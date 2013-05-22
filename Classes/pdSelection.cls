@@ -845,7 +845,7 @@ Private Sub createSelectionMask()
                     
                     'Next, draw the interior one
                     GDIPlusDrawEllipse selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
-                    
+                        
                 Else
                     
                     SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
@@ -861,9 +861,9 @@ Private Sub createSelectionMask()
                     FillRgn selMask.getLayerDC, maskRegion, hBrush
                     DeleteObject hBrush
                     DeleteObject maskRegion
-                
+                    
                 End If
-                
+                        
             End If
             
             'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)
@@ -876,9 +876,12 @@ Private Sub createSelectionMask()
     'If the selection is locked and feathering has been requested, apply it now
     If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then
     
+        'Time to experiment with a new kind of selection feathering!  This time, we're going to take advantage of the fast drawing time
+        ' for antialiased shapes to see if we can improve performance over the original Gaussian blur implementation.
+        
         'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
         If g_GDIPlusFXAvailable Then
-       
+        
             Message "Feathering selection..."
             GDIPlusBlurLayer selMask, featheringRadius
             Message "Finished."
@@ -888,7 +891,7 @@ Private Sub createSelectionMask()
             Dim tmpLayer As pdLayer
             Set tmpLayer = New pdLayer
             tmpLayer.createFromExistingLayer selMask
-            
+        
             Message "Feathering selection..."
             CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
             SetProgBarVal 0
@@ -981,34 +984,33 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     
     'If this selection is transformable, draw transform circles at the corners and edges of the transformation.
     If isTransformable Then
-    
-        Dim oldDrawMode As Long, oldFillStyle As Long
-        oldDrawMode = dstForm.DrawMode
-        oldFillStyle = dstForm.FillStyle
-        dstForm.DrawMode = vbInvert
-        dstForm.FillStyle = 1 'Transparent
         
         Dim circRadius As Long
         circRadius = 5
         
+        Dim drawRadius As Single
+        drawRadius = 1.5
+        
+        Dim circColor As Long, circAlpha As Long
+        circColor = RGB(255, 255, 255)
+        circAlpha = 200
+        
         'Draw corner circles first
-        dstForm.Circle (dstLeft, dstTop), circRadius, RGB(255, 255, 255)
-        dstForm.Circle (dstRight, dstTop), circRadius, RGB(255, 255, 255)
-        dstForm.Circle (dstRight, dstBottom), circRadius, RGB(255, 255, 255)
-        dstForm.Circle (dstLeft, dstBottom), circRadius, RGB(255, 255, 255)
+        GDIPlusDrawAACircleToDC dstForm.hDC, dstLeft, dstTop, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawAACircleToDC dstForm.hDC, dstRight, dstTop, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawAACircleToDC dstForm.hDC, dstRight, dstBottom, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawAACircleToDC dstForm.hDC, dstLeft, dstBottom, circRadius, circColor, circAlpha, drawRadius, True
         
         'Draw mid-line circles next
         Dim midHorizontal As Long, midVertical As Long
         midHorizontal = (dstLeft + dstRight) \ 2
         midVertical = (dstTop + dstBottom) \ 2
         
-        dstForm.Circle (dstLeft, midVertical), circRadius, RGB(255, 255, 255)
-        dstForm.Circle (midHorizontal, dstTop), circRadius, RGB(255, 255, 255)
-        dstForm.Circle (dstRight, midVertical), circRadius, RGB(255, 255, 255)
-        dstForm.Circle (midHorizontal, dstBottom), circRadius, RGB(255, 255, 255)
-        
-        dstForm.FillStyle = oldFillStyle
-        dstForm.DrawMode = oldDrawMode
+        GDIPlusDrawAACircleToDC dstForm.hDC, dstLeft, midVertical, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawAACircleToDC dstForm.hDC, midHorizontal, dstTop, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawAACircleToDC dstForm.hDC, dstRight, midVertical, circRadius, circColor, circAlpha, drawRadius, True
+        GDIPlusDrawAACircleToDC dstForm.hDC, midHorizontal, dstBottom, circRadius, circColor, circAlpha, drawRadius, True
+        dstForm.Picture = dstForm.Image
         
     End If
     
@@ -1235,22 +1237,22 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
         Case Else
         
             'Store the destination DC to a local variable
-            Dim DstDC As Long
-            DstDC = dstLayer.getLayerDC
+            Dim dstDC As Long
+            dstDC = dstLayer.getLayerDC
             
             'Since we'll be using the API to draw our selection area, we need to initialize several brushes
             Dim hPen As Long, hOldPen As Long
             
             hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
-            hOldPen = SelectObject(DstDC, hPen)
+            hOldPen = SelectObject(dstDC, hPen)
             
             'Get a transparent brush
             Dim hBrush As Long, hOldBrush As Long
             hBrush = GetStockObject(NULL_BRUSH)
-            hOldBrush = SelectObject(DstDC, hBrush)
+            hOldBrush = SelectObject(dstDC, hBrush)
             
             'Change the rasterOp to XOR (this will invert the line)
-            SetROP2 DstDC, vbSrcInvert
+            SetROP2 dstDC, vbSrcInvert
             
             'If dstLeft > imgLeft Then dstLeft = dstLeft - 1
             'If dstTop > imgTop Then dstTop = dstTop - 1
@@ -1258,17 +1260,17 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             'dstBottom = dstBottom + 1
             
             'Draw the rectangle
-            Rectangle DstDC, dstLeft, dstTop, dstRight, dstBottom
+            Rectangle dstDC, dstLeft, dstTop, dstRight, dstBottom
             
             'Restore the normal COPY rOp
-            SetROP2 DstDC, vbSrcCopy
+            SetROP2 dstDC, vbSrcCopy
             
             'Remove the brush from the DC
-            SelectObject DstDC, hOldBrush
+            SelectObject dstDC, hOldBrush
             DeleteObject hBrush
             
             'Remove the pen from the DC
-            SelectObject DstDC, hOldPen
+            SelectObject dstDC, hOldPen
             DeleteObject hPen
                     
     End Select
