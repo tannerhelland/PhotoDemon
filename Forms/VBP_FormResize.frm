@@ -56,14 +56,14 @@ Begin VB.Form FormResize
       Height          =   360
       Left            =   840
       Style           =   2  'Dropdown List
-      TabIndex        =   2
+      TabIndex        =   5
       Top             =   2520
       Width           =   5535
    End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
       Left            =   4110
-      TabIndex        =   9
+      TabIndex        =   4
       Top             =   840
       Width           =   2355
       _ExtentX        =   4154
@@ -83,7 +83,7 @@ Begin VB.Form FormResize
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
       Left            =   1560
-      TabIndex        =   10
+      TabIndex        =   2
       Top             =   585
       Width           =   1200
       _ExtentX        =   2117
@@ -102,7 +102,7 @@ Begin VB.Form FormResize
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
       Left            =   1560
-      TabIndex        =   11
+      TabIndex        =   3
       Top             =   1215
       Width           =   1200
       _ExtentX        =   2117
@@ -149,7 +149,7 @@ Begin VB.Form FormResize
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -2280
-      TabIndex        =   8
+      TabIndex        =   11
       Top             =   3720
       Width           =   9975
    End
@@ -170,7 +170,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00808080&
       Height          =   375
       Left            =   2850
-      TabIndex        =   7
+      TabIndex        =   10
       Top             =   1245
       Width           =   855
    End
@@ -191,7 +191,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00808080&
       Height          =   480
       Left            =   2850
-      TabIndex        =   6
+      TabIndex        =   9
       Top             =   615
       Width           =   855
    End
@@ -213,7 +213,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   720
-      TabIndex        =   5
+      TabIndex        =   8
       Top             =   1245
       Width           =   750
    End
@@ -235,7 +235,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   720
-      TabIndex        =   4
+      TabIndex        =   7
       Top             =   615
       Width           =   675
    End
@@ -256,7 +256,7 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   720
-      TabIndex        =   3
+      TabIndex        =   6
       Top             =   2160
       Width           =   2895
    End
