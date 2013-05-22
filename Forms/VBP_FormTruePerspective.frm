@@ -639,15 +639,16 @@ Private Sub redrawPreviewBox()
         End If
     Next i
     
-    'Next, draw connecting lines to form an image outline.  Use Wu's antialiasing algorithm for this for better results.
+    'Next, draw connecting lines to form an image outline.  Use GDI+ for superior results (e.g. antialiasing).
+    Dim oTransparency As Long
+    oTransparency = 220
+    
     picDraw.ForeColor = RGB(255, 0, 0)
     For i = 0 To 3
         If i < 3 Then
-            DrawLineWuAA picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(i + 1).pX, m_nPoints(i + 1).pY, picDraw.ForeColor
-            'picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(i + 1).pX, m_nPoints(i + 1).pY)
+            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(i + 1).pX, m_nPoints(i + 1).pY, picDraw.ForeColor, oTransparency
         Else
-            DrawLineWuAA picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(0).pX, m_nPoints(0).pY, picDraw.ForeColor
-            'picDraw.Line (m_nPoints(i).pX, m_nPoints(i).pY)-(m_nPoints(0).pX, m_nPoints(0).pY)
+            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(0).pX, m_nPoints(0).pY, picDraw.ForeColor, oTransparency
         End If
     Next i
     
@@ -655,15 +656,12 @@ Private Sub redrawPreviewBox()
     picDraw.ForeColor = RGB(0, 0, 255)
     
     For i = 0 To 3
-        DrawCircleAA picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, 5, picDraw.ForeColor
-        'picDraw.Circle (m_nPoints(i).pX, m_nPoints(i).pY), 5
+        GDIPlusDrawCircleToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, 5, picDraw.ForeColor, oTransparency
     Next i
     
     'Finally, draw the center cross to help the user orient to the center point of the perspective effect
-    DrawLineWuAA picDraw.hDC, m_nPoints(0).pX, m_nPoints(0).pY, m_nPoints(2).pX, m_nPoints(2).pY, picDraw.ForeColor
-    'picDraw.Line (m_nPoints(0).pX, m_nPoints(0).pY)-(m_nPoints(2).pX, m_nPoints(2).pY)
-    DrawLineWuAA picDraw.hDC, m_nPoints(1).pX, m_nPoints(1).pY, m_nPoints(3).pX, m_nPoints(3).pY, picDraw.ForeColor
-    'picDraw.Line (m_nPoints(1).pX, m_nPoints(1).pY)-(m_nPoints(3).pX, m_nPoints(3).pY)
+    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(0).pX, m_nPoints(0).pY, m_nPoints(2).pX, m_nPoints(2).pY, picDraw.ForeColor, oTransparency
+    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(1).pX, m_nPoints(1).pY, m_nPoints(3).pX, m_nPoints(3).pY, picDraw.ForeColor, oTransparency
     
     picDraw.Refresh
 

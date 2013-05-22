@@ -1070,10 +1070,9 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
         Next xPos
     Next i
     
-    'Draw the finished spline
+    'Draw the finished spline, using GDI+ for antialiasing
     For i = 1 To picH.ScaleWidth
-        'picH.Line (i, results(i) + 2)-(i - 1, results(i - 1) + 2)
-        DrawLineWuAA picH.hDC, i, results(i) + 2, i - 1, results(i - 1) + 2, picH.ForeColor
+        GDIPlusDrawLineToDC picH.hDC, i, results(i) + 2, i - 1, results(i - 1) + 2, picH.ForeColor
     Next i
     
     picH.Picture = picH.Image

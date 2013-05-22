@@ -444,7 +444,7 @@ Private Sub updatePreview()
     'Clear out the old chart and draw a gray line across the diagonal for reference
     picChart.Picture = LoadPicture("")
     picChart.ForeColor = RGB(127, 127, 127)
-    DrawLineWuAA picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+    GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
     
     Dim gamVal As Double, tmpVal As Double
     
@@ -480,7 +480,7 @@ Private Sub updatePreview()
             tmpVal = yHeight - (tmpVal * yHeight)
             curY = tmpVal
             curX = x
-            DrawLineWuAA picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+            GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
             prevX = curX
             prevY = curY
         Next x

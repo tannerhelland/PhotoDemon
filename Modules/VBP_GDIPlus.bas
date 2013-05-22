@@ -263,6 +263,7 @@ Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Lo
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
+Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
@@ -415,13 +416,34 @@ End Function
 'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
 Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 255) As Boolean
 
-    GDIPlusDrawAACircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
-    GDIPlusDrawAACircleToDC dstDC, cX, cY, cRadius, RGB(255, 255, 255), 220, 1, True
+    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
+    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(255, 255, 255), 220, 1, True
     
 End Function
 
-'Use GDI+ to render a hollow circle, with optional antialiasing
-Public Function GDIPlusDrawAACircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+'Use GDI+ to render a line, with optional color, opacity, and antialiasing
+Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    
+    'Create a pen, which will be used to stroke the line
+    Dim iPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    
+    'Render the line
+    GdipDrawLine iGraphics, iPen, x1, y1, x2, y2
+        
+    'Release all created objects
+    GdipDeletePen iPen
+    GdipDeleteGraphics iGraphics
+
+End Function
+
+'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
+Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
