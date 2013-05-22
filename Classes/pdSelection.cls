@@ -986,7 +986,7 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     If isTransformable Then
         
         Dim circRadius As Long
-        circRadius = 5
+        circRadius = 7
                 
         Dim circAlpha As Long
         circAlpha = 190
