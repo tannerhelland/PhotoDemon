@@ -3,8 +3,8 @@ Attribute VB_Name = "FreeImage_Expanded_Interface"
 'FreeImage Interface (Advanced)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 25/November/12
-'Last update: improved tone-mapping for high-bit-depth images with alpha channels
+'Last updated: 23/May/13
+'Last update: image metadata is now processed at load-time and stored inside the pdImage's imgMetadata class
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
@@ -100,7 +100,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
         
     'For icons, we prefer a white background (default is black).
-    ' NOTE: this is disabled, because it uses the AND mask incorrectly for mixed-format icons
+    ' NOTE: this check is now disabled, because it uses the AND mask incorrectly for mixed-format icons.  A better fix is
+    ' provided below - see the section starting with "If fileFIF = FIF_ICO Then..."
     'If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA
     
     '****************************************************************************
@@ -269,9 +270,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     
+    '****************************************************************************
+    ' Attempt to load any valid metadata.
+    '****************************************************************************
+    Set dstImage.imgMetadata = New pdMetadata
+    dstImage.imgMetadata.loadAllMetadata fi_hDIB
     
     '****************************************************************************
-    ' Retrieve format-specific information, link PNG background color
+    ' Retrieve format-specific information, like PNG background color
     '****************************************************************************
     
     'Check to see if the image has a background color embedded
@@ -571,7 +577,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'Update Dec '12: certain faulty TIFF files can confuse FreeImage and cause it to report wildly bizarre height and width
     ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
-    ' - but it prevents a hard program crash, so it's the lesser of two evils.)
+    ' - but it prevents a hard program crash, so I consider it the lesser of two evils.)
     If (fi_Width > 1000000) Or (fi_Height > 1000000) Then
         FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False

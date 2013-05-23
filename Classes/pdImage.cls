@@ -162,6 +162,10 @@ Option Explicit
     Public mainSelection As pdSelection
     Public selectionActive As Boolean
     
+    'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
+    ' NOTE: FREEIMAGE IS REQUIRED FOR METADATA HANDLING.
+    Public imgMetadata As pdMetadata
+    
 'When this layer is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
     
@@ -422,6 +426,9 @@ Private Sub Class_Initialize()
     selectionActive = False
     mainSelection.setSelectionShape sRectangle
     Set mainSelection.containingPDImage = Me
+    
+    'Initialize the metadata object (which may not get used, but this prevents errors if other functions try to access metadata)
+    Set imgMetadata = New pdMetadata
         
 End Sub
 

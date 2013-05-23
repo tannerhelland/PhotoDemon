@@ -1,5 +1,6 @@
 Attribute VB_Name = "Outside_FreeImageV3"
 'Note: this file has been modified for use within PhotoDemon.
+' (Most changes consist of converting PRIVATE functions to PUBLIC.)
 
 'IF YOU WANT TO USE THIS CODE IN YOUR OWN PROJECT, PLEASE DOWNLOAD THE ORIGINAL FROM THIS LINK:
 'http://freeimage.sourceforge.net/download.html
@@ -2735,7 +2736,7 @@ Public Declare Function FreeImage_FindFirstMetadata Lib "FreeImage.dll" Alias "_
            ByVal BITMAP As Long, _
            ByRef Tag As Long) As Long
 
-Private Declare Function FreeImage_FindNextMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_FindNextMetadata@8" ( _
+Public Declare Function FreeImage_FindNextMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_FindNextMetadata@8" ( _
            ByVal hFind As Long, _
            ByRef Tag As Long) As Long
 
@@ -11760,7 +11761,7 @@ End Function
 ' Private metadata helper functions
 '--------------------------------------------------------------------------------
 
-Private Function pGetTagFromTagPtr(ByVal Model As FREE_IMAGE_MDMODEL, _
+Public Function pGetTagFromTagPtr(ByVal Model As FREE_IMAGE_MDMODEL, _
                                    ByVal TagPtr As Long) As FREE_IMAGE_TAG
 
 Dim tTag As FITAG
@@ -12126,7 +12127,7 @@ Private Function floor(ByRef a As Variant) As Variant
 
 End Function
 
-Private Function pTagToTagPtr(ByRef Tag As FREE_IMAGE_TAG) As Boolean
+Public Function pTagToTagPtr(ByRef Tag As FREE_IMAGE_TAG) As Boolean
 
 Dim tTagSave As FITAG
 Dim lpTag As Long

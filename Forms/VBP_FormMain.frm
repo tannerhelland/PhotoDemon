@@ -3149,6 +3149,7 @@ End Sub
 
 Private Sub MnuTest_Click()
     'MenuTest
+    pdImages(CurrentImage).imgMetadata.testMetadata
 End Sub
 
 Private Sub MnuTile_Click()
