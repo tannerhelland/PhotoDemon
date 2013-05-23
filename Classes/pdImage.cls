@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2006-2013 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 28/September/12
-'Last update: added a Selection object (mainSelection)
+'Last updated: 22/May/13
+'Last update: fixed a bug in 32bpp processing for the retrieveProcessedSelection function
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -483,7 +483,8 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
         dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
         dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
         If srcLayerCD = 4 Then
-            dstImageData(dstQuickX + 3, y) = (srcImageData(srcQuickX + 3, srcQuickY) + thisAlpha) \ 2
+            blendAlpha = thisAlpha / 255
+            dstImageData(dstQuickX + 3, y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
         Else
             dstImageData(dstQuickX + 3, y) = thisAlpha
         End If
