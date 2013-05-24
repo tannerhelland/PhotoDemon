@@ -5656,8 +5656,33 @@ Public Function FreeImage_SaveMultiBitmapToMemoryEx2(ByVal Format As FREE_IMAGE_
 
 End Function
 
+                             
+Public Function FreeImage_CreateTagExRational(ByVal Model As FREE_IMAGE_MDMODEL, _
+                             ByVal Key As String, _
+                             ByVal TagType As FREE_IMAGE_MDTYPE, _
+                             ByRef srcRationalValue() As FIRATIONAL, _
+                             Optional ByRef Count As Long, _
+                             Optional ByVal Id As Long) As FREE_IMAGE_TAG
 
+   With FreeImage_CreateTagExRational
+      .TagPtr = FreeImage_CreateTag()
+      If (.TagPtr <> 0) Then
+         .Model = Model
+         If (LenB(Key) > 0) Then
+            .Key = Key
+         End If
+         .Type = TagType
+         .Count = Count
+         .Id = Id
+         .RationalValue() = srcRationalValue()
+         Call pTagToTagPtr(FreeImage_CreateTagExRational)
+         FreeImage_CreateTagExRational = pGetTagFromTagPtr(Model, .TagPtr)
+      End If
+   End With
 
+End Function
+                             
+                             
 '--------------------------------------------------------------------------------
 ' Tag accessing VB friendly helper functions
 '--------------------------------------------------------------------------------

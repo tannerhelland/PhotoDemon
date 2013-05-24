@@ -211,6 +211,157 @@ Private Function FreeImage_GetMaxMetadataCount(ByVal fiImageHandle As Long) As L
 
 End Function
 
+'My (vain?) attempt to write an EXIF to XMP translator
+Public Function writeDataAsXMPString() As String
+
+    Dim XMPText As String
+    
+    'Start by writing out the standard XMP packet header
+    XMPText = "<?xpacket begin=""?"" id=""W5M0MpCehiHzreSzNTczkc9d""?>" & vbCrLf
+    XMPText = XMPText & "<x:xmpmeta xmlns:x=""adobe:ns:meta/"" x:xmptk=""Adobe XMP Core 5.4-c002 1.000000, 0000/00/00-00:00:00        "">" & vbCrLf
+    XMPText = XMPText & "<rdf:RDF xmlns:rdf=""http://www.w3.org/1999/02/22-rdf-syntax-ns#"">" & vbCrLf
+    XMPText = XMPText & "      <rdf:Description rdf:about=""""" & vbCrLf
+    XMPText = XMPText & "            xmlns:xmp=""http://ns.adobe.com/xap/1.0/"">" & vbCrLf
+    XMPText = XMPText & "         <xmp:CreatorTool>PhotoDemon</xmp:CreatorTool>" & vbCrLf
+    XMPText = XMPText & "      </rdf:Description>" & vbCrLf
+    
+    Dim curTitle As String
+    
+    'FreeImage doesn't write out "description" tags, and I have no plans to manually add them.  So our XMP packet data is going to be a little ugly.  Oh well.
+    Dim fiMetadataType As Long, j As Long
+    For fiMetadataType = 0 To 10
+    
+        'Only process tags that exist (obviously!)
+        If numTags(fiMetadataType) > 0 Then
+            For j = 0 To numTags(fiMetadataType) - 1
+                
+                curTitle = getXMPfromEXIF(fiMetadata(fiMetadataType, j).Key)
+                If curTitle <> "" Then
+                    XMPText = XMPText & "<" & curTitle & ">" & fiMetadata(fiMetadataType, j).StringValue & "</" & curTitle & ">" & vbCrLf
+                End If
+                
+            Next j
+        End If
+    
+    Next fiMetadataType
+    
+    'Terminate the XMP packet
+    XMPText = XMPText & "</rdf:RDF>"
+    XMPText = XMPText & "</x:xmpmeta>"
+    XMPText = XMPText & "<?xpacket end=""w""?>"
+
+    writeDataAsXMPString = XMPText
+
+End Function
+
+'Given a handle to a FreeImage object, write out all currently stored metadata.  (This only needs to be done immediately prior to a save.)
+Public Function writeAllMetadata(ByVal fiImageHandle As Long) As Boolean
+    
+    'New strategy: convert as much EXIF data to XMP format as possible.
+    Dim XMPPacket As String
+    XMPPacket = writeDataAsXMPString
+    
+    Dim tmpTag As FREE_IMAGE_TAG
+    tmpTag = FreeImage_CreateTagEx(FIMD_XMP, "XMLPacket", FIDT_ASCII, XMPPacket)
+
+    Dim totalSuccess As Boolean
+    totalSuccess = True
+    
+    If tmpTag.TagPtr <> 0 Then
+                    
+                    'Attempt to set this tag to the FreeImage handle we were passed
+                    If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, "XMLPacket", FIMD_XMP, True) Then
+                    'If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, fiMetadata(fiMetadataType, j).Key, fiMetadataType, True) Then
+                        
+                        'Note that normally we would need to delete the tag object just created; however, the RefreshTag
+                        ' parameter used above handles that for us.
+                        
+                    Else
+                        totalSuccess = False
+                        Message "Failed to set metadata tag to FreeImage object."
+                    End If
+                    
+                Else
+                    totalSuccess = False
+                    Message "Failed to create metadata tag."
+                End If
+                
+                Exit Function
+    
+    
+    Dim fiMetadataType As Long, j As Long
+        
+    For fiMetadataType = 0 To 10
+    
+        'Only process tags that exist (obviously!)
+        If numTags(fiMetadataType) > 0 Then
+            For j = 0 To numTags(fiMetadataType) - 1
+                
+                'Create a new FreeImage tag with data identical to this one
+                Select Case fiMetadata(fiMetadataType, j).Type
+                    
+                    Case FIDT_SRATIONAL, FIDT_RATIONAL
+                        'tmpTag = FreeImage_CreateTagExRational(FIMD_EXIF_RAW, fiMetadata(fiMetadataType, j).Key, fiMetadata(fiMetadataType, j).Type, fiMetadata(fiMetadataType, j).RationalValue(), fiMetadata(fiMetadataType, j).Count, fiMetadata(fiMetadataType, j).Id)
+                        'tmpTag = FreeImage_CreateTagExRational(fiMetadataType, fiMetadata(fiMetadataType, j).Key, fiMetadata(fiMetadataType, j).Type, fiMetadata(fiMetadataType, j).RationalValue(), fiMetadata(fiMetadataType, j).Count, fiMetadata(fiMetadataType, j).Id)
+                        tmpTag.TagPtr = 0
+                    
+                    Case Else
+                        'tmpTag = FreeImage_CreateTagEx(fiMetadataType, fiMetadata(fiMetadataType, j).Key, fiMetadata(fiMetadataType, j).Type, fiMetadata(fiMetadataType, j).Value, fiMetadata(fiMetadataType, j).Count, fiMetadata(fiMetadataType, j).Id)
+                        tmpTag.TagPtr = 0
+                        
+                End Select
+                
+                If tmpTag.TagPtr <> 0 Then
+                    
+                    'Attempt to set this tag to the FreeImage handle we were passed
+                    If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, tmpTag.Key, FIMD_XMP, True) Then
+                    'If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, fiMetadata(fiMetadataType, j).Key, fiMetadataType, True) Then
+                        
+                        'Note that normally we would need to delete the tag object just created; however, the RefreshTag
+                        ' parameter used above handles that for us.
+                        
+                    Else
+                        totalSuccess = False
+                        Message "Failed to set metadata tag to FreeImage object."
+                    End If
+                    
+                Else
+                    totalSuccess = False
+                    Message "Failed to create metadata tag."
+                End If
+                
+            Next j
+        End If
+    
+    Next fiMetadataType
+    
+    'Now, for the hell of it, we are going to attempt to retrieve the full raw metadata buffer.  I don't know if this will exist, but it's worth a try...
+    loadAllMetadata fiImageHandle
+    testMetadata
+    'MsgBox fiMetadata(11, 0).StringValue
+    
+    writeAllMetadata = totalSuccess
+    
+End Function
+
+'Given the name of an EXIF property, return the corresponding XMP title.  This can be used to convert EXIF properties to XMP format.
+Private Function getXMPfromEXIF(ByVal exifName As String) As String
+
+    Select Case exifName
+    
+        Case "Make"
+            getXMPfromEXIF = "tiff:Make"
+            
+        Case "Model"
+            getXMPfromEXIF = "tiff:Model"
+            
+        Case Else
+            getXMPfromEXIF = ""
+    
+    End Select
+    
+End Function
+
 Private Sub Class_Initialize()
     maxMetadataCount = 0
 End Sub

@@ -1161,7 +1161,7 @@ SaveTGAError:
 
 End Function
 
-'Save to JPEG using the FreeImage library.  This is more reliable than using GDI+.
+'Save to JPEG using the FreeImage library.  FreeImage offers significantly more JPEG features than GDI+.
 Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As String, ByVal jpegParams As String) As Boolean
     
     On Error GoTo SaveJPEGError
