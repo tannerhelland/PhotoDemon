@@ -63,7 +63,6 @@ Begin VB.Form FormPluginDownloader
          PictureAlign    =   0
          DisabledPictureMode=   1
          CaptionEffects  =   0
-         TooltipType     =   1
          TooltipTitle    =   "Download All Plugins"
       End
       Begin PhotoDemon.jcbutton cmdChoice 
@@ -93,7 +92,6 @@ Begin VB.Form FormPluginDownloader
          PictureAlign    =   0
          DisabledPictureMode=   1
          CaptionEffects  =   0
-         TooltipType     =   1
          TooltipTitle    =   "Postpone Plugin Download"
       End
       Begin PhotoDemon.jcbutton cmdChoice 
@@ -122,7 +120,6 @@ Begin VB.Form FormPluginDownloader
          PictureAlign    =   0
          DisabledPictureMode=   1
          CaptionEffects  =   0
-         TooltipType     =   1
          TooltipTitle    =   "Never Download Plugins"
       End
       Begin VB.Label lblInterfaceTitle 
@@ -509,7 +506,7 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 10/June/12
 'Last updated: 24/May/13
-'Last update: interface overhaul due to inclusion of ExifTool as plugin #5
+'Last update: interface overhaul due to inclusion of ExifTool as official plugin #5
 '
 'Interface for downloading plugins marked as missing upon program load.  The download code itself is a heavily
 ' modified version of publicly available code by Alberto Falossi (http://www.devx.com/vb2themax/Tip/19203).

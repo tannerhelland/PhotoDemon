@@ -171,6 +171,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://sourceforge.net/projects/pngnqs9/)
 * Jerry Huxtable and JHLabs for an excellent reference on Distort-style filters (Apache 2.0)
   (http://www.jhlabs.com/ip/filters/index.html)
+* Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License)
+  (http://www.sno.phy.queensu.ca/~phil/exiftool/)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * audioglider
   * Zhu JinYong

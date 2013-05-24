@@ -8,7 +8,7 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin will be
-' available by default in all versions of PhotoDemon after and including 5.6 (release TBD, estimate as summer 2013).
+' available by default in all versions of PhotoDemon after and including 5.6 (release TBD, estimated summer 2013).
 '
 'ExifTool is a comprehensive image metadata handler written by Phil Harvey.  No DLL or VB-compatible library is
 ' available, so PhotoDemon relies on the stock Windows ExifTool executable file for all interfacing.  You can read
@@ -26,7 +26,7 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 'http://www.visualbasic.happycodings.com/Graphics_Games_Programming/code3.html
 '
 'This project was designed against v9.29 of ExifTool (18 May '13).  It may not work with other versions of the
-' software.  Additional documentation regarding the use of ExifTool is available as part of the official ExifTool
+' software.  Additional documentation regarding the use of ExifTool can be found in the official ExifTool
 ' package, downloadable from http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-9.29.tar.gz
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -71,8 +71,8 @@ End Type
 Private Type PROCESS_INFORMATION
     hProcess As Long
     hThread As Long
-    dwProcessID As Long
-    dwThreadID As Long
+    dwProcessId As Long
+    dwThreadId As Long
 End Type
 
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
