@@ -1,4 +1,4 @@
-Attribute VB_Name = "FreeImage_Expanded_Interface"
+Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
 'Copyright ©2012-2013 by Tanner Helland
@@ -271,10 +271,10 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     
     '****************************************************************************
-    ' Attempt to load any valid metadata.
+    ' Attempt to load any valid metadata.  (Disabled while I investigate a switch to ExifTool for metadata handling)
     '****************************************************************************
-    Set dstImage.imgMetadata = New pdMetadata
-    dstImage.imgMetadata.loadAllMetadata fi_hDIB
+    'Set dstImage.imgMetadata = New pdMetadata
+    'dstImage.imgMetadata.loadAllMetadata fi_hDIB
     
     '****************************************************************************
     ' Retrieve format-specific information, like PNG background color

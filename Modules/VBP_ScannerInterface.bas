@@ -1,4 +1,4 @@
-Attribute VB_Name = "Scanner_Interface"
+Attribute VB_Name = "Plugin_Scanner_Interface"
 '***************************************************************************
 'Scanner Interface
 'Copyright ©2001-2013 by Tanner Helland

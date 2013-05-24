@@ -1,13 +1,13 @@
-Attribute VB_Name = "pngnq_Interface"
+Attribute VB_Name = "Plugin_pngnq_Interface"
 '***************************************************************************
 'pngnq-s9 Interface
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/December/12
 'Last updated: 26/December/12
 'Last update: added mechanism for version checking
 '
 'Module for handling all pngnq-s9 interfacing.  This module is pointless without the accompanying
-' pngnq-s9 plugin, which will be in the Data/Plugins subdirectory as "pngnq-s9.exe"
+' pngnq-s9 plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "pngnq-s9.exe"
 '
 'pngnq-s9 is a modified, much-improved variant of the free, open-source pngnq tool.  You can learn more
 ' about the original pngnq at:

@@ -1,4 +1,4 @@
-Attribute VB_Name = "zLib_Handler"
+Attribute VB_Name = "Plugin_zLib_Handler"
 '***************************************************************************
 'File Compression Interface (via zLib)
 'Copyright ©2003-2013 by Tanner Helland
