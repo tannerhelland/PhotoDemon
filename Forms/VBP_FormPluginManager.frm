@@ -74,6 +74,502 @@ Begin VB.Form FormPluginManager
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
+      Index           =   0
+      Left            =   3000
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   513
+      TabIndex        =   3
+      Top             =   240
+      Width           =   7695
+      Begin VB.Label lblDisable 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "Disable ExifTool"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   240
+         Index           =   4
+         Left            =   6015
+         MouseIcon       =   "VBP_FormPluginManager.frx":0000
+         MousePointer    =   99  'Custom
+         TabIndex        =   88
+         Top             =   4125
+         Width           =   1350
+      End
+      Begin VB.Label lblStatus 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "installed, enabled, and up to date"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   4
+         Left            =   1260
+         TabIndex        =   87
+         Top             =   4440
+         Width           =   3255
+      End
+      Begin VB.Label lblInterfaceSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "status:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   4
+         Left            =   480
+         TabIndex        =   86
+         Top             =   4440
+         Width           =   675
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "ExifTool"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   240
+         TabIndex        =   85
+         Top             =   4080
+         Width           =   870
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "current plugin status:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   21
+         Top             =   15
+         Width           =   2265
+      End
+      Begin VB.Label lblPluginStatus 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "GOOD"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000B909&
+         Height          =   285
+         Left            =   2460
+         TabIndex        =   20
+         Top             =   15
+         Width           =   690
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "pngnq-s9"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   240
+         TabIndex        =   19
+         Top             =   3240
+         Width           =   1005
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "zLib"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   240
+         TabIndex        =   18
+         Top             =   1560
+         Width           =   420
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "EZTwain"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   240
+         TabIndex        =   17
+         Top             =   2400
+         Width           =   915
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "FreeImage"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   240
+         TabIndex        =   16
+         Top             =   720
+         Width           =   1125
+      End
+      Begin VB.Label lblInterfaceSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "status:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   0
+         Left            =   480
+         TabIndex        =   15
+         Top             =   1080
+         Width           =   675
+      End
+      Begin VB.Label lblStatus 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "installed, enabled, and up to date"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   0
+         Left            =   1260
+         TabIndex        =   14
+         Top             =   1080
+         Width           =   3255
+      End
+      Begin VB.Label lblInterfaceSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "status:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   1
+         Left            =   480
+         TabIndex        =   13
+         Top             =   1920
+         Width           =   675
+      End
+      Begin VB.Label lblStatus 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "installed, enabled, and up to date"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   1
+         Left            =   1260
+         TabIndex        =   12
+         Top             =   1920
+         Width           =   3255
+      End
+      Begin VB.Label lblInterfaceSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "status:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   2
+         Left            =   480
+         TabIndex        =   11
+         Top             =   2760
+         Width           =   675
+      End
+      Begin VB.Label lblStatus 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "installed, enabled, and up to date"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   2
+         Left            =   1260
+         TabIndex        =   10
+         Top             =   2760
+         Width           =   3255
+      End
+      Begin VB.Label lblInterfaceSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "status:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   3
+         Left            =   480
+         TabIndex        =   9
+         Top             =   3600
+         Width           =   675
+      End
+      Begin VB.Label lblStatus 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "installed, enabled, and up to date"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   3
+         Left            =   1260
+         TabIndex        =   8
+         Top             =   3600
+         Width           =   3255
+      End
+      Begin VB.Label lblDisable 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "Disable FreeImage"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   240
+         Index           =   0
+         Left            =   5760
+         MouseIcon       =   "VBP_FormPluginManager.frx":0152
+         MousePointer    =   99  'Custom
+         TabIndex        =   7
+         Top             =   765
+         Width           =   1605
+      End
+      Begin VB.Label lblDisable 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "Disable zLib"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   240
+         Index           =   1
+         Left            =   6360
+         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
+         MousePointer    =   99  'Custom
+         TabIndex        =   6
+         Top             =   1605
+         Width           =   1005
+      End
+      Begin VB.Label lblDisable 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "Disable EZTwain"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   240
+         Index           =   2
+         Left            =   5955
+         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
+         MousePointer    =   99  'Custom
+         TabIndex        =   5
+         Top             =   2445
+         Width           =   1410
+      End
+      Begin VB.Label lblDisable 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "Disable pngnq-s9"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   240
+         Index           =   3
+         Left            =   5895
+         MouseIcon       =   "VBP_FormPluginManager.frx":0548
+         MousePointer    =   99  'Custom
+         TabIndex        =   4
+         Top             =   3285
+         Width           =   1470
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4935
       Index           =   4
       Left            =   3000
       ScaleHeight     =   329
@@ -307,7 +803,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0000
+         MouseIcon       =   "VBP_FormPluginManager.frx":069A
          MousePointer    =   99  'Custom
          TabIndex        =   61
          Top             =   1560
@@ -351,7 +847,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0152
+         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
          MousePointer    =   99  'Custom
          TabIndex        =   59
          Top             =   1080
@@ -484,6 +980,216 @@ Begin VB.Form FormPluginManager
          TabIndex        =   53
          Top             =   15
          Width           =   3045
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4935
+      Index           =   5
+      Left            =   3000
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   513
+      TabIndex        =   75
+      Top             =   240
+      Width           =   7695
+      Begin VB.Label lblLicenseLink 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "open-source Perl license"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   270
+         Index           =   4
+         Left            =   2640
+         MouseIcon       =   "VBP_FormPluginManager.frx":093E
+         MousePointer    =   99  'Custom
+         TabIndex        =   84
+         Top             =   1560
+         Width           =   2325
+      End
+      Begin VB.Label lblLicense 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "ExifTool license:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   4
+         Left            =   480
+         TabIndex        =   83
+         Top             =   1560
+         Width           =   1545
+      End
+      Begin VB.Label lblHomepageLink 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   270
+         Index           =   4
+         Left            =   2640
+         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
+         MousePointer    =   99  'Custom
+         TabIndex        =   82
+         Top             =   1080
+         Width           =   4575
+      End
+      Begin VB.Label lblHomepage 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "ExifTool homepage:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   4
+         Left            =   480
+         TabIndex        =   81
+         Top             =   1080
+         Width           =   1950
+      End
+      Begin VB.Label lbPluginSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "version found:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   3
+         Left            =   3960
+         TabIndex        =   80
+         Top             =   600
+         Width           =   1395
+      End
+      Begin VB.Label lblPluginVersionTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "XX.XX.XX"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   4
+         Left            =   2400
+         TabIndex        =   79
+         Top             =   600
+         Width           =   960
+      End
+      Begin VB.Label lblPluginVersion 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "XX.XX.XX"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   4
+         Left            =   5520
+         TabIndex        =   78
+         Top             =   600
+         Width           =   960
+      End
+      Begin VB.Label lbPluginSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "expected version:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   2
+         Left            =   480
+         TabIndex        =   77
+         Top             =   600
+         Width           =   1740
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "ExifTool plugin information"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   6
+         Left            =   120
+         TabIndex        =   76
+         Top             =   15
+         Width           =   2910
       End
    End
    Begin VB.PictureBox picContainer 
@@ -645,7 +1351,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
+         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
          MousePointer    =   99  'Custom
          TabIndex        =   45
          Top             =   1080
@@ -689,7 +1395,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
+         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
          MousePointer    =   99  'Custom
          TabIndex        =   43
          Top             =   1560
@@ -728,7 +1434,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":0548
+         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
          MousePointer    =   99  'Custom
          TabIndex        =   31
          Top             =   1560
@@ -773,7 +1479,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":069A
+         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
          MousePointer    =   99  'Custom
          TabIndex        =   29
          Top             =   1080
@@ -1069,7 +1775,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
+         MouseIcon       =   "VBP_FormPluginManager.frx":112A
          MousePointer    =   99  'Custom
          TabIndex        =   35
          Top             =   1080
@@ -1113,419 +1819,11 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":093E
+         MouseIcon       =   "VBP_FormPluginManager.frx":127C
          MousePointer    =   99  'Custom
          TabIndex        =   33
          Top             =   1560
          Width           =   3150
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4935
-      Index           =   0
-      Left            =   3000
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   3
-      Top             =   240
-      Width           =   7695
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "current plugin status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   21
-         Top             =   15
-         Width           =   2265
-      End
-      Begin VB.Label lblPluginStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "GOOD"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000B909&
-         Height          =   285
-         Left            =   2460
-         TabIndex        =   20
-         Top             =   15
-         Width           =   690
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   240
-         TabIndex        =   19
-         Top             =   3960
-         Width           =   1005
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zLib"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   240
-         TabIndex        =   18
-         Top             =   1800
-         Width           =   420
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "EZTwain"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   240
-         TabIndex        =   17
-         Top             =   2880
-         Width           =   915
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   240
-         TabIndex        =   16
-         Top             =   720
-         Width           =   1125
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   15
-         Top             =   1080
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   0
-         Left            =   1260
-         TabIndex        =   14
-         Top             =   1080
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   480
-         TabIndex        =   13
-         Top             =   2160
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   1
-         Left            =   1260
-         TabIndex        =   12
-         Top             =   2160
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   2
-         Left            =   480
-         TabIndex        =   11
-         Top             =   3240
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   2
-         Left            =   1260
-         TabIndex        =   10
-         Top             =   3240
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   3
-         Left            =   480
-         TabIndex        =   9
-         Top             =   4320
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   3
-         Left            =   1260
-         TabIndex        =   8
-         Top             =   4320
-         Width           =   3255
-      End
-      Begin VB.Label lblDisable 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "Disable FreeImage"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C07031&
-         Height          =   240
-         Index           =   0
-         Left            =   5760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
-         MousePointer    =   99  'Custom
-         TabIndex        =   7
-         Top             =   765
-         Width           =   1605
-      End
-      Begin VB.Label lblDisable 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "Disable zLib"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C07031&
-         Height          =   240
-         Index           =   1
-         Left            =   6360
-         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
-         MousePointer    =   99  'Custom
-         TabIndex        =   6
-         Top             =   1845
-         Width           =   1005
-      End
-      Begin VB.Label lblDisable 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "Disable EZTwain"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C07031&
-         Height          =   240
-         Index           =   2
-         Left            =   5955
-         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
-         MousePointer    =   99  'Custom
-         TabIndex        =   5
-         Top             =   2925
-         Width           =   1410
-      End
-      Begin VB.Label lblDisable 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "Disable pngnq-s9"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C07031&
-         Height          =   240
-         Index           =   3
-         Left            =   5895
-         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
-         MousePointer    =   99  'Custom
-         TabIndex        =   4
-         Top             =   4005
-         Width           =   1470
       End
    End
    Begin VB.Label lblBackground 
@@ -1543,10 +1841,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 27/December/12
-'Last update: added a host of pngnq-s9 settings
+'Last updated: 24/May/13
+'Last update: added support for ExifTool
 '
 'Dialog for presenting the user data related to the currently installed plugins.
 '
@@ -1554,8 +1852,8 @@ Attribute VB_Exposed = False
 ' are simply too many settings present.  Rather than clutter up the main Preferences dialog with
 ' plugin-related settings, I have moved those all here.
 '
-'In the future, I suppose this could be merged with the plugin updater to form one happy plugin
-' handler, but for now it makes sense to make them both available (and to keep them separate).
+'In the future, I suppose this could be merged with the plugin updater to form one giant plugin
+' handler, but for now it makes sense to make both available (and to keep them separate).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -1596,10 +1894,10 @@ Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBl
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, ByVal Source As Long, ByVal Length As Long)
 
 'This array will contain the full version strings of our various plugins
-Dim vString(0 To 3) As String
+Dim vString(0 To 4) As String
 
 'If the user presses "cancel", we need to restore the previous enabled/disabled values
-Dim pEnabled(0 To 3) As Boolean
+Dim pEnabled(0 To 4) As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -1646,6 +1944,7 @@ Private Sub CmdCancel_Click()
     g_ZLibEnabled = pEnabled(1)
     g_ScanEnabled = pEnabled(2)
     g_ImageFormats.pngnqEnabled = pEnabled(3)
+    g_ExifToolEnabled = pEnabled(4)
     
     Unload Me
     
@@ -1706,8 +2005,15 @@ Private Sub cmdOK_Click()
         g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", True
     End If
     
+    'ExifTool
+    If g_ExifToolEnabled Then
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceExifToolDisable", False
+    Else
+        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceExifToolDisable", True
+    End If
+    
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
-    If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngnqEnabled) Then
+    If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngnqEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
         LoadPlugins
         ApplyAllMenuIcons
         ResetMenuIcons
@@ -1748,6 +2054,7 @@ Private Sub cmdReset_Click()
     g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
     g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
     g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
+    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceExifToolDisable", False
     
     'Reload the plugins (from a system standpoint)
     LoadPlugins
@@ -1765,6 +2072,7 @@ Private Sub Form_Load()
     pEnabled(1) = g_ZLibEnabled
     pEnabled(2) = g_ScanEnabled
     pEnabled(3) = g_ImageFormats.pngnqEnabled
+    pEnabled(4) = g_ExifToolEnabled
     
     'Populate the left-hand list box with all relevant plugins
     lstPlugins.Clear
@@ -1773,6 +2081,7 @@ Private Sub Form_Load()
     lstPlugins.AddItem "zLib", 2
     lstPlugins.AddItem "EZTwain", 3
     lstPlugins.AddItem "pngnq-s9", 4
+    lstPlugins.AddItem "ExifTool", 5
     
     lstPlugins.ListIndex = 0
     
@@ -1864,6 +2173,9 @@ Private Sub UpdatePluginLabels()
     'pngnq-s9
     pluginStatus = pluginStatus And popPluginLabel(3, "pngnq-s9", "2.0.1", isPngnqAvailable, g_ImageFormats.pngnqEnabled)
     
+    'ExifTool
+    pluginStatus = pluginStatus And popPluginLabel(4, "ExifTool", "9.29", isExifToolAvailable, g_ExifToolEnabled)
+    
     If pluginStatus Then
         lblPluginStatus.ForeColor = GOODCOLOR
         lblPluginStatus.Caption = UCase(g_Language.TranslateMessage("GOOD"))
@@ -1883,15 +2195,22 @@ Private Sub CollectAllVersionNumbers()
     If isZLibAvailable Then CollectVersionInfo g_PluginPath & "zlibwapi.dll", 1 Else vString(1) = "none"
     If isEZTwainAvailable Then CollectVersionInfo g_PluginPath & "eztw32.dll", 2 Else vString(2) = "none"
     If isPngnqAvailable Then CollectVersionInfo g_PluginPath & "pngnq-s9.exe", 3 Else vString(3) = "none"
+    If isExifToolAvailable Then CollectVersionInfo g_PluginPath & "exiftool.exe", 4 Else vString(4) = "none"
     
-    'Special techniques are required for for EZTwain and pngnq-s9.
+    'Special version-checking techniques are required for some plugins.
     
     'The EZTwain DLL provides its own version-checking function
     If isEZTwainAvailable Then vString(2) = getEZTwainVersion Else vString(2) = "none"
     
+    'pngnq-s9 doesn't have a version-checking function, and it doesn't write version numbers to the .exe.
+    ' So for now, assume the latest version automatically.
     If isPngnqAvailable Then vString(3) = getPngnqVersion Else vString(3) = "none"
     
-    'Remove trailing build numbers from the version strings
+    'ExifTool can write its version number to stdout.  Capture that now.
+    If isExifToolAvailable Then vString(4) = getExifToolVersion() Else vString(4) = "none"
+    
+    'Remove trailing build numbers from version strings as necessary.  (Note: (4) is left off, as ExifTool
+    ' does not report a build number)
     Dim i As Long
     For i = 0 To 3
         If vString(i) <> "none" Then StripOffExtension vString(i)
@@ -1930,7 +2249,7 @@ Private Function popPluginLabel(ByVal curPlugin As Long, ByRef pluginName As Str
                 
             'Version mismatch
             Else
-                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", " & g_Language.TranslateMessage("but incorrect version (%1 found, %2 expected)", vString(0), expectedVersion)
+                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", " & g_Language.TranslateMessage("but incorrect version (%1 found, %2 expected)", vString(curPlugin), expectedVersion)
                 lblStatus(curPlugin).ForeColor = BADCOLOR
                 popPluginLabel = False
             End If
@@ -1980,6 +2299,10 @@ Private Sub lblDisable_Click(Index As Integer)
         'pngnq-s9
         Case 3
             g_ImageFormats.pngnqEnabled = Not g_ImageFormats.pngnqEnabled
+        
+        'ExifTool
+        Case 4
+            g_ExifToolEnabled = Not g_ExifToolEnabled
             
     End Select
     
@@ -2007,6 +2330,10 @@ Private Sub lblHomepageLink_Click(Index As Integer)
         'pngnq-s9
         Case 3
             OpenURL "http://sourceforge.net/projects/pngnqs9/"
+            
+        'ExifTool
+        Case 4
+            OpenURL "http://www.sno.phy.queensu.ca/~phil/exiftool/"
         
     End Select
 
@@ -2031,6 +2358,10 @@ Private Sub lblLicenseLink_Click(Index As Integer)
         'pngnq-s9
         Case 3
             OpenURL "http://sourceforge.net/projects/pngnqs9/files/"
+            
+        'ExifTool
+        Case 4
+            OpenURL "http://www.sno.phy.queensu.ca/~phil/exiftool/#license"
         
     End Select
     

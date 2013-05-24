@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPluginDownloader 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Plugin Downloader"
-   ClientHeight    =   7425
+   ClientHeight    =   7320
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   10665
+   ClientWidth     =   12405
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,8 +18,8 @@ Begin VB.Form FormPluginDownloader
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   7425
-   ScaleWidth      =   10665
+   ScaleHeight     =   7320
+   ScaleWidth      =   12405
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox picInitial 
@@ -31,11 +31,11 @@ Begin VB.Form FormPluginDownloader
       Left            =   0
       ScaleHeight     =   489
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   705
+      ScaleWidth      =   825
       TabIndex        =   7
       TabStop         =   0   'False
       Top             =   0
-      Width           =   10575
+      Width           =   12375
       Begin PhotoDemon.jcbutton cmdChoice 
          Default         =   -1  'True
          Height          =   1605
@@ -43,9 +43,9 @@ Begin VB.Form FormPluginDownloader
          Left            =   180
          TabIndex        =   0
          Top             =   5520
-         Width           =   5130
-         _ExtentX        =   9049
-         _ExtentY        =   2778
+         Width           =   5970
+         _ExtentX        =   10530
+         _ExtentY        =   2831
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -70,11 +70,11 @@ Begin VB.Form FormPluginDownloader
          Cancel          =   -1  'True
          Height          =   765
          Index           =   1
-         Left            =   5370
+         Left            =   6240
          TabIndex        =   1
          Top             =   5520
-         Width           =   5130
-         _ExtentX        =   8837
+         Width           =   5970
+         _ExtentX        =   10530
          _ExtentY        =   1349
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
@@ -99,11 +99,11 @@ Begin VB.Form FormPluginDownloader
       Begin PhotoDemon.jcbutton cmdChoice 
          Height          =   765
          Index           =   2
-         Left            =   5370
+         Left            =   6240
          TabIndex        =   2
          Top             =   6360
-         Width           =   5130
-         _ExtentX        =   8837
+         Width           =   5970
+         _ExtentX        =   10530
          _ExtentY        =   1349
          ButtonStyle     =   13
          ShowFocusRect   =   -1  'True
@@ -124,6 +124,50 @@ Begin VB.Form FormPluginDownloader
          CaptionEffects  =   0
          TooltipType     =   1
          TooltipTitle    =   "Never Download Plugins"
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         Caption         =   "ExifTool 9.29"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   285
+         Index           =   4
+         Left            =   4440
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":30F6
+         MousePointer    =   99  'Custom
+         TabIndex        =   21
+         Top             =   3240
+         Width           =   1425
+      End
+      Begin VB.Label lblDescription 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "free, open-source image metadata library (camera settings, GPS coordinates, etc)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   735
+         Index           =   4
+         Left            =   4680
+         TabIndex        =   20
+         Top             =   3600
+         Width           =   3600
       End
       Begin VB.Label lblExplanation 
          BackStyle       =   0  'Transparent
@@ -162,10 +206,10 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00404040&
          Height          =   735
          Index           =   3
-         Left            =   5880
+         Left            =   600
          TabIndex        =   18
          Top             =   3600
-         Width           =   3975
+         Width           =   3600
       End
       Begin VB.Label lblDescription 
          Appearance      =   0  'Flat
@@ -184,10 +228,10 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00404040&
          Height          =   735
          Index           =   2
-         Left            =   720
+         Left            =   8520
          TabIndex        =   17
-         Top             =   3600
-         Width           =   3975
+         Top             =   2520
+         Width           =   3600
       End
       Begin VB.Label lblDescription 
          Appearance      =   0  'Flat
@@ -206,10 +250,10 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00404040&
          Height          =   735
          Index           =   1
-         Left            =   5880
+         Left            =   4440
          TabIndex        =   16
          Top             =   2520
-         Width           =   3975
+         Width           =   3600
       End
       Begin VB.Label lblDescription 
          Appearance      =   0  'Flat
@@ -228,10 +272,10 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00404040&
          Height          =   735
          Index           =   0
-         Left            =   720
+         Left            =   600
          TabIndex        =   15
          Top             =   2520
-         Width           =   3975
+         Width           =   3600
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -248,8 +292,8 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C07031&
          Height          =   285
          Index           =   3
-         Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":30F6
+         Left            =   360
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":3248
          MousePointer    =   99  'Custom
          TabIndex        =   14
          Top             =   3240
@@ -270,8 +314,8 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C07031&
          Height          =   285
          Index           =   1
-         Left            =   5640
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":3248
+         Left            =   4440
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":339A
          MousePointer    =   99  'Custom
          TabIndex        =   13
          Top             =   2160
@@ -292,11 +336,11 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C07031&
          Height          =   285
          Index           =   2
-         Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":339A
+         Left            =   8280
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":34EC
          MousePointer    =   99  'Custom
          TabIndex        =   12
-         Top             =   3240
+         Top             =   2160
          Width           =   1470
       End
       Begin VB.Label lblInterfaceTitle 
@@ -314,8 +358,8 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00C07031&
          Height          =   285
          Index           =   0
-         Left            =   480
-         MouseIcon       =   "VBP_FormPluginDownloader.frx":34EC
+         Left            =   360
+         MouseIcon       =   "VBP_FormPluginDownloader.frx":363E
          MousePointer    =   99  'Custom
          TabIndex        =   11
          Top             =   2160
@@ -390,12 +434,12 @@ Begin VB.Form FormPluginDownloader
       Left            =   0
       ScaleHeight     =   145
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   713
+      ScaleWidth      =   833
       TabIndex        =   3
       TabStop         =   0   'False
       Top             =   7920
       Visible         =   0   'False
-      Width           =   10695
+      Width           =   12495
       Begin VB.PictureBox picProgBar 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -405,11 +449,11 @@ Begin VB.Form FormPluginDownloader
          Height          =   375
          Left            =   2640
          ScaleHeight     =   375
-         ScaleWidth      =   7695
+         ScaleWidth      =   9495
          TabIndex        =   6
          TabStop         =   0   'False
          Top             =   1200
-         Width           =   7695
+         Width           =   9495
       End
       Begin VB.Label lblDownloadInfo 
          Alignment       =   2  'Center
@@ -431,7 +475,7 @@ Begin VB.Form FormPluginDownloader
          Left            =   240
          TabIndex        =   5
          Top             =   480
-         Width           =   10215
+         Width           =   12015
       End
       Begin VB.Label lblDownload 
          AutoSize        =   -1  'True
@@ -462,18 +506,18 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Plugin Downloader (for downloading core plugins that were not found at program start)
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 10/June/12
-'Last updated: 19/December/12
-'Last update: interface overhaul, pngnq addition, general code review
+'Last updated: 24/May/13
+'Last update: interface overhaul due to inclusion of ExifTool as plugin #5
 '
-'Interface for downloading plugins marked as missing upon program load.  This code is a heavily modified version
-' of publicly available code by Alberto Falossi (http://www.devx.com/vb2themax/Tip/19203).
+'Interface for downloading plugins marked as missing upon program load.  The download code itself is a heavily
+' modified version of publicly available code by Alberto Falossi (http://www.devx.com/vb2themax/Tip/19203).
 '
-'A number of features have been added to the original version of this code.  The routine checks the file download
+'A number of features have been added to the original version of this code.  The routine checks plugin download
 ' size, and updates the user (via progress bar) on the download progress.  Many checks are in place to protect
 ' against Internet and download errors.  Full compression support is implemented, so if zLib is not found, it will be
-' downloaded first then used to decompress the other plugins.  This cut total download size from 3.0M to nearly 1.0M.
+' downloaded first then used to decompress the other plugins.  This cuts total download size from 8.5 to 5mb.
 '
 'Note that compression of the original plugin files must be performed using a custom PhotoDemon-based tool.  These are
 ' NOT generic .zip files (they are actually smaller than generic .zip files, owing to their simpler headers).
@@ -491,17 +535,19 @@ Option Explicit
 'Whether or not the Internet is currently connected
 Dim isInternetConnected As Boolean
 
-'Download sizes of the four core plugins
+'Download sizes of the five core plugins
 Dim zLibSize As Double
 Dim freeImageSize As Double
 Dim ezTW32Size As Double
 Dim pngnqSize As Double
+Dim exifToolSize As Double
 
 'Download size estimates if the user is not connected to the Internet
 Private Const estZLibSize As Long = 139000
 Private Const estFreeImageSize As Long = 1007000
 Private Const estEzTW32Size As Long = 27000
 Private Const estPngnqSize As Long = 298000
+Private Const estExifToolSize As Long = 3510000
 
 'Total expected download size, amount download thus far
 Dim totalDownloadSize As Double, curDownloadSize As Double
@@ -574,11 +620,9 @@ Private Sub Form_Load()
     'If the user is NOT connected, adjust the text accordingly
     If hInternetSession = 0 Then
         isInternetConnected = False
-        'txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please connect to the Internet and restart this program. Then, when prompted, please allow it to download the following free, open-source plugin(s):"
         lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s):")
     Else
         isInternetConnected = True
-        'txtExplanation.Text = "Thank you for using PhotoDemon." & vbCrLf & vbCrLf & "Unfortunately, one or more core plugins could not be located.  " & PROGRAMNAME & " will work without these files but certain features will be disabled.  To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):"
         lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):")
     End If
     
@@ -598,7 +642,7 @@ Private Sub Form_Load()
     'Upon program load, populate the list of files to be downloaded based on which could not be found.
     
     'zLib
-    If isInternetConnected = True Then
+    If isInternetConnected Then
         URL = "http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc"
         zLibSize = getPluginSize(hInternetSession, URL)
         
@@ -610,7 +654,7 @@ Private Sub Form_Load()
     End If
     
     'EZTwain
-    If isInternetConnected = True Then
+    If isInternetConnected Then
         URL = "http://www.tannerhelland.com/photodemon_files/eztw32.pdc"
         ezTW32Size = getPluginSize(hInternetSession, URL)
         
@@ -622,7 +666,7 @@ Private Sub Form_Load()
     End If
     
     'FreeImage
-    If isInternetConnected = True Then
+    If isInternetConnected Then
         URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
         freeImageSize = getPluginSize(hInternetSession, URL)
         
@@ -633,8 +677,8 @@ Private Sub Form_Load()
         freeImageSize = estFreeImageSize
     End If
     
-    'pngnq
-    If isInternetConnected = True Then
+    'pngnq-s9
+    If isInternetConnected Then
         URL = "http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc"
         pngnqSize = getPluginSize(hInternetSession, URL)
         
@@ -643,6 +687,18 @@ Private Sub Form_Load()
         
     Else
         pngnqSize = estPngnqSize
+    End If
+    
+    'ExifTool
+    If isInternetConnected Then
+        URL = "http://www.tannerhelland.com/photodemon_files/exiftool.pdc"
+        exifToolSize = getPluginSize(hInternetSession, URL)
+        
+        'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
+        If exifToolSize = -1 Then exifToolSize = estExifToolSize
+        
+    Else
+        exifToolSize = estExifToolSize
     End If
     
     updateDownloadSize
@@ -696,9 +752,13 @@ Private Sub lblInterfaceTitle_Click(Index As Integer)
         Case 2
             OpenURL "http://eztwain.com/eztwain1.htm"
             
-        'PNGNQ
+        'pngnq-s9
         Case 3
             OpenURL "http://sourceforge.net/projects/pngnqs9/"
+            
+        'ExifTool
+        Case 4
+            OpenURL "http://www.sno.phy.queensu.ca/~phil/exiftool/"
             
     End Select
     
@@ -795,7 +855,7 @@ Private Function downloadAllPlugins() As Boolean
     
     curNumOfFiles = curNumOfFiles + 1
     
-    'Last is pngnq
+    'Next is pngnq-s9
     downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
@@ -803,6 +863,18 @@ Private Function downloadAllPlugins() As Boolean
         Exit Function
     Else
         g_ImageFormats.pngnqEnabled = True
+    End If
+    
+    curNumOfFiles = curNumOfFiles + 1
+    
+    'Last is ExifTool
+    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/exiftool.pdc", curNumOfFiles, numOfFiles, exifToolSize, True)
+    If downloadSuccessful = False Then
+        pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
+        downloadAllPlugins = False
+        Exit Function
+    Else
+        g_ExifToolEnabled = True
     End If
     
     dProgBar.Value = dProgBar.Max
@@ -949,13 +1021,16 @@ Private Sub updateDownloadSize()
     totalDownloadSize = totalDownloadSize + zLibSize
     numOfFiles = numOfFiles + 1
     
-    totalDownloadSize = totalDownloadSize + pngnqSize
+    totalDownloadSize = totalDownloadSize + freeImageSize
     numOfFiles = numOfFiles + 1
-    
+        
     totalDownloadSize = totalDownloadSize + ezTW32Size
     numOfFiles = numOfFiles + 1
     
-    totalDownloadSize = totalDownloadSize + freeImageSize
+    totalDownloadSize = totalDownloadSize + pngnqSize
+    numOfFiles = numOfFiles + 1
+        
+    totalDownloadSize = totalDownloadSize + exifToolSize
     numOfFiles = numOfFiles + 1
     
     lblDownloadSize.Caption = g_Language.TranslateMessage("total download size:") & " " & Format(CStr(totalDownloadSize / 1000000), "0.00") & " MB"

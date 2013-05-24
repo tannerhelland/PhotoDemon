@@ -141,8 +141,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://freeimage.sourceforge.net/)
 * Brad Martinez for the original implementation of VB binary file extraction
   (http://btmtz.mvps.org/gfxfromfrx/)
-* Ron van Tilburg for a native-VB implementation of Xiaolin Wu's line antialiasing routine
-  (http://www.planet-source-code.com/vb/scripts/showcode.asp?txtCodeId=71370&lngWid=1)
 * Jason Bullen for a native-VB implementation of knot-based cubic spline interpolation
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
 * Dosadi for the EZTW32 scanner/digital camera library

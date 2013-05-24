@@ -475,6 +475,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "ForceZLibDisable=0"
         Print #fileNum, "ForceEZTwainDisable=0"
         Print #fileNum, "ForcePngnqDisable=0"
+        Print #fileNum, "ForceExifToolDisable=0"
         Print #fileNum, "LastPluginPreferencesPage=0"
         Print #fileNum, "PngnqAlphaExtenuation=0"
         Print #fileNum, "PngnqYUV=1"

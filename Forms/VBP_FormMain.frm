@@ -1792,8 +1792,8 @@ Dim m_ToolTip As clsToolTip
 Private Sub cmbSelRender_Click(Index As Integer)
     
     'Remember the selection type, and write it out to the preferences file as well
-    g_selectionRenderPreference = FormMain.cmbSelRender(Index).ListIndex
-    g_UserPreferences.SetPreference_Long "Tool Preferences", "LastSelectionShape", g_selectionRenderPreference
+    g_SelectionRenderPreference = FormMain.cmbSelRender(Index).ListIndex
+    g_UserPreferences.SetPreference_Long "Tool Preferences", "LastSelectionShape", g_SelectionRenderPreference
         
     If NumOfWindows > 0 Then
     
@@ -3149,7 +3149,8 @@ End Sub
 
 Private Sub MnuTest_Click()
     'MenuTest
-    pdImages(CurrentImage).imgMetadata.testMetadata
+    'pdImages(CurrentImage).imgMetadata.testMetadata
+    getExifToolVersion
 End Sub
 
 Private Sub MnuTile_Click()

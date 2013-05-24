@@ -54,7 +54,7 @@ Public Enum SelectionRender
     sInvertRect = 3
 End Enum
 
-Public g_selectionRenderPreference As SelectionRender
+Public g_SelectionRenderPreference As SelectionRender
 
 
 'Zoom data
@@ -80,6 +80,9 @@ Public g_ScanEnabled As Boolean
 
 'Is compression via zLib enabled?
 Public g_ZLibEnabled As Boolean
+
+'Is metadata handling via ExifTool enabled?
+Public g_ExifToolEnabled As Boolean
 
 'Whether or not the user has created a custom filter
 Public g_HasCreatedFilter As Boolean

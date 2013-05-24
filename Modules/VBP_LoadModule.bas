@@ -3,11 +3,11 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 23/January/13
-'Last update: began implementing translation support
+'Last updated: 24/May/13
+'Last update: added run-time checks for the new ExifTool plugin
 '
 'Module for handling any and all program loading.  This includes the program itself,
-' files, and anything else the program needs to take from the hard drive.
+' plugins, files, and anything else the program needs to take from the hard drive.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -173,7 +173,7 @@ Public Sub LoadTheProgram()
             FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
             FormMain.cmbSelRender(i).AddItem "Highlight (Red)", 2
             FormMain.cmbSelRender(i).ListIndex = 0
-            g_selectionRenderPreference = 0
+            g_SelectionRenderPreference = 0
         Next i
         
         'Selection types (currently interior, exterior, border)
@@ -1318,13 +1318,26 @@ Public Sub LoadPlugins()
         g_ImageFormats.pngnqEnabled = False
     End If
     
+    'Check for ExifTool metadata interface
+    If isExifToolAvailable Then
+        
+        'Check to see if ExifTool has been forcibly disabled
+        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceExifToolDisable", False) Then
+            g_ExifToolEnabled = False
+        Else
+            g_ExifToolEnabled = True
+        End If
+        
+    Else
+        g_ExifToolEnabled = False
+    End If
+    
     'Finally, check GDI+ availability
     If isGDIPlusAvailable() Then
         g_ImageFormats.GDIPlusEnabled = True
     Else
         g_ImageFormats.GDIPlusEnabled = False
     End If
-    
     
     
 End Sub
