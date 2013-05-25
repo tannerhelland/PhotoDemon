@@ -24,7 +24,7 @@ Attribute VB_Exposed = False
 ' (This was a huge project, as PhotoDemon contains a LOT of text.)
 '
 'The latest revision of the translation engine operates on translation files stored as XML.  You can see
-' (and freely edit) these files inside the /Data/Languages/ subfolder of the PhotoDemon directory.
+' (and freely edit) these files inside the /App/PhotoDemon/Languages/ subfolder of wherever PD is installed.
 '
 'Many features are on the roadmap for translation, including things like interactive editing and automatic
 ' updating of translation files, but this version of the engine focuses primarily on just getting the damn
@@ -34,7 +34,7 @@ Attribute VB_Exposed = False
 'Most of the crucial translation work in the program happens inside a global object called "g_Language",
 ' which is an object of this class (pdTranslate).  Most subs and functions should be self-explanatory.  To
 ' really get a feel for how the translation engine works, I suggest starting with the Loading module, and
-' looking at the order in which the various subs in this class are called.
+' looking at the way this class is initialized and loaded.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -95,6 +95,18 @@ Private m_hasTrailingColon As Boolean
 'Searching the main XML string is a time-consuming process.  Shortcuts can be activated if all text lies on the same form.
 Dim m_shortcutActive As Boolean
 Dim m_shortcutLocation As Long
+
+'External functions can request the current language, which may then be used to request translations from
+' 3rd-party plugins (specifically, ExifTool).
+Public Function getCurrentLanguage() As String
+    
+    If translationActive Then
+        getCurrentLanguage = Left$(availableLanguages(curLanguage).langID, 2)
+    Else
+        getCurrentLanguage = "en"
+    End If
+    
+End Function
 
 'To improve performance, the user can specify a "shortcut" - e.g. the name of the form being processed.  The translation engine
 ' will then attempt to search in the vicinity of that shortcut, which should help it find a match more quickly
