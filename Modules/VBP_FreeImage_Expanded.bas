@@ -268,14 +268,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
-    
-    
-    '****************************************************************************
-    ' Attempt to load any valid metadata.  (Disabled while I investigate a switch to ExifTool for metadata handling)
-    '****************************************************************************
-    'Set dstImage.imgMetadata = New pdMetadata
-    'dstImage.imgMetadata.loadAllMetadata fi_hDIB
-    
+        
+        
+        
     '****************************************************************************
     ' Retrieve format-specific information, like PNG background color
     '****************************************************************************
