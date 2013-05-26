@@ -21,9 +21,9 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 '
 'http://owl.phy.queensu.ca/~phil/exiftool/modExiftool_101.zip
 '
-'...as well as a modified piping function, derived from code originally downloaded from this link:
+'...as well as a modified piping function, derived from code originally written by Joacim Andersson:
 '
-'http://www.visualbasic.happycodings.com/Graphics_Games_Programming/code3.html
+'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
 'This project was designed against v9.29 of ExifTool (18 May '13).  It may not work with other versions of the
 ' software.  Additional documentation regarding the use of ExifTool can be found in the official ExifTool
@@ -37,10 +37,16 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 Option Explicit
 
 'A number of API functions are required to pipe stdout
-Private Declare Function CreatePipe Lib "kernel32" (phReadPipe As Long, phWritePipe As Long, lpPipeAttributes As Any, ByVal nSize As Long) As Long
-Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuffer As String, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, ByVal lpOverlapped As Any) As Long
-Private Declare Function GetNamedPipeInfo Lib "kernel32" (ByVal hNamedPipe As Long, lType As Long, lLenOutBuf As Long, lLenInBuf As Long, lMaxInstances As Long) As Long
-   
+Private Const STARTF_USESHOWWINDOW = &H1
+Private Const STARTF_USESTDHANDLES = &H100
+Private Const SW_NORMAL = 1
+Private Const SW_HIDE = 0
+Private Const DUPLICATE_CLOSE_SOURCE = &H1
+Private Const DUPLICATE_SAME_ACCESS = &H2
+
+'Potential error codes (not used at present, but could be added in the future)
+Private Const ERROR_BROKEN_PIPE = 109
+
 Private Type SECURITY_ATTRIBUTES
     nLength As Long
     lpSecurityDescriptor As Long
@@ -49,9 +55,9 @@ End Type
 
 Private Type STARTUPINFO
     cb As Long
-    lpReserved As Long
-    lpDesktop As Long
-    lpTitle As Long
+    lpReserved As String
+    lpDesktop As String
+    lpTitle As String
     dwX As Long
     dwY As Long
     dwXSize As Long
@@ -75,12 +81,13 @@ Private Type PROCESS_INFORMATION
     dwThreadId As Long
 End Type
 
-Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
-Private Declare Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As String, lpProcessAttributes As Any, lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, lpStartupInfo As Any, lpProcessInformation As Any) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+Private Declare Function CreatePipe Lib "kernel32" (phReadPipe As Long, phWritePipe As Long, lpPipeAttributes As Any, ByVal nSize As Long) As Long
+Private Declare Function CreateProcess Lib "kernel32" Alias "CreateProcessA" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As Any, lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, lpEnvironment As Any, ByVal lpCurrentDriectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
+Private Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHandle As Long, ByVal hSourceHandle As Long, ByVal hTargetProcessHandle As Long, lpTargetHandle As Long, ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwOptions As Long) As Long
+Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
+Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
 
-Private hWritePipe As Long
-Private hReadPipe As Long
 
 'Is ExifTool available as a plugin?
 Public Function isExifToolAvailable() As Boolean
@@ -115,79 +122,138 @@ Public Function getExifToolVersion() As String
     
 End Function
 
-'Capture output from the requested command-line executable and return it as a string
-Private Function ShellExecuteCapture(ByRef sCommandLine As String, ByRef sReceiveOutput As String, Optional bShowWindow As Boolean = False) As Boolean
+'Given a path to a valid image file, retrieve all metadata into a single (enormous) string
+Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As String
     
-    Const clReadBytes As Long = 256, INFINITE As Long = &HFFFFFFFF
-    Const STARTF_USESHOWWINDOW = &H1, STARTF_USESTDHANDLES = &H100&
-    Const SW_HIDE = 0, SW_NORMAL = 1
-    Const NORMAL_PRIORITY_CLASS = &H20&
+    'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
+    ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
+    Dim Quotes As String
+    Quotes = Chr(34)
     
-    Const PIPE_CLIENT_END = &H0     'The handle refers to the client end of a named pipe instance. This is the default.
-    Const PIPE_SERVER_END = &H1     'The handle refers to the server end of a named pipe instance. If this value is not specified, the handle refers to the client end of a named pipe instance.
-    Const PIPE_TYPE_BYTE = &H0      'The named pipe is a byte pipe. This is the default.
-    Const PIPE_TYPE_MESSAGE = &H4   'The named pipe is a message pipe. If this value is not specified, the pipe is a byte pipe
+    'Build a command-line string that ExifTool can understand
+    Dim execString As String
+    execString = g_PluginPath & "exiftool.exe"
     
-    Dim tProcInfo As PROCESS_INFORMATION, lRetVal As Long, lSuccess As Long
-    Dim tStartupInf As STARTUPINFO
-    Dim tSecurAttrib As SECURITY_ATTRIBUTES, lhwndReadPipe As Long, lhwndWritePipe As Long
-    Dim lBytesRead As Long, sBuffer As String
-    Dim lPipeOutLen As Long, lPipeInLen As Long, lMaxInst As Long
+    'Ignore minor errors and warnings
+    execString = execString & " -m"
     
-    tSecurAttrib.nLength = Len(tSecurAttrib)
-    tSecurAttrib.bInheritHandle = 1&
-    tSecurAttrib.lpSecurityDescriptor = 0&
+    'Output long-format data
+    execString = execString & " -l"
+        
+    'Request ANSI-compatible text (Windows-1252 specifically)
+    execString = execString & " -L"
+    
+    'If a translation is active, request descriptions in the current language
+    If g_Language.translationActive Then execString = execString & " -lang " & g_Language.getCurrentLanguage()
+    
+    'If this is a JPEG, request the extra JPEGDigest tag
+    If srcFormat = FIF_JPEG Then execString = execString & " -TAG -JPEGDigest"
+    
+    'Output XML data (a lot more complex, but the only way to retrieve descriptions and names simultaneously)
+    execString = execString & " -X"
+    
+    'Finally, add the image path
+    execString = execString & " " & Quotes & srcFile & Quotes
+    
+    'MsgBox execString
+    
+    'NOTE: while in the IDE, it's useful to see ExifTool's output, so the command-line window is displayed there.
+    
+    'Use ExifTool to retrieve this image's metadata
+    If Not ShellExecuteCapture(execString, getMetadata, Not g_IsProgramCompiled) Then
+        Message "Failed to retrieve metadata."
+        getMetadata = ""
+    End If
+    
+    'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back to standard characters now.
+    If InStr(1, getMetadata, "&amp;") > 0 Then getMetadata = Replace(getMetadata, "&amp;", "&")
+    If InStr(1, getMetadata, "&#39;") > 0 Then getMetadata = Replace(getMetadata, "&#39;", "'")
+    If InStr(1, getMetadata, "&quot;") > 0 Then getMetadata = Replace(getMetadata, "&quot;", """")
+    If InStr(1, getMetadata, "&gt;") > 0 Then getMetadata = Replace(getMetadata, "&gt;", ">")
+    If InStr(1, getMetadata, "&lt;") > 0 Then getMetadata = Replace(getMetadata, "&lt;", "<")
+    
+End Function
 
-    lRetVal = CreatePipe(lhwndReadPipe, lhwndWritePipe, tSecurAttrib, 0)
-    If lRetVal = 0 Then
+
+'Capture output from the requested command-line executable and return it as a string
+' NOTE: This function is a heavily modified version of code originally written by Joacim Andersson.  A download link to his original
+'        version is available at the top of this module.
+Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
+
+    Dim hPipeRead As Long, hPipeWrite As Long
+    Dim hCurProcess As Long
+    Dim sa As SECURITY_ATTRIBUTES
+    Dim si As STARTUPINFO
+    Dim PI As PROCESS_INFORMATION
+    Dim baOutput() As Byte
+    Dim sNewOutput As String
+    Dim lBytesRead As Long
+    
+    Dim lRet As Long
+
+    'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1024
+    Const BUFSIZE = 1024
+
+    dstString = ""
+    
+    ReDim baOutput(BUFSIZE - 1) As Byte
+
+    With sa
+        .nLength = Len(sa)
+        .bInheritHandle = 1
+    End With
+
+    If CreatePipe(hPipeRead, hPipeWrite, sa, BUFSIZE) = 0 Then
         ShellExecuteCapture = False
         Message "Failed to start plugin service (couldn't create pipe)."
         Exit Function
     End If
 
-    tStartupInf.cb = Len(tStartupInf)
-    tStartupInf.dwFlags = STARTF_USESTDHANDLES Or STARTF_USESHOWWINDOW
-    tStartupInf.hStdOutput = lhwndWritePipe
-    
-    'Show or hide the command-line window as requested
-    If bShowWindow Then tStartupInf.wShowWindow = SW_NORMAL Else tStartupInf.wShowWindow = SW_HIDE
-    
-    lRetVal = CreateProcessA(0&, sCommandLine, tSecurAttrib, tSecurAttrib, 1&, NORMAL_PRIORITY_CLASS, 0&, 0&, tStartupInf, tProcInfo)
-    If lRetVal <> 1 Then
+    hCurProcess = GetCurrentProcess()
+
+    'Replace the inheritable read handle with a non-inheritable one. (MSDN suggestion)
+    Call DuplicateHandle(hCurProcess, hPipeRead, hCurProcess, hPipeRead, 0&, 0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE)
+
+    With si
+        .cb = Len(si)
+        .dwFlags = STARTF_USESHOWWINDOW Or STARTF_USESTDHANDLES
+        .hStdOutput = hPipeWrite
+        
+        'NOTE: calling functions typically request that the shelled window be shown in the IDE but not in the compiled .exe
+        If bShowWindow Then .wShowWindow = SW_NORMAL Else .wShowWindow = SW_HIDE
+        
+    End With
+
+    If CreateProcess(vbNullString, sCommandLine, ByVal 0&, ByVal 0&, 1, 0&, ByVal 0&, vbNullString, si, PI) Then
+
+        'Close the thread handle, as we have no use for it
+        Call CloseHandle(PI.hThread)
+
+        'Also close the pipe's write handle.  This is important, because ReadFile will not return until all write handles
+        ' are closed or the buffer is full.
+        Call CloseHandle(hPipeWrite)
+        hPipeWrite = 0
+        
+        Do
+            
+            If ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0 Then Exit Do
+            
+            sNewOutput = StrConv(baOutput, vbUnicode)
+            dstString = dstString & Left$(sNewOutput, lBytesRead)
+            
+        Loop
+
+        Call CloseHandle(PI.hProcess)
+    Else
         ShellExecuteCapture = False
         Message "Failed to start plugin service (couldn't create process)."
         Exit Function
     End If
-    
-    'Process created, wait for completion. Note, this will cause your application
-    'to hang indefinitely until the process completes.
-    WaitForSingleObject tProcInfo.hProcess, INFINITE
-    
-    'Determine pipe's contents
-    lSuccess = GetNamedPipeInfo(lhwndReadPipe, PIPE_TYPE_BYTE, lPipeOutLen, lPipeInLen, lMaxInst)
-    
-    If lSuccess Then
-        
-        'Got pipe info, create buffer
-        sBuffer = String(lPipeOutLen, 0)
-        
-        'Read Output Pipe
-        lSuccess = ReadFile(lhwndReadPipe, sBuffer, lPipeOutLen, lBytesRead, 0&)
-        
-        'Pipe read successfully
-        If lSuccess = 1 Then sReceiveOutput = Left$(sBuffer, lBytesRead)
-        
-        ShellExecuteCapture = True
 
-    Else
-        Message "Failed to retrieve plugin output (couldn't find named pipe)."
-        ShellExecuteCapture = False
-    End If
+    Call CloseHandle(hPipeRead)
+    If hPipeWrite Then CloseHandle hPipeWrite
     
-    'Close handles
-    Call CloseHandle(tProcInfo.hProcess)
-    Call CloseHandle(tProcInfo.hThread)
-    Call CloseHandle(lhwndReadPipe)
-    Call CloseHandle(lhwndWritePipe)
+    ShellExecuteCapture = True
     
 End Function
+

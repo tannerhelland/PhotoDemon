@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 23/May/13
-'Last update: initial build
+'Last updated: 25/May/13
+'Last update: converted storage model to use ExifTool output instead of FreeImage
 '
 'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -25,15 +25,9 @@ Attribute VB_Exposed = False
 ' has one (1) metadata class called "imgMetadata".  That class is publicly accessible.  If metadata is available at
 ' load-time, the imgMetadata object will automatically be filled with any metadata found in the source file.
 '
-'At present, metadata handling is 100% tied FreeImage.  I have no plans for a GDI+ fallback (at this time).  The primary
-' reason for this is that to my understanding, GDI+ does not allow for writing metadata out to an image without first
-' loading that image into memory.  For JPEG images, this requires decompression and then recompression, which reduces
-' image quality.  (Similarly, I don't believe GDI+ provides a lossless way to handle JPEG loading/saving - but I'd love
-' to be proven wrong.)  For more information on how FreeImage handles metadata, see the FreeImage documentation at:
-' http://freeimage.sourceforge.net/download.html
-'
-'Finally, note that FreeImage supports 12 types of metadata, which is why the range [0, 11] is frequently used throughout
-' this class.
+'At present, metadata handling is 100% tied to the ExifTool plugin (see the "Plugin_ExifTool_Interface" module for more
+' detail).  Because metadata is insanely complex to both read and write - if you want it done correctly - I have no
+' plans to write a fallback for users without the plugin.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -42,17 +36,19 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Number of tags available for each metadata model
-Private numTags(0 To 11) As Long
-
-'The highest metadata count of the 12 sub-types.  We need this to know how to dimension our 2D metadata array.
+'The number of metadata items currently stored
 Private maxMetadataCount As Long
 
-'Metadata itself, in FreeImage-compatible format.  Note that the second array dimension will be set according to
-' maxMetadataCount above.  Chances are that only one type of metadata will actually contain that many values; in
-' fact, most metadata subtypes will probably contain 0 values.  So DO NOT assume all metadata types have
-' maxMetadataCount values available.
-Private fiMetadata() As FREE_IMAGE_TAG
+Private Type mdItem
+    Group As String
+    Name As String
+    Description As String
+    Value As String
+    TechnicalValue As String
+End Type
+
+'Array that contains the metadata itself
+Private iMetadata() As mdItem
 
 'If no metadata was found during the original FreeImage load process, this will return FALSE.  If any metadata of any
 ' compatible type was found, this will return TRUE.
@@ -60,199 +56,161 @@ Public Function hasMetadata() As Boolean
     If maxMetadataCount = 0 Then hasMetadata = False Else hasMetadata = True
 End Function
 
-'DO NOTE USE THIS FUNCTION IN PRODUCTION!  I include it here simply for ensuring that metadata was loaded correctly.
+'DO NOTE USE THIS FUNCTION IN PRODUCTION!  I include it here simply for ensuring the metadata was loaded correctly.
 Public Sub testMetadata()
 
     Dim msgString As String
 
+    If maxMetadataCount = 0 Then Exit Sub
+
     'For each metadata object, display a message box with the relevant metadata value
-    Dim i As Long, j As Long
-    For i = 0 To 11
+    Dim i As Long
+    For i = 0 To maxMetadataCount - 1
     
-        If numTags(i) > 0 Then
-            For j = 0 To numTags(i) - 1
-                msgString = "Metadata model: " & getFriendlySubtypeName(i) & vbCrLf
-                msgString = msgString & "Tag count: " & (j + 1) & " of " & numTags(i) & vbCrLf & vbCrLf
-                msgString = msgString & "ID: " & fiMetadata(i, j).Id & vbCrLf
-                msgString = msgString & "Description: " & fiMetadata(i, j).Description & vbCrLf
-                msgString = msgString & "Value: " & CStr(fiMetadata(i, j).StringValue) & vbCrLf
-                MsgBox msgString
-            Next j
-        End If
-    
+        msgString = "Tag " & (i + 1) & " of " & maxMetadataCount & vbCrLf & vbCrLf
+        msgString = msgString & "Group: " & iMetadata(i).Group & vbCrLf
+        msgString = msgString & "Name: " & iMetadata(i).Name & vbCrLf
+        msgString = msgString & "Description: " & iMetadata(i).Description & vbCrLf
+        msgString = msgString & "Value: " & iMetadata(i).Value & vbCrLf
+        msgString = msgString & "Technical value: " & iMetadata(i).TechnicalValue & vbCrLf
+        MsgBox msgString
+        
     Next i
 
 End Sub
 
-'Given a metadata sub-type, return a friendly (and translated!) string describing that sub-type
-Private Function getFriendlySubtypeName(ByVal mdSubType As Long) As String
+'Given an image path, attempt to load all metadata from that file.
+' (The image's format is also passed to this function, which may be helpful in the future for enabling certain options on a per-format basis.)
+Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
 
-    Dim tmpString As String, prefixString As String
+    'If the ExifTool plugin can't be found, abandon all metadata loading attempts
+    If Not g_ExifToolEnabled Then
+        Message "ExifTool plugin missing.  Metadata import abandoned."
+        Exit Sub
+    End If
 
-    Select Case mdSubType
+    maxMetadataCount = 0
         
-        'Generic comments.  May be EXIF, may not - FreeImage handles these transparently.
-        Case 0
-            tmpString = g_Language.TranslateMessage("Comments")
-        
-        'Generic EXIF data (specifically, metadata common to both TIFF and EXIF files)
-        Case 1
-            tmpString = g_Language.TranslateMessage("Basic EXIF metadata")
-        
-        'EXIF-specific metadata
-        Case 2
-            tmpString = g_Language.TranslateMessage("Advanced EXIF metadata")
-        
-        'GPS metadata (EXIF-type)
-        Case 3
-            tmpString = g_Language.TranslateMessage("GPS metadata")
-        
-        'Maker note metadata (EXIF-type - there is no way to interpret this data, as it is not standardized)
-        Case 4
-            tmpString = g_Language.TranslateMessage("Custom camera metadata (""maker note"")")
-        
-        'Interoperability metadata (EXIF-type)
-        Case 5
-            tmpString = g_Language.TranslateMessage("Interoperability metadata")
-        
-        'IPTC metadata
-        Case 6
-            tmpString = g_Language.TranslateMessage("IPTC metadata (an old model, no longer recommended for use)")
-        
-        'XMP metadata
-        Case 7
-            tmpString = g_Language.TranslateMessage("XMP metadata (XML format developed by Adobe)")
-        
-        'GeoTiff metadata
-        Case 8
-            tmpString = g_Language.TranslateMessage("GeoTIFF metadata")
-        
-        'Animation metadata (animated GIFs only)
-        Case 9
-            tmpString = g_Language.TranslateMessage("Animation metadata (GIF only)")
-        
-        'Custom metadata (anything FreeImage can't convert to other metadata types)
-        Case 10
-            tmpString = g_Language.TranslateMessage("Custom metadata")
-        
-        'Raw EXIF metadata (required for writing EXIF data to file - unlikely to ever be found in loaded metadata, as
-        ' FreeImage will attempt to convert all EXIF data to a more useful sub-type)
-        Case 11
-            tmpString = g_Language.TranslateMessage("Raw, uncategorized EXIF metadata")
-    
-    End Select
-    
-    prefixString = g_Language.TranslateMessage("Type")
-    prefixString = prefixString & " " & mdSubType & ":"
-    
-    getFriendlySubtypeName = prefixString & " " & tmpString
+    'ExifTool will return all metadata in one enormous string, which we will have to parse manually.
+    Dim mdString As String
+    mdString = getMetadata(srcFile, srcFormat)
 
-End Function
-
-'Given a handle to a FreeImage-type image, attempt to load all metadata.
-' (Portions of this sub are based on code in the "FreeImage_GetAllMetadataTags" function by Carsten Klein)
-Public Sub loadAllMetadata(ByVal fiImageHandle As Long)
-
-    'Start by determining the maximum sub-type metadata count.  We need this value so we know how to dim our metadata array.
-    maxMetadataCount = FreeImage_GetMaxMetadataCount(fiImageHandle)
+    'If no metadata was found, we can safely exit now
+    If mdString = "" Then Exit Sub
     
-    'If no metadata was found, exit now
-    If maxMetadataCount = 0 Then Exit Sub
+    'We now have a (very large) string of XML-formatted metadata.  Our next job is to parse that data into the iMetadata() array.
     
-    'Redim the metadata array to fit the largest metadata sub-type.  This is not the most efficient way to store metadata,
-    ' but short of building a custom linked-list datatype, it's the easiest way to handle it in VB.
-    ReDim fiMetadata(0 To 11, 0 To maxMetadataCount) As FREE_IMAGE_TAG
+    'Our next goal is to step through the XML, looking for tag/value pairs as we go.  Because the XML is precisely structured, we
+    ' can rely on a few key markers to do this successfully.
     
-    'Proceed to load each metadata type individually.
-    Dim fiMetadataType As Long, i As Long
-    Dim h_Metadata As Long, tmpTag As Long
+    'Start by chopping up the string into an array, delimited into individual lines
+    Dim xmlLines() As String
+    xmlLines = Split(mdString, vbCrLf)
     
-    For fiMetadataType = 0 To 11
-        
-        'See if metadata exists for this sub-type.  If it does, proceed to load the metadata.
-        numTags(fiMetadataType) = FreeImage_GetMetadataCount(fiMetadataType, fiImageHandle)
-        If numTags(fiMetadataType) > 0 Then
-        
-            'Get a pointer to the first metadata object of this type.  If a valid pointer is returned, proceed to
-            ' enumerate all subsequent tags.
-            h_Metadata = FreeImage_FindFirstMetadata(fiMetadataType, fiImageHandle, tmpTag)
-            If h_Metadata <> 0 Then
-                
-                i = 0
-                Do
-                    fiMetadata(fiMetadataType, i) = pGetTagFromTagPtr(fiMetadataType, tmpTag)
-                    i = i + 1
-                Loop While (FreeImage_FindNextMetadataInt(h_Metadata, tmpTag) <> 0)
-                FreeImage_FindCloseMetadata h_Metadata
+    'Each line that contains a tag name will also contain the text "rdf:parseType='Resource'".  Because we don't know what the tag
+    ' or group name will be, we look for that text instead.
+    Dim curLine As Long
+    curLine = 0
+    
+    Dim ignoreThisTag As Boolean
+    
+    Dim tmpString As String
+    Dim tmpSplitOuter() As String, tmpSplitInner() As String
+    
+    ReDim iMetadata(0) As mdItem
+    
+    Do
+    
+        'If our definitive text is found, parse this line to retrieve this tag's Group and Name values
+        If InStr(1, xmlLines(curLine), "rdf:parseType='Resource'", vbBinaryCompare) > 0 Then
             
+            ignoreThisTag = False
+        
+            'Divide the tag into two segments: the prefix (which contains Group and Name) and the rdf parse-type, which we don't care about.
+            tmpSplitOuter = Split(xmlLines(curLine), "rdf:parseType='Resource")
+            
+            'Now, divide the prefix into two segments: Group and Name
+            tmpSplitInner = Split(tmpSplitOuter(0), ":")
+            
+            'It is now trivial to retrieve the Group and Name values
+            iMetadata(maxMetadataCount).Group = Right$(tmpSplitInner(0), Len(tmpSplitInner(0)) - 2)
+            iMetadata(maxMetadataCount).Name = tmpSplitInner(1)
+                        
+            'A description line always follows a group/name line.  Retrieve that value now.
+            curLine = curLine + 1
+            xmlLines(curLine) = Trim$(xmlLines(curLine))
+            iMetadata(maxMetadataCount).Description = Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10)
+            
+            'A human-friendly value always follows a description line.  Retrieve that value now.
+            curLine = curLine + 1
+            xmlLines(curLine) = Trim$(xmlLines(curLine))
+            iMetadata(maxMetadataCount).Value = Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9)
+            
+            curLine = curLine + 1
+            
+            'For some tags, the human-friendly value will be the actual value of the tag.  For others, the tag will have some kind
+            ' of obscure value that ExifTool has kindly translated for us.  We still want to retrieve the technical value if
+            ' available - so do that now.
+            If InStr(1, xmlLines(curLine), "<et:val") > 0 Then
+                xmlLines(curLine) = Trim$(xmlLines(curLine))
+                iMetadata(maxMetadataCount).TechnicalValue = Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9)
+                curLine = curLine + 1
             End If
             
+            'Now that we have fully parsed the tag, we need to run some additional checks on it.
+            
+            'ANALYZE GROUP
+            
+            'First, analyze the current Group.  Some groups can be ignored - check for those first.
+            tmpString = iMetadata(maxMetadataCount).Group
+            If StrComp(tmpString, "ExifTool") = 0 Then ignoreThisTag = True
+            
+            'Next, ExifTool provides VERY detailed group information.  I prefer to simplify its groups into something more manageable.
+            
+            'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
+            If StrComp(tmpString, "System") = 0 Then iMetadata(maxMetadataCount).Group = "General"
+            If StrComp(tmpString, "File") = 0 Then iMetadata(maxMetadataCount).Group = "General"
+            
+            'Next, ExifTool breaks down EXIF tags into their individual IDF blocks.  Simplify all those under a single "Exif" header.
+            If InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then iMetadata(maxMetadataCount).Group = "Exif"
+            
+            'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
+            ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
+            If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = "Intelligent"
+            
+            'ANALYZE VALUE
+            
+            'Next come .Value checks.  Certain values may be invalid - if so, ignore this tag.
+            tmpString = iMetadata(maxMetadataCount).Value
+            
+            'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
+            If InStr(1, tmpString, "Binary data", vbTextCompare) > 0 Then ignoreThisTag = True
+            
+            'Increment the max metadata count, and redim our metadata array as necessary
+            If Not ignoreThisTag Then
+                maxMetadataCount = maxMetadataCount + 1
+                ReDim Preserve iMetadata(0 To maxMetadataCount) As mdItem
+            End If
+        
+        'If this line doesn't contain a tag, move to the next one
+        Else
+                
+            'Move to the next line
+            curLine = curLine + 1
+                
         End If
         
-    Next fiMetadataType
-    
-    'Our fiMetadata() array is now filled with all compatible metadata from the source image.
+    Loop While curLine < UBound(xmlLines)
 
+    'If no metadata was found, exit now
+    If maxMetadataCount = 0 Then Exit Sub
+
+    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging, so I'm leaving this here.
+    'Clipboard.Clear
+    'Clipboard.SetText mdString
+    
 End Sub
 
-'Given a handle to a FreeImage image object, find the maximum sub-type metadata count
-Private Function FreeImage_GetMaxMetadataCount(ByVal fiImageHandle As Long) As Long
-
-    Dim i As Long
-    Dim maxMetadata As Long, tmpMetadata As Long
-    maxMetadata = 0
-    
-    For i = 0 To 11
-        tmpMetadata = FreeImage_GetMetadataCount(i, fiImageHandle)
-        If tmpMetadata > maxMetadata Then maxMetadata = tmpMetadata
-    Next i
-    
-    FreeImage_GetMaxMetadataCount = maxMetadata
-
-End Function
-
-'My (vain?) attempt to write an EXIF to XMP translator
-Public Function writeDataAsXMPString() As String
-
-    Dim XMPText As String
-    
-    'Start by writing out the standard XMP packet header
-    XMPText = "<?xpacket begin=""?"" id=""W5M0MpCehiHzreSzNTczkc9d""?>" & vbCrLf
-    XMPText = XMPText & "<x:xmpmeta xmlns:x=""adobe:ns:meta/"" x:xmptk=""Adobe XMP Core 5.4-c002 1.000000, 0000/00/00-00:00:00        "">" & vbCrLf
-    XMPText = XMPText & "<rdf:RDF xmlns:rdf=""http://www.w3.org/1999/02/22-rdf-syntax-ns#"">" & vbCrLf
-    XMPText = XMPText & "      <rdf:Description rdf:about=""""" & vbCrLf
-    XMPText = XMPText & "            xmlns:xmp=""http://ns.adobe.com/xap/1.0/"">" & vbCrLf
-    XMPText = XMPText & "         <xmp:CreatorTool>PhotoDemon</xmp:CreatorTool>" & vbCrLf
-    XMPText = XMPText & "      </rdf:Description>" & vbCrLf
-    
-    Dim curTitle As String
-    
-    'FreeImage doesn't write out "description" tags, and I have no plans to manually add them.  So our XMP packet data is going to be a little ugly.  Oh well.
-    Dim fiMetadataType As Long, j As Long
-    For fiMetadataType = 0 To 10
-    
-        'Only process tags that exist (obviously!)
-        If numTags(fiMetadataType) > 0 Then
-            For j = 0 To numTags(fiMetadataType) - 1
-                
-                curTitle = getXMPfromEXIF(fiMetadata(fiMetadataType, j).Key)
-                If curTitle <> "" Then
-                    XMPText = XMPText & "<" & curTitle & ">" & fiMetadata(fiMetadataType, j).StringValue & "</" & curTitle & ">" & vbCrLf
-                End If
-                
-            Next j
-        End If
-    
-    Next fiMetadataType
-    
-    'Terminate the XMP packet
-    XMPText = XMPText & "</rdf:RDF>"
-    XMPText = XMPText & "</x:xmpmeta>"
-    XMPText = XMPText & "<?xpacket end=""w""?>"
-
-    writeDataAsXMPString = XMPText
-
-End Function
 
 'Given a handle to a FreeImage object, write out all currently stored metadata.  (This only needs to be done immediately prior to a save.)
 Public Function writeAllMetadata(ByVal fiImageHandle As Long) As Boolean
@@ -341,24 +299,6 @@ Public Function writeAllMetadata(ByVal fiImageHandle As Long) As Boolean
     'MsgBox fiMetadata(11, 0).StringValue
     
     writeAllMetadata = totalSuccess
-    
-End Function
-
-'Given the name of an EXIF property, return the corresponding XMP title.  This can be used to convert EXIF properties to XMP format.
-Private Function getXMPfromEXIF(ByVal exifName As String) As String
-
-    Select Case exifName
-    
-        Case "Make"
-            getXMPfromEXIF = "tiff:Make"
-            
-        Case "Model"
-            getXMPfromEXIF = "tiff:Model"
-            
-        Case Else
-            getXMPfromEXIF = ""
-    
-    End Select
     
 End Function
 
