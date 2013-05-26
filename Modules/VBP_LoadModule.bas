@@ -416,9 +416,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
             
-    'One of the things we'll be doing in this routine is establishing an original color depth for this image.
-    ' FreeImage will return this automatically; GDI+ may not.  Use this tracking variable to notify us that
-    ' a manual color count needs to be performed.
+    'One of the things we'll be doing in this routine is establishing an original color depth for this image. FreeImage will return
+    ' this automatically; GDI+ may not.  Use a tracking variable to determine if a manual color count needs to be performed.
     Dim mustCountColors As Boolean
     Dim colorCountCheck As Long
             
@@ -490,7 +489,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank form to receive it
         '*************************************************************************************************************************************
         
-        'If this is a standard load (e.g. loading an image via File -> Open), prepare a blank form to receive the image.
         If isThisPrimaryImage Then
             
             Message "Image found. Initializing blank form..."
@@ -519,7 +517,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             
         '*************************************************************************************************************************************
-        ' Based on what type of image this is, call the most appropriate load function for it (FreeImage, GDI+, or VB's LoadPicture)
+        ' Call the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture)
         '*************************************************************************************************************************************
             
         If isThisPrimaryImage Then Message "Determining filetype..."
@@ -572,7 +570,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
                     
-                    'If GDI+ loaded the image successfully, note that we have to count available colors ourselves
+                    'If GDI+ loaded the image successfully, note that we have to determine color depth manually
                     If loadSuccessful Then
                         loadedByOtherMeans = True
                         mustCountColors = True
@@ -586,7 +584,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     If isThisPrimaryImage Then Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                 
-                    'If VB managed to load the image successfully, note that we have to count available colors ourselves
+                    'If VB managed to load the image successfully, note that we have to deteremine color depth manually
                     If loadSuccessful Then
                         loadedByOtherMeans = True
                         mustCountColors = True
@@ -765,7 +763,16 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.UpdateSaveState False
             
         End If
-            
+        
+        
+        
+        '*************************************************************************************************************************************
+        ' If the ExifTool plugin is available, use it to extract any possible metadata from the image file
+        '*************************************************************************************************************************************
+        
+        Message "Parsing image metadata..."
+        Set targetImage.imgMetadata = New pdMetadata
+        targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
         
         
         '*************************************************************************************************************************************
