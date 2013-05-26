@@ -102,11 +102,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
 
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
-    
-    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging, so I'm leaving this here.
-    'Clipboard.Clear
-    'Clipboard.SetText mdString
-    
+        
     'We now have a (very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of that string.
     ' We need this backup when it comes time to write the metadata back out to file.
     originalMetadataXML = mdString
