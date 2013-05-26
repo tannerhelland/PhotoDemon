@@ -55,10 +55,37 @@ Private iMetadata() As mdItem
 ' as it is the only way to precisely restore the XML data in its *exact* form when save-time comes.
 Private originalMetadataXML As String
 
+'If GPS data is found, mark its location
+Private hasGPSCoordinates As Boolean
+Private gpsIndex As Long
+
 'If no metadata was found during the original FreeImage load process, this will return FALSE.  If any metadata of any
 ' compatible type was found, this will return TRUE.
 Public Function hasMetadata() As Boolean
     If maxMetadataCount = 0 Then hasMetadata = False Else hasMetadata = True
+End Function
+
+'Some metadata options require the presence of GPS data in the photo.  If a GPS entry was found at metadata load-time, return TRUE.
+Public Function hasGPSMetadata() As Boolean
+    hasGPSMetadata = hasGPSCoordinates
+End Function
+
+'If GPS metadata exists, this function can be used to retrieve the exact latitude and longitude values
+Public Function fillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
+    
+    If hasGPSCoordinates Then
+    
+        Dim tmpSplit() As String
+        tmpSplit = Split(iMetadata(gpsIndex).TechnicalValue, " ")
+        latString = tmpSplit(0)
+        lonString = tmpSplit(1)
+    
+        fillLatitudeLongitude = True
+    
+    Else
+        fillLatitudeLongitude = False
+    End If
+    
 End Function
 
 'DO NOTE USE THIS FUNCTION IN PRODUCTION!  I include it here simply for ensuring the metadata was loaded correctly.
@@ -95,6 +122,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     End If
 
     maxMetadataCount = 0
+    hasGPSCoordinates = False: gpsIndex = 0
         
     'ExifTool will return all metadata in one enormous string, which we will have to parse manually.
     Dim mdString As String
@@ -142,13 +170,13 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             tmpSplitInner = Split(tmpSplitOuter(0), ":")
             
             'It is now trivial to retrieve the Group and Name values
-            iMetadata(maxMetadataCount).Group = Right$(tmpSplitInner(0), Len(tmpSplitInner(0)) - 2)
-            iMetadata(maxMetadataCount).Name = tmpSplitInner(1)
+            iMetadata(maxMetadataCount).Group = Trim$(Right$(tmpSplitInner(0), Len(tmpSplitInner(0)) - 2))
+            iMetadata(maxMetadataCount).Name = Trim$(tmpSplitInner(1))
                         
             'A description line always follows a group/name line.  Retrieve that value now.
             curLine = curLine + 1
             xmlLines(curLine) = Trim$(xmlLines(curLine))
-            iMetadata(maxMetadataCount).Description = Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10)
+            iMetadata(maxMetadataCount).Description = Trim$(Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10))
             
             'A human-friendly value *almost* always follows a description line.  Check to see if this is a binary data line;
             ' if it is, retrieve it an mark is as binary type.  Then proceed to retrieve the data (binary or otherwise).
@@ -165,7 +193,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
                     curLine = curLine + 1
                 Loop While StrComp(xmlLines(curLine), "</et:prt>") <> 0
             Else
-                iMetadata(maxMetadataCount).Value = Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9)
+                iMetadata(maxMetadataCount).Value = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
             End If
             
             curLine = curLine + 1
@@ -175,7 +203,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             ' available - so do that now.
             If InStr(1, xmlLines(curLine), "<et:val") > 0 Then
                 xmlLines(curLine) = Trim$(xmlLines(curLine))
-                iMetadata(maxMetadataCount).TechnicalValue = Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9)
+                iMetadata(maxMetadataCount).TechnicalValue = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
                 curLine = curLine + 1
             End If
             
@@ -199,6 +227,15 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
             ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
             If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = "Intelligent"
+            
+            'ANALYZE NAME
+            tmpString = iMetadata(maxMetadataCount).Name
+            
+            'Check for GPS coordinates.  If found, we can enable some fun bonus metadata options.
+            If StrComp(tmpString, "GPSPosition") = 0 Then
+                hasGPSCoordinates = True
+                gpsIndex = maxMetadataCount
+            End If
             
             'ANALYZE VALUE
             

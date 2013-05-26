@@ -32,6 +32,7 @@ Public Const tEdit As Byte = 11
 Public Const tRepeatLast As Byte = 12
 Public Const tSelection As Byte = 13
 Public Const tImgMode32bpp As Byte = 14
+Public Const tGPSMetadata As Byte = 15
 
 'tInit enables or disables a specified button and/or menu item
 Public Sub tInit(tButton As Byte, tState As Boolean)
@@ -153,13 +154,17 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             End If
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
-            If FormMain.MnuImage(5).Enabled <> tState Then FormMain.MnuImage(5).Enabled = tState
+            If FormMain.MnuImage(7).Enabled <> tState Then FormMain.MnuImage(7).Enabled = tState
             
         '32bpp color mode (e.g. add/remove alpha channel)
         Case tImgMode32bpp
             
             FormMain.MnuTransparency(0).Enabled = Not tState
             FormMain.MnuTransparency(1).Enabled = tState
+            
+        Case tGPSMetadata
+        
+            If FormMain.MnuMetadata(2).Enabled <> tState Then FormMain.MnuMetadata(2).Enabled = tState
             
     End Select
     

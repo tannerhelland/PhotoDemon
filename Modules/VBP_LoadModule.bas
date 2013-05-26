@@ -774,6 +774,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         Set targetImage.imgMetadata = New pdMetadata
         targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
         
+        'If GPS metadata was found, enable the "map photo location" menu item
+        tInit tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
+        
         
         '*************************************************************************************************************************************
         ' If this is a primary image, render it to the screen and update all relevant interface elements
@@ -1143,13 +1146,13 @@ Public Sub DrawMenuShortcuts()
     'Image menu
     
         'Rotate clockwise
-        FormMain.MnuImage(11).Caption = FormMain.MnuImage(11).Caption & vbTab & "R"
+        FormMain.MnuImage(13).Caption = FormMain.MnuImage(13).Caption & vbTab & "R"
         
         'Rotate counter-clockwise
-        FormMain.MnuImage(12).Caption = FormMain.MnuImage(12).Caption & vbTab & "L"
+        FormMain.MnuImage(14).Caption = FormMain.MnuImage(14).Caption & vbTab & "L"
         
         'Crop to selection
-        FormMain.MnuImage(5).Caption = FormMain.MnuImage(5).Caption & vbTab & "Ctrl+Shift+X"
+        FormMain.MnuImage(7).Caption = FormMain.MnuImage(7).Caption & vbTab & "Ctrl+Shift+X"
     
     'Color menu
     FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
@@ -1315,7 +1318,7 @@ Public Sub LoadPlugins()
     End If
     
         'Additionally related to FreeImage - enable/disable the arbitrary rotation option contingent on FreeImage's enabling
-        FormMain.MnuImage(14).Visible = g_ImageFormats.FreeImageEnabled
+        FormMain.MnuImage(16).Visible = g_ImageFormats.FreeImageEnabled
     
     'Check for pngnq interface
     If isPngnqAvailable Then

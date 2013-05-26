@@ -167,6 +167,9 @@ Public Sub ActivateWorkaround()
     'Determine whether save is enabled
     tInit tSave, Not pdImages(CurrentImage).HasBeenSaved
     
+    'Determine whether GPS metadata is present, and dis/enable the "map photo location" menu item accordingly
+    tInit tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+    
     'Check the image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
     

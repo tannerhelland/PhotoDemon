@@ -224,26 +224,30 @@ Public Sub ApplyAllMenuIcons()
     
     'Image Menu
     AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
-    AddMenuIcon "TRANSPARENCY", 3, 2   'Transparency
+    AddMenuIcon "METADATA", 3, 2       'Metadata (top-level)
+        '--> Metadata sub-menu
+        AddMenuIcon "BROWSEMD", 3, 2, 0     'Browse metadata
+        AddMenuIcon "MAPPHOTO", 3, 2, 2     'Map photo location
+    AddMenuIcon "TRANSPARENCY", 3, 4   'Transparency
         '--> Image Mode sub-menu
-        AddMenuIcon "ADDTRANS", 3, 2, 0     'Add alpha channel
-        AddMenuIcon "REMOVETRANS", 3, 2, 1  'Remove alpha channel
-    AddMenuIcon "RESIZE", 3, 4         'Resize
-    AddMenuIcon "CROPSEL", 3, 5        'Crop to Selection
-    AddMenuIcon "AUTOCROP", 3, 6       'Autocrop
-    AddMenuIcon "MIRROR", 3, 8         'Mirror
-    AddMenuIcon "FLIP", 3, 9           'Flip
-    AddMenuIcon "ROTATECW", 3, 11      'Rotate Clockwise
-    AddMenuIcon "ROTATECCW", 3, 12     'Rotate Counter-clockwise
-    AddMenuIcon "ROTATE180", 3, 13     'Rotate 180
+        AddMenuIcon "ADDTRANS", 3, 4, 0     'Add alpha channel
+        AddMenuIcon "REMOVETRANS", 3, 4, 1  'Remove alpha channel
+    AddMenuIcon "RESIZE", 3, 6         'Resize
+    AddMenuIcon "CROPSEL", 3, 7        'Crop to Selection
+    AddMenuIcon "AUTOCROP", 3, 8       'Autocrop
+    AddMenuIcon "MIRROR", 3, 10         'Mirror
+    AddMenuIcon "FLIP", 3, 11           'Flip
+    AddMenuIcon "ROTATECW", 3, 13      'Rotate Clockwise
+    AddMenuIcon "ROTATECCW", 3, 14     'Rotate Counter-clockwise
+    AddMenuIcon "ROTATE180", 3, 15     'Rotate 180
     'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
     If g_ImageFormats.FreeImageEnabled Then
-        AddMenuIcon "ROTATEANY", 3, 14 'Rotate Arbitrary
-        AddMenuIcon "ISOMETRIC", 3, 16 'Isometric
-        AddMenuIcon "TILE", 3, 17      'Tile
+        AddMenuIcon "ROTATEANY", 3, 16 'Rotate Arbitrary
+        AddMenuIcon "ISOMETRIC", 3, 18 'Isometric
+        AddMenuIcon "TILE", 3, 19      'Tile
     Else
-        AddMenuIcon "ISOMETRIC", 3, 15 'Isometric
-        AddMenuIcon "TILE", 3, 16      'Tile
+        AddMenuIcon "ISOMETRIC", 3, 17 'Isometric
+        AddMenuIcon "TILE", 3, 18      'Tile
     End If
     
     'Color Menu
