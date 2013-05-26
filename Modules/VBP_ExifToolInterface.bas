@@ -146,8 +146,13 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
     'If a translation is active, request descriptions in the current language
     If g_Language.translationActive Then execString = execString & " -lang " & g_Language.getCurrentLanguage()
     
-    'If this is a JPEG, request the extra JPEGDigest tag
-    If srcFormat = FIF_JPEG Then execString = execString & " -TAG -JPEGDigest"
+    'Request that binary data be processed.  We have no use for this data within PD, but when it comes time to write
+    ' our metadata back out to file, we need to have a copy of it.
+    execString = execString & " -b"
+    
+    'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
+    ' so deny them specifically.
+    execString = execString & " -x PreviewImage -x ThumbnailImage"
     
     'Output XML data (a lot more complex, but the only way to retrieve descriptions and names simultaneously)
     execString = execString & " -X"

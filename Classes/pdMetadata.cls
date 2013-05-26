@@ -45,10 +45,15 @@ Private Type mdItem
     Description As String
     Value As String
     TechnicalValue As String
+    isBinary As Boolean
 End Type
 
 'Array that contains the metadata itself
 Private iMetadata() As mdItem
+
+'When extracting metadata, we request a full XML dump from ExifTool.  This XML file is stored - in its entirety - in memory,
+' as it is the only way to precisely restore the XML data in its *exact* form when save-time comes.
+Private originalMetadataXML As String
 
 'If no metadata was found during the original FreeImage load process, this will return FALSE.  If any metadata of any
 ' compatible type was found, this will return TRUE.
@@ -98,10 +103,17 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
     
-    'We now have a (very large) string of XML-formatted metadata.  Our next job is to parse that data into the iMetadata() array.
+    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging, so I'm leaving this here.
+    'Clipboard.Clear
+    'Clipboard.SetText mdString
     
-    'Our next goal is to step through the XML, looking for tag/value pairs as we go.  Because the XML is precisely structured, we
-    ' can rely on a few key markers to do this successfully.
+    'We now have a (very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of that string.
+    ' We need this backup when it comes time to write the metadata back out to file.
+    originalMetadataXML = mdString
+    
+    'Our next job is to parse our very large XML string into individual components within the iMetadata() array. We accomplish this by
+    ' stepping through the XML and looking for tag/value pairs as we go.  Because the XML is precisely structured, we can rely on a few
+    ' key markers to do this successfully.
     
     'Start by chopping up the string into an array, delimited into individual lines
     Dim xmlLines() As String
@@ -114,6 +126,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     
     Dim ignoreThisTag As Boolean
     
+    Dim tmpLocation As Long
     Dim tmpString As String
     Dim tmpSplitOuter() As String, tmpSplitInner() As String
     
@@ -141,10 +154,23 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             xmlLines(curLine) = Trim$(xmlLines(curLine))
             iMetadata(maxMetadataCount).Description = Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10)
             
-            'A human-friendly value always follows a description line.  Retrieve that value now.
+            'A human-friendly value *almost* always follows a description line.  Check to see if this is a binary data line;
+            ' if it is, retrieve it an mark is as binary type.  Then proceed to retrieve the data (binary or otherwise).
             curLine = curLine + 1
             xmlLines(curLine) = Trim$(xmlLines(curLine))
-            iMetadata(maxMetadataCount).Value = Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9)
+            
+            'Non-binary data will have no rdf identifier in the tag; use that to separate binary from non-binary
+            If InStr(1, xmlLines(curLine), "<et:prt>") > 0 Then iMetadata(maxMetadataCount).isBinary = False Else iMetadata(maxMetadataCount).isBinary = True
+            
+            If iMetadata(maxMetadataCount).isBinary Then
+                'Binary data can be enormous.  ExifTool is kind enough to always start it on a new line for us - so move down a line,
+                ' then run a specialized check for the end of the binary chunk.
+                Do
+                    curLine = curLine + 1
+                Loop While StrComp(xmlLines(curLine), "</et:prt>") <> 0
+            Else
+                iMetadata(maxMetadataCount).Value = Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9)
+            End If
             
             curLine = curLine + 1
             
@@ -212,93 +238,8 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
 End Sub
 
 
-'Given a handle to a FreeImage object, write out all currently stored metadata.  (This only needs to be done immediately prior to a save.)
-Public Function writeAllMetadata(ByVal fiImageHandle As Long) As Boolean
-    
-    'New strategy: convert as much EXIF data to XMP format as possible.
-    Dim XMPPacket As String
-    XMPPacket = writeDataAsXMPString
-    
-    Dim tmpTag As FREE_IMAGE_TAG
-    tmpTag = FreeImage_CreateTagEx(FIMD_XMP, "XMLPacket", FIDT_ASCII, XMPPacket)
-
-    Dim totalSuccess As Boolean
-    totalSuccess = True
-    
-    If tmpTag.TagPtr <> 0 Then
-                    
-                    'Attempt to set this tag to the FreeImage handle we were passed
-                    If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, "XMLPacket", FIMD_XMP, True) Then
-                    'If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, fiMetadata(fiMetadataType, j).Key, fiMetadataType, True) Then
-                        
-                        'Note that normally we would need to delete the tag object just created; however, the RefreshTag
-                        ' parameter used above handles that for us.
-                        
-                    Else
-                        totalSuccess = False
-                        Message "Failed to set metadata tag to FreeImage object."
-                    End If
-                    
-                Else
-                    totalSuccess = False
-                    Message "Failed to create metadata tag."
-                End If
-                
-                Exit Function
-    
-    
-    Dim fiMetadataType As Long, j As Long
-        
-    For fiMetadataType = 0 To 10
-    
-        'Only process tags that exist (obviously!)
-        If numTags(fiMetadataType) > 0 Then
-            For j = 0 To numTags(fiMetadataType) - 1
-                
-                'Create a new FreeImage tag with data identical to this one
-                Select Case fiMetadata(fiMetadataType, j).Type
-                    
-                    Case FIDT_SRATIONAL, FIDT_RATIONAL
-                        'tmpTag = FreeImage_CreateTagExRational(FIMD_EXIF_RAW, fiMetadata(fiMetadataType, j).Key, fiMetadata(fiMetadataType, j).Type, fiMetadata(fiMetadataType, j).RationalValue(), fiMetadata(fiMetadataType, j).Count, fiMetadata(fiMetadataType, j).Id)
-                        'tmpTag = FreeImage_CreateTagExRational(fiMetadataType, fiMetadata(fiMetadataType, j).Key, fiMetadata(fiMetadataType, j).Type, fiMetadata(fiMetadataType, j).RationalValue(), fiMetadata(fiMetadataType, j).Count, fiMetadata(fiMetadataType, j).Id)
-                        tmpTag.TagPtr = 0
-                    
-                    Case Else
-                        'tmpTag = FreeImage_CreateTagEx(fiMetadataType, fiMetadata(fiMetadataType, j).Key, fiMetadata(fiMetadataType, j).Type, fiMetadata(fiMetadataType, j).Value, fiMetadata(fiMetadataType, j).Count, fiMetadata(fiMetadataType, j).Id)
-                        tmpTag.TagPtr = 0
-                        
-                End Select
-                
-                If tmpTag.TagPtr <> 0 Then
-                    
-                    'Attempt to set this tag to the FreeImage handle we were passed
-                    If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, tmpTag.Key, FIMD_XMP, True) Then
-                    'If FreeImage_SetMetadataEx(fiImageHandle, tmpTag, fiMetadata(fiMetadataType, j).Key, fiMetadataType, True) Then
-                        
-                        'Note that normally we would need to delete the tag object just created; however, the RefreshTag
-                        ' parameter used above handles that for us.
-                        
-                    Else
-                        totalSuccess = False
-                        Message "Failed to set metadata tag to FreeImage object."
-                    End If
-                    
-                Else
-                    totalSuccess = False
-                    Message "Failed to create metadata tag."
-                End If
-                
-            Next j
-        End If
-    
-    Next fiMetadataType
-    
-    'Now, for the hell of it, we are going to attempt to retrieve the full raw metadata buffer.  I don't know if this will exist, but it's worth a try...
-    loadAllMetadata fiImageHandle
-    testMetadata
-    'MsgBox fiMetadata(11, 0).StringValue
-    
-    writeAllMetadata = totalSuccess
+'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a path to the original file, to a FreeImage object, write out all currently stored metadata.  (This only needs to be done immediately prior to a save.)
+Public Function writeAllMetadata(ByVal outputPath As String, ByVal originalFile As String) As Boolean
     
 End Function
 
