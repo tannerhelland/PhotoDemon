@@ -3149,8 +3149,8 @@ End Sub
 
 Private Sub MnuTest_Click()
     'MenuTest
-    'pdImages(CurrentImage).imgMetadata.testMetadata
-    getExifToolVersion
+    pdImages(CurrentImage).imgMetadata.testMetadata
+    'getExifToolVersion
 End Sub
 
 Private Sub MnuTile_Click()
