@@ -123,14 +123,14 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
 
     maxMetadataCount = 0
     hasGPSCoordinates = False: gpsIndex = 0
-        
+    
     'ExifTool will return all metadata in one enormous string, which we will have to parse manually.
     Dim mdString As String
     mdString = getMetadata(srcFile, srcFormat)
-
+    
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
-        
+    
     'We now have a (very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of that string.
     ' We need this backup when it comes time to write the metadata back out to file.
     originalMetadataXML = mdString
@@ -201,10 +201,26 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             'For some tags, the human-friendly value will be the actual value of the tag.  For others, the tag will have some kind
             ' of obscure value that ExifTool has kindly translated for us.  We still want to retrieve the technical value if
             ' available - so do that now.
-            If InStr(1, xmlLines(curLine), "<et:val") > 0 Then
+            
+            'Unfortunately, like the base Value tag, the *actual* value tag can also come in a binary variant.  Check for that now.
+            ' If a fully closed tag is found, we know this is of the (far more common) non-binary variety
+            If InStr(1, xmlLines(curLine), "<et:val>") > 0 Then
+                
                 xmlLines(curLine) = Trim$(xmlLines(curLine))
                 iMetadata(maxMetadataCount).TechnicalValue = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
                 curLine = curLine + 1
+                
+            'If the tag exists but is not closed, we know it is in binary format
+            ElseIf InStr(1, xmlLines(curLine), "<et:val") > 0 Then
+            
+                 'Binary data can be enormous.  ExifTool is kind enough to always start it on a new line for us - so move down a line,
+                ' then run a specialized check for the end of the binary chunk.
+                Do
+                    curLine = curLine + 1
+                Loop While StrComp(xmlLines(curLine), "</et:val>") <> 0
+                
+                curLine = curLine + 1
+            
             End If
             
             'Now that we have fully parsed the tag, we need to run some additional checks on it.
