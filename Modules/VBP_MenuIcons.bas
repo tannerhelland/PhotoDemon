@@ -224,10 +224,10 @@ Public Sub ApplyAllMenuIcons()
     
     'Image Menu
     AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
-    AddMenuIcon "MODE24", 3, 2         'Image Mode
+    AddMenuIcon "TRANSPARENCY", 3, 2   'Transparency
         '--> Image Mode sub-menu
-        AddMenuIcon "MODE24", 3, 2, 0  '24bpp
-        AddMenuIcon "MODE32", 3, 2, 1  '32bpp
+        AddMenuIcon "ADDTRANS", 3, 2, 0     'Add alpha channel
+        AddMenuIcon "REMOVETRANS", 3, 2, 1  'Remove alpha channel
     AddMenuIcon "RESIZE", 3, 4         'Resize
     AddMenuIcon "CROPSEL", 3, 5        'Crop to Selection
     AddMenuIcon "AUTOCROP", 3, 6       'Autocrop
@@ -534,42 +534,11 @@ Public Sub ResetMenuIcons()
             End If
         
         Next i
-        
-        
-        'If the OS is Vista or later, we can use the checked states of the Image Mode menu entries to redraw those icons as well
-        If FormMain.MnuImageMode24bpp.Checked Then
-            AddMenuIcon "MODE24", 3, 2
-            AddMenuIcon "MODE24CHK", 3, 2, 0
-            AddMenuIcon "MODE32", 3, 2, 1
-        Else
-            'Update the parent menu
-            AddMenuIcon "MODE32", 3, 2
-            AddMenuIcon "MODE24", 3, 2, 0   '24bpp
-            AddMenuIcon "MODE32CHK", 3, 2, 1    '32bpp
-        End If
-        
+                
     End If
         
 End Sub
 
-'As a courtesy to the user, the Image -> Mode icon is dynamically changed to match the current image's mode
-Public Sub updateModeIcon(ByVal nMode As Boolean)
-    
-    If nMode Then
-        'Update the parent menu
-        AddMenuIcon "MODE32", 3, 2
-        
-        'Update the children menus as well
-        AddMenuIcon "MODE24", 3, 2, 0   '24bpp
-        AddMenuIcon "MODE32CHK", 3, 2, 1    '32bpp
-        
-    Else
-        AddMenuIcon "MODE24", 3, 2
-        AddMenuIcon "MODE24CHK", 3, 2, 0
-        AddMenuIcon "MODE32", 3, 2, 1
-    End If
-    
-End Sub
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
 ' Past versions of this sub included a pure-VB fallback if FreeImage wasn't found.  These have since been removed -

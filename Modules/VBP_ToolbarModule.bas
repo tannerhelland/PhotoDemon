@@ -1,10 +1,10 @@
 Attribute VB_Name = "Toolbar"
 '***************************************************************************
 'Toolbar Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/November/12
-'Last update: Add a constant for toggling an image's color mode between 24bpp and 32bpp
+'Last updated: 26/May/13
+'Last update: Simplify the way 24/32bpp mode conversions are handled
 '
 'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June '12 in favor of
 ' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
@@ -155,27 +155,11 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuCropSelection.Enabled <> tState Then FormMain.MnuCropSelection.Enabled = tState
             
-        '32bpp color mode
+        '32bpp color mode (e.g. add/remove alpha channel)
         Case tImgMode32bpp
             
-            'NOTE: because the corresponding menu entries are "checkable", added images won't render nicely in unthemed environments.
-            '       Thus, only activate the checked state if theming IS enabled.
-            If g_IsThemingEnabled And g_IsVistaOrLater Then
-            
-                'tState = True indicates 32bpp mode.
-                If tState Then
-                    FormMain.MnuImageMode32bpp.Checked = True
-                    FormMain.MnuImageMode24bpp.Checked = False
-                'tState = False indicates 24bpp mode.
-                Else
-                    FormMain.MnuImageMode24bpp.Checked = True
-                    FormMain.MnuImageMode32bpp.Checked = False
-                End If
-                
-            End If
-            
-            'Update the menu icons to match.  In unthemed environments, this is the only visual clue they will receive about the present mode.
-            updateModeIcon tState
+            FormMain.MnuTransparency(0).Enabled = Not tState
+            FormMain.MnuTransparency(1).Enabled = tState
             
     End Select
     
