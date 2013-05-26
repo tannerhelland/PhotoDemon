@@ -941,17 +941,20 @@ Begin VB.MDIForm FormMain
          Caption         =   "Hide right panel (image tools)"
       End
    End
-   Begin VB.Menu MnuImage 
+   Begin VB.Menu MnuImageTop 
       Caption         =   "&Image"
-      Begin VB.Menu MnuDuplicate 
+      Begin VB.Menu MnuImage 
          Caption         =   "&Duplicate"
+         Index           =   0
          Shortcut        =   ^D
       End
-      Begin VB.Menu MnuImageSepBar0 
+      Begin VB.Menu MnuImage 
          Caption         =   "-"
+         Index           =   1
       End
-      Begin VB.Menu MnuImageTransparency 
+      Begin VB.Menu MnuImage 
          Caption         =   "Transparency"
+         Index           =   2
          Begin VB.Menu MnuTransparency 
             Caption         =   "Add alpha channel"
             Index           =   0
@@ -961,51 +964,66 @@ Begin VB.MDIForm FormMain
             Index           =   1
          End
       End
-      Begin VB.Menu MnuImageSepBar1 
+      Begin VB.Menu MnuImage 
          Caption         =   "-"
+         Index           =   3
       End
-      Begin VB.Menu MnuResample 
+      Begin VB.Menu MnuImage 
          Caption         =   "Resize..."
+         Index           =   4
          Shortcut        =   ^R
       End
-      Begin VB.Menu MnuCropSelection 
+      Begin VB.Menu MnuImage 
          Caption         =   "Crop to selection"
+         Index           =   5
       End
-      Begin VB.Menu MnuAutocrop 
+      Begin VB.Menu MnuImage 
          Caption         =   "Autocrop Image"
+         Index           =   6
       End
-      Begin VB.Menu MnuImageSepBar2 
+      Begin VB.Menu MnuImage 
          Caption         =   "-"
+         Index           =   7
       End
-      Begin VB.Menu MnuMirror 
+      Begin VB.Menu MnuImage 
          Caption         =   "Flip horizontal"
+         Index           =   8
       End
-      Begin VB.Menu MnuFlip 
+      Begin VB.Menu MnuImage 
          Caption         =   "Flip vertical"
+         Index           =   9
       End
-      Begin VB.Menu MnuImageSepBar3 
+      Begin VB.Menu MnuImage 
          Caption         =   "-"
+         Index           =   10
       End
-      Begin VB.Menu MnuRotateClockwise 
+      Begin VB.Menu MnuImage 
          Caption         =   "Rotate 90° clockwise"
+         Index           =   11
       End
-      Begin VB.Menu MnuRotate270Clockwise 
+      Begin VB.Menu MnuImage 
          Caption         =   "Rotate 90° counter-clockwise"
+         Index           =   12
       End
-      Begin VB.Menu MnuRotate180 
+      Begin VB.Menu MnuImage 
          Caption         =   "Rotate 180°"
+         Index           =   13
       End
-      Begin VB.Menu MnuRotateArbitrary 
+      Begin VB.Menu MnuImage 
          Caption         =   "Arbitrary rotation..."
+         Index           =   14
       End
-      Begin VB.Menu MnuImageSepBar4 
+      Begin VB.Menu MnuImage 
          Caption         =   "-"
+         Index           =   15
       End
-      Begin VB.Menu MnuIsometric 
+      Begin VB.Menu MnuImage 
          Caption         =   "Convert to isometric view"
+         Index           =   16
       End
-      Begin VB.Menu MnuTile 
+      Begin VB.Menu MnuImage 
          Caption         =   "Tile..."
+         Index           =   17
       End
    End
    Begin VB.Menu MnuColorTop 
@@ -2183,10 +2201,6 @@ Private Sub MnuArtistic_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuAutocrop_Click()
-    Process Autocrop
-End Sub
-
 Private Sub MnuAutoEnhanceHighlights_Click()
     Process AutoHighlights
 End Sub
@@ -2389,10 +2403,6 @@ Private Sub MnuCompoundInvert_Click()
     Process CompoundInvert, 128
 End Sub
 
-Private Sub MnuCropSelection_Click()
-    Process CropToSelection
-End Sub
-
 Private Sub MnuCShiftL_Click()
     Process ColorShiftLeft, 1
 End Sub
@@ -2468,14 +2478,6 @@ End Sub
 
 Private Sub MnuDream_Click()
     Process Dream
-End Sub
-
-'Duplicate the current image
-Private Sub MnuDuplicate_Click()
-    
-    'This sub can be found in the "Loading" module
-    DuplicateCurrentImage
-    
 End Sub
 
 Private Sub MnuEdge_Click(Index As Integer)
@@ -2651,6 +2653,84 @@ Private Sub MnuHistogramStretch_Click()
     Process StretchHistogram
 End Sub
 
+'All top-level Image menu actions are handled here
+Private Sub MnuImage_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Duplicate
+        Case 0
+        
+            'It may seem odd, but the Duplicate function can be found in the "Loading" module; I do this because
+            ' we effectively LOAD a copy of the original image, so all loading operations have to be repeated.
+            DuplicateCurrentImage
+        
+        'Separator
+        Case 1
+        
+        'Transparency top-level
+        Case 2
+        
+        'Separator
+        Case 3
+        
+        'Resize
+        Case 4
+            Process ImageSize, , , , , , , , , , True
+        
+        'Crop to selection
+        Case 5
+            Process CropToSelection
+        
+        'Autocrop
+        Case 6
+            Process Autocrop
+        
+        'Separator
+        Case 7
+        
+        'Flip horizontal (mirror)
+        Case 8
+            Process Mirror
+        
+        'Flip vertical
+        Case 9
+            Process Flip
+        
+        'Separator
+        Case 10
+        
+        'Rotate 90
+        Case 11
+            Process Rotate90Clockwise
+        
+        'Rotate 270
+        Case 12
+            Process Rotate270Clockwise
+        
+        'Rotate 180
+        Case 13
+            Process Rotate180
+        
+        'Rotate arbitrary
+        Case 14
+            Process FreeRotate, , , , , , , , , , True
+        
+        'Separator
+        Case 15
+        
+        'Isometric view
+        Case 16
+            Process Isometric
+        
+        'Tile
+        Case 17
+            Process Tile, , , , , , , , , , True
+    
+    End Select
+
+End Sub
+
 'This is the exact same thing as "Paste as New Image".  It is provided in two locations for convenience.
 Private Sub MnuImportClipboard_Click()
     Process cPaste
@@ -2672,10 +2752,6 @@ End Sub
 
 Private Sub MnuInvertHue_Click()
     Process InvertHue
-End Sub
-
-Private Sub MnuIsometric_Click()
-    Process Isometric
 End Sub
 
 'When a language is clicked, immediately activate it
@@ -2772,16 +2848,8 @@ Private Sub MnuExit_Click()
     Unload FormMain
 End Sub
 
-Private Sub MnuFlip_Click()
-    Process Flip
-End Sub
-
 Private Sub MnuInvert_Click()
     Process Invert
-End Sub
-
-Private Sub MnuMirror_Click()
-    Process Mirror
 End Sub
 
 'All noise filters are handled here
@@ -2865,32 +2933,12 @@ Private Sub MnuRepeatLast_Click()
     Process LastCommand
 End Sub
 
-Private Sub MnuResample_Click()
-    Process ImageSize, , , , , , , , , , True
-End Sub
-
 Private Sub MnuAutoEnhance_Click()
     Process AutoEnhance
 End Sub
 
 Private Sub MnuRightPanel_Click()
     ChangeRightPane VISIBILITY_TOGGLE
-End Sub
-
-Private Sub MnuRotate180_Click()
-    Process Rotate180
-End Sub
-
-Private Sub MnuRotate270Clockwise_Click()
-    Process Rotate270Clockwise
-End Sub
-
-Private Sub MnuRotateArbitrary_Click()
-    Process FreeRotate, , , , , , , , , , True
-End Sub
-
-Private Sub MnuRotateClockwise_Click()
-    Process Rotate90Clockwise
 End Sub
 
 Private Sub MnuSave_Click()
@@ -3013,10 +3061,6 @@ Private Sub MnuTest_Click()
     'MenuTest
     pdImages(CurrentImage).imgMetadata.testMetadata
     'getExifToolVersion
-End Sub
-
-Private Sub MnuTile_Click()
-    Process Tile, , , , , , , , , , True
 End Sub
 
 'All tool menu items are launched from here

@@ -1141,9 +1141,15 @@ Public Sub DrawMenuShortcuts()
     FormMain.MnuSpecificZoom(8).Caption = FormMain.MnuSpecificZoom(8).Caption & vbTab & "Shift+5"
         
     'Image menu
-    FormMain.MnuRotateClockwise.Caption = FormMain.MnuRotateClockwise.Caption & vbTab & "R"
-    FormMain.MnuRotate270Clockwise.Caption = FormMain.MnuRotate270Clockwise.Caption & vbTab & "L"
-    FormMain.MnuCropSelection.Caption = FormMain.MnuCropSelection.Caption & vbTab & "Ctrl+Shift+X"
+    
+        'Rotate clockwise
+        FormMain.MnuImage(11).Caption = FormMain.MnuImage(11).Caption & vbTab & "R"
+        
+        'Rotate counter-clockwise
+        FormMain.MnuImage(12).Caption = FormMain.MnuImage(12).Caption & vbTab & "L"
+        
+        'Crop to selection
+        FormMain.MnuImage(5).Caption = FormMain.MnuImage(5).Caption & vbTab & "Ctrl+Shift+X"
     
     'Color menu
     FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
@@ -1309,7 +1315,7 @@ Public Sub LoadPlugins()
     End If
     
         'Additionally related to FreeImage - enable/disable the arbitrary rotation option contingent on FreeImage's enabling
-        FormMain.MnuRotateArbitrary.Visible = g_ImageFormats.FreeImageEnabled
+        FormMain.MnuImage(14).Visible = g_ImageFormats.FreeImageEnabled
     
     'Check for pngnq interface
     If isPngnqAvailable Then

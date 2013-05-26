@@ -88,8 +88,8 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
         'ImageOps is all Image-related menu items; it enables/disables the Image, Color, View (most items, anyway), and Print menus
         Case tImageOps
-            If FormMain.MnuImage.Enabled <> tState Then
-                FormMain.MnuImage.Enabled = tState
+            If FormMain.MnuImageTop.Enabled <> tState Then
+                FormMain.MnuImageTop.Enabled = tState
                 'Use this same command to disable other menus
                 FormMain.MnuColorTop.Enabled = tState
                 FormMain.MnuPrint.Enabled = tState
@@ -153,7 +153,7 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             End If
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
-            If FormMain.MnuCropSelection.Enabled <> tState Then FormMain.MnuCropSelection.Enabled = tState
+            If FormMain.MnuImage(5).Enabled <> tState Then FormMain.MnuImage(5).Enabled = tState
             
         '32bpp color mode (e.g. add/remove alpha channel)
         Case tImgMode32bpp
