@@ -143,6 +143,9 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
     'Request ANSI-compatible text (Windows-1252 specifically)
     execString = execString & " -L"
     
+    'Request a custom separator for list-type values
+    execString = execString & " -sep ;"
+    
     'If a translation is active, request descriptions in the current language
     If g_Language.translationActive Then execString = execString & " -lang " & g_Language.getCurrentLanguage()
     
@@ -152,7 +155,7 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
     
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
     ' so deny them specifically.
-    execString = execString & " -x PreviewImage -x ThumbnailImage"
+    execString = execString & " -x PreviewImage -x ThumbnailImage -x PhotoshopThumbnail"
     
     'Output XML data (a lot more complex, but the only way to retrieve descriptions and names simultaneously)
     execString = execString & " -X"
