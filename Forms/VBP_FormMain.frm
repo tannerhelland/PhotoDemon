@@ -2941,7 +2941,11 @@ Private Sub MnuMetadata_Click(Index As Integer)
             If pdImages(CurrentImage).imgMetadata.fillLatitudeLongitude(latString, lonString) Then
                 
                 'Build a valid Google maps URL (you can use Google to see what the various parameters mean)
-                gMapsURL = "https://maps.google.com/maps?f=q&z=19&t=h&q=" & latString & "%2c+" & lonString
+                
+                'Note: I find a zoom of 18 ideal, as that is a common level for switching to an "aerial"
+                ' view instead of a satellite view.  Much higher than that and you run the risk of not
+                ' having data available at that high of zoom.
+                gMapsURL = "https://maps.google.com/maps?f=q&z=18&t=h&q=" & latString & "%2c+" & lonString
                 
                 'As a convenience, request Google Maps in the current language
                 If g_Language.translationActive Then
