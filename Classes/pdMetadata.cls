@@ -134,6 +134,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
     
+    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging.  Uncomment as necessary.
     'Clipboard.Clear
     'Clipboard.SetText mdString
     
@@ -184,21 +185,21 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             xmlLines(curLine) = Trim$(xmlLines(curLine))
             iMetadata(maxMetadataCount).Description = Trim$(Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10))
             
-            'A human-friendly value *almost* always follows a description line, but parsing it is more difficult than the first two entries.
+            'A human-friendly value always follows a description line, but parsing it is more difficult than the first two entries.
             ' Why?  The variety of Value properties that can exist.  My testing shows three main types of values:
             
             ' 1) Simple value.  This is the most common type of entry, and it looks like:
             '    <et:prt>value</et:prt>
-            '    Parsing these values is easy.
+            '    These values are easy to parse.
             
             ' 2) Complex (binary) value.  Used for things like thumbnails, and not generally relevant to display to the user.  Looks like:
             '    <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
             '       zgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA
             '       ...many more lines of gibberish...
             '    </et:prt>
-            '    Not difficult to parse, and FYI there is generally no point to storing or attempting to convert the binary values.
+            '    Not difficult to parse, but FYI there is really no reason to store or attempting to convert the specific binary values.
             
-            ' 3) List-type values.  Used almost exclusively by PhotoShop.  Looks like:
+            ' 3) List-type values.  Used primarily by PhotoShop.  Looks like:
             '<et:prt>
             '  <rdf:Bag>
             '    <rdf:li>saved</rdf:li>
@@ -208,10 +209,10 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             '  </rdf:Bag>
             '</et:prt>
             '    More problematic than the first two types, as a LOT of rdf lines can exist, and there is possible merit to extracting their values.
-            '    At present, I simply ignore these, as I don't have a good way to present them to the user.  This may be revisited at a later date.
+            '    At present, these are condensed into a single string delimited by semicolons.  Might revisit this approach in the future.
             
-            'Using this knowledge of various data types, check to see if this is a non-simple value.  If it is,
-            ' mark it as such and proceed to ignore the full contents of the tag (binary or otherwise).
+            'Using this knowledge of various data types, check to see if the value is binary or list-type.  If it is,
+            ' mark it and proceed to ignore the tag's full contents.
             curLine = curLine + 1
             
             'Simple data will exist on a single line; use that knowledge to separate such values out.
@@ -231,11 +232,10 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
                 End If
             End If
             
-            'Binary and list-type values can be ignored.  Only retrieve the data if it is neither of these types.
             If iMetadata(maxMetadataCount).isValueBinary Or iMetadata(maxMetadataCount).isValueList Then
             
-                'Binary and list data can be enormous.  ExifTool is kind enough to always start it on a new line for us -
-                ' so move down a line, then start searching for the end of the binary or list chunk.
+                'Binary and list data can be enormous.  ExifTool is kind enough to always start these tag types on a new line -
+                ' so move down a line, then start searching for the end of the chunk.
                 Do
                     curLine = curLine + 1
                 Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
@@ -289,7 +289,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
                 
             End If
             
-            'Now that we have fully parsed the tag, we need to run some additional checks on it.
+            'Now that we have fully parsed the tag, we need to run a few additional checks.
             
             'ANALYZE GROUP
             
@@ -305,6 +305,10 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             
             'Next, ExifTool breaks down EXIF tags into their individual IDF blocks.  Simplify all those under a single "Exif" header.
             If InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then iMetadata(maxMetadataCount).Group = "Exif"
+            
+            'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
+            ' a single "ICC Profile".
+            If InStr(1, tmpString, "ICC", vbBinaryCompare) > 0 Then iMetadata(maxMetadataCount).Group = "ICC Profile"
             
             'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
             ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
@@ -345,10 +349,6 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
 
     'If no metadata was found, exit now
     If maxMetadataCount = 0 Then Exit Sub
-
-    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging, so I'm leaving this here.
-    'Clipboard.Clear
-    'Clipboard.SetText mdString
     
 End Sub
 

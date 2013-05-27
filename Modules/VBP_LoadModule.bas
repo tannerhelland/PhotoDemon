@@ -770,7 +770,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the ExifTool plugin is available, use it to extract any possible metadata from the image file
         '*************************************************************************************************************************************
         
-        Message "Parsing image metadata..."
+        Message "Compiling metadata..."
         Set targetImage.imgMetadata = New pdMetadata
         targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
         
