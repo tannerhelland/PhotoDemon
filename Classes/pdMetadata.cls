@@ -44,8 +44,11 @@ Private Type mdItem
     Name As String
     Description As String
     Value As String
-    TechnicalValue As String
-    isBinary As Boolean
+    ActualValue As String
+    isValueBinary As Boolean
+    isValueList As Boolean
+    isActualValueBinary As Boolean
+    isActualValueList As Boolean
 End Type
 
 'Array that contains the metadata itself
@@ -76,7 +79,7 @@ Public Function fillLatitudeLongitude(ByRef latString As String, ByRef lonString
     If hasGPSCoordinates Then
     
         Dim tmpSplit() As String
-        tmpSplit = Split(iMetadata(gpsIndex).TechnicalValue, " ")
+        tmpSplit = Split(iMetadata(gpsIndex).ActualValue, " ")
         latString = tmpSplit(0)
         lonString = tmpSplit(1)
     
@@ -104,7 +107,7 @@ Public Sub testMetadata()
         msgString = msgString & "Name: " & iMetadata(i).Name & vbCrLf
         msgString = msgString & "Description: " & iMetadata(i).Description & vbCrLf
         msgString = msgString & "Value: " & iMetadata(i).Value & vbCrLf
-        msgString = msgString & "Technical value: " & iMetadata(i).TechnicalValue & vbCrLf
+        msgString = msgString & "Technical value: " & iMetadata(i).ActualValue & vbCrLf
         MsgBox msgString
         
     Next i
@@ -130,6 +133,9 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
+    
+    'Clipboard.Clear
+    'Clipboard.SetText mdString
     
     'We now have a (very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of that string.
     ' We need this backup when it comes time to write the metadata back out to file.
@@ -159,7 +165,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     Do
     
         'If our definitive text is found, parse this line to retrieve this tag's Group and Name values
-        If InStr(1, xmlLines(curLine), "rdf:parseType='Resource'", vbBinaryCompare) > 0 Then
+        If InStr(1, xmlLines(curLine), "rdf:parseType='Resource'", vbTextCompare) > 0 Then
             
             ignoreThisTag = False
         
@@ -178,49 +184,109 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             xmlLines(curLine) = Trim$(xmlLines(curLine))
             iMetadata(maxMetadataCount).Description = Trim$(Mid$(xmlLines(curLine), 10, InStr(1, xmlLines(curLine), "</et") - 10))
             
-            'A human-friendly value *almost* always follows a description line.  Check to see if this is a binary data line;
-            ' if it is, retrieve it an mark is as binary type.  Then proceed to retrieve the data (binary or otherwise).
+            'A human-friendly value *almost* always follows a description line, but parsing it is more difficult than the first two entries.
+            ' Why?  The variety of Value properties that can exist.  My testing shows three main types of values:
+            
+            ' 1) Simple value.  This is the most common type of entry, and it looks like:
+            '    <et:prt>value</et:prt>
+            '    Parsing these values is easy.
+            
+            ' 2) Complex (binary) value.  Used for things like thumbnails, and not generally relevant to display to the user.  Looks like:
+            '    <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
+            '       zgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA
+            '       ...many more lines of gibberish...
+            '    </et:prt>
+            '    Not difficult to parse, and FYI there is generally no point to storing or attempting to convert the binary values.
+            
+            ' 3) List-type values.  Used almost exclusively by PhotoShop.  Looks like:
+            '<et:prt>
+            '  <rdf:Bag>
+            '    <rdf:li>saved</rdf:li>
+            '    <rdf:li>derived</rdf:li>
+            '    <rdf:li>saved</rdf:li>
+            '    ...many more lines of this
+            '  </rdf:Bag>
+            '</et:prt>
+            '    More problematic than the first two types, as a LOT of rdf lines can exist, and there is possible merit to extracting their values.
+            '    At present, I simply ignore these, as I don't have a good way to present them to the user.  This may be revisited at a later date.
+            
+            'Using this knowledge of various data types, check to see if this is a non-simple value.  If it is,
+            ' mark it as such and proceed to ignore the full contents of the tag (binary or otherwise).
             curLine = curLine + 1
-            xmlLines(curLine) = Trim$(xmlLines(curLine))
             
-            'Non-binary data will have no rdf identifier in the tag; use that to separate binary from non-binary
-            If InStr(1, xmlLines(curLine), "<et:prt>") > 0 Then iMetadata(maxMetadataCount).isBinary = False Else iMetadata(maxMetadataCount).isBinary = True
+            'Simple data will exist on a single line; use that knowledge to separate such values out.
+            If (InStr(1, xmlLines(curLine), "<et:prt>") > 0) And (InStr(1, xmlLines(curLine), "</et:prt>") > 0) Then
+                iMetadata(maxMetadataCount).isValueBinary = False
+                iMetadata(maxMetadataCount).isValueList = False
+            Else
+                'The current value is eithr binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
+                If (InStr(1, xmlLines(curLine + 1), "<rdf:Bag>") > 0) Then
+                    iMetadata(maxMetadataCount).isValueBinary = False
+                    iMetadata(maxMetadataCount).isValueList = True
+                    iMetadata(maxMetadataCount).Value = "(list of values too long to display)"
+                Else
+                    iMetadata(maxMetadataCount).isValueBinary = True
+                    iMetadata(maxMetadataCount).isValueList = False
+                    iMetadata(maxMetadataCount).Value = "(binary data)"
+                End If
+            End If
             
-            If iMetadata(maxMetadataCount).isBinary Then
-                'Binary data can be enormous.  ExifTool is kind enough to always start it on a new line for us - so move down a line,
-                ' then run a specialized check for the end of the binary chunk.
+            'Binary and list-type values can be ignored.  Only retrieve the data if it is neither of these types.
+            If iMetadata(maxMetadataCount).isValueBinary Or iMetadata(maxMetadataCount).isValueList Then
+            
+                'Binary and list data can be enormous.  ExifTool is kind enough to always start it on a new line for us -
+                ' so move down a line, then start searching for the end of the binary or list chunk.
                 Do
                     curLine = curLine + 1
-                Loop While StrComp(xmlLines(curLine), "</et:prt>") <> 0
+                Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
             Else
+                xmlLines(curLine) = Trim$(xmlLines(curLine))
                 iMetadata(maxMetadataCount).Value = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
             End If
             
             curLine = curLine + 1
             
             'For some tags, the human-friendly value will be the actual value of the tag.  For others, the tag will have some kind
-            ' of obscure value that ExifTool has kindly translated for us.  We still want to retrieve the technical value if
-            ' available - so do that now.
+            ' of obscure value that ExifTool has kindly translated for us.  We still want to retrieve the actual, technical value
+            ' if available - so check for it now.
             
-            'Unfortunately, like the base Value tag, the *actual* value tag can also come in a binary variant.  Check for that now.
-            ' If a fully closed tag is found, we know this is of the (far more common) non-binary variety
-            If InStr(1, xmlLines(curLine), "<et:val>") > 0 Then
+            'Note that actual value tags can also come in binary and list varieties, so they are analyzed with an algorithm identical
+            ' to the one directly above.  The only difference is an initial check, because a separate "actual value" tag may not exist.
+            
+            If InStr(1, xmlLines(curLine), "<et:val") > 0 Then
+            
+                'Simple data will exist on a single line; use that knowledge to separate such values out.
+                If (InStr(1, xmlLines(curLine), "<et:val>") > 0) And (InStr(1, xmlLines(curLine), "</et:val>") > 0) Then
+                    iMetadata(maxMetadataCount).isActualValueBinary = False
+                    iMetadata(maxMetadataCount).isActualValueList = False
+                Else
+                    'The current value is eithr binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
+                    If (InStr(1, xmlLines(curLine + 1), "<rdf:Bag>") > 0) Then
+                        iMetadata(maxMetadataCount).isActualValueBinary = False
+                        iMetadata(maxMetadataCount).isActualValueList = True
+                        iMetadata(maxMetadataCount).ActualValue = "(list of values too long to display)"
+                    Else
+                        iMetadata(maxMetadataCount).isActualValueBinary = True
+                        iMetadata(maxMetadataCount).isActualValueList = False
+                        iMetadata(maxMetadataCount).ActualValue = "(binary data)"
+                    End If
+                End If
                 
-                xmlLines(curLine) = Trim$(xmlLines(curLine))
-                iMetadata(maxMetadataCount).TechnicalValue = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
+                'Binary and list-type values can be ignored.  Only retrieve the data if it is neither of these types.
+                If iMetadata(maxMetadataCount).isActualValueBinary Or iMetadata(maxMetadataCount).isActualValueList Then
+                
+                    'Binary and list data can be enormous.  ExifTool is kind enough to always start it on a new line for us -
+                    ' so move down a line, then start searching for the end of the binary or list chunk.
+                    Do
+                        curLine = curLine + 1
+                    Loop While InStr(1, xmlLines(curLine), "</et:val>") = 0
+                Else
+                    xmlLines(curLine) = Trim$(xmlLines(curLine))
+                    iMetadata(maxMetadataCount).ActualValue = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
+                End If
+                
                 curLine = curLine + 1
                 
-            'If the tag exists but is not closed, we know it is in binary format
-            ElseIf InStr(1, xmlLines(curLine), "<et:val") > 0 Then
-            
-                 'Binary data can be enormous.  ExifTool is kind enough to always start it on a new line for us - so move down a line,
-                ' then run a specialized check for the end of the binary chunk.
-                Do
-                    curLine = curLine + 1
-                Loop While StrComp(xmlLines(curLine), "</et:val>") <> 0
-                
-                curLine = curLine + 1
-            
             End If
             
             'Now that we have fully parsed the tag, we need to run some additional checks on it.
@@ -259,7 +325,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             tmpString = iMetadata(maxMetadataCount).Value
             
             'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
-            If InStr(1, tmpString, "Binary data", vbTextCompare) > 0 Then ignoreThisTag = True
+            'If InStr(1, tmpString, "Binary data", vbTextCompare) > 0 Then ignoreThisTag = True
             
             'Increment the max metadata count, and redim our metadata array as necessary
             If Not ignoreThisTag Then
