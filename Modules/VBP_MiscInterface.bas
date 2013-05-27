@@ -38,6 +38,56 @@ Public Const VISIBILITY_TOGGLE As Long = 0
 Public Const VISIBILITY_FORCEDISPLAY As Long = 1
 Public Const VISIBILITY_FORCEHIDE As Long = 2
 
+'These values are used to remember the user's current font smoothing setting.  We try to be polite and restore
+' the original setting when the application terminates.
+Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoA" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
+
+Private Const SPI_GETFONTSMOOTHING As Long = &H4A
+Private Const SPI_SETFONTSMOOTHING As Long = &H4B
+Private Const SPI_GETFONTSMOOTHINGTYPE As Long = &H200A
+Private Const SPI_SETFONTSMOOTHINGTYPE As Long = &H200B
+Private Const SmoothingClearType As Long = &H2
+Private Const SmoothingStandardType As Long = &H1
+Private Const SmoothingNone As Long = &H0
+
+Private hadToChangeSmoothing As Boolean
+
+'Use to enable font smoothing if currently disabled.
+Public Sub handleClearType(ByVal startingProgram As Boolean)
+    
+    'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
+    If startingProgram Then
+    
+        'Get current font smoothing setting
+        Dim pv As Long
+        SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
+        
+        'If pv = 0 Then
+            hadToChangeSmoothing = True
+            SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
+            
+            'On Vista/7 use ClearType, on XP use standard AA
+            If g_IsVistaOrLater Then
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingClearType, 0
+            Else
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingStandardType, 0
+            End If
+            
+        'Else
+        '    hadToChangeSmoothing = False
+        'End If
+    
+    Else
+    
+        If hadToChangeSmoothing Then
+            SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
+            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingNone, 0
+        End If
+    
+    End If
+    
+End Sub
+
 'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
 ' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
 ' having to rewrite code in every individual form.
