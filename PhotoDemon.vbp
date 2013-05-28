@@ -164,7 +164,7 @@ Description="PhotoDemon"
 CompatibleMode="0"
 MajorVer=5
 MinorVer=5
-RevisionVer=263
+RevisionVer=266
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="©2000-2013 Tanner Helland -  www.tannerhelland.com"
@@ -203,5 +203,3 @@ ReplaceIcon=0
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
-
-

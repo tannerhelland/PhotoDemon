@@ -121,10 +121,8 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   0.1
-      Max             =   64
+      Min             =   -10
       SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -399,8 +397,16 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     midY = CDbl(finalY - initY) / 2
     midY = midY + initY
     
-    'Invert the incoming zoom value (so higher numbers mean zooming in)
-    newZoom = 1 / newZoom
+    'Invert the vertical pan parameters, as that seems to be more intuitive to non-programmers
+    vPan = -1 * vPan
+    
+    'Zoom is passed in as a value from -10 to 10.  0 implies no change.  We need to convert this
+    ' value to something that can actually be used to modify zoom.
+    If newZoom >= 0 Then
+        newZoom = 1 / (newZoom + 1)
+    Else
+        newZoom = -1 * (newZoom - 1)
+    End If
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
