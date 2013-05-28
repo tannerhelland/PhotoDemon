@@ -172,7 +172,6 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
                 If (Trim(eControl.ToolTipText) <> "") Then
                     Dim tmpTooltip As String
                     tmpTooltip = eControl.ToolTipText
-                    Message tmpTooltip
                     eControl.ToolTipText = ""
                     customTooltips.AddTool eControl, tmpTooltip
                 End If
