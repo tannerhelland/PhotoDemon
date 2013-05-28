@@ -62,7 +62,7 @@ Public Sub handleClearType(ByVal startingProgram As Boolean)
         Dim pv As Long
         SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
         
-        'If pv = 0 Then
+        If pv = 0 Then
             hadToChangeSmoothing = True
             SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
             
@@ -73,9 +73,9 @@ Public Sub handleClearType(ByVal startingProgram As Boolean)
                 SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingStandardType, 0
             End If
             
-        'Else
-        '    hadToChangeSmoothing = False
-        'End If
+        Else
+            hadToChangeSmoothing = False
+        End If
     
     Else
     

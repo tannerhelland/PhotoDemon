@@ -813,10 +813,10 @@ Private Sub requestMouseTracking(Optional ByVal stopTracking As Boolean = False)
 End Sub
 
 'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events.
-Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xPos As Long, ByVal yPos As Long)
+Private Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xPos As Long, ByVal yPos As Long)
   
   'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-  If (VScroll.Visible = True) And (Not ShiftDown) And (Not CtrlDown) Then
+  If VScroll.Visible And (Not ShiftDown) And (Not CtrlDown) Then
   
     If mRotation < 0 Then
         
@@ -842,7 +842,7 @@ Public Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xP
   End If
   
   'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
-  If (HScroll.Visible = True) And ShiftDown And (Not CtrlDown) Then
+  If HScroll.Visible And ShiftDown And (Not CtrlDown) Then
   
     If mRotation < 0 Then
         
@@ -911,7 +911,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 xPos = lParam And 65535
                 yPos = lParam / 65536
           
-                Me.MouseWheel MouseKeys, mRotation, xPos, yPos
+                MouseWheel MouseKeys, mRotation, xPos, yPos
           
             'FYI: I used brute-force testing to discover what messages my mouse uses for its back/forward keys.
             ' I have no idea if these values are consistent between hardware vendors
