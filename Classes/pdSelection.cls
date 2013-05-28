@@ -873,35 +873,7 @@ Private Sub createSelectionMask()
     
     End Select
     
-    'If the selection is locked and feathering has been requested, apply it now
-    If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then
-    
-        'Time to experiment with a new kind of selection feathering!  This time, we're going to take advantage of the fast drawing time
-        ' for antialiased shapes to see if we can improve performance over the original Gaussian blur implementation.
-        
-        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
-        If g_GDIPlusFXAvailable Then
-        
-            Message "Feathering selection..."
-            GDIPlusBlurLayer selMask, featheringRadius
-            Message "Finished."
-        
-        Else
-        
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer selMask
-        
-            Message "Feathering selection..."
-            CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
-            SetProgBarVal 0
-            Message "Finished."
-        
-        End If
-    
-    End If
-    
-    'Finally, we need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
+    'We now need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
     ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
     Select Case sShape
         
@@ -944,6 +916,34 @@ Private Sub createSelectionMask()
     If boundTop < 0 Then boundTop = 0
     If boundLeft + boundWidth > containingPDImage.Width - 1 Then boundWidth = (containingPDImage.Width - 1) - boundLeft
     If boundTop + boundHeight > containingPDImage.Height - 1 Then boundHeight = (containingPDImage.Height - 1) - boundTop
+    
+    'Finally, if the selection is locked and feathering has been requested, apply it now
+    If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then
+    
+        'Time to experiment with a new kind of selection feathering!  This time, we're going to take advantage of the fast drawing time
+        ' for antialiased shapes to see if we can improve performance over the original Gaussian blur implementation.
+        
+        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
+        If g_GDIPlusFXAvailable Then
+        
+            'Message "Feathering selection..."
+            GDIPlusBlurLayer selMask, featheringRadius, boundLeft, boundTop, boundWidth, boundHeight
+            'Message "Finished."
+        
+        Else
+        
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer selMask
+        
+            Message "Feathering selection..."
+            CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
+            SetProgBarVal 0
+            Message "Finished."
+        
+        End If
+    
+    End If
     
     'Mark the mask as ready for us
     isMaskReady = True

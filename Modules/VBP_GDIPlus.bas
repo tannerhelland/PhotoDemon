@@ -337,7 +337,7 @@ Public g_GDIPlusToken As Long
 Public g_GDIPlusFXAvailable As Boolean
 
 'Use GDI+ to blur a layer with variable radius
-Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As Long) As Boolean
+Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As Long, ByVal rLeft As Double, ByVal rTop As Double, ByVal rWidth As Double, ByVal rHeight As Double) As Boolean
 
     'Create a GDI+ graphics object that points to the destination layer's DC
     Dim iGraphics As Long, tBitmap As Long
@@ -379,10 +379,10 @@ Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As 
     
             'The DrawImageFX call requires a target rect.  Create one now (in GDI+ format, e.g. RECTF)
             Dim tmpRect As RECTF
-            tmpRect.Left = 0
-            tmpRect.Top = 0
-            tmpRect.Width = dstLayer.getLayerWidth
-            tmpRect.Height = dstLayer.getLayerHeight
+            tmpRect.Left = rLeft
+            tmpRect.Top = rTop
+            tmpRect.Width = rWidth
+            tmpRect.Height = rHeight
             
             'Create a temporary GDI+ transformation matrix as well
             Dim tmpMatrix As Long
@@ -414,10 +414,10 @@ Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As 
 End Function
 
 'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
-Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 255) As Boolean
+Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 255) As Boolean
 
-    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
-    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(255, 255, 255), 220, 1, True
+    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
+    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(255, 255, 255), 220, 1, True
     
 End Function
 
@@ -443,7 +443,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
 End Function
 
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -455,7 +455,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), drawRadius, UnitPixel, iPen
     
     'Render the circle
-    GdipDrawEllipse iGraphics, iPen, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2
+    GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
         
     'Release all created objects
     GdipDeletePen iPen
