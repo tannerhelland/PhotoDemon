@@ -121,7 +121,7 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   0.01
+      Min             =   0.1
       Max             =   64
       SigDigits       =   2
       Value           =   1
