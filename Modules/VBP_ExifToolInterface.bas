@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 'ExifTool Plugin Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 24/May/13
-'Last update: initial build
+'Last updated: 27/May/13
+'Last update: use custom separators for list-type values; this is much easier than parsing them manually
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin will be
@@ -88,6 +88,20 @@ Private Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHan
 Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
 
+'This type is what PhotoDemon uses internally for storing and displaying metadata
+Public Type mdItem
+    Group As String
+    SubGroup As String
+    Name As String
+    Description As String
+    Value As String
+    ActualValue As String
+    isValueBinary As Boolean
+    isValueList As Boolean
+    isActualValueBinary As Boolean
+    isActualValueList As Boolean
+End Type
+
 
 'Is ExifTool available as a plugin?
 Public Function isExifToolAvailable() As Boolean
@@ -145,6 +159,10 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
     
     'Request a custom separator for list-type values
     execString = execString & " -sep ;"
+    
+    'Suppress duplicate tags (NOTE: as much as I would like this to work, it appears to be incompatible
+    ' with XML output.  Damn.)
+    'execString = execString & " --duplicates"
     
     'If a translation is active, request descriptions in the current language
     If g_Language.translationActive Then execString = execString & " -lang " & g_Language.getCurrentLanguage()

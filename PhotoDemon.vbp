@@ -150,6 +150,7 @@ Class=cCustomClipboard; Classes\cCustomClipboard.cls
 Class=pdMetadata; Classes\pdMetadata.cls
 Module=Plugin_ExifTool_Interface; Modules\VBP_ExifToolInterface.bas
 ResFile32="Resources\PD_icons.RES"
+Form=Forms\VBP_FormMetadata.frm
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
@@ -162,7 +163,7 @@ Description="PhotoDemon"
 CompatibleMode="0"
 MajorVer=5
 MinorVer=5
-RevisionVer=239
+RevisionVer=244
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="©2000-2013 Tanner Helland -  www.tannerhelland.com"
@@ -189,3 +190,15 @@ DebugStartupOption=0
 
 [MS Transaction Server]
 AutoRefresh=1
+
+[vbAdvance]
+IsConsole=0
+HasStubFile=0
+GenerateMap=0
+TSAware=0
+XPManifest=0
+ResBuildName=.\PhotoDemon.dll
+ReplaceIcon=0
+SendCommandArgs=0
+SymbDbgPref=0
+RevisionVersion=0
