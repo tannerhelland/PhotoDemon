@@ -932,14 +932,47 @@ Private Sub createSelectionMask()
         
         Else
         
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer selMask
-        
-            Message "Feathering selection..."
-            CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
-            SetProgBarVal 0
-            Message "Finished."
+            'For exterior selections, the whole mask needs to be blurred.  No way around that.  But for interior and bordered selections,
+            ' we can blur only the active area of the selection - saving precious time in the process.
+            If (sType = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
+                Dim tmpLayer As pdLayer
+                Set tmpLayer = New pdLayer
+                tmpLayer.createFromExistingLayer selMask
+            
+                Message "Feathering selection..."
+                CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
+                SetProgBarVal 0
+                Message "Finished."
+            Else
+            
+                'Create a layer the size of the active selection, and copy the selection mask into that
+                Message "Feathering selection..."
+                Dim srcLayer As pdLayer
+                Set srcLayer = New pdLayer
+                srcLayer.createBlank boundWidth, boundHeight, 24
+                BitBlt srcLayer.getLayerDC, 0, 0, boundWidth, boundHeight, selMask.getLayerDC, boundLeft, boundTop, vbSrcCopy
+                
+                'Create a second layer (which will receive the blurred data)
+                Dim dstLayer As pdLayer
+                Set dstLayer = New pdLayer
+                dstLayer.createBlank boundWidth, boundHeight, 24
+                
+                'Blur the selection
+                CreateGaussianBlurLayer featheringRadius, srcLayer, dstLayer
+                
+                'Copy the blurred area back onto the selection mask
+                BitBlt selMask.getLayerDC, boundLeft, boundTop, boundWidth, boundHeight, dstLayer.getLayerDC, 0, 0, vbSrcCopy
+                
+                'Erase both temporary layers
+                srcLayer.eraseLayer
+                Set srcLayer = Nothing
+                dstLayer.eraseLayer
+                Set dstLayer = Nothing
+                
+                SetProgBarVal 0
+                Message "Finished."
+            
+            End If
         
         End If
     
