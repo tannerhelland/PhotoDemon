@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 25/May/13
-'Last update: converted storage model to use ExifTool output instead of FreeImage
+'Last updated: 27/May/13
+'Last update: fix additional parse errors for XMP entries with list data
 '
 'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -39,18 +39,6 @@ Option Explicit
 'The number of metadata items currently stored
 Private maxMetadataCount As Long
 
-Private Type mdItem
-    Group As String
-    Name As String
-    Description As String
-    Value As String
-    ActualValue As String
-    isValueBinary As Boolean
-    isValueList As Boolean
-    isActualValueBinary As Boolean
-    isActualValueList As Boolean
-End Type
-
 'Array that contains the metadata itself
 Private iMetadata() As mdItem
 
@@ -61,6 +49,19 @@ Private originalMetadataXML As String
 'If GPS data is found, mark its location
 Private hasGPSCoordinates As Boolean
 Private gpsIndex As Long
+
+'Given an index and a source metadata object, fill that object with the contents of the matching entry in the iMetadata() array
+Friend Function getMetadataEntry(ByVal objIndex As Long) As mdItem
+
+    'Make sure the passed index is valid
+    If objIndex < maxMetadataCount Then getMetadataEntry = iMetadata(objIndex)
+
+End Function
+
+'Return the total metadata count for this object.  Note that binary and list items ARE included in this count.
+Public Function getMetadataCount() As Long
+    getMetadataCount = maxMetadataCount
+End Function
 
 'If no metadata was found during the original FreeImage load process, this will return FALSE.  If any metadata of any
 ' compatible type was found, this will return TRUE.
@@ -300,19 +301,37 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             'Next, ExifTool provides VERY detailed group information.  I prefer to simplify its groups into something more manageable.
             
             'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
-            If StrComp(tmpString, "System") = 0 Then iMetadata(maxMetadataCount).Group = "General"
-            If StrComp(tmpString, "File") = 0 Then iMetadata(maxMetadataCount).Group = "General"
+            If StrComp(tmpString, "System") = 0 Then
+                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
+                iMetadata(maxMetadataCount).Group = "General"
+            End If
+            If StrComp(tmpString, "File") = 0 Then
+                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
+                iMetadata(maxMetadataCount).Group = "General"
+            End If
             
             'Next, ExifTool breaks down EXIF tags into their individual IDF blocks.  Simplify all those under a single "Exif" header.
-            If InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then iMetadata(maxMetadataCount).Group = "Exif"
+            If InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then
+                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
+                iMetadata(maxMetadataCount).Group = "Exif"
+            End If
             
             'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
             ' a single "ICC Profile".
-            If InStr(1, tmpString, "ICC", vbBinaryCompare) > 0 Then iMetadata(maxMetadataCount).Group = "ICC Profile"
+            If InStr(1, tmpString, "ICC", vbBinaryCompare) > 0 Then
+                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
+                iMetadata(maxMetadataCount).Group = "ICC Profile"
+            End If
+            
+            'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  Condense these into a single XMP group.
+            If InStr(1, tmpString, "XMP", vbBinaryCompare) > 0 Then
+                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
+                iMetadata(maxMetadataCount).Group = "XMP"
+            End If
             
             'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
             ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
-            If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = "Intelligent"
+            If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = "Composite*"
             
             'ANALYZE NAME
             tmpString = iMetadata(maxMetadataCount).Name
