@@ -2162,7 +2162,7 @@ Private Sub MDIForm_Load()
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so ignore this request if the user was already notified of an update.)
-    If (updateNeeded <> 2) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngnqAvailable)) Then
+    If (updateNeeded <> 2) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngnqAvailable) Or (Not isExifToolAvailable)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
@@ -2299,6 +2299,9 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     
     'Save all current tool options to file
     g_UserPreferences.saveToolSettings
+    
+    'Restore the user's font smoothing setting as necessary
+    handleClearType False
     
     ReleaseFormTheming Me
     
@@ -2929,6 +2932,7 @@ Private Sub MnuMetadata_Click(Index As Integer)
     
         'Browse metadata
         Case 0
+            FormMetadata.Show vbModal, Me
         
         'Separator
         Case 1
