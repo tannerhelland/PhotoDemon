@@ -32,7 +32,8 @@ Public Const tEdit As Byte = 11
 Public Const tRepeatLast As Byte = 12
 Public Const tSelection As Byte = 13
 Public Const tImgMode32bpp As Byte = 14
-Public Const tGPSMetadata As Byte = 15
+Public Const tMetadata As Byte = 15
+Public Const tGPSMetadata As Byte = 16
 
 'tInit enables or disables a specified button and/or menu item
 Public Sub tInit(tButton As Byte, tState As Boolean)
@@ -162,6 +163,10 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             FormMain.MnuTransparency(0).Enabled = Not tState
             FormMain.MnuTransparency(1).Enabled = tState
             
+        Case tMetadata
+        
+            If FormMain.MnuMetadata(0).Enabled <> tState Then FormMain.MnuMetadata(0).Enabled = tState
+        
         Case tGPSMetadata
         
             If FormMain.MnuMetadata(2).Enabled <> tState Then FormMain.MnuMetadata(2).Enabled = tState

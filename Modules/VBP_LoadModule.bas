@@ -782,7 +782,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         Set targetImage.imgMetadata = New pdMetadata
         targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
         
-        'If GPS metadata was found, enable the "map photo location" menu item
+        'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+        tInit tMetadata, targetImage.imgMetadata.hasMetadata
         tInit tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
         
         
