@@ -205,10 +205,12 @@ Option Explicit
     Public Const Autocrop As Long = 721
     '-Distort: Shear
     Public Const DistortShear As Long = 722
-    '-Distort: Perspective (fixed)
-    Public Const FixedPerspective As Long = 723
+    '-Distort: Squish (formerly Fixed Perspective)
+    Public Const DistortSquish As Long = 723
     '-Distort: Perspective (free)
     Public Const FreePerspective As Long = 724
+    '-Distort: Pan and zoom (Ken Burns effect)
+    Public Const DistortPanAndZoom As Long = 725
     
     'Other filters; numbers 800-899
     Public Const FilmNoir As Long = 801
@@ -805,17 +807,23 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormShear.ShearImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
             End If
-        Case FixedPerspective
+        Case DistortSquish
             If LoadForm Then
-                FormPerspective.Show vbModal, FormMain
+                FormSquish.Show vbModal, FormMain
             Else
-                FormPerspective.PerspectiveImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
+                FormSquish.SquishImage CDbl(pOPCODE), CDbl(pOPCODE2), CLng(pOPCODE3), CBool(pOPCODE4)
             End If
         Case FreePerspective
             If LoadForm Then
                 FormTruePerspective.Show vbModal, FormMain
             Else
-                FormTruePerspective.TruePerspectiveImage CStr(pOPCODE), CLng(pOPCODE2), CBool(pOPCODE3)
+                FormTruePerspective.PerspectiveImage CStr(pOPCODE), CLng(pOPCODE2), CBool(pOPCODE3)
+            End If
+        Case DistortPanAndZoom
+            If LoadForm Then
+                FormPanAndZoom.Show vbModal, FormMain
+            Else
+                FormPanAndZoom.PanAndZoomFilter CDbl(pOPCODE), CDbl(pOPCODE2), CDbl(pOPCODE3), CLng(pOPCODE4), CBool(pOPCODE5)
             End If
             
             
@@ -1301,7 +1309,7 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Autocrop image"
         Case DistortShear
             GetNameOfProcess = "Shear"
-        Case FixedPerspective
+        Case DistortSquish
             GetNameOfProcess = "Perspective (fixed)"
         Case FreePerspective
             GetNameOfProcess = "Perspective (free)"

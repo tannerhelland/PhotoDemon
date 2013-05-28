@@ -241,7 +241,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
     
-    'If this is a preview, we need to adjust the xDiffuse and yDiffuse values to match the size of the preview box
+    'If this is a preview, we need to adjust the mosaic values to match the size of the preview box
     If toPreview Then
         BlockSizeX = (BlockSizeX / iWidth) * curLayerValues.Width
         BlockSizeY = (BlockSizeY / iHeight) * curLayerValues.Height
