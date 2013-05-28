@@ -3,7 +3,7 @@ Begin VB.Form FormTruePerspective
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Free Perspective"
+   Caption         =   " Perspective Correction"
    ClientHeight    =   9615
    ClientLeft      =   -15
    ClientTop       =   225
@@ -320,7 +320,7 @@ End Sub
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: xRatio, a value from -100 to 100 that specifies the horizontal perspective
 '        yRatio, same as xRatio but for vertical perspective
-Public Sub TruePerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Applying new perspective..."
     
@@ -616,7 +616,7 @@ Private Sub updatePreview()
     paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
     paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
     
-    TruePerspectiveImage paramString, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    PerspectiveImage paramString, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
     
 End Sub
 

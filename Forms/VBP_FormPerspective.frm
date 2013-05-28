@@ -1,9 +1,9 @@
 VERSION 5.00
-Begin VB.Form FormPerspective 
+Begin VB.Form FormSquish 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Fixed Perspective"
+   Caption         =   " Squish"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
@@ -159,7 +159,7 @@ Begin VB.Form FormPerspective
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "vertical perspective:"
+      Caption         =   "vertical strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -175,7 +175,7 @@ Begin VB.Form FormPerspective
       Left            =   6000
       TabIndex        =   10
       Top             =   2160
-      Width           =   2100
+      Width           =   1785
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -233,7 +233,7 @@ Begin VB.Form FormPerspective
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "horizontal perspective:"
+      Caption         =   "horizontal strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -249,20 +249,20 @@ Begin VB.Form FormPerspective
       Left            =   6000
       TabIndex        =   2
       Top             =   1200
-      Width           =   2400
+      Width           =   2085
    End
 End
-Attribute VB_Name = "FormPerspective"
+Attribute VB_Name = "FormSquish"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Image Perspective Distortion
+'Squish Distortion (formerly Fixed Perspective)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 04/April/13
-'Last updated: 27/April/13
-'Last update: update interface to use new slider/text custom control
+'Last updated: 28/May/13
+'Last update: changed tool to "Squish", as Fixed Perspective caused undo confusion with Free Perspective
 '
 'This tool allows the user to apply forced perspective to an image.  The code is similar (in theory) to the
 ' shearing algorithm used in FormShear.  Reverse-mapping is used to allow for high-quality antialiasing.
@@ -292,7 +292,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltRatioX.IsValid And sltRatioY.IsValid Then
         Me.Visible = False
-        Process FixedPerspective, sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process DistortSquish, sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
         Unload Me
     End If
     
@@ -301,9 +301,9 @@ End Sub
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: xRatio, a value from -100 to 100 that specifies the horizontal perspective
 '        yRatio, same as xRatio but for vertical perspective
-Public Sub PerspectiveImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Applying new perspective..."
+    If toPreview = False Then Message "Squeezing image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -460,5 +460,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    PerspectiveImage sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    SquishImage sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
