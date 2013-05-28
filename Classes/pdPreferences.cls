@@ -555,10 +555,10 @@ End Function
 Public Sub SetPreference_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
 
     'If the boolean value is FALSE, set "0" to the INI file.  Otherwise, set "1".
-    If boolVal = False Then
-        WriteINIString preferenceSection, preferenceName, "0"
-    Else
+    If boolVal Then
         WriteINIString preferenceSection, preferenceName, "1"
+    Else
+        WriteINIString preferenceSection, preferenceName, "0"
     End If
 
 End Sub
