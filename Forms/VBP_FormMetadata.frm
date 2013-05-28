@@ -4,10 +4,10 @@ Begin VB.Form FormMetadata
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Browse Image Metadata"
-   ClientHeight    =   7470
+   ClientHeight    =   7140
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   11850
+   ClientWidth     =   12015
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,17 +20,37 @@ Begin VB.Form FormMetadata
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   498
+   ScaleHeight     =   476
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   790
+   ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkFriendlyNames 
+      Height          =   540
+      Left            =   3240
+      TabIndex        =   6
+      Top             =   5760
+      Width           =   2355
+      _ExtentX        =   4154
+      _ExtentY        =   953
+      Caption         =   "use readable names"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.VScrollBar vsMetadata 
       Height          =   5340
       LargeChange     =   32
       Left            =   11430
-      TabIndex        =   6
-      Top             =   720
+      TabIndex        =   5
+      Top             =   240
       Width           =   330
    End
    Begin VB.PictureBox picBuffer 
@@ -44,8 +64,8 @@ Begin VB.Form FormMetadata
       ScaleHeight     =   353
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   537
-      TabIndex        =   5
-      Top             =   720
+      TabIndex        =   4
+      Top             =   240
       Visible         =   0   'False
       Width           =   8055
    End
@@ -63,8 +83,8 @@ Begin VB.Form FormMetadata
       Height          =   5340
       IntegralHeight  =   0   'False
       Left            =   240
-      TabIndex        =   4
-      Top             =   720
+      TabIndex        =   3
+      Top             =   240
       Width           =   2895
    End
    Begin VB.CommandButton CmdCancel 
@@ -73,7 +93,7 @@ Begin VB.Form FormMetadata
       Height          =   495
       Left            =   10380
       TabIndex        =   1
-      Top             =   6870
+      Top             =   6510
       Width           =   1365
    End
    Begin VB.CommandButton CmdOK 
@@ -82,36 +102,35 @@ Begin VB.Form FormMetadata
       Height          =   495
       Left            =   8910
       TabIndex        =   0
-      Top             =   6870
+      Top             =   6510
       Width           =   1365
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      Caption         =   "categories:"
-      BeginProperty Font 
+   Begin PhotoDemon.smartCheckBox chkFriendlyValues 
+      Height          =   540
+      Left            =   7320
+      TabIndex        =   7
+      Top             =   5760
+      Width           =   2310
+      _ExtentX        =   4075
+      _ExtentY        =   953
+      Caption         =   "use readable values"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   240
-      TabIndex        =   3
-      Top             =   240
-      Width           =   1155
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
       TabIndex        =   2
-      Top             =   6720
-      Width           =   12135
+      Top             =   6360
+      Width           =   12255
    End
 End
 Attribute VB_Name = "FormMetadata"
@@ -166,6 +185,14 @@ Dim m_Subclass As cSelfSubHookCallback
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+Private Sub chkFriendlyNames_Click()
+    redrawMetadataList
+End Sub
+
+Private Sub chkFriendlyValues_Click()
+    redrawMetadataList
+End Sub
+
 'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
@@ -176,8 +203,13 @@ Private Sub CmdOK_Click()
 End Sub
 
 Private Sub Form_Activate()
+    
     'Assign the system hand cursor to all relevant objects
     makeFormPretty Me, m_ToolTip
+    
+    'Realign the bottom check boxes
+    chkFriendlyValues.Left = chkFriendlyNames.Left + chkFriendlyNames.Width + 24
+    
 End Sub
 
 'LOAD dialog
@@ -332,7 +364,7 @@ Private Sub redrawMetadataList()
         
     Dim scrollOffset As Long
     scrollOffset = vsMetadata.Value
-    
+        
     Dim i As Long
     For i = 0 To mdCategories(curCategory).Count - 1
         renderMDBlock curCategory, i, 8, i * BLOCKHEIGHT - scrollOffset - 2
@@ -362,13 +394,32 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         linePadding = 4
     
         Dim mWidth As Single, mHeight As Single
+        
+        Dim drawString As String
+        
+        If CBool(chkFriendlyNames.Value) Then
+            drawString = thisTag.Description
+        Else
+            drawString = thisTag.Name
+        End If
     
         'Start with the simplest field: the tag title (readable form)
-        drawTextOnObject picBuffer, thisTag.Description, offsetX + 0, offsetY + 0, 12, primaryColor, True, False
-    
+        drawTextOnObject picBuffer, CStr(blockIndex + 1) & " - " & drawString, offsetX + 0, offsetY + 0, 12, primaryColor, True, False
+                
         'Below the tag title, add the human-friendly description
-        mHeight = picBuffer.TextHeight(thisTag.Description) + linePadding
-        drawTextOnObject picBuffer, thisTag.Value, offsetX + 4, offsetY + mHeight, 11, secondaryColor, False
+        mHeight = picBuffer.TextHeight(drawString) + linePadding
+        
+        If CBool(chkFriendlyValues.Value) Then
+            drawString = thisTag.Value
+        Else
+            If Len(thisTag.ActualValue) > 0 Then
+                drawString = thisTag.ActualValue
+            Else
+                drawString = thisTag.Value
+            End If
+        End If
+        
+        drawTextOnObject picBuffer, drawString, offsetX + 4, offsetY + mHeight, 11, secondaryColor, False
         
         'Draw a divider line near the bottom of the metadata block
         Dim lineY As Long
