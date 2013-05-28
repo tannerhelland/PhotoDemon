@@ -254,7 +254,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     'Before processing, ensure the threshold value is valid
     If sltThreshold.IsValid Then
@@ -286,6 +286,7 @@ Private Sub Form_Activate()
     cboDither.ListIndex = 6
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     setHandCursor picBWColor(0)
     setHandCursor picBWColor(1)

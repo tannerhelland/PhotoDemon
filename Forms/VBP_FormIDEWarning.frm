@@ -207,6 +207,7 @@ Public Sub ShowDialog()
     userAnswer = vbOK
 
     'Apply any custom styles to the form
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
 
     'Display the form
@@ -215,7 +216,7 @@ Public Sub ShowDialog()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     If CBool(chkRepeat.Value) Then g_UserPreferences.SetPreference_Boolean "General Preferences", "DisplayIDEWarning", False
     Me.Hide

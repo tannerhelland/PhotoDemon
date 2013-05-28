@@ -748,7 +748,7 @@ Private Sub cmdExportHistogram_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
@@ -758,6 +758,7 @@ Private Sub Form_Activate()
     histogramGenerated = False
 
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'For now, initialize all histogram types
@@ -993,7 +994,7 @@ End Sub
 
 'We'll use this routine only to draw the gradient below the histogram window
 '(like Photoshop does).  This code is old, but it works ;)
-Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As Long, ByVal Color2 As Long)
+Private Sub DrawHistogramGradient(ByRef dstObject As PictureBox, ByVal Color1 As Long, ByVal Color2 As Long)
     'RGB() variables for each color
     Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
@@ -1011,8 +1012,8 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
     
     'Size of the picture box we'll be drawing to
     Dim iWidth As Long, iHeight As Long
-    iWidth = DstObject.ScaleWidth
-    iHeight = DstObject.ScaleHeight
+    iWidth = dstObject.ScaleWidth
+    iHeight = dstObject.ScaleHeight
     
     'Here, create a calculation variable for determining the step between
     'each level of the gradient
@@ -1030,7 +1031,7 @@ Private Sub DrawHistogramGradient(ByRef DstObject As PictureBox, ByVal Color1 As
         r2 = r + VR * x
         g2 = g + VG * x
         b2 = b + VB * x
-        DstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
+        dstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
     Next x
 End Sub
 

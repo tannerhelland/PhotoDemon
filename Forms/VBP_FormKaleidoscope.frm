@@ -337,7 +337,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltMirrors.IsValid And sltAngle.IsValid And sltAngle2.IsValid And sltRadius.IsValid Then
@@ -482,6 +482,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Mark scroll bar changes as coming from the user

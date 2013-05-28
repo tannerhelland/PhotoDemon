@@ -225,7 +225,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
         
     'Determine the compression ratio for the JPEG2000 wavelet transformation
     If sltQuality.IsValid Then
@@ -296,6 +296,7 @@ Public Sub ShowDialog()
     Message "Waiting for user to specify JPEG-2000 export options... "
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog

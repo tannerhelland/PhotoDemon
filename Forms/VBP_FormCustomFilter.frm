@@ -706,7 +706,7 @@ Private cImgCtl As clsControlImage
 Dim m_ToolTip As clsToolTip
 
 'When the user clicks OK...
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Before we do anything else, check to make sure every text box has a
     'valid number in it (no range checking is necessary)
@@ -782,6 +782,7 @@ Private Sub Form_Activate()
     If g_HasCreatedFilter = True Then OpenCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Render a preview

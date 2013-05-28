@@ -224,7 +224,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     'Validate text box entries
     If Not sltWidth.IsValid Then Exit Sub
@@ -560,6 +560,7 @@ Private Sub Form_Activate()
     updatePreview
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'If the program is not compiled, display a special warning for this tool

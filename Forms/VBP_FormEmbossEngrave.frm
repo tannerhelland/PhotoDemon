@@ -183,7 +183,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Used to remember the last color used for embossing
     g_EmbossEngraveColor = PicColor.backColor
@@ -205,6 +205,7 @@ Private Sub Form_Activate()
     PicColor.backColor = g_EmbossEngraveColor
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     setHandCursor PicColor
     

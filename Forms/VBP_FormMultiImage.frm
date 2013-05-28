@@ -201,6 +201,7 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     End If
 
     'Apply any custom styles to the form
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
 
     'Display the form

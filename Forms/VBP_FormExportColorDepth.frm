@@ -232,7 +232,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
         
     'Restore a busy cursor if necessary
     If restoreCursor Then Screen.MousePointer = vbHourglass
@@ -291,6 +291,7 @@ Public Sub ShowDialog()
     Message "Waiting for user to specify color depth... "
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog

@@ -294,7 +294,7 @@ Public Sub ApplyLanguage()
 
     'Redraw all text on the main form using the new language
     If FormMain.Visible Then
-        makeFormPretty FormMain
+        FormMain.requestMakeFormPretty
         DrawMenuShortcuts
         ApplyAllMenuIcons
         
@@ -311,10 +311,7 @@ Public Sub ApplyLanguage()
         End If
         
     End If
-    
-    'FixToolboxText will resize the text on the left-hand toolbar as necessary so that it fits the current language
-    'FixToolboxText
-    
+        
 End Sub
 
 'Check the current default user language, and return it as a standard language code, e.g. "en" or "en-GB" or "de-CH"

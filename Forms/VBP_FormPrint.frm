@@ -668,6 +668,7 @@ Private Sub Form_Load()
     cmbDPI = baseDPI
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
 
     If g_UseFancyFonts Then
@@ -678,7 +679,7 @@ Private Sub Form_Load()
 End Sub
 
 'OK Button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     On Error Resume Next
     
@@ -752,7 +753,7 @@ Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal i
     Dim PrnRatio As Double
     Dim PrnPicWidth As Double, PrnPicHeight As Double
 
-    Dim OffsetX As Double, OffsetY As Double
+    Dim offsetX As Double, offsetY As Double
 
     On Error Resume Next
 
@@ -792,12 +793,12 @@ Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal i
 
     'If the user has told us to center the image, calculate offsets
     If (iCenter) Then
-        OffsetX = (Prn.ScaleWidth - PrnPicWidth) \ 2
-        OffsetY = (Prn.ScaleHeight - PrnPicHeight) \ 2
+        offsetX = (Prn.ScaleWidth - PrnPicWidth) \ 2
+        offsetY = (Prn.ScaleHeight - PrnPicHeight) \ 2
     End If
 
     'Print the picture using VB's PaintPicture method
-    Prn.PaintPicture pic, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight
+    Prn.PaintPicture pic, offsetX, offsetY, PrnPicWidth, PrnPicHeight
     e = e Or Err
 
     PrintPictureToFitPage = (e = 0)
@@ -843,8 +844,8 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     Dim PrnPicWidth   As Double
     Dim PrnPicHeight  As Double
     
-    Dim OffsetX       As Double
-    Dim OffsetY       As Double
+    Dim offsetX       As Double
+    Dim offsetY       As Double
 
     On Error Resume Next
 
@@ -877,24 +878,24 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     End If
     
     If chkCenter.Value = vbChecked Then
-        OffsetX = (Printer.ScaleWidth - PrnPicWidth) \ 2
-        OffsetY = (Printer.ScaleHeight - PrnPicHeight) \ 2
+        offsetX = (Printer.ScaleWidth - PrnPicWidth) \ 2
+        offsetY = (Printer.ScaleHeight - PrnPicHeight) \ 2
     End If
     
     'Now, convert the printer-specific measurements to their corresponding measurements in the preview window
     If cbOrientation.ListIndex = 0 Then
-        OffsetX = (OffsetX / Printer.ScaleWidth) * iSrc.ScaleWidth
-        OffsetY = (OffsetY / Printer.ScaleHeight) * iSrc.ScaleHeight
+        offsetX = (offsetX / Printer.ScaleWidth) * iSrc.ScaleWidth
+        offsetY = (offsetY / Printer.ScaleHeight) * iSrc.ScaleHeight
         PrnPicWidth = (PrnPicWidth / Printer.ScaleWidth) * iSrc.ScaleWidth
         PrnPicHeight = (PrnPicHeight / Printer.ScaleHeight) * iSrc.ScaleHeight
     Else
         Dim tmpOX As Double, tmpOY As Double, tmpWidth As Double, tmpHeight As Double
-        tmpOX = (OffsetY / Printer.ScaleHeight) * iSrc.ScaleWidth
-        tmpOY = (OffsetX / Printer.ScaleWidth) * iSrc.ScaleHeight
+        tmpOX = (offsetY / Printer.ScaleHeight) * iSrc.ScaleWidth
+        tmpOY = (offsetX / Printer.ScaleWidth) * iSrc.ScaleHeight
         tmpWidth = (PrnPicHeight / Printer.ScaleHeight) * iSrc.ScaleWidth
         tmpHeight = (PrnPicWidth / Printer.ScaleWidth) * iSrc.ScaleHeight
-        OffsetX = tmpOX
-        OffsetY = tmpOY
+        offsetX = tmpOX
+        offsetY = tmpOY
         PrnPicWidth = tmpWidth
         PrnPicHeight = tmpHeight
     End If
@@ -904,12 +905,12 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         DrawPreviewImage picThumb, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewWidth, pdImages(CurrentImage).mainLayer.PreviewHeight, vbSrcCopy
+        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewWidth, pdImages(CurrentImage).mainLayer.PreviewHeight, vbSrcCopy
     Else
         DrawPreviewImage picThumb90, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, OffsetX, OffsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewHeight, pdImages(CurrentImage).mainLayer.PreviewWidth, vbSrcCopy
+        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewHeight, pdImages(CurrentImage).mainLayer.PreviewWidth, vbSrcCopy
     End If
     
     iSrc.Picture = iSrc.Image

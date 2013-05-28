@@ -288,7 +288,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltRadius.IsValid Then
@@ -547,6 +547,7 @@ Private Sub Form_Activate()
     cboConvert.ListIndex = 0
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
         
     'Create the preview

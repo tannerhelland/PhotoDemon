@@ -274,7 +274,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Validate all textbox entries
     If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
@@ -419,6 +419,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window

@@ -2266,7 +2266,7 @@ Private Sub chkFancyFonts_Click()
     If Me.Visible Then
         g_UseFancyFonts = CBool(chkFancyFonts)
         makeFormPretty Me
-        makeFormPretty FormMain
+        FormMain.requestMakeFormPretty
     End If
 
 End Sub
@@ -2362,7 +2362,7 @@ Private Sub CmdCancel_Click()
     'Restore any settings that may have been changed in real-time
     If g_UseFancyFonts <> originalg_useFancyFonts Then
         g_UseFancyFonts = originalg_useFancyFonts
-        makeFormPretty FormMain
+        FormMain.requestMakeFormPretty
     End If
     
     g_AlphaCheckMode = originalg_AlphaCheckMode
@@ -2390,7 +2390,7 @@ Private Sub cmdCategory_Click(Index As Integer)
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'First, remember the panel(s) that the user was looking at
     Dim i As Long

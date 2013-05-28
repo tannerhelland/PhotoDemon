@@ -228,7 +228,7 @@ Dim curCredit As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
@@ -277,6 +277,7 @@ Private Sub Form_Load()
     lblThanks(0).MousePointer = vbDefault
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
 End Sub

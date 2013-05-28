@@ -255,10 +255,7 @@ Public Sub LoadTheProgram()
     
     'Before displaying the main window, see if the user wants to restore last-used window location.
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
-    
-    'Finish applying visual styles
-    makeFormPretty FormMain
-    
+        
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
     If g_UseFancyFonts Then
         FormMain.cmdZoomIn.Height = FormMain.cmdZoomIn.Height + 1
@@ -267,6 +264,9 @@ Public Sub LoadTheProgram()
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
+    
+    'Apply visual styles
+    FormMain.requestMakeFormPretty
     
     
     '*************************************************************************************************************************************

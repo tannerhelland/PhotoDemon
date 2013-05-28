@@ -153,7 +153,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     If sltNoise.IsValid Then
         FormNoise.Visible = False
         Process Noise, sltNoise.Value, CBool(chkM.Value)
@@ -264,6 +264,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Render a preview

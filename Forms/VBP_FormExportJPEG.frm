@@ -323,7 +323,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
         
     'Determine the compression quality for the quantization tables
     If sltQuality.IsValid Then
@@ -517,6 +517,7 @@ Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
     toggleAdvancedSettings
                 
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog

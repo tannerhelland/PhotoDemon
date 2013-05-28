@@ -706,6 +706,7 @@ Private Sub Form_Load()
     Message "Ready to download required plugins. Awaiting user permission..."
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
 
 End Sub

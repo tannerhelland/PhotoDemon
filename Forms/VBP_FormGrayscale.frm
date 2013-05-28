@@ -383,7 +383,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     Dim invalidTextPrompt As Boolean
     If ((cboMethod.ListIndex = 5) Or (cboMethod.ListIndex = 6)) Then invalidTextPrompt = True Else invalidTextPrompt = False
@@ -444,6 +444,7 @@ Private Sub Form_Activate()
     'lblExplanation = "This tool removes color data from an image.  The new image contains only shades of gray." & vbCrLf & vbCrLf & "Sometimes this tool is called a ""black and white"" tool, but that name is misleading because the processed image contains many more shades than just ""black"" and ""white"".  A separate ""Black and White"" tool (found in the ""Color"" menu) exists if you want an image with just black and just white." & vbCrLf & vbCrLf & "While there are many ways to remove color from an image, most users stick with the ""Highest Quality (ITU Standard)"" method, which produces the best grayscale image.  Other options are provided for artistic effect." & vbCrLf & vbCrLf & "To learn more about the various grayscale conversion options, please visit this link:"
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     setArrowCursorToObject picChannel
     setArrowCursorToObject picDecompose

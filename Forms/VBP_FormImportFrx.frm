@@ -256,7 +256,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     Me.Visible = False
     Message "Importing binary image data..."
     PicLoadImage.Picture = m_cff(LstInfo.ListIndex + 1).Picture
@@ -354,6 +354,7 @@ TryBinaryImportAgain:
         End If
         
         'Assign the system hand cursor to all relevant objects
+        Set m_ToolTip = New clsToolTip
         makeFormPretty Me, m_ToolTip
         
     'If the commondialog box is canceled...

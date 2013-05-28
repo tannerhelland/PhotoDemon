@@ -355,7 +355,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     Me.Visible = False
     Process ImageLevels, sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value
@@ -366,6 +366,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Draw a preview image

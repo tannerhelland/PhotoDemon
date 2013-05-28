@@ -444,6 +444,7 @@ Private Sub Form_Load()
     End If
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
 End Sub

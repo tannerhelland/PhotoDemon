@@ -287,7 +287,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     Me.Visible = False
     
@@ -578,6 +578,7 @@ Private Sub Form_Activate()
     popDistortEdgeBox cmbEdges, EDGE_ERASE
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
         
     'Create the preview

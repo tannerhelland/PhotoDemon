@@ -306,7 +306,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK Button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Check to make sure the user followed directions
     Dim fullURL As String
@@ -343,6 +343,7 @@ Private Sub Form_Load()
     Message "Waiting for user input..."
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
 
 End Sub

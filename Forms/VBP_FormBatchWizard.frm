@@ -2142,7 +2142,7 @@ Private Sub cmdLoadList_Click()
             fixHorizontalListBoxScrolling lstFiles, 16
             lstFiles.Refresh
             Screen.MousePointer = vbDefault
-            makeFormPretty Me, m_ToolTip
+            'makeFormPretty Me, m_ToolTip
         Close #fileNum
         
         'Note that the current list has been saved (technically it hasn't, I realize, but it exists in a file in this exact state
@@ -2761,6 +2761,7 @@ Private Sub Form_Load()
     Next i
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'For some reason, the container picture boxes automatically acquire the cursor of children objects.

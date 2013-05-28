@@ -181,7 +181,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     Me.Visible = False
     
@@ -226,6 +226,7 @@ Private Sub Form_Activate()
     LstEdgeOptions.ListIndex = 5
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)

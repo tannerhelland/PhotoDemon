@@ -210,7 +210,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     If sltHue.IsValid And sltSaturation.IsValid And sltLuminance.IsValid Then
         Me.Visible = False
@@ -314,6 +314,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window

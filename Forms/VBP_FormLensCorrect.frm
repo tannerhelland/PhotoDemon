@@ -333,7 +333,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltStrength.IsValid And sltStrength.IsValid And sltRadius.IsValid Then
@@ -483,6 +483,7 @@ Private Sub Form_Activate()
     updatePreview
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
             
 End Sub

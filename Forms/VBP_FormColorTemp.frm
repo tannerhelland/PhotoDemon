@@ -252,7 +252,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'The scroll bar max and min values are used to check the temperature input for validity
     If sltTemperature.IsValid And sltStrength.IsValid Then
@@ -380,6 +380,7 @@ Private Sub Form_Activate()
     picTempDemo.Picture = picTempDemo.Image
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window

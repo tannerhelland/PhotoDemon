@@ -229,7 +229,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
         
     'Make sure the input value is valid before continuing
     If sltThreshold.IsValid Then
@@ -272,6 +272,7 @@ Public Sub ShowDialog()
     Message "Waiting for user to specify alpha threshold... "
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog

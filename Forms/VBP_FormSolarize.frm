@@ -132,7 +132,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     If sltThreshold.IsValid Then
         Me.Visible = False
         Process Solarize, sltThreshold.Value
@@ -207,6 +207,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Render a preview

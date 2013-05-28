@@ -168,7 +168,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         ' for things like automatic multiline support, unsupported characters, theming, and displaying tooltips
         ' on the correct monitor of a multimonitor setup.)
         For Each eControl In tForm.Controls
-            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
+            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
                 If (Trim(eControl.ToolTipText) <> "") Then
                     Dim tmpTooltip As String
                     tmpTooltip = eControl.ToolTipText

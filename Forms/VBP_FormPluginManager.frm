@@ -1951,7 +1951,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     Message "Saving plugin options..."
     
@@ -2096,6 +2096,7 @@ Private Sub Form_Load()
     Next i
             
     'Apply visual styles
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'If a translation is active, realign text as necessary

@@ -127,7 +127,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     If sltPercent.IsValid Then
         Me.Visible = False
@@ -307,6 +307,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Render a preview

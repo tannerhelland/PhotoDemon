@@ -159,7 +159,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     Me.Visible = False
     Process CustomDespeckle, CLng(10 - hsDespeckle.Value)
     Unload Me
@@ -434,6 +434,7 @@ End Sub
 Private Sub Form_Load()
     
     'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
 End Sub
