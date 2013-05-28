@@ -302,12 +302,12 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             
             'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
             If StrComp(tmpString, "System") = 0 Then
-                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
-                iMetadata(maxMetadataCount).Group = "General"
+                iMetadata(maxMetadataCount).SubGroup = g_Language.TranslateMessage("System")
+                iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("General")
             End If
             If StrComp(tmpString, "File") = 0 Then
-                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
-                iMetadata(maxMetadataCount).Group = "General"
+                iMetadata(maxMetadataCount).SubGroup = g_Language.TranslateMessage("File")
+                iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("General")
             End If
             
             'Next, ExifTool breaks down EXIF tags into their individual IDF blocks.  Simplify all those under a single "Exif" header.
@@ -320,7 +320,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             ' a single "ICC Profile".
             If InStr(1, tmpString, "ICC", vbBinaryCompare) > 0 Then
                 iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
-                iMetadata(maxMetadataCount).Group = "ICC Profile"
+                iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("ICC Profile")
             End If
             
             'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  Condense these into a single XMP group.
@@ -331,7 +331,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             
             'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
             ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
-            If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = "Composite*"
+            If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("Composite") & "*"
             
             'ANALYZE NAME
             tmpString = iMetadata(maxMetadataCount).Name
