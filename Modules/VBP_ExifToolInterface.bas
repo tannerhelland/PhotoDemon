@@ -90,6 +90,7 @@ Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer 
 
 'This type is what PhotoDemon uses internally for storing and displaying metadata
 Public Type mdItem
+    FullGroupAndName As String
     Group As String
     SubGroup As String
     Name As String
@@ -100,6 +101,7 @@ Public Type mdItem
     isValueList As Boolean
     isActualValueBinary As Boolean
     isActualValueList As Boolean
+    markedForRemoval As Boolean
 End Type
 
 
@@ -201,7 +203,7 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
 End Function
 
 'Given a path to a valid metadata file, and a second path to a valid image file, copy the metadata file into the image file.
-Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage) As String
+Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal removeGPS As Boolean = False) As String
     
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
@@ -227,6 +229,9 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     execString = execString & " --IFD2:ImageWidth --IFD2:ImageHeight"
     execString = execString & " -ImageWidth=" & srcPDImage.Width & " -ExifIFD:ExifImageWidth=" & srcPDImage.Width
     execString = execString & " -ImageHeight=" & srcPDImage.Height & " -ExifIFD:ExifImageHeight=" & srcPDImage.Height
+    
+    'If we were asked to remove GPS data, do so now
+    If removeGPS Then execString = execString & " -gps:all="
     
     'NOTE: while in the IDE, it can be useful to see ExifTool's output, so the console window will be displayed.
     

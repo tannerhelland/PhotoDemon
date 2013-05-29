@@ -92,28 +92,37 @@ Public Function fillLatitudeLongitude(ByRef latString As String, ByRef lonString
     
 End Function
 
-'DO NOTE USE THIS FUNCTION IN PRODUCTION!  I include it here simply for ensuring the metadata was loaded correctly.
-Public Sub testMetadata()
-
-    Dim msgString As String
-
-    If maxMetadataCount = 0 Then Exit Sub
-
-    'For each metadata object, display a message box with the relevant metadata value
+'This function will return a new XML file string with all "marked for removal" entries removed
+Private Function retrieveModifiedXMLString() As String
+    
+    Dim newXMLString As String
+    newXMLString = originalMetadataXML
+    
+    Dim tagStart As Long, tagEnd As Long
+    
+    'Note that external functions are responsible for marking which entries they want removed.  This function presumes that all
+    ' modifications have already been marked, so all we need to do is fulfill the actual removal step.
     Dim i As Long
     For i = 0 To maxMetadataCount - 1
     
-        msgString = "Tag " & (i + 1) & " of " & maxMetadataCount & vbCrLf & vbCrLf
-        msgString = msgString & "Group: " & iMetadata(i).Group & vbCrLf
-        msgString = msgString & "Name: " & iMetadata(i).Name & vbCrLf
-        msgString = msgString & "Description: " & iMetadata(i).Description & vbCrLf
-        msgString = msgString & "Value: " & iMetadata(i).Value & vbCrLf
-        msgString = msgString & "Technical value: " & iMetadata(i).ActualValue & vbCrLf
-        MsgBox msgString
+        If iMetadata(i).markedForRemoval Then
         
+            'Find this tag's start position
+            tagStart = InStr(1, newXMLString, "<" & iMetadata(i).FullGroupAndName)
+            
+            'Next, find this tag's end position
+            tagEnd = InStr(tagStart, newXMLString, "</" & iMetadata(i).FullGroupAndName) + Len(iMetadata(i).FullGroupAndName) + 3
+            
+            'Use those positions to fully remove the tag from the master XML string
+            newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
+        
+        End If
+    
     Next i
-
-End Sub
+        
+    retrieveModifiedXMLString = newXMLString
+    
+End Function
 
 'Given an image path, attempt to load all metadata from that file.
 ' (The image's format is also passed to this function, which may be helpful in the future for enabling certain options on a per-format basis.)
@@ -173,6 +182,10 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
         
             'Divide the tag into two segments: the prefix (which contains Group and Name) and the rdf parse-type, which we don't care about.
             tmpSplitOuter = Split(xmlLines(curLine), "rdf:parseType='Resource")
+            
+            'Store the full group and name text, because we will use that to relocate this tag (if necessary) at write-time
+            tmpString = Trim$(tmpSplitOuter(0))
+            iMetadata(maxMetadataCount).FullGroupAndName = Right$(tmpString, Len(tmpString) - 1)
             
             'Now, divide the prefix into two segments: Group and Name
             tmpSplitInner = Split(tmpSplitOuter(0), ":")
@@ -381,7 +394,11 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
         
         Message "Embedding metadata..."
         
-        Dim etReturn As String
+        Dim etReturn As String, newXMLString As String, tmpXMLPath As String
+        Dim fileNum As Integer
+        
+        Dim cSHA2 As CSHA256
+        Set cSHA2 = New CSHA256
         
         'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel
         Select Case saveOptions
@@ -408,22 +425,16 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                 
                 'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for this test,
                 ' simply dump the full original XML contents to a temp file.
-                Dim newXMLString As String
                 newXMLString = originalMetadataXML
                 
                 ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                Dim tmpXMLPath As String
                 tmpXMLPath = getDirectory(outputPath)
                 
                 'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
-                Dim cSHA2 As CSHA256
-                Set cSHA2 = New CSHA256
                 tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
                 
                 'Write the XML file
                 If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                
-                Dim fileNum As Integer
                 fileNum = FreeFile
     
                 Open tmpXMLPath For Output As #fileNum
@@ -452,7 +463,90 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
             'Save metadata, but remove items with potential privacy concerns (GPS coordinates, serial numbers, etc)
             Case 2
             
-            'Do not save metadata.  This is easiest.  :)
+                Message "Removing metadata with potential privacy concerns..."
+            
+                'First thing we need to do is mark all tags to be removed.  Note that GPS tags will be automatically removed by
+                ' a parameter we pass to ExifTool, but any other privacy tags must be removed manually.
+                Dim i As Long
+                Dim removeThisTag As Boolean
+                For i = 0 To maxMetadataCount - 1
+                
+                    removeThisTag = False
+                
+                    'Compare this tag against a manually curated database of potentially private tags.  If a match is found,
+                    ' mark this tag for removal.
+                    If InStr(1, iMetadata(i).Name, "Firmware", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Serial", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Name", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Baby", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Software", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "About", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Creator", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Country", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "City", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Location", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "By-line", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "Toolkit", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Name, "History", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Value, "xmp.iid", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, iMetadata(i).Value, "xmp.did", vbTextCompare) > 0 Then
+                        removeThisTag = True
+                        
+                    End If
+                    
+                    iMetadata(i).markedForRemoval = removeThisTag
+                    
+                Next i
+                
+                'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
+                newXMLString = retrieveModifiedXMLString
+                
+                ' Since we can assume the user has rights to the output directory, write the temporary XML file there
+                tmpXMLPath = getDirectory(outputPath)
+                
+                'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
+                tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
+                
+                'Write the XML file
+                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
+                fileNum = FreeFile
+    
+                Open tmpXMLPath For Output As #fileNum
+                    Print #fileNum, newXMLString
+                Close #fileNum
+                
+                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+                etReturn = writeMetadata(tmpXMLPath, outputPath, srcPDImage, True)
+                
+                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
+                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
+                ' we don't need to do any specialized damage control.
+                If InStr(1, etReturn, "1 image files updated") > 0 Then
+                    Message "Metadata embedded successfully."
+                    
+                Else
+                    Message "Unexpected message returned: " & etReturn
+                    Message "Metadata may not have been embedded (but saved image still written successfully)."
+                End If
+                
+                'Delete our temporary XML file
+                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
+            
+            'Do not save metadata.  This is by far the easiest method.  :)
             Case 3
         
         End Select
