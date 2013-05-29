@@ -142,8 +142,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 27/May/13
-'Last update: initial build
+'Last updated: 29/May/13
+'Last update: minor fixes
 '
 'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -151,10 +151,11 @@ Attribute VB_Exposed = False
 'This dialog interacts heavily with the pdMetadata class to present users with a relatively simple interface for
 ' perusing (and eventually, editing) an image's metadata.  Designing this dialog is difficult as it is impossible to
 ' predict what metadata types and entries might exist in a finished file, so I've opted for the most flexible system
-' I can think up.
+' I can.  No assumptions are made about present categories or tag counts, so any type of metadata should theoretically
+' be viewable.
 '
-'Categories are displayed on the left, and selecting a category repopulates the fields on the right.  More details
-' forthcoming as I flesh out this dialog...
+'Categories are displayed on the left, and selecting a category repopulates the fields on the right.  Future updates
+' could include the ability to add or remove individual tags...
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -179,8 +180,8 @@ Dim curTagCount() As Long
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 64
 
-'Subclass the window to enable mousewheel support for scrolling the metadata view
-Dim m_Subclass As cSelfSubHookCallback
+'Subclass the window to enable mousewheel support for scrolling the metadata view (compiled EXE only)
+Dim m_Subclass As cSelfSubHookCallback, m_Subclass2 As cSelfSubHookCallback
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -218,12 +219,17 @@ Private Sub Form_Load()
 
     'Note that this form will be interacting heavily with the current image's metadata container.
     
-    'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
-    Set m_Subclass = New cSelfSubHookCallback
+    If g_IsProgramCompiled Then
     
-    'Add mousewheel messages to the subclassing handler
-    If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-    If m_Subclass.ssc_Subclass(lstMetadata.hWnd, , 1, Me) Then m_Subclass.ssc_AddMsg lstMetadata.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
+        'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
+        Set m_Subclass = New cSelfSubHookCallback
+        Set m_Subclass2 = New cSelfSubHookCallback
+        
+        'Add mousewheel messages to the subclassing handler (compiled only)
+        If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
+        If m_Subclass2.ssc_Subclass(lstMetadata.hWnd, , 1, Me) Then m_Subclass2.ssc_AddMsg lstMetadata.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
+        
+    End If
         
     'Make the invisible buffer's font match the rest of PD
     If g_UseFancyFonts Then
@@ -327,9 +333,16 @@ End Sub
 'UNLOAD form
 Private Sub Form_Unload(Cancel As Integer)
     
-    'Release the subclassing object responsible for mouse wheel support
-    m_Subclass.ssc_Terminate
-    Set m_Subclass = Nothing
+    If g_IsProgramCompiled Then
+    
+        'Release the subclassing object responsible for mouse wheel support
+        m_Subclass.ssc_Terminate
+        Set m_Subclass = Nothing
+        
+        m_Subclass2.ssc_Terminate
+        Set m_Subclass2 = Nothing
+        
+    End If
 
 End Sub
 
