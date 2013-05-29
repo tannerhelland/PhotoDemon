@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 27/May/13
-'Last update: fix additional parse errors for XMP entries with list data
+'Last updated: 29/May/13
+'Last update: new function to remove XML entries from the stored XML metadata file
 '
 'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -391,9 +391,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
     
     'Metadata only needs to be written out if it exists (obviously)
     If maxMetadataCount > 0 Then
-        
-        Message "Embedding metadata..."
-        
+                
         Dim etReturn As String, newXMLString As String, tmpXMLPath As String
         Dim fileNum As Integer
         
@@ -406,6 +404,8 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
             'Save as much metadata as possible - basically, do a simply "copy all tags" from the original file to the new one
             Case 0
             
+                Message "Embedding metadata..."
+                
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
                 etReturn = writeMetadata(srcPDImage.LocationOnDisk, outputPath, srcPDImage)
                 
@@ -416,12 +416,14 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                     Message "Metadata embedded successfully."
                     
                 Else
-                    Message "Unexpected message returned: " & etReturn
+                    Message "Unexpected message returned: %1", etReturn
                     Message "Metadata may not have been embedded (but saved image still written successfully)."
                 End If
             
             'Save as much RELEVANT metadata as possible (default action)
             Case 1
+            
+                Message "Embedding metadata..."
                 
                 'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for this test,
                 ' simply dump the full original XML contents to a temp file.
@@ -451,7 +453,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                     Message "Metadata embedded successfully."
                     
                 Else
-                    Message "Unexpected message returned: " & etReturn
+                    Message "Unexpected message returned: %1", etReturn
                     Message "Metadata may not have been embedded (but saved image still written successfully)."
                 End If
                 
@@ -515,6 +517,8 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                 'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
                 newXMLString = retrieveModifiedXMLString
                 
+                Message "Embedding metadata..."
+                
                 ' Since we can assume the user has rights to the output directory, write the temporary XML file there
                 tmpXMLPath = getDirectory(outputPath)
                 
@@ -539,7 +543,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                     Message "Metadata embedded successfully."
                     
                 Else
-                    Message "Unexpected message returned: " & etReturn
+                    Message "Unexpected message returned: %1", etReturn
                     Message "Metadata may not have been embedded (but saved image still written successfully)."
                 End If
                 

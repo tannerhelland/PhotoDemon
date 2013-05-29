@@ -119,10 +119,10 @@ Public Function getExifToolVersion() As String
     Else
         
         Dim exifPath As String
-        exifPath = g_PluginPath & "exiftool.exe -ver"
+        exifPath = g_PluginPath & "exiftool.exe"
         
         Dim outputString As String
-        If ShellExecuteCapture(exifPath, outputString) Then
+        If ShellExecuteCapture(exifPath, "exiftool.exe -ver", outputString) Then
         
             'The output string will be a simple version number, e.g. "X.YY", and it will be terminated by a vbCrLf character.
             ' Remove vbCrLf now.
@@ -146,49 +146,48 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
     Dim Quotes As String
     Quotes = Chr(34)
     
-    'Build a command-line string that ExifTool can understand
-    Dim execString As String
-    execString = g_PluginPath & "exiftool.exe"
+    'Grab the ExifTool path, which we will shell and pipe in a moment
+    Dim appLocation As String
+    appLocation = g_PluginPath & "exiftool.exe"
     
-    'Ignore minor errors and warnings
-    execString = execString & " -m"
+    'Next, build a string of command-line parameters.  These will modify ExifTool's behavior to make it compatible with our code.
+    Dim cmdParams As String
+    
+    'Ignore minor errors and warnings (note that exiftool.exe must be included as param [0], per C convention)
+    cmdParams = cmdParams & "exiftool.exe -m"
     
     'Output long-format data
-    execString = execString & " -l"
+    cmdParams = cmdParams & " -l"
         
     'Request ANSI-compatible text (Windows-1252 specifically)
-    execString = execString & " -L"
+    cmdParams = cmdParams & " -L"
     
     'Request a custom separator for list-type values
-    execString = execString & " -sep ;"
-    
-    'Suppress duplicate tags (NOTE: as much as I would like this to work, it appears to be incompatible
-    ' with XML output.  Damn.)
-    'execString = execString & " --duplicates"
-    
+    cmdParams = cmdParams & " -sep ;"
+        
     'If a translation is active, request descriptions in the current language
-    If g_Language.translationActive Then execString = execString & " -lang " & g_Language.getCurrentLanguage()
+    If g_Language.translationActive Then cmdParams = cmdParams & " -lang " & g_Language.getCurrentLanguage()
     
     'Request that binary data be processed.  We have no use for this data within PD, but when it comes time to write
     ' our metadata back out to file, we need to have a copy of it.
-    execString = execString & " -b"
+    cmdParams = cmdParams & " -b"
     
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
     ' so deny them specifically.
-    execString = execString & " -x PreviewImage -x ThumbnailImage -x PhotoshopThumbnail"
+    cmdParams = cmdParams & " -x PreviewImage -x ThumbnailImage -x PhotoshopThumbnail"
     
     'Output XML data (a lot more complex, but the only way to retrieve descriptions and names simultaneously)
-    execString = execString & " -X"
+    cmdParams = cmdParams & " -X"
     
     'Finally, add the image path
-    execString = execString & " " & Quotes & srcFile & Quotes
+    cmdParams = cmdParams & " " & Quotes & srcFile & Quotes
     
-    'MsgBox execString
+    'MsgBox cmdParams
     
     'NOTE: while in the IDE, it's useful to see ExifTool's output, so the command-line window is displayed there.
     
     'Use ExifTool to retrieve this image's metadata
-    If Not ShellExecuteCapture(execString, getMetadata, Not g_IsProgramCompiled) Then
+    If Not ShellExecuteCapture(appLocation, cmdParams, getMetadata, Not g_IsProgramCompiled) Then
         Message "Failed to retrieve metadata."
         getMetadata = ""
     End If
@@ -210,33 +209,36 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     Dim Quotes As String
     Quotes = Chr(34)
     
-    'Build a command-line string that ExifTool can understand
-    Dim execString As String
-    execString = g_PluginPath & "exiftool.exe"
+    'Grab the ExifTool path, which we will shell and pipe in a moment
+    Dim appLocation As String
+    appLocation = g_PluginPath & "exiftool.exe"
     
-    'Ignore minor errors and warnings
-    execString = execString & " -m"
+    'Build a command-line string that ExifTool can understand
+    Dim cmdParams As String
+    
+    'Ignore minor errors and warnings (note that exiftool.exe must be included as param [0], per C convention)
+    cmdParams = cmdParams & "exiftool.exe -m"
         
     'Overwrite the original destination file, but only if the metadata was embedded succesfully
-    execString = execString & " -overwrite_original"
+    cmdParams = cmdParams & " -overwrite_original"
     
     'Copy all tags
-    execString = execString & " -tagsfromfile " & Quotes & srcMetadataFile & Quotes & " " & Quotes & dstImageFile & Quotes
+    cmdParams = cmdParams & " -tagsfromfile " & Quotes & srcMetadataFile & Quotes & " " & Quotes & dstImageFile & Quotes
     
-    'Regardless of what type of metadata copy we are doing, we want to alter or remove some tags because their
+    'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
-    execString = execString & " --Orientation"
-    execString = execString & " --IFD2:ImageWidth --IFD2:ImageHeight"
-    execString = execString & " -ImageWidth=" & srcPDImage.Width & " -ExifIFD:ExifImageWidth=" & srcPDImage.Width
-    execString = execString & " -ImageHeight=" & srcPDImage.Height & " -ExifIFD:ExifImageHeight=" & srcPDImage.Height
+    cmdParams = cmdParams & " --Orientation"
+    cmdParams = cmdParams & " --IFD2:ImageWidth --IFD2:ImageHeight"
+    cmdParams = cmdParams & " -ImageWidth=" & srcPDImage.Width & " -ExifIFD:ExifImageWidth=" & srcPDImage.Width
+    cmdParams = cmdParams & " -ImageHeight=" & srcPDImage.Height & " -ExifIFD:ExifImageHeight=" & srcPDImage.Height
     
     'If we were asked to remove GPS data, do so now
-    If removeGPS Then execString = execString & " -gps:all="
+    If removeGPS Then cmdParams = cmdParams & " -gps:all="
     
     'NOTE: while in the IDE, it can be useful to see ExifTool's output, so the console window will be displayed.
     
     'Use ExifTool to write the metadata
-    If Not ShellExecuteCapture(execString, writeMetadata, Not g_IsProgramCompiled) Then
+    If Not ShellExecuteCapture(appLocation, cmdParams, writeMetadata, Not g_IsProgramCompiled) Then
         Message "Failed to write metadata."
         writeMetadata = ""
     End If
@@ -246,7 +248,7 @@ End Function
 'Capture output from the requested command-line executable and return it as a string
 ' NOTE: This function is a heavily modified version of code originally written by Joacim Andersson.  A download link to his original
 '        version is available at the top of this module.
-Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
+Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
 
     Dim hPipeRead As Long, hPipeWrite As Long
     Dim hCurProcess As Long
@@ -291,8 +293,8 @@ Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstStrin
         If bShowWindow Then .wShowWindow = SW_NORMAL Else .wShowWindow = SW_HIDE
         
     End With
-
-    If CreateProcess(vbNullString, sCommandLine, ByVal 0&, ByVal 0&, 1, 0&, ByVal 0&, vbNullString, si, PI) Then
+    'MsgBox sApplicationPath & vbCrLf & sCommandLineParams
+    If CreateProcess(sApplicationPath, sCommandLineParams, ByVal 0&, ByVal 0&, 1, 0&, ByVal 0&, vbNullString, si, PI) Then
 
         'Close the thread handle, as we have no use for it
         CloseHandle PI.hThread
@@ -315,7 +317,7 @@ Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstStrin
         CloseHandle hCurProcess
     Else
         ShellExecuteCapture = False
-        Message "Failed to start plugin service (couldn't create process)."
+        Message "Failed to start plugin service (couldn't create process: %1).", Err.LastDllError
         Exit Function
     End If
 
