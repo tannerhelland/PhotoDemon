@@ -444,6 +444,7 @@ Private Sub createNewINIFile()
         Print #fileNum, "LastPreferencesPage=0"
         Print #fileNum, "LastFilePreferencesPage=1"
         Print #fileNum, "LogProgramMessages=0"
+        Print #fileNum, "MetadataExport=0"
         Print #fileNum, "MRUCaptionSize=0"
         Print #fileNum, "MultipageImagePrompt=0"
         Print #fileNum, "OutgoingColorDepth=1"
