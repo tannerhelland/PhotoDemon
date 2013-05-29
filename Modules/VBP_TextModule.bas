@@ -25,7 +25,7 @@ Public Function FixPath(ByVal tempString As String) As String
     End If
 End Function
 
-'Given a full file name, remove everything but the directory structure
+'Given a full file path (path + name + extension), remove everything but the directory structure
 Public Sub StripDirectory(ByRef sString As String)
     
     Dim x As Long
@@ -38,6 +38,21 @@ Public Sub StripDirectory(ByRef sString As String)
     Next x
     
 End Sub
+
+'Given a full file path (path + name + extension), return everything but the directory structure
+Public Function getDirectory(ByRef sString As String) As String
+    
+    Dim x As Long
+    
+    For x = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
+            getDirectory = Left(sString, x)
+            Exit Function
+        End If
+    Next x
+    
+End Function
+
 
 'Pull the filename ONLY (no directory) off a path
 Public Sub StripFilename(ByRef sString As String)
