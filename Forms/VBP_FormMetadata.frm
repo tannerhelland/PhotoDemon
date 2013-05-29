@@ -414,7 +414,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         If CBool(chkFriendlyNames.Value) Then
             drawString = thisTag.Description
         Else
-            drawString = thisTag.Name
+            drawString = thisTag.FullGroupAndName
         End If
     
         'Start with the simplest field: the tag title (readable form)
