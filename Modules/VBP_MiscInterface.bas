@@ -50,47 +50,12 @@ Private Const SmoothingClearType As Long = &H2
 Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
 
+'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit
 Private hadToChangeSmoothing As Boolean
 
-'Use to enable font smoothing if currently disabled.
-Public Sub handleClearType(ByVal startingProgram As Boolean)
-    
-    'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
-    If startingProgram Then
-    
-        'Get current font smoothing setting
-        Dim pv As Long
-        SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
-        
-        If pv = 0 Then
-            hadToChangeSmoothing = True
-            SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
-            
-            'On Vista/7 use ClearType, on XP use standard AA
-            If g_IsVistaOrLater Then
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingClearType, 0
-            Else
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingStandardType, 0
-            End If
-            
-        Else
-            hadToChangeSmoothing = False
-        End If
-    
-    Else
-    
-        If hadToChangeSmoothing Then
-            SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
-            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingNone, 0
-        End If
-    
-    End If
-    
-End Sub
-
-'Because VB6 apps tend to look pretty lame on modern version of Windows, we do a bit of beautification to every form when
-' it's loaded.  This routine is nice because every form calls it at least once, so we can make centralized changes without
-' having to rewrite code in every individual form.
+'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
+' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
+' code in every individual form.  This is also where run-time translation occurs.
 Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
@@ -162,6 +127,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         If Not tooltipsAlreadyInitialized Then
             customTooltips.Create tForm
             customTooltips.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+            customTooltips.DelayTime(ttDelayShow) = 10000
         End If
         
         'Once again, enumerate every control on the form and copy their tooltips into this object.  (This allows
@@ -188,6 +154,43 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         If FormMain.Visible Then ApplyAllMenuIcons
     End If
         
+End Sub
+
+
+'Use to enable font smoothing if currently disabled.
+Public Sub handleClearType(ByVal startingProgram As Boolean)
+    
+    'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
+    If startingProgram Then
+    
+        'Get current font smoothing setting
+        Dim pv As Long
+        SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
+        
+        If pv = 0 Then
+            hadToChangeSmoothing = True
+            SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
+            
+            'On Vista/7 use ClearType, on XP use standard AA
+            If g_IsVistaOrLater Then
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingClearType, 0
+            Else
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingStandardType, 0
+            End If
+            
+        Else
+            hadToChangeSmoothing = False
+        End If
+    
+    Else
+    
+        If hadToChangeSmoothing Then
+            SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
+            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingNone, 0
+        End If
+    
+    End If
+    
 End Sub
 
 'This sub is used to render control backgrounds as transparent
