@@ -2747,10 +2747,11 @@ Private Sub LoadAllPreferences()
         
     'Populate the combo box for default metadata export handling
     cmbMetadata.Clear
-    cmbMetadata.AddItem " copy all metadata into the new file", 0
-    cmbMetadata.AddItem " copy metadata, but remove entries with privacy implications (e.g. GPS coordinates)", 1
-    cmbMetadata.AddItem " do not copy metadata", 2
-    cmbMetadata.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "MetadataExport", 0)
+    cmbMetadata.AddItem " preserve all original metadata, regardless of relevance", 0
+    cmbMetadata.AddItem " preserve all relevant metadata", 1
+    cmbMetadata.AddItem " preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)", 2
+    cmbMetadata.AddItem " do not preserve metadata", 3
+    cmbMetadata.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "MetadataExport", 1)
         
     'Populate the check box for initial color depth calcuations
     If g_UserPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Then chkInitialColorDepth.Value = vbChecked Else chkInitialColorDepth.Value = vbUnchecked

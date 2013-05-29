@@ -200,6 +200,43 @@ Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As
     
 End Function
 
+'Given a path to a valid metadata file, and a second path to a valid image file, copy the metadata file into the image file.
+Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage) As String
+    
+    'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
+    ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
+    Dim Quotes As String
+    Quotes = Chr(34)
+    
+    'Build a command-line string that ExifTool can understand
+    Dim execString As String
+    execString = g_PluginPath & "exiftool.exe"
+    
+    'Ignore minor errors and warnings
+    execString = execString & " -m"
+        
+    'Overwrite the original destination file, but only if the metadata was embedded succesfully
+    execString = execString & " -overwrite_original"
+    
+    'Copy all tags
+    execString = execString & " -tagsfromfile " & Quotes & srcMetadataFile & Quotes & " " & Quotes & dstImageFile & Quotes
+    
+    'Regardless of what type of metadata copy we are doing, we want to alter or remove some tags because their
+    ' original values are no longer relevant.
+    execString = execString & " --Orientation"
+    execString = execString & " --IFD2:ImageWidth --IFD2:ImageHeight"
+    execString = execString & " -ImageWidth=" & srcPDImage.Width & " -ExifIFD:ExifImageWidth=" & srcPDImage.Width
+    execString = execString & " -ImageHeight=" & srcPDImage.Height & " -ExifIFD:ExifImageHeight=" & srcPDImage.Height
+    
+    'NOTE: while in the IDE, it can be useful to see ExifTool's output, so the console window will be displayed.
+    
+    'Use ExifTool to write the metadata
+    If Not ShellExecuteCapture(execString, writeMetadata, Not g_IsProgramCompiled) Then
+        Message "Failed to write metadata."
+        writeMetadata = ""
+    End If
+    
+End Function
 
 'Capture output from the requested command-line executable and return it as a string
 ' NOTE: This function is a heavily modified version of code originally written by Joacim Andersson.  A download link to his original
@@ -238,7 +275,7 @@ Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstStrin
     hCurProcess = GetCurrentProcess()
 
     'Replace the inheritable read handle with a non-inheritable one. (MSDN suggestion)
-    Call DuplicateHandle(hCurProcess, hPipeRead, hCurProcess, hPipeRead, 0&, 0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE)
+    DuplicateHandle hCurProcess, hPipeRead, hCurProcess, hPipeRead, 0&, 0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE
 
     With si
         .cb = Len(si)
@@ -253,11 +290,11 @@ Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstStrin
     If CreateProcess(vbNullString, sCommandLine, ByVal 0&, ByVal 0&, 1, 0&, ByVal 0&, vbNullString, si, PI) Then
 
         'Close the thread handle, as we have no use for it
-        Call CloseHandle(PI.hThread)
+        CloseHandle PI.hThread
 
         'Also close the pipe's write handle.  This is important, because ReadFile will not return until all write handles
         ' are closed or the buffer is full.
-        Call CloseHandle(hPipeWrite)
+        CloseHandle hPipeWrite
         hPipeWrite = 0
         
         Do
@@ -269,15 +306,17 @@ Public Function ShellExecuteCapture(ByVal sCommandLine As String, ByRef dstStrin
             
         Loop
 
-        Call CloseHandle(PI.hProcess)
+        CloseHandle PI.hProcess
+        CloseHandle hCurProcess
     Else
         ShellExecuteCapture = False
         Message "Failed to start plugin service (couldn't create process)."
         Exit Function
     End If
 
-    Call CloseHandle(hPipeRead)
+    CloseHandle hPipeRead
     If hPipeWrite Then CloseHandle hPipeWrite
+    If hCurProcess Then CloseHandle hCurProcess
     
     ShellExecuteCapture = True
     

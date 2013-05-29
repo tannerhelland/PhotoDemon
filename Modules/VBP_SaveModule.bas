@@ -7,9 +7,13 @@ Attribute VB_Name = "Saving"
 'Last update: Rewrote all save subs to use string-based parameters.  Also, moved all handling of preferences to external forms.
 '              Save functions don't rely on the INI now - they expect external functions to explicitly request any special save parameters.
 '
-'Module for handling all image saving.  It contains pretty much every routine that I find useful;
-' the majority of the functions are simply interfaces to FreeImage, so if that is not enabled than
-' only a subset of these matter.
+'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
+' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
+' functions in the FreeImage plugin.
+'
+'The most important sub is PhotoDemon_SaveImage at the top of the module.  This sub is responsible for doing a multitude of handling before
+' and after saving an image, including items like selecting correct color depth prior to save, and requesting MRU updates post-save.  If
+' passed the loadRelevantForm parameter, it will also prompt the user for any format-specific settings (such as JPEG quality).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -354,6 +358,16 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Exit Function
         
     End Select
+    
+    'If the file was successfully written, we can now add metadata to it.  I don't like doing this in two steps, but that's a necessary
+    ' evil of routing all metadata handling through the ExifTool plugin.
+    
+    'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
+    If updateMRU And g_ExifToolEnabled Then
+        
+        updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPreference_Long("General Preferences", "MetadataExport", 1), srcPDImage)
+        
+    End If
     
     'UpdateMRU should only be true if the save was successful
     If updateMRU Then

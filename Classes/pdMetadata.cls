@@ -372,8 +372,94 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
 End Sub
 
 
-'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a path to the original file, to a FreeImage object, write out all currently stored metadata.  (This only needs to be done immediately prior to a save.)
-Public Function writeAllMetadata(ByVal outputPath As String, ByVal originalFile As String) As Boolean
+'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a Long-type value specifying what metadata to save,
+' copy over any relevant metadata.  (Note: this needs to be done immediately following a save, and is handled by the PhotoDemon_SaveImage function.)
+Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions As Long, ByRef srcPDImage As pdImage) As Boolean
+    
+    'Metadata only needs to be written out if it exists (obviously)
+    If maxMetadataCount > 0 Then
+        
+        Message "Embedding metadata..."
+        
+        Dim etReturn As String
+        
+        'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel
+        Select Case saveOptions
+            
+            'Save as much metadata as possible - basically, do a simply "copy all tags" from the original file to the new one
+            Case 0
+            
+                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+                etReturn = writeMetadata(srcPDImage.LocationOnDisk, outputPath, srcPDImage)
+                
+                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
+                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
+                ' we don't need to do any specialized damage control.
+                If InStr(1, etReturn, "1 image files updated") > 0 Then
+                    Message "Metadata embedded successfully."
+                    
+                Else
+                    Message "Unexpected message returned: " & etReturn
+                    Message "Metadata may not have been embedded (but saved image still written successfully)."
+                End If
+            
+            'Save as much RELEVANT metadata as possible (default action)
+            Case 1
+                
+                'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for this test,
+                ' simply dump the full original XML contents to a temp file.
+                Dim newXMLString As String
+                newXMLString = originalMetadataXML
+                
+                ' Since we can assume the user has rights to the output directory, write the temporary XML file there
+                Dim tmpXMLPath As String
+                tmpXMLPath = getDirectory(outputPath)
+                
+                'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
+                Dim cSHA2 As CSHA256
+                Set cSHA2 = New CSHA256
+                tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
+                
+                'Write the XML file
+                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
+                
+                Dim fileNum As Integer
+                fileNum = FreeFile
+    
+                Open tmpXMLPath For Output As #fileNum
+                    Print #fileNum, newXMLString
+                Close #fileNum
+                
+                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+                etReturn = writeMetadata(tmpXMLPath, outputPath, srcPDImage)
+                
+                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
+                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
+                ' we don't need to do any specialized damage control.
+                If InStr(1, etReturn, "1 image files updated") > 0 Then
+                    Message "Metadata embedded successfully."
+                    
+                Else
+                    Message "Unexpected message returned: " & etReturn
+                    Message "Metadata may not have been embedded (but saved image still written successfully)."
+                End If
+                
+                'Delete our temporary XML file
+                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
+                
+                'NEED TO TEST: is JPEG thumbnail overwritten??
+                
+            'Save metadata, but remove items with potential privacy concerns (GPS coordinates, serial numbers, etc)
+            Case 2
+            
+            'Do not save metadata.  This is easiest.  :)
+            Case 3
+        
+        End Select
+        
+    End If
+    
+    writeAllMetadata = True
     
 End Function
 
