@@ -110,6 +110,11 @@ Private Const BLOCKHEIGHT As Long = 54
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+Dim backLayer As pdLayer
+Dim m_BufferLeft As Long, m_BufferTop As Long
+Dim m_BufferWidth As Long, m_BufferHeight As Long
+Dim m_FormWidth As Long
+
 Private Sub CmdOK_Click()
     tmrText.Enabled = False
     Unload Me
@@ -129,14 +134,15 @@ Private Sub Form_Load()
     numOfCredits = 0
     
     'Shout-outs to other designers, programmers, testers and sponsors who provided various resources
-    GenerateThankyou "", ""
-    GenerateThankyou "", ""
-    GenerateThankyou "", ""
-    GenerateThankyou "", ""
-    GenerateThankyou "", ""
-    GenerateThankyou "", ""
+    GenerateThankyou ""
+    GenerateThankyou ""
+    GenerateThankyou ""
+    GenerateThankyou ""
+    GenerateThankyou ""
+    GenerateThankyou ""
     GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2013 Tanner Helland"
-    GenerateThankyou "", ""
+    GenerateThankyou g_Language.TranslateMessage("a free, portable, powerful photo editor"), ""
+    GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
     GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/"
     GenerateThankyou "Alfred Hellmueller"
@@ -170,24 +176,49 @@ Private Sub Form_Load()
     GenerateThankyou "Waty Thierry", "http://www.ppreview.net/"
     GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
     GenerateThankyou "Zhu JinYong"
-    GenerateThankyou "", ""
+    GenerateThankyou ""
     
     Dim extraString1 As String, extraString2 As String
-    extraString1 = g_Language.TranslateMessage("PhotoDemon uses several third-party plugins")
-    extraString2 = g_Language.TranslateMessage("These plugins may be governed by additional licenses, specifically:")
+    extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
+    extraString2 = "for more information on licensing, visit tannerhelland.com/photodemon/#license"
     GenerateThankyou extraString1, extraString2
+    GenerateThankyou ""
+    extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
+    GenerateThankyou extraString1
+    GenerateThankyou ""
+    extraString1 = g_Language.TranslateMessage("These plugins are also free and open source...")
+    extraString2 = g_Language.TranslateMessage("...but they are governed by their own licenses, separate from PhotoDemon")
+    GenerateThankyou extraString1, extraString2
+    GenerateThankyou ""
+    extraString1 = g_Language.TranslateMessage("For more information on plugin licensing, please visit:")
+    GenerateThankyou extraString1
     GenerateThankyou "ExifTool", "http://dev.perl.org/licenses/"
     GenerateThankyou "EZTwain", "http://eztwain.com/ezt1faq.htm"
     GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html"
     GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/"
     GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html"
     GenerateThankyou "", ""
-    GenerateThankyou "Thank you for using PhotoDemon!"
+    GenerateThankyou "Thank you for using PhotoDemon"
     GenerateThankyou "tannerhelland.com/photodemon"
+    
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Initialize the background layer (this allows for faster blitting than a picture box)
+    Set backLayer = New pdLayer
+    backLayer.CreateFromPicture picBackground.Picture
+    
+    'Initialize a few other variables for speed reasons
+    m_BufferLeft = picBuffer.Left
+    m_BufferTop = picBuffer.Top
+    m_BufferWidth = picBuffer.ScaleWidth
+    m_BufferHeight = picBuffer.ScaleHeight
+    m_FormWidth = Me.ScaleWidth
+    
+    'Render the primary background image to the form
+    StretchBlt Me.hDC, 0, 0, m_FormWidth, backLayer.getLayerHeight, backLayer.getLayerDC, 0, 0, backLayer.getLayerWidth, backLayer.getLayerHeight, vbSrcCopy
     
     tmrText.Enabled = True
     
@@ -215,8 +246,8 @@ Private Sub tmrText_Timer()
     Static scrollOffset As Long
     scrollOffset = scrollOffset + 1
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
-        
-    picBuffer.PaintPicture picBackground.Picture, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, picBuffer.Left, picBuffer.Top, picBuffer.ScaleWidth, picBuffer.ScaleHeight, vbSrcCopy
+    
+    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, backLayer.getLayerDC, m_BufferLeft, m_BufferTop, vbSrcCopy
     
     Dim i As Long
     For i = 0 To numOfCredits - 1
@@ -224,9 +255,8 @@ Private Sub tmrText_Timer()
     Next i
     
     'Copy the buffer to the main form
-    Me.PaintPicture picBackground.Picture, 0, 0, Me.ScaleWidth, picBackground.ScaleHeight, 0, 0, picBackground.ScaleWidth, picBackground.ScaleHeight, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
-    Me.PaintPicture picBuffer.Picture, picBuffer.Left, picBuffer.Top, picBuffer.ScaleWidth, picBuffer.ScaleHeight, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, vbSrcCopy
+    BitBlt Me.hDC, m_BufferLeft, m_BufferTop, m_BufferWidth, m_BufferHeight, picBuffer.hDC, 0, 0, vbSrcCopy
     Me.Picture = Me.Image
     
 End Sub
@@ -235,7 +265,7 @@ End Sub
 Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < picBuffer.Height) Then
+    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < m_BufferHeight) Then
     
         Dim primaryColor As Long, secondaryColor As Long, tertiaryColor As Long
         primaryColor = RGB(255, 255, 255)
@@ -253,7 +283,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         picBuffer.FontBold = True
         
         'Render the "name" field
-        drawTextOnObject picBuffer, drawString, picBuffer.ScaleWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + 0, 14, primaryColor, True, False
+        drawTextOnObject picBuffer, drawString, m_BufferWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + 0, 14, primaryColor, True, False
                 
         'Below the name, add the URL (or other description)
         mHeight = picBuffer.TextHeight(drawString) + linePadding
@@ -263,7 +293,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         picBuffer.FontSize = 10
         picBuffer.FontBold = False
         
-        drawTextOnObject picBuffer, drawString, picBuffer.ScaleWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + mHeight, 10, secondaryColor, False
+        drawTextOnObject picBuffer, drawString, m_BufferWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + mHeight, 10, secondaryColor, False
         
         'Draw a divider line near the bottom of the block
         'Dim lineY As Long
