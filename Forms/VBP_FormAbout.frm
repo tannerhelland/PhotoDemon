@@ -1,14 +1,13 @@
 VERSION 5.00
 Begin VB.Form FormAbout 
    AutoRedraw      =   -1  'True
-   BackColor       =   &H00FFFFFF&
+   BackColor       =   &H00000000&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   8310
+   ClientHeight    =   8925
    ClientLeft      =   2340
    ClientTop       =   1875
-   ClientWidth     =   9000
-   ClipControls    =   0   'False
+   ClientWidth     =   11685
    ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,205 +21,60 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   554
+   ScaleHeight     =   595
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   600
+   ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.Timer tmrText 
+      Enabled         =   0   'False
+      Interval        =   17
+      Left            =   360
+      Top             =   8400
+   End
+   Begin VB.PictureBox picBuffer 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00000000&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H00FFFFFF&
+      Height          =   4455
+      Left            =   600
+      ScaleHeight     =   297
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   721
+      TabIndex        =   1
+      Top             =   240
+      Visible         =   0   'False
+      Width           =   10815
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   7440
+      Left            =   10095
       TabIndex        =   0
-      Top             =   7680
+      Top             =   8280
       Width           =   1365
    End
-   Begin VB.Label lblExifTool 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "ExifTool license page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FF0000&
-      Height          =   195
-      Left            =   6390
-      MouseIcon       =   "VBP_FormAbout.frx":000C
-      MousePointer    =   99  'Custom
-      TabIndex        =   9
-      Top             =   7050
-      Width           =   1500
-   End
-   Begin VB.Label lblzLib 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "zLib license page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FF0000&
-      Height          =   195
-      Left            =   1020
-      MouseIcon       =   "VBP_FormAbout.frx":015E
-      MousePointer    =   99  'Custom
-      TabIndex        =   8
-      Top             =   7320
-      Width           =   1200
-   End
-   Begin VB.Label lblEZTW32 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "EZTwain license page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FF0000&
-      Height          =   195
-      Left            =   3690
-      MouseIcon       =   "VBP_FormAbout.frx":02B0
-      MousePointer    =   99  'Custom
-      TabIndex        =   7
-      Top             =   7050
-      Width           =   1530
-   End
-   Begin VB.Label lblPngnq 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "pngnq-s9 homepage"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FF0000&
-      Height          =   195
-      Left            =   3690
-      MouseIcon       =   "VBP_FormAbout.frx":0402
-      MousePointer    =   99  'Custom
-      TabIndex        =   6
-      Top             =   7320
-      Width           =   1470
-   End
-   Begin VB.Label lblFreeImage 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "FreeImage license page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FF0000&
-      Height          =   195
-      Left            =   1020
-      MouseIcon       =   "VBP_FormAbout.frx":0554
-      MousePointer    =   99  'Custom
-      TabIndex        =   5
-      Top             =   7050
-      Width           =   1710
-   End
-   Begin VB.Label lblLinks 
+   Begin VB.PictureBox picBackground 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
+      BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   435
-      Left            =   240
-      TabIndex        =   4
-      Top             =   6480
-      Width           =   8580
-   End
-   Begin VB.Line Line3 
-      BorderColor     =   &H80000002&
-      X1              =   8
-      X2              =   592
-      Y1              =   184
-      Y2              =   184
-   End
-   Begin VB.Label lblThanks 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "PhotoDemon would not be possible without contributions from the following individuals and organizations:"
-      ForeColor       =   &H00400000&
-      Height          =   195
-      Index           =   0
-      Left            =   240
-      MouseIcon       =   "VBP_FormAbout.frx":06A6
-      MousePointer    =   99  'Custom
-      TabIndex        =   3
-      Top             =   2880
-      Width           =   7560
-   End
-   Begin VB.Label lblDisclaimer 
-      Alignment       =   1  'Right Justify
-      BackStyle       =   0  'Transparent
-      Caption         =   "Copyright (auto-populated at run-time)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   315
-      Left            =   2910
+      Height          =   8265
+      Left            =   0
+      Picture         =   "VBP_FormAbout.frx":000C
+      ScaleHeight     =   551
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   779
       TabIndex        =   2
-      Top             =   2400
-      Width           =   5985
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblVersion 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Version"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   210
-      TabIndex        =   1
-      Top             =   2400
-      Width           =   795
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   11685
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -233,9 +87,7 @@ Attribute VB_Exposed = False
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 30/May/13
-'Last update: added ExifTool license link
-'
-'A simple "about"/credits form.  Contains credits, copyright, and the program logo.
+'Last update: redesigned the dialog from the ground up.  Also, scrolling credits!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -244,30 +96,53 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Dim creditList() As String
-Dim curCredit As Long
+Private Type pdCredit
+    Name As String
+    URL As String
+End Type
+
+Dim creditList() As pdCredit
+Dim numOfCredits As Long
+
+'Height of each credit content block
+Private Const BLOCKHEIGHT As Long = 54
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
 Private Sub CmdOK_Click()
+    tmrText.Enabled = False
     Unload Me
 End Sub
 
 Private Sub Form_Load()
-426
-    'Automatic generation of version & copyright information
-    lblVersion.Caption = g_Language.TranslateMessage("Version") & " " & App.Major & "." & App.Minor & "." & App.Revision
-    lblDisclaimer.Caption = App.LegalCopyright & " "
-    lblLinks.Caption = g_Language.TranslateMessage("PhotoDemon uses several third-party plugins.  These plugins may be governed by additional licenses. For more information, please visit:")
-    
-    curCredit = 1
+
+    ReDim creditList(0) As pdCredit
+
+    'Make the invisible buffer's font match the rest of PD
+    If g_UseFancyFonts Then
+        picBuffer.FontName = "Segoe UI"
+    Else
+        picBuffer.FontName = "Tahoma"
+    End If
+
+    numOfCredits = 0
     
     'Shout-outs to other designers, programmers, testers and sponsors who provided various resources
+    GenerateThankyou "", ""
+    GenerateThankyou "", ""
+    GenerateThankyou "", ""
+    GenerateThankyou "", ""
+    GenerateThankyou "", ""
+    GenerateThankyou "", ""
+    GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2013 Tanner Helland"
+    GenerateThankyou "", ""
+    GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
     GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/"
     GenerateThankyou "Alfred Hellmueller"
     GenerateThankyou "Andrew Yeoman"
     GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
+    GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
     GenerateThankyou "Brad Martinez", "http://btmtz.mvps.org/gfxfromfrx/"
     GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
     GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
@@ -277,7 +152,7 @@ Private Sub Form_Load()
     GenerateThankyou "Frank Donckers"
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/"
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
-    GenerateThankyou "GioRock", "http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266&strAuthorName=GioRock&txtMaxNumberOfEntriesPerPage=25"
+    GenerateThankyou "GioRock", ""
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
     GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
@@ -295,92 +170,108 @@ Private Sub Form_Load()
     GenerateThankyou "Waty Thierry", "http://www.ppreview.net/"
     GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
     GenerateThankyou "Zhu JinYong"
+    GenerateThankyou "", ""
     
-    lblThanks(0).MousePointer = vbDefault
+    Dim extraString1 As String, extraString2 As String
+    extraString1 = g_Language.TranslateMessage("PhotoDemon uses several third-party plugins")
+    extraString2 = g_Language.TranslateMessage("These plugins may be governed by additional licenses, specifically:")
+    GenerateThankyou extraString1, extraString2
+    GenerateThankyou "ExifTool", "http://dev.perl.org/licenses/"
+    GenerateThankyou "EZTwain", "http://eztwain.com/ezt1faq.htm"
+    GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html"
+    GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/"
+    GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html"
+    GenerateThankyou "", ""
+    GenerateThankyou "Thank you for using PhotoDemon!"
+    GenerateThankyou "tannerhelland.com/photodemon"
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    tmrText.Enabled = True
     
 End Sub
 
 'Generate a label with the specified "thank you" text, and link it to the specified URL
 Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = "")
     
-    'Generate a new label
-    Load lblThanks(curCredit)
+    creditList(numOfCredits).Name = thxText
+    creditList(numOfCredits).URL = creditURL
     
-    'Because I now have too many people to thank, it's necessary to split the list into multiple columns
-    Dim columnLimit As Long
-    columnLimit = 12
+    numOfCredits = numOfCredits + 1
+    ReDim Preserve creditList(0 To numOfCredits) As pdCredit
     
-    Dim thxOffset As Long
-    thxOffset = 50
-    
-    If curCredit = 1 Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 20
-        lblThanks(curCredit).Left = lblThanks(0).Left + 2 + thxOffset
-    ElseIf curCredit < columnLimit Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-        lblThanks(curCredit).Left = lblThanks(0).Left + 2 + thxOffset
-    ElseIf curCredit = columnLimit Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 20 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
-        lblThanks(curCredit).Left = lblThanks(0).Left + 180 + thxOffset
-    ElseIf curCredit < columnLimit * 2 - 1 Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-        lblThanks(curCredit).Left = lblThanks(0).Left + 180 + thxOffset
-    ElseIf curCredit = columnLimit * 2 - 1 Then
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 20 - (lblThanks(columnLimit * 2 - 2).Top - lblThanks(0).Top)
-        lblThanks(curCredit).Left = lblThanks(0).Left + 360 + thxOffset
-    Else
-        lblThanks(curCredit).Top = lblThanks(curCredit - 1).Top + lblThanks(curCredit - 1).Height + 4
-        lblThanks(curCredit).Left = lblThanks(0).Left + 360 + thxOffset
-    End If
-    
-    lblThanks(curCredit).Caption = thxText
-    If creditURL = "" Then
-        lblThanks(curCredit).MousePointer = vbDefault
-    Else
-        lblThanks(curCredit).FontUnderline = True
-        lblThanks(curCredit).ForeColor = vbBlue
-        lblThanks(curCredit).ToolTipText = g_Language.TranslateMessage("Click to open") & " " & creditURL
-    End If
-    lblThanks(curCredit).Visible = True
-    
-    ReDim Preserve creditList(0 To curCredit) As String
-    creditList(curCredit) = creditURL
-    
-    curCredit = curCredit + 1
-
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub lblExifTool_Click()
-    OpenURL "http://dev.perl.org/licenses/"
+'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
+' scrolling code I wrote for the metadata browser.
+Private Sub tmrText_Timer()
+        
+    Static scrollOffset As Long
+    scrollOffset = scrollOffset + 1
+    If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
+        
+    picBuffer.PaintPicture picBackground.Picture, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, picBuffer.Left, picBuffer.Top, picBuffer.ScaleWidth, picBuffer.ScaleHeight, vbSrcCopy
+    
+    Dim i As Long
+    For i = 0 To numOfCredits - 1
+        renderCredit i, 8, i * BLOCKHEIGHT - scrollOffset - 2
+    Next i
+    
+    'Copy the buffer to the main form
+    Me.PaintPicture picBackground.Picture, 0, 0, Me.ScaleWidth, picBackground.ScaleHeight, 0, 0, picBackground.ScaleWidth, picBackground.ScaleHeight, vbSrcCopy
+    picBuffer.Picture = picBuffer.Image
+    Me.PaintPicture picBuffer.Picture, picBuffer.Left, picBuffer.Top, picBuffer.ScaleWidth, picBuffer.ScaleHeight, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, vbSrcCopy
+    Me.Picture = Me.Image
+    
 End Sub
 
-Private Sub lblEZTW32_Click()
-    OpenURL "http://eztwain.com/ezt1faq.htm"
-End Sub
+'Render the given metadata index onto the background picture box at the specified offset
+Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
-Private Sub lblFreeImage_Click()
-    OpenURL "http://freeimage.sourceforge.net/license.html"
-End Sub
+    'Only draw the current block if it will be visible
+    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < picBuffer.Height) Then
+    
+        Dim primaryColor As Long, secondaryColor As Long, tertiaryColor As Long
+        primaryColor = RGB(255, 255, 255)
+        secondaryColor = RGB(192, 192, 192)
+        tertiaryColor = RGB(255, 255, 255)
+    
+        Dim linePadding As Long
+        linePadding = 1
+    
+        Dim mWidth As Single, mHeight As Single
+        
+        Dim drawString As String
+        drawString = creditList(blockIndex).Name
+        picBuffer.FontSize = 14
+        picBuffer.FontBold = True
+        
+        'Render the "name" field
+        drawTextOnObject picBuffer, drawString, picBuffer.ScaleWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + 0, 14, primaryColor, True, False
+                
+        'Below the name, add the URL (or other description)
+        mHeight = picBuffer.TextHeight(drawString) + linePadding
+        
+        drawString = creditList(blockIndex).URL
+        
+        picBuffer.FontSize = 10
+        picBuffer.FontBold = False
+        
+        drawTextOnObject picBuffer, drawString, picBuffer.ScaleWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + mHeight, 10, secondaryColor, False
+        
+        'Draw a divider line near the bottom of the block
+        'Dim lineY As Long
+        'If blockIndex < mdCategories(blockCategory).Count - 1 Then
+        '    lineY = offsetY + BLOCKHEIGHT - 8
+        '    picBuffer.Line (4, lineY)-(picBuffer.ScaleWidth - 8, lineY), tertiaryColor
+        'End If
+        
+    End If
 
-Private Sub lblPngnq_Click()
-    OpenURL "http://sourceforge.net/projects/pngnqs9/"
-End Sub
-
-'When a thank-you credit is clicked, launch the corresponding website
-Private Sub lblThanks_Click(Index As Integer)
-
-    If creditList(Index) <> "" Then OpenURL creditList(Index)
-
-End Sub
-
-Private Sub lblzLib_Click()
-    OpenURL "http://www.zlib.net/zlib_license.html"
 End Sub

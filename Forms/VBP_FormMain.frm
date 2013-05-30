@@ -2777,20 +2777,6 @@ Private Sub MnuHelp_Click(Index As Integer)
             
         'Display About page
         Case 10
-            'Before we can display the "About" form, we need to paint the PhotoDemon logo to it.
-            Dim logoWidth As Long, logoHeight As Long
-            Dim logoAspectRatio As Double
-            
-            logoWidth = FormMain.picLogo.ScaleWidth
-            logoHeight = FormMain.picLogo.ScaleHeight
-            logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
-            
-            FormAbout.Visible = False
-            SetStretchBltMode FormAbout.hDC, STRETCHBLT_HALFTONE
-            StretchBlt FormAbout.hDC, 0, 0, FormAbout.ScaleWidth, FormAbout.ScaleWidth / logoAspectRatio, FormMain.picLogo.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
-            FormAbout.Picture = FormAbout.Image
-            
-            'With the painting done, we can now display the form.
             FormAbout.Show vbModal, FormMain
         
     End Select
