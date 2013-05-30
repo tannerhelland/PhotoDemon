@@ -16,11 +16,17 @@ Attribute VB_Name = "Loading"
 
 Option Explicit
 
+'Use these to ensure that the splash shows for a certain amount of time
+Private Const LOADTIME As Double = 2#
+Dim startTime As Double
+
 'IT ALL BEGINS HERE (after Sub Main, that is).
 ' Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be operated
 ' on by functions called from this routine.  (It is necessary to load the main form first, since a number of these operations -
 ' like loading all PNG menu icons from the resource file - operate on the main form.)
 Public Sub LoadTheProgram()
+    
+    startTime = Timer
     
     '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
@@ -330,7 +336,7 @@ Public Sub LoadTheProgram()
         FormSplash.Visible = False
         LoadImagesFromCommandLine
     Else
-        LoadMessage "All systems go!  Launching main window..."
+        LoadMessage "All systems go!  Preparing to launch main window..."
     End If
     
     
@@ -338,6 +344,12 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Unload the splash screen and present the main form
     '*************************************************************************************************************************************
+        
+    'Display the splash screen for at least a second or two
+    If Timer - startTime < LOADTIME Then
+        Do While Timer - startTime < LOADTIME
+        Loop
+    End If
         
     FormMain.Show
     
@@ -1040,6 +1052,9 @@ Public Sub LoadMessage(ByVal sMsg As String)
         End If
     End If
     
+    If App.LogMode = 0 Then sMsg = "PLEASE COMPILE - " & sMsg
+    'sMsg = UCase(sMsg)
+    
     If FormSplash.Visible Then
         FormSplash.lblMessage = sMsg
         FormSplash.lblMessage.Refresh
@@ -1470,7 +1485,7 @@ Private Sub CheckLoadingEnvironment()
         g_IsProgramCompiled = True
         
         'Determine the version automatically from the EXE information
-        FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
+        'FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
                 
     'App is not compiled:
     Else
@@ -1478,7 +1493,7 @@ Private Sub CheckLoadingEnvironment()
         g_IsProgramCompiled = False
 
         'Add a gentle reminder to compile the program
-        FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"
+        'FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"
         
     End If
     
