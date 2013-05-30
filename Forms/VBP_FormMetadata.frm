@@ -31,19 +31,11 @@ Begin VB.Form FormMetadata
       TabIndex        =   6
       Top             =   5760
       Width           =   2355
-      _ExtentX        =   4154
-      _ExtentY        =   953
-      Caption         =   "use readable names"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4154
+      _extenty        =   953
+      caption         =   "use readable names"
+      font            =   "VBP_FormMetadata.frx":0000
+      value           =   1
    End
    Begin VB.VScrollBar vsMetadata 
       Height          =   5340
@@ -111,19 +103,11 @@ Begin VB.Form FormMetadata
       TabIndex        =   7
       Top             =   5760
       Width           =   2310
-      _ExtentX        =   4075
-      _ExtentY        =   953
-      Caption         =   "use readable values"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4075
+      _extenty        =   953
+      caption         =   "use readable values"
+      font            =   "VBP_FormMetadata.frx":0028
+      value           =   1
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -315,19 +299,6 @@ Private Sub Form_Load()
     
     lstMetadata.ListIndex = 0
     
-End Sub
-
-'Simplified function for rendering text to an object.
-Private Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, ByVal xPos As Long, ByVal yPos As Long, Optional ByVal newFontSize As Long = 12, Optional ByVal newFontColor As Long = 0, Optional ByVal makeFontBold As Boolean = False, Optional ByVal makeFontItalic As Boolean = False)
-
-    dstObject.CurrentX = xPos
-    dstObject.CurrentY = yPos
-    dstObject.FontSize = newFontSize
-    dstObject.ForeColor = newFontColor
-    dstObject.FontBold = makeFontBold
-    dstObject.FontItalic = makeFontItalic
-    dstObject.Print sText
-
 End Sub
 
 'UNLOAD form

@@ -29,6 +29,19 @@ End Enum
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
 Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
+'Simplified pure-VB function for rendering text to an object.
+Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, ByVal xPos As Long, ByVal yPos As Long, Optional ByVal newFontSize As Long = 12, Optional ByVal newFontColor As Long = 0, Optional ByVal makeFontBold As Boolean = False, Optional ByVal makeFontItalic As Boolean = False)
+
+    dstObject.CurrentX = xPos
+    dstObject.CurrentY = yPos
+    dstObject.FontSize = newFontSize
+    dstObject.ForeColor = newFontColor
+    dstObject.FontBold = makeFontBold
+    dstObject.FontItalic = makeFontItalic
+    dstObject.Print sText
+
+End Sub
+
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
 Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
