@@ -173,6 +173,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.jhlabs.com/ip/filters/index.html)
 * Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License)
   (http://www.sno.phy.queensu.ca/~phil/exiftool/)
+* Bernhard Stockmann for his many excellent GIMP tutorials
+  (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * audioglider
   * Zhu JinYong
