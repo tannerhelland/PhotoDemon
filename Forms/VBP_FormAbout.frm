@@ -4,7 +4,7 @@ Begin VB.Form FormAbout
    BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   8055
+   ClientHeight    =   8310
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   9000
@@ -22,7 +22,7 @@ Begin VB.Form FormAbout
    Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   537
+   ScaleHeight     =   554
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   600
    ShowInTaskbar   =   0   'False
@@ -34,8 +34,30 @@ Begin VB.Form FormAbout
       Height          =   495
       Left            =   7440
       TabIndex        =   0
-      Top             =   7440
+      Top             =   7680
       Width           =   1365
+   End
+   Begin VB.Label lblExifTool 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "ExifTool license page"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FF0000&
+      Height          =   195
+      Left            =   6390
+      MouseIcon       =   "VBP_FormAbout.frx":000C
+      MousePointer    =   99  'Custom
+      TabIndex        =   9
+      Top             =   7050
+      Width           =   1500
    End
    Begin VB.Label lblzLib 
       AutoSize        =   -1  'True
@@ -52,11 +74,11 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   4650
-      MouseIcon       =   "VBP_FormAbout.frx":000C
+      Left            =   1020
+      MouseIcon       =   "VBP_FormAbout.frx":015E
       MousePointer    =   99  'Custom
       TabIndex        =   8
-      Top             =   6960
+      Top             =   7320
       Width           =   1200
    End
    Begin VB.Label lblEZTW32 
@@ -74,11 +96,11 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   2535
-      MouseIcon       =   "VBP_FormAbout.frx":015E
+      Left            =   3690
+      MouseIcon       =   "VBP_FormAbout.frx":02B0
       MousePointer    =   99  'Custom
       TabIndex        =   7
-      Top             =   6960
+      Top             =   7050
       Width           =   1530
    End
    Begin VB.Label lblPngnq 
@@ -96,11 +118,11 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   6420
-      MouseIcon       =   "VBP_FormAbout.frx":02B0
+      Left            =   3690
+      MouseIcon       =   "VBP_FormAbout.frx":0402
       MousePointer    =   99  'Custom
       TabIndex        =   6
-      Top             =   6960
+      Top             =   7320
       Width           =   1470
    End
    Begin VB.Label lblFreeImage 
@@ -118,11 +140,11 @@ Begin VB.Form FormAbout
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   195
-      Left            =   270
-      MouseIcon       =   "VBP_FormAbout.frx":0402
+      Left            =   1020
+      MouseIcon       =   "VBP_FormAbout.frx":0554
       MousePointer    =   99  'Custom
       TabIndex        =   5
-      Top             =   6960
+      Top             =   7050
       Width           =   1710
    End
    Begin VB.Label lblLinks 
@@ -153,7 +175,7 @@ Begin VB.Form FormAbout
       Height          =   195
       Index           =   0
       Left            =   240
-      MouseIcon       =   "VBP_FormAbout.frx":0554
+      MouseIcon       =   "VBP_FormAbout.frx":06A6
       MousePointer    =   99  'Custom
       TabIndex        =   3
       Top             =   2880
@@ -210,8 +232,8 @@ Attribute VB_Exposed = False
 'About Form
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 23/April/13
-'Last update: added additional names
+'Last updated: 30/May/13
+'Last update: added ExifTool license link
 '
 'A simple "about"/credits form.  Contains credits, copyright, and the program logo.
 '
@@ -233,7 +255,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 Private Sub Form_Load()
-    
+426
     'Automatic generation of version & copyright information
     lblVersion.Caption = g_Language.TranslateMessage("Version") & " " & App.Major & "." & App.Minor & "." & App.Revision
     lblDisclaimer.Caption = App.LegalCopyright & " "
@@ -334,6 +356,10 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub lblExifTool_Click()
+    OpenURL "http://dev.perl.org/licenses/"
 End Sub
 
 Private Sub lblEZTW32_Click()
