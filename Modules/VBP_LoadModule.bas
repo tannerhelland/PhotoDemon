@@ -17,8 +17,7 @@ Attribute VB_Name = "Loading"
 Option Explicit
 
 'Use these to ensure that the splash shows for a certain amount of time
-Private Const LOADTIME As Double = 2#
-Dim startTime As Double
+Dim m_LoadTime As Double, m_StartTime As Double
 
 'IT ALL BEGINS HERE (after Sub Main, that is).
 ' Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be operated
@@ -26,7 +25,7 @@ Dim startTime As Double
 ' like loading all PNG menu icons from the resource file - operate on the main form.)
 Public Sub LoadTheProgram()
     
-    startTime = Timer
+    m_StartTime = Timer
     
     '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
@@ -39,7 +38,7 @@ Public Sub LoadTheProgram()
     'Check the environment.  If inside the the IDE, the splash needs to be modified slightly.
     CheckLoadingEnvironment
     
-    
+    If g_IsProgramCompiled Then m_LoadTime = 2# Else m_LoadTime = 1#
     
     '*************************************************************************************************************************************
     ' Determine which version of Windows the user is running (as other load functions rely on this)
@@ -54,7 +53,7 @@ Public Sub LoadTheProgram()
     
     
     '*************************************************************************************************************************************
-    ' If the user doesn't have font smoothing enabled, enable it now.  PD's interface looks much better with it enabled.
+    ' If the user doesn't have font smoothing enabled, enable it now.  PD's interface looks much better with some form of antialiasing.
     '*************************************************************************************************************************************
     
     handleClearType True
@@ -104,7 +103,14 @@ Public Sub LoadTheProgram()
     wRect.Right = wRect.Left + g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
     wRect.Bottom = wRect.Top + g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
     g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
-            
+    
+    'Make the splash screen's message display match the rest of PD
+    If g_UseFancyFonts Then
+        FormSplash.lblMessage.FontName = "Segoe UI"
+    Else
+        FormSplash.lblMessage.FontName = "Tahoma"
+    End If
+    
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show
             
@@ -336,7 +342,7 @@ Public Sub LoadTheProgram()
         FormSplash.Visible = False
         LoadImagesFromCommandLine
     Else
-        LoadMessage "All systems go!  Preparing to launch main window..."
+        LoadMessage "Finalizing interface..."
     End If
     
     
@@ -346,8 +352,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
         
     'Display the splash screen for at least a second or two
-    If Timer - startTime < LOADTIME Then
-        Do While Timer - startTime < LOADTIME
+    If Timer - m_StartTime < m_LoadTime Then
+        Do While Timer - m_StartTime < m_LoadTime
         Loop
     End If
         
@@ -1052,8 +1058,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
         End If
     End If
     
-    If App.LogMode = 0 Then sMsg = "PLEASE COMPILE - " & sMsg
-    'sMsg = UCase(sMsg)
+    If Not g_IsProgramCompiled Then sMsg = "(IDE NOT RECOMMENDED - PLEASE COMPILE)  " & sMsg
     
     If FormSplash.Visible Then
         FormSplash.lblMessage = sMsg

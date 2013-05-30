@@ -41,28 +41,30 @@ Begin VB.Form FormSplash
       ScaleHeight     =   551
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   779
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
       Width           =   11685
    End
    Begin VB.Label lblMessage 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Live updates..."
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   11.25
          Charset         =   0
-         Weight          =   700
+         Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00808080&
+      ForeColor       =   &H00C0C0C0&
       Height          =   330
       Left            =   285
-      TabIndex        =   0
-      Top             =   7350
+      TabIndex        =   1
+      Top             =   7320
       Width           =   11205
       WordWrap        =   -1  'True
    End
