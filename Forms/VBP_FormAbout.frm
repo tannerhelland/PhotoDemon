@@ -103,6 +103,9 @@ End Type
 Dim creditList() As pdCredit
 Dim numOfCredits As Long
 
+'The offset is incremented upward; this controls the credit scroll distance
+Dim scrollOffset As Long
+
 'Height of each credit content block
 Private Const BLOCKHEIGHT As Long = 54
 
@@ -124,6 +127,8 @@ Private Sub CmdOK_Click()
 End Sub
 
 Private Sub Form_Load()
+
+    scrollOffset = 0
 
     ReDim creditList(0) As pdCredit
 
@@ -259,8 +264,7 @@ End Sub
 'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
 ' scrolling code I wrote for the metadata browser.
 Private Sub tmrText_Timer()
-        
-    Static scrollOffset As Long
+    
     scrollOffset = scrollOffset + 1
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
