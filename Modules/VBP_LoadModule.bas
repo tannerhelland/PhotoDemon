@@ -188,6 +188,7 @@ Public Sub LoadTheProgram()
     'INITIALIZE ALL SELECTION TOOLS
     
         'Selection visual styles (currently lightbox or highlight)
+        FormMain.cmbSelRender(0).ToolTipText = "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
         For i = 0 To FormMain.cmbSelRender.Count - 1
             FormMain.cmbSelRender(i).AddItem "Lightbox", 0
             FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
@@ -244,13 +245,13 @@ Public Sub LoadTheProgram()
     End If
                 
     'Manually create multi-line tooltips for some command buttons
-    FormMain.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop" & vbCrLf & " or Windows Explorer and dropping them onto PhotoDemon.)")
+    FormMain.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
     If g_ConfirmClosingUnsaved Then
-        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will" & vbCrLf & " receive a prompt to save it before it closes.")
+        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
     Else
-        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences)," & vbCrLf & " you WILL NOT receive a prompt to save this image before it closes.")
+        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
     End If
-    FormMain.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file." & vbCrLf & " To save to a different file, use the ""Save As"" button.")
+    FormMain.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
     FormMain.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
                         
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
@@ -342,7 +343,7 @@ Public Sub LoadTheProgram()
         FormSplash.Visible = False
         LoadImagesFromCommandLine
     Else
-        LoadMessage "Finalizing interface..."
+        LoadMessage "All systems go!  Launching main window..."
     End If
     
     
