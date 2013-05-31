@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 02/May/13
-'Last update: rebuilt all selection techniques around selection masks
+'Last updated: 31/May/13
+'Last update: fix bound values for feathered selections that are against an image edge
 '
 'This class handles all selections in PhotoDemon. At present, selections are simply rectangular areas - but this will change
 ' in the future as new selection modes are added.
@@ -889,6 +889,11 @@ Private Sub createSelectionMask()
                 boundTop = selTop - featheringRadius
                 boundWidth = selWidth + featheringRadius * 2
                 boundHeight = selHeight + featheringRadius * 2
+                
+                'Do extra checking for feathering - if a bound is less than zero and feathering is enabled, we have to subtract the
+                ' pixels that lie over the edge from the bound width/height
+                If boundLeft < 0 And featheringRadius > 0 Then boundWidth = boundWidth + boundLeft
+                If boundTop < 0 And featheringRadius > 0 Then boundHeight = boundHeight + boundTop
             End If
             
         Case sCircle
@@ -903,6 +908,11 @@ Private Sub createSelectionMask()
                 boundTop = selTop - featheringRadius
                 boundWidth = selWidth + featheringRadius * 2
                 boundHeight = selHeight + featheringRadius * 2
+                
+                'Do extra checking for feathering - if a bound is less than zero and feathering is enabled, we have to subtract the
+                ' pixels that lie over the edge from the bound width/height
+                If boundLeft < 0 And featheringRadius > 0 Then boundWidth = boundWidth + boundLeft
+                If boundTop < 0 And featheringRadius > 0 Then boundHeight = boundHeight + boundTop
             End If
             
         Case Else
