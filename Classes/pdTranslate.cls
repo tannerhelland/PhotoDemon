@@ -983,13 +983,14 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             
         End If
         
+        Dim curFontSize As Long
+        
         'Labels receive a bit of extra attention.  Because translations can be longer than their original English text, a translated
         ' label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until it fits.
         If (TypeOf eControl Is Label) Then
             If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
             
                 'Try shrinking the font size until an acceptable width is found
-                Dim curFontSize As Long
                 curFontSize = eControl.FontSize
                 Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
             
@@ -997,6 +998,22 @@ Public Sub applyTranslations(ByRef srcForm As Form)
                     eControl.FontSize = curFontSize
                     eControl.Refresh
             
+                Loop
+            
+            End If
+        End If
+        
+        'PhotoDemon's "smart" option and check box buttons receive the same autosize treatment
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+            If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) Then
+            
+                'Try shrinking the font size until an acceptable width is found
+                curFontSize = eControl.Font.Size
+                Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
+                
+                    curFontSize = curFontSize - 1
+                    eControl.Font.Size = curFontSize
+                
                 Loop
             
             End If
