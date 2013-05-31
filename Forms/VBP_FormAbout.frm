@@ -35,7 +35,6 @@ Begin VB.Form FormAbout
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       ForeColor       =   &H00FFFFFF&
@@ -86,8 +85,8 @@ Attribute VB_Exposed = False
 'About Form
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 30/May/13
-'Last update: redesigned the dialog from the ground up.  Also, scrolling credits!
+'Last updated: 31/May/13
+'Last update: rewrote the scrolling credits against my new pdText object.  Performance is waaaay better!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -111,9 +110,13 @@ Private Const BLOCKHEIGHT As Long = 54
 Dim m_ToolTip As clsToolTip
 
 Dim backLayer As pdLayer
+Dim bufferLayer As pdLayer
 Dim m_BufferLeft As Long, m_BufferTop As Long
 Dim m_BufferWidth As Long, m_BufferHeight As Long
 Dim m_FormWidth As Long
+
+'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
+Dim firstFont As pdFont, secondFont As pdFont
 
 Private Sub CmdOK_Click()
     tmrText.Enabled = False
@@ -123,13 +126,6 @@ End Sub
 Private Sub Form_Load()
 
     ReDim creditList(0) As pdCredit
-
-    'Make the invisible buffer's font match the rest of PD
-    If g_UseFancyFonts Then
-        picBuffer.FontName = "Segoe UI"
-    Else
-        picBuffer.FontName = "Tahoma"
-    End If
 
     numOfCredits = 0
     
@@ -201,7 +197,6 @@ Private Sub Form_Load()
     GenerateThankyou "Thank you for using PhotoDemon"
     GenerateThankyou "tannerhelland.com/photodemon"
     
-    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
@@ -210,6 +205,10 @@ Private Sub Form_Load()
     Set backLayer = New pdLayer
     backLayer.CreateFromPicture picBackground.Picture
     
+    'The PicBuffer picture box is used only as a reference.  No drawing ever occurs on it - instead, we use our own buffer layer.
+    Set bufferLayer = New pdLayer
+    bufferLayer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    
     'Initialize a few other variables for speed reasons
     m_BufferLeft = picBuffer.Left
     m_BufferTop = picBuffer.Top
@@ -217,9 +216,27 @@ Private Sub Form_Load()
     m_BufferHeight = picBuffer.ScaleHeight
     m_FormWidth = Me.ScaleWidth
     
+    'Initialize a custom font objects for names
+    Set firstFont = New pdFont
+    firstFont.setFontColor RGB(255, 255, 255)
+    firstFont.setFontBold True
+    firstFont.setFontSize 14
+    firstFont.createFontObject
+    firstFont.setTextAlignment vbRightJustify
+    
+    '...and a second custom font object for URLs
+    Set secondFont = New pdFont
+    secondFont.setFontColor RGB(192, 192, 192)
+    secondFont.setFontBold False
+    secondFont.setFontSize 10
+    secondFont.createFontObject
+    secondFont.setTextAlignment vbRightJustify
+    
     'Render the primary background image to the form
     StretchBlt Me.hDC, 0, 0, m_FormWidth, backLayer.getLayerHeight, backLayer.getLayerDC, 0, 0, backLayer.getLayerWidth, backLayer.getLayerHeight, vbSrcCopy
+    Me.Picture = Me.Image
     
+    'Start the credit scroll timer
     tmrText.Enabled = True
     
 End Sub
@@ -247,30 +264,26 @@ Private Sub tmrText_Timer()
     scrollOffset = scrollOffset + 1
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, backLayer.getLayerDC, m_BufferLeft, m_BufferTop, vbSrcCopy
+    'Erase the buffer by copying over a chunk of the background image (onto which we will render the text)
+    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, backLayer.getLayerDC, m_BufferLeft, m_BufferTop, vbSrcCopy
     
+    'Render all text
     Dim i As Long
     For i = 0 To numOfCredits - 1
         renderCredit i, 8, i * BLOCKHEIGHT - scrollOffset - 2
     Next i
     
-    'Copy the buffer to the main form
-    picBuffer.Picture = picBuffer.Image
-    BitBlt Me.hDC, m_BufferLeft, m_BufferTop, m_BufferWidth, m_BufferHeight, picBuffer.hDC, 0, 0, vbSrcCopy
+    'Copy the buffer to the main form and refresh it
+    BitBlt Me.hDC, m_BufferLeft, m_BufferTop, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
     Me.Picture = Me.Image
     
 End Sub
 
-'Render the given metadata index onto the background picture box at the specified offset
+'Render the given metadata index onto the background picture box at the specified offset.  Custom font objects are used for better performance.
 Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
     If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < m_BufferHeight) Then
-    
-        Dim primaryColor As Long, secondaryColor As Long, tertiaryColor As Long
-        primaryColor = RGB(255, 255, 255)
-        secondaryColor = RGB(192, 192, 192)
-        tertiaryColor = RGB(255, 255, 255)
     
         Dim linePadding As Long
         linePadding = 1
@@ -279,28 +292,17 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         
         Dim drawString As String
         drawString = creditList(blockIndex).Name
-        picBuffer.FontSize = 14
-        picBuffer.FontBold = True
         
         'Render the "name" field
-        drawTextOnObject picBuffer, drawString, m_BufferWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + 0, 14, primaryColor, True, False
+        firstFont.attachToDC bufferLayer.getLayerDC
+        firstFont.fastRenderText m_BufferWidth - offsetX, offsetY, drawString
                 
         'Below the name, add the URL (or other description)
-        mHeight = picBuffer.TextHeight(drawString) + linePadding
-        
+        mHeight = firstFont.getHeightOfString(drawString) + linePadding
         drawString = creditList(blockIndex).URL
         
-        picBuffer.FontSize = 10
-        picBuffer.FontBold = False
-        
-        drawTextOnObject picBuffer, drawString, m_BufferWidth - picBuffer.TextWidth(drawString) - offsetX, offsetY + mHeight, 10, secondaryColor, False
-        
-        'Draw a divider line near the bottom of the block
-        'Dim lineY As Long
-        'If blockIndex < mdCategories(blockCategory).Count - 1 Then
-        '    lineY = offsetY + BLOCKHEIGHT - 8
-        '    picBuffer.Line (4, lineY)-(picBuffer.ScaleWidth - 8, lineY), tertiaryColor
-        'End If
+        secondFont.attachToDC bufferLayer.getLayerDC
+        secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
         
     End If
 
