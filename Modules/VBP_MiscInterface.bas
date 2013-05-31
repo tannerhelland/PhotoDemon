@@ -146,6 +146,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         
     End If
     
+    
     'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then
         tForm.Refresh

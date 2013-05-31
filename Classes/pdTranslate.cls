@@ -983,6 +983,25 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             
         End If
         
+        'Labels receive a bit of extra attention.  Because translations can be longer than their original English text, a translated
+        ' label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until it fits.
+        If (TypeOf eControl Is Label) Then
+            If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
+            
+                'Try shrinking the font size until an acceptable width is found
+                Dim curFontSize As Long
+                curFontSize = eControl.FontSize
+                Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
+            
+                    curFontSize = curFontSize - 1
+                    eControl.FontSize = curFontSize
+                    eControl.Refresh
+            
+                Loop
+            
+            End If
+        End If
+        
     Next
     
     'If DISPLAY_TIMINGS Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
