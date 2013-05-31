@@ -65,10 +65,10 @@ Begin VB.Form FormResize
       Left            =   4110
       TabIndex        =   4
       Top             =   840
-      Width           =   2355
-      _ExtentX        =   4154
+      Width           =   1770
+      _ExtentX        =   3122
       _ExtentY        =   847
-      Caption         =   "lock image aspect ratio"
+      Caption         =   "lock aspect ratio"
       Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -196,6 +196,7 @@ Begin VB.Form FormResize
       Width           =   855
    End
    Begin VB.Label lblHeight 
+      Alignment       =   1  'Right Justify
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
@@ -218,6 +219,7 @@ Begin VB.Form FormResize
       Width           =   750
    End
    Begin VB.Label lblWidth 
+      Alignment       =   1  'Right Justify
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
