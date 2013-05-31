@@ -687,13 +687,13 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             
             Select Case checkClick(x, y)
                 Case 0
-                    picDraw.ToolTipText = g_Language.TranslateMessage("top-left corner")
+                    picDraw.ToolTipText = g_Language.TranslateMessage("top-left")
                 Case 1
-                    picDraw.ToolTipText = g_Language.TranslateMessage("top-right corner")
+                    picDraw.ToolTipText = g_Language.TranslateMessage("top-right")
                 Case 2
-                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-right corner")
+                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-right")
                 Case 3
-                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-left corner")
+                    picDraw.ToolTipText = g_Language.TranslateMessage("bottom-left")
                     
             End Select
             
