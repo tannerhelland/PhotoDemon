@@ -584,7 +584,9 @@ End Function
 
 'Retrieve an entire file and return it as a string.
 Private Function getFileAsString(ByVal fName As String) As String
-        
+    
+    Dim tmpFileContents As String
+    
     'Ensure that the file exists before attempting to load it
     If FileExist(fName) Then
         
@@ -592,15 +594,14 @@ Private Function getFileAsString(ByVal fName As String) As String
         fileNum = FreeFile
     
         Open fName For Binary As #fileNum
-            getFileAsString = Space$(LOF(fileNum))
-            Get #fileNum, , getFileAsString
+            tmpFileContents = Space$(LOF(fileNum))
+            Get #fileNum, , tmpFileContents
         Close #fileNum
     
         'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-        If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
-    
-        'Replace any pure linefeed characters with vbCrLf, which is handled better by the translation engine
-        If InStr(1, getFileAsString, vbLf) <> 0 Then getFileAsString = Replace(getFileAsString, vbLf, vbCrLf)
+        If InStr(1, tmpFileContents, vbTab) <> 0 Then tmpFileContents = Replace(tmpFileContents, vbTab, "")
+        
+        getFileAsString = tmpFileContents
     
     Else
         getFileAsString = ""
@@ -751,7 +752,16 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
     'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
     ' even if translation text is missing.
-    If newString = "" Then newString = srcMessage
+    If newString = "" Then
+        
+        'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+        If translationActive And (InStr(1, searchString, vbCrLf) > 0) Then
+            newString = getTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
+            If newString = "" Then newString = srcMessage
+        Else
+            newString = srcMessage
+        End If
+    End If
     
     'newString now contains the translated message (or the original text, if no translation was found).
     
