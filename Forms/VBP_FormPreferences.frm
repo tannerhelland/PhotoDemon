@@ -28,7 +28,7 @@ Begin VB.Form FormPreferences
       Caption         =   "Reset all options"
       Height          =   495
       Left            =   2670
-      TabIndex        =   95
+      TabIndex        =   93
       Top             =   6990
       Width           =   2580
    End
@@ -57,32 +57,24 @@ Begin VB.Form FormPreferences
       TabIndex        =   2
       Top             =   120
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Interface"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":0000
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Interface Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":0000
+      backcolor       =   -2147483643
+      caption         =   "Interface"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      value           =   -1  'True
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":0028
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Interface Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -91,31 +83,23 @@ Begin VB.Form FormPreferences
       TabIndex        =   5
       Top             =   5160
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Updates"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":1052
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Update Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":107A
+      backcolor       =   -2147483643
+      caption         =   "Updates"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":10A2
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Update Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -124,31 +108,23 @@ Begin VB.Form FormPreferences
       TabIndex        =   3
       Top             =   3480
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Tools"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":20A4
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Tool Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":20F4
+      backcolor       =   -2147483643
+      caption         =   "Tools"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":211C
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Tool Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -157,31 +133,23 @@ Begin VB.Form FormPreferences
       TabIndex        =   6
       Top             =   6000
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Advanced"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":30F6
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Advanced Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":316E
+      backcolor       =   -2147483643
+      caption         =   "Advanced"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":3196
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Advanced Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -190,31 +158,23 @@ Begin VB.Form FormPreferences
       TabIndex        =   4
       Top             =   4320
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Transparency"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":4148
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Transparency Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":41E8
+      backcolor       =   -2147483643
+      caption         =   "Transparency"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":4210
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Transparency Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
@@ -223,395 +183,73 @@ Begin VB.Form FormPreferences
       TabIndex        =   32
       Top             =   960
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Loading"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":519A
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Load (Import) Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":5262
+      backcolor       =   -2147483643
+      caption         =   "Loading"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":528A
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Load (Import) Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
       Index           =   2
       Left            =   120
-      TabIndex        =   50
+      TabIndex        =   49
       Top             =   1800
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Saving"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":61EC
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Save (Export) Options"
-      ColorScheme     =   3
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":62DC
+      backcolor       =   -2147483643
+      caption         =   "Saving"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":6304
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "Save (Export) Options"
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
       Index           =   3
       Left            =   120
-      TabIndex        =   53
+      TabIndex        =   52
       Top             =   2640
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "File formats"
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":723E
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "File Format Options"
-      ColorScheme     =   3
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   2
-      Left            =   2760
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   51
-      Top             =   240
-      Width           =   8295
-      Begin VB.ComboBox cmbSaveBehavior 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   112
-         Top             =   5925
-         Width           =   7980
-      End
-      Begin VB.ComboBox cmbExportColorDepth 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   67
-         Top             =   1740
-         Width           =   7980
-      End
-      Begin VB.ComboBox cmbMetadata 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   64
-         Top             =   4530
-         Width           =   7980
-      End
-      Begin VB.ComboBox cmbDefaultSaveFormat 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   56
-         Top             =   3135
-         Width           =   7980
-      End
-      Begin VB.CheckBox chkConfirmUnsaved 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   " when closing images, warn me me about unsaved changes"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   600
-         Left            =   240
-         TabIndex        =   52
-         ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
-         Top             =   330
-         Width           =   7815
-      End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when saving images that originally contained metadata:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   3
-         Left            =   240
-         TabIndex        =   113
-         Top             =   4140
-         Width           =   4785
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "metadata (EXIF, GPS, comments, etc.)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         TabIndex        =   111
-         Top             =   3690
-         Width           =   4065
-      End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "set outgoing color depth:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   0
-         Left            =   240
-         TabIndex        =   69
-         Top             =   1350
-         Width           =   2145
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "color depth of saved images"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   17
-         Left            =   0
-         TabIndex        =   68
-         Top             =   930
-         Width           =   2985
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "save behavior: overwrite vs make a copy"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   16
-         Left            =   0
-         TabIndex        =   66
-         Top             =   5085
-         Width           =   4320
-      End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when ""Save"" is used:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   2
-         Left            =   240
-         TabIndex        =   65
-         Top             =   5535
-         Width           =   1830
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "closing unsaved images"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   11
-         Left            =   0
-         TabIndex        =   59
-         Top             =   0
-         Width           =   2505
-      End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   1
-         Left            =   240
-         TabIndex        =   58
-         Top             =   2730
-         Width           =   6585
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "default file format when saving"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   10
-         Left            =   0
-         TabIndex        =   57
-         Top             =   2310
-         Width           =   3285
-      End
+      _extentx        =   3995
+      _extenty        =   1376
+      buttonstyle     =   7
+      font            =   "VBP_FormPreferences.frx":7356
+      backcolor       =   -2147483643
+      caption         =   "File formats"
+      forecolor       =   4210752
+      forecolorhover  =   4194304
+      mode            =   1
+      handpointer     =   -1  'True
+      picturenormal   =   "VBP_FormPreferences.frx":737E
+      picturealign    =   0
+      pictureeffectondown=   0
+      disabledpicturemode=   1
+      captioneffects  =   0
+      tooltiptitle    =   "File Format Options"
+      colorscheme     =   3
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -628,26 +266,6 @@ Begin VB.Form FormPreferences
       TabIndex        =   33
       Top             =   240
       Width           =   8295
-      Begin VB.CheckBox chkInitialColorDepth 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   " count unique colors in incoming images (to determine optimal color depth)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   615
-         Left            =   360
-         TabIndex        =   63
-         Top             =   780
-         Width           =   7815
-      End
       Begin VB.ComboBox cmbMultiImage 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -662,29 +280,9 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   360
          Style           =   2  'Dropdown List
-         TabIndex        =   46
+         TabIndex        =   45
          Top             =   5250
          Width           =   7920
-      End
-      Begin VB.CheckBox chkToneMapping 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         Caption         =   "apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   615
-         Left            =   360
-         TabIndex        =   44
-         Top             =   3675
-         Width           =   7935
       End
       Begin VB.ComboBox cmbLargeImages 
          BeginProperty Font 
@@ -704,6 +302,28 @@ Begin VB.Form FormPreferences
          Top             =   2250
          Width           =   7920
       End
+      Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
+         Height          =   480
+         Left            =   360
+         TabIndex        =   112
+         Top             =   840
+         Width           =   6765
+         _extentx        =   11933
+         _extenty        =   847
+         caption         =   "count unique colors in incoming images (to determine optimal color depth)"
+         font            =   "VBP_FormPreferences.frx":83D0
+      End
+      Begin PhotoDemon.smartCheckBox chkToneMapping 
+         Height          =   480
+         Left            =   360
+         TabIndex        =   113
+         Top             =   3720
+         Width           =   6885
+         _extentx        =   12144
+         _extenty        =   847
+         caption         =   "apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)"
+         font            =   "VBP_FormPreferences.frx":83F8
+      End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
@@ -721,7 +341,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   15
          Left            =   180
-         TabIndex        =   62
+         TabIndex        =   61
          Top             =   480
          Width           =   1200
       End
@@ -742,7 +362,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   14
          Left            =   0
-         TabIndex        =   61
+         TabIndex        =   60
          Top             =   0
          Width           =   2025
       End
@@ -763,7 +383,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   13
          Left            =   0
-         TabIndex        =   60
+         TabIndex        =   59
          Top             =   2880
          Width           =   3870
       End
@@ -781,7 +401,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   615
          Left            =   120
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   5760
          Width           =   8175
       End
@@ -801,7 +421,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   360
-         TabIndex        =   47
+         TabIndex        =   46
          Top             =   4860
          Width           =   2895
       End
@@ -822,7 +442,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   8
          Left            =   180
-         TabIndex        =   45
+         TabIndex        =   44
          Top             =   4380
          Width           =   5205
       End
@@ -907,21 +527,13 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkSelectionClearCrop 
          Height          =   480
          Left            =   240
-         TabIndex        =   108
+         TabIndex        =   106
          Top             =   480
          Width           =   6480
-         _ExtentX        =   11430
-         _ExtentY        =   847
-         Caption         =   "automatically clear the active selection after ""Crop to Selection"" is used"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   11430
+         _extenty        =   847
+         caption         =   "automatically clear the active selection after ""Crop to Selection"" is used"
+         font            =   "VBP_FormPreferences.frx":8420
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -963,40 +575,24 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkGDIPlusTest 
          Height          =   480
          Left            =   240
-         TabIndex        =   110
+         TabIndex        =   108
          Top             =   5160
          Width           =   2130
-         _ExtentX        =   3757
-         _ExtentY        =   847
-         Caption         =   "enable GDI+ support"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   3757
+         _extenty        =   847
+         caption         =   "enable GDI+ support"
+         font            =   "VBP_FormPreferences.frx":8448
       End
       Begin PhotoDemon.smartCheckBox chkLogMessages 
          Height          =   480
          Left            =   240
-         TabIndex        =   109
+         TabIndex        =   107
          Top             =   360
          Width           =   3195
-         _ExtentX        =   5636
-         _ExtentY        =   847
-         Caption         =   "log all program messages to file "
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   5636
+         _extenty        =   847
+         caption         =   "log all program messages to file "
+         font            =   "VBP_FormPreferences.frx":8470
       End
       Begin VB.TextBox TxtTempPath 
          BeginProperty Font 
@@ -1051,7 +647,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   72
+         TabIndex        =   70
          Top             =   3870
          Width           =   7965
          WordWrap        =   -1  'True
@@ -1071,7 +667,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   71
+         TabIndex        =   69
          Top             =   3360
          Width           =   7965
          WordWrap        =   -1  'True
@@ -1093,7 +689,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   70
+         TabIndex        =   68
          Top             =   2880
          Width           =   2130
       End
@@ -1114,7 +710,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   49
+         TabIndex        =   48
          Top             =   960
          Width           =   2385
       End
@@ -1198,43 +794,27 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkPromptPluginDownload 
          Height          =   480
          Left            =   240
-         TabIndex        =   97
+         TabIndex        =   95
          Top             =   1080
          Width           =   5280
-         _ExtentX        =   9313
-         _ExtentY        =   847
-         Caption         =   "if core plugins cannot be located, offer to download them"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   9313
+         _extenty        =   847
+         caption         =   "if core plugins cannot be located, offer to download them"
+         value           =   1
+         font            =   "VBP_FormPreferences.frx":8498
       End
       Begin PhotoDemon.smartCheckBox chkProgramUpdates 
          Height          =   480
          Left            =   240
-         TabIndex        =   96
+         TabIndex        =   94
          ToolTipText     =   "If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon"
          Top             =   480
          Width           =   5130
-         _ExtentX        =   9049
-         _ExtentY        =   847
-         Caption         =   "automatically check for software updates every 10 days"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   9049
+         _extenty        =   847
+         caption         =   "automatically check for software updates every 10 days"
+         value           =   1
+         font            =   "VBP_FormPreferences.frx":84C0
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -1295,81 +875,49 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkFancyFonts 
          Height          =   480
          Left            =   240
-         TabIndex        =   101
+         TabIndex        =   99
          ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon interface font. Leaving it unchecked defaults to ""Tahoma""."
          Top             =   5400
          Width           =   7425
-         _ExtentX        =   13097
-         _ExtentY        =   847
-         Caption         =   "render PhotoDemon text with modern typefaces (only available on Vista or newer)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   13097
+         _extenty        =   847
+         caption         =   "render PhotoDemon text with modern typefaces (only available on Vista or newer)"
+         font            =   "VBP_FormPreferences.frx":84E8
       End
       Begin PhotoDemon.smartCheckBox chkWindowLocation 
          Height          =   480
          Left            =   240
-         TabIndex        =   100
+         TabIndex        =   98
          ToolTipText     =   "If selected, this setting will ensure that PhotoDemon starts up in the on-screen location where you last left it."
          Top             =   4920
          Width           =   5820
-         _ExtentX        =   10266
-         _ExtentY        =   847
-         Caption         =   "remember main window's on-screen location between sessions"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   10266
+         _extenty        =   847
+         caption         =   "remember main window's on-screen location between sessions"
+         font            =   "VBP_FormPreferences.frx":8510
       End
       Begin PhotoDemon.smartCheckBox chkTaskBarIcon 
          Height          =   480
          Left            =   240
-         TabIndex        =   99
+         TabIndex        =   97
          Top             =   4440
          Width           =   5175
-         _ExtentX        =   9128
-         _ExtentY        =   847
-         Caption         =   "dynamically update taskbar icon to match current image"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   9128
+         _extenty        =   847
+         caption         =   "dynamically update taskbar icon to match current image"
+         font            =   "VBP_FormPreferences.frx":8538
       End
       Begin PhotoDemon.smartCheckBox chkDropShadow 
          Height          =   480
          Left            =   240
-         TabIndex        =   98
+         TabIndex        =   96
          ToolTipText     =   "This setting helps images stand out from the canvas behind them"
          Top             =   1230
          Width           =   4380
-         _ExtentX        =   7726
-         _ExtentY        =   847
-         Caption         =   "draw drop shadow between image and canvas"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   7726
+         _extenty        =   847
+         caption         =   "draw drop shadow between image and canvas"
+         font            =   "VBP_FormPreferences.frx":8560
       End
       Begin VB.ComboBox cmbMRUCaption 
          BeginProperty Font 
@@ -1432,7 +980,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   405
          Left            =   6960
-         MouseIcon       =   "VBP_FormPreferences.frx":8290
+         MouseIcon       =   "VBP_FormPreferences.frx":8588
          MousePointer    =   99  'Custom
          ScaleHeight     =   25
          ScaleMode       =   3  'Pixel
@@ -1584,21 +1132,13 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkValidateAlpha 
          Height          =   480
          Left            =   360
-         TabIndex        =   102
+         TabIndex        =   100
          Top             =   3240
          Width           =   4635
-         _ExtentX        =   8176
-         _ExtentY        =   847
-         Caption         =   "automatically validate all incoming alpha channels"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         _extentx        =   8176
+         _extenty        =   847
+         caption         =   "automatically validate all incoming alpha channels"
+         font            =   "VBP_FormPreferences.frx":86DA
       End
       Begin VB.ComboBox cmbAlphaCheckSize 
          BeginProperty Font 
@@ -1642,7 +1182,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   6240
-         MouseIcon       =   "VBP_FormPreferences.frx":83E2
+         MouseIcon       =   "VBP_FormPreferences.frx":8702
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1658,7 +1198,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H80000008&
          Height          =   360
          Left            =   7200
-         MouseIcon       =   "VBP_FormPreferences.frx":8534
+         MouseIcon       =   "VBP_FormPreferences.frx":8854
          MousePointer    =   99  'Custom
          ScaleHeight     =   22
          ScaleMode       =   3  'Pixel
@@ -1764,7 +1304,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   433
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   54
+      TabIndex        =   53
       Top             =   240
       Width           =   8295
       Begin VB.ComboBox cmbFiletype 
@@ -1781,7 +1321,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   600
          Style           =   2  'Dropdown List
-         TabIndex        =   82
+         TabIndex        =   80
          Top             =   960
          Width           =   7395
       End
@@ -1796,27 +1336,19 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   84
+         TabIndex        =   82
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkBMPRLE 
             Height          =   480
             Left            =   360
-            TabIndex        =   107
+            TabIndex        =   105
             Top             =   600
             Width           =   4890
-            _ExtentX        =   8625
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving 8bpp BMP images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   8625
+            _extenty        =   847
+            caption         =   "use RLE compression when saving 8bpp BMP images"
+            font            =   "VBP_FormPreferences.frx":89A6
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1835,7 +1367,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   19
             Left            =   120
-            TabIndex        =   85
+            TabIndex        =   83
             Top             =   120
             Width           =   2295
          End
@@ -1851,27 +1383,19 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   76
+         TabIndex        =   74
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
             Height          =   480
             Left            =   360
-            TabIndex        =   103
+            TabIndex        =   101
             Top             =   1560
             Width           =   4230
-            _ExtentX        =   7461
-            _ExtentY        =   847
-            Caption         =   " save TIFFs as separated CMYK (for printing)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   7461
+            _extenty        =   847
+            caption         =   " save TIFFs as separated CMYK (for printing)"
+            font            =   "VBP_FormPreferences.frx":89CE
          End
          Begin VB.ComboBox cmbTIFFCompression 
             BeginProperty Font 
@@ -1887,7 +1411,7 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   360
             Style           =   2  'Dropdown List
-            TabIndex        =   77
+            TabIndex        =   75
             Top             =   960
             Width           =   7335
          End
@@ -1908,7 +1432,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   7
             Left            =   120
-            TabIndex        =   80
+            TabIndex        =   78
             Top             =   120
             Width           =   4395
          End
@@ -1929,7 +1453,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   0
             Left            =   360
-            TabIndex        =   78
+            TabIndex        =   76
             Top             =   645
             Width           =   3135
          End
@@ -1945,7 +1469,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   73
+         TabIndex        =   71
          Top             =   1680
          Width           =   7935
          Begin VB.ComboBox cmbPPMFormat 
@@ -1962,7 +1486,7 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   74
+            TabIndex        =   72
             Top             =   960
             Width           =   7335
          End
@@ -1983,7 +1507,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   12
             Left            =   120
-            TabIndex        =   81
+            TabIndex        =   79
             Top             =   120
             Width           =   3285
          End
@@ -2003,7 +1527,7 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   240
             Left            =   240
-            TabIndex        =   75
+            TabIndex        =   73
             Top             =   600
             Width           =   1950
          End
@@ -2019,52 +1543,36 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   289
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   86
+         TabIndex        =   84
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   480
             Left            =   360
-            TabIndex        =   105
+            TabIndex        =   103
             Top             =   2520
             Width           =   4830
-            _ExtentX        =   8520
-            _ExtentY        =   847
-            Caption         =   "preserve file's original background color, if available"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   8520
+            _extenty        =   847
+            caption         =   "preserve file's original background color, if available"
+            font            =   "VBP_FormPreferences.frx":89F6
          End
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   480
             Left            =   360
-            TabIndex        =   104
+            TabIndex        =   102
             Top             =   2040
             Width           =   2430
-            _ExtentX        =   4286
-            _ExtentY        =   847
-            Caption         =   "use interlacing (Adam7)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   4286
+            _extenty        =   847
+            caption         =   "use interlacing (Adam7)"
+            font            =   "VBP_FormPreferences.frx":8A1E
          End
          Begin VB.HScrollBar hsPNGCompression 
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   88
+            TabIndex        =   86
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -2087,7 +1595,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   1
             Left            =   5625
-            TabIndex        =   91
+            TabIndex        =   89
             Top             =   1560
             Width           =   1590
          End
@@ -2108,7 +1616,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   0
             Left            =   600
-            TabIndex        =   90
+            TabIndex        =   88
             Top             =   1560
             Width           =   1110
          End
@@ -2129,7 +1637,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   89
+            TabIndex        =   87
             Top             =   720
             Width           =   4725
          End
@@ -2150,7 +1658,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   20
             Left            =   120
-            TabIndex        =   87
+            TabIndex        =   85
             Top             =   120
             Width           =   4290
          End
@@ -2166,27 +1674,19 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   92
+         TabIndex        =   90
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTGARLE 
             Height          =   480
             Left            =   360
-            TabIndex        =   106
+            TabIndex        =   104
             Top             =   600
             Width           =   4410
-            _ExtentX        =   7779
-            _ExtentY        =   847
-            Caption         =   "use RLE compression when saving TGA images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   7779
+            _extenty        =   847
+            caption         =   "use RLE compression when saving TGA images"
+            font            =   "VBP_FormPreferences.frx":8A46
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -2205,7 +1705,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   21
             Left            =   120
-            TabIndex        =   93
+            TabIndex        =   91
             Top             =   120
             Width           =   2700
          End
@@ -2215,7 +1715,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
-         TabIndex        =   83
+         TabIndex        =   81
          Top             =   5520
          Width           =   7455
       End
@@ -2243,7 +1743,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   18
          Left            =   360
-         TabIndex        =   79
+         TabIndex        =   77
          Top             =   480
          Width           =   2520
       End
@@ -2264,9 +1764,307 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   9
          Left            =   0
-         TabIndex        =   55
+         TabIndex        =   54
          Top             =   0
          Width           =   1950
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   2
+      Left            =   2760
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   50
+      Top             =   240
+      Width           =   8295
+      Begin VB.ComboBox cmbSaveBehavior 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   110
+         Top             =   5925
+         Width           =   7980
+      End
+      Begin VB.ComboBox cmbExportColorDepth 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   65
+         Top             =   1740
+         Width           =   7980
+      End
+      Begin VB.ComboBox cmbMetadata 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   62
+         Top             =   4530
+         Width           =   7980
+      End
+      Begin VB.ComboBox cmbDefaultSaveFormat 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   55
+         Top             =   3135
+         Width           =   7980
+      End
+      Begin VB.CheckBox chkConfirmUnsaved 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         Caption         =   " when closing images, warn me me about unsaved changes"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   600
+         Left            =   240
+         TabIndex        =   51
+         ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
+         Top             =   330
+         Width           =   7815
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when saving images that originally contained metadata:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   3
+         Left            =   240
+         TabIndex        =   111
+         Top             =   4140
+         Width           =   4785
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "metadata (EXIF, GPS, comments, etc.)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   1
+         Left            =   0
+         TabIndex        =   109
+         Top             =   3690
+         Width           =   4065
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "set outgoing color depth:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         TabIndex        =   67
+         Top             =   1350
+         Width           =   2145
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "color depth of saved images"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   17
+         Left            =   0
+         TabIndex        =   66
+         Top             =   930
+         Width           =   2985
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "save behavior: overwrite vs make a copy"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   16
+         Left            =   0
+         TabIndex        =   64
+         Top             =   5085
+         Width           =   4320
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when ""Save"" is used:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   2
+         Left            =   240
+         TabIndex        =   63
+         Top             =   5535
+         Width           =   1830
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "closing unsaved images"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   11
+         Left            =   0
+         TabIndex        =   58
+         Top             =   0
+         Width           =   2505
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   240
+         TabIndex        =   57
+         Top             =   2730
+         Width           =   6585
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "default file format when saving"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   10
+         Left            =   0
+         TabIndex        =   56
+         Top             =   2310
+         Width           =   3285
       End
    End
    Begin VB.Line lneVertical 
@@ -2279,7 +2077,7 @@ Begin VB.Form FormPreferences
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   94
+      TabIndex        =   92
       Top             =   6840
       Width           =   11295
    End
