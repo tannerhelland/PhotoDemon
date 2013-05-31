@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter Support Class
-'Copyright ©2013-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/January/13
 'Last updated: 29/April/13
 'Last update: added "Ignore" option for out-of-bounds pixels; this mimicks Paint Shop Pro behavior
