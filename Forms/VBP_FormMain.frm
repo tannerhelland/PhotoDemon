@@ -95,7 +95,7 @@ Begin VB.MDIForm FormMain
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   198
          TabIndex        =   15
-         Top             =   2760
+         Top             =   1440
          Visible         =   0   'False
          Width           =   2970
          Begin VB.ComboBox cmbSelSmoothing 
@@ -452,8 +452,8 @@ Begin VB.MDIForm FormMain
          Index           =   1
          X1              =   5
          X2              =   192
-         Y1              =   180
-         Y2              =   180
+         Y1              =   92
+         Y2              =   92
       End
       Begin VB.Label lblTools 
          Appearance      =   0  'Flat
