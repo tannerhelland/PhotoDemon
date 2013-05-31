@@ -1310,9 +1310,11 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
         Case DistortShear
             GetNameOfProcess = "Shear"
         Case DistortSquish
-            GetNameOfProcess = "Perspective (fixed)"
+            GetNameOfProcess = "Squish"
         Case FreePerspective
             GetNameOfProcess = "Perspective (free)"
+        Case DistortPanAndZoom
+            GetNameOfProcess = "Pan and Zoom"
             
         'Miscellaneous filters; numbers 800-899
         Case Fade
