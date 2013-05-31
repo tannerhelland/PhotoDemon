@@ -170,6 +170,7 @@ Begin VB.Form FormTile
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblWidth 
+      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "width:"
@@ -184,12 +185,13 @@ Begin VB.Form FormTile
       EndProperty
       ForeColor       =   &H00400000&
       Height          =   210
-      Left            =   6000
+      Left            =   6120
       TabIndex        =   11
       Top             =   2985
       Width           =   525
    End
    Begin VB.Label lblHeight 
+      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "height:"
@@ -210,6 +212,7 @@ Begin VB.Form FormTile
       Width           =   585
    End
    Begin VB.Label lblWidthType 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "pixels"
       BeginProperty Font 
@@ -222,13 +225,14 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
-      Height          =   255
+      Height          =   210
       Left            =   8010
       TabIndex        =   9
       Top             =   2985
-      Width           =   855
+      Width           =   435
    End
    Begin VB.Label lblHeightType 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "pixels"
       BeginProperty Font 
@@ -241,11 +245,11 @@ Begin VB.Form FormTile
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00400000&
-      Height          =   255
+      Height          =   210
       Left            =   10890
       TabIndex        =   8
       Top             =   2985
-      Width           =   855
+      Width           =   435
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
