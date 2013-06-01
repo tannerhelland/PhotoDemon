@@ -835,7 +835,7 @@ Dim retVal           As Long
 
 End Sub
 
-Private Sub TransBlt(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal TransColor As Long = -1, Optional ByVal BrushColor As Long = -1, Optional ByVal MonoMask As Boolean = False, Optional ByVal isGreyscale As Boolean = False)
+Private Sub TransBlt(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal TransColor As Long = -1, Optional ByVal BrushColor As Long = -1, Optional ByVal MonoMask As Boolean = False, Optional ByVal isGreyscale As Boolean = False)
 
 '****************************************************************************
 '* Routine : To make transparent and grayscale images
@@ -889,7 +889,7 @@ Dim a1               As Long
         tObj = SelectObject(srcDC, SrcPic)
     Else
 Dim hBrush           As Long
-        tObj = SelectObject(srcDC, CreateCompatibleBitmap(DstDC, DstW, DstH))
+        tObj = SelectObject(srcDC, CreateCompatibleBitmap(dstDC, DstW, DstH))
         hBrush = CreateSolidBrush(TransColor)
         DrawIconEx srcDC, 0, 0, SrcPic.Handle, DstW, DstH, 0, hBrush, DI_NORMAL
         DeleteObject hBrush
@@ -897,8 +897,8 @@ Dim hBrush           As Long
 
     TmpDC = CreateCompatibleDC(srcDC)
     Sr2DC = CreateCompatibleDC(srcDC)
-    TmpBmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
-    Sr2Bmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
+    TmpBmp = CreateCompatibleBitmap(dstDC, DstW, DstH)
+    Sr2Bmp = CreateCompatibleBitmap(dstDC, DstW, DstH)
     TmpObj = SelectObject(TmpDC, TmpBmp)
     Sr2Obj = SelectObject(Sr2DC, Sr2Bmp)
     ReDim DataDest(DstW * DstH * 3 - 1)
@@ -911,7 +911,7 @@ Dim hBrush           As Long
         .biBitCount = 24
     End With
 
-    BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
+    BitBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, vbSrcCopy
     BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
     GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
     GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
@@ -997,7 +997,7 @@ Dim hBrush           As Long
     Next h
 
     ' /--Paint it!
-    SetDIBitsToDevice DstDC, dstX, dstY, DstW, DstH, 0, 0, 0, DstH, DataDest(0), Info, 0
+    SetDIBitsToDevice dstDC, dstX, dstY, DstW, DstH, 0, 0, 0, DstH, DataDest(0), Info, 0
 
     Erase DataDest, DataSrc
     DeleteObject SelectObject(TmpDC, TmpObj)
@@ -1010,7 +1010,7 @@ Dim hBrush           As Long
 
 End Sub
 
-Private Sub TransBlt32(ByVal DstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal BrushColor As Long = -1, Optional ByVal isGreyscale As Boolean = False)
+Private Sub TransBlt32(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal BrushColor As Long = -1, Optional ByVal isGreyscale As Boolean = False)
 
 '****************************************************************************
 '* Routine : Renders 32 bit Bitmap                                          *
@@ -1063,8 +1063,8 @@ Dim a1               As Long
     TmpDC = CreateCompatibleDC(srcDC)
     Sr2DC = CreateCompatibleDC(srcDC)
 
-    TmpBmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
-    Sr2Bmp = CreateCompatibleBitmap(DstDC, DstW, DstH)
+    TmpBmp = CreateCompatibleBitmap(dstDC, DstW, DstH)
+    Sr2Bmp = CreateCompatibleBitmap(dstDC, DstW, DstH)
     TmpObj = SelectObject(TmpDC, TmpBmp)
     Sr2Obj = SelectObject(Sr2DC, Sr2Bmp)
 
@@ -1079,7 +1079,7 @@ Dim a1               As Long
     ReDim DataDest(Info.bmiHeader.biSizeImage - 1)
     ReDim DataSrc(UBound(DataDest))
 
-    BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, dstX, dstY, vbSrcCopy
+    BitBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, vbSrcCopy
     BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
     GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
     GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
@@ -1160,7 +1160,7 @@ Dim a1               As Long
     Next h
 
     ' /--Paint it!
-    SetDIBitsToDevice DstDC, dstX, dstY, DstW, DstH, 0, 0, 0, DstH, DataDest(0), Info, 0
+    SetDIBitsToDevice dstDC, dstX, dstY, DstW, DstH, 0, 0, 0, DstH, DataDest(0), Info, 0
 
     Erase DataDest, DataSrc
     DeleteObject SelectObject(TmpDC, TmpObj)
@@ -1864,7 +1864,7 @@ Dim bColor           As Long                                  'BackColor
 
 End Sub
 
-Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, OffsetY As Long)
+Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, offsetX As Long, offsetY As Long)
 
 Dim tRECT            As RECT
 Dim lOldForeColor    As Long
@@ -1874,7 +1874,7 @@ Dim lOldForeColor    As Long
     lOldForeColor = GetTextColor(hDC)
 
     CopyRect tRECT, lpRect
-    OffsetRect tRECT, OffsetX, OffsetY
+    OffsetRect tRECT, offsetX, offsetY
 
     SetTextColor hDC, lColor
 
@@ -3048,7 +3048,7 @@ Const GCL_STYLE         As Long = (-26)
         End If
 
     End If
-    SendMessage m_ltthWnd, TTM_SETMAXTIPWIDTH, 0, 240 'for Multiline capability
+    SendMessage m_ltthWnd, TTM_SETMAXTIPWIDTH, 0, ByVal PD_MAX_TOOLTIP_WIDTH  'for Multiline capability
     If m_lttBackColor <> Empty Then
         SendMessage m_ltthWnd, TTM_SETTIPBKCOLOR, TranslateColor(m_lttBackColor), 0&
     End If
