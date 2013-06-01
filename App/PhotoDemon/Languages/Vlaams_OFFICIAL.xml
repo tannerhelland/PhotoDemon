@@ -24,51 +24,41 @@
 	</phrase>
 
 	<phrase>
-		<original>zLib license page</original>
-		<translation>zLib licentie pagina</translation>
+		<original>a free, portable, powerful photo editor</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>EZTwain license page</original>
-		<translation>EZTwain licentie pagina</translation>
+		<original>PhotoDemon is the product of many talented contributors, including</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>pngnq-s9 homepage</original>
-		<translation>pngnq-s9 homepage</translation>
+		<original>PhotoDemon is released under an open-source BSD license</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>FreeImage license page</original>
-		<translation>FreeImage licentie pagina</translation>
+		<original>Please note that PhotoDemon uses several third-party plugins</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>PhotoDemon would not be possible without contributions from the following individuals and organizations</original>
-		<translation>PhotoDemon zou niet mogelijk zijn zonder de contributie  van volgende personen en organisaties</translation>
+		<original>These plugins are also free and open source</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Copyright (auto-populated at run-time)</original>
-		<translation>Copyright (auto-opvulling tijdens run-time)</translation>
+		<original>...but they are governed by their own licenses, separate from PhotoDemon</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Version</original>
-		<translation>Versie</translation>
+		<original>For more information on plugin licensing, please visit</original>
+		<translation></translation>
 	</phrase>
 
-	<phrase>
-		<original>PhotoDemon uses several third-party plugins.  These plugins may be governed by additional licenses. For more information, please visit</original>
-		<translation>PhotoDemon gebruikt verschillende third-party plugins. Deze plugins kunnen beheerst worden door extra licenties. Voor meer informatie kunt u terecht op</translation>
-	</phrase>
-
-	<phrase>
-		<original>Click to open</original>
-		<translation>Klik om te openen</translation>
-	</phrase>
-
-	<!-- VBP_FormAbout.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+	<!-- VBP_FormAbout.frm contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormAbout.frm-->
 
@@ -79,18 +69,28 @@
 		<translation>Live updates</translation>
 	</phrase>
 
-	<!-- VBP_FormSplash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+	<!-- VBP_FormSplash.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 	<!-- END text for VBP_FormSplash.frm-->
 
 	<!-- BEGIN text for VBP_SubModule.bas -->
 
 	<phrase>
+		<original>Are you sure you want to cancel %1?</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Cancel image processing</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Verifying image color count</original>
 		<translation>Verificieren aantal kleuren afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_SubModule.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+	<!-- VBP_SubModule.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_SubModule.bas-->
 
@@ -167,6 +167,36 @@
 	</phrase>
 
 	<phrase>
+		<original>Interior</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Exterior</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Border</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>None</original>
+		<translation>geen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Antialiased</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Feathered</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Initializing drop shadow renderer</original>
 		<translation>Initialisatie slagschaduw translateerder</translation>
 	</phrase>
@@ -179,45 +209,37 @@
 	<phrase>
 		<original>Open one or more images for editing.
 
-(Another way to open images is dragging them from your desktop
- or Windows Explorer and dropping them onto PhotoDemon.)</original>
+(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)</original>
 		<translation>Open een of meer afbeeldingen te bewerken.
 
-(Een andere manier om beelden te openen is ze te slepen vanaf uw bureaublad
-  of Windows Verkenner en neer te zetten PhotoDemon.)</translation>
+(Een andere manier om beelden te openen is ze te slepen vanaf uw bureaublad of Windows Verkenner en neer te zetten PhotoDemon.)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Close the current image.
 
-If the current image has not been saved, you will
- receive a prompt to save it before it closes.</original>
+If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
 		<translation>Sluit de huidige afbeelding.
 		
-Als de huidige afbeelding niet is opgeslagen,
-wordt u gevraagd om ze op te slaan voordat ze wordt gesloten.</translation>
+Als de huidige afbeelding niet is opgeslagen, wordt u gevraagd om ze op te slaan voordat ze wordt gesloten.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Close the current image.
 
-Because you have turned off save prompts (via Edit -> Preferences),
- you WILL NOT receive a prompt to save this image before it closes.</original>
+Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
 		<translation>Sluit het huidige beeld.
 
-Omdat je hebt uitgeschakeld opslaan vraagt ??(via Bewerken -> Voorkeuren),
-  U zult niet de vraag ontvangt om dit beeld op te slaan voordat het wordt gesloten.</translation>
+Omdat je hebt uitgeschakeld opslaan vraagt ??(via Bewerken -> Voorkeuren), U zult niet de vraag ontvangt om dit beeld op te slaan voordat het wordt gesloten.</translation>
 	</phrase>
 
 	<phrase>
 		<original>Save the current image.
 
-WARNING: this will overwrite the current image file.
- To save to a different file, use the "Save As" button.</original>
+WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
 		<translation>Bewaar de afbeelding.
 
-LET OP: dit zal het huidige beeld bestand wilt overschrijven.
-  Om op te slaan in een ander bestand, gebruikt u de knop Opslaan als.</translation>
+LET OP: dit zal het huidige beeld bestand wilt overschrijven. Om op te slaan in een ander bestand, gebruikt u de knop Opslaan als.</translation>
 	</phrase>
 
 	<phrase>
@@ -276,7 +298,7 @@ LET OP: dit zal het huidige beeld bestand wilt overschrijven.
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 		<translation>Helaas, de afbeelding ' %1' kan niet worden gevonden.
 		
-Als deze afbeelding oorspronkelijk opgeslagen was op een verwisselbaar medium (DVD, USB-stick, etc), voer dan het medium opnieuw in en probeer opnieuw .</translation>
+Als deze afbeelding oorspronkelijk opgeslagen was op een verwisselbaar medium (DVD, USB-stick, etc), voer dan het medium opnieuw in en probeer opnieuw.</translation>
 	</phrase>
 
 	<phrase>
@@ -368,6 +390,11 @@ Gebruik een ander programma om dit beeld op te slaan in een generiek formaat (zo
 	</phrase>
 
 	<phrase>
+		<original>Compiling metadata</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Resizing image to fit screen</original>
 		<translation>Aanpassen grootte van de afbeelding om op scherm te passen</translation>
 	</phrase>
@@ -449,8 +476,8 @@ Please use another program to save these images in a generic format (such as JPE
 	</phrase>
 
 	<phrase>
-		<original>Copying plugin files to new \Data\Plugins subdirectory</original>
-		<translation>Kopiëren plugin bestanden naar nieuwe \Data\Plugins subdirectory</translation>
+		<original>Moving plugins to updated folder location</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -468,7 +495,7 @@ Please use another program to save these images in a generic format (such as JPE
 		<translation>Duplicatie afbeelding klaar.</translation>
 	</phrase>
 
-	<!-- VBP_LoadModule.bas contains 65 phrases.  One was a duplicate of an existing phrase, so only 64 new phrases were written to file. -->
+	<!-- VBP_LoadModule.bas contains 72 phrases.  One was a duplicate of an existing phrase, so only 71 new phrases were written to file. -->
 
 	<!-- END text for VBP_LoadModule.bas-->
 
@@ -810,7 +837,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Fout Windows Klembord</translation>
 	</phrase>
 
-	<!-- VBP_ClipboardModule.bas contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
+	<!-- VBP_ClipboardModule.bas contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_ClipboardModule.bas-->
 
@@ -822,7 +849,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
-		<original>lock image aspect ratio</original>
+		<original>lock aspect ratio</original>
 		<translation>vergrendelen beeldverhouding</translation>
 	</phrase>
 
@@ -994,13 +1021,13 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
-		<original>Preparing conversion tables</original>
-		<translation>Voorbereiden conversietabellen</translation>
+		<original>Converting image to isometric view</original>
+		<translation>Omzetten van afbeelding naar isometrisch aanzicht</translation>
 	</phrase>
 
 	<phrase>
-		<original>Converting image to isometric view</original>
-		<translation>Omzetten van afbeelding naar isometrisch aanzicht</translation>
+		<original>Action canceled.</original>
+		<translation></translation>
 	</phrase>
 
 	<!-- VBP_FilterModule.bas contains 14 phrases.  One was a duplicate of an existing phrase, so only 13 new phrases were written to file. -->
@@ -1832,6 +1859,26 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Shear</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Squish</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Perspective (free)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Pan and Zoom</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Fade</original>
 		<translation>Vervagen</translation>
 	</phrase>
@@ -2001,7 +2048,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Moderne kunst</translation>
 	</phrase>
 
-	<!-- VBP_ProcessorModule.bas contains 159 phrases. 8 were duplicates of existing phrases, so only 151 new phrases were written to file. -->
+	<!-- VBP_ProcessorModule.bas contains 163 phrases. 8 were duplicates of existing phrases, so only 155 new phrases were written to file. -->
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
@@ -2167,7 +2214,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Translateren afbeelding naar het scherm</translation>
 	</phrase>
 
-	<!-- VBP_FastDrawing.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+	<!-- VBP_FastDrawing.bas contains 3 phrases. 2 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
 
 	<!-- END text for VBP_FastDrawing.bas-->
 
@@ -2515,7 +2562,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 		<translation>PhotoDemon Pro Tip</translation>
 	</phrase>
 
-	<!-- VBP_Filters2.bas contains 21 phrases. 5 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+	<!-- VBP_Filters2.bas contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 	<!-- END text for VBP_Filters2.bas-->
 
@@ -2543,23 +2590,53 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<!-- BEGIN text for VBP_FormMain.frm (FormMain) -->
 
 	<phrase>
-		<original>Click to change the way selections are rendered</original>
-		<translation>Klik om de manier waarop keuzes worden weergegeven wijzigen</translation>
+		<original>Select (Rect)</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>(tool buttons will appear here in the near future...)</original>
-		<translation>(gereedschapsknoppen verschijnen hier in de nabije toekomst...)</translation>
+		<original>Rectangular Selection tool</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>image tools</original>
-		<translation>gereedschappen afbeelding</translation>
+		<original>Select (Ellipse)</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>selection style</original>
-		<translation>Selectie stijl</translation>
+		<original>Elliptical (Oval) Selection tool</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Use this option to change the way selections blend with their surroundings.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>This option controls the selection's area.  You can switch between the three settings without losing the current selection.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>smoothing</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>selection type</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>corner rounding</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>visual style</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -2573,6 +2650,11 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>selection tools</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Click to adjust image zoom</original>
 		<translation>Klik op het beeld zoomen</translation>
 	</phrase>
@@ -2583,18 +2665,13 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Use this button to increase image zoom.</original>
-		<translation>Gebruik deze knop om de afbeelding te vergroten zoom.</translation>
-	</phrase>
-
-	<phrase>
 		<original>Zoom In</original>
 		<translation>Inzoomen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Use this button to decrease image zoom.</original>
-		<translation>Gebruik deze knop aan de zoom te verlagen.</translation>
+		<original>Use this button to increase image zoom.</original>
+		<translation>Gebruik deze knop om de afbeelding te vergroten zoom.</translation>
 	</phrase>
 
 	<phrase>
@@ -2603,23 +2680,8 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>zoom</original>
-		<translation>zoom</translation>
-	</phrase>
-
-	<phrase>
-		<original>undo / redo</original>
-		<translation>ongedaan maken / opnieuw</translation>
-	</phrase>
-
-	<phrase>
-		<original>save / save as</original>
-		<translation>opslaan / opslaan als</translation>
-	</phrase>
-
-	<phrase>
-		<original>open / close</original>
-		<translation>openen / sluiten</translation>
+		<original>Use this button to decrease image zoom.</original>
+		<translation>Gebruik deze knop aan de zoom te verlagen.</translation>
 	</phrase>
 
 	<phrase>
@@ -2808,18 +2870,33 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Mode</original>
-		<translation>Mode</translation>
+		<original>Metadata</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Photo  (RGB  |  24bpp  |  no transparency)</original>
-		<translation>Foto (RGB | 24bpp | geen transparantie)</translation>
+		<original>Browse image metadata</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
-		<original>Web  (RGBA  |  32bpp  |  transparency)</original>
-		<translation>Web (RGBA | 32bpp | transparantie)</translation>
+		<original>Map photo location</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Transparency</original>
+		<translation>Doorzichtigheid</translation>
+	</phrase>
+
+	<phrase>
+		<original>Add alpha channel</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Remove alpha channel</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -2993,8 +3070,8 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Pixelate (mosaic)</original>
-		<translation>Pixelate (mozaïek)</translation>
+		<original>Pixelate</original>
+		<translation>Pixelate</translation>
 	</phrase>
 
 	<phrase>
@@ -3015,6 +3092,11 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<phrase>
 		<original>Kaleiodoscope</original>
 		<translation>Kaleiodoscoop</translation>
+	</phrase>
+
+	<phrase>
+		<original>Perspective</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -3331,7 +3413,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 		<translation>Voorbereidingen om invoer van recente bestand te laden</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 230 phrases. 73 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 240 phrases. 76 were duplicates of existing phrases, so only 164 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3787,11 +3869,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>None</original>
-		<translation>geen</translation>
-	</phrase>
-
-	<phrase>
 		<original>Ordered (Bayer 4x4)</original>
 		<translation>Geordend (Bayer 4x4)</translation>
 	</phrase>
@@ -3851,7 +3928,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 		<translation>Omzetten van afbeelding naar twee kleuren</translation>
 	</phrase>
 
-	<!-- VBP_FormBlackAndWhite.frm contains 20 phrases. 2 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+	<!-- VBP_FormBlackAndWhite.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBlackAndWhite.frm-->
 
@@ -3908,11 +3985,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
-		<original>Transparency</original>
-		<translation>Doorzichtigheid</translation>
-	</phrase>
-
-	<phrase>
 		<original>Transparency Options</original>
 		<translation>Geavanceerde opties</translation>
 	</phrase>
@@ -3945,156 +4017,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<phrase>
 		<original>File Format Options</original>
 		<translation>opties voor het bestandsformaat</translation>
-	</phrase>
-
-	<phrase>
-		<original>automatically validate all incoming alpha channels</original>
-		<translation>automatisch valideren van alle inkomende alfakanalen</translation>
-	</phrase>
-
-	<phrase>
-		<original>validation</original>
-		<translation>validatie</translation>
-	</phrase>
-
-	<phrase>
-		<original>transparency checkerboard size</original>
-		<translation>transparantie dambord  -grootte</translation>
-	</phrase>
-
-	<phrase>
-		<original>transparency checkerboard colors</original>
-		<translation>transparantie dambord -kleuren</translation>
-	</phrase>
-
-	<phrase>
-		<original>appearance</original>
-		<translation>uitzicht</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE compression when saving 8bpp BMP images</original>
-		<translation>gebruik RLE -codering bij het opslaan van 8bpp BMP-afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>BMP (Bitmap) options</original>
-		<translation>Opties BMP (Bitmap)</translation>
-	</phrase>
-
-	<phrase>
-		<original>save TIFFs as separated CMYK (for printing)</original>
-		<translation>TIFF's opslaan als gescheiden CMYK (voor afdrukken)</translation>
-	</phrase>
-
-	<phrase>
-		<original>TIFF (Tagged Image File Format) options</original>
-		<translation>Opties TIFF (Tagged Image File Format)</translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress TIFFs using</original>
-		<translation>bij het opslaan, comprimeren TIFF's met behulp van</translation>
-	</phrase>
-
-	<phrase>
-		<original>PPM (Portable Pixmap) options</original>
-		<translation>Opties PPM (Portable Pixmap)</translation>
-	</phrase>
-
-	<phrase>
-		<original>export PPM files using</original>
-		<translation>exporteren PPM bestanden met behulp van</translation>
-	</phrase>
-
-	<phrase>
-		<original>preserve file's original background color, if available</original>
-		<translation>bewaren oorspronkelijke achtergrondkleur van bestand, indien beschikbaar</translation>
-	</phrase>
-
-	<phrase>
-		<original>use interlacing (Adam7)</original>
-		<translation>gebruik maken van interlacing (Adam7)</translation>
-	</phrase>
-
-	<phrase>
-		<original>maximum compression</original>
-		<translation>maximale compressie</translation>
-	</phrase>
-
-	<phrase>
-		<original>no compression</original>
-		<translation>geen compressie</translation>
-	</phrase>
-
-	<phrase>
-		<original>when saving, compress PNG files at the following level</original>
-		<translation>bij het opslaan, PNG-bestanden comprimeren op het volgende niveau</translation>
-	</phrase>
-
-	<phrase>
-		<original>PNG (Portable Network Graphic) options</original>
-		<translation>Opties PNG (Portable Network Graphic)</translation>
-	</phrase>
-
-	<phrase>
-		<original>use RLE compression when saving TGA images</original>
-		<translation>gebruik RLE -codering bij het opslaan van TGA afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>TGA (Truevision) options</original>
-		<translation>Opties TGA (Truevision)</translation>
-	</phrase>
-
-	<phrase>
-		<original>please select a file type</original>
-		<translation>selecteer een bestandstype</translation>
-	</phrase>
-
-	<phrase>
-		<original>when closing image files, warn me me about unsaved changes</original>
-		<translation>waarschuw me bij het sluiten van afbeeldingen over niet-opgeslagen wijzigingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
-		<translation>Vink dit aan als u wilt worden gewaarschuwd wanneer u probeert een afbeelding te sluiten met niet-opgeslagen wijzigingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>set outgoing color depth</original>
-		<translation>instellen uitgaande kleurdiepte</translation>
-	</phrase>
-
-	<phrase>
-		<original>color depth of saved images</original>
-		<translation>kleurdiepte van opgeslagen afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>save behavior: overwrite vs make a copy</original>
-		<translation>opslaan gedrag: overschrijven vs een kopie maken</translation>
-	</phrase>
-
-	<phrase>
-		<original>when "Save" is used</original>
-		<translation>wanneer "Opslaan" wordt gebruikt</translation>
-	</phrase>
-
-	<phrase>
-		<original>closing unsaved images</original>
-		<translation>sluiten van niet-opgeslagen afbeeldingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>when using the "Save As" command, set the default file format according to</original>
-		<translation>bij gebruik van het "Opslaan als " commando, zet dan de standaard bestandsindeling op basis van</translation>
-	</phrase>
-
-	<phrase>
-		<original>default file format when saving</original>
-		<translation>standaard bestandsformaat tijdens het opslaan</translation>
 	</phrase>
 
 	<phrase>
@@ -4293,14 +4215,185 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>automatically validate all incoming alpha channels</original>
+		<translation>automatisch valideren van alle inkomende alfakanalen</translation>
+	</phrase>
+
+	<phrase>
+		<original>validation</original>
+		<translation>validatie</translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency checkerboard size</original>
+		<translation>transparantie dambord  -grootte</translation>
+	</phrase>
+
+	<phrase>
+		<original>transparency checkerboard colors</original>
+		<translation>transparantie dambord -kleuren</translation>
+	</phrase>
+
+	<phrase>
+		<original>appearance</original>
+		<translation>uitzicht</translation>
+	</phrase>
+
+	<phrase>
+		<original>use RLE compression when saving 8bpp BMP images</original>
+		<translation>gebruik RLE -codering bij het opslaan van 8bpp BMP-afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>BMP (Bitmap) options</original>
+		<translation>Opties BMP (Bitmap)</translation>
+	</phrase>
+
+	<phrase>
+		<original>save TIFFs as separated CMYK (for printing)</original>
+		<translation>TIFF's opslaan als gescheiden CMYK (voor afdrukken)</translation>
+	</phrase>
+
+	<phrase>
+		<original>TIFF (Tagged Image File Format) options</original>
+		<translation>Opties TIFF (Tagged Image File Format)</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress TIFFs using</original>
+		<translation>bij het opslaan, comprimeren TIFF's met behulp van</translation>
+	</phrase>
+
+	<phrase>
+		<original>PPM (Portable Pixmap) options</original>
+		<translation>Opties PPM (Portable Pixmap)</translation>
+	</phrase>
+
+	<phrase>
+		<original>export PPM files using</original>
+		<translation>exporteren PPM bestanden met behulp van</translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve file's original background color, if available</original>
+		<translation>bewaren oorspronkelijke achtergrondkleur van bestand, indien beschikbaar</translation>
+	</phrase>
+
+	<phrase>
+		<original>use interlacing (Adam7)</original>
+		<translation>gebruik maken van interlacing (Adam7)</translation>
+	</phrase>
+
+	<phrase>
+		<original>maximum compression</original>
+		<translation>maximale compressie</translation>
+	</phrase>
+
+	<phrase>
+		<original>no compression</original>
+		<translation>geen compressie</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving, compress PNG files at the following level</original>
+		<translation>bij het opslaan, PNG-bestanden comprimeren op het volgende niveau</translation>
+	</phrase>
+
+	<phrase>
+		<original>PNG (Portable Network Graphic) options</original>
+		<translation>Opties PNG (Portable Network Graphic)</translation>
+	</phrase>
+
+	<phrase>
+		<original>use RLE compression when saving TGA images</original>
+		<translation>gebruik RLE -codering bij het opslaan van TGA afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>TGA (Truevision) options</original>
+		<translation>Opties TGA (Truevision)</translation>
+	</phrase>
+
+	<phrase>
+		<original>please select a file type</original>
+		<translation>selecteer een bestandstype</translation>
+	</phrase>
+
+	<phrase>
+		<original>when closing images, warn me me about unsaved changes</original>
+		<translation>waarschuw me bij het sluiten van afbeeldingen over niet-opgeslagen wijzigingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
+		<translation>Vink dit aan als u wilt worden gewaarschuwd wanneer u probeert een afbeelding te sluiten met niet-opgeslagen wijzigingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>when saving images that originally contained metadata</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>metadata (EXIF, GPS, comments, etc.)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>set outgoing color depth</original>
+		<translation>instellen uitgaande kleurdiepte</translation>
+	</phrase>
+
+	<phrase>
+		<original>color depth of saved images</original>
+		<translation>kleurdiepte van opgeslagen afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>save behavior: overwrite vs make a copy</original>
+		<translation>opslaan gedrag: overschrijven vs een kopie maken</translation>
+	</phrase>
+
+	<phrase>
+		<original>when "Save" is used</original>
+		<translation>wanneer "Opslaan" wordt gebruikt</translation>
+	</phrase>
+
+	<phrase>
+		<original>closing unsaved images</original>
+		<translation>sluiten van niet-opgeslagen afbeeldingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>when using the "Save As" command, set the default file format according to</original>
+		<translation>bij gebruik van het "Opslaan als " commando, zet dan de standaard bestandsindeling op basis van</translation>
+	</phrase>
+
+	<phrase>
+		<original>default file format when saving</original>
+		<translation>standaard bestandsformaat tijdens het opslaan</translation>
+	</phrase>
+
+	<phrase>
+		<original>Close the current image.
+
+If the current image has not been saved, you will
+ receive a prompt to save it before it closes.</original>
+		<translation>Sluit de huidige afbeelding.
+		
+Als de huidige afbeelding niet is opgeslagen,
+wordt u gevraagd om ze op te slaan voordat ze wordt gesloten.</translation>
+	</phrase>
+
+	<phrase>
 		<original>Close the current image.
 
 Because you have turned off save prompts (via Tools -> Options),
  you WILL NOT receive a prompt to save this image before it closes.</original>
-		<translation>Sluit huidige afbeelding.
+		<translation>Sluit het huidige beeld.
 
-Omdat je de 'opslaan vragen' hebt uitgeschakeld (via Extra -> Opties),
- zal je geen vraag ontvangen om deze afbeelding op te slaan voordat ze wordt gesloten.</translation>
+Omdat je hebt uitgeschakeld opslaan vraagt ??(via Bewerken -> Voorkeuren),
+  U zult niet de vraag ontvangt om dit beeld op te slaan voordat het wordt gesloten.</translation>
 	</phrase>
 
 	<phrase>
@@ -4450,6 +4543,26 @@ Weet u zeker dat u wilt doorgaan?</translation>
 	<phrase>
 		<original>the last image format I used in the "Save As" screen</original>
 		<translation>het laatste afbeelding -formaat dat ik gebruikte in het "Opslaan als" -scherm</translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve all original metadata, regardless of relevance</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve all relevant metadata</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>do not preserve metadata</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -4773,11 +4886,16 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 	</phrase>
 
 	<phrase>
+		<original>Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, or the GPS coordinates of the photo's location, or many other items.  To view an image's metadata, use the Image -> Metadata menu.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 		<translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 195 phrases. 17 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 198 phrases. 13 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -5282,18 +5400,33 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 	</phrase>
 
 	<phrase>
+		<original>gray level (midtones)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>ceiling (highlights)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>floor (shadows)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>white point</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>black point</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>output levels</original>
 		<translation>uitgangsniveaus</translation>
-	</phrase>
-
-	<phrase>
-		<original>Left limit</original>
-		<translation>Linkse limiet</translation>
-	</phrase>
-
-	<phrase>
-		<original>Right limit</original>
-		<translation>Rechtse limiet</translation>
 	</phrase>
 
 	<phrase>
@@ -5306,7 +5439,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>In kaart brengen nieuwe afbeelding niveaus</translation>
 	</phrase>
 
-	<!-- VBP_FormImageLevels.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+	<!-- VBP_FormImageLevels.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormImageLevels.frm-->
 
@@ -5476,7 +5609,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 		
 U moet deze afbeelding downloaden met behulp van een internetbrowser naar keuze, en vervolgens handmatig laden in %2.
 
-Mijn oprechte excuses  voor het ongemak, maar helaas is er niets dat %2 kan doen aan geringe server configuraties.: (</translation>
+Mijn oprechte excuses  voor het ongemak, maar helaas is er niets dat %2 kan doen aan geringe server configuraties. :(</translation>
 	</phrase>
 
 	<phrase>
@@ -5553,6 +5686,11 @@ Mijn oprechte excuses  voor het ongemak, maar helaas is er niets dat %2 kan doen
 	<phrase>
 		<original>Never Download Plugins</original>
 		<translation>Nooit Download Plugins</translation>
+	</phrase>
+
+	<phrase>
+		<original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -5753,7 +5891,7 @@ Om uw gebruikerservaring te verbeteren, dient u het programma toegang te geven v
 		<translation>Totale download grootte</translation>
 	</phrase>
 
-	<!-- VBP_FormPluginDownloader.frm contains 53 phrases. 8 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
+	<!-- VBP_FormPluginDownloader.frm contains 56 phrases. 10 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -5832,12 +5970,6 @@ Om uw gebruikerservaring te verbeteren, dient u het programma toegang te geven v
 	<!-- VBP_TextModule.bas contains 0 phrases. -->
 
 	<!-- END text for VBP_TextModule.bas-->
-
-	<!-- BEGIN text for VBP_OutsideDevelopment_mGfxWu.bas -->
-
-	<!-- VBP_OutsideDevelopment_mGfxWu.bas contains 0 phrases. -->
-
-	<!-- END text for VBP_OutsideDevelopment_mGfxWu.bas-->
 
 	<!-- BEGIN text for VBP_FormSoftwareUpdates.frm (FormSoftwareUpdate) -->
 
@@ -5980,6 +6112,21 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 	<!-- BEGIN text for VBP_GDIPlus.bas -->
 
 	<phrase>
+		<original>GDI+ failed to render blur effect (Error Code %1).</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>GDI+ failed to set effect parameters.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>GDI+ failed to create blur effect object</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Initializing GDI+</original>
 		<translation>Initialiseren GDI +</translation>
 	</phrase>
@@ -6004,7 +6151,7 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 		<translation>Vrijmaken van alle tijdelijke afbeeldingskopieën</translation>
 	</phrase>
 
-	<!-- VBP_GDIPlus.bas contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+	<!-- VBP_GDIPlus.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_GDIPlus.bas-->
 
@@ -6243,7 +6390,12 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 
 	<!-- BEGIN text for pdSelection.cls -->
 
-	<!-- pdSelection.cls contains 0 phrases. -->
+	<phrase>
+		<original>Feathering selection</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- pdSelection.cls contains 4 phrases. 3 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
 
 	<!-- END text for pdSelection.cls-->
 
@@ -6377,7 +6529,12 @@ Geef een numerieke waarde.</translation>
 		<translation>wis ze uit</translation>
 	</phrase>
 
-	<!-- VBP_MiscInterface.bas contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+	<phrase>
+		<original>ignore them</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_MiscInterface.bas contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_MiscInterface.bas-->
 
@@ -6420,7 +6577,12 @@ Geef een numerieke waarde.</translation>
 
 	<!-- BEGIN text for pdPreferences.cls -->
 
-	<!-- pdPreferences.cls contains 0 phrases. -->
+	<phrase>
+		<original>Moving language files to updated folder location</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- pdPreferences.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 	<!-- END text for pdPreferences.cls-->
 
@@ -6527,8 +6689,7 @@ Geef een numerieke waarde.</translation>
 	<phrase>
 		<original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
-If you want to save it with a different file name, please select 'Cancel', then use the
- File -> Save As menu item.</original>
+If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 		<translation>OPMERKING: Als u op 'Opslaan' klikt, zal PhotoDemon deze afbeelding opslaan met behulp van de huidige bestandsnaam.
 		
 Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', en gebruik dan het Bestand - > Opslaan als menu-item.</translation>
@@ -7027,6 +7188,51 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>Disable ExifTool</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>installed, enabled, and up to date</original>
+		<translation>en actueel</translation>
+	</phrase>
+
+	<phrase>
+		<original>status</original>
+		<translation>status</translation>
+	</phrase>
+
+	<phrase>
+		<original>current plugin status</original>
+		<translation>Huidige plugin status</translation>
+	</phrase>
+
+	<phrase>
+		<original>GOOD</original>
+		<translation>GOED</translation>
+	</phrase>
+
+	<phrase>
+		<original>Disable FreeImage</original>
+		<translation>Uitschakelen FreeImage</translation>
+	</phrase>
+
+	<phrase>
+		<original>Disable zLib</original>
+		<translation>Uitschakelen zLib</translation>
+	</phrase>
+
+	<phrase>
+		<original>Disable EZTwain</original>
+		<translation>Uitschakelen EZTwain</translation>
+	</phrase>
+
+	<phrase>
+		<original>Disable pngnq-s9</original>
+		<translation>Uitschakelen pngnq-s9</translation>
+	</phrase>
+
+	<phrase>
 		<original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
 		<translation>analyseren kleuren met YUV in plaats van RGB</translation>
 	</phrase>
@@ -7077,6 +7283,11 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
+		<original>pngnq-s9 homepage</original>
+		<translation>pngnq-s9 homepage</translation>
+	</phrase>
+
+	<phrase>
 		<original>version found</original>
 		<translation>versie gevonden</translation>
 	</phrase>
@@ -7089,6 +7300,26 @@ effectively treating at as a non-animated GIF file.</original>
 	<phrase>
 		<original>pngnq-s9 plugin information</original>
 		<translation>pngnq-s9 plugin informatie</translation>
+	</phrase>
+
+	<phrase>
+		<original>open-source Perl license</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>ExifTool license</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>ExifTool homepage</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>ExifTool plugin information</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -7147,46 +7378,6 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>current plugin status</original>
-		<translation>Huidige plugin status</translation>
-	</phrase>
-
-	<phrase>
-		<original>GOOD</original>
-		<translation>GOED</translation>
-	</phrase>
-
-	<phrase>
-		<original>status</original>
-		<translation>status</translation>
-	</phrase>
-
-	<phrase>
-		<original>installed, enabled, and up to date</original>
-		<translation>en actueel</translation>
-	</phrase>
-
-	<phrase>
-		<original>Disable FreeImage</original>
-		<translation>Uitschakelen FreeImage</translation>
-	</phrase>
-
-	<phrase>
-		<original>Disable zLib</original>
-		<translation>Uitschakelen zLib</translation>
-	</phrase>
-
-	<phrase>
-		<original>Disable EZTwain</original>
-		<translation>Uitschakelen EZTwain</translation>
-	</phrase>
-
-	<phrase>
-		<original>Disable pngnq-s9</original>
-		<translation>Uitschakelen pngnq-s9</translation>
-	</phrase>
-
-	<phrase>
 		<original>Saving plugin options</original>
 		<translation>Bezig met opslaan plugin opties</translation>
 	</phrase>
@@ -7241,7 +7432,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>niet aanwezig</translation>
 	</phrase>
 
-	<!-- VBP_FormPluginManager.frm contains 65 phrases. 19 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+	<!-- VBP_FormPluginManager.frm contains 74 phrases. 22 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPluginManager.frm-->
 
@@ -7684,21 +7875,6 @@ effectively treating at as a non-animated GIF file.</original>
 	</phrase>
 
 	<phrase>
-		<original>fit to image</original>
-		<translation>passen om de afbeelding</translation>
-	</phrase>
-
-	<phrase>
-		<original>circular</original>
-		<translation>cirkelvormig</translation>
-	</phrase>
-
-	<phrase>
-		<original>shape</original>
-		<translation>vorm</translation>
-	</phrase>
-
-	<phrase>
 		<original>vignetting color (click box to change)</original>
 		<translation>kleur vignettering (klik vakje om te veranderen)</translation>
 	</phrase>
@@ -7708,7 +7884,7 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>Toepassen vignettering</translation>
 	</phrase>
 
-	<!-- VBP_FormVignette.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormVignette.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormVignette.frm-->
 
@@ -7734,7 +7910,17 @@ effectively treating at as a non-animated GIF file.</original>
 		<translation>Toepassen mediaan filter</translation>
 	</phrase>
 
-	<!-- VBP_FormMedian.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<phrase>
+		<original>Erode (Minimum rank filter)</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Dilate (Maximum rank filter)</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormMedian.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMedian.frm-->
 
@@ -8264,11 +8450,6 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 	</phrase>
 
 	<phrase>
-		<original>Preview not available</original>
-		<translation>Voorbeeld niet beschikbaar</translation>
-	</phrase>
-
-	<phrase>
 		<original>item</original>
 		<translation>item</translation>
 	</phrase>
@@ -8276,6 +8457,11 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 	<phrase>
 		<original>items</original>
 		<translation>items</translation>
+	</phrase>
+
+	<phrase>
+		<original>Preview not available</original>
+		<translation>Voorbeeld niet beschikbaar</translation>
 	</phrase>
 
 	<phrase>
@@ -8338,15 +8524,246 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 		<translation>verwerkt voor annulering. Laatst bewerkt beeld was "%1"</translation>
 	</phrase>
 
-	<!-- VBP_FormBatchWizard.frm contains 169 phrases. 70 were duplicates of existing phrases, so only 99 new phrases were written to file. -->
+	<!-- VBP_FormBatchWizard.frm contains 167 phrases. 68 were duplicates of existing phrases, so only 99 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBatchWizard.frm-->
 
+	<!-- BEGIN text for VBP_FormShear.frm (FormShear) -->
+
+	<phrase>
+		<original>vertical angle</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>horizontal angle</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Shearing image</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormShear.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+	<!-- END text for VBP_FormShear.frm-->
+
+	<!-- BEGIN text for VBP_FormPerspective.frm (FormSquish) -->
+
+	<phrase>
+		<original>Squeezing image</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormPerspective.frm contains 10 phrases. 9 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+
+	<!-- END text for VBP_FormPerspective.frm-->
+
+	<!-- BEGIN text for VBP_FormTruePerspective.frm (FormTruePerspective) -->
+
+	<phrase>
+		<original>Perspective Correction</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Reset perspective</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>other options</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying new perspective</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>top-left</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>top-right</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>bottom-right</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>bottom-left</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormTruePerspective.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+	<!-- END text for VBP_FormTruePerspective.frm-->
+
+	<!-- BEGIN text for textSliderCombo.ctl -->
+
+	<!-- textSliderCombo.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+	<!-- END text for textSliderCombo.ctl-->
+
+	<!-- BEGIN text for textUpDown.ctl -->
+
+	<!-- textUpDown.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+	<!-- END text for textUpDown.ctl-->
+
+	<!-- BEGIN text for cCustomClipboard.cls -->
+
+	<!-- cCustomClipboard.cls contains 0 phrases. -->
+
+	<!-- END text for cCustomClipboard.cls-->
+
+	<!-- BEGIN text for pdMetadata.cls -->
+
+	<phrase>
+		<original>ExifTool plugin missing.  Metadata import abandoned.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>System</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>General</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>File</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>ICC Profile</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Composite</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Embedding metadata</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Metadata embedded successfully.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Unexpected message returned: %1</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Metadata may not have been embedded (but saved image still written successfully).</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Removing metadata with potential privacy concerns</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- pdMetadata.cls contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+	<!-- END text for pdMetadata.cls-->
+
+	<!-- BEGIN text for VBP_ExifToolInterface.bas -->
+
+	<phrase>
+		<original>Failed to retrieve metadata.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Failed to write metadata.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Failed to start plugin service (couldn't create pipe).</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Failed to start plugin service (couldn't create process: %1).</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_ExifToolInterface.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+
+	<!-- END text for VBP_ExifToolInterface.bas-->
+
+	<!-- BEGIN text for VBP_FormMetadata.frm (FormMetadata) -->
+
+	<phrase>
+		<original>use readable names</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>use readable values</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormMetadata.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+	<!-- END text for VBP_FormMetadata.frm-->
+
+	<!-- BEGIN text for VBP_FormPanZoom.frm (FormPanAndZoom) -->
+
+	<phrase>
+		<original>zoom</original>
+		<translation>zoom</translation>
+	</phrase>
+
+	<phrase>
+		<original>horizontal pan</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>vertical pan</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Applying pan and zoom (Ken Burns) effect</original>
+		<translation></translation>
+	</phrase>
+
+	<!-- VBP_FormPanZoom.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+	<!-- END text for VBP_FormPanZoom.frm-->
+
+	<!-- BEGIN text for pdFont.cls -->
+
+	<!-- pdFont.cls contains 0 phrases. -->
+
+	<!-- END text for pdFont.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 2058 phrases in total. -->
-<!-- 593 are duplicate phrases, so only 1465 phrases have been written to file. -->
-<!-- These 1465 phrases contain approximately 9441 total words. -->
+<!-- As of this build, PhotoDemon contains 2185 phrases in total. -->
+<!-- 648 are duplicate phrases, so only 1537 phrases have been written to file. -->
+<!-- These 1537 phrases contain approximately 9765 total words. -->
 
 </language>
 
