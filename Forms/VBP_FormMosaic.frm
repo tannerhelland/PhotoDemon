@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormMosaic 
+Begin VB.Form FormPixelate 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Mosaic Options"
+   Caption         =   " Pixelate Options"
    ClientHeight    =   6510
    ClientLeft      =   45
    ClientTop       =   285
@@ -161,19 +161,19 @@ Begin VB.Form FormMosaic
       Width           =   1380
    End
 End
-Attribute VB_Name = "FormMosaic"
+Attribute VB_Name = "FormPixelate"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Mosaic filter interface
+'Pixelate filter interface (formerly "mosaic")
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 8/5/00
 'Last updated: 27/April/13
 'Last update: simplify code by implementing new slider/text custom control
 '
-'Form for handling all the mosaic image transform code.
+'Form for handling all the pixellation image transform code.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -204,17 +204,17 @@ Private Sub CmdOK_Click()
     
     If sltWidth.IsValid And sltHeight.IsValid Then
         Me.Visible = False
-        Process Mosaic, sltWidth.Value, sltHeight.Value
+        Process Pixelate, sltWidth.Value, sltHeight.Value
         Unload Me
     End If
     
 End Sub
 
-'Apply a mosaic effect (sometimes called "pixelize") to an image
-' Inputs: width and height of the desired mosaic tiles (in pixels), optional preview settings
-Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Apply a pixelate effect (sometimes called "mosaic") to an image
+' Inputs: width and height of the desired pixelation tiles (in pixels), optional preview settings
+Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Repainting image in mosaic style..."
+    If toPreview = False Then Message "Applying pixellation..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -292,7 +292,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
         For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
-            If i > finalX Or j > finalY Then GoTo NextMosiacPixel1
+            If i > finalX Or j > finalY Then GoTo NextPixelatePixel1
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
@@ -303,13 +303,13 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
             'Count this as a valid pixel
             NumOfPixels = NumOfPixels + 1
             
-NextMosiacPixel1:
+NextPixelatePixel1:
         
         Next j
         Next i
         
         'If this tile is completely off of the image, don't worry about it and go to the next one
-        If NumOfPixels = 0 Then GoTo NextMosaicPixel3
+        If NumOfPixels = 0 Then GoTo NextPixelatePixel3
         
         'Take the average red, green, and blue values of all the pixles within this tile
         r = r \ NumOfPixels
@@ -323,19 +323,19 @@ NextMosiacPixel1:
         For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
-            If i > finalX Or j > finalY Then GoTo NextMosiacPixel2
+            If i > finalX Or j > finalY Then GoTo NextPixelatePixel2
             
             'Set the pixel
             dstImageData(QuickVal + 2, j) = r
             dstImageData(QuickVal + 1, j) = g
             dstImageData(QuickVal, j) = b
             
-NextMosiacPixel2:
+NextPixelatePixel2:
 
         Next j
         Next i
 
-NextMosaicPixel3:
+NextPixelatePixel3:
 
         'Clear all the variables and go to the next pixel
         r = 0
@@ -409,7 +409,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    MosaicFilter sltWidth.Value, sltHeight.Value, True, fxPreview
+    PixelateFilter sltWidth.Value, sltHeight.Value, True, fxPreview
 End Sub
 
 Private Sub sltHeight_Change()
