@@ -218,17 +218,22 @@ End Sub
 'LOAD form
 Private Sub Form_Load()
     
-    'Request mouse tracking
-    requestMouseTracking
+    'Mouse subclassing is only available in the compiled EXE.
+    If g_IsProgramCompiled Then
     
-    'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
-    Set m_Subclass = New cSelfSubHookCallback
-    
-    'Add two messages to the subclassing handler - one for handling mousewheel events, and another for handling mouse forward/back keypresses
-    If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel (used for zoom/pan)
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys (used for undo/redo)
-        m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear pixel coordinate display)
+        'Request mouse tracking
+        requestMouseTracking
+        
+        'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
+        Set m_Subclass = New cSelfSubHookCallback
+        
+        'Add two messages to the subclassing handler - one for handling mousewheel events, and another for handling mouse forward/back keypresses
+        If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
+            m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel (used for zoom/pan)
+            m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys (used for undo/redo)
+            m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear pixel coordinate display)
+        End If
+        
     End If
     
     'Assign the system hand cursor to all relevant objects
@@ -714,12 +719,17 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
-    'Stop requesting mouse tracking
-    requestMouseTracking True
+    'Mouse subclassing is only available in the compiled EXE.
+    If g_IsProgramCompiled Then
     
-    'Release the subclassing object responsible for mouse wheel support
-    m_Subclass.ssc_Terminate
-    Set m_Subclass = Nothing
+        'Stop requesting mouse tracking
+        requestMouseTracking True
+    
+        'Release the subclassing object responsible for mouse wheel support
+        m_Subclass.ssc_Terminate
+        Set m_Subclass = Nothing
+        
+    End If
     
     Message "Closing image..."
     
