@@ -96,6 +96,29 @@ Private Const TA_CENTER = 6
 'Transparent font background
 Private Const FONT_TRANSPARENT = &H3
 
+'Formatting constants for DrawText
+Private Const DT_TOP = &H0
+Private Const DT_LEFT = &H0
+Private Const DT_CENTER = &H1
+Private Const DT_RIGHT = &H2
+Private Const DT_VCENTER = &H4
+Private Const DT_BOTTOM = &H8
+Private Const DT_WORDBREAK = &H10
+Private Const DT_SINGLELINE = &H20
+Private Const DT_EXPANDTABS = &H40
+Private Const DT_TABSTOP = &H80
+Private Const DT_NOCLIP = &H100
+Private Const DT_EXTERNALLEADING = &H200
+Private Const DT_CALCRECT = &H400
+Private Const DT_NOPREFIX = &H800
+Private Const DT_INTERNAL = &H1000
+Private Const DT_EDITCONTROL = &H2000
+Private Const DT_PATH_ELLIPSIS = &H4000
+Private Const DT_END_ELLIPSIS = &H8000
+Private Const DT_MODIFYSTRING = &H10000
+Private Const DT_RTLREADING = &H20000
+Private Const DT_WORD_ELLIPSIS = &H40000
+
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (ByRef lpLogFont As LOGFONT) As Long
 
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
@@ -114,7 +137,9 @@ Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC A
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
-'Used to measure the expected length of a string
+Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+
+'Used to measure the expected length of a string (single line only; line breaks do not work)
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
 'Used to track the created font
@@ -134,6 +159,7 @@ Dim fontColor As Long
 
 'This LOGFONT object stores all current settings for the font
 Dim currentLogFont As LOGFONT
+
 
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
 ' additional parameters have to be set)
@@ -158,12 +184,17 @@ Public Sub attachToDC(ByVal targetDC As Long)
     
 End Sub
 
+'If we want to detach this font from its current DC, use this call
+Public Sub releaseFromDC()
+    SelectObject curDC, oldFont
+End Sub
+
 'Create the font object on-demand
 Public Sub createFontObject()
 
     'If a font has already been created, delete it now
     If curFont > 0 Then
-        SelectObject curDC, oldFont
+        If curDC > 0 Then SelectObject curDC, oldFont
         DeleteObject curFont
     End If
     
@@ -251,6 +282,22 @@ Public Function getHeightOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
     getHeightOfString = txtSize.y
+End Function
+
+'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently
+' set for this object, as the DC's font settings are used to calculate the word-wrapped string's dimensions.
+Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWidth As Long) As Long
+
+    Dim tmpRect As RECT
+    tmpRect.Left = 0
+    tmpRect.Top = 0
+    tmpRect.Bottom = 0
+    tmpRect.Right = strWidth
+    
+    DrawText curDC, srcString, Len(srcString), tmpRect, DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+    
+    getHeightOfWordwrapString = tmpRect.Bottom
+
 End Function
 
 Private Sub Class_Initialize()

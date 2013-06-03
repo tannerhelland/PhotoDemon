@@ -53,6 +53,52 @@ Private Const SmoothingNone As Long = &H0
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit
 Private hadToChangeSmoothing As Boolean
 
+'Given a wordwrap label with a set size, attempt to fit the label's text inside it
+Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
+
+    'We will use a pdFont object to help us measure the label in question
+    Dim tmpFont As pdFont
+    Set tmpFont = New pdFont
+    tmpFont.setFontBold srcLabel.FontBold
+    tmpFont.setFontItalic srcLabel.FontItalic
+    tmpFont.setFontFace srcLabel.FontName
+    tmpFont.setFontSize srcLabel.FontSize
+    tmpFont.createFontObject
+    tmpFont.setTextAlignment srcLabel.Alignment
+    tmpFont.attachToDC srcForm.hDC
+    
+    'Retrieve the height from the pdFont class
+    Dim lblHeight As Long
+    lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width)
+    
+    Dim curFontSize As Long
+    curFontSize = srcLabel.FontSize
+    
+    'If the text is too tall, shrink the font until an acceptable size is found.  Note that the reported text value tends to be
+    ' smaller than the space actually required.  I do not know why this happens.  To account for it, I cut a further 10% from
+    ' the requested height, just to be safe.
+    If (lblHeight > srcLabel.Height * 0.9) Then
+            
+        'Try shrinking the font size until an acceptable width is found
+        Do While (lblHeight > srcLabel.Height * 0.9) And (curFontSize >= 8)
+        
+            curFontSize = curFontSize - 1
+            
+            tmpFont.setFontSize curFontSize
+            tmpFont.createFontObject
+            tmpFont.attachToDC srcForm.hDC
+            lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width)
+            
+        Loop
+            
+    End If
+    
+    'When an acceptable size is found, set it and exit.
+    srcLabel.FontSize = curFontSize
+    srcLabel.Refresh
+
+End Sub
+
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
