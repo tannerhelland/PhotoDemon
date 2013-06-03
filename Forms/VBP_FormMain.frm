@@ -1244,48 +1244,24 @@ Begin VB.MDIForm FormMain
          Caption         =   "Blur"
          Index           =   1
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Soften"
+            Caption         =   "Box blur..."
             Index           =   0
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Soften more"
+            Caption         =   "Gaussian blur..."
             Index           =   1
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Blur"
+            Caption         =   "Grid blur"
             Index           =   2
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Blur more"
+            Caption         =   "Pixelate..."
             Index           =   3
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "-"
-            Index           =   4
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Box blur..."
-            Index           =   5
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Gaussian blur..."
-            Index           =   6
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Grid blur"
-            Index           =   7
-         End
-         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Smart blur..."
-            Index           =   8
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "-"
-            Index           =   9
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Pixelate..."
-            Index           =   10
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2232,43 +2208,27 @@ End Sub
 Private Sub MnuBlurFilter_Click(Index As Integer)
 
     Select Case Index
-            
-        'Soften
-        Case 0
-            Process Soften
-        
-        'Soften more
-        Case 1
-            Process SoftenMore
-        
-        'Blur
-        Case 2
-            Process Blur
-        
-        'Blur more
-        Case 3
-            Process BlurMore
         
         'Box blur
-        Case 5
+        Case 0
             Process BoxBlur, , , , , , , , , , True
             
         'Gaussian blur
-        Case 6
+        Case 1
             Process GaussianBlur, , , , , , , , , , True
                 
         'Grid blur
-        Case 7
+        Case 2
             Process GridBlur
             
-        'Smart Blur
-        Case 8
-            Process SmartBlur, , , , , , , , , , True
-            
         'Pixelate (mosaic)
-        Case 10
-            Process Mosaic, , , , , , , , , , True
-    
+        Case 3
+            Process Pixelate, , , , , , , , , , True
+        
+        'Smart Blur
+        Case 4
+            Process SmartBlur, , , , , , , , , , True
+        
     End Select
 
 End Sub

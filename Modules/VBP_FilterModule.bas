@@ -1,10 +1,11 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 08/September/12
-'Last update: rewrote all filters against layers
+'Last updated: 02/June/13
+'Last update: remove Soften, Soften More, Blur, and Blur More filters.  These have all been superseded by the far
+'              superior Gaussian Blur and Box Blur implementations.
 'Still needs: interpolation for isometric conversion
 '
 'Holder for generalized area filters, including most of the project's convolution filters.
@@ -301,142 +302,6 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     Close #fileNum
     LoadCustomFilterData = True
 End Function
-
-'"Soften an image" (aka, apply a gentle 3x3 blur)
-Public Sub FilterSoften()
-    
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
-    
-    g_FM(-1, -1) = 1
-    g_FM(-1, 0) = 1
-    g_FM(-1, 1) = 1
-    
-    g_FM(0, -1) = 1
-    g_FM(0, 0) = 8
-    g_FM(0, 1) = 1
-    
-    g_FM(1, -1) = 1
-    g_FM(1, 0) = 1
-    g_FM(1, 1) = 1
-    
-    g_FilterWeight = 16
-    g_FilterBias = 0
-    
-    DoFilter g_Language.TranslateMessage("Soften")
-    
-End Sub
-
-'"Soften an image more" (aka, apply a gentle 5x5 blur)
-Public Sub FilterSoftenMore()
-    
-    g_FilterSize = 5
-    ReDim g_FM(-2 To 2, -2 To 2) As Long
-    
-    g_FM(-2, -2) = 1
-    g_FM(-2, -1) = 1
-    g_FM(-2, 0) = 1
-    g_FM(-2, 1) = 1
-    g_FM(-2, 2) = 1
-    
-    g_FM(-1, -2) = 1
-    g_FM(-1, -1) = 1
-    g_FM(-1, 0) = 1
-    g_FM(-1, 1) = 1
-    g_FM(-1, 2) = 1
-    
-    g_FM(0, -2) = 1
-    g_FM(0, -1) = 1
-    g_FM(0, 0) = 24
-    g_FM(0, 1) = 1
-    g_FM(0, 2) = 1
-    
-    g_FM(1, -2) = 1
-    g_FM(1, -1) = 1
-    g_FM(1, 0) = 1
-    g_FM(1, 1) = 1
-    g_FM(1, 2) = 1
-    
-    g_FM(2, -2) = 1
-    g_FM(2, -1) = 1
-    g_FM(2, 0) = 1
-    g_FM(2, 1) = 1
-    g_FM(2, 2) = 1
-    
-    g_FilterWeight = 48
-    g_FilterBias = 0
-    
-    DoFilter g_Language.TranslateMessage("Strong Soften")
-    
-End Sub
-
-'Blur an image using a 3x3 convolution matrix
-Public Sub FilterBlur()
-        
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
-    
-    g_FM(-1, -1) = 1
-    g_FM(-1, 0) = 1
-    g_FM(-1, 1) = 1
-    
-    g_FM(0, -1) = 1
-    g_FM(0, 0) = 1
-    g_FM(0, 1) = 1
-    
-    g_FM(1, -1) = 1
-    g_FM(1, 0) = 1
-    g_FM(1, 1) = 1
-    
-    g_FilterWeight = 9
-    g_FilterBias = 0
-    
-    DoFilter g_Language.TranslateMessage("Blur")
-    
-End Sub
-
-'Blur an image using a 5x5 convolution matrix
-Public Sub FilterBlurMore()
-    
-    g_FilterSize = 5
-    ReDim g_FM(-2 To 2, -2 To 2) As Long
-    
-    g_FM(-2, -2) = 1
-    g_FM(-2, -1) = 1
-    g_FM(-2, 0) = 1
-    g_FM(-2, 1) = 1
-    g_FM(-2, 2) = 1
-    
-    g_FM(-1, -2) = 1
-    g_FM(-1, -1) = 1
-    g_FM(-1, 0) = 1
-    g_FM(-1, 1) = 1
-    g_FM(-1, 2) = 1
-    
-    g_FM(0, -2) = 1
-    g_FM(0, -1) = 1
-    g_FM(0, 0) = 1
-    g_FM(0, 1) = 1
-    g_FM(0, 2) = 1
-    
-    g_FM(1, -2) = 1
-    g_FM(1, -1) = 1
-    g_FM(1, 0) = 1
-    g_FM(1, 1) = 1
-    g_FM(1, 2) = 1
-    
-    g_FM(2, -2) = 1
-    g_FM(2, -1) = 1
-    g_FM(2, 0) = 1
-    g_FM(2, 1) = 1
-    g_FM(2, 2) = 1
-    
-    g_FilterWeight = 25
-    g_FilterBias = 0
-    
-    DoFilter g_Language.TranslateMessage("Strong Blur")
-    
-End Sub
 
 'Sharpen an image via convolution filter
 Public Sub FilterSharpen()

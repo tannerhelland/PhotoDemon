@@ -311,15 +311,11 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "RELIEF", 5, 2, 6         'Relief
     AddMenuIcon "BLUR", 5, 3            'Blur
         '--> Blur sub-menu
-        AddMenuIcon "SOFTEN", 5, 3, 0         'Soften
-        AddMenuIcon "SOFTENMORE", 5, 3, 1     'Soften More
-        AddMenuIcon "BLUR2", 5, 3, 2          'Blur
-        AddMenuIcon "BLURMORE", 5, 3, 3       'Blur More
-        AddMenuIcon "BOXBLUR", 5, 3, 5        'Box Blur
-        AddMenuIcon "GAUSSBLUR", 5, 3, 6      'Gaussian Blur
-        AddMenuIcon "GRIDBLUR", 5, 3, 7       'Grid Blur
-        AddMenuIcon "SMARTBLUR", 5, 3, 8      'Smart Blur
-        AddMenuIcon "MOSAIC", 5, 3, 10        'Pixelate (Mosaic)
+        AddMenuIcon "BOXBLUR", 5, 3, 0        'Box Blur
+        AddMenuIcon "GAUSSBLUR", 5, 3, 1      'Gaussian Blur
+        AddMenuIcon "GRIDBLUR", 5, 3, 2       'Grid Blur
+        AddMenuIcon "PIXELATE", 5, 3, 3       'Pixelate (formerly Mosaic)
+        AddMenuIcon "SMARTBLUR", 5, 3, 4      'Smart Blur
     AddMenuIcon "DISTORT", 5, 4      'Distort
         '--> Distort sub-menu
         AddMenuIcon "LENSDISTORT", 5, 4, 0    'Apply lens distortion
