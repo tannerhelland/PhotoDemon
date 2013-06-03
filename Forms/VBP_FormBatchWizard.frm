@@ -1824,12 +1824,13 @@ Begin VB.Form FormBatchWizard
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   7365
+      Height          =   7320
       Index           =   0
       Left            =   240
       TabIndex        =   4
       Top             =   780
       Width           =   2895
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblWizardTitle 
       AutoSize        =   -1  'True
@@ -2373,7 +2374,10 @@ Private Sub updateWizardText()
     End Select
     
     lblExplanation(0).Caption = sideText
-
+    
+    'If translations are active, the translated text may not fit the label.  Automatically adjust it to fit.
+    fitWordwrapLabel lblExplanation(0), Me
+    
 End Sub
 
 'Remove all selected items from the batch conversion list
