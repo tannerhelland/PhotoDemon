@@ -757,7 +757,7 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 	</phrase>
 
 	<phrase>
-		<original>The FreeImage interface plug-ins (FreeImage.dll) was marked as missing or disabled upon program initialization.
+		<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
 		<translation>L'interface FreeImage plug-ins (FreeImage.dll) a été marqué comme manquant ou désactivé lors de l'initialisation du programme.
@@ -981,26 +981,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	</phrase>
 
 	<phrase>
-		<original>Soften</original>
-		<translation>Adoucir</translation>
-	</phrase>
-
-	<phrase>
-		<original>Strong Soften</original>
-		<translation>Adoucir</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blur</original>
-		<translation>Brouiller</translation>
-	</phrase>
-
-	<phrase>
-		<original>Strong Blur</original>
-		<translation>Brouiller</translation>
-	</phrase>
-
-	<phrase>
 		<original>Sharpen</original>
 		<translation>Affiler</translation>
 	</phrase>
@@ -1030,7 +1010,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FilterModule.bas contains 14 phrases.  One was a duplicate of an existing phrase, so only 13 new phrases were written to file. -->
+	<!-- VBP_FilterModule.bas contains 10 phrases.  One was a duplicate of an existing phrase, so only 9 new phrases were written to file. -->
 
 	<!-- END text for VBP_FilterModule.bas-->
 
@@ -1133,11 +1113,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 	<!-- END text for VBP_FormBrightnessContrast.frm-->
 
-	<!-- BEGIN text for VBP_FormMosaic.frm (FormMosaic) -->
+	<!-- BEGIN text for VBP_FormMosaic.frm (FormPixelate) -->
 
 	<phrase>
-		<original>Mosaic Options</original>
-		<translation>options de mosaïque</translation>
+		<original>Pixelate Options</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -1156,8 +1136,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	</phrase>
 
 	<phrase>
-		<original>Repainting image in mosaic style</original>
-		<translation>Redessiner l'image dans le style de la mosaïque</translation>
+		<original>Applying pixellation</original>
+		<translation></translation>
 	</phrase>
 
 	<!-- VBP_FormMosaic.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -1498,8 +1478,18 @@ When finished, click the Submit button.  Thank you!</original>
 	</phrase>
 
 	<phrase>
+		<original>Blur</original>
+		<translation>Brouiller</translation>
+	</phrase>
+
+	<phrase>
 		<original>Blur More</original>
 		<translation>Plus fondu</translation>
+	</phrase>
+
+	<phrase>
+		<original>Soften</original>
+		<translation>Adoucir</translation>
 	</phrase>
 
 	<phrase>
@@ -1533,8 +1523,8 @@ When finished, click the Submit button.  Thank you!</original>
 	</phrase>
 
 	<phrase>
-		<original>Mosaic</original>
-		<translation>Mosaic</translation>
+		<original>Pixelate</original>
+		<translation>Pixellisation</translation>
 	</phrase>
 
 	<phrase>
@@ -2047,7 +2037,7 @@ When finished, click the Submit button.  Thank you!</original>
 		<translation>L'art moderne</translation>
 	</phrase>
 
-	<!-- VBP_ProcessorModule.bas contains 163 phrases. 8 were duplicates of existing phrases, so only 155 new phrases were written to file. -->
+	<!-- VBP_ProcessorModule.bas contains 163 phrases. 6 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
 
 	<!-- END text for VBP_ProcessorModule.bas-->
 
@@ -3069,11 +3059,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Pixelate</original>
-		<translation>Pixellisation</translation>
-	</phrase>
-
-	<phrase>
 		<original>Distort</original>
 		<translation>Fausser</translation>
 	</phrase>
@@ -3412,7 +3397,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifie
 		<translation>Préparation de charger le fichier d'entrée récente</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 240 phrases. 76 were duplicates of existing phrases, so only 164 new phrases were written to file. -->
+	<!-- VBP_FormMain.frm contains 236 phrases. 73 were duplicates of existing phrases, so only 163 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -4377,23 +4362,10 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 	<phrase>
 		<original>Close the current image.
 
-If the current image has not been saved, you will
- receive a prompt to save it before it closes.</original>
-		<translation>Fermez l'image actuelle. 
-		
- Si l'image actuelle n'a pas été enregistré, vous devrez 
- recevoir une invite pour le sauver avant qu'il ne ferme.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Close the current image.
-
-Because you have turned off save prompts (via Tools -> Options),
- you WILL NOT receive a prompt to save this image before it closes.</original>
+Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.</original>
 		<translation>Fermez l'image actuelle
 		
- Parce que vous avez désactivé la sauvegarde invites. (Via Outils - > Options), 
- vous ne recevrez une invite pour enregistrer cette image avant qu'elle ne se referme.</translation>
+ Parce que vous avez désactivé la sauvegarde invites. (Via Outils - > Options), vous ne recevrez une invite pour enregistrer cette image avant qu'elle ne se referme.</translation>
 	</phrase>
 
 	<phrase>
@@ -4686,10 +4658,8 @@ Are you sure you want to continue?</original>
 	</phrase>
 
 	<phrase>
-		<original>Interface options include settings for the main PhotoDemon interface, including
-things like canvas settings, font selection, and positioning.</original>
-		<translation>Options d'interface comprennent des paramètres de l'interface principale PhotoDemon, y compris 
- choses comme paramètres toile, sélection de polices et de positionnement.</translation>
+		<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
+		<translation>Options d'interface comprennent des paramètres de l'interface principale PhotoDemon, y compris choses comme paramètres toile, sélection de polices et de positionnement.</translation>
 	</phrase>
 
 	<phrase>
@@ -4708,33 +4678,23 @@ things like canvas settings, font selection, and positioning.</original>
 	</phrase>
 
 	<phrase>
-		<original>Tool options currently include customizable options for the Selection Tool.
-In the future, PhotoDemon will gain paint tools, and those settings will appear
-here as well.</original>
-		<translation>Options de l'outil en cours comprennent des options personnalisables pour l'outil de sélection. 
- À l'avenir, PhotoDemon obtiendra des outils de peinture, et ces paramètres apparaissent 
- ici aussi.</translation>
+		<original>Tool options currently include customizable options for the Selection Tool. In the future, PhotoDemon will gain paint tools, and those settings will appear here as well.</original>
+		<translation>Options de l'outil en cours comprennent des options personnalisables pour l'outil de sélection. À l'avenir, PhotoDemon obtiendra des outils de peinture, et ces paramètres apparaissent ici aussi.</translation>
 	</phrase>
 
 	<phrase>
-		<original>Transparency options control how PhotoDemon displays images
-that contain alpha channels (e.g. 32bpp images).</original>
-		<translation>Options de transparence contrôler le mode d'affichage des images PhotoDemon 
- qui contiennent des canaux alpha (par exemple 32bpp images).</translation>
+		<original>Transparency options control how PhotoDemon displays images that contain alpha channels (e.g. 32bpp images).</original>
+		<translation>Options de transparence contrôler le mode d'affichage des images PhotoDemon qui contiennent des canaux alpha (par exemple 32bpp images).</translation>
 	</phrase>
 
 	<phrase>
-		<original>Update options control how frequently PhotoDemon checks for
-updated versions, and how it handles the download of missing plugins.</original>
-		<translation>Options de mise à jour des contrôles PhotoDemon contrôler la fréquence à laquelle des 
- versions mises à jour, et comment il gère le téléchargement de plug-ins manquants.</translation>
+		<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
+		<translation>Options de mise à jour des contrôles PhotoDemon contrôler la fréquence à laquelle des versions mises à jour, et comment il gère le téléchargement de plug-ins manquants.</translation>
 	</phrase>
 
 	<phrase>
-		<original>Advanced options can be safely ignored by regular users.
-Testers and developers may, however, find these settings useful.</original>
-		<translation>Les options avancées peuvent être ignorés par les utilisateurs réguliers. 
- testeurs et les développeurs peuvent toutefois trouver ces paramètres utiles.</translation>
+		<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
+		<translation>Les options avancées peuvent être ignorés par les utilisateurs réguliers. Testeurs et les développeurs peuvent toutefois trouver ces paramètres utiles.</translation>
 	</phrase>
 
 	<phrase>
@@ -4895,7 +4855,7 @@ If you choose to disable these features, note that you can always visit tannerhe
 		<translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 	</phrase>
 
-	<!-- VBP_FormPreferences.frm contains 198 phrases. 13 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
+	<!-- VBP_FormPreferences.frm contains 198 phrases. 14 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPreferences.frm-->
 
@@ -6795,8 +6755,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 	</phrase>
 
 	<phrase>
-		<original>This option will only load a single frame from the animated GIF file,
-effectively treating at as a non-animated GIF file.</original>
+		<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
 		<translation>Cette option permet de ne charger une seule image à partir du fichier GIF animé, traitement efficace à un fichier non - GIF animé.</translation>
 	</phrase>
 
@@ -8761,9 +8720,9 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 2185 phrases in total. -->
-<!-- 648 are duplicate phrases, so only 1537 phrases have been written to file. -->
-<!-- These 1537 phrases contain approximately 9765 total words. -->
+<!-- As of this build, PhotoDemon contains 2177 phrases in total. -->
+<!-- 644 are duplicate phrases, so only 1533 phrases have been written to file. -->
+<!-- These 1533 phrases contain approximately 9742 total words. -->
 
 </language>
 

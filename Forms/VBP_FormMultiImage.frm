@@ -185,7 +185,7 @@ Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
         cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each frame as a separate image")
         cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("This option will load every frame in the animated GIF file as an individual image.")
         cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first frame")
-        cmdAnswer(1).ToolTipText = g_Language.TranslateMessage("This option will only load a single frame from the animated GIF file," & vbCrLf & "effectively treating at as a non-animated GIF file.")
+        cmdAnswer(1).ToolTipText = g_Language.TranslateMessage("This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.")
     ElseIf UCase(FileExtension) = "ICO" Then
         lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
         cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each icon as a separate image")
