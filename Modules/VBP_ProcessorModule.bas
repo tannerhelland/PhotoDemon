@@ -87,8 +87,8 @@ Option Explicit
     Public Const Diffuse As Long = 407
     Public Const DiffuseMore As Long = 408
     Public Const CustomDiffuse As Long = 409
-    '-Mosaic
-    Public Const Mosaic As Long = 410
+    '-Pixelate
+    Public Const Pixelate As Long = 410
     '-Rank
     '413-414 have been deprecated
     Public Const MinimumRank As Long = 411
@@ -507,14 +507,16 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             FormGrayscale.MenuGrayscaleSingleChannel pOPCODE
         
     'Area filters
+    
+        'These four blur functions are no longer used. I keep them here for compatibility reasons with old macros.
         Case Blur
-            FilterBlur
+            FormBoxBlur.BoxBlurFilter 1, 1
         Case BlurMore
-            FilterBlurMore
+            FormBoxBlur.BoxBlurFilter 2, 2
         Case Soften
-            FilterSoften
+            FormGaussianBlur.GaussianBlurFilter 1
         Case SoftenMore
-            FilterSoftenMore
+            FormGaussianBlur.GaussianBlurFilter 2
         Case Sharpen
             FilterSharpen
         Case SharpenMore
@@ -535,11 +537,11 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
             Else
                 FormDiffuse.DiffuseCustom pOPCODE, pOPCODE2, pOPCODE3
             End If
-        Case Mosaic
+        Case Pixelate
             If LoadForm Then
-                FormMosaic.Show vbModal, FormMain
+                FormPixelate.Show vbModal, FormMain
             Else
-                FormMosaic.MosaicFilter CInt(pOPCODE), CInt(pOPCODE2)
+                FormPixelate.PixelateFilter CInt(pOPCODE), CInt(pOPCODE2)
             End If
         Case MaximumRank
             If LoadForm Then
@@ -947,7 +949,7 @@ Public Sub Process(ByVal pType As Long, Optional pOPCODE As Variant = 0, Optiona
     
     'If the user wants us to time this action, display the results now
     If (Not LoadForm) And (pType >= 100) Then
-        If DISPLAY_TIMINGS Then Message "Time taken: " & Timer - m_ProcessingTime & " seconds"
+        If DISPLAY_TIMINGS Then Message "Time taken: " & Format$(Timer - m_ProcessingTime, "#0.####") & " seconds"
     End If
     
     'Finally, check to see if the user wants us to Fade the last effect applied to the image...
@@ -1167,8 +1169,8 @@ Public Function GetNameOfProcess(ByVal processID As Long) As String
             GetNameOfProcess = "Diffuse More"
         Case CustomDiffuse
             GetNameOfProcess = "Custom Diffuse"
-        Case Mosaic
-            GetNameOfProcess = "Mosaic"
+        Case Pixelate
+            GetNameOfProcess = "Pixelate"
         Case MaximumRank
             GetNameOfProcess = "Dilate (maximum rank)"
         Case MinimumRank
