@@ -325,12 +325,14 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "PANANDZOOM", 5, 4, 4     'Pan and zoom
         AddMenuIcon "PERSPECTIVE", 5, 4, 5    'Perspective (free)
         AddMenuIcon "PINCHWHIRL", 5, 4, 6     'Pinch and whirl
-        AddMenuIcon "POLAR", 5, 4, 7          'Polar conversion
-        AddMenuIcon "RIPPLE", 5, 4, 8         'Ripple
-        AddMenuIcon "SHEAR", 5, 4, 9          'Shear
-        AddMenuIcon "SQUISH", 5, 4, 10        'Squish (formerly Fixed Perspective)
-        AddMenuIcon "SWIRL", 5, 4, 11         'Swirl
-        AddMenuIcon "WAVES", 5, 4, 12         'Waves
+        AddMenuIcon "POKE", 5, 4, 7           'Poke
+        AddMenuIcon "POLAR", 5, 4, 8          'Polar conversion
+        AddMenuIcon "RIPPLE", 5, 4, 9         'Ripple
+        AddMenuIcon "SHEAR", 5, 4, 10         'Shear
+        AddMenuIcon "SPHERIZE", 5, 4, 11      'Spherize
+        AddMenuIcon "SQUISH", 5, 4, 12        'Squish (formerly Fixed Perspective)
+        AddMenuIcon "SWIRL", 5, 4, 13         'Swirl
+        AddMenuIcon "WAVES", 5, 4, 14         'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu
