@@ -747,6 +747,11 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
+		<original>Reduce colors</original>
+		<translation>Kleuren reduceren</translation>
+	</phrase>
+
+	<phrase>
 		<original>Quantizing image using the FreeImage library</original>
 		<translation>Quantiseren afbeelding met behulp van de FreeImage bibliotheek</translation>
 	</phrase>
@@ -775,7 +780,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Toepassen van intelligente kleuren</translation>
 	</phrase>
 
-	<!-- VBP_FormReduceColors.frm contains 24 phrases. 5 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+	<!-- VBP_FormReduceColors.frm contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormReduceColors.frm-->
 
@@ -874,6 +879,11 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
+		<original>Resize</original>
+		<translation>Wijzigen afmetingen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Nearest Neighbor</original>
 		<translation>Naaste buur</translation>
 	</phrase>
@@ -928,7 +938,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Klaar.</translation>
 	</phrase>
 
-	<!-- VBP_FormResize.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormResize.frm contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormResize.frm-->
 
@@ -959,7 +969,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Genereren van afbeeldings tweeling</translation>
 	</phrase>
 
-	<!-- VBP_FormTwins.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormTwins.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormTwins.frm-->
 
@@ -1095,6 +1105,11 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
+		<original>Brightness and contrast</original>
+		<translation>Helderheid en contrast</translation>
+	</phrase>
+
+	<phrase>
 		<original>Adjusting image brightness</original>
 		<translation>Instellen helderheid van de afbeelding</translation>
 	</phrase>
@@ -1109,7 +1124,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 		<translation>Instellen van de afbeeldingcontrast</translation>
 	</phrase>
 
-	<!-- VBP_FormBrightnessContrast.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+	<!-- VBP_FormBrightnessContrast.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBrightnessContrast.frm-->
 
@@ -1136,11 +1151,16 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
+		<original>Pixelate</original>
+		<translation>Pixelate</translation>
+	</phrase>
+
+	<phrase>
 		<original>Applying pixellation</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMosaic.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormMosaic.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMosaic.frm-->
 
@@ -1193,11 +1213,16 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	</phrase>
 
 	<phrase>
+		<original>Add RGB noise</original>
+		<translation>Toevoegen RGB ruis</translation>
+	</phrase>
+
+	<phrase>
 		<original>Increasing image noise</original>
 		<translation>Verhogen ruis van afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormNoise.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormNoise.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormNoise.frm-->
 
@@ -1211,6 +1236,18 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 	<phrase>
 		<original>Color reduction error</original>
 		<translation>Fout kleur reductie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unknown processor request submitted: %1
+
+Please report this bug via the Help -> Submit Bug Report menu.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Processor Error</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -1353,696 +1390,16 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Bug report instructies</translation>
 	</phrase>
 
-	<phrase>
-		<original>Open</original>
-		<translation>Openen</translation>
-	</phrase>
+	<!-- VBP_ProcessorModule.bas contains 22 phrases.  All 22 were unique, so 22 new phrases were written to file. -->
 
-	<phrase>
-		<original>Save</original>
-		<translation>Opslaan</translation>
-	</phrase>
+	<!-- END text for VBP_ProcessorModule.bas-->
 
-	<phrase>
-		<original>Save As</original>
-		<translation>Opslaan als</translation>
-	</phrase>
-
-	<phrase>
-		<original>Paste</original>
-		<translation>Plakken</translation>
-	</phrase>
-
-	<phrase>
-		<original>Empty Clipboard</original>
-		<translation>Ledig klembord</translation>
-	</phrase>
-
-	<phrase>
-		<original>Undo</original>
-		<translation>Ongedaan maken</translation>
-	</phrase>
-
-	<phrase>
-		<original>Redo</original>
-		<translation>Opnieuw</translation>
-	</phrase>
-
-	<phrase>
-		<original>Start Macro Recording</original>
-		<translation>Start Macro Opname</translation>
-	</phrase>
-
-	<phrase>
-		<original>Stop Macro Recording</original>
-		<translation>Stop Macro Opname</translation>
-	</phrase>
-
-	<phrase>
-		<original>Play Macro</original>
-		<translation>Speel Macro af</translation>
-	</phrase>
-
-	<phrase>
-		<original>Select Scanner or Camera</original>
-		<translation>Selecteer scanner of camera</translation>
-	</phrase>
-
-	<phrase>
-		<original>Scan Image</original>
-		<translation>Scan Afbeelding</translation>
-	</phrase>
-
-	<phrase>
-		<original>Display Histogram</original>
-		<translation>Weergave Histogram</translation>
-	</phrase>
-
-	<phrase>
-		<original>Stretch Histogram</original>
-		<translation>Rek histogram</translation>
-	</phrase>
-
-	<phrase>
-		<original>Equalize</original>
-		<translation>Egaliseren</translation>
-	</phrase>
-
-	<phrase>
-		<original>White Balance</original>
-		<translation>Witbalans</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color to Monochrome</original>
-		<translation>Kleur naar zwart-wit</translation>
-	</phrase>
-
-	<phrase>
-		<original>Monochrome to Grayscale</original>
-		<translation>Monochroom in grijswaarden</translation>
-	</phrase>
-
-	<phrase>
-		<original>Desaturate</original>
-		<translation>Verzadiging verminderen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (ITU Standard)</original>
-		<translation>Grijswaarden (ITU standaard)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Average)</original>
-		<translation>Grijswaarden (gemiddeld)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Custom # of Colors)</original>
-		<translation>Grijswaarden (Aangepast  # kleuren)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Custom Dither)</original>
-		<translation>Grijswaarden  (Aangepaste Dither)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Decomposition)</original>
-		<translation>Grijswaarden (Decompositie)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Single Channel)</original>
-		<translation>Grijswaarden (Enkel kanaal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blur</original>
-		<translation>Verflauwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blur More</original>
-		<translation>Meer verflauwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Soften</original>
-		<translation>Verzachten</translation>
-	</phrase>
-
-	<phrase>
-		<original>Soften More</original>
-		<translation>Meer Verzachten</translation>
-	</phrase>
-
-	<phrase>
-		<original>Sharpen More</original>
-		<translation>Meer verscherpen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Unsharp</original>
-		<translation>Ontscherpen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Diffuse</original>
-		<translation>Spreiden</translation>
-	</phrase>
-
-	<phrase>
-		<original>Diffuse More</original>
-		<translation>Meer spreiden</translation>
-	</phrase>
+	<!-- BEGIN text for VBP_FormDiffuse.frm (FormDiffuse) -->
 
 	<phrase>
 		<original>Custom Diffuse</original>
 		<translation>Aangepaste spreiding</translation>
 	</phrase>
-
-	<phrase>
-		<original>Pixelate</original>
-		<translation>Pixelate</translation>
-	</phrase>
-
-	<phrase>
-		<original>Dilate (maximum rank)</original>
-		<translation>Dilate (maximaal rangschikking)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Erode (minimum rank)</original>
-		<translation>Erode (minimum rangschikking)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grid Blur</original>
-		<translation>Raster Verflauwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Gaussian Blur</original>
-		<translation>Gaussiaans Verflauwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Smart Blur</original>
-		<translation>Slim Verflauwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Box Blur</original>
-		<translation>Vierkant Verflauwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Emboss</original>
-		<translation>Reliëf</translation>
-	</phrase>
-
-	<phrase>
-		<original>Engrave</original>
-		<translation>Gravure</translation>
-	</phrase>
-
-	<phrase>
-		<original>Pencil Drawing</original>
-		<translation>Potlood tekening</translation>
-	</phrase>
-
-	<phrase>
-		<original>Relief</original>
-		<translation>Reliëf</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Prewitt Horizontal)</original>
-		<translation>Randen zoeken (Prewitt horizontaal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Prewitt Vertical)</original>
-		<translation>Randen zoeken (Prewitt Verticaal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Sobel Horizontal)</original>
-		<translation>Randen zoeken (Sobel horizontaal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Sobel Vertical)</original>
-		<translation>Randen zoeken (Sobel Verticaal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Laplacian)</original>
-		<translation>Randen zoeken (Laplace)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Artistic Contour</original>
-		<translation>Artistieke Contour</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Hilite)</original>
-		<translation>Randen zoeken (Hilite)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (PhotoDemon Linear)</original>
-		<translation>Randen zoeken (PhotoDemon Linear)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (PhotoDemon Cubic)</original>
-		<translation>Randen zoeken (PhotoDemon Cubic)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Edge Enhance</original>
-		<translation>Verbeteren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Trace Contour</original>
-		<translation>Omtreklijn</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rechannel</original>
-		<translation>Herkanaliseren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rechannel (Green)</original>
-		<translation>Herkanaliseren (Groen)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rechannel (Red)</original>
-		<translation>Herkanaliseren (Rood)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shift Colors (Left)</original>
-		<translation>Verschuif kleuren (links)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shift Colors (Right)</original>
-		<translation>Verschuif kleuren (rechts)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Gamma Correction</original>
-		<translation>Gammacorrectie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Invert Colors</original>
-		<translation>Omkeren kleuren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Invert Hue</original>
-		<translation>Omkeren Kleurtoon</translation>
-	</phrase>
-
-	<phrase>
-		<original>Film Negative</original>
-		<translation>Film Negatief</translation>
-	</phrase>
-
-	<phrase>
-		<original>Compound Invert</original>
-		<translation>Omkeren Compound</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Contrast</original>
-		<translation>Auto- Verbetering Contrast</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Highlights</original>
-		<translation>Auto- Verbetering Glanspunten</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Midtones</original>
-		<translation>Auto- Verbetering Middentonen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Shadows</original>
-		<translation>Auto- Verbetering Schaduwen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Image Levels</original>
-		<translation>Afbeeldingsniveaus</translation>
-	</phrase>
-
-	<phrase>
-		<original>Colorize</original>
-		<translation>Verkleuren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Reduce Colors</original>
-		<translation>Kleuren reduceren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color Temperature</original>
-		<translation>Kleur Temperatuur</translation>
-	</phrase>
-
-	<phrase>
-		<original>Hue/Saturation/Lightness</original>
-		<translation>Kleurtoon/verzadiging/helderheid</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color Balance</original>
-		<translation>Kleurbalans</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shadow/Highlight</original>
-		<translation>Shaduw/Glanspunt</translation>
-	</phrase>
-
-	<phrase>
-		<original>Resize</original>
-		<translation>Wijzigen afmetingen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Flip</original>
-		<translation>Omkeren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Mirror</original>
-		<translation>Spiegelen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rotate 90° Clockwise</original>
-		<translation>Draai 90° naar rechts</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rotate 180°</original>
-		<translation>180° draaien</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rotate 90° Counter-Clockwise</original>
-		<translation>Draai 90° tegen de klok in</translation>
-	</phrase>
-
-	<phrase>
-		<original>Arbitrary Rotation</original>
-		<translation>Willekeurig draaien</translation>
-	</phrase>
-
-	<phrase>
-		<original>Isometric Conversion</original>
-		<translation>Isometrische Conversie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Tile Image</original>
-		<translation>Tegel afbeelding</translation>
-	</phrase>
-
-	<phrase>
-		<original>Crop</original>
-		<translation>Bijsnijden</translation>
-	</phrase>
-
-	<phrase>
-		<original>Convert to Photo Mode (RGB, 24bpp)</original>
-		<translation>Converteren naar fotomodus (RGB, 24bpp)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Convert to Web Mode (RGBA, 32bpp)</original>
-		<translation>Converteren naar web -modus (RGBA, 32bpp)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Swirl</original>
-		<translation>Kolken</translation>
-	</phrase>
-
-	<phrase>
-		<original>Apply lens distortion</original>
-		<translation>Toepassen lensvervorming</translation>
-	</phrase>
-
-	<phrase>
-		<original>Correct lens distortion</original>
-		<translation>Corrigeren lensvervorming</translation>
-	</phrase>
-
-	<phrase>
-		<original>Ripple</original>
-		<translation>Rimpeling</translation>
-	</phrase>
-
-	<phrase>
-		<original>Pinch and whirl</original>
-		<translation>Knijp en wervel</translation>
-	</phrase>
-
-	<phrase>
-		<original>Waves</original>
-		<translation>Golven</translation>
-	</phrase>
-
-	<phrase>
-		<original>Figured glass</original>
-		<translation>Glasfiguur</translation>
-	</phrase>
-
-	<phrase>
-		<original>Kaleidoscope</original>
-		<translation>Kaleidoscoop</translation>
-	</phrase>
-
-	<phrase>
-		<original>Polar conversion</original>
-		<translation>Polar conversie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Autocrop image</original>
-		<translation>Automatisch bijsnijden Afbeelding</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shear</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Squish</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Perspective (free)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Pan and Zoom</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Fade</original>
-		<translation>Vervagen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Unfade</original>
-		<translation>On-vervagen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Atmosphere</original>
-		<translation>Atmosfeer</translation>
-	</phrase>
-
-	<phrase>
-		<original>Freeze</original>
-		<translation>Bevriezen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Lava</original>
-		<translation>Lava</translation>
-	</phrase>
-
-	<phrase>
-		<original>Burn</original>
-		<translation>Verbranden</translation>
-	</phrase>
-
-	<phrase>
-		<original>Water</original>
-		<translation>Water</translation>
-	</phrase>
-
-	<phrase>
-		<original>Steel</original>
-		<translation>Staal</translation>
-	</phrase>
-
-	<phrase>
-		<original>Dream</original>
-		<translation>Droom</translation>
-	</phrase>
-
-	<phrase>
-		<original>Alien</original>
-		<translation>Buitenaards</translation>
-	</phrase>
-
-	<phrase>
-		<original>Custom Filter</original>
-		<translation>Aangepaste Filter</translation>
-	</phrase>
-
-	<phrase>
-		<original>Antique</original>
-		<translation>Antiek</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blacklight</original>
-		<translation>Blacklight</translation>
-	</phrase>
-
-	<phrase>
-		<original>Posterize</original>
-		<translation>Schakeren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Radioactive</original>
-		<translation>Radioactief</translation>
-	</phrase>
-
-	<phrase>
-		<original>Solarize</original>
-		<translation>Solarizeren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Synthesize</original>
-		<translation>Synthetiseren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Count Image Colors</original>
-		<translation>Tellen van aantal kleuren in de afbeelding.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Fog</original>
-		<translation>Mist</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rainbow</original>
-		<translation>Regenboog</translation>
-	</phrase>
-
-	<phrase>
-		<original>Vibrate</original>
-		<translation>Trillen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Despeckle</original>
-		<translation>Ontvlekken</translation>
-	</phrase>
-
-	<phrase>
-		<original>Custom Despeckle</original>
-		<translation>Aangepast Ontvlekken</translation>
-	</phrase>
-
-	<phrase>
-		<original>Comic book</original>
-		<translation>Comic Book</translation>
-	</phrase>
-
-	<phrase>
-		<original>Sepia</original>
-		<translation>Sepia</translation>
-	</phrase>
-
-	<phrase>
-		<original>Thermograph (Heat Map)</original>
-		<translation>Thermograaf (Warmte Map)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Film Grain</original>
-		<translation>Film Korrel</translation>
-	</phrase>
-
-	<phrase>
-		<original>Repeat Last Action</original>
-		<translation>Herhaal Laatste Actie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Fade last effect</original>
-		<translation>Vervagen laatste effect</translation>
-	</phrase>
-
-	<phrase>
-		<original>Create New Selection</original>
-		<translation>Maak Nieuwe selectie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Clear Active Selection</original>
-		<translation>Wissen Actieve selectie</translation>
-	</phrase>
-
-	<phrase>
-		<original>Vignetting</original>
-		<translation>Vignettering</translation>
-	</phrase>
-
-	<phrase>
-		<original>Median filter</original>
-		<translation>Mediaan filter</translation>
-	</phrase>
-
-	<phrase>
-		<original>Modern art</original>
-		<translation>Moderne kunst</translation>
-	</phrase>
-
-	<!-- VBP_ProcessorModule.bas contains 163 phrases. 6 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
-
-	<!-- END text for VBP_ProcessorModule.bas-->
-
-	<!-- BEGIN text for VBP_FormDiffuse.frm (FormDiffuse) -->
 
 	<phrase>
 		<original>wrap edge values</original>
@@ -2060,11 +1417,16 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Diffuse</original>
+		<translation>Spreiden</translation>
+	</phrase>
+
+	<phrase>
 		<original>Simulating large image explosion</original>
 		<translation>Simuleren van grote afbeeldingsexplosie</translation>
 	</phrase>
 
-	<!-- VBP_FormDiffuse.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormDiffuse.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormDiffuse.frm-->
 
@@ -2081,6 +1443,11 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Fade</original>
+		<translation>Vervagen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Fading image</original>
 		<translation>Vervagen afbeelding</translation>
 	</phrase>
@@ -2090,17 +1457,32 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Onvervagen afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormFade.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormFade.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFade.frm-->
 
 	<!-- BEGIN text for VBP_ToolbarModule.bas -->
 
-	<!-- VBP_ToolbarModule.bas contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+	<phrase>
+		<original>Undo</original>
+		<translation>Ongedaan maken</translation>
+	</phrase>
+
+	<phrase>
+		<original>Redo</original>
+		<translation>Opnieuw</translation>
+	</phrase>
+
+	<!-- VBP_ToolbarModule.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_ToolbarModule.bas-->
 
 	<!-- BEGIN text for VBP_FormSolarize.frm (FormSolarize) -->
+
+	<phrase>
+		<original>Solarize</original>
+		<translation>Solarizeren</translation>
+	</phrase>
 
 	<phrase>
 		<original>solarize threshold</original>
@@ -2112,11 +1494,16 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Solariseren afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormSolarize.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormSolarize.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSolarize.frm-->
 
 	<!-- BEGIN text for VBP_FormCustomFilter.frm (FormCustomFilter) -->
+
+	<phrase>
+		<original>Custom Filter</original>
+		<translation>Aangepaste Filter</translation>
+	</phrase>
 
 	<phrase>
 		<original>Save filter</original>
@@ -2193,7 +1580,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Voorbeeld</translation>
 	</phrase>
 
-	<!-- VBP_FormCustomFilter.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+	<!-- VBP_FormCustomFilter.frm contains 21 phrases. 5 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormCustomFilter.frm-->
 
@@ -2232,6 +1619,11 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	<!-- BEGIN text for VBP_FormGamma.frm (FormGamma) -->
 
 	<phrase>
+		<original>Gamma Correction</original>
+		<translation>Gammacorrectie</translation>
+	</phrase>
+
+	<phrase>
 		<original>keep all colors in sync</original>
 		<translation>alle kleuren in sync houden</translation>
 	</phrase>
@@ -2257,11 +1649,16 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Gamma</original>
+		<translation>Gamma</translation>
+	</phrase>
+
+	<phrase>
 		<original>Adjusting gamma values</original>
 		<translation>Instellen van gammawaarden</translation>
 	</phrase>
 
-	<!-- VBP_FormGamma.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormGamma.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormGamma.frm-->
 
@@ -2359,6 +1756,18 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	<!-- BEGIN text for VBP_BatchConversion.bas -->
 
 	<phrase>
+		<original>Macro recording is currently being overhauled in preparation for PhotoDemon 5.6.  As such, it is very unstable, and I DO NOT recommend recording macros with this development build.
+
+If you want to risk it, press OK to continue.  Otherwise, press CANCEL to return to regular editing mode.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Macros unstable in this build</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Macro recording started.</original>
 		<translation>Macro opname gestart.</translation>
 	</phrase>
@@ -2438,8 +1847,8 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
-		<original>Macro converted successfully!  Continuing</original>
-		<translation>Macro met succes omgezet! Voortzetting van</translation>
+		<original>Old macro converted successfully!  Continuing</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -2462,7 +1871,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 		<translation>Macro compleet!</translation>
 	</phrase>
 
-	<!-- VBP_BatchConversion.bas contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+	<!-- VBP_BatchConversion.bas contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 	<!-- END text for VBP_BatchConversion.bas-->
 
@@ -2509,6 +1918,11 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Vibrate</original>
+		<translation>Trillen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Putting image to sleep, then measuring its REM cycles</original>
 		<translation>Beeld laten inslapen, dan meten van de REM cycli</translation>
 	</phrase>
@@ -2539,6 +1953,11 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 	</phrase>
 
 	<phrase>
+		<original>Count Image Colors</original>
+		<translation>Tellen van aantal kleuren in de afbeelding.</translation>
+	</phrase>
+
+	<phrase>
 		<original>This menu item only appears in the Visual Basic IDE.
 
 You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
@@ -2552,7 +1971,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 		<translation>PhotoDemon Pro Tip</translation>
 	</phrase>
 
-	<!-- VBP_Filters2.bas contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+	<!-- VBP_Filters2.bas contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 	<!-- END text for VBP_Filters2.bas-->
 
@@ -2569,11 +1988,16 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Black light</original>
+		<translation>Black light</translation>
+	</phrase>
+
+	<phrase>
 		<original>Illuminating image with imaginary blacklight</original>
 		<translation>Verlichten afbeelding met denkbeeldige blacklight</translation>
 	</phrase>
 
-	<!-- VBP_FormBlackLight.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormBlackLight.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBlackLight.frm-->
 
@@ -2650,13 +2074,23 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Open</original>
+		<translation>Openen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save</original>
+		<translation>Opslaan</translation>
+	</phrase>
+
+	<phrase>
 		<original>Close</original>
 		<translation>Sluiten</translation>
 	</phrase>
 
 	<phrase>
-		<original>Zoom In</original>
-		<translation>Inzoomen</translation>
+		<original>Save As</original>
+		<translation>Opslaan als</translation>
 	</phrase>
 
 	<phrase>
@@ -2665,13 +2099,18 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Zoom Out</original>
-		<translation>uitzoomen</translation>
+		<original>Zoom In</original>
+		<translation>Inzoomen</translation>
 	</phrase>
 
 	<phrase>
 		<original>Use this button to decrease image zoom.</original>
 		<translation>Gebruik deze knop aan de zoom te verlagen.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom Out</original>
+		<translation>uitzoomen</translation>
 	</phrase>
 
 	<phrase>
@@ -2895,6 +2334,11 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Autocrop Image</original>
+		<translation>Automatisch bijsnijden Afbeelding</translation>
+	</phrase>
+
+	<phrase>
 		<original>Flip horizontal</original>
 		<translation>Horizontaal omkeren</translation>
 	</phrase>
@@ -2902,6 +2346,26 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<phrase>
 		<original>Flip vertical</original>
 		<translation>Vertikaal omkeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 90° clockwise</original>
+		<translation>Draai 90° naar rechts</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 90° counter-clockwise</original>
+		<translation>Draai 90° tegen de klok in</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 180°</original>
+		<translation>180° draaien</translation>
+	</phrase>
+
+	<phrase>
+		<original>Arbitrary rotation</original>
+		<translation>Willekeurig draaien</translation>
 	</phrase>
 
 	<phrase>
@@ -2920,13 +2384,8 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Brightness and contrast</original>
-		<translation>Helderheid en contrast</translation>
-	</phrase>
-
-	<phrase>
-		<original>Gamma</original>
-		<translation>Gamma</translation>
+		<original>Color balance</original>
+		<translation>Kleurbalans</translation>
 	</phrase>
 
 	<phrase>
@@ -2950,6 +2409,21 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>White balance</original>
+		<translation>Witbalans</translation>
+	</phrase>
+
+	<phrase>
+		<original>Display histogram</original>
+		<translation>Weergave Histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>Equalize</original>
+		<translation>Egaliseren</translation>
+	</phrase>
+
+	<phrase>
 		<original>Stretch</original>
 		<translation>Rekken</translation>
 	</phrase>
@@ -2967,6 +2441,16 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<phrase>
 		<original>Shift colors left</original>
 		<translation>Kleurverschuiving links</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rechannel</original>
+		<translation>Herkanaliseren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Colorize</original>
+		<translation>Verkleuren</translation>
 	</phrase>
 
 	<phrase>
@@ -3010,6 +2494,11 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Unfade</original>
+		<translation>On-vervagen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Grayscale</original>
 		<translation>Grijswaarden</translation>
 	</phrase>
@@ -3025,13 +2514,38 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Invert hue</original>
+		<translation>Omkeren Kleurtoon</translation>
+	</phrase>
+
+	<phrase>
 		<original>Invert RGB</original>
 		<translation>Omkeren RGB</translation>
 	</phrase>
 
 	<phrase>
+		<original>Compound invert</original>
+		<translation>Omkeren Compound</translation>
+	</phrase>
+
+	<phrase>
 		<original>Monochrome</original>
 		<translation>Zwart-wit</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color to monochrome</original>
+		<translation>Kleur naar zwart-wit</translation>
+	</phrase>
+
+	<phrase>
+		<original>Monochrome to grayscale</original>
+		<translation>Monochroom in grijswaarden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sepia</original>
+		<translation>Sepia</translation>
 	</phrase>
 
 	<phrase>
@@ -3050,8 +2564,23 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Fade last effect</original>
+		<translation>Vervagen laatste effect</translation>
+	</phrase>
+
+	<phrase>
 		<original>Artistic</original>
 		<translation>Artistiek</translation>
+	</phrase>
+
+	<phrase>
+		<original>Antique</original>
+		<translation>Antiek</translation>
+	</phrase>
+
+	<phrase>
+		<original>Comic book</original>
+		<translation>Comic Book</translation>
 	</phrase>
 
 	<phrase>
@@ -3060,8 +2589,58 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Modern art</original>
+		<translation>Moderne kunst</translation>
+	</phrase>
+
+	<phrase>
+		<original>Pencil drawing</original>
+		<translation>Potlood tekening</translation>
+	</phrase>
+
+	<phrase>
+		<original>Posterize</original>
+		<translation>Schakeren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Relief</original>
+		<translation>Reliëf</translation>
+	</phrase>
+
+	<phrase>
+		<original>Blur</original>
+		<translation>Verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Box blur</original>
+		<translation>Vierkant Verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Gaussian blur</original>
+		<translation>Gaussiaans Verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grid blur</original>
+		<translation>Raster Verflauwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Smart blur</original>
+		<translation>Slim Verflauwen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Distort</original>
 		<translation>Vervormen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Apply lens distortion</original>
+		<translation>Toepassen lensvervorming</translation>
 	</phrase>
 
 	<phrase>
@@ -3080,8 +2659,48 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Pan and zoom</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Perspective</original>
 		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Pinch and whirl</original>
+		<translation>Knijp en wervel</translation>
+	</phrase>
+
+	<phrase>
+		<original>Polar conversion</original>
+		<translation>Polar conversie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ripple</original>
+		<translation>Rimpeling</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shear</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Squish</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Swirl</original>
+		<translation>Kolken</translation>
+	</phrase>
+
+	<phrase>
+		<original>Waves</original>
+		<translation>Golven</translation>
 	</phrase>
 
 	<phrase>
@@ -3105,18 +2724,78 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Trace contour</original>
+		<translation>Omtreklijn</translation>
+	</phrase>
+
+	<phrase>
 		<original>Experimental</original>
 		<translation>Experimenteel</translation>
 	</phrase>
 
 	<phrase>
-		<original>Black light</original>
-		<translation>Black light</translation>
+		<original>Alien</original>
+		<translation>Buitenaards</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dream</original>
+		<translation>Droom</translation>
+	</phrase>
+
+	<phrase>
+		<original>Radioactive</original>
+		<translation>Radioactief</translation>
+	</phrase>
+
+	<phrase>
+		<original>Synthesize</original>
+		<translation>Synthetiseren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thermograph (heat map)</original>
+		<translation>Thermograaf (Warmte Map)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Natural</original>
 		<translation>Natuurlijk</translation>
+	</phrase>
+
+	<phrase>
+		<original>Atmosphere</original>
+		<translation>Atmosfeer</translation>
+	</phrase>
+
+	<phrase>
+		<original>Burn</original>
+		<translation>Verbranden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fog</original>
+		<translation>Mist</translation>
+	</phrase>
+
+	<phrase>
+		<original>Freeze</original>
+		<translation>Bevriezen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Lava</original>
+		<translation>Lava</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rainbow</original>
+		<translation>Regenboog</translation>
+	</phrase>
+
+	<phrase>
+		<original>Steel</original>
+		<translation>Staal</translation>
 	</phrase>
 
 	<phrase>
@@ -3135,8 +2814,8 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
-		<original>Add RGB noise</original>
-		<translation>Toevoegen RGB ruis</translation>
+		<original>Despeckle</original>
+		<translation>Ontvlekken</translation>
 	</phrase>
 
 	<phrase>
@@ -3147,6 +2826,11 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<phrase>
 		<original>Remove orphan pixels</original>
 		<translation>Verwijder verweesde pixels</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sharpen more</original>
+		<translation>Meer verscherpen</translation>
 	</phrase>
 
 	<phrase>
@@ -3172,6 +2856,11 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	<phrase>
 		<original>Twins</original>
 		<translation>Tweelingen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Vignetting</original>
+		<translation>Vignettering</translation>
 	</phrase>
 
 	<phrase>
@@ -3350,6 +3039,56 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 	</phrase>
 
 	<phrase>
+		<original>Auto-enhance highlights</original>
+		<translation>Auto- Verbetering Glanspunten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Auto-enhance midtones</original>
+		<translation>Auto- Verbetering Middentonen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Auto-enhance shadows</original>
+		<translation>Auto- Verbetering Schaduwen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color temperature</original>
+		<translation>Kleur Temperatuur</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shift colors (left)</original>
+		<translation>Verschuif kleuren (links)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shift colors (right)</original>
+		<translation>Verschuif kleuren (rechts)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Correct lens distortion</original>
+		<translation>Corrigeren lensvervorming</translation>
+	</phrase>
+
+	<phrase>
+		<original>Figured glass</original>
+		<translation>Glasfiguur</translation>
+	</phrase>
+
+	<phrase>
+		<original>Kaleidoscope</original>
+		<translation>Kaleidoscoop</translation>
+	</phrase>
+
+	<phrase>
+		<original>Edge enhance</original>
+		<translation>Verbeteren</translation>
+	</phrase>
+
+	<phrase>
 		<original>Checking for software updates</original>
 		<translation>Controleren op software-updates</translation>
 	</phrase>
@@ -3379,6 +3118,31 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 	</phrase>
 
 	<phrase>
+		<original>Stretch histogram</original>
+		<translation>Rek histogram</translation>
+	</phrase>
+
+	<phrase>
+		<original>Crop</original>
+		<translation>Bijsnijden</translation>
+	</phrase>
+
+	<phrase>
+		<original>Autocrop</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Isometric conversion</original>
+		<translation>Isometrische Conversie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Paste as new image</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Removing existing translation</original>
 		<translation>Verwijderen van bestaande vertaling</translation>
 	</phrase>
@@ -3394,11 +3158,86 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 	</phrase>
 
 	<phrase>
+		<original>Water</original>
+		<translation>Water</translation>
+	</phrase>
+
+	<phrase>
+		<original>Film negative</original>
+		<translation>Film Negatief</translation>
+	</phrase>
+
+	<phrase>
+		<original>Copy to clipboard</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Empty clipboard</original>
+		<translation>Ledig klembord</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom despeckle</original>
+		<translation>Aangepast Ontvlekken</translation>
+	</phrase>
+
+	<phrase>
+		<original>Play macro</original>
+		<translation>Speel Macro af</translation>
+	</phrase>
+
+	<phrase>
 		<original>Preparing to load recent file entry</original>
 		<translation>Voorbereidingen om invoer van recente bestand te laden</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 236 phrases. 73 were duplicates of existing phrases, so only 163 new phrases were written to file. -->
+	<phrase>
+		<original>Repeat last action</original>
+		<translation>Herhaal Laatste Actie</translation>
+	</phrase>
+
+	<phrase>
+		<original>Auto-enhance contrast</original>
+		<translation>Auto- Verbetering Contrast</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scan image</original>
+		<translation>Scan Afbeelding</translation>
+	</phrase>
+
+	<phrase>
+		<original>Select scanner or camera</original>
+		<translation>Selecteer scanner of camera</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unsharp mask</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Start macro recording</original>
+		<translation>Start Macro Opname</translation>
+	</phrase>
+
+	<phrase>
+		<original>Stop macro recording</original>
+		<translation>Stop Macro Opname</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dilate (maximum rank)</original>
+		<translation>Dilate (maximaal rangschikking)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Erode (minimum rank)</original>
+		<translation>Erode (minimum rangschikking)</translation>
+	</phrase>
+
+	<!-- VBP_FormMain.frm contains 374 phrases. 128 were duplicates of existing phrases, so only 246 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3544,6 +3383,41 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	</phrase>
 
 	<phrase>
+		<original>Grayscale (average)</original>
+		<translation>Grijswaarden (gemiddeld)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (ITU standard)</original>
+		<translation>Grijswaarden (ITU standaard)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Desaturate</original>
+		<translation>Verzadiging verminderen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (decomposition)</original>
+		<translation>Grijswaarden (Decompositie)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (single channel)</original>
+		<translation>Grijswaarden (Enkel kanaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (custom # of colors)</original>
+		<translation>Grijswaarden (Aangepast  # kleuren)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (custom dither)</original>
+		<translation>Grijswaarden  (Aangepaste Dither)</translation>
+	</phrase>
+
+	<phrase>
 		<original>Fastest Calculation (average value)</original>
 		<translation>Snelste berekening (gemiddelde waarde)</translation>
 	</phrase>
@@ -3608,7 +3482,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 		<translation>Omzetten afbeelding in grijswaarden met behulp van %1 waarden</translation>
 	</phrase>
 
-	<!-- VBP_FormGrayscale.frm contains 30 phrases. 10 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+	<!-- VBP_FormGrayscale.frm contains 40 phrases. 13 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormGrayscale.frm-->
 
@@ -3638,6 +3512,51 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 	<phrase>
 		<original>(no item selected)</original>
 		<translation>(Geen Item geselecteerd)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Prewitt horizontal)</original>
+		<translation>Randen zoeken (Prewitt horizontaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Prewitt vertical)</original>
+		<translation>Randen zoeken (Prewitt Verticaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Sobel horizontal)</original>
+		<translation>Randen zoeken (Sobel horizontaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Sobel vertical)</original>
+		<translation>Randen zoeken (Sobel Verticaal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Laplacian)</original>
+		<translation>Randen zoeken (Laplace)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Artistic contour</original>
+		<translation>Artistieke Contour</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Hilite)</original>
+		<translation>Randen zoeken (Hilite)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (PhotoDemon linear)</original>
+		<translation>Randen zoeken (PhotoDemon Linear)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (PhotoDemon cubic)</original>
+		<translation>Randen zoeken (PhotoDemon Cubic)</translation>
 	</phrase>
 
 	<phrase>
@@ -3745,7 +3664,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 		<translation>Geavanceerde wiskundige routine gebaseerd op kubieke relaties tussen diagonale pixels.</translation>
 	</phrase>
 
-	<!-- VBP_FormFindEdges.frm contains 33 phrases. 9 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+	<!-- VBP_FormFindEdges.frm contains 42 phrases. 9 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFindEdges.frm-->
 
@@ -3913,7 +3832,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 		<translation>Omzetten van afbeelding naar twee kleuren</translation>
 	</phrase>
 
-	<!-- VBP_FormBlackAndWhite.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormBlackAndWhite.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBlackAndWhite.frm-->
 
@@ -4871,7 +4790,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>Schakeren afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormPosterize.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormPosterize.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPosterize.frm-->
 
@@ -4887,7 +4806,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>Afbeelding wordt afgesloten</translation>
 	</phrase>
 
-	<!-- VBP_FormImage.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormImage.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormImage.frm-->
 
@@ -5181,6 +5100,16 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 	</phrase>
 
 	<phrase>
+		<original>emboss</original>
+		<translation>Reliëf</translation>
+	</phrase>
+
+	<phrase>
+		<original>engrave</original>
+		<translation>Gravure</translation>
+	</phrase>
+
+	<phrase>
 		<original>Embossing image</original>
 		<translation>Reliëf afbeelding</translation>
 	</phrase>
@@ -5190,7 +5119,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>Graveren afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormEmbossEngrave.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormEmbossEngrave.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -5399,7 +5328,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>In kaart brengen nieuwe afbeelding niveaus</translation>
 	</phrase>
 
-	<!-- VBP_FormImageLevels.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+	<!-- VBP_FormImageLevels.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormImageLevels.frm-->
 
@@ -5425,7 +5354,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>Inkleuren afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormColorize.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormColorize.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormColorize.frm-->
 
@@ -5467,7 +5396,7 @@ Als u ervoor kiest om deze functies uit te schakelen, neem er dan rekening van d
 		<translation>Verwijderen van verweesde pixels</translation>
 	</phrase>
 
-	<!-- VBP_FormDespeckle.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormDespeckle.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormDespeckle.frm-->
 
@@ -5921,7 +5850,7 @@ Om uw gebruikerservaring te verbeteren, dient u het programma toegang te geven v
 		<translation>Instellen witbalans van de afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormWhiteBalance.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormWhiteBalance.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormWhiteBalance.frm-->
 
@@ -6020,6 +5949,11 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 	<!-- BEGIN text for VBP_FormTile.frm (FormTile) -->
 
 	<phrase>
+		<original>Tile Image</original>
+		<translation>Tegel afbeelding</translation>
+	</phrase>
+
+	<phrase>
 		<original>The final image will be %1 %3 wide by %2 %3 tall.</original>
 		<translation>De uiteindelijke afbeelding zal %1 %3 breed en %2 %3 hoog zijn.</translation>
 	</phrase>
@@ -6054,7 +5988,7 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 		<translation>tegels</translation>
 	</phrase>
 
-	<!-- VBP_FormTile.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+	<!-- VBP_FormTile.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormTile.frm-->
 
@@ -6323,7 +6257,7 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 		<translation>Toepassen van nieuwe temperatuur aan de afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormColorTemp.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormColorTemp.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormColorTemp.frm-->
 
@@ -6344,7 +6278,7 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 		<translation>Egaliseren afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormEqualize.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormEqualize.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormEqualize.frm-->
 
@@ -6406,7 +6340,7 @@ Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tanne
 		<translation>Isoleren van het %1 kanaal</translation>
 	</phrase>
 
-	<!-- VBP_FormRechannel.frm contains 27 phrases. 18 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+	<!-- VBP_FormRechannel.frm contains 28 phrases. 19 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormRechannel.frm-->
 
@@ -6525,7 +6459,7 @@ Geef een numerieke waarde.</translation>
 		<translation>Instellen waarden van kleurtoon, verzadiging en helderheid</translation>
 	</phrase>
 
-	<!-- VBP_FormHSL.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormHSL.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormHSL.frm-->
 
@@ -6610,7 +6544,7 @@ Geef een numerieke waarde.</translation>
 		<translation>FreeImage plugin ontbreekt</translation>
 	</phrase>
 
-	<!-- VBP_FormRotate.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+	<!-- VBP_FormRotate.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormRotate.frm-->
 
@@ -7433,7 +7367,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Afbeelding rond en rond wervelen</translation>
 	</phrase>
 
-	<!-- VBP_FormSwirl.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormSwirl.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSwirl.frm-->
 
@@ -7449,7 +7383,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Projecteren van afbeelding door gesimuleerde lens</translation>
 	</phrase>
 
-	<!-- VBP_FormLens.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormLens.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormLens.frm-->
 
@@ -7475,7 +7409,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Simuleren van rimpelingen over het afbeeldingsvlak</translation>
 	</phrase>
 
-	<!-- VBP_FormRipple.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormRipple.frm contains 13 phrases. 9 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormRipple.frm-->
 
@@ -7496,7 +7430,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Knijpen en wervelen van afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormPinch.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormPinch.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPinch.frm-->
 
@@ -7527,7 +7461,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Afbeelding in virtueel golfslagbad dompelen</translation>
 	</phrase>
 
-	<!-- VBP_FormWaves.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormWaves.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormWaves.frm-->
 
@@ -7548,7 +7482,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Projecteren van afbeelding door gesimuleerde glas</translation>
 	</phrase>
 
-	<!-- VBP_FormEtchGlass.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormEtchGlass.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormEtchGlass.frm-->
 
@@ -7596,7 +7530,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Turen naar afbeelding door denkbeeldige kaleidoscoop</translation>
 	</phrase>
 
-	<!-- VBP_FormKaleidoscope.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormKaleidoscope.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormKaleidoscope.frm-->
 
@@ -7632,7 +7566,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Polaire inversie</translation>
 	</phrase>
 
-	<!-- VBP_FormPolar.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormPolar.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPolar.frm-->
 
@@ -7653,7 +7587,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>WAARSCHUWING! Deze tool is sterk geoptimaliseerd, maar bij hoge straal-waarden blijft het nog steeds vrij traag in de IDE. Gelieve te compileren voor het toepassen of previewen van elke straal groter dan 20.</translation>
 	</phrase>
 
-	<!-- VBP_FormGaussianBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormGaussianBlur.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormGaussianBlur.frm-->
 
@@ -7689,7 +7623,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Toepassen van slimme vervaging</translation>
 	</phrase>
 
-	<!-- VBP_FormSmartBlur.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormSmartBlur.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSmartBlur.frm-->
 
@@ -7710,7 +7644,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Toepassen van vierkant vervagen op de afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormBoxBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormBoxBlur.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBoxBlur.frm-->
 
@@ -7726,7 +7660,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Toepassen onscherpte masker (stap %1 van %2)</translation>
 	</phrase>
 
-	<!-- VBP_FormUnsharpMask.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormUnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormUnsharpMask.frm-->
 
@@ -7757,7 +7691,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Corrigeren van beeldvervorming</translation>
 	</phrase>
 
-	<!-- VBP_FormLensCorrect.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormLensCorrect.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormLensCorrect.frm-->
 
@@ -7806,7 +7740,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Toepassen filmkorrel op afbeelding</translation>
 	</phrase>
 
-	<!-- VBP_FormFilmGrain.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormFilmGrain.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFilmGrain.frm-->
 
@@ -7822,7 +7756,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Corrigeren kleurbalans</translation>
 	</phrase>
 
-	<!-- VBP_FormColorBalance.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormColorBalance.frm-->
 
@@ -7843,11 +7777,16 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Toepassen vignettering</translation>
 	</phrase>
 
-	<!-- VBP_FormVignette.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormVignette.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormVignette.frm-->
 
 	<!-- BEGIN text for VBP_FormMedian.frm (FormMedian) -->
+
+	<phrase>
+		<original>Median Filter</original>
+		<translation>Mediaan filter</translation>
+	</phrase>
 
 	<phrase>
 		<original>percentile</original>
@@ -7879,7 +7818,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMedian.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormMedian.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMedian.frm-->
 
@@ -7890,7 +7829,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Toepassen moderne kunst technieken</translation>
 	</phrase>
 
-	<!-- VBP_FormModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+	<!-- VBP_FormModernArt.frm contains 7 phrases. 6 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormModernArt.frm-->
 
@@ -7921,7 +7860,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Net als alle zwart-wit-naar-grijswaarden tools, zal deze tool een wazig beeld produceren. U kunt gebruik maken van de Effecten -> Verscherpen -> Onscherp maskeren tool om dit op te lossen. (Voor de beste resultaten een onscherp masker straal tenminste zo groot als deze radius.)</translation>
 	</phrase>
 
-	<!-- VBP_FormMonoToColor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormMonoToColor.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMonoToColor.frm-->
 
@@ -7942,7 +7881,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Overtrekafbeelding contour</translation>
 	</phrase>
 
-	<!-- VBP_FormContour.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormContour.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormContour.frm-->
 
@@ -7974,7 +7913,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 		<translation>Het aanpassen van schaduwen, middentonen en glanspunten</translation>
 	</phrase>
 
-	<!-- VBP_FormShadowHighlight.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormShadowHighlight.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -8504,7 +8443,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormShear.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormShear.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormShear.frm-->
 
@@ -8515,7 +8454,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPerspective.frm contains 10 phrases. 9 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+	<!-- VBP_FormPerspective.frm contains 11 phrases. 10 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPerspective.frm-->
 
@@ -8561,7 +8500,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormTruePerspective.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+	<!-- VBP_FormTruePerspective.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormTruePerspective.frm-->
 
@@ -8708,7 +8647,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPanZoom.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormPanZoom.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPanZoom.frm-->
 
@@ -8720,9 +8659,9 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 2177 phrases in total. -->
-<!-- 644 are duplicate phrases, so only 1533 phrases have been written to file. -->
-<!-- These 1533 phrases contain approximately 9742 total words. -->
+<!-- As of this build, PhotoDemon contains 2252 phrases in total. -->
+<!-- 732 are duplicate phrases, so only 1520 phrases have been written to file. -->
+<!-- These 1520 phrases contain approximately 9780 total words. -->
 
 </language>
 

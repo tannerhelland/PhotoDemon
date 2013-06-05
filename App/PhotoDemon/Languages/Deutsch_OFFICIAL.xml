@@ -747,6 +747,11 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 	</phrase>
 
 	<phrase>
+		<original>Reduce colors</original>
+		<translation>Farben reduzieren</translation>
+	</phrase>
+
+	<phrase>
 		<original>Quantizing image using the FreeImage library</original>
 		<translation>Quantisierung des Bildes mit Hilfe der FreeImage Bibliothek</translation>
 	</phrase>
@@ -775,7 +780,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation>Anwendung intelligenter Farben</translation>
 	</phrase>
 
-	<!-- VBP_FormReduceColors.frm contains 24 phrases. 5 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+	<!-- VBP_FormReduceColors.frm contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormReduceColors.frm-->
 
@@ -874,6 +879,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	</phrase>
 
 	<phrase>
+		<original>Resize</original>
+		<translation>Größe andern</translation>
+	</phrase>
+
+	<phrase>
 		<original>Nearest Neighbor</original>
 		<translation>Nächster Nachbar</translation>
 	</phrase>
@@ -928,7 +938,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation>Bereit.</translation>
 	</phrase>
 
-	<!-- VBP_FormResize.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormResize.frm contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormResize.frm-->
 
@@ -959,7 +969,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation>Generation von Bild -Zwillinge</translation>
 	</phrase>
 
-	<!-- VBP_FormTwins.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormTwins.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormTwins.frm-->
 
@@ -1095,6 +1105,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	</phrase>
 
 	<phrase>
+		<original>Brightness and contrast</original>
+		<translation>Helligkeit / Kontrast</translation>
+	</phrase>
+
+	<phrase>
 		<original>Adjusting image brightness</original>
 		<translation>Einstellen BildesHelligkeit</translation>
 	</phrase>
@@ -1109,7 +1124,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 		<translation>Einstellen BildkontrastGegensatz</translation>
 	</phrase>
 
-	<!-- VBP_FormBrightnessContrast.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+	<!-- VBP_FormBrightnessContrast.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBrightnessContrast.frm-->
 
@@ -1136,11 +1151,16 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	</phrase>
 
 	<phrase>
+		<original>Pixelate</original>
+		<translation>Pixelate</translation>
+	</phrase>
+
+	<phrase>
 		<original>Applying pixellation</original>
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMosaic.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormMosaic.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMosaic.frm-->
 
@@ -1193,11 +1213,16 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	</phrase>
 
 	<phrase>
+		<original>Add RGB noise</original>
+		<translation>Fügen RGB Rauschen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Increasing image noise</original>
 		<translation>Zunehmende Rausch der Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormNoise.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormNoise.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormNoise.frm-->
 
@@ -1211,6 +1236,18 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 	<phrase>
 		<original>Color reduction error</original>
 		<translation>Farbreduktion Fehler</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unknown processor request submitted: %1
+
+Please report this bug via the Help -> Submit Bug Report menu.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Processor Error</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -1351,696 +1388,16 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 		<translation>Bug report Anweisungen</translation>
 	</phrase>
 
-	<phrase>
-		<original>Open</original>
-		<translation>Öffnen</translation>
-	</phrase>
+	<!-- VBP_ProcessorModule.bas contains 22 phrases.  All 22 were unique, so 22 new phrases were written to file. -->
 
-	<phrase>
-		<original>Save</original>
-		<translation>Speichern</translation>
-	</phrase>
+	<!-- END text for VBP_ProcessorModule.bas-->
 
-	<phrase>
-		<original>Save As</original>
-		<translation>Speichern unter</translation>
-	</phrase>
-
-	<phrase>
-		<original>Paste</original>
-		<translation>Paste</translation>
-	</phrase>
-
-	<phrase>
-		<original>Empty Clipboard</original>
-		<translation>Leere Zwischenablage</translation>
-	</phrase>
-
-	<phrase>
-		<original>Undo</original>
-		<translation>Rückgängig machen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Redo</original>
-		<translation>Redo</translation>
-	</phrase>
-
-	<phrase>
-		<original>Start Macro Recording</original>
-		<translation>Starten Macro Aufnahme</translation>
-	</phrase>
-
-	<phrase>
-		<original>Stop Macro Recording</original>
-		<translation>Stoppen Macro Aufnahme</translation>
-	</phrase>
-
-	<phrase>
-		<original>Play Macro</original>
-		<translation>Abspielen Macro</translation>
-	</phrase>
-
-	<phrase>
-		<original>Select Scanner or Camera</original>
-		<translation>Wählen Sie Scanner oder Kamera</translation>
-	</phrase>
-
-	<phrase>
-		<original>Scan Image</original>
-		<translation>Bild scannen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Display Histogram</original>
-		<translation>Histogramm-Anzeige</translation>
-	</phrase>
-
-	<phrase>
-		<original>Stretch Histogram</original>
-		<translation>Stretch Histogramm</translation>
-	</phrase>
-
-	<phrase>
-		<original>Equalize</original>
-		<translation>Auszugleichen</translation>
-	</phrase>
-
-	<phrase>
-		<original>White Balance</original>
-		<translation>Weißabgleich</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color to Monochrome</original>
-		<translation>Monochrom</translation>
-	</phrase>
-
-	<phrase>
-		<original>Monochrome to Grayscale</original>
-		<translation>Monochrome in Graustufen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Desaturate</original>
-		<translation>Sättigung reduzieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (ITU Standard)</original>
-		<translation>Graustufen (ITU Standard)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Average)</original>
-		<translation>Graustufen (Durchschnitt)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Custom # of Colors)</original>
-		<translation>Graustufen (Benutzerdefiniert # farben)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Custom Dither)</original>
-		<translation>Graustufen (Custom Dither)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Decomposition)</original>
-		<translation>Graustufen (Zersetzung)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grayscale (Single Channel)</original>
-		<translation>Graustufen (Single Channel)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blur</original>
-		<translation>Verwischen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blur More</original>
-		<translation>Mehr erweichen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Soften</original>
-		<translation>Erweichen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Soften More</original>
-		<translation>Mehr Soften</translation>
-	</phrase>
-
-	<phrase>
-		<original>Sharpen More</original>
-		<translation>Schärfer</translation>
-	</phrase>
-
-	<phrase>
-		<original>Unsharp</original>
-		<translation>Unscharf</translation>
-	</phrase>
-
-	<phrase>
-		<original>Diffuse</original>
-		<translation>Verbreiten</translation>
-	</phrase>
-
-	<phrase>
-		<original>Diffuse More</original>
-		<translation>Weitere Verbreitung</translation>
-	</phrase>
+	<!-- BEGIN text for VBP_FormDiffuse.frm (FormDiffuse) -->
 
 	<phrase>
 		<original>Custom Diffuse</original>
 		<translation>Benutzerdefinierte Verbreiten</translation>
 	</phrase>
-
-	<phrase>
-		<original>Pixelate</original>
-		<translation>Pixelate</translation>
-	</phrase>
-
-	<phrase>
-		<original>Dilate (maximum rank)</original>
-		<translation>Dilate (maximal rang)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Erode (minimum rank)</original>
-		<translation>Erode (mindestens Rang)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Grid Blur</original>
-		<translation>Gittern Weichzeichner</translation>
-	</phrase>
-
-	<phrase>
-		<original>Gaussian Blur</original>
-		<translation>Gaußschen Weichzeichner</translation>
-	</phrase>
-
-	<phrase>
-		<original>Smart Blur</original>
-		<translation>Intelligent Weichzeichner</translation>
-	</phrase>
-
-	<phrase>
-		<original>Box Blur</original>
-		<translation>Box Weichzeichner</translation>
-	</phrase>
-
-	<phrase>
-		<original>Emboss</original>
-		<translation>Relief</translation>
-	</phrase>
-
-	<phrase>
-		<original>Engrave</original>
-		<translation>Gravur</translation>
-	</phrase>
-
-	<phrase>
-		<original>Pencil Drawing</original>
-		<translation>Bleistiftzeichnung</translation>
-	</phrase>
-
-	<phrase>
-		<original>Relief</original>
-		<translation>Beleuchtung</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Prewitt Horizontal)</original>
-		<translation>Konturen finden (Prewitt Horizontal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Prewitt Vertical)</original>
-		<translation>Konturen finden (Prewitt Vertical)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Sobel Horizontal)</original>
-		<translation>Konturen finden (Sobel Horizontal)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Sobel Vertical)</original>
-		<translation>Konturen finden (Sobel Vertical)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Laplacian)</original>
-		<translation>Konturen finden (Laplace)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Artistic Contour</original>
-		<translation>Künstlerische Contour</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (Hilite)</original>
-		<translation>Konturen finden (Hilite)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (PhotoDemon Linear)</original>
-		<translation>Konturen finden (PhotoDemon Linear)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Find Edges (PhotoDemon Cubic)</original>
-		<translation>Konturen finden (PhotoDemon Cubic)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Edge Enhance</original>
-		<translation>Kante verbessern</translation>
-	</phrase>
-
-	<phrase>
-		<original>Trace Contour</original>
-		<translation>Trace Contour</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rechannel</original>
-		<translation>Rückkanalisieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rechannel (Green)</original>
-		<translation>Rückkanalisieren (Green)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rechannel (Red)</original>
-		<translation>Rückkanalisieren (Red)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shift Colors (Left)</original>
-		<translation>Farbverschiebung (links)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shift Colors (Right)</original>
-		<translation>Farbverschiebung (rechts)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Gamma Correction</original>
-		<translation>Gamma-Korrektur</translation>
-	</phrase>
-
-	<phrase>
-		<original>Invert Colors</original>
-		<translation>Farben umkehren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Invert Hue</original>
-		<translation>Invert Hue</translation>
-	</phrase>
-
-	<phrase>
-		<original>Film Negative</original>
-		<translation>Film Negative</translation>
-	</phrase>
-
-	<phrase>
-		<original>Compound Invert</original>
-		<translation>Compound umkehren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Contrast</original>
-		<translation>Auto-Enhance Contrast</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Highlights</original>
-		<translation>Auto -Enhance Strähnchen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Midtones</original>
-		<translation>Auto -Enhance Mitteltöne</translation>
-	</phrase>
-
-	<phrase>
-		<original>Auto-Enhance Shadows</original>
-		<translation>Auto -Enhance Schatten</translation>
-	</phrase>
-
-	<phrase>
-		<original>Image Levels</original>
-		<translation>Bild Levels</translation>
-	</phrase>
-
-	<phrase>
-		<original>Colorize</original>
-		<translation>Discolor</translation>
-	</phrase>
-
-	<phrase>
-		<original>Reduce Colors</original>
-		<translation>Farben reduzieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color Temperature</original>
-		<translation>Farb temperatur</translation>
-	</phrase>
-
-	<phrase>
-		<original>Hue/Saturation/Lightness</original>
-		<translation>Farbton/Sättigung/Helligkeit</translation>
-	</phrase>
-
-	<phrase>
-		<original>Color Balance</original>
-		<translation>Color Balance</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shadow/Highlight</original>
-		<translation>Schatten/Strähnchen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Resize</original>
-		<translation>Größe andern</translation>
-	</phrase>
-
-	<phrase>
-		<original>Flip</original>
-		<translation>Flip</translation>
-	</phrase>
-
-	<phrase>
-		<original>Mirror</original>
-		<translation>Spiegel</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rotate 90° Clockwise</original>
-		<translation>Um 90° nach rechts</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rotate 180°</original>
-		<translation>Um 180 °</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rotate 90° Counter-Clockwise</original>
-		<translation>Um 90° gegen den Uhrzeigersinn</translation>
-	</phrase>
-
-	<phrase>
-		<original>Arbitrary Rotation</original>
-		<translation>Zufällige Rotation</translation>
-	</phrase>
-
-	<phrase>
-		<original>Isometric Conversion</original>
-		<translation>Isometrische Conversion</translation>
-	</phrase>
-
-	<phrase>
-		<original>Tile Image</original>
-		<translation>Tile image</translation>
-	</phrase>
-
-	<phrase>
-		<original>Crop</original>
-		<translation>Ernte</translation>
-	</phrase>
-
-	<phrase>
-		<original>Convert to Photo Mode (RGB, 24bpp)</original>
-		<translation>Convert to Photo Mode (RGB, 24bpp)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Convert to Web Mode (RGBA, 32bpp)</original>
-		<translation>Convert to Web Mode (RGBA, 32bpp)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Swirl</original>
-		<translation>Wirbel</translation>
-	</phrase>
-
-	<phrase>
-		<original>Apply lens distortion</original>
-		<translation>Bewerben Lens Distortion</translation>
-	</phrase>
-
-	<phrase>
-		<original>Correct lens distortion</original>
-		<translation>Richtig Verzeichnung des Objektivs</translation>
-	</phrase>
-
-	<phrase>
-		<original>Ripple</original>
-		<translation>Plätschern</translation>
-	</phrase>
-
-	<phrase>
-		<original>Pinch and whirl</original>
-		<translation>Kneif und Wirbelsäule</translation>
-	</phrase>
-
-	<phrase>
-		<original>Waves</original>
-		<translation>Wellen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Figured glass</original>
-		<translation>Glass Figure</translation>
-	</phrase>
-
-	<phrase>
-		<original>Kaleidoscope</original>
-		<translation>Kaleidoskop</translation>
-	</phrase>
-
-	<phrase>
-		<original>Polar conversion</original>
-		<translation>Polar Umwandlung</translation>
-	</phrase>
-
-	<phrase>
-		<original>Autocrop image</original>
-		<translation>Autocrop Bild</translation>
-	</phrase>
-
-	<phrase>
-		<original>Shear</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Squish</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Perspective (free)</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Pan and Zoom</original>
-		<translation></translation>
-	</phrase>
-
-	<phrase>
-		<original>Fade</original>
-		<translation>Verblassen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Unfade</original>
-		<translation>Un-Unschärfe</translation>
-	</phrase>
-
-	<phrase>
-		<original>Atmosphere</original>
-		<translation>Atmosphäre</translation>
-	</phrase>
-
-	<phrase>
-		<original>Freeze</original>
-		<translation>Einfrieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Lava</original>
-		<translation>Lava</translation>
-	</phrase>
-
-	<phrase>
-		<original>Burn</original>
-		<translation>Brennen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Water</original>
-		<translation>Wasser</translation>
-	</phrase>
-
-	<phrase>
-		<original>Steel</original>
-		<translation>Stahl</translation>
-	</phrase>
-
-	<phrase>
-		<original>Dream</original>
-		<translation>Traum</translation>
-	</phrase>
-
-	<phrase>
-		<original>Alien</original>
-		<translation>Außerirdische</translation>
-	</phrase>
-
-	<phrase>
-		<original>Custom Filter</original>
-		<translation>filternbenutzerdefinierte</translation>
-	</phrase>
-
-	<phrase>
-		<original>Antique</original>
-		<translation>Antik</translation>
-	</phrase>
-
-	<phrase>
-		<original>Blacklight</original>
-		<translation>Blacklight</translation>
-	</phrase>
-
-	<phrase>
-		<original>Posterize</original>
-		<translation>Posterisieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Radioactive</original>
-		<translation>Radioaktiv</translation>
-	</phrase>
-
-	<phrase>
-		<original>Solarize</original>
-		<translation>Solarisation</translation>
-	</phrase>
-
-	<phrase>
-		<original>Synthesize</original>
-		<translation>GrößeSynthetisieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Count Image Colors</original>
-		<translation>Zählen der Anzahl der Farben im Bild.</translation>
-	</phrase>
-
-	<phrase>
-		<original>Fog</original>
-		<translation>Nebel</translation>
-	</phrase>
-
-	<phrase>
-		<original>Rainbow</original>
-		<translation>Regenbogen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Vibrate</original>
-		<translation>Vibrieren</translation>
-	</phrase>
-
-	<phrase>
-		<original>Despeckle</original>
-		<translation>Schmutz entfernen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Custom Despeckle</original>
-		<translation>Schmutz entfernen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Comic book</original>
-		<translation>Comic Book</translation>
-	</phrase>
-
-	<phrase>
-		<original>Sepia</original>
-		<translation>Sepia</translation>
-	</phrase>
-
-	<phrase>
-		<original>Thermograph (Heat Map)</original>
-		<translation>Thermograph (Heat Map)</translation>
-	</phrase>
-
-	<phrase>
-		<original>Film Grain</original>
-		<translation>Film Grain</translation>
-	</phrase>
-
-	<phrase>
-		<original>Repeat Last Action</original>
-		<translation>Wiederholung der letzten Aktion</translation>
-	</phrase>
-
-	<phrase>
-		<original>Fade last effect</original>
-		<translation>Fade letzte Effekt</translation>
-	</phrase>
-
-	<phrase>
-		<original>Create New Selection</original>
-		<translation>Neu Auswahl Schaffen</translation>
-	</phrase>
-
-	<phrase>
-		<original>Clear Active Selection</original>
-		<translation>Klare Active Selection</translation>
-	</phrase>
-
-	<phrase>
-		<original>Vignetting</original>
-		<translation>Vignettierung</translation>
-	</phrase>
-
-	<phrase>
-		<original>Median filter</original>
-		<translation>Median -Filter</translation>
-	</phrase>
-
-	<phrase>
-		<original>Modern art</original>
-		<translation>Moderne Kunst</translation>
-	</phrase>
-
-	<!-- VBP_ProcessorModule.bas contains 163 phrases. 6 were duplicates of existing phrases, so only 157 new phrases were written to file. -->
-
-	<!-- END text for VBP_ProcessorModule.bas-->
-
-	<!-- BEGIN text for VBP_FormDiffuse.frm (FormDiffuse) -->
 
 	<phrase>
 		<original>wrap edge values</original>
@@ -2058,11 +1415,16 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>Diffuse</original>
+		<translation>Verbreiten</translation>
+	</phrase>
+
+	<phrase>
 		<original>Simulating large image explosion</original>
 		<translation>Simulieren große Bild Explosion</translation>
 	</phrase>
 
-	<!-- VBP_FormDiffuse.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormDiffuse.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormDiffuse.frm-->
 
@@ -2079,6 +1441,11 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>Fade</original>
+		<translation>Verblassen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Fading image</original>
 		<translation>Blur Bild</translation>
 	</phrase>
@@ -2088,17 +1455,32 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 		<translation>Unblur Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormFade.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormFade.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFade.frm-->
 
 	<!-- BEGIN text for VBP_ToolbarModule.bas -->
 
-	<!-- VBP_ToolbarModule.bas contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+	<phrase>
+		<original>Undo</original>
+		<translation>Rückgängig machen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Redo</original>
+		<translation>Redo</translation>
+	</phrase>
+
+	<!-- VBP_ToolbarModule.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_ToolbarModule.bas-->
 
 	<!-- BEGIN text for VBP_FormSolarize.frm (FormSolarize) -->
+
+	<phrase>
+		<original>Solarize</original>
+		<translation>Solarisation</translation>
+	</phrase>
 
 	<phrase>
 		<original>solarize threshold</original>
@@ -2110,11 +1492,16 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 		<translation>Solarisation Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormSolarize.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormSolarize.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSolarize.frm-->
 
 	<!-- BEGIN text for VBP_FormCustomFilter.frm (FormCustomFilter) -->
+
+	<phrase>
+		<original>Custom Filter</original>
+		<translation>filternbenutzerdefinierte</translation>
+	</phrase>
 
 	<phrase>
 		<original>Save filter</original>
@@ -2191,7 +1578,7 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 		<translation>Vorschau</translation>
 	</phrase>
 
-	<!-- VBP_FormCustomFilter.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+	<!-- VBP_FormCustomFilter.frm contains 21 phrases. 5 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormCustomFilter.frm-->
 
@@ -2230,6 +1617,11 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	<!-- BEGIN text for VBP_FormGamma.frm (FormGamma) -->
 
 	<phrase>
+		<original>Gamma Correction</original>
+		<translation>Gamma-Korrektur</translation>
+	</phrase>
+
+	<phrase>
 		<original>keep all colors in sync</original>
 		<translation>alle Farben in sync halten</translation>
 	</phrase>
@@ -2255,11 +1647,16 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>Gamma</original>
+		<translation>Gamma</translation>
+	</phrase>
+
+	<phrase>
 		<original>Adjusting gamma values</original>
 		<translation>Einstellen Gamma-Werte</translation>
 	</phrase>
 
-	<!-- VBP_FormGamma.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormGamma.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormGamma.frm-->
 
@@ -2357,6 +1754,18 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	<!-- BEGIN text for VBP_BatchConversion.bas -->
 
 	<phrase>
+		<original>Macro recording is currently being overhauled in preparation for PhotoDemon 5.6.  As such, it is very unstable, and I DO NOT recommend recording macros with this development build.
+
+If you want to risk it, press OK to continue.  Otherwise, press CANCEL to return to regular editing mode.</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Macros unstable in this build</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Macro recording started.</original>
 		<translation>Macro Aufzeichnung gestartet.</translation>
 	</phrase>
@@ -2436,8 +1845,8 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
-		<original>Macro converted successfully!  Continuing</original>
-		<translation>Macro erfolgreich umgesetzt! Fortsetzung</translation>
+		<original>Old macro converted successfully!  Continuing</original>
+		<translation></translation>
 	</phrase>
 
 	<phrase>
@@ -2460,7 +1869,7 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 		<translation>Macro abzuschließen!</translation>
 	</phrase>
 
-	<!-- VBP_BatchConversion.bas contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+	<!-- VBP_BatchConversion.bas contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 	<!-- END text for VBP_BatchConversion.bas-->
 
@@ -2507,6 +1916,11 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>Vibrate</original>
+		<translation>Vibrieren</translation>
+	</phrase>
+
+	<phrase>
 		<original>Putting image to sleep, then measuring its REM cycles</original>
 		<translation>Bild schlafen, dann messen die REM-Zyklen</translation>
 	</phrase>
@@ -2537,6 +1951,11 @@ Wenn Sie fertig sind, klicken Sie auf die Schaltfläche Submit. Danke!</translati
 	</phrase>
 
 	<phrase>
+		<original>Count Image Colors</original>
+		<translation>Zählen der Anzahl der Farben im Bild.</translation>
+	</phrase>
+
+	<phrase>
 		<original>This menu item only appears in the Visual Basic IDE.
 
 You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
@@ -2550,7 +1969,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 		<translation>PhotoDemon Pro Tip</translation>
 	</phrase>
 
-	<!-- VBP_Filters2.bas contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+	<!-- VBP_Filters2.bas contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 	<!-- END text for VBP_Filters2.bas-->
 
@@ -2567,11 +1986,16 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Black light</original>
+		<translation>Schwarzlicht</translation>
+	</phrase>
+
+	<phrase>
 		<original>Illuminating image with imaginary blacklight</original>
 		<translation>Entlasten Bild mit imaginären blacklight</translation>
 	</phrase>
 
-	<!-- VBP_FormBlackLight.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormBlackLight.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBlackLight.frm-->
 
@@ -2648,13 +2072,23 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Open</original>
+		<translation>Öffnen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Save</original>
+		<translation>Speichern</translation>
+	</phrase>
+
+	<phrase>
 		<original>Close</original>
 		<translation>schließen</translation>
 	</phrase>
 
 	<phrase>
-		<original>Zoom In</original>
-		<translation>Zoom In</translation>
+		<original>Save As</original>
+		<translation>Speichern unter</translation>
 	</phrase>
 
 	<phrase>
@@ -2663,13 +2097,18 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Zoom Out</original>
-		<translation>Verkleinern</translation>
+		<original>Zoom In</original>
+		<translation>Zoom In</translation>
 	</phrase>
 
 	<phrase>
 		<original>Use this button to decrease image zoom.</original>
 		<translation>Verwenden Sie diese Taste, um Zoom zu verringern.</translation>
+	</phrase>
+
+	<phrase>
+		<original>Zoom Out</original>
+		<translation>Verkleinern</translation>
 	</phrase>
 
 	<phrase>
@@ -2893,6 +2332,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Autocrop Image</original>
+		<translation>Autocrop Bild</translation>
+	</phrase>
+
+	<phrase>
 		<original>Flip horizontal</original>
 		<translation>Horizontal kippen</translation>
 	</phrase>
@@ -2900,6 +2344,26 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<phrase>
 		<original>Flip vertical</original>
 		<translation>Vertikal kippen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 90° clockwise</original>
+		<translation>Um 90° nach rechts</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 90° counter-clockwise</original>
+		<translation>Um 90° gegen den Uhrzeigersinn</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rotate 180°</original>
+		<translation>Um 180 °</translation>
+	</phrase>
+
+	<phrase>
+		<original>Arbitrary rotation</original>
+		<translation>Zufällige Rotation</translation>
 	</phrase>
 
 	<phrase>
@@ -2918,13 +2382,8 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Brightness and contrast</original>
-		<translation>Helligkeit / Kontrast</translation>
-	</phrase>
-
-	<phrase>
-		<original>Gamma</original>
-		<translation>Gamma</translation>
+		<original>Color balance</original>
+		<translation>Color Balance</translation>
 	</phrase>
 
 	<phrase>
@@ -2948,6 +2407,21 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>White balance</original>
+		<translation>Weißabgleich</translation>
+	</phrase>
+
+	<phrase>
+		<original>Display histogram</original>
+		<translation>Histogramm-Anzeige</translation>
+	</phrase>
+
+	<phrase>
+		<original>Equalize</original>
+		<translation>Auszugleichen</translation>
+	</phrase>
+
+	<phrase>
 		<original>Stretch</original>
 		<translation>Strecken</translation>
 	</phrase>
@@ -2965,6 +2439,16 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<phrase>
 		<original>Shift colors left</original>
 		<translation>Verschiebung nach links</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rechannel</original>
+		<translation>Rückkanalisieren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Colorize</original>
+		<translation>Discolor</translation>
 	</phrase>
 
 	<phrase>
@@ -3008,6 +2492,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Unfade</original>
+		<translation>Un-Unschärfe</translation>
+	</phrase>
+
+	<phrase>
 		<original>Grayscale</original>
 		<translation>Graustufen</translation>
 	</phrase>
@@ -3023,13 +2512,38 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Invert hue</original>
+		<translation>Invert Hue</translation>
+	</phrase>
+
+	<phrase>
 		<original>Invert RGB</original>
 		<translation>Invert RGB</translation>
 	</phrase>
 
 	<phrase>
+		<original>Compound invert</original>
+		<translation>Compound umkehren</translation>
+	</phrase>
+
+	<phrase>
 		<original>Monochrome</original>
 		<translation>Monochrom</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color to monochrome</original>
+		<translation>Monochrom</translation>
+	</phrase>
+
+	<phrase>
+		<original>Monochrome to grayscale</original>
+		<translation>Monochrome in Graustufen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sepia</original>
+		<translation>Sepia</translation>
 	</phrase>
 
 	<phrase>
@@ -3048,8 +2562,23 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Fade last effect</original>
+		<translation>Fade letzte Effekt</translation>
+	</phrase>
+
+	<phrase>
 		<original>Artistic</original>
 		<translation>Künstlerisch</translation>
+	</phrase>
+
+	<phrase>
+		<original>Antique</original>
+		<translation>Antik</translation>
+	</phrase>
+
+	<phrase>
+		<original>Comic book</original>
+		<translation>Comic Book</translation>
 	</phrase>
 
 	<phrase>
@@ -3058,8 +2587,58 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Modern art</original>
+		<translation>Moderne Kunst</translation>
+	</phrase>
+
+	<phrase>
+		<original>Pencil drawing</original>
+		<translation>Bleistiftzeichnung</translation>
+	</phrase>
+
+	<phrase>
+		<original>Posterize</original>
+		<translation>Posterisieren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Relief</original>
+		<translation>Beleuchtung</translation>
+	</phrase>
+
+	<phrase>
+		<original>Blur</original>
+		<translation>Verwischen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Box blur</original>
+		<translation>Box Weichzeichner</translation>
+	</phrase>
+
+	<phrase>
+		<original>Gaussian blur</original>
+		<translation>Gaußschen Weichzeichner</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grid blur</original>
+		<translation>Gittern Weichzeichner</translation>
+	</phrase>
+
+	<phrase>
+		<original>Smart blur</original>
+		<translation>Intelligent Weichzeichner</translation>
+	</phrase>
+
+	<phrase>
 		<original>Distort</original>
 		<translation>Verzerren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Apply lens distortion</original>
+		<translation>Bewerben Lens Distortion</translation>
 	</phrase>
 
 	<phrase>
@@ -3078,8 +2657,48 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Pan and zoom</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Perspective</original>
 		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Pinch and whirl</original>
+		<translation>Kneif und Wirbelsäule</translation>
+	</phrase>
+
+	<phrase>
+		<original>Polar conversion</original>
+		<translation>Polar Umwandlung</translation>
+	</phrase>
+
+	<phrase>
+		<original>Ripple</original>
+		<translation>Plätschern</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shear</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Squish</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Swirl</original>
+		<translation>Wirbel</translation>
+	</phrase>
+
+	<phrase>
+		<original>Waves</original>
+		<translation>Wellen</translation>
 	</phrase>
 
 	<phrase>
@@ -3103,18 +2722,78 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Trace contour</original>
+		<translation>Trace Contour</translation>
+	</phrase>
+
+	<phrase>
 		<original>Experimental</original>
 		<translation>Experimentell</translation>
 	</phrase>
 
 	<phrase>
-		<original>Black light</original>
-		<translation>Schwarzlicht</translation>
+		<original>Alien</original>
+		<translation>Außerirdische</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dream</original>
+		<translation>Traum</translation>
+	</phrase>
+
+	<phrase>
+		<original>Radioactive</original>
+		<translation>Radioaktiv</translation>
+	</phrase>
+
+	<phrase>
+		<original>Synthesize</original>
+		<translation>GrößeSynthetisieren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Thermograph (heat map)</original>
+		<translation>Thermograph (Heat Map)</translation>
 	</phrase>
 
 	<phrase>
 		<original>Natural</original>
 		<translation>Natürlich</translation>
+	</phrase>
+
+	<phrase>
+		<original>Atmosphere</original>
+		<translation>Atmosphäre</translation>
+	</phrase>
+
+	<phrase>
+		<original>Burn</original>
+		<translation>Brennen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Fog</original>
+		<translation>Nebel</translation>
+	</phrase>
+
+	<phrase>
+		<original>Freeze</original>
+		<translation>Einfrieren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Lava</original>
+		<translation>Lava</translation>
+	</phrase>
+
+	<phrase>
+		<original>Rainbow</original>
+		<translation>Regenbogen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Steel</original>
+		<translation>Stahl</translation>
 	</phrase>
 
 	<phrase>
@@ -3133,8 +2812,8 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
-		<original>Add RGB noise</original>
-		<translation>Fügen RGB Rauschen</translation>
+		<original>Despeckle</original>
+		<translation>Schmutz entfernen</translation>
 	</phrase>
 
 	<phrase>
@@ -3145,6 +2824,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<phrase>
 		<original>Remove orphan pixels</original>
 		<translation>Entfernen verwaister Pixel</translation>
+	</phrase>
+
+	<phrase>
+		<original>Sharpen more</original>
+		<translation>Schärfer</translation>
 	</phrase>
 
 	<phrase>
@@ -3170,6 +2854,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	<phrase>
 		<original>Twins</original>
 		<translation>Zwillinge</translation>
+	</phrase>
+
+	<phrase>
+		<original>Vignetting</original>
+		<translation>Vignettierung</translation>
 	</phrase>
 
 	<phrase>
@@ -3348,6 +3037,56 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 	</phrase>
 
 	<phrase>
+		<original>Auto-enhance highlights</original>
+		<translation>Auto -Enhance Strähnchen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Auto-enhance midtones</original>
+		<translation>Auto -Enhance Mitteltöne</translation>
+	</phrase>
+
+	<phrase>
+		<original>Auto-enhance shadows</original>
+		<translation>Auto -Enhance Schatten</translation>
+	</phrase>
+
+	<phrase>
+		<original>Color temperature</original>
+		<translation>Farb temperatur</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shift colors (left)</original>
+		<translation>Farbverschiebung (links)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Shift colors (right)</original>
+		<translation>Farbverschiebung (rechts)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Correct lens distortion</original>
+		<translation>Richtig Verzeichnung des Objektivs</translation>
+	</phrase>
+
+	<phrase>
+		<original>Figured glass</original>
+		<translation>Glass Figure</translation>
+	</phrase>
+
+	<phrase>
+		<original>Kaleidoscope</original>
+		<translation>Kaleidoskop</translation>
+	</phrase>
+
+	<phrase>
+		<original>Edge enhance</original>
+		<translation>Kante verbessern</translation>
+	</phrase>
+
+	<phrase>
 		<original>Checking for software updates</original>
 		<translation>Nach Software-Updates suchen</translation>
 	</phrase>
@@ -3377,6 +3116,31 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 	</phrase>
 
 	<phrase>
+		<original>Stretch histogram</original>
+		<translation>Stretch Histogramm</translation>
+	</phrase>
+
+	<phrase>
+		<original>Crop</original>
+		<translation>Ernte</translation>
+	</phrase>
+
+	<phrase>
+		<original>Autocrop</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Isometric conversion</original>
+		<translation>Isometrische Conversion</translation>
+	</phrase>
+
+	<phrase>
+		<original>Paste as new image</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
 		<original>Removing existing translation</original>
 		<translation>Beseitigung bestehender Übersetzung</translation>
 	</phrase>
@@ -3392,11 +3156,86 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 	</phrase>
 
 	<phrase>
+		<original>Water</original>
+		<translation>Wasser</translation>
+	</phrase>
+
+	<phrase>
+		<original>Film negative</original>
+		<translation>Film Negative</translation>
+	</phrase>
+
+	<phrase>
+		<original>Copy to clipboard</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Empty clipboard</original>
+		<translation>Leere Zwischenablage</translation>
+	</phrase>
+
+	<phrase>
+		<original>Custom despeckle</original>
+		<translation>Schmutz entfernen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Play macro</original>
+		<translation>Abspielen Macro</translation>
+	</phrase>
+
+	<phrase>
 		<original>Preparing to load recent file entry</original>
 		<translation>Vorbereiten auf den letzten Eintrag in der Datei laden</translation>
 	</phrase>
 
-	<!-- VBP_FormMain.frm contains 236 phrases. 73 were duplicates of existing phrases, so only 163 new phrases were written to file. -->
+	<phrase>
+		<original>Repeat last action</original>
+		<translation>Wiederholung der letzten Aktion</translation>
+	</phrase>
+
+	<phrase>
+		<original>Auto-enhance contrast</original>
+		<translation>Auto-Enhance Contrast</translation>
+	</phrase>
+
+	<phrase>
+		<original>Scan image</original>
+		<translation>Bild scannen</translation>
+	</phrase>
+
+	<phrase>
+		<original>Select scanner or camera</original>
+		<translation>Wählen Sie Scanner oder Kamera</translation>
+	</phrase>
+
+	<phrase>
+		<original>Unsharp mask</original>
+		<translation></translation>
+	</phrase>
+
+	<phrase>
+		<original>Start macro recording</original>
+		<translation>Starten Macro Aufnahme</translation>
+	</phrase>
+
+	<phrase>
+		<original>Stop macro recording</original>
+		<translation>Stoppen Macro Aufnahme</translation>
+	</phrase>
+
+	<phrase>
+		<original>Dilate (maximum rank)</original>
+		<translation>Dilate (maximal rang)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Erode (minimum rank)</original>
+		<translation>Erode (mindestens Rang)</translation>
+	</phrase>
+
+	<!-- VBP_FormMain.frm contains 374 phrases. 128 were duplicates of existing phrases, so only 246 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMain.frm-->
 
@@ -3542,6 +3381,41 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	</phrase>
 
 	<phrase>
+		<original>Grayscale (average)</original>
+		<translation>Graustufen (Durchschnitt)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (ITU standard)</original>
+		<translation>Graustufen (ITU Standard)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Desaturate</original>
+		<translation>Sättigung reduzieren</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (decomposition)</original>
+		<translation>Graustufen (Zersetzung)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (single channel)</original>
+		<translation>Graustufen (Single Channel)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (custom # of colors)</original>
+		<translation>Graustufen (Benutzerdefiniert # farben)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Grayscale (custom dither)</original>
+		<translation>Graustufen (Custom Dither)</translation>
+	</phrase>
+
+	<phrase>
 		<original>Fastest Calculation (average value)</original>
 		<translation>Schnellste Berechnung (Mittelwert)</translation>
 	</phrase>
@@ -3606,7 +3480,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 		<translation>Konvertieren Graustufenbild mit %1 Werte</translation>
 	</phrase>
 
-	<!-- VBP_FormGrayscale.frm contains 30 phrases. 10 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+	<!-- VBP_FormGrayscale.frm contains 40 phrases. 13 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormGrayscale.frm-->
 
@@ -3636,6 +3510,51 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 	<phrase>
 		<original>(no item selected)</original>
 		<translation>(kein Artikel ausgewählt)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Prewitt horizontal)</original>
+		<translation>Konturen finden (Prewitt Horizontal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Prewitt vertical)</original>
+		<translation>Konturen finden (Prewitt Vertical)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Sobel horizontal)</original>
+		<translation>Konturen finden (Sobel Horizontal)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Sobel vertical)</original>
+		<translation>Konturen finden (Sobel Vertical)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Laplacian)</original>
+		<translation>Konturen finden (Laplace)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Artistic contour</original>
+		<translation>Künstlerische Contour</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (Hilite)</original>
+		<translation>Konturen finden (Hilite)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (PhotoDemon linear)</original>
+		<translation>Konturen finden (PhotoDemon Linear)</translation>
+	</phrase>
+
+	<phrase>
+		<original>Find edges (PhotoDemon cubic)</original>
+		<translation>Konturen finden (PhotoDemon Cubic)</translation>
 	</phrase>
 
 	<phrase>
@@ -3743,7 +3662,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 		<translation>Erweiterte mathematische Routine auf kubische diagonale Beziehungen zwischen Pixeln.</translation>
 	</phrase>
 
-	<!-- VBP_FormFindEdges.frm contains 33 phrases. 9 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+	<!-- VBP_FormFindEdges.frm contains 42 phrases. 9 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFindEdges.frm-->
 
@@ -3911,7 +3830,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 		<translation>Konvertieren Bild auf zwei Farben</translation>
 	</phrase>
 
-	<!-- VBP_FormBlackAndWhite.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+	<!-- VBP_FormBlackAndWhite.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBlackAndWhite.frm-->
 
@@ -4869,7 +4788,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Posterisieren Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormPosterize.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormPosterize.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPosterize.frm-->
 
@@ -4885,7 +4804,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Schließen Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormImage.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormImage.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormImage.frm-->
 
@@ -5179,6 +5098,16 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 	</phrase>
 
 	<phrase>
+		<original>emboss</original>
+		<translation>Relief</translation>
+	</phrase>
+
+	<phrase>
+		<original>engrave</original>
+		<translation>Gravur</translation>
+	</phrase>
+
+	<phrase>
 		<original>Embossing image</original>
 		<translation>Prägen image</translation>
 	</phrase>
@@ -5188,7 +5117,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Gravur Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormEmbossEngrave.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormEmbossEngrave.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -5397,7 +5326,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Charting neues Bild Ebenen</translation>
 	</phrase>
 
-	<!-- VBP_FormImageLevels.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+	<!-- VBP_FormImageLevels.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormImageLevels.frm-->
 
@@ -5423,7 +5352,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Kolorieren Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormColorize.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormColorize.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormColorize.frm-->
 
@@ -5465,7 +5394,7 @@ Die Entwickler von PhotoDemon nehmen Privatsphäre sehr ernst , so dass keine Inf
 		<translation>Entfernen von verwaisten Pixel</translation>
 	</phrase>
 
-	<!-- VBP_FormDespeckle.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormDespeckle.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormDespeckle.frm-->
 
@@ -5919,7 +5848,7 @@ To improve your user experience, please allow the program to automatically downl
 		<translation>Einstellen des Weißabgleichs des Bildes</translation>
 	</phrase>
 
-	<!-- VBP_FormWhiteBalance.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormWhiteBalance.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormWhiteBalance.frm-->
 
@@ -6018,6 +5947,11 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie t
 	<!-- BEGIN text for VBP_FormTile.frm (FormTile) -->
 
 	<phrase>
+		<original>Tile Image</original>
+		<translation>Tile image</translation>
+	</phrase>
+
+	<phrase>
 		<original>The final image will be %1 %3 wide by %2 %3 tall.</original>
 		<translation>Das fertige Bild wird %1 %3 breit %2 %3 hoch.</translation>
 	</phrase>
@@ -6052,7 +5986,7 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie t
 		<translation>fliesen</translation>
 	</phrase>
 
-	<!-- VBP_FormTile.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+	<!-- VBP_FormTile.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormTile.frm-->
 
@@ -6321,7 +6255,7 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie t
 		<translation>Anwendung neuer Temperatur auf das Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormColorTemp.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormColorTemp.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormColorTemp.frm-->
 
@@ -6342,7 +6276,7 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie t
 		<translation>Auszugleichen Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormEqualize.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormEqualize.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormEqualize.frm-->
 
@@ -6404,7 +6338,7 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie t
 		<translation>Isolierung der %1 Kanal</translation>
 	</phrase>
 
-	<!-- VBP_FormRechannel.frm contains 27 phrases. 18 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+	<!-- VBP_FormRechannel.frm contains 28 phrases. 19 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormRechannel.frm-->
 
@@ -6523,7 +6457,7 @@ Please enter a numeric value.</original>
 		<translation>Einstellen der Farbton, Sättigung und Helligkeit Werte</translation>
 	</phrase>
 
-	<!-- VBP_FormHSL.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormHSL.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormHSL.frm-->
 
@@ -6608,7 +6542,7 @@ Please enter a numeric value.</original>
 		<translation>nicht vorhandenFreeImage Plugin fehlt</translation>
 	</phrase>
 
-	<!-- VBP_FormRotate.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+	<!-- VBP_FormRotate.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormRotate.frm-->
 
@@ -7431,7 +7365,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Abbildung wirbelnden rund und rund</translation>
 	</phrase>
 
-	<!-- VBP_FormSwirl.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormSwirl.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSwirl.frm-->
 
@@ -7447,7 +7381,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Projizierte Bild durch simulierte Linse</translation>
 	</phrase>
 
-	<!-- VBP_FormLens.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormLens.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormLens.frm-->
 
@@ -7473,7 +7407,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Simulation von Wellen auf der Bildebene</translation>
 	</phrase>
 
-	<!-- VBP_FormRipple.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormRipple.frm contains 13 phrases. 9 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormRipple.frm-->
 
@@ -7494,7 +7428,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Kneifen und wirbelnden Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormPinch.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormPinch.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPinch.frm-->
 
@@ -7525,7 +7459,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Bild in virtuelle Welle Tauchen</translation>
 	</phrase>
 
-	<!-- VBP_FormWaves.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormWaves.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormWaves.frm-->
 
@@ -7546,7 +7480,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Projizierte Bild durch simulierte Glas</translation>
 	</phrase>
 
-	<!-- VBP_FormEtchGlass.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormEtchGlass.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormEtchGlass.frm-->
 
@@ -7594,7 +7528,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Peering durch imaginäre Bild Kaleidoskop</translation>
 	</phrase>
 
-	<!-- VBP_FormKaleidoscope.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormKaleidoscope.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormKaleidoscope.frm-->
 
@@ -7630,7 +7564,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Polar Inversion</translation>
 	</phrase>
 
-	<!-- VBP_FormPolar.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormPolar.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPolar.frm-->
 
@@ -7651,7 +7585,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>WARNUNG! Dieses Tool ist hoch optimiert, aber bei hohen Radius-Werte, ist es immer noch ziemlich langsam in der IDE. Und werden gebeten, für die Vorschau der Anwendung oder eines Radius größer als 20 kompilieren.</translation>
 	</phrase>
 
-	<!-- VBP_FormGaussianBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormGaussianBlur.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormGaussianBlur.frm-->
 
@@ -7687,7 +7621,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Anwenden von Smart Blur</translation>
 	</phrase>
 
-	<!-- VBP_FormSmartBlur.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormSmartBlur.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormSmartBlur.frm-->
 
@@ -7708,7 +7642,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Anwenden von quadratischen Unschärfe auf das Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormBoxBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormBoxBlur.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormBoxBlur.frm-->
 
@@ -7724,7 +7658,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Anwendung Unscharf maskieren (Schritt %1 der %2)</translation>
 	</phrase>
 
-	<!-- VBP_FormUnsharpMask.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormUnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormUnsharpMask.frm-->
 
@@ -7755,7 +7689,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Korrektur Bildverzerrungen</translation>
 	</phrase>
 
-	<!-- VBP_FormLensCorrect.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormLensCorrect.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormLensCorrect.frm-->
 
@@ -7804,7 +7738,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Anwenden von Filmkorn zu Bild</translation>
 	</phrase>
 
-	<!-- VBP_FormFilmGrain.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormFilmGrain.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormFilmGrain.frm-->
 
@@ -7820,7 +7754,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Einstellen des Weißabgleichs</translation>
 	</phrase>
 
-	<!-- VBP_FormColorBalance.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+	<!-- VBP_FormColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormColorBalance.frm-->
 
@@ -7841,11 +7775,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Anwendung Vignettierung</translation>
 	</phrase>
 
-	<!-- VBP_FormVignette.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormVignette.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormVignette.frm-->
 
 	<!-- BEGIN text for VBP_FormMedian.frm (FormMedian) -->
+
+	<phrase>
+		<original>Median Filter</original>
+		<translation>Median -Filter</translation>
+	</phrase>
 
 	<phrase>
 		<original>percentile</original>
@@ -7877,7 +7816,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormMedian.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+	<!-- VBP_FormMedian.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMedian.frm-->
 
@@ -7888,7 +7827,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Anwendung moderner Techniken</translation>
 	</phrase>
 
-	<!-- VBP_FormModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+	<!-- VBP_FormModernArt.frm contains 7 phrases. 6 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormModernArt.frm-->
 
@@ -7919,7 +7858,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Wie alle Monochrom-to-Graustufen-Tools, wird dieses Tool zu produzieren ein verschwommenes Bild. Sie können die Effekte verwenden -> Schärfen -> Unscharf Maskieren Werkzeug, um dies zu beheben. (Für beste Ergebnisse, verwenden Sie eine Unscharf maskieren Radius mindestens so groß wie dieser Radius.)</translation>
 	</phrase>
 
-	<!-- VBP_FormMonoToColor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+	<!-- VBP_FormMonoToColor.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormMonoToColor.frm-->
 
@@ -7940,7 +7879,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Tracing Bildkontur</translation>
 	</phrase>
 
-	<!-- VBP_FormContour.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormContour.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormContour.frm-->
 
@@ -7972,7 +7911,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<translation>Einstellen Schatten, Mitteltöne und Lichter</translation>
 	</phrase>
 
-	<!-- VBP_FormShadowHighlight.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormShadowHighlight.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -8502,7 +8441,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormShear.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+	<!-- VBP_FormShear.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormShear.frm-->
 
@@ -8513,7 +8452,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPerspective.frm contains 10 phrases. 9 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+	<!-- VBP_FormPerspective.frm contains 11 phrases. 10 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPerspective.frm-->
 
@@ -8559,7 +8498,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormTruePerspective.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+	<!-- VBP_FormTruePerspective.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormTruePerspective.frm-->
 
@@ -8706,7 +8645,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 		<translation></translation>
 	</phrase>
 
-	<!-- VBP_FormPanZoom.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+	<!-- VBP_FormPanZoom.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 	<!-- END text for VBP_FormPanZoom.frm-->
 
@@ -8718,9 +8657,9 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 
 <!-- Automatic text extraction complete. -->
 
-<!-- As of this build, PhotoDemon contains 2177 phrases in total. -->
-<!-- 644 are duplicate phrases, so only 1533 phrases have been written to file. -->
-<!-- These 1533 phrases contain approximately 9742 total words. -->
+<!-- As of this build, PhotoDemon contains 2252 phrases in total. -->
+<!-- 732 are duplicate phrases, so only 1520 phrases have been written to file. -->
+<!-- These 1520 phrases contain approximately 9780 total words. -->
 
 </language>
 
