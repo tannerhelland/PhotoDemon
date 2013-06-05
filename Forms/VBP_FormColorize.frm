@@ -169,15 +169,11 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    Me.Visible = False
     
-    If chkSaturation.Value = vbChecked Then
-        Process Colorize, CSng((CSng(hsHue.Value) - 60) / 60), True
-    Else
-        Process Colorize, CSng((CSng(hsHue.Value) - 60) / 60), False
-    End If
-        
+    Me.Visible = False
+    Process "Colorize", , buildParams(CDbl((CDbl(hsHue.Value) - 60) / 60), CBool(chkSaturation.Value))
     Unload Me
+    
 End Sub
 
 'Colorize an image using a hue defined between -1 and 5

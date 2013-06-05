@@ -189,14 +189,18 @@ Private Sub CmdOK_Click()
     g_EmbossEngraveColor = PicColor.backColor
     Me.Visible = False
     
+    Dim newColor As Long
+    If CBool(chkToColor.Value) Then newColor = PicColor.backColor Else newColor = RGB(127, 127, 127)
+    
     'Dependent: filter to grey OR to a background color
-    If optEmboss.Value = True Then
-        If chkToColor.Value = vbChecked Then Process EmbossToColor, PicColor.backColor Else Process EmbossToColor, RGB(127, 127, 127)
+    If optEmboss.Value Then
+        Process "Emboss", , CStr(newColor)
     Else
-        If chkToColor.Value = vbChecked Then Process EngraveToColor, PicColor.backColor Else Process EngraveToColor, RGB(127, 127, 127)
+        Process "Engrave", , CStr(newColor)
     End If
     
     Unload Me
+    
 End Sub
 
 Private Sub Form_Activate()

@@ -279,7 +279,7 @@ Private Sub CmdOK_Click()
     'Validate all textbox entries
     If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
         Me.Visible = False
-        Process AdjustColorBalance, sltRed, sltGreen, sltBlue, True
+        Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, True)
         Unload Me
     End If
     

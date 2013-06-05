@@ -25,8 +25,8 @@ Attribute VB_Exposed = False
 ' require no additional parameters.  Others, like "Image curves", require a huge amount of data to be passed from the
 ' tool form to the actual function.  Functions utilize every type of value (bool, int, float, etc), and if a macro is
 ' being recorded, all those various parameters need to be written to file.  Rather than attempt to deal with a convoluted
-' system for tracking those, as was previously used, PhotoDemon now sticks everything inside a string.  This allows any
-' amount - and type - of data to be stored.
+' system for tracking each unique data type, as we previously did, the latest versions of PhotoDemon now stick all
+' parameters inside a string.  This allows any amount - and type - of data to be stored.
 '
 'Individual functions therefore rely on this class to parse parameter strings for them.
 '

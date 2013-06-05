@@ -313,7 +313,7 @@ Private Sub CmdOK_Click()
     'If all gamma values are valid, perform a full gamma correction on the current image (or selection)
     If sltGamma(0).IsValid And sltGamma(1).IsValid And sltGamma(2).IsValid Then
         Me.Visible = False
-        Process GammaCorrection, sltGamma(0), sltGamma(1), sltGamma(2)
+        Process "Gamma", , buildParams(sltGamma(0), sltGamma(1), sltGamma(2))
         Unload Me
     End If
     

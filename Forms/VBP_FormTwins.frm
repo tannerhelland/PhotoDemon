@@ -162,7 +162,7 @@ End Sub
 'OK button
 Private Sub CmdOK_Click()
     Me.Visible = False
-    If optTwins(0).Value Then Process Twins, 0 Else Process Twins, 1
+    If optTwins(0).Value Then Process "Generate twins", , "0" Else Process "Generate twins", , "1"
     Unload Me
 End Sub
 

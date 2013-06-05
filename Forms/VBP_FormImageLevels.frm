@@ -358,7 +358,7 @@ End Sub
 Private Sub CmdOK_Click()
     
     Me.Visible = False
-    Process ImageLevels, sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value
+    Process "Levels", , buildParams(sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value)
     Unload Me
     
 End Sub

@@ -131,7 +131,7 @@ Private Sub CmdOK_Click()
     
     If sltPercent.IsValid Then
         Me.Visible = False
-        Process Fade, CDbl(sltPercent.Value / 100)
+        Process "Fade", , CStr(CDbl(sltPercent.Value / 100))
         Unload Me
     End If
     

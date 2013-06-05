@@ -411,7 +411,7 @@ Private Sub CmdOK_Click()
     Me.Visible = False
     
     'Based on the user's selection, submit the proper processor request
-    Process Tile, cboTarget.ListIndex, TxtWidth, TxtHeight
+    Process "Tile", , buildParams(cboTarget.ListIndex, TxtWidth, TxtHeight)
     
     Unload Me
     

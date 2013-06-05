@@ -295,7 +295,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltAngleX.IsValid And sltAngleY.IsValid Then
         Me.Visible = False
-        Process DistortShear, sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

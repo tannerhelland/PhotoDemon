@@ -259,7 +259,7 @@ Private Sub CmdOK_Click()
     'Before processing, ensure the threshold value is valid
     If sltThreshold.IsValid Then
         Me.Visible = False
-        Process BWMaster, sltThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor
+        Process "Color to monochrome", , buildParams(sltThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor)
         Unload Me
     Else
         Exit Sub
@@ -474,8 +474,11 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
                 End If
                 
             Next y
-                If toPreview = False Then
-                    If (x And progBarCheck) = 0 Then SetProgBarVal x
+                If Not toPreview Then
+                    If (x And progBarCheck) = 0 Then
+                        If userPressedESC() Then Exit For
+                        SetProgBarVal x
+                    End If
                 End If
             Next x
             
@@ -542,8 +545,11 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
                 End If
                 
             Next y
-                If toPreview = False Then
-                    If (x And progBarCheck) = 0 Then SetProgBarVal x
+                If Not toPreview Then
+                    If (x And progBarCheck) = 0 Then
+                        If userPressedESC() Then Exit For
+                        SetProgBarVal x
+                    End If
                 End If
             Next x
 
@@ -661,8 +667,11 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
                 End If
                 
             Next y
-                If toPreview = False Then
-                    If (x And progBarCheck) = 0 Then SetProgBarVal x
+                If Not toPreview Then
+                    If (x And progBarCheck) = 0 Then
+                        If userPressedESC() Then Exit For
+                        SetProgBarVal x
+                    End If
                 End If
             Next x
         
@@ -941,8 +950,11 @@ NextDitheredPixel:     Next j
             End If
                 
         Next y
-            If toPreview = False Then
-                If (x And progBarCheck) = 0 Then SetProgBarVal x
+            If Not toPreview Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x
+                End If
             End If
         Next x
     

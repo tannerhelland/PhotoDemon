@@ -310,8 +310,14 @@ Private Sub CmdOK_Click()
     paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
     paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
     
+    'Edge handling
+    paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
+    
+    'Resampling
+    paramString = paramString & "|" & OptInterpolate(0).Value
+    
     'Based on the user's selection, submit the proper processor request
-    Process FreePerspective, paramString, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+    Process "Perspective", , paramString
     
     Unload Me
     
@@ -320,7 +326,7 @@ End Sub
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: xRatio, a value from -100 to 100 that specifies the horizontal perspective
 '        yRatio, same as xRatio but for vertical perspective
-Public Sub PerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If toPreview = False Then Message "Applying new perspective..."
     
@@ -354,21 +360,21 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, ByVal edgeHandling 
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
+    'Parse the incoming parameter string into individual (x, y) pairs
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    If Len(listOfModifiers) > 0 Then cParams.setParamString listOfModifiers
+    
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, cParams.GetLong(9), cParams.GetBool(10), curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-    
-    'Parse the incoming parameter string into individual (x, y) pairs
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(listOfModifiers) > 0 Then cParams.setParamString listOfModifiers
-        
+            
     'Store region width and height as floating-point
     Dim imgWidth As Double, imgHeight As Double
     imgWidth = finalX - initX
@@ -616,7 +622,13 @@ Private Sub updatePreview()
     paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
     paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
     
-    PerspectiveImage paramString, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    'Edge handling
+    paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
+    
+    'Resampling
+    paramString = paramString & "|" & OptInterpolate(0).Value
+    
+    PerspectiveImage paramString, True, fxPreview
     
 End Sub
 

@@ -374,7 +374,7 @@ Private Sub CmdOK_Click()
     If optChannel(8).Value Then rechannelMethod = 8
     If optChannel(9).Value Then rechannelMethod = 9
     
-    Process Rechannel, rechannelMethod
+    Process "Rechannel", , CStr(rechannelMethod)
     
     Unload Me
 End Sub

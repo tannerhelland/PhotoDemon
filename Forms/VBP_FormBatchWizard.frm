@@ -1878,8 +1878,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright ©2007-2013 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 28/March/13
-'Last update: finished adding full support for all file format export options (there are a TON!)
+'Last updated: 03/June/13
+'Last update: left panel text is now auto-fitted (with word-wrap!) after translations are applied
 '
 'PhotoDemon's batch process wizard is one of its most unique - and in my opinion, most impressive - features.  It integrates
 ' tightly with the macro recording feature to allow any combination of actions to be applied to any set of images.

@@ -203,9 +203,7 @@ End Sub
 Private Sub CmdOK_Click()
     
     Me.Visible = False
-        
-    Process Equalize, CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value)
-    
+    Process "Equalize", , buildParams(CBool(chkRed), CBool(chkGreen), CBool(chkBlue), CBool(chkLuminance))
     Unload Me
     
 End Sub

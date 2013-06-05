@@ -135,7 +135,7 @@ Private Sub CmdOK_Click()
 
     If sltIntensity.IsValid Then
         Me.Visible = False
-        Process BlackLight, sltIntensity
+        Process "Black light", , buildParams(sltIntensity)
         Unload Me
     End If
     
@@ -209,7 +209,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
         ImageData(QuickVal + 2, y) = b
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x

@@ -244,7 +244,7 @@ End Sub
 'This sub is used to render control backgrounds as transparent
 Public Sub SubclassFrame(FramehWnd As Long, ReleaseSubclass As Boolean)
     Dim prevProc As Long
-
+    
     prevProc = GetProp(FramehWnd, "scPproc")
     If ReleaseSubclass Then
         If prevProc Then
@@ -391,6 +391,24 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     
 End Sub
 
+'PhotoDemon's software processor requires that all parameters be passed as a string, with individual parameters separated by
+' the "|" character.  This function can be used to automatically assemble any number of parameters into such a string.
+Public Function buildParams(ParamArray allParams() As Variant) As String
+
+    buildParams = ""
+
+    If Not IsMissing(allParams) Then
+    
+        Dim i As Long
+        For i = LBound(allParams) To UBound(allParams)
+            buildParams = buildParams & CStr(allParams(i))
+            If i < UBound(allParams) Then buildParams = buildParams & "|"
+        Next i
+    
+    End If
+
+End Function
+
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
 ' in the future I may replace the dialog function with something custom.
 Public Function pdMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxStyle, ByVal pTitle As String, ParamArray ExtraText() As Variant) As VbMsgBoxResult
@@ -425,7 +443,8 @@ End Function
 
 'This popular function is used to display a message in the main form's status bar.
 ' INPUTS:
-' 1) the message to be displayed (mString), with any run-time dependent values
+' 1) the message to be displayed (mString)
+' *2) any values that must be calculated at run-time, which are labeled in the message string by "%n"
 Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
 
     Dim newString As String

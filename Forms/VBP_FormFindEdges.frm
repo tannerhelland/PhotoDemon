@@ -187,23 +187,23 @@ Private Sub CmdOK_Click()
     
     Select Case LstEdgeOptions.ListIndex
         Case 0
-            Process PrewittHorizontal, CBool(chkInvert.Value)
+            Process "Find edges (Prewitt horizontal)", , CStr(CBool(chkInvert.Value))
         Case 1
-            Process PrewittVertical, CBool(chkInvert.Value)
+            Process "Find edges (Prewitt vertical)", , CStr(CBool(chkInvert.Value))
         Case 2
-            Process SobelHorizontal, CBool(chkInvert.Value)
+            Process "Find edges (Sobel horizontal)", , CStr(CBool(chkInvert.Value))
         Case 3
-            Process SobelVertical, CBool(chkInvert.Value)
+            Process "Find edges (Sobel vertical)", , CStr(CBool(chkInvert.Value))
         Case 4
-            Process Laplacian, CBool(chkInvert.Value)
+            Process "Find edges (Laplacian)", , CStr(CBool(chkInvert.Value))
         Case 5
-            Process SmoothContour, CBool(chkInvert.Value)
+            Process "Artistic contour", , CStr(CBool(chkInvert.Value))
         Case 6
-            Process HiliteEdge, CBool(chkInvert.Value)
+            Process "Find edges (Hilite)", , CStr(CBool(chkInvert.Value))
         Case 7
-            Process PhotoDemonEdgeLinear, CBool(chkInvert.Value)
+            Process "Find edges (PhotoDemon linear)", , CStr(CBool(chkInvert.Value))
         Case 8
-            Process PhotoDemonEdgeCubic, CBool(chkInvert.Value)
+            Process "Find edges (PhotoDemon cubic)", , CStr(CBool(chkInvert.Value))
     End Select
     
     Unload Me

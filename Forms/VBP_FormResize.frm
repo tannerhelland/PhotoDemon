@@ -308,22 +308,26 @@ Private Sub CmdResize_Click()
         Me.Visible = False
     
         'Resample based on the combo box entry...
+        Dim resampleMethod As Long
+        
         Select Case cboResample.ListIndex
             Case 0
-                Process ImageSize, tudWidth, tudHeight, RESIZE_NORMAL
+                resampleMethod = RESIZE_NORMAL
             Case 1
-                Process ImageSize, tudWidth, tudHeight, RESIZE_HALFTONE
+                resampleMethod = RESIZE_HALFTONE
             Case 2
-                Process ImageSize, tudWidth, tudHeight, RESIZE_BILINEAR
+                resampleMethod = RESIZE_BILINEAR
             Case 3
-                Process ImageSize, tudWidth, tudHeight, RESIZE_BSPLINE
+                resampleMethod = RESIZE_BSPLINE
             Case 4
-                Process ImageSize, tudWidth, tudHeight, RESIZE_BICUBIC_MITCHELL
+                resampleMethod = RESIZE_BICUBIC_MITCHELL
             Case 5
-                Process ImageSize, tudWidth, tudHeight, RESIZE_BICUBIC_CATMULL
+                resampleMethod = RESIZE_BICUBIC_CATMULL
             Case 6
-                Process ImageSize, tudWidth, tudHeight, RESIZE_LANCZOS
+                resampleMethod = RESIZE_LANCZOS
         End Select
+        
+        Process "Resize", , buildParams(tudWidth, tudHeight, resampleMethod)
         
         Unload Me
         

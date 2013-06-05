@@ -209,7 +209,7 @@ Private Sub CmdOK_Click()
     'Validate text box entries
     If sltThickness.IsValid Then
         Me.Visible = False
-        Process Contour, sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)
+        Process "Trace contour", , buildParams(sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value))
         Unload Me
     End If
         

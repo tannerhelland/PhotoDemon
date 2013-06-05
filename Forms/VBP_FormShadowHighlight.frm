@@ -268,7 +268,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If sltShadow.IsValid And sltHighlight.IsValid Then
         Me.Visible = False
-        Process ShadowHighlight, sltShadow, sltHighlight, CLng(PicColor.backColor)
+        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(PicColor.backColor))
         Unload Me
     End If
     

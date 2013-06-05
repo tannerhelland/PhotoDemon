@@ -85,7 +85,7 @@ Option Explicit
     Public UndoState As Boolean
     Public RedoState As Boolean
     'IDs of the processes associated with each undo file
-    Private UndoIDs() As Long
+    Private UndoIDs() As String
     
     'Current index of the zoom combo box
     Public CurrentZoomValue As Long
@@ -225,14 +225,14 @@ End Sub
 
 'Create an undo entry (a copy of the present image); also required is the ID of the process that required this action.
 ' This is used to generate a string of the undo action's name (for example, "Undo Blur")
-Public Sub BuildUndo(ByVal processID As Long)
+Public Sub BuildUndo(ByVal processID As String)
     
     'Easy enough - just store a 24-bit bitmap of the current image
     mainLayer.writeToFile GenerateUndoFile(UndoNum)
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
     
     'Remember this processID for future use
-    ReDim Preserve UndoIDs(0 To UndoNum) As Long
+    ReDim Preserve UndoIDs(0 To UndoNum) As String
     UndoIDs(UndoNum) = processID
     
     'If the present image is NOT the last image in the undo train (i.e., an Undo
@@ -267,7 +267,7 @@ Public Sub Undo()
         mainLayer.writeToFile GenerateUndoFile(UndoNum)
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
         'Mirror the current processID
-        ReDim Preserve UndoIDs(0 To UndoNum) As Long
+        ReDim Preserve UndoIDs(0 To UndoNum) As String
         UndoIDs(UndoNum) = UndoIDs(UndoNum - 1)
     End If
     
@@ -349,25 +349,25 @@ Public Sub ClearUndos()
 End Sub
 
 'Return the processID associated with the current Undo state
-Public Function getUndoProcessID() As Long
+Public Function getUndoProcessID() As String
     
     'If we don't have a relevant Undo state, return -1.  Otherwise return the proper process ID.
     If UndoState = False Then
-        getUndoProcessID = -1
+        getUndoProcessID = ""
     Else
-        getUndoProcessID = UndoIDs(UndoNum - 1)
+        getUndoProcessID = g_Language.TranslateMessage(UndoIDs(UndoNum - 1))
     End If
         
 End Function
 
 'Return the processID associated with the current Redo state
-Public Function getRedoProcessID() As Long
+Public Function getRedoProcessID() As String
 
     'If we don't have a relevant Redo state, return -1.  Otherwise return the proper process ID.
     If RedoState = False Then
-        getRedoProcessID = -1
+        getRedoProcessID = ""
     Else
-        getRedoProcessID = UndoIDs(UndoNum)
+        getRedoProcessID = g_Language.TranslateMessage(UndoIDs(UndoNum))
     End If
 
 End Function
@@ -410,7 +410,7 @@ Private Sub Class_Initialize()
     pngBackgroundColor = -1
     
     'Set up the process ID array
-    ReDim UndoIDs(0 To 0) As Long
+    ReDim UndoIDs(0) As String
     
     'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
     Set mainLayer = New pdLayer

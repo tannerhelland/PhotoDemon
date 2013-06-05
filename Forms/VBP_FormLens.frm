@@ -253,7 +253,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltIndex.IsValid And sltRadius.IsValid Then
         Me.Visible = False
-        Process DistortLens, sltIndex, sltRadius, OptInterpolate(0).Value
+        Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value)
         Unload Me
     End If
     

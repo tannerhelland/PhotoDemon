@@ -343,7 +343,7 @@ Private Sub CmdOK_Click()
     If sltMirrors.IsValid And sltAngle.IsValid And sltAngle2.IsValid And sltRadius.IsValid Then
         Me.Visible = False
         'Based on the user's selection, submit the proper processor request
-        Process DistortKaleidoscope, sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value
+        Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value)
         Unload Me
     End If
     

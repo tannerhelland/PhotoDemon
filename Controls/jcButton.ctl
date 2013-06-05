@@ -3366,14 +3366,14 @@ Private Sub UserControl_Terminate()
         'Subclass_Terminate
         'End If
 
-        If Ambient.UserMode Then
+        'If Ambient.UserMode Then
             'With m_NGSubclass
             '.ssc_DelMsg UserControl.hWnd, MSG_BEFORE, WM_MOUSELEAVE, WM_THEMECHANGED,WM_SETCURSOR
             '.ssc_DelMsg m_lParenthWnd, MSG_AFTER, WM_NCACTIVATE, WM_ACTIVATE
             '.ssc_UnSubclass UserControl.hWnd
             '.ssc_UnSubclass m_lParenthWnd
             'End With
-        End If
+        'End If
 
         m_NGSubclass.ssc_Terminate
         Set m_NGSubclass = Nothing

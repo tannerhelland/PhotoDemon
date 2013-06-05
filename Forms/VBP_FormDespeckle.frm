@@ -161,7 +161,7 @@ End Sub
 'OK button
 Private Sub CmdOK_Click()
     Me.Visible = False
-    Process CustomDespeckle, CLng(10 - hsDespeckle.Value)
+    Process "Custom despeckle", , buildParams(CLng(10 - hsDespeckle.Value))
     Unload Me
 End Sub
 

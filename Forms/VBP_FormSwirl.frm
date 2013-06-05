@@ -294,7 +294,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltAngle.IsValid And sltRadius.IsValid Then
         Me.Visible = False
-        Process DistortSwirl, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Swirl", , buildParams(sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

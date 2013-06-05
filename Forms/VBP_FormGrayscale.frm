@@ -395,29 +395,29 @@ Private Sub CmdOK_Click()
         
         Select Case cboMethod.ListIndex
             Case 0
-                Process GrayscaleAverage
+                Process "Grayscale (average)"
             Case 1
-                Process GrayScale
+                Process "Grayscale (ITU standard)"
             Case 2
-                Process Desaturate
+                Process "Desaturate"
             Case 3
                 If optDecompose(0).Value Then
-                    Process GrayscaleDecompose, 0
+                    Process "Grayscale (decomposition)", , "0"
                 Else
-                    Process GrayscaleDecompose, 1
+                    Process "Grayscale (decomposition)", , "1"
                 End If
             Case 4
                 If optChannel(0).Value Then
-                    Process GrayscaleSingleChannel, 0
+                    Process "Grayscale (single channel)", , "0"
                 ElseIf optChannel(1).Value Then
-                    Process GrayscaleSingleChannel, 1
+                    Process "Grayscale (single channel)", , "1"
                 Else
-                    Process GrayscaleSingleChannel, 2
+                    Process "Grayscale (single channel)", , "2"
                 End If
             Case 5
-                Process GrayscaleCustom, sltShades.Value
+                Process "Grayscale (custom # of colors)", , CStr(sltShades.Value)
             Case 6
-                Process GrayscaleCustomDither, sltShades.Value
+                Process "Grayscale (custom dither)", , CStr(sltShades.Value)
         End Select
         
         Unload Me

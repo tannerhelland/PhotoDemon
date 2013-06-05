@@ -62,7 +62,7 @@ Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boole
         If tmpMsg.wParam = vbKeyEscape Then
             If displayConfirmationPrompt Then
                 Dim msgReturn As VbMsgBoxResult
-                msgReturn = pdMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", GetNameOfProcess(LastFilterCall.MainType))
+                msgReturn = pdMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.ID)
                 If msgReturn = vbYes Then cancelCurrentAction = True Else cancelCurrentAction = False
             Else
                 cancelCurrentAction = True

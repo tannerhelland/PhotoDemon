@@ -292,7 +292,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltRatioX.IsValid And sltRatioY.IsValid Then
         Me.Visible = False
-        Process DistortSquish, sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Squish", , buildParams(sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

@@ -156,7 +156,7 @@ End Sub
 Private Sub CmdOK_Click()
     If sltNoise.IsValid Then
         FormNoise.Visible = False
-        Process Noise, sltNoise.Value, CBool(chkM.Value)
+        Process "Add RGB noise", , buildParams(sltNoise.Value, CBool(chkM.Value))
         Unload Me
     End If
 End Sub

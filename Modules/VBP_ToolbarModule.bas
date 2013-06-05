@@ -79,8 +79,8 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If tState Then
-                FormMain.cmdUndo.ToolTip = GetNameOfProcess(pdImages(CurrentImage).getUndoProcessID)
-                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo:") & " " & GetNameOfProcess(pdImages(CurrentImage).getUndoProcessID)
+                FormMain.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID ' GetNameOfProcess(pdImages(CurrentImage).getUndoProcessID)
+                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getUndoProcessID)
                 ResetMenuIcons
             Else
                 FormMain.cmdUndo.ToolTip = ""
@@ -120,8 +120,8 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If tState = True Then
-                FormMain.cmdRedo.ToolTip = GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID)
-                FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo:") & " " & GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) '& vbTab & "Ctrl+Alt+Z"
+                FormMain.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID)
+                FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) '& vbTab & "Ctrl+Alt+Z"
                 ResetMenuIcons
             Else
                 FormMain.cmdRedo.ToolTip = ""

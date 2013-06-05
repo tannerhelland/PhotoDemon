@@ -153,9 +153,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   27
             Top             =   5640
             Width           =   3000
-            _extentx        =   5318
-            _extenty        =   873
-            font            =   "VBP_FormMain.frx":0014
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin VB.ComboBox cmbSelRender 
             Appearance      =   0  'Flat
@@ -171,9 +179,9 @@ Begin VB.MDIForm FormMain
             EndProperty
             Height          =   360
             Index           =   0
-            ItemData        =   "VBP_FormMain.frx":003C
+            ItemData        =   "VBP_FormMain.frx":0014
             Left            =   180
-            List            =   "VBP_FormMain.frx":003E
+            List            =   "VBP_FormMain.frx":0016
             Style           =   2  'Dropdown List
             TabIndex        =   16
             TabStop         =   0   'False
@@ -187,9 +195,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   17
             Top             =   1320
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":0040
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSelTop 
             Height          =   405
@@ -198,9 +214,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   18
             Top             =   1320
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":0068
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSelWidth 
             Height          =   405
@@ -209,9 +233,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   19
             Top             =   2160
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":0090
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSelHeight 
             Height          =   405
@@ -220,9 +252,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   20
             Top             =   2160
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":00B8
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
             CausesValidation=   0   'False
@@ -232,12 +272,20 @@ Begin VB.MDIForm FormMain
             Top             =   4710
             Visible         =   0   'False
             Width           =   3000
-            _extentx        =   5318
-            _extenty        =   873
-            font            =   "VBP_FormMain.frx":00E0
-            min             =   1
-            max             =   100
-            value           =   1
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            Min             =   1
+            Max             =   100
+            Value           =   1
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
             CausesValidation=   0   'False
@@ -246,10 +294,18 @@ Begin VB.MDIForm FormMain
             TabIndex        =   33
             Top             =   3390
             Width           =   3000
-            _extentx        =   5318
-            _extenty        =   873
-            font            =   "VBP_FormMain.frx":0108
-            max             =   100
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            Max             =   100
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -449,9 +505,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -491,9 +547,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":0130
+         ItemData        =   "VBP_FormMain.frx":0018
          Left            =   60
-         List            =   "VBP_FormMain.frx":0132
+         List            =   "VBP_FormMain.frx":001A
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
@@ -506,17 +562,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   60
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":0134
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":015C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":001C
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -524,17 +588,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1440
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":15AE
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":15D6
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":146E
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -542,18 +614,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2820
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":2628
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":2650
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Undo"
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":24C0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Undo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -561,18 +641,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   3450
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":36A2
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":36CA
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Redo"
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":3512
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Redo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -580,17 +668,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   10
          Top             =   690
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":471C
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":4744
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Close"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":4564
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Close"
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -598,17 +694,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   11
          Top             =   2070
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":5796
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":57BE
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save As"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":55B6
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Save As"
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   450
@@ -616,18 +720,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   4800
          Width           =   480
-         _extentx        =   847
-         _extenty        =   794
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":6810
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":6838
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Zoom In"
-         tooltip         =   "Use this button to increase image zoom."
+         _ExtentX        =   847
+         _ExtentY        =   794
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":6608
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   "Use this button to increase image zoom."
+         TooltipTitle    =   "Zoom In"
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   450
@@ -635,18 +747,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   4800
          Width           =   480
-         _extentx        =   847
-         _extenty        =   794
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":6C8A
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_FormMain.frx":6CB2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Zoom Out"
-         tooltip         =   "Use this button to decrease image zoom."
+         _ExtentX        =   847
+         _ExtentY        =   794
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":6A5A
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   "Use this button to decrease image zoom."
+         TooltipTitle    =   "Zoom Out"
       End
       Begin VB.Line lineMain 
          BorderColor     =   &H80000002&
@@ -1738,19 +1858,19 @@ Private Sub cmdClose_Click()
 End Sub
 
 Private Sub cmdOpen_Click()
-    Process FileOpen
+    Process "Open", True
 End Sub
 
 Private Sub cmdRedo_Click()
-    Process Redo
+    Process "Redo", , , False
 End Sub
 
 Private Sub cmdSave_Click()
-    Process FileSave
+    Process "Save", , , False
 End Sub
 
 Private Sub cmdSaveAs_Click()
-    Process FileSaveAs
+    Process "Save as", True, , False
 End Sub
 
 Private Sub cmdTools_Click(Index As Integer)
@@ -1857,7 +1977,7 @@ Private Sub newToolSelected()
 End Sub
 
 Private Sub cmdUndo_Click()
-    Process Undo
+    Process "Undo", , , False
 End Sub
 
 Private Sub cmdZoomIn_Click()
@@ -2151,57 +2271,56 @@ Private Sub MnuArtistic_Click(Index As Integer)
     
         'Antique
         Case 0
-            Process Antique
+            Process "Antique"
         
         'Comic book
         Case 1
-            Process ComicBook
+            Process "Comic book"
             
         'Film noir
         Case 2
-            Process FilmNoir
+            Process "Film noir"
         
         'Modern art
         Case 3
-            Process ModernArt, , , , , , , , , , True
+            Process "Modern art", True
         
         'Pencil drawing
         Case 4
-            Process Pencil
+            Process "Pencil drawing"
                 
         'Posterize
         Case 5
-            Process Posterize, , , , , , , , , , True
+            Process "Posterize", True
             
         'Relief
         Case 6
-            Process Relief
+            Process "Relief"
     
     End Select
 
 End Sub
 
 Private Sub MnuAutoEnhanceHighlights_Click()
-    Process AutoHighlights
+    Process "Auto-enhance highlights"
 End Sub
 
 Private Sub MnuAutoEnhanceMidtones_Click()
-    Process AutoMidtones
+    Process "Auto-enhance midtones"
 End Sub
 
 Private Sub MnuAutoEnhanceShadows_Click()
-    Process AutoShadows
+    Process "Auto-enhance shadows"
 End Sub
 
 Private Sub MnuBatchConvert_Click()
     g_AllowDragAndDrop = False
     FormBatchWizard.Show vbModal, FormMain
     g_AllowDragAndDrop = True
-    'FormBatchConvert.Show 1, FormMain
 End Sub
 
 Private Sub MnuBlackLight_Click()
-    Process BlackLight, , , , , , , , , , True
+    Process "Black light", True
 End Sub
 
 'All blur filters are handled here
@@ -2211,23 +2330,23 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         
         'Box blur
         Case 0
-            Process BoxBlur, , , , , , , , , , True
+            Process "Box blur", True
             
         'Gaussian blur
         Case 1
-            Process GaussianBlur, , , , , , , , , , True
+            Process "Gaussian blur", True
                 
         'Grid blur
         Case 2
-            Process GridBlur
+            Process "Grid blur"
             
         'Pixelate (mosaic)
         Case 3
-            Process Pixelate, , , , , , , , , , True
+            Process "Pixelate", True
         
         'Smart Blur
         Case 4
-            Process SmartBlur, , , , , , , , , , True
+            Process "Smart blur", True
         
     End Select
 
@@ -2275,35 +2394,35 @@ Private Sub MnuColor_Click(Index As Integer)
     
         'Brightness/Contrast
         Case 0
-            Process BrightnessAndContrast, , , , , , , , , , True
+            Process "Brightness and contrast", True
         
         'Color balance
         Case 1
-            Process AdjustColorBalance, , , , , , , , , , True
+            Process "Color balance", True
         
         'Gamma correction
         Case 2
-            Process GammaCorrection, , , , , , , , , , True
+            Process "Gamma", True
             
         'HSL
         Case 3
-            Process AdjustHSL, , , , , , , , , , True
+            Process "Hue and saturation", True
             
         'Levels
         Case 4
-            Process ImageLevels, , , , , , , , , , True
+            Process "Levels", True
         
         'Shadows/Midtones/Highlights
         Case 5
-            Process ShadowHighlight, , , , , , , , , , True
+            Process "Shadows and highlights", True
         
         'Temperature
         Case 6
-            Process AdjustTemperature, , , , , , , , , , True
+            Process "Color temperature", True
         
         'White balance
         Case 7
-            Process WhiteBalance, , , , , , , , , , True
+            Process "White balance", True
         
         '<separator>
         Case 8
@@ -2319,14 +2438,14 @@ Private Sub MnuColor_Click(Index As Integer)
         
         'Rechannel
         Case 12
-            Process Rechannel, , , , , , , , , , True
+            Process "Rechannel", True
         
         '<separator>
         Case 13
         
         'Colorize
         Case 14
-            Process Colorize, , , , , , , , , , True
+            Process "Colorize", True
             
         '<Enhance top-level>
         Case 15
@@ -2336,7 +2455,7 @@ Private Sub MnuColor_Click(Index As Integer)
         
         'Grayscale
         Case 17
-            Process GrayScale, , , , , , , , , , True
+            Process "Grayscale", True
             
         '<Invert top-level>
         Case 18
@@ -2346,41 +2465,41 @@ Private Sub MnuColor_Click(Index As Integer)
             
         'Sepia
         Case 20
-            Process Sepia
+            Process "Sepia"
         
         '<separator>
         Case 21
         
         'Count colors
         Case 22
-            Process CountColors
+            Process "Count image colors", True
         
         'Reduce color count
         Case 23
-            Process ReduceColors, , , , , , , , , , True
+            Process "Reduce colors", True
         
     End Select
 
 End Sub
 
 Private Sub MnuCompoundInvert_Click()
-    Process CompoundInvert, 128
+    Process "Compound invert", False, "128"
 End Sub
 
 Private Sub MnuCShiftL_Click()
-    Process ColorShiftLeft, 1
+    Process "Shift colors (left)"
 End Sub
 
 Private Sub MnuCShiftR_Click()
-    Process ColorShiftRight, 0
+    Process "Shift colors (right)"
 End Sub
 
 Private Sub MnuCustomFade_Click()
-    Process Fade, , , , , , , , , , True
+    Process "Fade", True
 End Sub
 
 Private Sub MnuCustomFilter_Click()
-    Process CustomFilter, , , , , , , , , , True
+    Process "Custom filter", True
 End Sub
 
 'All distortion filters happen here
@@ -2390,62 +2509,62 @@ Private Sub MnuDistortFilter_Click(Index As Integer)
     
         'Apply lens distort
         Case 0
-            Process DistortLens, , , , , , , , , , True
+            Process "Apply lens distortion", True
         
         'Remove lens distort
         Case 1
-            Process DistortLensFix, , , , , , , , , , True
+            Process "Correct lens distortion", True
             
         'Etched glass
         Case 2
-            Process DistortFiguredGlass, , , , , , , , , , True
+            Process "Figured glass", True
         
         'Kaleidoscope
         Case 3
-            Process DistortKaleidoscope, , , , , , , , , , True
+            Process "Kaleidoscope", True
                 
         'Pan and zoom
         Case 4
-            Process DistortPanAndZoom, , , , , , , , , , True
+            Process "Pan and zoom", True
             
         'Perspective (free)
         Case 5
-            Process FreePerspective, , , , , , , , , , True
+            Process "Perspective", True
             
         'Pinch and whirl
         Case 6
-            Process DistortPinchAndWhirl, , , , , , , , , , True
+            Process "Pinch and whirl", True
         
         'Polar conversion
         Case 7
-            Process ConvertPolar, , , , , , , , , , True
+            Process "Polar conversion", True
         
         'Ripple
         Case 8
-            Process DistortRipple, , , , , , , , , , True
+            Process "Ripple", True
         
         'Shear
         Case 9
-            Process DistortShear, , , , , , , , , , True
+            Process "Shear", True
             
         'Squish (formerly Fixed Perspective)
         Case 10
-            Process DistortSquish, , , , , , , , , , True
+            Process "Squish", True
         
         'Swirl
         Case 11
-            Process DistortSwirl, , , , , , , , , , True
+            Process "Swirl", True
         
         'Waves
         Case 12
-            Process DistortWaves, , , , , , , , , , True
+            Process "Waves", True
     
     End Select
 
 End Sub
 
 Private Sub MnuDream_Click()
-    Process Dream
+    Process "Dream"
 End Sub
 
 Private Sub MnuEdge_Click(Index As Integer)
@@ -2454,38 +2573,38 @@ Private Sub MnuEdge_Click(Index As Integer)
         
         'Emboss/engrave
         Case 0
-            Process EmbossToColor, , , , , , , , , , True
-        
+            Process "Emboss or engrave", True
+         
         'Enhance edges
         Case 1
-            Process EdgeEnhance
+            Process "Edge enhance"
         
         'Find edges
         Case 2
-            Process Laplacian, , , , , , , , , , True
+            Process "Find edges", True
         
         'Trace contour
         Case 3
-            Process Contour, , , , , , , , , , True
+            Process "Trace contour", True
     
     End Select
 
 End Sub
 
 Private Sub MnuFadeHigh_Click()
-    Process Fade, 0.75
+    Process "Fade", False, "0.75"
 End Sub
 
 Private Sub MnuFadeLastEffect_Click()
-    Process FadeLastEffect
+    Process "Fade last effect"
 End Sub
 
 Private Sub MnuFadeLow_Click()
-    Process Fade, 0.25
+    Process "Fade", False, "0.25"
 End Sub
 
 Private Sub MnuFadeMedium_Click()
-    Process Fade, 0.5
+    Process "Fade", False, "0.5"
 End Sub
 
 Private Sub MnuFitOnScreen_Click()
@@ -2498,7 +2617,7 @@ Private Sub MnuFitWindowToImage_Click()
 End Sub
 
 Private Sub MnuHeatmap_Click()
-    Process HeatMap
+    Process "Thermograph (heat map)"
 End Sub
 
 'All help menu entries are launched from here
@@ -2534,7 +2653,7 @@ Private Sub MnuHelp_Click(Index As Integer)
                         
                 Case 2
                     Message "Software update found!  Launching update notifier..."
-                    FormSoftwareUpdate.Show 1, Me
+                    FormSoftwareUpdate.Show vbModal, Me
                 
             End Select
         
@@ -2596,15 +2715,15 @@ Private Sub MnuHelp_Click(Index As Integer)
 End Sub
 
 Private Sub MnuHistogram_Click()
-    Process ViewHistogram, , , , , , , , , , True
+    Process "Display histogram", True
 End Sub
 
 Private Sub MnuHistogramEqualize_Click()
-    Process Equalize, , , , , , , , , , True
+    Process "Equalize", True
 End Sub
 
 Private Sub MnuHistogramStretch_Click()
-    Process StretchHistogram
+    Process "Stretch histogram"
 End Sub
 
 'All top-level Image menu actions are handled here
@@ -2636,56 +2755,56 @@ Private Sub MnuImage_Click(Index As Integer)
         
         'Resize
         Case 6
-            Process ImageSize, , , , , , , , , , True
+            Process "Resize", True
         
         'Crop to selection
         Case 7
-            Process CropToSelection
+            Process "Crop"
         
         'Autocrop
         Case 8
-            Process Autocrop
+            Process "Autocrop"
         
         'Separator
         Case 9
         
         'Flip horizontal (mirror)
         Case 10
-            Process Mirror
+            Process "Flip horizontal"
         
         'Flip vertical
         Case 11
-            Process Flip
+            Process "Flip vertical"
         
         'Separator
         Case 12
         
         'Rotate 90
         Case 13
-            Process Rotate90Clockwise
+            Process "Rotate 90° clockwise"
         
         'Rotate 270
         Case 14
-            Process Rotate270Clockwise
+            Process "Rotate 90° Counter-Clockwise"
         
         'Rotate 180
         Case 15
-            Process Rotate180
+            Process "Rotate 180°"
         
         'Rotate arbitrary
         Case 16
-            Process FreeRotate, , , , , , , , , , True
+            Process "Arbitrary rotation", True
         
         'Separator
         Case 17
         
         'Isometric view
         Case 18
-            Process Isometric
+            Process "Isometric conversion"
         
         'Tile
         Case 19
-            Process Tile, , , , , , , , , , True
+            Process "Tile", True
     
     End Select
 
@@ -2693,25 +2812,25 @@ End Sub
 
 'This is the exact same thing as "Paste as New Image".  It is provided in two locations for convenience.
 Private Sub MnuImportClipboard_Click()
-    Process cPaste
+    Process "Paste as new image", , , False
 End Sub
 
 'Attempt to import an image from the Internet
 Private Sub MnuImportFromInternet_Click()
-    If FormInternetImport.Visible = False Then FormInternetImport.Show 1, FormMain
+    If FormInternetImport.Visible = False Then FormInternetImport.Show vbModal, FormMain
 End Sub
 
 Private Sub MnuImportFrx_Click()
     On Error Resume Next
-    If FormImportFrx.Visible = False Then FormImportFrx.Show 1, FormMain
+    If FormImportFrx.Visible = False Then FormImportFrx.Show vbModal, FormMain
 End Sub
 
 Private Sub MnuAlien_Click()
-    Process Alien
+    Process "Alien"
 End Sub
 
 Private Sub MnuInvertHue_Click()
-    Process InvertHue
+    Process "Invert hue"
 End Sub
 
 'When a language is clicked, immediately activate it
@@ -2784,11 +2903,11 @@ Private Sub MnuMonochrome_Click(Index As Integer)
         
         'Convert color to monochrome
         Case 0
-            Process BWMaster, , , , , , , , , , True
+            Process "Color to monochrome", True
         
         'Convert monochrome to grayscale
         Case 1
-            Process RemoveBW, , , , , , , , , , True
+            Process "Monochrome to grayscale", True
         
     End Select
     
@@ -2800,50 +2919,50 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
     
         'Atmosphere
         Case 0
-            Process Atmospheric
+            Process "Atmosphere"
             
         'Burn
         Case 1
-            Process Burn
+            Process "Burn"
         
         'Fog
         Case 2
-            Process FogEffect
+            Process "Fog"
         
         'Freeze
         Case 3
-            Process Frozen
+            Process "Freeze"
         
         'Lava
         Case 4
-            Process Lava
+            Process "Lava"
                 
         'Rainbow
         Case 5
-            Process Rainbow
+            Process "Rainbow"
         
         'Steel
         Case 6
-            Process Steel
+            Process "Steel"
         
         'Water
         Case 7
-            Process Water
+            Process "Water"
     
     End Select
 
 End Sub
 
 Private Sub MnuNegative_Click()
-    Process Negative
+    Process "Film negative"
 End Sub
 
 Private Sub MnuCopy_Click()
-    Process cCopy
+    Process "Copy to clipboard", , , False
 End Sub
 
 Private Sub MnuEmptyClipboard_Click()
-    Process cEmpty
+    Process "Empty clipboard", , , False
 End Sub
 
 Private Sub MnuExit_Click()
@@ -2851,7 +2970,7 @@ Private Sub MnuExit_Click()
 End Sub
 
 Private Sub MnuInvert_Click()
-    Process Invert
+    Process "Invert RGB"
 End Sub
 
 'All noise filters are handled here
@@ -2861,49 +2980,49 @@ Private Sub MnuNoise_Click(Index As Integer)
     
         'Film grain
         Case 0
-            Process FilmGrain, , , , , , , , , , True
+            Process "Add film grain", True
         
         'RGB Noise
         Case 1
-            Process Noise, , , , , , , , , , True
+            Process "Add RGB noise", True
             
         'Separator
         Case 2
             
         'Despeckle
         Case 3
-            Process CustomDespeckle, , , , , , , , , , True
+            Process "Custom despeckle", True
         
         'Median
         Case 4
-            Process Median, , , , , , , , , , True
+            Process "Median", True
             
         'Remove orphan pixels
         Case 5
-            Process Despeckle
+            Process "Despeckle"
             
     End Select
         
 End Sub
 
 Private Sub MnuOpen_Click()
-    Process FileOpen
+    Process "Open", True
 End Sub
 
 Private Sub MnuPaste_Click()
-    Process cPaste
+    Process "Paste as new image", , , False
 End Sub
 
 Private Sub MnuPlayMacroRecording_Click()
-    Process MacroPlayRecording
+    Process "Play macro", True
 End Sub
 
 Private Sub MnuPrint_Click()
-    If FormPrint.Visible = False Then FormPrint.Show 1, FormMain
+    If Not FormPrint.Visible Then FormPrint.Show vbModal, FormMain
 End Sub
 
 Private Sub MnuRadioactive_Click()
-    Process Radioactive
+    Process "Radioactive"
 End Sub
 
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
@@ -2928,15 +3047,15 @@ Public Sub mnuRecDocs_Click(Index As Integer)
 End Sub
 
 Private Sub MnuRedo_Click()
-    Process Redo
+    Process "Redo", , , False
 End Sub
 
 Private Sub MnuRepeatLast_Click()
-    Process LastCommand
+    Process "Repeat last action"
 End Sub
 
 Private Sub MnuAutoEnhance_Click()
-    Process AutoEnhance
+    Process "Auto-enhance contrast"
 End Sub
 
 Private Sub MnuRightPanel_Click()
@@ -2944,23 +3063,23 @@ Private Sub MnuRightPanel_Click()
 End Sub
 
 Private Sub MnuSave_Click()
-    Process FileSave
+    Process "Save", , , False
 End Sub
 
 Private Sub MnuSaveAs_Click()
-    Process FileSaveAs
+    Process "Save as", True
 End Sub
 
 Private Sub MnuScanImage_Click()
-    Process ScanImage
+    Process "Scan image", , , False
 End Sub
 
 Private Sub MnuScreenCapture_Click()
-    Process capScreen
+    Process "Screen capture", , , False
 End Sub
 
 Private Sub MnuSelectScanner_Click()
-    Process SelectScanner
+    Process "Select scanner or camera", True
 End Sub
 
 'All sharpen filters are handled here
@@ -2970,18 +3089,18 @@ Private Sub MnuSharpen_Click(Index As Integer)
     
         'Sharpen
         Case 0
-            Process Sharpen
+            Process "Sharpen"
             
         'Sharpen More
         Case 1
-            Process SharpenMore
+            Process "Sharpen more"
         
         'Separator bar
         Case 2
         
         'Unsharp mask
         Case 3
-            Process Unsharp, , , , , , , , , , True
+            Process "Unsharp mask", True
             
     End Select
 
@@ -3015,11 +3134,11 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
 End Sub
 
 Private Sub MnuStartMacroRecording_Click()
-    Process MacroStartRecording
+    Process "Start macro recording", , , False
 End Sub
 
 Private Sub MnuStopMacroRecording_Click()
-    Process MacroStopRecording
+    Process "Stop macro recording", True
 End Sub
 
 'All stylize filters are handled here
@@ -3029,39 +3148,38 @@ Private Sub MnuStylize_Click(Index As Integer)
     
         'Diffuse
         Case 0
-            Process CustomDiffuse, , , , , , , , , , True
+            Process "Diffuse", True
         
         'Dilate (maximum rank)
         Case 1
-        Process MaximumRank, , , , , , , , , , True
+            Process "Dilate (maximum rank)", True
         
         'Erode (minimum rank)
         Case 2
-        Process MinimumRank, , , , , , , , , , True
+            Process "Erode (minimum rank)", True
 
         'Solarize
         Case 3
-            Process Solarize, , , , , , , , , , True
+            Process "Solarize", True
 
         'Twins
         Case 4
-            Process Twins, , , , , , , , , , True
+            Process "Generate twins", True
             
         'Vignetting
         Case 5
-            Process Vignetting, , , , , , , , , , True
+            Process "Vignetting", True
     
     End Select
 
 End Sub
 
 Private Sub MnuSynthesize_Click()
-    Process Synthesize
+    Process "Synthesize"
 End Sub
 
 Private Sub MnuTest_Click()
     MenuTest
-    'getExifToolVersion
 End Sub
 
 'All tool menu items are launched from here
@@ -3071,11 +3189,11 @@ Private Sub mnuTool_Click(Index As Integer)
     
         'Options
         Case 4
-            If Not FormPreferences.Visible Then FormPreferences.Show 1, FormMain
+            If Not FormPreferences.Visible Then FormPreferences.Show vbModal, FormMain
             
         'Plugin manager
         Case 5
-            If Not FormPluginManager.Visible Then FormPluginManager.Show 1, FormMain
+            If Not FormPluginManager.Visible Then FormPluginManager.Show vbModal, FormMain
             
     End Select
 
@@ -3091,37 +3209,38 @@ Private Sub MnuTransparency_Click(Index As Integer)
             
             'Ignore if the current image is already in 32bpp mode
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then Exit Sub
-            Process ChangeImageMode32
+            Process "Add alpha channel"
 
         'Remove alpha channel
         Case 1
 
             'Ignore if the current image is already in 24bpp mode
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then Exit Sub
-            Process ChangeImageMode24
+            Process "Remove alpha channel"
     
     End Select
 
 End Sub
 
 Private Sub MnuUndo_Click()
-    Process Undo
+    Process "Undo", , , False
 End Sub
 
 Private Sub MnuUnfade_Click()
-    Process UnFade
+    Process "Unfade"
 End Sub
 
 Private Sub MnuVibrate_Click()
-    Process Vibrate
+    Process "Vibrate"
 End Sub
 
 'Because VB doesn't allow key tracking in MDIForms, we have to hook keypresses via this method.
 ' Many thanks to Steve McMahon for the usercontrol that helps implement this
 Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
 
-    'Don't process accelerators when the main form is disabled (e.g. if a modal form is present)
-    If FormMain.Enabled = False Then Exit Sub
+    'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
+    ' action is in the middle of execution)
+    If Not FormMain.Enabled Then Exit Sub
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
     ' faster than one quarter-second apart.
@@ -3131,47 +3250,47 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
 
     'Import from Internet
     If ctlAccelerator.Key(nIndex) = "Internet_Import" Then
-        If FormInternetImport.Visible = False Then FormInternetImport.Show vbModal, FormMain
+        If Not FormInternetImport.Visible Then FormInternetImport.Show vbModal, FormMain
     End If
     
     'Save As...
     If ctlAccelerator.Key(nIndex) = "Save_As" Then
-        If FormMain.MnuSaveAs.Enabled = True Then Process FileSaveAs
+        If FormMain.MnuSaveAs.Enabled Then Process "Save as", True
     End If
     
     'Capture the screen
-    If ctlAccelerator.Key(nIndex) = "Screen_Capture" Then Process capScreen
+    If ctlAccelerator.Key(nIndex) = "Screen_Capture" Then Process "Screen capture", , , False
     
     'Import from FRX
     If ctlAccelerator.Key(nIndex) = "Import_FRX" Then
         On Error Resume Next
-        If FormImportFrx.Visible = False Then FormImportFrx.Show vbModal, FormMain
+        If Not FormImportFrx.Visible Then FormImportFrx.Show vbModal, FormMain
     End If
 
     'Open program preferences
     If ctlAccelerator.Key(nIndex) = "Preferences" Then
-        If FormPreferences.Visible = False Then FormPreferences.Show vbModal, FormMain
+        If Not FormPreferences.Visible Then FormPreferences.Show vbModal, FormMain
     End If
     
     'Redo
     If ctlAccelerator.Key(nIndex) = "Redo" Then
-        If FormMain.MnuRedo.Enabled = True Then Process Redo
+        If FormMain.MnuRedo.Enabled Then Process "Redo", , , False
     End If
     
     'Empty clipboard
-    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process cEmpty
+    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process "Empty clipboard", , , False
     
     'Fit on screen
     If ctlAccelerator.Key(nIndex) = "FitOnScreen" Then FitOnScreen
     
     'Zoom in
     If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
-        If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+        If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
     End If
     
     'Zoom out
     If ctlAccelerator.Key(nIndex) = "Zoom_Out" Then
-        If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+        If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
     End If
     
     'Actual size
@@ -3212,33 +3331,34 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
     End If
     
-    'Escape - right now it's only used to cancel batch conversions, but it could be applied elsewhere
+    'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
+    ' to cancel batch conversions, but in the future it should be applied elsewhere.
     If ctlAccelerator.Key(nIndex) = "Escape" Then
         If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
     End If
     
     'Brightness/Contrast
     If ctlAccelerator.Key(nIndex) = "Bright_Contrast" Then
-        Process BrightnessAndContrast, , , , , , , , , , True
+        Process "Brightness and contrast", True
     End If
     
     'Color balance
     If ctlAccelerator.Key(nIndex) = "Color_Balance" Then
-        Process AdjustColorBalance, , , , , , , , , , True
+        Process "Color balance", True
     End If
     
     'Shadows / Highlights
     If ctlAccelerator.Key(nIndex) = "Shadow_Highlight" Then
-        Process ShadowHighlight, , , , , , , , , , True
+        Process "Shadows and highlights", True
     End If
     
     'Rotate Right / Left
-    If ctlAccelerator.Key(nIndex) = "Rotate_Left" Then Process Rotate270Clockwise
-    If ctlAccelerator.Key(nIndex) = "Rotate_Right" Then Process Rotate90Clockwise
+    If ctlAccelerator.Key(nIndex) = "Rotate_Left" Then Process "Rotate 90° counter-clockwise"
+    If ctlAccelerator.Key(nIndex) = "Rotate_Right" Then Process "Rotate 90° clockwise"
     
     'Crop to selection
     If ctlAccelerator.Key(nIndex) = "Crop_Selection" Then
-        If pdImages(CurrentImage).selectionActive Then Process CropToSelection
+        If pdImages(CurrentImage).selectionActive Then Process "Crop"
     End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
@@ -3366,7 +3486,10 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Restore all windows"
+                    If pdImages(i).IsActive Then
+                        pdImages(i).containingForm.WindowState = vbNormal
+                        PrepareViewport pdImages(i).containingForm, "Restore all windows"
+                    End If
                 End If
             Next i
     

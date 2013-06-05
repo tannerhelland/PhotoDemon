@@ -231,7 +231,7 @@ Private Sub CmdOK_Click()
     If Not sltHeight.IsValid Then Exit Sub
     
     Me.Visible = False
-    Process BoxBlur, sltWidth, sltHeight
+    Process "Box blur", , buildParams(sltWidth, sltHeight)
     Unload Me
     
 End Sub

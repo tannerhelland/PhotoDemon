@@ -305,7 +305,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltScale.IsValid And sltTurbulence.IsValid Then
         Me.Visible = False
-        Process DistortFiguredGlass, sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

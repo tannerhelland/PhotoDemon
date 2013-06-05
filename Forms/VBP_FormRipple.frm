@@ -380,7 +380,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltWavelength.IsValid And sltAmplitude.IsValid And sltPhase.IsValid And sltRadius.IsValid Then
         Me.Visible = False
-        Process DistortRipple, sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

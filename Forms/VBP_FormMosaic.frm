@@ -204,7 +204,7 @@ Private Sub CmdOK_Click()
     
     If sltWidth.IsValid And sltHeight.IsValid Then
         Me.Visible = False
-        Process Pixelate, sltWidth.Value, sltHeight.Value
+        Process "Pixelate", , buildParams(sltWidth.Value, sltHeight.Value)
         Unload Me
     End If
     

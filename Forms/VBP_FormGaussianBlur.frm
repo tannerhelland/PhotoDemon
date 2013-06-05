@@ -168,7 +168,7 @@ Private Sub CmdOK_Click()
 
     If sltRadius.IsValid Then
         Me.Visible = False
-        Process GaussianBlur, sltRadius
+        Process "Gaussian blur", , CStr(sltRadius)
         Unload Me
     End If
     

@@ -376,7 +376,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltWavelengthX.IsValid And sltWavelengthY.IsValid And sltAmplitudeX.IsValid And sltAmplitudeY.IsValid Then
         Me.Visible = False
-        Process DistortWaves, sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Waves", , buildParams(sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

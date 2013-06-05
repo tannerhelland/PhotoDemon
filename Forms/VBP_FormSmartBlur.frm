@@ -273,7 +273,7 @@ Private Sub CmdOK_Click()
     'Validate all text box entries
     If sltRadius.IsValid And sltThreshold.IsValid Then
         Me.Visible = False
-        Process SmartBlur, sltRadius, sltThreshold, optEdges(1)
+        Process "Smart blur", , buildParams(sltRadius, sltThreshold, optEdges(1))
         Unload Me
     End If
     

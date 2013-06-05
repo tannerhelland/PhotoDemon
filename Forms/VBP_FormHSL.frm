@@ -214,7 +214,7 @@ Private Sub CmdOK_Click()
     
     If sltHue.IsValid And sltSaturation.IsValid And sltLuminance.IsValid Then
         Me.Visible = False
-        Process AdjustHSL, sltHue.Value, sltSaturation.Value, sltLuminance.Value
+        Process "Hue and saturation", , buildParams(sltHue.Value, sltSaturation.Value, sltLuminance.Value)
         Unload Me
     End If
     

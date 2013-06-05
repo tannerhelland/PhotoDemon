@@ -215,9 +215,9 @@ Private Sub CmdOK_Click()
         
         'Based on the user's selection, submit the proper processor request
         If optRotate(0) Then
-            Process FreeRotate, 0, sltAngle
+            Process "Arbitrary rotation", , buildParams(0, sltAngle)
         Else
-            Process FreeRotate, 1, sltAngle
+            Process "Arbitrary rotation", , buildParams(1, sltAngle)
         End If
         
         Unload Me

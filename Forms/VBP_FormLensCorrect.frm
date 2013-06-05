@@ -338,7 +338,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltStrength.IsValid And sltStrength.IsValid And sltRadius.IsValid Then
         Me.Visible = False
-        Process DistortLensFix, sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

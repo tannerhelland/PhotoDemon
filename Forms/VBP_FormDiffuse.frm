@@ -199,7 +199,7 @@ Private Sub CmdOK_Click()
     'Validate all text entries before proceeding with the diffuse
     If sltX.IsValid And sltY.IsValid Then
         FormDiffuse.Visible = False
-        Process CustomDiffuse, sltX.Value, sltY.Value, CBool(chkWrap.Value)
+        Process "Diffuse", , buildParams(sltX.Value, sltY.Value, CBool(chkWrap.Value))
         Unload Me
     End If
     

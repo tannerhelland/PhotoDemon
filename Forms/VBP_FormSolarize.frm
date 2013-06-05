@@ -135,7 +135,7 @@ End Sub
 Private Sub CmdOK_Click()
     If sltThreshold.IsValid Then
         Me.Visible = False
-        Process Solarize, sltThreshold.Value
+        Process "Solarize", , CStr(sltThreshold.Value)
         Unload Me
     End If
 End Sub

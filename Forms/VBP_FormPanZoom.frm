@@ -331,7 +331,7 @@ Private Sub CmdOK_Click()
     
     If sltHorizontal.IsValid And sltVertical.IsValid And sltZoom.IsValid Then
         Me.Visible = False
-        Process DistortPanAndZoom, sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

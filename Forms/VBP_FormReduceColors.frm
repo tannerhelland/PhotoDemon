@@ -415,15 +415,15 @@ Private Sub CmdOK_Click()
     'Check to see which method the user has requested
     
     'Xiaolin Wu
-    If optQuant(0).Value = True Then
+    If optQuant(0).Value Then
         FormReduceColors.Visible = False
-        Process ReduceColors, REDUCECOLORS_AUTO, FIQ_WUQUANT
+        Process "Reduce colors", , buildParams(REDUCECOLORS_AUTO, FIQ_WUQUANT)
         Unload Me
     
     'NeuQuant
-    ElseIf optQuant(1).Value = True Then
+    ElseIf optQuant(1).Value Then
         FormReduceColors.Visible = False
-        Process ReduceColors, REDUCECOLORS_AUTO, FIQ_NNQUANT
+        Process "Reduce colors", , buildParams(REDUCECOLORS_AUTO, FIQ_NNQUANT)
         Unload Me
     
     'Manual
@@ -436,9 +436,9 @@ Private Sub CmdOK_Click()
         
             'Do the appropriate method of color reduction
             If chkDither.Value = vbUnchecked Then
-                Process ReduceColors, REDUCECOLORS_MANUAL, sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)
+                Process "Reduce colors", , buildParams(REDUCECOLORS_MANUAL, sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value))
             Else
-                Process ReduceColors, REDUCECOLORS_MANUAL_ERRORDIFFUSION, sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)
+                Process "Reduce colors", , buildParams(REDUCECOLORS_MANUAL_ERRORDIFFUSION, sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value))
             End If
             
             Unload Me

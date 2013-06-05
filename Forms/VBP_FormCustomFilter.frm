@@ -752,7 +752,7 @@ Private Sub CmdOK_Click()
     g_HasCreatedFilter = True
     
     SaveCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
-    Process CustomFilter, g_UserPreferences.getTempPath & "~PD_CF.tmp"
+    Process "Custom filter", , g_UserPreferences.getTempPath & "~PD_CF.tmp"
     
     Unload Me
     

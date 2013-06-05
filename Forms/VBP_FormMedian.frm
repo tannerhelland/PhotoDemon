@@ -210,7 +210,7 @@ Private Sub CmdOK_Click()
     'Validate text box entries
     If sltRadius.IsValid And sltPercent.IsValid Then
         Me.Visible = False
-        Process Median, sltRadius.Value, sltPercent.Value
+        Process "Median", , buildParams(sltRadius.Value, sltPercent.Value)
         Unload Me
     End If
     

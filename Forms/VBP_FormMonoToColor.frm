@@ -193,7 +193,7 @@ Private Sub CmdOK_Click()
     'Validate text box entries
     If sltRadius.IsValid Then
         Me.Visible = False
-        Process RemoveBW, sltRadius.Value
+        Process "Monochrome to grayscale", , CStr(sltRadius.Value)
         Unload Me
     End If
     

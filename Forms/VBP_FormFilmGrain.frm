@@ -184,7 +184,7 @@ Private Sub CmdOK_Click()
     'Validate all text box entries before proceeding
     If sltNoise.IsValid And sltRadius.IsValid Then
         Me.Visible = False
-        Process FilmGrain, sltNoise.Value, sltRadius.Value
+        Process "Add film grain", , buildParams(sltNoise.Value, sltRadius.Value)
         Unload Me
     End If
     

@@ -932,12 +932,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 'Mouse back key
                 If lParam = WM_MOUSEKEYBACK Then
                     If pdImages(Me.Tag).IsActive Then
-                        If pdImages(Me.Tag).UndoState Then Process Undo
+                        If pdImages(Me.Tag).UndoState Then Process "Undo"
                     End If
                 'Mouse forward key
                 ElseIf lParam = WM_MOUSEKEYFORWARD Then
                     If pdImages(Me.Tag).IsActive Then
-                        If pdImages(Me.Tag).RedoState Then Process Redo
+                        If pdImages(Me.Tag).RedoState Then Process "Redo"
                     End If
                 End If
                 

@@ -24,7 +24,7 @@ Option Explicit
 
 'Create an Undo entry (save a copy of the present image or tool to the temp directory)
 ' Required: the ID of the process that called this action
-Public Sub CreateUndoFile(ByVal processID As Long)
+Public Sub CreateUndoFile(ByVal processID As String)
     
     'All undo work is handled internally in the pdImage class
     Message "Saving Undo data..."

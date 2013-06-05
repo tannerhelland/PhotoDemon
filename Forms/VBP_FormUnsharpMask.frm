@@ -253,7 +253,7 @@ Private Sub CmdOK_Click()
     'Validate all text box entries
     If sltRadius.IsValid And sltThreshold.IsValid And sltAmount.IsValid Then
         Me.Visible = False
-        Process Unsharp, sltRadius, sltAmount, sltThreshold
+        Process "Unsharp mask", , buildParams(sltRadius, sltAmount, sltThreshold)
         Unload Me
     End If
     

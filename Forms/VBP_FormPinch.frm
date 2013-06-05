@@ -341,7 +341,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltAngle.IsValid And sltRadius.IsValid And sltAmount.IsValid Then
         Me.Visible = False
-        Process DistortPinchAndWhirl, sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value
+        Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
     End If
     

@@ -136,7 +136,7 @@ End Sub
 Private Sub CmdOK_Click()
     If sltBits.IsValid Then
         Me.Visible = False
-        Process Posterize, sltBits.Value
+        Process "Posterize", , CStr(sltBits.Value)
         Unload Me
     End If
 End Sub

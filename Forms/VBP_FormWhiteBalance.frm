@@ -145,7 +145,7 @@ Private Sub CmdOK_Click()
     
     If sltStrength.IsValid Then
         Me.Visible = False
-        Process WhiteBalance, sltStrength
+        Process "White balance", , CStr(sltStrength)
         Unload Me
     End If
     
