@@ -300,8 +300,8 @@ Attribute VB_Exposed = False
 'Fix Lens Distort Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 22/January/13
-'Last updated: 26/April/13
-'Last update: simplify code by relying on new slider/text custom control
+'Last updated: 05/June/13
+'Last update: fix typo that prevented zoom slider from being validated
 '
 'This tool allows the user to correct an existing lens distortion on an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a higher quality correction.
@@ -336,7 +336,7 @@ End Sub
 Private Sub CmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
-    If sltStrength.IsValid And sltStrength.IsValid And sltRadius.IsValid Then
+    If sltStrength.IsValid And sltZoom.IsValid And sltRadius.IsValid Then
         Me.Visible = False
         Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
         Unload Me
