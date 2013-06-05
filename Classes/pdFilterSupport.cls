@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter Support Class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/January/13
-'Last updated: 29/April/13
-'Last update: added "Ignore" option for out-of-bounds pixels; this mimicks Paint Shop Pro behavior
+'Last updated: 05/June/13
+'Last update: added a "force pixels" option, which functions can use to wipe out pixels at a given location
 '
 'Per its name, this class provides support routines for certain types of image filters, namely: filters
 ' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
@@ -34,6 +34,19 @@ Private m_FinalX As Long, m_FinalY As Long
 Private m_EdgeMethod As Long, m_ColorDepth As Long, m_ColorDepthLoop As Long
 Private m_Interpolate As Boolean
 Private m_DstX As Long, m_DstY As Long
+
+'A function may want to force parts of an image to a certain color.  This simplified function can be used to do that.
+Public Sub forcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
+
+    Dim QuickVal As Long
+    QuickVal = x * m_ColorDepth
+    dstData(QuickVal, y) = newB
+    dstData(QuickVal + 1, y) = newG
+    dstData(QuickVal + 2, y) = newR
+    If m_ColorDepth = 4 Then dstData(QuickVal + 3, y) = newA
+
+End Sub
+
 
 'After a transform has generate a set of reverse-mapped pixel coordinates, they are passed to this function.
 ' Based on already established parameters (such as interpolation, edge handling, etc), new pixel values are set.
