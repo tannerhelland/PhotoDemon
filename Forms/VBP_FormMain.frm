@@ -1473,16 +1473,20 @@ Begin VB.MDIForm FormMain
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
+            Caption         =   "Photo filters..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
+            Caption         =   "Solarize..."
             Index           =   4
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Vignetting..."
+            Caption         =   "Twins..."
             Index           =   5
+         End
+         Begin VB.Menu MnuStylize 
+            Caption         =   "Vignetting..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuFilterSepBar1 
@@ -3053,17 +3057,21 @@ Private Sub MnuStylize_Click(Index As Integer)
         'Erode (minimum rank)
         Case 2
             Process "Erode (minimum rank)", True
-
-        'Solarize
+        
+        'Photo filters
         Case 3
+            Process "Photo filter", True
+        
+        'Solarize
+        Case 4
             Process "Solarize", True
 
         'Twins
-        Case 4
+        Case 5
             Process "Generate twins", True
             
         'Vignetting
-        Case 5
+        Case 6
             Process "Vignetting", True
     
     End Select

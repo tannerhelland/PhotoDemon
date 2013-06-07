@@ -374,11 +374,12 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "STYLIZE", 5, 10     'Stylize
         '--> Stylize sub-menu
         AddMenuIcon "DIFFUSE", 5, 10, 0       'Diffuse
-        AddMenuIcon "DILATE", 5, 10, 1         'Dilate
-        AddMenuIcon "ERODE", 5, 10, 2          'Erode
-        AddMenuIcon "SOLARIZE", 5, 10, 3      'Solarize
-        AddMenuIcon "TWINS", 5, 10, 4         'Twins
-        AddMenuIcon "VIGNETTE", 5, 10, 5      'Vignetting
+        AddMenuIcon "DILATE", 5, 10, 1        'Dilate
+        AddMenuIcon "ERODE", 5, 10, 2         'Erode
+        AddMenuIcon "PHOTOFILTER", 5, 10, 3   'Photo filters
+        AddMenuIcon "SOLARIZE", 5, 10, 4      'Solarize
+        AddMenuIcon "TWINS", 5, 10, 5         'Twins
+        AddMenuIcon "VIGNETTE", 5, 10, 6      'Vignetting
     AddMenuIcon "CUSTFILTER", 5, 12  'Custom Filter
     
     'Tools Menu

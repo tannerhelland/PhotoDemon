@@ -835,6 +835,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormModernArt.ApplyModernArt cParams.GetLong(1)
             End If
             
+        Case "Photo filter"
+            If ShowDialog Then
+                FormPhotoFilters.Show vbModal, FormMain
+            Else
+                FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
+            End If
+        
         
         'SPECIAL OPERATIONS
         Case "Fade last effect"
