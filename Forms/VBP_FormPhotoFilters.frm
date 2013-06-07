@@ -43,14 +43,14 @@ Begin VB.Form FormPhotoFilters
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
       ClipControls    =   0   'False
+      FillColor       =   &H80000007&
       ForeColor       =   &H80000008&
-      Height          =   4095
+      Height          =   4245
       Left            =   6000
-      ScaleHeight     =   273
+      ScaleHeight     =   281
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
+      ScaleWidth      =   551
       TabIndex        =   8
       Top             =   480
       Width           =   8295
@@ -92,9 +92,9 @@ Begin VB.Form FormPhotoFilters
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
       Height          =   495
-      Left            =   6000
+      Left            =   7800
       TabIndex        =   5
-      Top             =   5160
+      Top             =   5040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -140,6 +140,7 @@ Begin VB.Form FormPhotoFilters
       Width           =   14775
    End
    Begin VB.Label lblTitle 
+      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "density:"
@@ -155,9 +156,9 @@ Begin VB.Form FormPhotoFilters
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   6000
+      Left            =   6810
       TabIndex        =   2
-      Top             =   4800
+      Top             =   5130
       Width           =   840
    End
 End
@@ -258,7 +259,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the temperature input for validity
     If sltDensity.IsValid Then
         Me.Visible = False
-        Process "Photo filter", , buildParams(PicColor.backColor, sltDensity.Value, True)
+        Process "Photo filter", , buildParams(picColor.backColor, sltDensity.Value, True)
         Unload Me
     End If
     
@@ -437,7 +438,7 @@ Private Sub Form_Activate()
     curFilterHover = -1
     
     'Display the previewed effect in the neighboring window, then render the list of available filters
-    updatePreview
+    ApplyPhotoFilter RGB(127, 127, 127), 0, True, True, fxPreview
     redrawFilterList
     
 End Sub
@@ -524,7 +525,7 @@ End Sub
 Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     curFilter = getFilterAtPosition(x, y)
-    PicColor.backColor = fArray(curFilter).RGBColor
+    picColor.backColor = fArray(curFilter).RGBColor
     redrawFilterList
     updatePreview
     
@@ -556,7 +557,7 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    ApplyPhotoFilter PicColor.backColor, sltDensity.Value, True, True, fxPreview
+    ApplyPhotoFilter picColor.backColor, sltDensity.Value, True, True, fxPreview
 End Sub
 
 'Cast an image with a new temperature value
