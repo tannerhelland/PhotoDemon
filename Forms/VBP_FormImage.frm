@@ -116,15 +116,6 @@ Dim m_initMouseX As Double, m_initMouseY As Double
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
 
-'We want mouse events tracked for this form
-Private Type tagTRACKMOUSEEVENT
-    cbSize As Long
-    dwFlags As Long
-    hWndTrack As Long
-    dwHoverTime As Long
-End Type
-Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As tagTRACKMOUSEEVENT) As Long
-
 'New approach to mousewheel support - should be more robust than the old system
 Dim m_Subclass As cSelfSubHookCallback
 
@@ -222,7 +213,7 @@ Private Sub Form_Load()
     If g_IsProgramCompiled Then
     
         'Request mouse tracking
-        requestMouseTracking
+        requestMouseTracking Me.hWnd
         
         'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
         Set m_Subclass = New cSelfSubHookCallback
@@ -337,7 +328,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
         
     'Ask Windows to track the mouse relative to this form
-    requestMouseTracking
+    requestMouseTracking Me.hWnd
     
     hasMouseMoved = hasMouseMoved + 1
     
@@ -723,7 +714,7 @@ Private Sub Form_Unload(Cancel As Integer)
     If g_IsProgramCompiled Then
     
         'Stop requesting mouse tracking
-        requestMouseTracking True
+        requestMouseTracking Me.hWnd, True
     
         'Release the subclassing object responsible for mouse wheel support
         m_Subclass.ssc_Terminate
@@ -793,35 +784,6 @@ End Sub
 
 Private Sub VScroll_Scroll()
     ScrollViewport Me
-End Sub
-
-'Request mouse tracking of this form.  (Windows requires you to re-request tracking after a tracking message is posted.)
-Private Sub requestMouseTracking(Optional ByVal stopTracking As Boolean = False)
-
-    Dim tracker As tagTRACKMOUSEEVENT
-
-    If stopTracking Then
-        
-        'Prepare a mouse tracking object, which will be sent to Windows so we can track mouse events for this form
-        With tracker
-            .cbSize = 16
-            .dwFlags = TME_LEAVE Or TME_CANCEL
-            .dwHoverTime = 0
-            .hWndTrack = Me.hWnd
-        End With
-        TrackMouseEvent tracker
-    Else
-    
-        With tracker
-            .cbSize = 16
-            .dwFlags = TME_LEAVE
-            .dwHoverTime = 0
-            .hWndTrack = Me.hWnd
-        End With
-        TrackMouseEvent tracker
-    
-    End If
-
 End Sub
 
 'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events.
