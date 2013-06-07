@@ -689,8 +689,10 @@ Private Sub processFile(ByVal srcFile As String)
             processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
                         
         '8) Check for text that has been manually marked for translation (e.g. g_Language.TranslateMessage("xyz"))
+        '    NOTE: as of 07 June 2013, each line can contain two translation calls (instead of just one)
         ElseIf InStr(1, curLineText, "g_Language.TranslateMessage(""") Then
             processedText = findMessage(fileLines, curLineNumber)
+            processedTextSecondary = findMessage(fileLines, curLineNumber, True)
             
         '9) And finally, specific to PhotoDemon - check for action names that may not be present elsewhere
         'ElseIf InStr(1, curLineText, "GetNameOfProcess =") Then
@@ -831,7 +833,7 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
 End Function
 
 'Given a line number and the original file contents, search for a message box title
-Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Long) As String
+Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
     
     'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
     ' add manual line breaks to messages via " & vbCrLf & " - these need to be checked for and replaced.
@@ -841,7 +843,11 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     ' first (and/or only) parameter.
     
     Dim initPosition As Long
-    initPosition = InStr(1, srcLines(lineNumber), "g_Language.TranslateMessage(""")
+    If inReverse Then
+        initPosition = InStrRev(srcLines(lineNumber), "g_Language.TranslateMessage(""")
+    Else
+        initPosition = InStr(1, srcLines(lineNumber), "g_Language.TranslateMessage(""")
+    End If
     
     Dim startQuote As Long
     startQuote = InStr(initPosition, srcLines(lineNumber), """")
