@@ -369,7 +369,8 @@ Private Sub Form_Activate()
     numOfFilters = 0
     ReDim fArray(0) As wrattenFilter
     
-    'Add a comprehensive list of Wratten-type filters and their corresponding RGB values
+    'Add a comprehensive list of Wratten-type filters and their corresponding RGB values.  In the future, this may be moved to an external
+    ' (or embedded) XML file.  That would certainly make editing the list easier, though I don't anticipate needing to change it much.
     addWratten "1A", g_Language.TranslateMessage("skylight (pale pink)"), g_Language.TranslateMessage("reduce haze in landscape photography"), RGB(245, 236, 240)
     addWratten "2A", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation"), RGB(244, 243, 233)
     addWratten "2B", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation (slightly less than 2A)"), RGB(244, 245, 230)
