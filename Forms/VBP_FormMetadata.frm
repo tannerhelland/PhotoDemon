@@ -34,8 +34,8 @@ Begin VB.Form FormMetadata
       _extentx        =   4154
       _extenty        =   953
       caption         =   "use readable names"
-      font            =   "VBP_FormMetadata.frx":0000
       value           =   1
+      font            =   "VBP_FormMetadata.frx":0000
    End
    Begin VB.VScrollBar vsMetadata 
       Height          =   5340
@@ -106,8 +106,8 @@ Begin VB.Form FormMetadata
       _extentx        =   4075
       _extenty        =   953
       caption         =   "use readable values"
-      font            =   "VBP_FormMetadata.frx":0028
       value           =   1
+      font            =   "VBP_FormMetadata.frx":0028
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -165,7 +165,7 @@ Dim curTagCount() As Long
 Private Const BLOCKHEIGHT As Long = 64
 
 'Subclass the window to enable mousewheel support for scrolling the metadata view (compiled EXE only)
-Dim m_Subclass As cSelfSubHookCallback, m_Subclass2 As cSelfSubHookCallback
+Dim m_Subclass As cSelfSubHookCallback
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -207,11 +207,10 @@ Private Sub Form_Load()
     
         'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
         Set m_Subclass = New cSelfSubHookCallback
-        Set m_Subclass2 = New cSelfSubHookCallback
         
         'Add mousewheel messages to the subclassing handler (compiled only)
         If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-        If m_Subclass2.ssc_Subclass(lstMetadata.hWnd, , 1, Me) Then m_Subclass2.ssc_AddMsg lstMetadata.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
+        If m_Subclass.ssc_Subclass(lstMetadata.hWnd, , 1, Me) Then m_Subclass.ssc_AddMsg lstMetadata.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
         
     End If
         
@@ -310,10 +309,9 @@ Private Sub Form_Unload(Cancel As Integer)
         m_Subclass.ssc_Terminate
         Set m_Subclass = Nothing
         
-        m_Subclass2.ssc_Terminate
-        Set m_Subclass2 = Nothing
-        
     End If
+    
+    ReleaseFormTheming Me
 
 End Sub
 
