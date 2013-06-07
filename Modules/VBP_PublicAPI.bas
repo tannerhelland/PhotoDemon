@@ -85,3 +85,12 @@ Public Declare Function GetTickCount Lib "kernel32" () As Long
 Public Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Public Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
 Public Declare Function ColorAdjustLuma Lib "shlwapi" (ByVal clrRGB As Long, ByVal n As Long, ByVal fScale As Long) As Long
+
+'Request mouse tracking for a given object
+Public Type tagTRACKMOUSEEVENT
+    cbSize As Long
+    dwFlags As Long
+    hWndTrack As Long
+    dwHoverTime As Long
+End Type
+Public Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As tagTRACKMOUSEEVENT) As Long
