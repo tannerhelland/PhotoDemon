@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Specialized String Parameter Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 25/March/13
-'Last update: initial build
+'Last updated: 07/June/13
+'Last update: added support for String-type params
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
 ' macros, the program needs a way to not only trade around parameters, but also store them in a file.
@@ -160,6 +160,21 @@ Public Function GetDouble(ByVal pIndex As Long, Optional ByVal defaultReturn As 
             GetDouble = CDbl(m_Params(pIndex - 1))
         Else
             GetDouble = defaultReturn
+        End If
+    End If
+
+End Function
+
+'Retrieve a string-type parameter
+Public Function GetString(ByVal pIndex As Long, Optional ByVal defaultReturn As String = "") As String
+
+    If m_numOfParams = 1 Then
+        GetString = m_ParamString
+    Else
+        If doesParamExist(pIndex) Then
+            GetString = m_Params(pIndex - 1)
+        Else
+            GetString = defaultReturn
         End If
     End If
 
