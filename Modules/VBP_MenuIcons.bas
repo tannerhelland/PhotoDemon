@@ -322,17 +322,18 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "FIXLENS", 5, 4, 1        'Remove or correct existing lens distortion
         AddMenuIcon "FIGGLASS", 5, 4, 2       'Figured glass
         AddMenuIcon "KALEIDOSCOPE", 5, 4, 3   'Kaleidoscope
-        AddMenuIcon "PANANDZOOM", 5, 4, 4     'Pan and zoom
-        AddMenuIcon "PERSPECTIVE", 5, 4, 5    'Perspective (free)
-        AddMenuIcon "PINCHWHIRL", 5, 4, 6     'Pinch and whirl
-        AddMenuIcon "POKE", 5, 4, 7           'Poke
-        AddMenuIcon "POLAR", 5, 4, 8          'Polar conversion
-        AddMenuIcon "RIPPLE", 5, 4, 9         'Ripple
-        AddMenuIcon "SHEAR", 5, 4, 10         'Shear
-        AddMenuIcon "SPHERIZE", 5, 4, 11      'Spherize
-        AddMenuIcon "SQUISH", 5, 4, 12        'Squish (formerly Fixed Perspective)
-        AddMenuIcon "SWIRL", 5, 4, 13         'Swirl
-        AddMenuIcon "WAVES", 5, 4, 14         'Waves
+        AddMenuIcon "MISCDISTORT", 5, 4, 4    'Miscellaneous distort functions
+        AddMenuIcon "PANANDZOOM", 5, 4, 5     'Pan and zoom
+        AddMenuIcon "PERSPECTIVE", 5, 4, 6    'Perspective (free)
+        AddMenuIcon "PINCHWHIRL", 5, 4, 7     'Pinch and whirl
+        AddMenuIcon "POKE", 5, 4, 8           'Poke
+        AddMenuIcon "POLAR", 5, 4, 9          'Polar conversion
+        AddMenuIcon "RIPPLE", 5, 4, 10        'Ripple
+        AddMenuIcon "SHEAR", 5, 4, 11         'Shear
+        AddMenuIcon "SPHERIZE", 5, 4, 12      'Spherize
+        AddMenuIcon "SQUISH", 5, 4, 13        'Squish (formerly Fixed Perspective)
+        AddMenuIcon "SWIRL", 5, 4, 14         'Swirl
+        AddMenuIcon "WAVES", 5, 4, 15         'Waves
         
     AddMenuIcon "EDGES", 5, 5        'Edges
         '--> Edges sub-menu
