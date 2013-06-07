@@ -127,7 +127,7 @@ Begin VB.Form FormPhotoFilters
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   5880
+      Left            =   6000
       TabIndex        =   6
       Top             =   120
       Width           =   1665
@@ -174,8 +174,8 @@ Attribute VB_Exposed = False
 'Last updated: 07/June/13
 'Last update: completed initial build
 '
-'Photo filter application form.  A full discussion of photographic filters and how they work are available at this
-' wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
+'Traditioanl photo filter simulation tool.  A full discussion of photographic filters and how they work are available
+' at this Wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
 '
 'This code is very similar to PhotoDemon's "color temperature" algorithm.  The main difference is the way the user
 ' selects a filter to apply.  The available list of filters is flexible, and I have simply based it off Photoshop's
@@ -185,6 +185,13 @@ Attribute VB_Exposed = False
 ' specific wavelengths of light at the moment of photography, so it's impossible to perfectly replicate their behavior
 ' via code.  All we can do is approximate, so do not expect to get identical results between actual filters and
 ' post-production tools like PhotoDemon.
+'
+'Luminosity preservation is assumed.  I could provide a toggle for it, but I see no real benefit to unpreserved use
+' of these tools.
+'
+'The list-box-style interface was custom built for this tool, and I derived it from similar code in the Metadata Browser
+' and About dialog.  Please compile for best results; things like mousewheel support and mouseleave tracking require
+' subclassing, so they are not enabled in the IDE.
 '
 'I used many resources while attempting to create a list of Wratten filters and their RGB equivalents.  In no particular
 ' order, thank you to:
@@ -216,7 +223,7 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 
 'Specialized type for holding photographic filter information
 Private Type wrattenFilter
-    ID As String
+    Id As String
     Name As String
     Description As String
     RGBColor As Long
@@ -326,7 +333,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         End If
         
         Dim drawString As String
-        drawString = fArray(blockIndex).ID & " - " & fArray(blockIndex).Name
+        drawString = fArray(blockIndex).Id & " - " & fArray(blockIndex).Name
         
         'Render a color box for the image
         Dim colorWidth As Long, colorHeight As Long
@@ -363,56 +370,56 @@ Private Sub Form_Activate()
     ReDim fArray(0) As wrattenFilter
     
     'Add a comprehensive list of Wratten-type filters and their corresponding RGB values
-    addWratten "1A", "skylight (pale pink)", "reduce haze in landscape photography", RGB(245, 236, 240)
-    addWratten "2A", "pale yellow", "absorb UV radiation", RGB(244, 243, 233)
-    addWratten "2B", "pale yellow", "absorb UV radiation (slightly less than 2A)", RGB(244, 245, 230)
-    addWratten "2E", "pale yellow", "absorb UV radiation (slightly more than 2A)", RGB(242, 254, 139)
-    addWratten "3", "light yellow", "absorb excessive sky blue, make sky darker in black/white photos", RGB(255, 250, 110)
-    addWratten "6", "light yellow", "absorb excessive sky blue, emphasizing clouds", RGB(253, 247, 3)
-    addWratten "8", "yellow", "high blue absorption; correction for sky, cloud, and foliage", RGB(247, 241, 0)
-    addWratten "9", "deep yellow", "moderate contrast in black/white outdoor photography", RGB(255, 228, 0)
-    addWratten "11", "yellow-green", "correction for tungsten light", RGB(75, 175, 65)
-    addWratten "12", "deep yellow", "minus blue; reduce haze in aerial photos", RGB(255, 220, 0)
-    addWratten "15", "deep yellow", "darken sky in black/white outdoor photography", RGB(240, 160, 50)
-    addWratten "16", "yellow-orange", "stronger version of 15", RGB(237, 140, 20)
-    addWratten "21", "orange", "contrast filter for blue and blue-green absorption", RGB(245, 100, 50)
-    addWratten "22", "deep orange", "stronger version of 21", RGB(247, 84, 33)
-    addWratten "23A", "light red", "contrast effects, darken sky and water", RGB(255, 117, 106)
-    addWratten "24", "red", "red for two-color photography (daylight or tungsten)", RGB(240, 0, 0)
-    addWratten "25", "red", "tricolor red; contrast effects in outdoor scenes", RGB(220, 0, 60)
-    addWratten "26", "red", "stereo red; cuts haze, useful for storm or moonlight settings", RGB(210, 0, 0)
-    addWratten "29", "deep red", "color separation; extreme sky darkening in black/white photos", RGB(115, 10, 25)
-    addWratten "32", "magenta", "green absorption", RGB(240, 0, 255)
-    addWratten "33", "strong green absorption", "variant on 32", RGB(154, 0, 78)
-    addWratten "34A", "violet", "minus-green and plus-blue separation", RGB(124, 40, 240)
-    addWratten "38A", "blue", "red absorption; useful for contrast in microscopy", RGB(1, 156, 210)
-    addWratten "44", "light blue-green", "minus-red, two-color general viewing", RGB(0, 136, 152)
-    addWratten "44A", "light blue-green", "minus-red, variant on 44", RGB(0, 175, 190)
-    addWratten "47", "blue tricolor", "direct color separation; contrast effects in commercial photography", RGB(43, 75, 220)
-    addWratten "47A", "light blue", "enhance blue and purple objects; useful for fluorescent dyes", RGB(0, 15, 150)
-    addWratten "47B", "deep blue tricolor", "color separation; calibration using SMPTE color bars", RGB(0, 0, 120)
-    addWratten "56", "very light green", "darkens sky, improves flesh tones", RGB(132, 206, 35)
-    addWratten "58", "green tricolor", "used for color separation; improves definition of foliage", RGB(40, 110, 5)
-    addWratten "61", "deep green tricolor", "used for color separation, tungsten tricolor projection", RGB(40, 70, 10)
-    addWratten "70", "dark red", "infrared photography longpass filter blocking", RGB(62, 0, 0)
-    addWratten "80A", "blue", "cooling filter, 3200K to 5500K; converts indoor lighting to sunlight", RGB(50, 100, 230)
-    addWratten "80B", "blue", "variant of 80A, 3400K to 5500K", RGB(70, 120, 230)
-    addWratten "80C", "blue", "variant of 80A, 3800K to 5500K", RGB(90, 140, 235)
-    addWratten "80D", "blue", "variant of 80A, 4200K to 5500K", RGB(110, 160, 240)
-    addWratten "81A", "pale orange", "warming filter (lowers color temperature), 3400 K to 3200 K", RGB(247, 240, 220)
-    addWratten "81B", "pale orange", "warming filter; slightly stronger than 81A", RGB(242, 232, 205)
-    addWratten "81C", "pale orange", "warming filter; slightly stronger than 81B", RGB(230, 220, 200)
-    addWratten "81D", "pale orange", "warming filter; slightly stronger than 81C", RGB(235, 220, 190)
-    addWratten "81EF", "pale orange", "warming filter; slightly stronger than 81D", RGB(215, 185, 150)
-    addWratten "82", "blue", "cooling filter; raises color temperature 100K", RGB(150, 205, 240)
-    addWratten "82A", "pale blue", "cooling filter; opposite of 81A", RGB(205, 225, 235)
-    addWratten "82B", "pale blue", "cooling filter; opposite of 81B", RGB(155, 190, 220)
-    addWratten "82C", "pale blue", "cooling filter; opposite of 81C", RGB(120, 155, 190)
-    addWratten "85", "amber", "warming filter, 5500K to 3400K; converts sunlight to incandescent", RGB(250, 155, 115)
-    addWratten "85B", "amber", "warming filter, 5500K to 3200K; opposite of 80A", RGB(250, 125, 95)
-    addWratten "85C", "amber", "warming filter, 5500K to 3800K; opposite of 80C", RGB(250, 155, 115)
-    addWratten "90", "dark gray amber", "remove color before photographing; rarely used for actual photos", RGB(100, 85, 20)
-    addWratten "96", "neutral gray", "neutral density filter; equally blocks all light frequencies", RGB(100, 100, 100)
+    addWratten "1A", g_Language.TranslateMessage("skylight (pale pink)"), g_Language.TranslateMessage("reduce haze in landscape photography"), RGB(245, 236, 240)
+    addWratten "2A", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation"), RGB(244, 243, 233)
+    addWratten "2B", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation (slightly less than 2A)"), RGB(244, 245, 230)
+    addWratten "2E", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation (slightly more than 2A)"), RGB(242, 254, 139)
+    addWratten "3", g_Language.TranslateMessage("light yellow"), g_Language.TranslateMessage("absorb excessive sky blue, make sky darker in black/white photos"), RGB(255, 250, 110)
+    addWratten "6", g_Language.TranslateMessage("light yellow"), g_Language.TranslateMessage("absorb excessive sky blue, emphasizing clouds"), RGB(253, 247, 3)
+    addWratten "8", g_Language.TranslateMessage("yellow"), g_Language.TranslateMessage("high blue absorption; correction for sky, cloud, and foliage"), RGB(247, 241, 0)
+    addWratten "9", g_Language.TranslateMessage("deep yellow"), g_Language.TranslateMessage("moderate contrast in black/white outdoor photography"), RGB(255, 228, 0)
+    addWratten "11", g_Language.TranslateMessage("yellow-green"), g_Language.TranslateMessage("correction for tungsten light"), RGB(75, 175, 65)
+    addWratten "12", g_Language.TranslateMessage("deep yellow"), g_Language.TranslateMessage("minus blue; reduce haze in aerial photos"), RGB(255, 220, 0)
+    addWratten "15", g_Language.TranslateMessage("deep yellow"), g_Language.TranslateMessage("darken sky in black/white outdoor photography"), RGB(240, 160, 50)
+    addWratten "16", g_Language.TranslateMessage("yellow-orange"), g_Language.TranslateMessage("stronger version of 15"), RGB(237, 140, 20)
+    addWratten "21", g_Language.TranslateMessage("orange"), g_Language.TranslateMessage("contrast filter for blue and blue-green absorption"), RGB(245, 100, 50)
+    addWratten "22", g_Language.TranslateMessage("deep orange"), g_Language.TranslateMessage("stronger version of 21"), RGB(247, 84, 33)
+    addWratten "23A", g_Language.TranslateMessage("light red"), g_Language.TranslateMessage("contrast effects, darken sky and water"), RGB(255, 117, 106)
+    addWratten "24", g_Language.TranslateMessage("red"), g_Language.TranslateMessage("red for two-color photography (daylight or tungsten)"), RGB(240, 0, 0)
+    addWratten "25", g_Language.TranslateMessage("red"), g_Language.TranslateMessage("tricolor red; contrast effects in outdoor scenes"), RGB(220, 0, 60)
+    addWratten "26", g_Language.TranslateMessage("red"), g_Language.TranslateMessage("stereo red; cuts haze, useful for storm or moonlight settings"), RGB(210, 0, 0)
+    addWratten "29", g_Language.TranslateMessage("deep red"), g_Language.TranslateMessage("color separation; extreme sky darkening in black/white photos"), RGB(115, 10, 25)
+    addWratten "32", g_Language.TranslateMessage("magenta"), g_Language.TranslateMessage("green absorption"), RGB(240, 0, 255)
+    addWratten "33", g_Language.TranslateMessage("strong green absorption"), g_Language.TranslateMessage("variant on 32"), RGB(154, 0, 78)
+    addWratten "34A", g_Language.TranslateMessage("violet"), g_Language.TranslateMessage("minus-green and plus-blue separation"), RGB(124, 40, 240)
+    addWratten "38A", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("red absorption; useful for contrast in microscopy"), RGB(1, 156, 210)
+    addWratten "44", g_Language.TranslateMessage("light blue-green"), g_Language.TranslateMessage("minus-red, two-color general viewing"), RGB(0, 136, 152)
+    addWratten "44A", g_Language.TranslateMessage("light blue-green"), g_Language.TranslateMessage("minus-red, variant on 44"), RGB(0, 175, 190)
+    addWratten "47", g_Language.TranslateMessage("blue tricolor"), g_Language.TranslateMessage("direct color separation; contrast effects in commercial photography"), RGB(43, 75, 220)
+    addWratten "47A", g_Language.TranslateMessage("light blue"), g_Language.TranslateMessage("enhance blue and purple objects; useful for fluorescent dyes"), RGB(0, 15, 150)
+    addWratten "47B", g_Language.TranslateMessage("deep blue tricolor"), g_Language.TranslateMessage("color separation; calibration using SMPTE color bars"), RGB(0, 0, 120)
+    addWratten "56", g_Language.TranslateMessage("very light green"), g_Language.TranslateMessage("darkens sky, improves flesh tones"), RGB(132, 206, 35)
+    addWratten "58", g_Language.TranslateMessage("green tricolor"), g_Language.TranslateMessage("used for color separation; improves definition of foliage"), RGB(40, 110, 5)
+    addWratten "61", g_Language.TranslateMessage("deep green tricolor"), g_Language.TranslateMessage("used for color separation, tungsten tricolor projection"), RGB(40, 70, 10)
+    addWratten "70", g_Language.TranslateMessage("dark red"), g_Language.TranslateMessage("infrared photography longpass filter blocking"), RGB(62, 0, 0)
+    addWratten "80A", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("cooling filter, 3200K to 5500K; converts indoor lighting to sunlight"), RGB(50, 100, 230)
+    addWratten "80B", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("variant of 80A, 3400K to 5500K"), RGB(70, 120, 230)
+    addWratten "80C", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("variant of 80A, 3800K to 5500K"), RGB(90, 140, 235)
+    addWratten "80D", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("variant of 80A, 4200K to 5500K"), RGB(110, 160, 240)
+    addWratten "81A", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter (lowers color temperature), 3400 K to 3200 K"), RGB(247, 240, 220)
+    addWratten "81B", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81A"), RGB(242, 232, 205)
+    addWratten "81C", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81B"), RGB(230, 220, 200)
+    addWratten "81D", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81C"), RGB(235, 220, 190)
+    addWratten "81EF", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81D"), RGB(215, 185, 150)
+    addWratten "82", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("cooling filter; raises color temperature 100K"), RGB(150, 205, 240)
+    addWratten "82A", g_Language.TranslateMessage("pale blue"), g_Language.TranslateMessage("cooling filter; opposite of 81A"), RGB(205, 225, 235)
+    addWratten "82B", g_Language.TranslateMessage("pale blue"), g_Language.TranslateMessage("cooling filter; opposite of 81B"), RGB(155, 190, 220)
+    addWratten "82C", g_Language.TranslateMessage("pale blue"), g_Language.TranslateMessage("cooling filter; opposite of 81C"), RGB(120, 155, 190)
+    addWratten "85", g_Language.TranslateMessage("amber"), g_Language.TranslateMessage("warming filter, 5500K to 3400K; converts sunlight to incandescent"), RGB(250, 155, 115)
+    addWratten "85B", g_Language.TranslateMessage("amber"), g_Language.TranslateMessage("warming filter, 5500K to 3200K; opposite of 80A"), RGB(250, 125, 95)
+    addWratten "85C", g_Language.TranslateMessage("amber"), g_Language.TranslateMessage("warming filter, 5500K to 3800K; opposite of 80C"), RGB(250, 155, 115)
+    addWratten "90", g_Language.TranslateMessage("dark gray amber"), g_Language.TranslateMessage("remove color before photographing; rarely used for actual photos"), RGB(100, 85, 20)
+    addWratten "96", g_Language.TranslateMessage("neutral gray"), g_Language.TranslateMessage("neutral density filter; equally blocks all light frequencies"), RGB(100, 100, 100)
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -447,7 +454,7 @@ End Sub
 Private Sub addWratten(ByVal wrattenID As String, ByVal filterColor As String, ByVal filterDescription As String, ByVal filterRGB As Long)
     
     With fArray(numOfFilters)
-        .ID = wrattenID
+        .Id = wrattenID
         .Name = filterColor
         .Description = filterDescription
         .RGBColor = filterRGB
