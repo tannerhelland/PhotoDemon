@@ -170,6 +170,7 @@ Private Sub Form_Load()
     GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
     GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
+    GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/"
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
     GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/"
     GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1"
