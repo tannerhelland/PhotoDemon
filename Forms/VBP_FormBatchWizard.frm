@@ -78,7 +78,6 @@ Begin VB.Form FormBatchWizard
    Begin VB.CommandButton cmdNext 
       Caption         =   "&Next"
       Default         =   -1  'True
-      Enabled         =   0   'False
       Height          =   615
       Left            =   11880
       TabIndex        =   0
@@ -91,7 +90,7 @@ Begin VB.Form FormBatchWizard
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7500
-      Index           =   0
+      Index           =   1
       Left            =   3480
       ScaleHeight     =   500
       ScaleMode       =   3  'Pixel
@@ -1705,7 +1704,7 @@ Begin VB.Form FormBatchWizard
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7455
-      Index           =   1
+      Index           =   0
       Left            =   3480
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
@@ -1826,10 +1825,10 @@ Begin VB.Form FormBatchWizard
       ForeColor       =   &H00404040&
       Height          =   7320
       Index           =   0
-      Left            =   240
+      Left            =   120
       TabIndex        =   4
       Top             =   780
-      Width           =   2895
+      Width           =   3135
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblWizardTitle 
@@ -2174,16 +2173,22 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
     'Before moving to the next page, validate the current one
     Select Case m_currentPage
     
-        'Add images to batch list
-        Case 0
-        
         'Select photo editing options
-        Case 1
+        Case 0
             
             'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
             If optActions(1).Value And ((txtMacro.Text = "no macro selected") Or (txtMacro.Text = "")) Then
                 pdMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
                 AutoSelectText txtMacro
+                Exit Sub
+            End If
+        
+        'Add images to batch list
+        Case 1
+        
+            'If no images have been added to the batch list, make the user add some!
+            If moveForward And lstFiles.ListCount = 0 Then
+                pdMsgBox "You have not selected any images to process!  Please place one or more images in the batch list (at the bottom of the screen) before moving to the next step.", vbExclamation + vbOKOnly + vbApplicationModal, "No images selected"
                 Exit Sub
             End If
         
@@ -2332,26 +2337,27 @@ Private Sub updateWizardText()
 
     Select Case m_currentPage
         
-        'Step 1: add images to list
+        'Step 1: choose what photo editing you will apply to each image
         Case 0
         
-            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 1: prepare the batch list (the list of images to be processed)")
+            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 1: select the photo editing action(s) to apply to each image")
             
-            sideText = g_Language.TranslateMessage("You can add files to the batch list in several ways:")
-            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("1) The folder and file lists at the top of this page.  Use the ""Add selected image(s) to batch list"" button to move images to the batch list, or use the right mouse button to drag-and-drop one or more items.")
-            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("2) The ""Add images using Open Image dialog..."" button.  You can then select one or more image files to be processed.")
-            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.")
-        
-        'Step 2: choose what photo editing you will apply to each image
+            sideText = g_Language.TranslateMessage("Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a ""batch process"".")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Start by selecting the photo editing action(s) you want to apply.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Note: a macro is simply a list of photo editing actions.  You can create your own macros by using the ""Tools -> Macros -> Record new macro"" menu in the main PhotoDemon window.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("In the next step, you will select the images you want processed.")
+            
+        'Step 2: add images to list
         Case 1
         
-            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 2: select the photo editing action(s) to apply to each image")
+            lblWizardTitle.Caption = g_Language.TranslateMessage("Step 2: prepare the batch list (the list of images to be processed)")
             
-            sideText = g_Language.TranslateMessage("This step is optional.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If requested, PhotoDemon can apply a recorded set of actions (a ""macro"") to each image in the batch list.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Macros can be recorded using the ""Tools -> Macros -> Record new macro"" menu in the main PhotoDemon window.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(FYI: the next version of PhotoDemon will add a selection of standard photo editing options to this screen, but at present you are limited to macros for any photo editing actions.)")
+            sideText = g_Language.TranslateMessage("You can add files to the batch list in several ways:")
+            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("1) The folder and file lists at the top of this page.  Use the ""Add selected image(s) to batch list"" button to move images to the batch list, or use the right mouse button to drag-and-drop images.")
+            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("2) The ""Add images using Open Image dialog..."" button.")
+            sideText = sideText & vbCrLf & vbCrLf & "  " & g_Language.TranslateMessage("3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("In the next step, you will choose how you want the processed images saved.")
         
         'Step 3: choose the output image format
         Case 2
@@ -2359,8 +2365,9 @@ Private Sub updateWizardText()
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 3: choose a destination image format")
             
             sideText = g_Language.TranslateMessage("PhotoDemon needs to know which format to use when saving the images in your batch list.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If ""keep images in their original format"" is selected, PhotoDemon will attempt to save each image in its current format.  However, some esoteric formats may not be supported.  If such images are encountered, a standard format (JPEG or PNG, depending on color depth) will be used instead.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If you choose to save these images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency need to be saved to a format that supports transparency!)")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If ""keep images in their original format"" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("In the final step, you will choose how you want the saved files to be named.")
             
         'Step 4: choose where processed images will be placed and named
         Case 3
@@ -2368,7 +2375,7 @@ Private Sub updateWizardText()
             lblWizardTitle.Caption = g_Language.TranslateMessage("Step 4: provide a destination folder and any renaming options")
             
             sideText = g_Language.TranslateMessage("In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.")
-            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("For your convenience, a number of standard renaming options are also provided.  Note that all options under ""additional rename options"" are optional.")
+            sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("For your convenience, a number of standard renaming options are also provided.  Note that all items under ""additional rename options"" are optional.")
             sideText = sideText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Finally, if two or more images in the batch list have the same filename, and the ""original filenames"" option is selected, such files will automatically be given unique filenames upon saving (e.g. ""original-filename (2)"").")
         
     End Select
@@ -2395,7 +2402,7 @@ Private Sub cmdRemove_Click()
     If lstFiles.ListCount = 0 Then
         cmdRemoveAll.Enabled = False
         cmdSaveList.Enabled = False
-        cmdNext.Enabled = False
+        'cmdNext.Enabled = False
     End If
     
     'Note that the current list has NOT been saved
@@ -2422,7 +2429,7 @@ Private Sub cmdRemoveAll_Click()
     cmdRemove.Enabled = False
     cmdRemoveAll.Enabled = False
     cmdSaveList.Enabled = False
-    cmdNext.Enabled = False
+    'cmdNext.Enabled = False
     
     'Note that the current list has NOT been saved
     m_ImageListSaved = False
@@ -3036,7 +3043,7 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     If lstFiles.ListCount > 0 Then
         If Not cmdRemoveAll.Enabled Then cmdRemoveAll.Enabled = True
         If Not cmdSaveList.Enabled Then cmdSaveList.Enabled = True
-        If Not cmdNext.Enabled Then cmdNext.Enabled = True
+        'If Not cmdNext.Enabled Then cmdNext.Enabled = True
     End If
     
     'Note that the current list has NOT been saved
