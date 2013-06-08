@@ -991,7 +991,17 @@ Public Sub MenuFilmNoir()
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 6)
+        gLookup(x) = CByte(x \ 3)
+    Next x
+    
+    'Same goes for contrast
+    Dim cLookup(0 To 255) As Byte, cCalc As Long
+                
+    For x = 0 To 255
+        cCalc = x + (((x - 127) * 30) \ 100)
+        If cCalc > 255 Then cCalc = 255
+        If cCalc < 0 Then cCalc = 0
+        cLookup(x) = CByte(cCalc)
     Next x
         
     'Apply the filter
@@ -1004,40 +1014,11 @@ Public Sub MenuFilmNoir()
         b = ImageData(QuickVal, y)
         
         grayVal = gLookup(r + g + b)
-        
-        'Stretch contrast between the high and low values
-        r = (r - grayVal) * 2
-        g = (g - grayVal) * 2
-        b = (b - grayVal) * 2
-        
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
-        If g > 255 Then g = 255
-        If g < 0 Then g = 0
-        If b > 255 Then b = 255
-        If b < 0 Then b = 0
-        
-        'grayVal = gLookup(r + g + b)
-        
-        
-        
-        'r = Abs(r * (g - b + g + r)) / 255
-        'g = Abs(r * (b - g + b + r)) / 255
-        'b = Abs(g * (b - g + b + r)) / 255
-        
-        'If r > 255 Then r = 255
-        'If g > 255 Then g = 255
-        'If b > 255 Then b = 255
-        
-        grayVal = gLookup(r + g + b) * 2
+        grayVal = cLookup(grayVal)
         
         ImageData(QuickVal + 2, y) = grayVal
         ImageData(QuickVal + 1, y) = grayVal
         ImageData(QuickVal, y) = grayVal
-        
-        'ImageData(QuickVal + 2, y) = r
-        'ImageData(QuickVal + 1, y) = g
-        'ImageData(QuickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
