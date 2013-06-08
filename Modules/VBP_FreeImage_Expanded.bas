@@ -90,13 +90,19 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     fi_ImportFlags = 0
     
     'For JPEGs, specify a preference for accuracy and quality over load speed under normal circumstances,
-    ' but when performing a batch conversion choose the reverse (speed over accuracy).
+    ' but when performing a batch conversion choose the reverse (speed over accuracy).  Also, if the showMessages parameter
+    ' is false, we know that preview-quality is acceptable - so load the image as quickly as possible.
     If fileFIF = FIF_JPEG Then
-        If MacroStatus = MacroBATCH Then
+        If (MacroStatus = MacroBATCH) Or (Not showMessages) Then
             fi_ImportFlags = FILO_JPEG_FAST Or FILO_JPEG_EXIFROTATE
         Else
             fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
         End If
+    End If
+    
+    'If this is not a primary image, RAW format files can load just their thumbnail
+    If (fileFIF = FIF_RAW) And (Not showMessages) Then
+        fi_ImportFlags = FILO_RAW_PREVIEW
     End If
         
     'For icons, we prefer a white background (default is black).
