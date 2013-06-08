@@ -341,8 +341,8 @@ Attribute VB_Exposed = False
 'Image "Spherize" Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 05/June/13
-'Last updated: 05/June/13
-'Last update: initial build
+'Last updated: 08/June/13
+'Last update: performance optimizations; speed was improved ~15-25% with some lookup tables and precalculation tricks
 '
 'This tool allows the user to map an image around a sphere, with optional rotation and bidirectional offsets.
 ' Bilinear interpolation (via reverse-mapping) is available to improve mapping quality.
@@ -468,13 +468,43 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
         minDimension = tHeight
         minDimVertical = True
     End If
-    
+        
     Dim halfDimDiff As Double
     halfDimDiff = Abs(tWidth - tHeight) / 2
     
     'Convert offsets to usable amounts
     xOffset = (xOffset / 100) * tWidth
     yOffset = (yOffset / 100) * tHeight
+    
+    'A slow part of this algorithm is translating all (x, y) coordinates to the range [-1, 1].  We can perform this
+    ' step in advance by constructing a look-up table for all possible x values and all possible y values.  This
+    ' greatly improves performance.
+    Dim xLookup() As Double, yLookup() As Double
+    ReDim xLookup(initX To finalX) As Double
+    ReDim yLookup(initY To finalY) As Double
+    
+    For x = initX To finalX
+        If minDimVertical Then
+            xLookup(x) = (2 * (x - halfDimDiff)) / minDimension - 1
+        Else
+            xLookup(x) = (2 * x) / minDimension - 1
+        End If
+    Next x
+    
+    For y = initY To finalY
+        If minDimVertical Then
+            yLookup(y) = (2 * y) / minDimension - 1
+        Else
+            yLookup(y) = (2 * (y - halfDimDiff)) / minDimension - 1
+        End If
+    Next y
+    
+    'We can also calculate a few constants in advance
+    Dim twoDivByPI As Double
+    twoDivByPI = 2 / PI
+    
+    Dim halfMinDimension As Double
+    halfMinDimension = minDimension / 2
             
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -482,29 +512,23 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0), and normalize them to (-1, 1)
-        If minDimVertical Then
-            nX = (2 * (x - halfDimDiff)) / minDimension - 1
-            nY = (2 * y) / minDimension - 1
-        Else
-            nX = (2 * x) / minDimension - 1
-            nY = (2 * (y - halfDimDiff)) / minDimension - 1
-        End If
+        nX = xLookup(x)
+        nY = yLookup(y)
         
         'Next, map them to polar coordinates and apply the spherification
         r = Sqr(nX * nX + nY * nY)
         theta = Atan2(nY, nX)
         
-        r = 2 * Asin(r) / PI
+        r = Asin(r) * twoDivByPI
         
         'Apply optional rotation
         theta = theta - sphereAngle
         
         'Convert them back to the Cartesian plane
-        
-        nX = r * Cos(theta)
-        srcX = (minDimension * (nX + 1)) / 2 + xOffset
-        nY = r * Sin(theta)
-        srcY = (minDimension * (nY + 1)) / 2 + yOffset
+        nX = r * Cos(theta) + 1
+        srcX = halfMinDimension * nX + xOffset
+        nY = r * Sin(theta) + 1
+        srcY = halfMinDimension * nY + yOffset
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         If useRays Then
