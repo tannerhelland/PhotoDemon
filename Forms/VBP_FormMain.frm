@@ -2027,15 +2027,28 @@ Private Sub MDIForm_Load()
     ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
     Set cImgCtl = New clsControlImage
     If g_IsProgramCompiled Then
+        
+        'Remove all tool button captions
+        For i = 0 To cmdTools.Count - 1
+            cmdTools(i).Caption = ""
+        Next i
+        
         With cImgCtl
+            
+            'Load the tool images (in PNG format) from the resource file
             .LoadImageFromStream cmdTools(0).hWnd, LoadResData("T_SELRECT", "CUSTOM"), 22, 22
             .LoadImageFromStream cmdTools(1).hWnd, LoadResData("T_SELCIRCLE", "CUSTOM"), 22, 22
             
+            'Center-align the images in their respective buttons
             For i = 0 To cmdTools.Count - 1
-                cmdTools(i).Caption = ""
                 .SetMargins cmdTools(i).hWnd, 0
                 .Align(cmdTools(i).hWnd) = Icon_Center
+                
+                'On XP, the tool command button images aren't aligned properly until the buttons are hovered.  No one
+                ' knows why.  We can imitate a hover with a click - do so now.
+                If Not g_IsVistaOrLater Then cmdTools_Click CInt(i)
             Next i
+            
         End With
     End If
     
