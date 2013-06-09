@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 24/May/13
-'Last update: added run-time checks for the new ExifTool plugin
+'Last updated: 09/June/13
+'Last update: fixed "Duplicate Image" handling of filenames without extensions (e.g. images from the clipboard or scanner)
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -1430,7 +1430,11 @@ Public Sub DuplicateCurrentImage()
     Dim newFilename As String
     newFilename = pdImages(imageToBeDuplicated).OriginalFileName & " - " & g_Language.TranslateMessage("Copy")
     pdImages(CurrentImage).OriginalFileName = newFilename
-    pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
+    If Len(originalExtension) > 0 Then
+        pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
+    Else
+        pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename
+    End If
             
     'Because this image hasn't been saved to disk, mark its save state as "false"
     pdImages(CurrentImage).UpdateSaveState False
