@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Emboss/Engrave Filter Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2003-2013 by Tanner Helland
 'Created: 3/6/03
 'Last updated: 09/September/12
 'Last update: rewrite emboss/engrave against new layer class
@@ -186,11 +186,11 @@ End Sub
 Private Sub CmdOK_Click()
     
     'Used to remember the last color used for embossing
-    g_EmbossEngraveColor = PicColor.backColor
+    g_EmbossEngraveColor = picColor.backColor
     Me.Visible = False
     
     Dim newColor As Long
-    If CBool(chkToColor.Value) Then newColor = PicColor.backColor Else newColor = RGB(127, 127, 127)
+    If CBool(chkToColor.Value) Then newColor = picColor.backColor Else newColor = RGB(127, 127, 127)
     
     'Dependent: filter to grey OR to a background color
     If optEmboss.Value Then
@@ -206,12 +206,12 @@ End Sub
 Private Sub Form_Activate()
     
     'Remember the last emboss/engrave color selection
-    PicColor.backColor = g_EmbossEngraveColor
+    picColor.backColor = g_EmbossEngraveColor
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor PicColor
+    setHandCursor picColor
     
     'Render a preview of the emboss/engrave effect
     UpdateEmbossPreview
@@ -238,10 +238,10 @@ Private Sub PicColor_Click()
     Dim retColor As Long
     Dim CD1 As cCommonDialog
     Set CD1 = New cCommonDialog
-    retColor = PicColor.backColor
+    retColor = picColor.backColor
     
     If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
-        PicColor.backColor = retColor
+        picColor.backColor = retColor
         chkToColor.Value = vbChecked
         UpdateEmbossPreview
     End If
@@ -473,8 +473,8 @@ End Sub
 'Render a new preview
 Private Sub UpdateEmbossPreview()
     If optEmboss.Value Then
-        If CBool(chkToColor.Value) Then FilterEmbossColor PicColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
+        If CBool(chkToColor.Value) Then FilterEmbossColor picColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
     Else
-        If CBool(chkToColor.Value) Then FilterEngraveColor PicColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
+        If CBool(chkToColor.Value) Then FilterEngraveColor picColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
     End If
 End Sub
