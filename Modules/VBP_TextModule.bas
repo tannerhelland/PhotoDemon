@@ -1,13 +1,12 @@
 Attribute VB_Name = "Text_Processing"
 '***************************************************************************
 'Text Operations Module
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 05/July/12
-'Last updated: 23/September/12
-'Last update: use local copies of "x" for each function
+'Last updated: 09/June/13
+'Last update: rewrote file extension function to be more intelligent about extension length
 '
-'Handles various string operations, mostly related to parsing and generating
-' valid filenames and paths.
+'Handles various string operations, mostly related to parsing and generating valid filenames, extensions, and paths.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -97,30 +96,27 @@ Public Sub StripOffExtension(ByRef sString As String)
 End Sub
 
 'Function to strip the extension from a filename
-Public Function GetExtension(FileName As String) As String
+Public Function GetExtension(sFile As String) As String
     
     Dim pathLoc As Long, extLoc As Long
     Dim i As Long, j As Long
 
-    For i = Len(FileName) To 1 Step -1
-        If Mid(FileName, i, 1) = "." Then
-            extLoc = i
-            For j = Len(FileName) To 1 Step -1
-                If Mid(FileName, j, 1) = "\" Then
-                    pathLoc = j
-                    Exit For
-                End If
-            Next j
-            Exit For
+    For i = Len(sFile) To 1 Step -1
+    
+        'If we find a path before we find an extension, return a blank string
+        If (Mid(sFile, i, 1) = "\") Or (Mid(sFile, i, 1) = "/") Then
+            GetExtension = ""
+            Exit Function
+        End If
+        
+        If Mid(sFile, i, 1) = "." Then
+            GetExtension = Right$(sFile, Len(sFile) - i)
+            Exit Function
         End If
     Next i
     
-    If pathLoc > extLoc Then
-        GetExtension = ""
-    Else
-        If extLoc = 0 Then GetExtension = ""
-        GetExtension = Mid(FileName, extLoc + 1, Len(FileName) - extLoc)
-    End If
+    'If we reach this point, no extension was found
+    GetExtension = ""
             
 End Function
 
