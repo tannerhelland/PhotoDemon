@@ -82,7 +82,6 @@ Begin VB.Form FormChannelMixer
       _ExtentY        =   873
       Min             =   -200
       Max             =   200
-      Value           =   -70
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -103,7 +102,6 @@ Begin VB.Form FormChannelMixer
       _ExtentY        =   873
       Min             =   -200
       Max             =   200
-      Value           =   200
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -119,12 +117,11 @@ Begin VB.Form FormChannelMixer
       Left            =   6000
       TabIndex        =   9
       Top             =   3060
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   6015
+      _ExtentX        =   10610
       _ExtentY        =   873
       Min             =   -200
       Max             =   200
-      Value           =   -30
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -159,8 +156,8 @@ Begin VB.Form FormChannelMixer
       Left            =   6000
       TabIndex        =   11
       Top             =   3960
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   6015
+      _ExtentX        =   10610
       _ExtentY        =   873
       Min             =   -255
       Max             =   255
@@ -174,15 +171,15 @@ Begin VB.Form FormChannelMixer
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.smartCheckBox chkOverlay 
+   Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   570
-      Left            =   8760
+      Left            =   8640
       TabIndex        =   13
       Top             =   5040
-      Width           =   1140
-      _ExtentX        =   2011
+      Width           =   2430
+      _ExtentX        =   4286
       _ExtentY        =   1005
-      Caption         =   "overlay"
+      Caption         =   "preserve luminance"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   12
@@ -340,19 +337,23 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright ©2012-2013 by Tanner Helland & audioglider
+'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 08/June/13
 'Last updated: 09/June/13
-'Last update: added support for modifying all channels simultaneously
+'Last update: added "preserve luminance" and applied a few final fixes
 '
 'Many thanks to talented contributer audioglider for creating this tool.
 '
 'Standard channel mixer dialog.  Layout and feature set derived from comparable tools in Photoshop and GIMP.
 ' Per convention, all channels can be modified simultaneously.  For convenience, a "constant" slider is also
-' provided, allowing for simple brightness adjustments as well.
+' provided, allowing for simple uniform adjustments.
 '
 'A "monochrome" option is provided for outputting a grayscale image.  Monochrome values are stored separately, so
 ' any changes made while in monochrome mode will not overwrite existing color channel values.
+'
+'A "preserve luminance" option is provided for applying color changes without changing the overall composition
+' of the photo.  This is disabled when "monochrome" is active (obviously, as otherwise the gray values would
+' never change!)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -385,10 +386,16 @@ Dim forbidUpdate As Boolean
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+Private Sub chkLuminance_Click()
+    updatePreview
+End Sub
+
 'To match GIMP's behavior (which is actually well-designed in this case), disable the output combo box
 Private Sub chkMonochrome_Click()
     
     If CBool(chkMonochrome) Then
+        
+        chkLuminance.Enabled = False
         cmbChannel.Enabled = False
         
         'Populate the sliders with any previously saved values
@@ -398,23 +405,24 @@ Private Sub chkMonochrome_Click()
         sltBlue.Value = curSliderValues(GrayOutput, BlueInput)
         sltConstant.Value = curSliderValues(GrayOutput, ConstantInput)
         forbidUpdate = False
-        
+                
     Else
     
+        chkLuminance.Enabled = True
         cmbChannel.Enabled = True
         
-        'Simulate a click on the combo box to make sure the slider values are repopulated correctly
-        cmbChannel.ListIndex = cmbChannel.ListIndex
+        'Populate the sliders with any previously saved values
+        forbidUpdate = True
+        sltRed.Value = curSliderValues(cmbChannel.ListIndex, RedInput)
+        sltGreen.Value = curSliderValues(cmbChannel.ListIndex, GreenInput)
+        sltBlue.Value = curSliderValues(cmbChannel.ListIndex, BlueInput)
+        sltConstant.Value = curSliderValues(cmbChannel.ListIndex, ConstantInput)
+        forbidUpdate = False
         
     End If
     
     updatePreview
     
-End Sub
-
-Private Sub chkOverlay_Click()
-    updateStoredValues
-    updatePreview
 End Sub
 
 Private Sub cmbChannel_Click()
@@ -479,8 +487,8 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Dim isMonochrome As Boolean
     isMonochrome = cParams.GetBool(17)
     
-    Dim isOverlay As Boolean
-    isOverlay = cParams.GetBool(18)
+    Dim preserveLuminance As Boolean
+    preserveLuminance = cParams.GetBool(18)
         
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -509,6 +517,8 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long, newGray As Long
+    Dim h As Double, s As Double, l As Double
+    Dim originalLuminance As Double
         
     'Apply the filter
     For x = initX To finalX
@@ -526,21 +536,20 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             If newGray > 255 Then newGray = 255
             If newGray < 0 Then newGray = 0
             
+            'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
+            
             ImageData(QuickVal + 2, y) = newGray
             ImageData(QuickVal + 1, y) = newGray
             ImageData(QuickVal, y) = newGray
             
         Else
+        
+            'If luminance is being preserved, we need to determine the initial luminance value
+            If preserveLuminance Then originalLuminance = (getLuminance(r, g, b) / 255)
+        
             newR = r * channelModifiers(0, 0) + g * channelModifiers(0, 1) + b * channelModifiers(0, 2) + channelModifiers(0, 3)
             newG = r * channelModifiers(1, 0) + g * channelModifiers(1, 1) + b * channelModifiers(1, 2) + channelModifiers(1, 3)
             newB = r * channelModifiers(2, 0) + g * channelModifiers(2, 1) + b * channelModifiers(2, 2) + channelModifiers(3, 3)
-            
-            'Overlay mode adds the modified value to the current channel values
-            If isOverlay Then
-                newR = r + newR
-                newG = g + newG
-                newB = b + newB
-            End If
             
             'Fit everything in the [0, 255] range
             If newR > 255 Then newR = 255
@@ -549,6 +558,13 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             If newG < 0 Then newG = 0
             If newB > 255 Then newB = 255
             If newB < 0 Then newB = 0
+            
+            'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
+            ' value with the original
+            If preserveLuminance Then
+                tRGBToHSL newR, newG, newB, h, s, l
+                tHSLToRGB h, s, originalLuminance, newR, newG, newB
+            End If
             
             ImageData(QuickVal + 2, y) = newR
             ImageData(QuickVal + 1, y) = newG
@@ -627,6 +643,9 @@ Private Sub Form_Activate()
     cmbChannel.AddItem " blue", 2
     cmbChannel.ListIndex = 0
     
+    'To account for translation width possibilities, align the monochrome and luminance check boxes manually
+    chkLuminance.Left = chkMonochrome.Left + chkMonochrome.Width + 24
+    
     'Display the previewed effect in the neighboring window
     updatePreview
     
@@ -678,12 +697,10 @@ Private Sub updateStoredValues()
         curSliderValues(GrayOutput, BlueInput) = sltBlue.Value
         curSliderValues(GrayOutput, ConstantInput) = sltConstant.Value
     Else
-    
         curSliderValues(cmbChannel.ListIndex, RedInput) = sltRed.Value
         curSliderValues(cmbChannel.ListIndex, GreenInput) = sltGreen.Value
         curSliderValues(cmbChannel.ListIndex, BlueInput) = sltBlue.Value
         curSliderValues(cmbChannel.ListIndex, ConstantInput) = sltConstant.Value
-    
     End If
 
 End Sub
@@ -706,8 +723,8 @@ Private Function createChannelParamString() As String
     'Next, add the monochrome checkbox value
     paramString = paramString & CStr(CBool(chkMonochrome)) & "|"
     
-    'Finally, add the overlay checkbox value
-    paramString = paramString & CStr(CBool(chkOverlay))
+    'Finally, add the preserve luminance checkbox value
+    paramString = paramString & CStr(CBool(chkLuminance))
     
     createChannelParamString = paramString
 
