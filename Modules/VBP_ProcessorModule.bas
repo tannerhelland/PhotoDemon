@@ -528,6 +528,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
+        Case "Channel mixer"
+            If ShowDialog Then
+                FormChannelMixer.Show vbModal, FormMain
+            Else
+                FormChannelMixer.ApplyChannelMixer cParams.getParamString
+            End If
+            
     
         'Coordinate filters/transformations
         Case "Flip vertical"

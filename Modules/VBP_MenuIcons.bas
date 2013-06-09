@@ -264,39 +264,40 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "HISTOGRAM", 4, 9, 0  'Display Histogram
         AddMenuIcon "EQUALIZE", 4, 9, 2   'Equalize
         AddMenuIcon "STRETCH", 4, 9, 3    'Stretch
-    AddMenuIcon "COLORSHIFTR", 4, 11   'Color Shift
-        '--> Color-Shift sub-menu
-        AddMenuIcon "COLORSHIFTR", 4, 11, 0  'Shift Right
-        AddMenuIcon "COLORSHIFTL", 4, 11, 1  'Shift Left
-    AddMenuIcon "RECHANNEL", 4, 12     'Rechannel
-    AddMenuIcon "COLORIZE", 4, 14      'Colorize
-    AddMenuIcon "ENHANCE", 4, 15       'Enhance
+    AddMenuIcon "CHANNELMIX", 4, 11    'Components top-level
+        '--> Components sub-menu
+        AddMenuIcon "CHANNELMIX", 4, 11, 0   'Channel mixer
+        AddMenuIcon "RECHANNEL", 4, 11, 1    'Rechannel
+        AddMenuIcon "COLORSHIFTR", 4, 11, 3  'Shift Right
+        AddMenuIcon "COLORSHIFTL", 4, 11, 4  'Shift Left
+    AddMenuIcon "COLORIZE", 4, 13      'Colorize
+    AddMenuIcon "ENHANCE", 4, 14       'Enhance
         '--> Enhance sub-menu
-        AddMenuIcon "ENCONTRAST", 4, 15, 0    'Contrast
-        AddMenuIcon "ENHIGHLIGHT", 4, 15, 1   'Highlights
-        AddMenuIcon "ENMIDTONE", 4, 15, 2     'Midtones
-        AddMenuIcon "ENSHADOW", 4, 15, 3      'Shadows
-    AddMenuIcon "FADE", 4, 16           'Fade
+        AddMenuIcon "ENCONTRAST", 4, 14, 0    'Contrast
+        AddMenuIcon "ENHIGHLIGHT", 4, 14, 1   'Highlights
+        AddMenuIcon "ENMIDTONE", 4, 14, 2     'Midtones
+        AddMenuIcon "ENSHADOW", 4, 14, 3      'Shadows
+    AddMenuIcon "FADE", 4, 15           'Fade
         '--> Fade sub-menu
-        AddMenuIcon "FADELOW", 4, 16, 0       'Low Fade
-        AddMenuIcon "FADE", 4, 16, 1          'Medium Fade
-        AddMenuIcon "FADEHIGH", 4, 16, 2      'High Fade
-        AddMenuIcon "CUSTOMFADE", 4, 16, 3    'Custom Fade
-        AddMenuIcon "UNFADE", 4, 16, 5        'Unfade
-    AddMenuIcon "GRAYSCALE", 4, 17            'Grayscale
-    AddMenuIcon "INVERT", 4, 18         'Invert
+        AddMenuIcon "FADELOW", 4, 15, 0       'Low Fade
+        AddMenuIcon "FADE", 4, 15, 1          'Medium Fade
+        AddMenuIcon "FADEHIGH", 4, 15, 2      'High Fade
+        AddMenuIcon "CUSTOMFADE", 4, 15, 3    'Custom Fade
+        AddMenuIcon "UNFADE", 4, 15, 5        'Unfade
+    AddMenuIcon "GRAYSCALE", 4, 16            'Grayscale
+    AddMenuIcon "INVERT", 4, 17         'Invert
         '--> Invert sub-menu
-        AddMenuIcon "INVCMYK", 4, 18, 0       'Invert CMYK
-        AddMenuIcon "INVHUE", 4, 18, 1        'Invert Hue
-        AddMenuIcon "INVRGB", 4, 18, 2        'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 4, 18, 4   'Compound Invert
-    AddMenuIcon "MONOCHROME", 4, 19     'Monochrome
+        AddMenuIcon "INVCMYK", 4, 17, 0       'Invert CMYK
+        AddMenuIcon "INVHUE", 4, 17, 1        'Invert Hue
+        AddMenuIcon "INVRGB", 4, 17, 2        'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 4, 17, 4   'Compound Invert
+    AddMenuIcon "MONOCHROME", 4, 18     'Monochrome
         '--> Monochrome sub-menu
-        AddMenuIcon "COLORTOMONO", 4, 19, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 4, 19, 1   'Monochrome to grayscale
-    AddMenuIcon "SEPIA", 4, 20          'Sepia
-    AddMenuIcon "COUNTCOLORS", 4, 22    'Count Colors
-    AddMenuIcon "REDUCECOLORS", 4, 23   'Reduce Colors
+        AddMenuIcon "COLORTOMONO", 4, 18, 0   'Color to monochrome
+        AddMenuIcon "MONOTOCOLOR", 4, 18, 1   'Monochrome to grayscale
+    AddMenuIcon "SEPIA", 4, 19          'Sepia
+    AddMenuIcon "COUNTCOLORS", 4, 21    'Count Colors
+    AddMenuIcon "REDUCECOLORS", 4, 22   'Reduce Colors
     
     'Filters Menu
     AddMenuIcon "FADELAST", 5, 0        'Fade Last
