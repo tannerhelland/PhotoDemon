@@ -400,7 +400,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     ' Also, convert it to radians.
     sphereAngle = -sphereAngle * (PI / 180)
 
-    If toPreview = False Then Message "Converting image to sphere shape..."
+    If toPreview = False Then Message "Wrapping image around sphere..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
