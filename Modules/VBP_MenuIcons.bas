@@ -38,9 +38,12 @@ Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hW
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
 Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -50,8 +53,13 @@ Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByV
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
 Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
-Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiImage As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
-Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiImage As Long) As Long
+Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
+Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiBitmap As Long) As Long
+Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
+
+'Used to check GDI+ images for alpha channels
+Private Const PixelFormatAlpha = &H40000             ' Has an alpha component
+Private Const PixelFormatPAlpha = &H80000            ' Pre-multiplied alpha
 
 'GDI+ types and constants
 Private Const UnitPixel As Long = &H2&
@@ -233,21 +241,22 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "ADDTRANS", 3, 4, 0     'Add alpha channel
         AddMenuIcon "REMOVETRANS", 3, 4, 1  'Remove alpha channel
     AddMenuIcon "RESIZE", 3, 6         'Resize
-    AddMenuIcon "CROPSEL", 3, 7        'Crop to Selection
-    AddMenuIcon "AUTOCROP", 3, 8       'Autocrop
-    AddMenuIcon "MIRROR", 3, 10         'Mirror
-    AddMenuIcon "FLIP", 3, 11           'Flip
-    AddMenuIcon "ROTATECW", 3, 13      'Rotate Clockwise
-    AddMenuIcon "ROTATECCW", 3, 14     'Rotate Counter-clockwise
-    AddMenuIcon "ROTATE180", 3, 15     'Rotate 180
+    AddMenuIcon "RESIZESMART", 3, 7    'Smart resize
+    AddMenuIcon "CROPSEL", 3, 8        'Crop to Selection
+    AddMenuIcon "AUTOCROP", 3, 9       'Autocrop
+    AddMenuIcon "MIRROR", 3, 11        'Mirror
+    AddMenuIcon "FLIP", 3, 12          'Flip
+    AddMenuIcon "ROTATECW", 3, 14      'Rotate Clockwise
+    AddMenuIcon "ROTATECCW", 3, 15     'Rotate Counter-clockwise
+    AddMenuIcon "ROTATE180", 3, 16     'Rotate 180
     'NOTE: the specific menu values will be different if the FreeImage plugin (FreeImage.dll) isn't found.
     If g_ImageFormats.FreeImageEnabled Then
-        AddMenuIcon "ROTATEANY", 3, 16 'Rotate Arbitrary
+        AddMenuIcon "ROTATEANY", 3, 17 'Rotate Arbitrary
+        AddMenuIcon "ISOMETRIC", 3, 19 'Isometric
+        AddMenuIcon "TILE", 3, 20      'Tile
+    Else
         AddMenuIcon "ISOMETRIC", 3, 18 'Isometric
         AddMenuIcon "TILE", 3, 19      'Tile
-    Else
-        AddMenuIcon "ISOMETRIC", 3, 17 'Isometric
-        AddMenuIcon "TILE", 3, 18      'Tile
     End If
     
     'Color Menu
@@ -976,4 +985,85 @@ Private Function requestCustomCursor(ByVal cursorName As String) As Long
         requestCustomCursor = tmpHandle
     End If
 
+End Function
+
+'Given an image in the .exe's resource section (typically a PNG image), load it to a pdLayer object.
+' The calling function is responsible for deleting the layer once they are done with it.
+Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As pdLayer) As Boolean
+    
+    'Start by extracting the PNG data into a bytestream
+    Dim ImageData() As Byte
+    ImageData() = LoadResData(resTitle, "CUSTOM")
+    
+    Dim IStream As IUnknown
+    Dim tmpRect As RECTF
+    Dim gdiBitmap As Long, hBitmap As Long, hIcon As Long
+        
+    CreateStreamOnHGlobal ImageData(0), 0&, IStream
+    
+    If Not IStream Is Nothing Then
+        
+        'Use GDI+ to convert the bytestream into a usable image
+        ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
+        If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
+        
+            'Retrieve the image's size and pixel format
+            GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
+            
+            Dim gdiPixelFormat As Long
+            GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
+            
+            'If the image has an alpha channel, create a 32bpp layer to receive it
+            If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
+                dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
+            Else
+                dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 24
+            End If
+            
+            'Convert the GDI+ bitmap to a standard Windows hBitmap
+            If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
+            
+                'Select the hBitmap into a new DC so we can BitBlt it into the layer
+                Dim gdiDC As Long
+                gdiDC = CreateCompatibleDC(0)
+                SelectObject gdiDC, hBitmap
+                
+                'Copy the GDI+ bitmap into the layer
+                BitBlt dstLayer.getLayerDC, 0, 0, tmpRect.fWidth, tmpRect.fHeight, gdiDC, 0, 0, vbSrcCopy
+                
+                'Verify the alpha channel
+                If Not dstLayer.verifyAlphaChannel Then dstLayer.convertTo24bpp
+                
+                'Release the Windows-format bitmap and temporary device context
+                DeleteObject hBitmap
+                DeleteDC gdiDC
+                
+                'Release the GDI+ bitmap as well
+                GdipDisposeImage gdiBitmap
+                
+                'Free the memory stream
+                Set IStream = Nothing
+                
+                loadResourceToLayer = True
+                Exit Function
+            
+            End If
+            
+            'Release the GDI+ bitmap and mark the load as failed
+            GdipDisposeImage gdiBitmap
+            loadResourceToLayer = False
+            Exit Function
+                
+        End If
+    
+        'Free the memory stream
+        Set IStream = Nothing
+        loadResourceToLayer = False
+        Exit Function
+    
+    End If
+    
+    loadResourceToLayer = False
+    Exit Function
+    
 End Function
