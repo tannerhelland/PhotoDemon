@@ -170,6 +170,9 @@ Private Declare Function RegisterClipboardFormat Lib "user32" Alias "RegisterCli
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 Private Const CLIPBOARD_FORMAT_DIB As Long = 8
 
+'AlphaBlend API call
+Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal widthSrc As Long, ByVal heightSrc As Long, ByVal blendFunct As Long) As Boolean
+
 'Variables related to the DIB
 'hDC for this layer
 Private layerDC As Long
@@ -1689,3 +1692,19 @@ Public Sub fixPremultipliedAlpha()
 
 End Sub
 
+'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects a premultiplied layer
+Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255)
+    
+    Dim bfParams As Long
+    
+    If layerColorDepth = 32 Then
+        'Use the image's current alpha channel, and blend it with the supplied customAlpha value
+        bfParams = customAlpha * &H10000 Or &H1000000
+    Else
+        'Ignore alpha channel, and only use the supplied customAlpha value
+        bfParams = customAlpha * &H10000
+    End If
+    
+    AlphaBlend dstDC, 0, 0, layerWidth, layerHeight, layerDC, 0, 0, layerWidth, layerHeight, bfParams
+
+End Sub
