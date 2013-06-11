@@ -100,9 +100,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         End If
     End If
     
-    'If this is not a primary image, RAW format files can load just their thumbnail
-    If (fileFIF = FIF_RAW) And (Not showMessages) Then
-        fi_ImportFlags = FILO_RAW_PREVIEW
+    'FreeImage is crazy slow at loading RAW-format files, so custom flags are specified to speed up the process
+    If fileFIF = FIF_RAW Then
+        
+        'If this is not a primary image, RAW format files can load just their thumbnail
+        If (Not showMessages) Then fi_ImportFlags = FILO_RAW_PREVIEW
+        
     End If
         
     'For icons, we prefer a white background (default is black).
