@@ -153,9 +153,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   27
             Top             =   5640
             Width           =   3000
-            _extentx        =   5318
-            _extenty        =   873
-            font            =   "VBP_FormMain.frx":0014
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin VB.ComboBox cmbSelRender 
             Appearance      =   0  'Flat
@@ -171,9 +179,9 @@ Begin VB.MDIForm FormMain
             EndProperty
             Height          =   360
             Index           =   0
-            ItemData        =   "VBP_FormMain.frx":003C
+            ItemData        =   "VBP_FormMain.frx":0014
             Left            =   180
-            List            =   "VBP_FormMain.frx":003E
+            List            =   "VBP_FormMain.frx":0016
             Style           =   2  'Dropdown List
             TabIndex        =   16
             TabStop         =   0   'False
@@ -187,9 +195,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   17
             Top             =   1320
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":0040
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSelTop 
             Height          =   405
@@ -198,9 +214,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   18
             Top             =   1320
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":0068
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSelWidth 
             Height          =   405
@@ -209,9 +233,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   19
             Top             =   2160
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":0090
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSelHeight 
             Height          =   405
@@ -220,9 +252,17 @@ Begin VB.MDIForm FormMain
             TabIndex        =   20
             Top             =   2160
             Width           =   1320
-            _extentx        =   2328
-            _extenty        =   714
-            font            =   "VBP_FormMain.frx":00B8
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
             CausesValidation=   0   'False
@@ -232,12 +272,20 @@ Begin VB.MDIForm FormMain
             Top             =   4710
             Visible         =   0   'False
             Width           =   3000
-            _extentx        =   5318
-            _extenty        =   873
-            font            =   "VBP_FormMain.frx":00E0
-            min             =   1
-            max             =   100
-            value           =   1
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            Min             =   1
+            Max             =   100
+            Value           =   1
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
             CausesValidation=   0   'False
@@ -246,10 +294,18 @@ Begin VB.MDIForm FormMain
             TabIndex        =   33
             Top             =   3390
             Width           =   3000
-            _extentx        =   5318
-            _extenty        =   873
-            font            =   "VBP_FormMain.frx":0108
-            max             =   100
+            _ExtentX        =   5318
+            _ExtentY        =   873
+            Max             =   100
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -449,9 +505,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -491,9 +547,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":0130
+         ItemData        =   "VBP_FormMain.frx":0018
          Left            =   60
-         List            =   "VBP_FormMain.frx":0132
+         List            =   "VBP_FormMain.frx":001A
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
@@ -506,17 +562,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   60
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":0134
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":015C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":001C
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -524,17 +588,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1440
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":15AE
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":15D6
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":146E
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -542,18 +614,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2820
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":2628
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":2650
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Undo"
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":24C0
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Undo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -561,18 +641,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   3450
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":36A2
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":36CA
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Redo"
-         tooltipbackcolor=   -2147483643
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":3512
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Redo"
+         TooltipBackColor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -580,17 +668,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   10
          Top             =   690
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":471C
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":4744
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Close"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":4564
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Close"
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -598,17 +694,25 @@ Begin VB.MDIForm FormMain
          TabIndex        =   11
          Top             =   2070
          Width           =   930
-         _extentx        =   1640
-         _extenty        =   1085
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":5796
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":57BE
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Save As"
+         _ExtentX        =   1640
+         _ExtentY        =   1085
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":55B6
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Save As"
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   450
@@ -616,18 +720,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   4800
          Width           =   480
-         _extentx        =   847
-         _extenty        =   794
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":6810
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":6838
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Zoom In"
-         tooltip         =   "Use this button to increase image zoom."
+         _ExtentX        =   847
+         _ExtentY        =   794
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":6608
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   "Use this button to increase image zoom."
+         TooltipTitle    =   "Zoom In"
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   450
@@ -635,18 +747,26 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   4800
          Width           =   480
-         _extentx        =   847
-         _extenty        =   794
-         buttonstyle     =   13
-         font            =   "VBP_FormMain.frx":6C8A
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_FormMain.frx":6CB2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Zoom Out"
-         tooltip         =   "Use this button to decrease image zoom."
+         _ExtentX        =   847
+         _ExtentY        =   794
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_FormMain.frx":6A5A
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         ToolTip         =   "Use this button to decrease image zoom."
+         TooltipTitle    =   "Zoom Out"
       End
       Begin VB.Line lineMain 
          BorderColor     =   &H80000002&
@@ -927,8 +1047,93 @@ Begin VB.MDIForm FormMain
          Index           =   1
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "Transparency"
          Index           =   2
+         Begin VB.Menu MnuTransparency 
+            Caption         =   "Add alpha channel"
+            Index           =   0
+         End
+         Begin VB.Menu MnuTransparency 
+            Caption         =   "Remove alpha channel"
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   3
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Canvas size..."
+         Index           =   4
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Resize..."
+         Index           =   5
+         Shortcut        =   ^R
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   6
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Crop to selection"
+         Index           =   7
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Autocrop"
+         Index           =   8
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   9
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Rotate"
+         Index           =   10
+         Begin VB.Menu MnuRotate 
+            Caption         =   "90° clockwise"
+            Index           =   0
+         End
+         Begin VB.Menu MnuRotate 
+            Caption         =   "90° counter-clockwise"
+            Index           =   1
+         End
+         Begin VB.Menu MnuRotate 
+            Caption         =   "180°"
+            Index           =   2
+         End
+         Begin VB.Menu MnuRotate 
+            Caption         =   "Arbitrary..."
+            Index           =   3
+         End
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Flip horizontal"
+         Index           =   11
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Flip vertical"
+         Index           =   12
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   13
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Convert to isometric view"
+         Index           =   14
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Tile..."
+         Index           =   15
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   16
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   17
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -941,83 +1146,6 @@ Begin VB.MDIForm FormMain
             Caption         =   "Map photo location..."
             Index           =   2
          End
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   3
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Transparency"
-         Index           =   4
-         Begin VB.Menu MnuTransparency 
-            Caption         =   "Add alpha channel"
-            Index           =   0
-         End
-         Begin VB.Menu MnuTransparency 
-            Caption         =   "Remove alpha channel"
-            Index           =   1
-         End
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   5
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Resize..."
-         Index           =   6
-         Shortcut        =   ^R
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Crop to selection"
-         Index           =   7
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Autocrop Image"
-         Index           =   8
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   9
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Flip horizontal"
-         Index           =   10
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Flip vertical"
-         Index           =   11
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   12
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Rotate 90° clockwise"
-         Index           =   13
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Rotate 90° counter-clockwise"
-         Index           =   14
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Rotate 180°"
-         Index           =   15
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Arbitrary rotation..."
-         Index           =   16
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   17
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Convert to isometric view"
-         Index           =   18
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
-         Index           =   19
       End
    End
    Begin VB.Menu MnuColorTop 
@@ -2682,28 +2810,31 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 0
         
             'It may seem odd, but the Duplicate function can be found in the "Loading" module; I do this because
-            ' we effectively LOAD a copy of the original image, so all loading operations have to be repeated.
+            ' we effectively LOAD a copy of the original image, so all loading operations (create a form, catalog
+            ' metadata, initialize properties) have to be repeated.
             DuplicateCurrentImage
         
         'Separator
         Case 1
         
-        'Metadata top-level
+        'Transparency top-level
         Case 2
         
         'Separator
         Case 3
         
-        'Transparency top-level
+        'Canvas resize
         Case 4
-        
-        'Separator
-        Case 5
+            'Process "Canvas size", True
+            MsgBox "still under development; deactivated for now"
         
         'Resize
-        Case 6
+        Case 5
             Process "Resize", True
-        
+                
+        'Separator
+        Case 6
+            
         'Crop to selection
         Case 7
             Process "Crop"
@@ -2715,43 +2846,33 @@ Private Sub MnuImage_Click(Index As Integer)
         'Separator
         Case 9
         
-        'Flip horizontal (mirror)
+        'Top-level Rotate
         Case 10
+        
+        'Flip horizontal (mirror)
+        Case 11
             Process "Flip horizontal"
         
         'Flip vertical
-        Case 11
+        Case 12
             Process "Flip vertical"
         
         'Separator
-        Case 12
-        
-        'Rotate 90
         Case 13
-            Process "Rotate 90° clockwise"
-        
-        'Rotate 270
-        Case 14
-            Process "Rotate 90° Counter-Clockwise"
-        
-        'Rotate 180
-        Case 15
-            Process "Rotate 180°"
-        
-        'Rotate arbitrary
-        Case 16
-            Process "Arbitrary rotation", True
-        
-        'Separator
-        Case 17
         
         'Isometric view
-        Case 18
+        Case 14
             Process "Isometric conversion"
         
         'Tile
-        Case 19
+        Case 15
             Process "Tile", True
+            
+        'Separator
+        Case 16
+        
+        'Metadata top-level
+        Case 17
     
     End Select
 
@@ -3007,6 +3128,31 @@ End Sub
 
 Private Sub MnuRightPanel_Click()
     ChangeRightPane VISIBILITY_TOGGLE
+End Sub
+
+'All rotation actions are initiated here
+Private Sub MnuRotate_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Rotate 90
+        Case 0
+            Process "Rotate 90° clockwise"
+        
+        'Rotate 270
+        Case 1
+            Process "Rotate 90° Counter-Clockwise"
+        
+        'Rotate 180
+        Case 2
+            Process "Rotate 180°"
+        
+        'Rotate arbitrary
+        Case 3
+            Process "Arbitrary rotation", True
+            
+    End Select
+            
 End Sub
 
 Private Sub MnuSave_Click()

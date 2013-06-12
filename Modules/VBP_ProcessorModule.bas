@@ -562,6 +562,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Isometric conversion"
             FilterIsometric
             
+        Case "Canvas size"
+            If ShowDialog Then
+                'FormCanvasSize.Show vbModal, FormMain
+            Else
+            
+            End If
+            
         Case "Resize"
             If ShowDialog Then
                 FormResize.Show vbModal, FormMain
