@@ -318,30 +318,30 @@ Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
     'Create a local array and point it at the pixel data of the image
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-            
+    
     prepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-                
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
     finalY = curLayerValues.Bottom
-                    
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
-            
+    
     'Color variables
     Dim r As Long, g As Long, b As Long
-            
+    
     'Histogram tables
     Dim lLookup(0 To 255)
     Dim pLuminance As Long
     Dim NumOfPixels As Long
-                
+    
     'Loop through each pixel in the image, tallying values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
