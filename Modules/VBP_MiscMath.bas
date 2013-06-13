@@ -31,7 +31,7 @@ Public Sub ConvertToFraction(ByVal V As Double, W As Double, N As Double, D As D
     Dim D1 As Double
     Dim N2 As Double    'Numerator, denominator of previous approx
     Dim D2 As Double
-    Dim I As Integer
+    Dim i As Integer
     Dim T As Double
     Dim maxDenom As Double
     Dim bIsNegative As Boolean
@@ -59,7 +59,7 @@ Public Sub ConvertToFraction(ByVal V As Double, W As Double, N As Double, D As D
     D2 = 1
 
     On Error GoTo RtnResult
-    For I = 0 To MaxTerms
+    For i = 0 To MaxTerms
         A = Fix(F)              'Get next term
         F = F - A               'Get new divisor
         N = N1 * A + N2         'Calculate new fraction
@@ -83,7 +83,7 @@ Public Sub ConvertToFraction(ByVal V As Double, W As Double, N As Double, D As D
             If T >= Accuracy And Abs(T) < 1 Then Exit For
         End If
         F = 1# / F               'Take reciprocal
-    Next I
+    Next i
 
 RtnResult:
     If Err Or D > maxDenom Then
@@ -108,20 +108,28 @@ RtnResult:
 End Sub
 
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
-Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
+' NOTE: by default, inclusive fitting is assumed, but the user can set that parameter to false.  That can be used to
+'        fit an image into a new size with no blank space, but cropping overhanging edges as necessary.)
+Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long, Optional ByVal fitInclusive As Boolean = True)
     
     Dim srcAspect As Double, dstAspect As Double
     srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
     
-    If srcAspect > dstAspect Then
+    Dim aspectLarger As Boolean
+    If srcAspect > dstAspect Then aspectLarger = True Else aspectLarger = False
+    
+    'Exclusive fitting fits the opposite dimension, so simply reverse the way the dimensions are calculated
+    If Not fitInclusive Then aspectLarger = Not aspectLarger
+    
+    If aspectLarger Then
         newWidth = dstWidth
         newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
     Else
         newHeight = dstHeight
         newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
     End If
-
+    
 End Sub
 
 'Return the distance between two values on the same line
