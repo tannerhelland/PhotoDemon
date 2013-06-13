@@ -1,4 +1,4 @@
-Attribute VB_Name = "Misc_OS_Interactions"
+Attribute VB_Name = "OS_Interactions"
 '***************************************************************************
 'Miscellaneous OS Interaction Handler
 'Copyright ©2011-2013 by Tanner Helland

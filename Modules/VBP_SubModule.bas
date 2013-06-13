@@ -4,7 +4,7 @@ Attribute VB_Name = "Misc_Uncategorized"
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 13/June/13
-'Last update: added a function by VB6 code LaVolpe for converting decimals to fractions.  Used to display image aspect ratio.
+'Last update: removed many functions into new dedicated Math and Color modules
 '
 'If a function doesn't have a home in a more appropriate module, it gets stuck here. Over time, I'm
 ' hoping to clear out most of this module in favor of a more organized approach.
@@ -39,9 +39,6 @@ Public cancelCurrentAction As Boolean
 'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
 Private Const mouseSelAccuracy As Double = 8
 
-'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
-
 'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
 ' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
 Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
@@ -74,194 +71,6 @@ Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boole
     End If
     
     userPressedESC = cancelCurrentAction
-    
-End Function
-
-'Given the number of colors in an image (as supplied by getQuickColorCount, below), return the highest color depth
-' that includes all those colors and is supported by PhotoDemon (1/4/8/24/32)
-Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLayer As pdLayer) As Long
-    
-    If srcColors <= 256 Then
-        If srcColors > 16 Then
-            getColorDepthFromColorCount = 8
-        Else
-            
-            'FreeImage only supports the writing of 4bpp and 1bpp images if they are grayscale. Thus, only
-            ' mark images as 4bpp or 1bpp if they are gray/b&w - otherwise, consider them 8bpp indexed color.
-            If (srcColors > 2) Then
-                                
-                If g_IsImageGray Then getColorDepthFromColorCount = 4 Else getColorDepthFromColorCount = 8
-            
-            'If there are only two colors, see if they are black and white, other shades of gray, or colors.
-            ' Mark the color depth as 1bpp, 4bpp, or 8bpp respectively.
-            Else
-                If g_IsImageMonochrome Then
-                    getColorDepthFromColorCount = 1
-                Else
-                    If g_IsImageGray Then getColorDepthFromColorCount = 4 Else getColorDepthFromColorCount = 8
-                End If
-            End If
-            
-        End If
-    Else
-        If refLayer.getLayerColorDepth = 24 Then
-            getColorDepthFromColorCount = 24
-        Else
-            getColorDepthFromColorCount = 32
-        End If
-    End If
-
-End Function
-
-'When images are loaded, this function is used to quickly determine the image's color count. It stops once 257 is reached,
-' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
-Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal imageID As Long = -1) As Long
-    
-    Message "Verifying image color count..."
-    
-    'Mark the image ID to the global tracking variable
-    g_LastImageScanned = imageID
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcImage.mainLayer
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = srcImage.Width - 1
-    finalY = srcImage.Height - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = (srcImage.mainLayer.getLayerColorDepth) \ 8
-    
-    'This array will track whether or not a given color has been detected in the image. (I don't know if powers of two
-    ' are allocated more efficiently, but it doesn't hurt to stick to that rule.)
-    Dim UniqueColors() As Long
-    ReDim UniqueColors(0 To 511) As Long
-    
-    Dim I As Long
-    For I = 0 To 255
-        UniqueColors(I) = -1
-    Next I
-    
-    'Total number of unique colors counted so far
-    Dim totalCount As Long
-    totalCount = 0
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim chkValue As Long
-    Dim colorFound As Boolean
-        
-    'Apply the filter
-    For x = 0 To finalX
-        QuickVal = x * qvDepth
-    For y = 0 To finalY
-        
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        chkValue = RGB(r, g, b)
-        colorFound = False
-        
-        'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
-        For I = 0 To totalCount
-            If UniqueColors(I) = chkValue Then
-                colorFound = True
-                Exit For
-            End If
-        Next I
-        
-        'If colorFound is still false, store this value in the array and increment our color counter
-        If Not colorFound Then
-            UniqueColors(totalCount) = chkValue
-            totalCount = totalCount + 1
-        End If
-        
-        'If the image has more than 256 colors, treat it as 24/32 bpp
-        If totalCount > 256 Then Exit For
-        
-    Next y
-        If totalCount > 256 Then Exit For
-    Next x
-        
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    'If the image contains only two colors, check to see if they are pure black and pure white. If so, mark
-    ' a global flag accordingly and exit (to save a little bit of extra processing time)
-    g_IsImageMonochrome = False
-    
-    If totalCount = 2 Then
-    
-        r = ExtractR(UniqueColors(0))
-        g = ExtractG(UniqueColors(0))
-        b = ExtractB(UniqueColors(0))
-        
-        If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
-            
-            r = ExtractR(UniqueColors(1))
-            g = ExtractG(UniqueColors(1))
-            b = ExtractB(UniqueColors(1))
-            
-            If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
-                g_IsImageMonochrome = True
-                Erase UniqueColors
-                g_LastColorCount = totalCount
-                getQuickColorCount = totalCount
-                Exit Function
-            End If
-            
-        End If
-        
-    End If
-        
-    'If we've made it this far, the color count has a maximum value of 257.
-    ' If it is less than 257, analyze it to see if it contains all gray values.
-    If totalCount <= 256 Then
-    
-        g_IsImageGray = True
-    
-        'Loop through all available colors
-        For I = 0 To totalCount - 1
-        
-            r = ExtractR(UniqueColors(I))
-            g = ExtractG(UniqueColors(I))
-            b = ExtractB(UniqueColors(I))
-            
-            'If any of the components do not match, this is not a grayscale image
-            If (r <> g) Or (g <> b) Or (r <> b) Then
-                g_IsImageGray = False
-                Exit For
-            End If
-            
-        Next I
-    
-    'If the image contains more than 256 colors, it is not grayscale
-    Else
-        g_IsImageGray = False
-    End If
-    
-    Erase UniqueColors
-    
-    g_LastColorCount = totalCount
-    getQuickColorCount = totalCount
-        
-End Function
-
-'Given an OLE color, return an RGB
-Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
-    
-    'OleTranslateColor returns -1 if it fails; if that happens, default to white
-    If OleTranslateColor(colorRef, 0, ConvertSystemColor) Then
-        ConvertSystemColor = RGB(255, 255, 255)
-    End If
     
 End Function
 
@@ -501,22 +310,4 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
         findNearestSelectionCoordinates = 0
     End If
 
-End Function
-
-'Extract the red, green, or blue value from an RGB() Long
-Public Function ExtractR(ByVal CurrentColor As Long) As Integer
-    ExtractR = CurrentColor Mod 256
-End Function
-
-Public Function ExtractG(ByVal CurrentColor As Long) As Integer
-    ExtractG = (CurrentColor \ 256) And 255
-End Function
-
-Public Function ExtractB(ByVal CurrentColor As Long) As Integer
-    ExtractB = (CurrentColor \ 65536) And 255
-End Function
-
-'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
-Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
-    BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
 End Function

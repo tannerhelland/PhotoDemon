@@ -1,4 +1,4 @@
-Attribute VB_Name = "Misc_ProgressBar"
+Attribute VB_Name = "ProgressBar_Support_Functions"
 '***************************************************************************
 'Miscellaneous Functions Related to the Progress Bar
 'Copyright ©2001-2013 by Tanner Helland
@@ -28,10 +28,10 @@ Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.
-Public Sub Replacement_DoEvents(ByVal srchWnd As Long)
+Public Sub Replacement_DoEvents(ByVal srcHwnd As Long)
 
     Dim tmpMsg As winMsg
-    Do While PeekMessage(tmpMsg, srchWnd, 0&, 0&, &H1&)
+    Do While PeekMessage(tmpMsg, srcHwnd, 0&, 0&, &H1&)
         TranslateMessage tmpMsg
         DispatchMessage tmpMsg
     Loop

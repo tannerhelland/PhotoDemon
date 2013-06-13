@@ -1,4 +1,4 @@
-Attribute VB_Name = "Misc_Validation"
+Attribute VB_Name = "Text_Validation"
 '***************************************************************************
 'Miscellaneous Functions Related to Validating User Input
 'Copyright ©2000-2013 by Tanner Helland
@@ -34,28 +34,28 @@ Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed A
     cursorPos = srcTextBox.SelStart
     
     'Loop through the text box contents and remove any invalid characters
-    Dim i As Long
+    Dim I As Long
     Dim invLoc As Long
     
-    For i = 1 To Len(numString)
+    For I = 1 To Len(numString)
         
         'Compare a single character from the text box against our list of valid characters
-        invLoc = InStr(validChars, Mid$(numString, i, 1))
+        invLoc = InStr(validChars, Mid$(numString, I, 1))
         
         'If this character was NOT found in the list of valid characters, remove it from the string
         If invLoc = 0 Then
         
-            numString = Left$(numString, i - 1) & Right$(numString, Len(numString) - i)
+            numString = Left$(numString, I - 1) & Right$(numString, Len(numString) - I)
             
             'Modify the position of the cursor to match (so the text box maintains the same cursor position)
-            If i >= (cursorPos - 1) Then cursorPos = cursorPos - 1
+            If I >= (cursorPos - 1) Then cursorPos = cursorPos - 1
             
             'Move the loop variable back by 1 so the next character is properly checked
-            i = i - 1
+            I = I - 1
             
         End If
             
-    Next i
+    Next I
         
     'Place the newly validated string back in the text box
     srcTextBox.Text = numString

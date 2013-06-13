@@ -1,4 +1,4 @@
-Attribute VB_Name = "Misc_FileInteractions"
+Attribute VB_Name = "File_And_Path_Handling"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright ©2000-2013 by Tanner Helland
@@ -50,18 +50,18 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
     'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
     If Right(tmpFilename, 1) = ")" Then
     
-        Dim i As Long
-        For i = Len(tmpFilename) - 2 To 1 Step -1
+        Dim I As Long
+        For I = Len(tmpFilename) - 2 To 1 Step -1
             
             ' If it isn't a number, see if it's an initial parentheses: "("
-            If Not (IsNumeric(Mid(tmpFilename, i, 1))) Then
+            If Not (IsNumeric(Mid(tmpFilename, I, 1))) Then
                 
                 'If it is a parentheses, then this file already has a "( #)" appended to it.  Figure out what the
                 ' number inside the parentheses is, and strip that entire block from the filename.
-                If Mid(tmpFilename, i, 1) = "(" Then
+                If Mid(tmpFilename, I, 1) = "(" Then
                 
-                    numToAppend = CLng(Val(Mid(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
-                    tmpFilename = Left(tmpFilename, i - 2)
+                    numToAppend = CLng(Val(Mid(tmpFilename, I + 1, Len(tmpFilename) - I - 1)))
+                    tmpFilename = Left(tmpFilename, I - 2)
                     Exit For
                 
                 'If this character is non-numeric and NOT an initial parentheses, this filename is not in the format we want.
@@ -74,7 +74,7 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
             End If
         
         'If this character IS a number, keep scanning.
-        Next i
+        Next I
     
     'If this is not already a copy of the format "filename (#).ext", start scanning at # = 2
     Else
@@ -176,14 +176,14 @@ noWriteAccess:
 End Function
 
 'Straight from MSDN - generate a "browse for folder" dialog
-Public Function BrowseForFolder(ByVal srchWnd As Long) As String
+Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
     
     Dim objShell As Shell
     Dim objFolder As Folder
     Dim returnString As String
         
     Set objShell = New Shell
-    Set objFolder = objShell.BrowseForFolder(srchWnd, g_Language.TranslateMessage("Please select a folder:"), 0)
+    Set objFolder = objShell.BrowseForFolder(srcHwnd, g_Language.TranslateMessage("Please select a folder:"), 0)
             
     If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
     

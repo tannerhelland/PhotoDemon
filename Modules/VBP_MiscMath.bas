@@ -1,4 +1,4 @@
-Attribute VB_Name = "Misc_Math"
+Attribute VB_Name = "Math_Functions"
 '***************************************************************************
 'Specialized Math Routines
 'Copyright ©2012-2013 by Tanner Helland
