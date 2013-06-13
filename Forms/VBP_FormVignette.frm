@@ -32,11 +32,19 @@ Begin VB.Form FormVignette
       TabIndex        =   10
       Top             =   4440
       Width           =   1500
-      _extentx        =   2646
-      _extenty        =   635
-      caption         =   "fit to image"
-      font            =   "VBP_FormVignette.frx":0000
-      value           =   -1
+      _ExtentX        =   2646
+      _ExtentY        =   635
+      Caption         =   "fit to image"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox PicColor 
       Appearance      =   0  'Flat
@@ -84,8 +92,8 @@ Begin VB.Form FormVignette
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton optShape 
       Height          =   360
@@ -94,10 +102,18 @@ Begin VB.Form FormVignette
       TabIndex        =   11
       Top             =   4440
       Width           =   1050
-      _extentx        =   1852
-      _extenty        =   635
-      caption         =   "circular"
-      font            =   "VBP_FormVignette.frx":0028
+      _ExtentX        =   1852
+      _ExtentY        =   635
+      Caption         =   "circular"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -105,12 +121,20 @@ Begin VB.Form FormVignette
       TabIndex        =   12
       Top             =   810
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormVignette.frx":0050
-      min             =   1
-      max             =   100
-      value           =   60
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   60
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltFeathering 
       Height          =   495
@@ -118,12 +142,20 @@ Begin VB.Form FormVignette
       TabIndex        =   13
       Top             =   1650
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormVignette.frx":0078
-      min             =   1
-      max             =   100
-      value           =   30
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   30
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltTransparency 
       Height          =   495
@@ -131,12 +163,20 @@ Begin VB.Form FormVignette
       TabIndex        =   14
       Top             =   2490
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormVignette.frx":00A0
-      min             =   1
-      max             =   100
-      value           =   80
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   100
+      Value           =   80
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblShape 
       AutoSize        =   -1  'True
@@ -281,7 +321,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltRadius.IsValid And sltFeathering.IsValid And sltTransparency.IsValid Then
         Me.Visible = False
-        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor)
+        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, picColor.backColor)
         Unload Me
     End If
     
@@ -460,7 +500,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor PicColor
+    setHandCursor picColor
     
 End Sub
 
@@ -474,14 +514,10 @@ End Sub
 
 Private Sub PicColor_Click()
 
-    'Use a common dialog box to select a new color.  (In the future, perhaps I'll design a better custom box.)
-    Dim retColor As Long
-    Dim CD1 As cCommonDialog
-    Set CD1 = New cCommonDialog
-    retColor = PicColor.backColor
-    
-    If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
-        PicColor.backColor = retColor
+    'Use the default color dialog to select a new color
+    Dim newColor As Long
+    If showColorDialog(newColor, Me, picColor.backColor) Then
+        picColor.backColor = newColor
         updatePreview
     End If
     
@@ -501,5 +537,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor, True, fxPreview
+    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, picColor.backColor, True, fxPreview
 End Sub

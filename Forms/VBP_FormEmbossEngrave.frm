@@ -234,14 +234,10 @@ End Sub
 'Clicking on the picture box allows the user to select a new color
 Private Sub PicColor_Click()
 
-    'Use a common dialog box to select a new color.  (In the future, perhaps I'll design a better custom box.)
-    Dim retColor As Long
-    Dim CD1 As cCommonDialog
-    Set CD1 = New cCommonDialog
-    retColor = picColor.backColor
-    
-    If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
-        picColor.backColor = retColor
+    'Use the default color dialog to select a new color
+    Dim newColor As Long
+    If showColorDialog(newColor, Me, picColor.backColor) Then
+        picColor.backColor = newColor
         chkToColor.Value = vbChecked
         UpdateEmbossPreview
     End If

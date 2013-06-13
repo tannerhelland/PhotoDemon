@@ -20,6 +20,29 @@ Option Explicit
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
+'Present the user with a color selection dialog.  At present, this is just a thin wrapper to the stock Windows color
+' selector, but in the future it will link to a custom PhotoDemon one.
+' INPUTS:  1) a Long-type variable that will receive the new color
+'          2) an optional intial color
+'
+' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
+Public Function showColorDialog(ByRef colorReceive As Long, ByRef dialogOwner As Form, Optional ByVal initialColor As Long = vbWhite) As Boolean
+
+    'For now, use a standard Windows color selector
+    Dim retColor As Long
+    Dim CD1 As cCommonDialog
+    Set CD1 = New cCommonDialog
+    retColor = initialColor
+    
+    If CD1.VBChooseColor(retColor, True, True, False, dialogOwner.hWnd) Then
+        colorReceive = retColor
+        showColorDialog = True
+    Else
+        showColorDialog = False
+    End If
+
+End Function
+
 'Given the number of colors in an image (as supplied by getQuickColorCount, below), return the highest color depth
 ' that includes all those colors and is supported by PhotoDemon (1/4/8/24/32)
 Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refLayer As pdLayer) As Long
@@ -86,10 +109,10 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     Dim UniqueColors() As Long
     ReDim UniqueColors(0 To 511) As Long
     
-    Dim I As Long
-    For I = 0 To 255
-        UniqueColors(I) = -1
-    Next I
+    Dim i As Long
+    For i = 0 To 255
+        UniqueColors(i) = -1
+    Next i
     
     'Total number of unique colors counted so far
     Dim totalCount As Long
@@ -113,12 +136,12 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
-        For I = 0 To totalCount
-            If UniqueColors(I) = chkValue Then
+        For i = 0 To totalCount
+            If UniqueColors(i) = chkValue Then
                 colorFound = True
                 Exit For
             End If
-        Next I
+        Next i
         
         'If colorFound is still false, store this value in the array and increment our color counter
         If Not colorFound Then
@@ -172,11 +195,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         g_IsImageGray = True
     
         'Loop through all available colors
-        For I = 0 To totalCount - 1
+        For i = 0 To totalCount - 1
         
-            r = ExtractR(UniqueColors(I))
-            g = ExtractG(UniqueColors(I))
-            b = ExtractB(UniqueColors(I))
+            r = ExtractR(UniqueColors(i))
+            g = ExtractG(UniqueColors(i))
+            b = ExtractB(UniqueColors(i))
             
             'If any of the components do not match, this is not a grayscale image
             If (r <> g) Or (g <> b) Or (r <> b) Then
@@ -184,7 +207,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
                 Exit For
             End If
             
-        Next I
+        Next i
     
     'If the image contains more than 256 colors, it is not grayscale
     Else

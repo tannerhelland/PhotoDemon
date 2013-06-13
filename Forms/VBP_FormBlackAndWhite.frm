@@ -303,13 +303,9 @@ End Sub
 'Allow the user to select a custom color for each
 Private Sub picBWColor_Click(Index As Integer)
     
-    'Use a common dialog box to select a new color.  (In the future, perhaps I'll design a better custom box.)
+    'Use the default color dialog to select a new color
     Dim newColor As Long
-    Dim comDlg As cCommonDialog
-    Set comDlg = New cCommonDialog
-    newColor = picBWColor(Index).backColor
-    
-    If comDlg.VBChooseColor(newColor, True, True, False, Me.hWnd) Then
+    If showColorDialog(newColor, Me, picBWColor(Index).backColor) Then
         picBWColor(Index).backColor = newColor
         updatePreview
     End If

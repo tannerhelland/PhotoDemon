@@ -252,7 +252,7 @@ Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold) Then
         CalculateOptimalMidtone
     Else
-        PicColor.backColor = RGB(127, 127, 127)
+        picColor.backColor = RGB(127, 127, 127)
     End If
     updatePreview
 End Sub
@@ -268,7 +268,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If sltShadow.IsValid And sltHighlight.IsValid Then
         Me.Visible = False
-        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(PicColor.backColor))
+        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(picColor.backColor))
         Unload Me
     End If
     
@@ -279,7 +279,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor PicColor
+    setHandCursor picColor
     
     'Render a preview
     updatePreview
@@ -307,16 +307,14 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub PicColor_Click()
-    'Use a common dialog box to select a new color.  (In the future, perhaps I'll design a better custom box.)
-    Dim retColor As Long
-    Dim CD1 As cCommonDialog
-    Set CD1 = New cCommonDialog
-    retColor = PicColor.backColor
     
-    If CD1.VBChooseColor(retColor, True, True, False, Me.hWnd) Then
-        PicColor.backColor = retColor
+    'Use the default color dialog to select a new color
+    Dim newColor As Long
+    If showColorDialog(newColor, Me, picColor.backColor) Then
+        picColor.backColor = newColor
         updatePreview
     End If
+
 End Sub
 
 Private Sub CalculateOptimalMidtone()
@@ -405,7 +403,7 @@ Private Sub CalculateOptimalMidtone()
     
     bCount = x - 1
     
-    PicColor.backColor = RGB(255 - rCount, 255 - gCount, 255 - bCount)
+    picColor.backColor = RGB(255 - rCount, 255 - gCount, 255 - bCount)
         
 End Sub
 
@@ -418,6 +416,6 @@ Private Sub sltShadow_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyShadowHighlight sltShadow, sltHighlight, CLng(PicColor.backColor), True, fxPreview
+    ApplyShadowHighlight sltShadow, sltHighlight, CLng(picColor.backColor), True, fxPreview
 End Sub
 
