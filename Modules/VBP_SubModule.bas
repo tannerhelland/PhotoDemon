@@ -3,9 +3,8 @@ Attribute VB_Name = "Misc_Uncategorized"
 'Miscellaneous Operations Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 10/May/13
-'Last update: Built "userPressedESC" function, which can be used to terminate long-running image processing loops.  Note that
-'              additional coding is required in said loops, because array references must be freed to avoid unhandled exceptions.
+'Last updated: 13/June/13
+'Last update: added a function by VB6 code LaVolpe for converting decimals to fractions.  Used to display image aspect ratio.
 '
 'If a function doesn't have a home in a more appropriate module, it gets stuck here. Over time, I'm
 ' hoping to clear out most of this module in favor of a more organized approach.
@@ -62,7 +61,7 @@ Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boole
         If tmpMsg.wParam = vbKeyEscape Then
             If displayConfirmationPrompt Then
                 Dim msgReturn As VbMsgBoxResult
-                msgReturn = pdMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.ID)
+                msgReturn = pdMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.Id)
                 If msgReturn = vbYes Then cancelCurrentAction = True Else cancelCurrentAction = False
             Else
                 cancelCurrentAction = True
@@ -77,23 +76,6 @@ Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boole
     userPressedESC = cancelCurrentAction
     
 End Function
-
-'Convert a width and height pair to a new max width and height, while preserving aspect ratio
-Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long)
-    
-    Dim srcAspect As Double, dstAspect As Double
-    srcAspect = srcWidth / srcHeight
-    dstAspect = dstWidth / dstHeight
-    
-    If srcAspect > dstAspect Then
-        newWidth = dstWidth
-        newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
-    Else
-        newHeight = dstHeight
-        newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
-    End If
-
-End Sub
 
 'Given the number of colors in an image (as supplied by getQuickColorCount, below), return the highest color depth
 ' that includes all those colors and is supported by PhotoDemon (1/4/8/24/32)
@@ -161,10 +143,10 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     Dim UniqueColors() As Long
     ReDim UniqueColors(0 To 511) As Long
     
-    Dim i As Long
-    For i = 0 To 255
-        UniqueColors(i) = -1
-    Next i
+    Dim I As Long
+    For I = 0 To 255
+        UniqueColors(I) = -1
+    Next I
     
     'Total number of unique colors counted so far
     Dim totalCount As Long
@@ -188,12 +170,12 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         colorFound = False
         
         'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
-        For i = 0 To totalCount
-            If UniqueColors(i) = chkValue Then
+        For I = 0 To totalCount
+            If UniqueColors(I) = chkValue Then
                 colorFound = True
                 Exit For
             End If
-        Next i
+        Next I
         
         'If colorFound is still false, store this value in the array and increment our color counter
         If Not colorFound Then
@@ -247,11 +229,11 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         g_IsImageGray = True
     
         'Loop through all available colors
-        For i = 0 To totalCount - 1
+        For I = 0 To totalCount - 1
         
-            r = ExtractR(UniqueColors(i))
-            g = ExtractG(UniqueColors(i))
-            b = ExtractB(UniqueColors(i))
+            r = ExtractR(UniqueColors(I))
+            g = ExtractG(UniqueColors(I))
+            b = ExtractB(UniqueColors(I))
             
             'If any of the components do not match, this is not a grayscale image
             If (r <> g) Or (g <> b) Or (r <> b) Then
@@ -259,7 +241,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
                 Exit For
             End If
             
-        Next i
+        Next I
     
     'If the image contains more than 256 colors, it is not grayscale
     Else
@@ -521,16 +503,6 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
 
 End Function
 
-'Return the distance between two values on the same line
-Public Function distanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
-    distanceOneDimension = Sqr((x1 - x2) ^ 2)
-End Function
-
-'Return the distance between two points
-Public Function distanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
-    distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
-End Function
-
 'Extract the red, green, or blue value from an RGB() Long
 Public Function ExtractR(ByVal CurrentColor As Long) As Integer
     ExtractR = CurrentColor Mod 256
@@ -547,44 +519,4 @@ End Function
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef mixRatio As Double) As Byte
     BlendColors = ((1 - mixRatio) * Color1) + (mixRatio * Color2)
-End Function
-
-'Return the arctangent of two values (rise / run)
-Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
- 
-    If (y = 0) And (x = 0) Then
-        Atan2 = 0
-        Exit Function
-    End If
- 
-    If y > 0 Then
-        If x >= y Then
-            Atan2 = Atn(y / x)
-        ElseIf x <= -y Then
-            Atan2 = Atn(y / x) + PI
-        Else
-            Atan2 = PI_HALF - Atn(x / y)
-        End If
-    Else
-        If x >= -y Then
-            Atan2 = Atn(y / x)
-        ElseIf x <= y Then
-            Atan2 = Atn(y / x) - PI
-        Else
-            Atan2 = -Atn(x / y) - PI_HALF
-        End If
-    End If
- 
-End Function
-
-'Arcsine function
-Public Function Asin(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Asin = Atan2(x, Sqr(1 - x * x))
-End Function
-
-'Arccosine function
-Public Function Acos(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Acos = Atan2(Sqr(1 - x * x), x)
 End Function
