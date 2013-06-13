@@ -3,7 +3,7 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   4500
+   ClientHeight    =   5220
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   7020
@@ -19,16 +19,16 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   300
+   ScaleHeight     =   348
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   468
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   480
-      Left            =   840
+      Left            =   600
       TabIndex        =   12
-      Top             =   3000
+      Top             =   3720
       Width           =   2265
       _ExtentX        =   3995
       _ExtentY        =   847
@@ -49,7 +49,7 @@ Begin VB.Form FormResize
       Height          =   495
       Left            =   4050
       TabIndex        =   0
-      Top             =   3870
+      Top             =   4590
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
@@ -58,7 +58,7 @@ Begin VB.Form FormResize
       Height          =   495
       Left            =   5520
       TabIndex        =   1
-      Top             =   3870
+      Top             =   4590
       Width           =   1365
    End
    Begin VB.ComboBox cboResample 
@@ -73,17 +73,17 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   840
+      Left            =   600
       Style           =   2  'Dropdown List
       TabIndex        =   5
-      Top             =   2520
+      Top             =   3240
       Width           =   5535
    End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
-      Left            =   4110
+      Left            =   4200
       TabIndex        =   4
-      Top             =   840
+      Top             =   975
       Width           =   1770
       _ExtentX        =   3122
       _ExtentY        =   847
@@ -101,9 +101,9 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
-      Left            =   1560
+      Left            =   1440
       TabIndex        =   2
-      Top             =   585
+      Top             =   705
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -120,9 +120,9 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
-      Left            =   1560
+      Left            =   1440
       TabIndex        =   3
-      Top             =   1215
+      Top             =   1335
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -137,39 +137,76 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin VB.Label lblTitle 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "new size:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   14
+      Top             =   240
+      Width           =   990
+   End
+   Begin VB.Label lblAspectRatio 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "selected aspect ratio is"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   615
+      TabIndex        =   13
+      Top             =   1950
+      Width           =   2370
+   End
    Begin VB.Line Line4 
       BorderColor     =   &H00808080&
-      X1              =   280
-      X2              =   280
-      Y1              =   49
-      Y2              =   61
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H00808080&
-      X1              =   280
-      X2              =   280
-      Y1              =   84
-      Y2              =   98
+      X1              =   272
+      X2              =   272
+      Y1              =   57
+      Y2              =   106
    End
    Begin VB.Line Line3 
       BorderColor     =   &H00808080&
-      X1              =   280
-      X2              =   240
-      Y1              =   48
-      Y2              =   48
+      X1              =   272
+      X2              =   232
+      Y1              =   56
+      Y2              =   56
    End
    Begin VB.Line Line2 
       BorderColor     =   &H00808080&
-      X1              =   240
-      X2              =   280
-      Y1              =   97
-      Y2              =   97
+      X1              =   232
+      X2              =   272
+      Y1              =   105
+      Y2              =   105
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -2280
       TabIndex        =   11
-      Top             =   3720
+      Top             =   4440
       Width           =   9975
    End
    Begin VB.Label lblHeightUnit 
@@ -188,9 +225,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   375
-      Left            =   2850
+      Left            =   2730
       TabIndex        =   10
-      Top             =   1245
+      Top             =   1365
       Width           =   855
    End
    Begin VB.Label lblWidthUnit 
@@ -209,9 +246,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   480
-      Left            =   2850
+      Left            =   2730
       TabIndex        =   9
-      Top             =   615
+      Top             =   735
       Width           =   855
    End
    Begin VB.Label lblHeight 
@@ -232,9 +269,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   720
+      Left            =   600
       TabIndex        =   8
-      Top             =   1245
+      Top             =   1365
       Width           =   750
    End
    Begin VB.Label lblWidth 
@@ -255,9 +292,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   720
+      Left            =   600
       TabIndex        =   7
-      Top             =   615
+      Top             =   735
       Width           =   675
    End
    Begin VB.Label lblResample 
@@ -277,9 +314,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   720
+      Left            =   240
       TabIndex        =   6
-      Top             =   2160
+      Top             =   2760
       Width           =   1470
    End
 End
@@ -375,10 +412,10 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
     
     'Populate the combo box
     cboResample.Clear
-    Dim i As Long
-    For i = 0 To numResamples - 1
-        cboResample.AddItem resampleTypes(i).Name, i
-    Next i
+    Dim I As Long
+    For I = 0 To numResamples - 1
+        cboResample.AddItem resampleTypes(I).Name, I
+    Next I
     
     'If this is the first time we are filling the combo box, provide an intelligent default setting
     If isFirstTime Then
@@ -417,12 +454,12 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
         End If
         
         'Find the matching resample method in the new combo box
-        For i = 0 To cboResample.ListCount - 1
-            If resampleTypes(i).ProgramID = targetResampleMethod Then
-                cboResample.ListIndex = i
+        For I = 0 To cboResample.ListCount - 1
+            If resampleTypes(I).ProgramID = targetResampleMethod Then
+                cboResample.ListIndex = I
                 Exit For
             End If
-        Next i
+        Next I
     
     End If
 
@@ -744,6 +781,27 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     
 End Sub
 
+'PhotoDemon now displays an approximate aspect ratio for the selected values.  This can be helpful when
+' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
+Private Sub updateAspectRatio()
+
+    Dim wholeNumber As Double, Numerator As Double, Denominator As Double
+    
+    If tudWidth.IsValid And tudHeight.IsValid Then
+        ConvertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
+        'Numerator = (wholeNumber * Denominator) + Numerator
+        
+        'Aspect ratios are typically given in terms of base 10 if possible, so change something like 8:5 to 16:10
+        If CLng(Denominator) = 5 Then
+            Numerator = Numerator * 2
+            Denominator = Denominator * 2
+        End If
+        
+        lblAspectRatio.Caption = g_Language.TranslateMessage("selected aspect ratio is %1:%2", Numerator, Denominator)
+    End If
+
+End Sub
+
 'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
 Private Sub tudHeight_Change()
     If CBool(chkRatio) And allowedToUpdateWidth Then
@@ -751,6 +809,9 @@ Private Sub tudHeight_Change()
         tudWidth = Int((tudHeight * wRatio) + 0.5)
         allowedToUpdateHeight = True
     End If
+    
+    updateAspectRatio
+    
 End Sub
 
 Private Sub tudWidth_Change()
@@ -759,4 +820,7 @@ Private Sub tudWidth_Change()
         tudHeight = Int((tudWidth * hRatio) + 0.5)
         allowedToUpdateWidth = True
     End If
+    
+    updateAspectRatio
+    
 End Sub
