@@ -24,6 +24,25 @@ Begin VB.Form FormResize
    ScaleWidth      =   468
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkNames 
+      Height          =   480
+      Left            =   840
+      TabIndex        =   12
+      Top             =   3000
+      Width           =   2265
+      _ExtentX        =   3995
+      _ExtentY        =   847
+      Caption         =   "show technical names"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton CmdResize 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -243,9 +262,10 @@ Begin VB.Form FormResize
    End
    Begin VB.Label lblResample 
       Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "resample method:"
+      Caption         =   "resize quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -256,11 +276,11 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   375
+      Height          =   285
       Left            =   720
       TabIndex        =   6
       Top             =   2160
-      Width           =   2895
+      Width           =   1470
    End
 End
 Attribute VB_Name = "FormResize"
@@ -272,8 +292,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 29/April/13
-'Last update: rebuilt the form around the new text/up-down custom control.  LOC for the module was significantly reduced.
+'Last updated: 13/June/13
+'Last update: redesigned the form to incorporate features originally meant for "Smart Resize"
 '
 'Handles all image-size related functions.  Currently supports nearest-neighbor and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it manually), bilinear resampling via pure VB, and
@@ -286,6 +306,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Type resampleAlgorithm
+    Name As String
+    ProgramID As Long
+End Type
+
+Dim resampleTypes() As resampleAlgorithm
+Dim numResamples As Long
+Dim lastSelectedResample As Long
+
 'Used for maintaining ratios when the check box is clicked
 Private wRatio As Double, hRatio As Double
 
@@ -293,6 +322,120 @@ Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+Private Sub addResample(ByVal rName As String, ByVal rID As Long)
+    resampleTypes(numResamples).Name = rName
+    resampleTypes(numResamples).ProgramID = rID
+    numResamples = numResamples + 1
+    ReDim Preserve resampleTypes(0 To numResamples) As resampleAlgorithm
+End Sub
+
+'Display all available resample algorithms in the combo box (contingent on the "show technical names" check box as well)
+Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
+
+    ReDim resampleTypes(0) As resampleAlgorithm
+    numResamples = 0
+
+    'Use friendly names
+    If Not CBool(chkNames) Then
+        
+        lblResample.Caption = g_Language.TranslateMessage("resize quality:")
+        
+        'FreeImage is required for best output.  Without it, only a small number of resample algorithms are implemented.
+        If g_ImageFormats.FreeImageEnabled Then
+            addResample g_Language.TranslateMessage("Best general purpose"), RESIZE_BICUBIC_CATMULL
+            addResample g_Language.TranslateMessage("Best for photographs"), RESIZE_LANCZOS
+            addResample g_Language.TranslateMessage("Best for text and illustration"), RESIZE_BICUBIC_MITCHELL
+            addResample g_Language.TranslateMessage("Fastest"), RESIZE_NORMAL
+        Else
+            addResample g_Language.TranslateMessage("Best for photographs"), RESIZE_BILINEAR
+            addResample g_Language.TranslateMessage("Best for text and illustration"), RESIZE_HALFTONE
+            addResample g_Language.TranslateMessage("Fastest"), RESIZE_NORMAL
+        End If
+    
+    'Use technical names
+    Else
+        
+        lblResample.Caption = g_Language.TranslateMessage("resampling algorithm:")
+        
+        'Prepare a list of available resample algorithms
+        addResample g_Language.TranslateMessage("Nearest Neighbor"), RESIZE_NORMAL
+        addResample g_Language.TranslateMessage("Halftone"), RESIZE_HALFTONE
+        addResample g_Language.TranslateMessage("Bilinear"), RESIZE_BILINEAR
+        
+        'If the FreeImage library is available, add additional resize options to the combo box
+        If g_ImageFormats.FreeImageEnabled Then
+            addResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE
+            addResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL
+            addResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL
+            addResample g_Language.TranslateMessage("Sinc (Lanczos3)"), RESIZE_LANCZOS
+        End If
+                
+    End If
+    
+    'Populate the combo box
+    cboResample.Clear
+    Dim i As Long
+    For i = 0 To numResamples - 1
+        cboResample.AddItem resampleTypes(i).Name, i
+    Next i
+    
+    'If this is the first time we are filling the combo box, provide an intelligent default setting
+    If isFirstTime Then
+    
+        'Friendly names
+        If Not CBool(chkNames) Then
+            cboResample.ListIndex = 0
+            
+        'Technical names
+        Else
+        
+            'FreeImage enabled
+            If g_ImageFormats.FreeImageEnabled Then
+                cboResample.ListIndex = 5
+                
+            'FreeImage not enabled
+            Else
+                cboResample.ListIndex = 2
+            End If
+        
+        End If
+    
+    'If this is not the first time we are creating a list of resample methods, re-select whatever method the
+    ' user had previously selected (if available; otherwise, redirect them to the best general-purpose algorithm)
+    Else
+    
+        Dim targetResampleMethod As Long
+        targetResampleMethod = lastSelectedResample
+        
+        'Some technical options are not available under friendly names, so redirect them to something similar
+        If CBool(chkNames) Then
+            Select Case lastSelectedResample
+                Case 1 To 3
+                    targetResampleMethod = RESIZE_BICUBIC_CATMULL
+            End Select
+        End If
+        
+        'Find the matching resample method in the new combo box
+        For i = 0 To cboResample.ListCount - 1
+            If resampleTypes(i).ProgramID = targetResampleMethod Then
+                cboResample.ListIndex = i
+                Exit For
+            End If
+        Next i
+    
+    End If
+
+End Sub
+
+Private Sub cboResample_Click()
+    lastSelectedResample = resampleTypes(cboResample.ListIndex).ProgramID
+End Sub
+
+'New to v5.6, PhotoDemon gives the user friendly resample names by default.  They can toggle these off at their liking.
+Private Sub chkNames_Click()
+    refillResampleBox
+End Sub
 
 'If the ratio button is checked, update the height box to reflect the image's current aspect ratio
 Private Sub ChkRatio_Click()
@@ -306,29 +449,7 @@ Private Sub CmdResize_Click()
     If tudWidth.IsValid And tudHeight.IsValid Then
         
         Me.Visible = False
-    
-        'Resample based on the combo box entry...
-        Dim resampleMethod As Long
-        
-        Select Case cboResample.ListIndex
-            Case 0
-                resampleMethod = RESIZE_NORMAL
-            Case 1
-                resampleMethod = RESIZE_HALFTONE
-            Case 2
-                resampleMethod = RESIZE_BILINEAR
-            Case 3
-                resampleMethod = RESIZE_BSPLINE
-            Case 4
-                resampleMethod = RESIZE_BICUBIC_MITCHELL
-            Case 5
-                resampleMethod = RESIZE_BICUBIC_CATMULL
-            Case 6
-                resampleMethod = RESIZE_LANCZOS
-        End Select
-        
-        Process "Resize", , buildParams(tudWidth, tudHeight, resampleMethod)
-        
+        Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID)
         Unload Me
         
     End If
@@ -351,20 +472,8 @@ Private Sub Form_Activate()
     wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
     hRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
 
-    'Load up the combo box
-    cboResample.AddItem "Nearest Neighbor", 0
-    cboResample.AddItem "Halftone", 1
-    cboResample.AddItem "Bilinear", 2
-    cboResample.ListIndex = 2
-    
-    'If the FreeImage library is available, add additional resize options to the combo box
-    If g_ImageFormats.FreeImageEnabled = True Then
-        cboResample.AddItem "B-Spline", 3
-        cboResample.AddItem "Bicubic (Mitchell and Netravali)", 4
-        cboResample.AddItem "Bicubic (Catmull-Rom)", 5
-        cboResample.AddItem "Sinc (Lanczos3)", 6
-        cboResample.ListIndex = 5
-    End If
+    'Populate the number of available resampling algorithms
+    refillResampleBox True
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     tudWidth.Value = pdImages(CurrentImage).Width
