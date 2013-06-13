@@ -573,7 +573,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 FormResize.Show vbModal, FormMain
             Else
-                FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3)
+                FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
             
         Case "Tile"

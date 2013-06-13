@@ -3,7 +3,7 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   5220
+   ClientHeight    =   8205
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   7020
@@ -19,16 +19,50 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   348
+   ScaleHeight     =   547
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   468
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picBackColor 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Left            =   1080
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   359
+      TabIndex        =   20
+      Top             =   6090
+      Width           =   5415
+   End
+   Begin PhotoDemon.smartOptionButton optFit 
+      Height          =   375
+      Index           =   0
+      Left            =   600
+      TabIndex        =   16
+      Top             =   4680
+      Width           =   1425
+      _ExtentX        =   2514
+      _ExtentY        =   661
+      Caption         =   "stretching"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   480
       Left            =   600
       TabIndex        =   12
-      Top             =   3720
+      Top             =   3480
       Width           =   2265
       _ExtentX        =   3995
       _ExtentY        =   847
@@ -43,13 +77,13 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdResize 
+   Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   4050
+      Left            =   4080
       TabIndex        =   0
-      Top             =   4590
+      Top             =   7590
       Width           =   1365
    End
    Begin VB.CommandButton CmdCancel 
@@ -58,7 +92,7 @@ Begin VB.Form FormResize
       Height          =   495
       Left            =   5520
       TabIndex        =   1
-      Top             =   4590
+      Top             =   7590
       Width           =   1365
    End
    Begin VB.ComboBox cboResample 
@@ -76,8 +110,8 @@ Begin VB.Form FormResize
       Left            =   600
       Style           =   2  'Dropdown List
       TabIndex        =   5
-      Top             =   3240
-      Width           =   5535
+      Top             =   3000
+      Width           =   5895
    End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
@@ -137,6 +171,137 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.smartOptionButton optFit 
+      Height          =   375
+      Index           =   1
+      Left            =   600
+      TabIndex        =   17
+      Top             =   5400
+      Width           =   1755
+      _ExtentX        =   3096
+      _ExtentY        =   661
+      Caption         =   "fit inclusively"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton optFit 
+      Height          =   375
+      Index           =   2
+      Left            =   600
+      TabIndex        =   18
+      Top             =   6720
+      Width           =   1800
+      _ExtentX        =   3175
+      _ExtentY        =   661
+      Caption         =   "fit exclusively"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblSubtext 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "the final image may look distorted"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   0
+      Left            =   1080
+      TabIndex        =   22
+      Top             =   5070
+      Width           =   2910
+   End
+   Begin VB.Label lblSubtext 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "no distortion; image edges will be cropped to fit"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   2
+      Left            =   1080
+      TabIndex        =   21
+      Top             =   7110
+      Width           =   4110
+   End
+   Begin VB.Label lblSubtext 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "no distortion; empty borders will be filled with:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   1
+      Left            =   1080
+      TabIndex        =   19
+      Top             =   5790
+      Width           =   4020
+   End
+   Begin VB.Label lblFit 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "fit image to new size by:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   15
+      Top             =   4200
+      Width           =   2610
+   End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -154,6 +319,7 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   0
       Left            =   240
       TabIndex        =   14
       Top             =   240
@@ -164,7 +330,7 @@ Begin VB.Form FormResize
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "selected aspect ratio is"
+      Caption         =   "new aspect ratio will be"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -179,7 +345,7 @@ Begin VB.Form FormResize
       Left            =   615
       TabIndex        =   13
       Top             =   1950
-      Width           =   2370
+      Width           =   2490
    End
    Begin VB.Line Line4 
       BorderColor     =   &H00808080&
@@ -206,7 +372,7 @@ Begin VB.Form FormResize
       Height          =   855
       Left            =   -2280
       TabIndex        =   11
-      Top             =   4440
+      Top             =   7440
       Width           =   9975
    End
    Begin VB.Label lblHeightUnit 
@@ -316,7 +482,7 @@ Begin VB.Form FormResize
       Height          =   285
       Left            =   240
       TabIndex        =   6
-      Top             =   2760
+      Top             =   2520
       Width           =   1470
    End
 End
@@ -343,6 +509,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'The list of available resampling algorithms changes based on the presence of FreeImage, and the use of
+' "friendly" vs "technical" names.  As a result, we have to track them dynamically using a custom type.
 Private Type resampleAlgorithm
     Name As String
     ProgramID As Long
@@ -360,6 +528,10 @@ Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'If the user unselects the "lock aspect ratio" box, we need to recenter the dialog over the main window.
+' Only do this once to avoid the dialog jumping all over the place.
+Dim dialogNeedsCentering As Boolean
+
 Private Sub addResample(ByVal rName As String, ByVal rID As Long)
     resampleTypes(numResamples).Name = rName
     resampleTypes(numResamples).ProgramID = rID
@@ -376,17 +548,16 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
     'Use friendly names
     If Not CBool(chkNames) Then
         
-        lblResample.Caption = g_Language.TranslateMessage("resize quality:")
+        lblResample.Caption = g_Language.TranslateMessage("resampling method:")
         
         'FreeImage is required for best output.  Without it, only a small number of resample algorithms are implemented.
         If g_ImageFormats.FreeImageEnabled Then
-            addResample g_Language.TranslateMessage("Best general purpose"), RESIZE_BICUBIC_CATMULL
             addResample g_Language.TranslateMessage("Best for photographs"), RESIZE_LANCZOS
-            addResample g_Language.TranslateMessage("Best for text and illustration"), RESIZE_BICUBIC_MITCHELL
+            addResample g_Language.TranslateMessage("Best for text and illustrations"), RESIZE_BICUBIC_MITCHELL
             addResample g_Language.TranslateMessage("Fastest"), RESIZE_NORMAL
         Else
             addResample g_Language.TranslateMessage("Best for photographs"), RESIZE_BILINEAR
-            addResample g_Language.TranslateMessage("Best for text and illustration"), RESIZE_HALFTONE
+            addResample g_Language.TranslateMessage("Best for text and illustrations"), RESIZE_HALFTONE
             addResample g_Language.TranslateMessage("Fastest"), RESIZE_NORMAL
         End If
     
@@ -412,10 +583,10 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
     
     'Populate the combo box
     cboResample.Clear
-    Dim I As Long
-    For I = 0 To numResamples - 1
-        cboResample.AddItem resampleTypes(I).Name, I
-    Next I
+    Dim i As Long
+    For i = 0 To numResamples - 1
+        cboResample.AddItem resampleTypes(i).Name, i
+    Next i
     
     'If this is the first time we are filling the combo box, provide an intelligent default setting
     If isFirstTime Then
@@ -446,7 +617,7 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
         targetResampleMethod = lastSelectedResample
         
         'Some technical options are not available under friendly names, so redirect them to something similar
-        If CBool(chkNames) Then
+        If CBool(chkNames) And g_ImageFormats.FreeImageEnabled Then
             Select Case lastSelectedResample
                 Case 1 To 3
                     targetResampleMethod = RESIZE_BICUBIC_CATMULL
@@ -454,12 +625,12 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
         End If
         
         'Find the matching resample method in the new combo box
-        For I = 0 To cboResample.ListCount - 1
-            If resampleTypes(I).ProgramID = targetResampleMethod Then
-                cboResample.ListIndex = I
+        For i = 0 To cboResample.ListCount - 1
+            If resampleTypes(i).ProgramID = targetResampleMethod Then
+                cboResample.ListIndex = i
                 Exit For
             End If
-        Next I
+        Next i
     
     End If
 
@@ -477,16 +648,29 @@ End Sub
 'If the ratio button is checked, update the height box to reflect the image's current aspect ratio
 Private Sub ChkRatio_Click()
     If CBool(chkRatio.Value) Then tudHeight = Int((tudWidth * hRatio) + 0.5)
+    updateFormLayout
+    
+    If dialogNeedsCentering Then
+        dialogNeedsCentering = False
+        Me.Top = FormMain.Top + ((FormMain.Height - Me.Height) \ 2)
+    End If
 End Sub
 
 'Perform a resize operation
-Private Sub CmdResize_Click()
+Private Sub CmdOK_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
     If tudWidth.IsValid And tudHeight.IsValid Then
         
         Me.Visible = False
-        Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID)
+        
+        Dim fitMethod As Long
+        Dim i As Long
+        For i = 0 To optFit.Count - 1
+            If optFit(i).Value Then fitMethod = i
+        Next i
+            
+        Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID, fitMethod, picBackColor.backColor)
         Unload Me
         
     End If
@@ -516,9 +700,40 @@ Private Sub Form_Activate()
     tudWidth.Value = pdImages(CurrentImage).Width
     tudHeight.Value = pdImages(CurrentImage).Height
     
+    'If the source image is 32bpp, change the text of the "fit inclusive" subheading to match
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+        lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be transparent")
+    Else
+        lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be filled with:")
+    End If
+    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    setHandCursor picBackColor
+        
+    'If the user unchecks the "lock aspect ratio" button, we will recenter the dialog once (as it's quite tall)
+    dialogNeedsCentering = True
+        
+End Sub
+
+'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
+Private Sub Form_Load()
+
+    'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
+    ' will be filled with transparency.
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    
+        'Hide the background color selectors
+        picBackColor.Visible = False
+        
+        'Move up the controls beneath it
+        optFit(2).Top = optFit(1).Top + 48
+        lblSubtext(2).Top = optFit(2).Top + 26
+        
+    End If
+    
+    updateFormLayout
     
 End Sub
 
@@ -527,7 +742,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Resize an image using the FreeImage library.  Very fast.
-Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
+Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer, ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
     
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
@@ -538,9 +753,9 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
         
         Message "Resampling image using the FreeImage plugin..."
         
-        'Convert our current layer to a FreeImage-type DIB
+        'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(srcLayer.getLayerDC)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -548,23 +763,15 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
             Dim returnDIB As Long
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, iWidth, iHeight, True, interpolationMethod)
             
-            'Resize our main layer in preparation for the transfer
-            pdImages(CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+            'Resize the destination layer in preparation for the transfer
+            dstLayer.createBlank iWidth, iHeight, srcLayer.getLayerColorDepth
             
             'Copy the bits from the FreeImage DIB to our DIB
-            SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
      
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             FreeLibrary hLib
-     
-            'Update the size variables
-            pdImages(CurrentImage).updateSize
-            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-        
-            'Fit the new image on-screen and redraw it
-            FitImageToViewport
-            FitWindowToImage
             
         Else
             FreeLibrary hLib
@@ -575,8 +782,37 @@ Private Sub FreeImageResize(ByVal iWidth As Long, iHeight As Long, ByVal interpo
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMethod As Byte)
+Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resampleMethod As Byte, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite)
 
+    'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
+    ' than the one requested.  Before doing anything else, calculate that new size.
+    Dim fitWidth As Long, fitHeight As Long
+    Dim newAspectRatio As Double, oldAspectRatio As Double
+    
+    Dim srcWidth As Long, srcHeight As Long
+    srcWidth = pdImages(CurrentImage).Width
+    srcHeight = pdImages(CurrentImage).Height
+    
+    Select Case fitMethod
+    
+        'Stretch-to-fit.  Default behavior, and no size changes are required.
+        Case 0
+            fitWidth = iWidth
+            fitHeight = iHeight
+        
+        'Fit inclusively.  Fit the image's largest dimension.  No cropping will occur, but blank space may be present.
+        Case 1
+            
+            'We have an existing function for this purpose.  (It's used when rendering preview images, for example.)
+            convertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight
+            
+        'Fit exclusively.  Fit the image's smallest dimension.  Cropping will occur, but no blank space will be present.
+        Case 2
+        
+            convertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight, False
+        
+    End Select
+    
     'If the image contains an active selection, automatically resize it to match the new image.
     Dim selActive As Boolean
     Dim tsLeft As Double, tsTop As Double, tsWidth As Double, tsHeight As Double
@@ -595,8 +831,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
         tInit tSelection, False
         
         'Note the ratio between the original width/height values and the new ones
-        wRatio = iWidth / pdImages(CurrentImage).Width
-        hRatio = iHeight / pdImages(CurrentImage).Height
+        wRatio = iWidth / srcWidth
+        hRatio = iHeight / srcHeight
         
     Else
         selActive = False
@@ -606,7 +842,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
 
-    Select Case iMethod
+    Select Case resampleMethod
 
         'Nearest neighbor...
         Case RESIZE_NORMAL
@@ -614,17 +850,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
             Message "Resizing image..."
             
             'Copy the current layer into this temporary layer at the new size
-            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, False
-            
-            'Now copy the resized image back into the main layer
-            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-            
-            'Update the size to match
-            pdImages(CurrentImage).updateSize
-            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-            
-            'Fit the new image on-screen and redraw it
-            FitOnScreen
+            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, False
             
         'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
         ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that
@@ -633,25 +859,15 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
             Message "Resizing image..."
             
             'Copy the current layer into this temporary layer at the new size
-            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, iWidth, iHeight, True
-                
-            'Now copy the resized image back into the main layer
-            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-            
-            'Update the size to match
-            pdImages(CurrentImage).updateSize
-            DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-            
-            'Fit the new image on-screen and redraw it
-            FitOnScreen
-            
+            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, True
+        
         'True bilinear sampling
         Case RESIZE_BILINEAR
         
             'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
             If g_ImageFormats.FreeImageEnabled Then
             
-                FreeImageResize iWidth, iHeight, FILTER_BILINEAR
+                FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BILINEAR
             
             'If FreeImage is not enabled, we have to do the resample ourselves.
             Else
@@ -665,7 +881,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
                 'Resize the temporary layer to the target size, and point a second local array at it
-                tmpLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+                tmpLayer.createBlank fitWidth, fitHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
                 
                 Dim dstImageData() As Byte
                 Dim dstSA As SAFEARRAY2D
@@ -693,20 +909,20 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 
                 'Scaled ratios between the old x and y values and the new ones
                 Dim xScale As Double, yScale As Double
-                xScale = (pdImages(CurrentImage).Width - 1) / iWidth
-                yScale = (pdImages(CurrentImage).Height - 1) / iHeight
+                xScale = (srcWidth - 1) / fitWidth
+                yScale = (srcHeight - 1) / fitHeight
                             
                 'Coordinate variables for source and destination
                 Dim x As Long, y As Long
                 Dim srcX As Double, srcY As Double
                             
-                For x = 0 To iWidth - 1
+                For x = 0 To fitWidth - 1
                     
                     'Generate the x calculation variables
                     srcX = x * xScale
                     
                     'Draw each pixel in the new image
-                    For y = 0 To iHeight - 1
+                    For y = 0 To fitHeight - 1
                         
                         'Generate the y calculation variables
                         srcY = y * yScale
@@ -719,10 +935,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                     If (x And progBarCheck) = 0 Then SetProgBarVal x
                     
                 Next x
-            
-                'Now copy the resized image back into the main layer
-                pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-                
+                            
                 'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
                 CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
                 Erase srcImageData
@@ -730,33 +943,89 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal iMetho
                 CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
                 Erase dstImageData
                 
-                'Update the size variables
-                pdImages(CurrentImage).updateSize
-                DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
-            
                 SetProgBarVal 0
-            
-                'Fit the new image on-screen and redraw it
-                FitOnScreen
                 
             End If
         
         Case RESIZE_BSPLINE
-            FreeImageResize iWidth, iHeight, FILTER_BSPLINE
+            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BSPLINE
             
         Case RESIZE_BICUBIC_MITCHELL
-            FreeImageResize iWidth, iHeight, FILTER_BICUBIC
+            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BICUBIC
             
         Case RESIZE_BICUBIC_CATMULL
-            FreeImageResize iWidth, iHeight, FILTER_CATMULLROM
+            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_CATMULLROM
         
         Case RESIZE_LANCZOS
-            FreeImageResize iWidth, iHeight, FILTER_LANCZOS3
+            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_LANCZOS3
             
     End Select
     
-    'Release our temporary layer
+    'The temporary layer now holds a copy of the resized image.
+    
+    'Calculate the aspect ratio of this layer and the target picture box
+    Dim srcAspect As Double, dstAspect As Double
+    srcAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
+    dstAspect = iWidth / iHeight
+    
+    Dim dstX As Long, dstY As Long, dWidth As Long, dHeight As Long
+    
+    'We now want to copy the resized image into the current image using the technique requested by the user.
+    Select Case fitMethod
+    
+        'Stretch-to-fit.  This is default resize behavior in all image editing software
+        Case 0
+    
+            'Very simple - just copy the resized image back into the main layer
+            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+    
+        'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
+        ' blank space - that space is filled by the background color parameter passed in.
+        Case 1
+        
+            'Resize the main layer (destructively!) to fit the new dimensions
+            pdImages(CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+        
+            'BitBlt the old image, centered, onto the new layer
+            If srcAspect > dstAspect Then
+                dstY = CLng((iHeight - fitHeight) / 2)
+                dstX = 0
+            Else
+                dstX = CLng((iWidth - fitWidth) / 2)
+                dstY = 0
+            End If
+            
+            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+        'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
+        ' blank space - but parts of the image may get cropped out.
+        Case 2
+        
+            'Resize the main layer (destructively!) to fit the new dimensions
+            pdImages(CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+        
+            'BitBlt the old image, centered, onto the new layer
+            If srcAspect < dstAspect Then
+                dstY = CLng((iHeight - fitHeight) / 2)
+                dstX = 0
+            Else
+                dstX = CLng((iWidth - fitWidth) / 2)
+                dstY = 0
+            End If
+            
+            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+    End Select
+    
+    'We are finished with the temporary layer, so release it
     Set tmpLayer = Nothing
+    
+    'Update the main image's size values
+    pdImages(CurrentImage).updateSize
+    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    
+    'Fit the new image on-screen and redraw it to its viewport
+    FitOnScreen
     
     'If the image had a selection, recreate it - but make it match the new image size
     If selActive Then
@@ -789,17 +1058,27 @@ Private Sub updateAspectRatio()
     
     If tudWidth.IsValid And tudHeight.IsValid Then
         ConvertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
-        'Numerator = (wholeNumber * Denominator) + Numerator
         
-        'Aspect ratios are typically given in terms of base 10 if possible, so change something like 8:5 to 16:10
+        'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
         If CLng(Denominator) = 5 Then
             Numerator = Numerator * 2
             Denominator = Denominator * 2
         End If
         
-        lblAspectRatio.Caption = g_Language.TranslateMessage("selected aspect ratio is %1:%2", Numerator, Denominator)
+        lblAspectRatio.Caption = g_Language.TranslateMessage("new aspect ratio will be %1:%2", Numerator, Denominator)
     End If
 
+End Sub
+
+Private Sub picBackColor_Click()
+    
+    'Use the default color dialog to select a new color
+    Dim newColor As Long
+    If showColorDialog(newColor, Me, picBackColor.backColor) Then
+        picBackColor.backColor = newColor
+        'updatePreview
+    End If
+    
 End Sub
 
 'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
@@ -823,4 +1102,67 @@ Private Sub tudWidth_Change()
     
     updateAspectRatio
     
+End Sub
+
+'When the image's aspect ratio is not being preserved, the user is provided with additional resize options.
+Private Sub updateFormLayout()
+
+    Dim i As Long
+    Dim formHeightDifference As Long
+    Me.ScaleMode = vbTwips
+    formHeightDifference = Me.Height - Me.ScaleHeight
+    Me.ScaleMode = vbPixels
+
+    If CBool(chkRatio) Then
+    
+        'Hide all "fit image" controls
+        lblFit.Visible = False
+        
+        For i = 0 To optFit.Count - 1
+            optFit(i).Visible = False
+        Next i
+        
+        For i = 0 To lblSubtext.Count - 1
+            lblSubtext(i).Visible = False
+        Next i
+        
+        picBackColor.Visible = False
+        
+        'Move the command bar into place
+        lblBackground.Top = chkNames.Top + chkNames.Height + 16
+        CmdOK.Top = lblBackground.Top + 10
+        CmdCancel.Top = CmdOK.Top
+        
+        'Resize the form to match
+        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
+    
+    Else
+    
+        'Show all "fit image" controls
+        lblFit.Visible = True
+        
+        For i = 0 To optFit.Count - 1
+            optFit(i).Visible = True
+        Next i
+        
+        For i = 0 To lblSubtext.Count - 1
+            lblSubtext(i).Visible = True
+        Next i
+        
+        'Hide the background color selector only if the image is not 32bpp.  (If it is 32bpp, blank space will
+        ' be filled by transparency, not color.)
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth <> 32 Then
+            picBackColor.Visible = True
+        End If
+        
+        'Move the command bar into place
+        lblBackground.Top = lblSubtext(2).Top + lblSubtext(2).Height + 16
+        CmdOK.Top = lblBackground.Top + 10
+        CmdCancel.Top = CmdOK.Top
+        
+        'Resize the form to match
+        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
+    
+    End If
+
 End Sub
