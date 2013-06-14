@@ -275,6 +275,8 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "RECHANNEL", 4, 11, 1    'Rechannel
         AddMenuIcon "COLORSHIFTR", 4, 11, 3  'Shift Right
         AddMenuIcon "COLORSHIFTL", 4, 11, 4  'Shift Left
+        AddMenuIcon "CHANNELMAX", 4, 11, 6   'Channel max
+        AddMenuIcon "CHANNELMIN", 4, 11, 7   'Channel min
     AddMenuIcon "COLORIZE", 4, 13      'Colorize
     AddMenuIcon "ENHANCE", 4, 14       'Enhance
         '--> Enhance sub-menu

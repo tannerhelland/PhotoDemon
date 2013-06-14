@@ -535,6 +535,12 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormChannelMixer.ApplyChannelMixer cParams.getParamString
             End If
             
+        Case "Maximum channel"
+            FilterMaxMinChannel True
+        
+        Case "Minimum channel"
+            FilterMaxMinChannel False
+            
     
         'Coordinate filters/transformations
         Case "Flip vertical"
