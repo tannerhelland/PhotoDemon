@@ -552,13 +552,13 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
         
         'FreeImage is required for best output.  Without it, only a small number of resample algorithms are implemented.
         If g_ImageFormats.FreeImageEnabled Then
-            addResample g_Language.TranslateMessage("Best for photographs"), RESIZE_LANCZOS
-            addResample g_Language.TranslateMessage("Best for text and illustrations"), RESIZE_BICUBIC_MITCHELL
-            addResample g_Language.TranslateMessage("Fastest"), RESIZE_NORMAL
+            addResample g_Language.TranslateMessage("best for photographs"), RESIZE_LANCZOS
+            addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BICUBIC_MITCHELL
+            addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL
         Else
-            addResample g_Language.TranslateMessage("Best for photographs"), RESIZE_BILINEAR
-            addResample g_Language.TranslateMessage("Best for text and illustrations"), RESIZE_HALFTONE
-            addResample g_Language.TranslateMessage("Fastest"), RESIZE_NORMAL
+            addResample g_Language.TranslateMessage("best for photographs"), RESIZE_BILINEAR
+            addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_HALFTONE
+            addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL
         End If
     
     'Use technical names
@@ -585,7 +585,7 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
     cboResample.Clear
     Dim i As Long
     For i = 0 To numResamples - 1
-        cboResample.AddItem resampleTypes(i).Name, i
+        cboResample.AddItem " " & resampleTypes(i).Name, i
     Next i
     
     'If this is the first time we are filling the combo box, provide an intelligent default setting

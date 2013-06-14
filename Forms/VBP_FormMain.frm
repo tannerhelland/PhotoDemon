@@ -2825,9 +2825,8 @@ Private Sub MnuImage_Click(Index As Integer)
         
         'Canvas resize
         Case 4
-            'Process "Canvas size", True
-            MsgBox "still under development; deactivated for now"
-        
+            Process "Canvas size", True
+            
         'Resize
         Case 5
             Process "Resize", True

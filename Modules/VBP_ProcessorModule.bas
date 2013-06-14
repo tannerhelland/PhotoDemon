@@ -564,9 +564,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         Case "Canvas size"
             If ShowDialog Then
-                'FormCanvasSize.Show vbModal, FormMain
+                FormCanvasSize.Show vbModal, FormMain
             Else
-            
+                FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Resize"
