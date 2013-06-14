@@ -185,6 +185,28 @@ Begin VB.Form FormCanvasSize
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin VB.Label lblAnchor 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "anchor position:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   5
+      Top             =   2520
+      Width           =   1725
+   End
    Begin VB.Label lblFill 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -368,28 +390,6 @@ Begin VB.Form FormCanvasSize
       Top             =   735
       Width           =   675
    End
-   Begin VB.Label lblAnchor 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "anchor position:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   240
-      TabIndex        =   5
-      Top             =   2520
-      Width           =   1725
-   End
 End
 Attribute VB_Name = "FormCanvasSize"
 Attribute VB_GlobalNameSpace = False
@@ -435,6 +435,9 @@ Dim m_ToolTip As clsToolTip
 'Current anchor position; used to render the anchor selection command buttons, among other things
 Dim m_CurrentAnchor As Long
 
+'We must also track which arrows are drawn where on the command button array
+Dim arrowLocations() As String
+
 'If the ratio button is checked, update the height box to reflect the image's current aspect ratio
 Private Sub ChkRatio_Click()
     If CBool(chkRatio.Value) Then tudHeight = Int((tudWidth * hRatio) + 0.5)
@@ -472,44 +475,62 @@ Private Sub updateAnchorButtons()
     
     Dim i As Long
     
-    'Start by building an array that contains the arrow that will appear in each location.
-    Dim arrowLocations(0 To 8) As String
-    fillArrowLocations arrowLocations
-    
-    'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
+    'If the buttons already have images, remove them first
     If Not cImgCtl Is Nothing Then
         For i = 0 To 8
-            cImgCtl.RemoveImage cmdAnchor(i).hWnd
+            If Len(arrowLocations(i)) > 0 Then cImgCtl.RemoveImage cmdAnchor(i).hWnd
         Next i
-    End If
-    Set cImgCtl = New clsControlImage
-    If g_IsProgramCompiled Then
-        
-        For i = 0 To 8
-            If Len(arrowLocations(i)) > 0 Then
-                With cImgCtl
-                    .LoadImageFromStream cmdAnchor(i).hWnd, LoadResData(arrowLocations(i), "CUSTOM"), 16, 16
-                    .SetMargins cmdAnchor(i).hWnd, 0
-                    .Align(cmdAnchor(i).hWnd) = Icon_Center
-                End With
-            End If
-        Next i
-        
+        Set cImgCtl = Nothing
     End If
     
-    'Finally, depress the active button
-    For i = 0 To cmdAnchor.Count - 1
-        If i = m_CurrentAnchor Then
-            SendMessageA cmdAnchor(i).hWnd, BM_SETSTATE, True, 0
-        Else
-            SendMessageA cmdAnchor(i).hWnd, BM_SETSTATE, False, 0
+    'Build an array that contains the arrow to appear in each location.
+    ReDim arrowLocations(0 To 8) As String
+    fillArrowLocations arrowLocations
+    
+    If g_IsVistaOrLater And g_IsThemingEnabled Then
+    
+        'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
+        ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
+        Set cImgCtl = New clsControlImage
+        If g_IsProgramCompiled Then
+            
+            For i = 0 To 8
+                If Len(arrowLocations(i)) > 0 Then
+                    With cImgCtl
+                        .LoadImageFromStream cmdAnchor(i).hWnd, LoadResData(arrowLocations(i), "CUSTOM"), 16, 16
+                        .SetMargins cmdAnchor(i).hWnd, 0
+                        .Align(cmdAnchor(i).hWnd) = Icon_Center
+                    End With
+                    cmdAnchor(i).Refresh
+                    DoEvents
+                End If
+            Next i
+            
         End If
-    Next i
+        
+        'Finally, depress the active button
+        'For i = 0 To cmdAnchor.Count - 1
+        '    If i = m_CurrentAnchor Then
+        '        SendMessageA cmdAnchor(i).hWnd, BM_SETSTATE, True, 0
+        '    Else
+        '        SendMessageA cmdAnchor(i).hWnd, BM_SETSTATE, False, 0
+        '    End If
+        '    cmdAnchor(i).Refresh
+        'Next i
+
+    Else
+        For i = 0 To 8
+            If arrowLocations(i) = "IMGMEDIUM" Then
+                cmdAnchor(i).Caption = "*"
+            Else
+                cmdAnchor(i).Caption = ""
+            End If
+        Next i
+    End If
 
 End Sub
 
-Private Sub cmdAnchor_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub
