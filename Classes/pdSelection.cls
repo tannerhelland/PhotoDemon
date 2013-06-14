@@ -15,11 +15,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 31/May/13
-'Last update: fix bound values for feathered selections that are against an image edge
+'Last updated: 14/June/13
+'Last update: selections can now lie partially off the image.  All bounds checking has been moved to a singular location
+'             (after the mask is rendered) which means there are no limits on where the user draws the selection; it simply
+'             has to cover at least one pixel of the image.  (If it doesn't, it will be deactivated.)  This is great when
+'             drawing elliptical/circular selections, as they can be used to cover arc-like portions of the image.
 '
-'This class handles all selections in PhotoDemon. At present, selections are simply rectangular areas - but this will change
-' in the future as new selection modes are added.
+'This class handles all selections in PhotoDemon.  Rectangular and elliptical selections are now implemented, with more
+' to follow in the coming months.
 '
 'All selections are treated as a subset of pixels within a rectangular area. The x1, y1, x2, y2 coordinates define opposite
 ' corners of the selection area. There is no guarantee that these coordinates will appear in a given corner - so they must
@@ -27,7 +30,9 @@ Attribute VB_Exposed = False
 ' are in turn used for everything from cropping to applying filters.
 '
 'Note also that this class is treated as a subset of pdLayer(). Right now each layer object only contains one selection,
-' but there's no reason it couldn't store multiples in the future. (Although I'm not sure what purpose that would serve.)
+' but there's no reason it couldn't store multiples in the future. (Some software allows for selection blending modes, e.g.
+' you can draw one selection, then draw another and the two will be merged into one - multiple selections are required
+' for that.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -445,16 +450,8 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
             '9 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
             Case 9
             
-                'When moving the selection, force it to retain its current size.  This means the selection cannot be moved
-                ' off the image - it must remain completely on it, at its current size.
                 x1 = x - moveXDist
-                If x1 < 0 Then x1 = 0
-                If x1 + selWidth > containingPDImage.Width Then x1 = containingPDImage.Width - selWidth
-                
                 y1 = y - moveYDist
-                If y1 < 0 Then y1 = 0
-                If y1 + selHeight > containingPDImage.Height Then y1 = containingPDImage.Height - selHeight
-                
                 x2 = x1 + selWidth
                 y2 = y1 + selHeight
                                 
@@ -492,25 +489,17 @@ Private Sub updateInternalCoords()
 
     'Calculate left, top width, height based off the current x1/x2/y1/y2 values
     If x1 < x2 Then
-        If x1 < 0 Then x1 = 0
-        If x2 > containingPDImage.Width Then x2 = containingPDImage.Width
         selLeft = x1
         selWidth = x2 - x1
     Else
-        If x2 < 0 Then x2 = 0
-        If x1 > containingPDImage.Width Then x1 = containingPDImage.Width
         selLeft = x2
         selWidth = x1 - x2
     End If
     
     If y1 < y2 Then
-        If y1 < 0 Then y1 = 0
-        If y2 > containingPDImage.Height Then y2 = containingPDImage.Height
         selTop = y1
         selHeight = y2 - y1
     Else
-        If y2 < 0 Then y2 = 0
-        If y1 > containingPDImage.Height Then y1 = containingPDImage.Height
         selTop = y2
         selHeight = y1 - y2
     End If
@@ -523,12 +512,6 @@ Private Sub updateInternalCoords()
     '        selHeight = selWidth
     '    End If
     'End If
-    
-    'Perform a quick sanity check on the calculated variables
-    If selLeft < 0 Then selLeft = 0
-    If selTop < 0 Then selTop = 0
-    If selLeft + selWidth > containingPDImage.Width Then selLeft = containingPDImage.Width - selWidth
-    If selTop + selHeight > containingPDImage.Height Then selTop = containingPDImage.Height - selHeight
     
     'Adjust the main form's selection text boxes to match the newly calculated values
     refreshTextBoxes
@@ -572,11 +555,11 @@ Public Sub refreshTextBoxes()
             targetTextBoxIndex = 0
         
     End Select
-        
-    If selLeft >= 0 Then FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
-    If selTop >= 0 Then FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
-    If selWidth > 0 Then FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
-    If selHeight > 0 Then FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
+    
+    FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
+    FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
+    FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
+    FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
 
     rejectRefreshRequests = False
 
@@ -594,54 +577,10 @@ Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
     isMaskReady = False
 
     'Check all text box entries for validity, then update the corresponding selection values
-    If FormMain.tudSelLeft(textSourceIndex).IsValid(False) Then
-        If FormMain.tudSelLeft(textSourceIndex).Value > containingPDImage.Width - 1 Then FormMain.tudSelLeft(textSourceIndex) = containingPDImage.Width - 1
-        selLeft = FormMain.tudSelLeft(textSourceIndex)
-    End If
-    If FormMain.tudSelTop(textSourceIndex).IsValid(False) Then
-        If FormMain.tudSelTop(textSourceIndex) > containingPDImage.Height - 1 Then FormMain.tudSelTop(textSourceIndex) = containingPDImage.Height - 1
-        selTop = FormMain.tudSelTop(textSourceIndex)
-    End If
-    If FormMain.tudSelWidth(textSourceIndex).IsValid(False) Then
-        If FormMain.tudSelWidth(textSourceIndex) + FormMain.tudSelLeft(textSourceIndex) > containingPDImage.Width Then
-            selLeft = containingPDImage.Width - FormMain.tudSelWidth(textSourceIndex)
-            FormMain.tudSelLeft(textSourceIndex) = selLeft
-        End If
-        selWidth = FormMain.tudSelWidth(textSourceIndex)
-    End If
-    If FormMain.tudSelHeight(textSourceIndex).IsValid(False) Then
-        If FormMain.tudSelHeight(textSourceIndex) + FormMain.tudSelTop(textSourceIndex) > containingPDImage.Height Then
-            selTop = containingPDImage.Height - FormMain.tudSelHeight(textSourceIndex)
-            FormMain.tudSelTop(textSourceIndex) = selTop
-        End If
-        selHeight = FormMain.tudSelHeight(textSourceIndex)
-    End If
-    
-    'Perform one final sanity check on all selection values
-    If selLeft < 0 Then
-        selLeft = 0
-        FormMain.tudSelLeft(textSourceIndex) = selLeft
-    End If
-    If selTop < 0 Then
-        selTop = 0
-        FormMain.tudSelTop(textSourceIndex) = selTop
-    End If
-    If selWidth > containingPDImage.Width Then
-        selWidth = containingPDImage.Width
-        FormMain.tudSelWidth(textSourceIndex) = selWidth
-    End If
-    If selWidth = 0 Then
-        selWidth = 1
-        FormMain.tudSelWidth(textSourceIndex) = selWidth
-    End If
-    If selHeight > containingPDImage.Height Then
-        selHeight = containingPDImage.Height
-        FormMain.tudSelHeight(textSourceIndex) = selHeight
-    End If
-    If selHeight = 0 Then
-        selHeight = 1
-        FormMain.tudSelHeight(textSourceIndex) = selHeight
-    End If
+    If FormMain.tudSelLeft(textSourceIndex).IsValid(False) Then selLeft = FormMain.tudSelLeft(textSourceIndex)
+    If FormMain.tudSelTop(textSourceIndex).IsValid(False) Then selTop = FormMain.tudSelTop(textSourceIndex)
+    If FormMain.tudSelWidth(textSourceIndex).IsValid(False) Then selWidth = FormMain.tudSelWidth(textSourceIndex)
+    If FormMain.tudSelHeight(textSourceIndex).IsValid(False) Then selHeight = FormMain.tudSelHeight(textSourceIndex)
     
     'Adjust the x1, y1, x2, y2 values to match these new ones
     x1 = selLeft
@@ -936,9 +875,7 @@ Private Sub createSelectionMask()
         'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
         If g_GDIPlusFXAvailable Then
         
-            'Message "Feathering selection..."
             GDIPlusBlurLayer selMask, featheringRadius, boundLeft, boundTop, boundWidth, boundHeight
-            'Message "Finished."
         
         Else
         
@@ -998,11 +935,10 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If rejectRefreshRequests Then Exit Sub
     
-    If areAllCoordinatesInvalid Then Exit Sub
-    
-    'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates.
-    ' (e.g., the location of this selection is stored as image coordinates - but we need to have it in "viewport" coordinates so we can
-    '        draw it to the screen, while accounting for things like zoom and scroll values)
+    'Before drawing the nodes, we need to convert the selection's coordinates from "image coordinates" to "viewport coordinates".
+    ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
+    '   on the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when scroll
+    '   and zoom parameters are in effect.)
     Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
@@ -1025,7 +961,7 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
         dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
     End If
     
-    'If this selection is transformable, draw transform circles at the corners and edges of the transformation.
+    'If this selection is transformable, we can now draw transform circles at the corners and edges of the selection.
     If isTransformable Then
         
         Dim circRadius As Long
@@ -1064,9 +1000,10 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     'Is the selection mask ready to be used?  If not, prepare it now.
     If Not isMaskReady Then createSelectionMask
     
-    'Before drawing anything, we need to convert our "image" coordinates back to "viewport" coordinates.
-    ' (e.g., the location of this selection is stored as image coordinates - but we need to have it in "viewport" coordinates so we can
-    '        draw it to the screen, while accounting for things like zoom and scroll values)
+    'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
+    ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
+    '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
+    '   in effect.)
     Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).CurrentZoomValue)
     
@@ -1097,7 +1034,8 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     srcWidth = containingPDImage.Width - 1
     srcHeight = containingPDImage.Height - 1
     
-    'Just to be safe, declare some bounding variables in advance as well
+    'Just to be safe, declare some bounding variables in advance as well.  PhotoDemon now allows selections to lie off the image, so
+    ' we must make sure we don't attempt to render selection pixels in any out-of-bound regions.
     Dim rightBound As Long, bottomBound As Long
     rightBound = imgLeft + imgWidth - 1
     bottomBound = imgTop + imgHeight - 1
@@ -1111,7 +1049,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     Dim tmpSelHolder As Byte
     Dim tmpSelDivider As Double
     
-    'Based on the selection type, draw a corresponding selection of some sort
+    'Based on the selection type, draw a corresponding selection visualization.
     Select Case renderType
     
         'Lightbox style
@@ -1135,9 +1073,8 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             dstRight = dstRight - 1
             dstBottom = dstBottom - 1
             
-            'Build look-up tables for both the x and y direction.  This is faster than calculating
-            ' such values for every pixel inside the loop.
-                        
+            'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
+            ' every pixel inside the loop.
             ReDim xLookup(imgLeft To rightBound) As Long
             For x = imgLeft To rightBound
                 tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
@@ -1292,12 +1229,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             
             'Change the rasterOp to XOR (this will invert the line)
             SetROP2 dstDC, vbSrcInvert
-            
-            'If dstLeft > imgLeft Then dstLeft = dstLeft - 1
-            'If dstTop > imgTop Then dstTop = dstTop - 1
-            'dstRight = dstRight + 1
-            'dstBottom = dstBottom + 1
-            
+                        
             'Draw the rectangle
             Rectangle dstDC, dstLeft, dstTop, dstRight, dstBottom
             
