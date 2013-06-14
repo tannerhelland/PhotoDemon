@@ -860,8 +860,8 @@ Private Sub createSelectionMask()
             If sType = sExterior Then
                 boundLeft = 0
                 boundTop = 0
-                boundWidth = containingPDImage.Width '- 1
-                boundHeight = containingPDImage.Height '- 1
+                boundWidth = containingPDImage.Width
+                boundHeight = containingPDImage.Height
             Else
                 boundLeft = selLeft - featheringRadius
                 boundTop = selTop - featheringRadius
@@ -879,8 +879,8 @@ Private Sub createSelectionMask()
             If sType = sExterior Then
                 boundLeft = 0
                 boundTop = 0
-                boundWidth = containingPDImage.Width '- 1
-                boundHeight = containingPDImage.Height '- 1
+                boundWidth = containingPDImage.Width
+                boundHeight = containingPDImage.Height
             Else
                 boundLeft = selLeft - featheringRadius
                 boundTop = selTop - featheringRadius
@@ -902,8 +902,8 @@ Private Sub createSelectionMask()
     'Do some basic bounds checking on the bound values to make sure they lie inside the image
     If boundLeft < 0 Then boundLeft = 0
     If boundTop < 0 Then boundTop = 0
-    If boundLeft + boundWidth > containingPDImage.Width - 1 Then boundWidth = (containingPDImage.Width - 1) - boundLeft
-    If boundTop + boundHeight > containingPDImage.Height - 1 Then boundHeight = (containingPDImage.Height - 1) - boundTop
+    If boundLeft + boundWidth > containingPDImage.Width Then boundWidth = containingPDImage.Width - boundLeft
+    If boundTop + boundHeight > containingPDImage.Height Then boundHeight = containingPDImage.Height - boundTop
     
     'Finally, if the selection is locked and feathering has been requested, apply it now
     If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then
