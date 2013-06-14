@@ -236,7 +236,7 @@ Public Sub ApplyAllMenuIcons()
         '--> Image Mode sub-menu
         AddMenuIcon "ADDTRANS", 3, 2, 0     'Add alpha channel
         AddMenuIcon "REMOVETRANS", 3, 2, 1  'Remove alpha channel
-    'AddMenuIcon "CANVASSIZE", 3, 4     'Canvas resize
+    AddMenuIcon "CANVASSIZE", 3, 4     'Canvas resize
     AddMenuIcon "RESIZE", 3, 5         'Resize
     AddMenuIcon "CROPSEL", 3, 7        'Crop to Selection
     AddMenuIcon "AUTOCROP", 3, 8       'Autocrop

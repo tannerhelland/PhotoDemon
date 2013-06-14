@@ -509,7 +509,7 @@ Private Sub updateAnchorButtons()
 
 End Sub
 
-Private Sub cmdAnchor_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub cmdAnchor_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub
