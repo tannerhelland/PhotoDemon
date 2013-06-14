@@ -459,7 +459,7 @@ Begin VB.MDIForm FormMain
       Top             =   7560
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -520,7 +520,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":0134
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":015C
          disabledpicturemode=   1
          captioneffects  =   0
@@ -538,7 +538,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":15AE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":15D6
          disabledpicturemode=   1
          captioneffects  =   0
@@ -556,7 +556,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":2628
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":2650
          disabledpicturemode=   1
          captioneffects  =   0
@@ -575,7 +575,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":36A2
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":36CA
          disabledpicturemode=   1
          captioneffects  =   0
@@ -594,7 +594,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":471C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":4744
          disabledpicturemode=   1
          captioneffects  =   0
@@ -612,7 +612,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":5796
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":57BE
          disabledpicturemode=   1
          captioneffects  =   0
@@ -630,7 +630,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":6810
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":6838
          disabledpicturemode=   1
          captioneffects  =   0
@@ -649,7 +649,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":6C8A
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":6CB2
          disabledpicturemode=   1
          captioneffects  =   0
@@ -942,7 +942,7 @@ Begin VB.MDIForm FormMain
             Index           =   0
          End
          Begin VB.Menu MnuTransparency 
-            Caption         =   "Remove alpha channel"
+            Caption         =   "Remove alpha channel..."
             Index           =   1
          End
       End
@@ -3223,7 +3223,7 @@ Private Sub MnuTransparency_Click(Index As Integer)
 
             'Ignore if the current image is already in 24bpp mode
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then Exit Sub
-            Process "Remove alpha channel"
+            Process "Remove alpha channel", True
     
     End Select
 

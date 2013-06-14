@@ -548,7 +548,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Convert this layer to 24bpp mode
-Public Function convertTo24bpp() As Boolean
+Public Function convertTo24bpp(Optional ByVal newBackcolor As Long = vbWhite) As Boolean
 
     'Make sure this layer is 32bpp. If it isn't, running this function pointless.
     If layerColorDepth = 32 Then
@@ -562,11 +562,11 @@ Public Function convertTo24bpp() As Boolean
             tmpLayer.createFromExistingLayer Me
                         
             'Composite the temporary layer against a white background, per convention.
-            tmpLayer.compositeBackgroundColor 255, 255, 255
-                        
+            tmpLayer.compositeBackgroundColor ExtractR(newBackcolor), ExtractG(newBackcolor), ExtractB(newBackcolor)
+            
             'Now erase our own layer
             eraseLayer
-    
+            
             'Create a new layer that's exactly the same size as the old one
             If createBlank(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, 24) Then
                 

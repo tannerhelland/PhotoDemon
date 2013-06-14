@@ -18,14 +18,14 @@ Attribute VB_Name = "Filters_Miscellaneous"
 Option Explicit
 
 'Convert the image's color depth to a new value.  (Currently, only 24bpp and 32bpp is allowed.)
-Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long)
+Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal newBackColor As Long = vbWhite)
 
     Message "Converting image mode..."
 
     If newColorDepth = 24 Then
     
         'Ask the current layer to convert itself to 24bpp mode
-        pdImages(CurrentImage).mainLayer.convertTo24bpp
+        pdImages(CurrentImage).mainLayer.convertTo24bpp newBackColor
     
         'Change the menu entries to match
         tInit tImgMode32bpp, False

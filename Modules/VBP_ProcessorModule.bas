@@ -593,7 +593,11 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuCropToSelection
             
         Case "Remove alpha channel"
-            ConvertImageColorDepth 24
+            If ShowDialog Then
+                FormConvert24bpp.Show vbModal, FormMain
+            Else
+                ConvertImageColorDepth 24, cParams.GetLong(1)
+            End If
             
         Case "Add alpha channel"
             ConvertImageColorDepth 32
