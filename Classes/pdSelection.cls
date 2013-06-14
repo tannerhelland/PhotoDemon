@@ -233,6 +233,17 @@ Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSel
     
 End Sub
 
+'Request a redraw of the selection mask.  We must do this when loading an Undo or Redo request after the image size has
+' been changed; otherwise, OOB errors can occur (because the selection mask will be a different size than the image).
+Public Sub requestNewMask()
+
+    If (Not containingPDImage Is Nothing) Then
+        updateInternalCoords
+        createSelectionMask
+    End If
+
+End Sub
+
 'Set feathering radius
 Public Sub setFeatheringRadius(ByVal newRadius As Long)
     isMaskReady = False
@@ -849,8 +860,8 @@ Private Sub createSelectionMask()
             If sType = sExterior Then
                 boundLeft = 0
                 boundTop = 0
-                boundWidth = containingPDImage.Width - 1
-                boundHeight = containingPDImage.Height - 1
+                boundWidth = containingPDImage.Width '- 1
+                boundHeight = containingPDImage.Height '- 1
             Else
                 boundLeft = selLeft - featheringRadius
                 boundTop = selTop - featheringRadius
@@ -868,8 +879,8 @@ Private Sub createSelectionMask()
             If sType = sExterior Then
                 boundLeft = 0
                 boundTop = 0
-                boundWidth = containingPDImage.Width - 1
-                boundHeight = containingPDImage.Height - 1
+                boundWidth = containingPDImage.Width '- 1
+                boundHeight = containingPDImage.Height '- 1
             Else
                 boundLeft = selLeft - featheringRadius
                 boundTop = selTop - featheringRadius

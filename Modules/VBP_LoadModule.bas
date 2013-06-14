@@ -1044,6 +1044,11 @@ Public Sub LoadUndo(ByVal UndoFile As String)
     pdImages(CurrentImage).updateSize
     DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
     
+    'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
+    ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
+    ' it before rendering the image or OOB errors may occur.)
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
+    
     'Render the image to the screen
     PrepareViewport FormMain.ActiveForm, "LoadUndo"
     
