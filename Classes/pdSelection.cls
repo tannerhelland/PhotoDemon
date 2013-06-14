@@ -219,13 +219,13 @@ Private borderSize As Long
 Private featheringRadius As Long
 
 'Request a 1:1 aspect ratio selection (squares, circles)
-Public Sub requestSquare(ByVal requestChoice As Boolean)
+Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
     
     isSquare = requestChoice
     isMaskReady = False
     
     'Redraw the selection if necessary
-    If Not containingPDImage Is Nothing Then
+    If forceSelectionRefresh And (Not containingPDImage Is Nothing) Then
         updateInternalCoords
         createSelectionMask
         RenderViewport containingPDImage.containingForm
@@ -487,7 +487,44 @@ Private Sub updateInternalCoords()
     'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
     isMaskReady = False
 
-    'Calculate left, top width, height based off the current x1/x2/y1/y2 values
+    'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
+    
+    ' (This set of if/then blocks looks complicated, but it's actually very simple - we simply have to account for every variation
+    '  of quadrants, because the selection can be drawn up or down in both directions, giving eight possible variants of x1 </> x2
+    '  and y1 </> y2.  By covering all those cases, square selection can be drawn in any direction.)
+    If isSquare Then
+        If x1 < x2 Then
+            If y1 < y2 Then
+                If Abs(x1 - x2) > Abs(y1 - y2) Then
+                    y2 = y1 + Abs(x1 - x2)
+                Else
+                    x2 = x1 + Abs(y1 - y2)
+                End If
+            Else
+                If Abs(x1 - x2) > Abs(y1 - y2) Then
+                    y2 = y1 - Abs(x1 - x2)
+                Else
+                    x2 = x1 + Abs(y1 - y2)
+                End If
+            End If
+        Else
+            If y1 < y2 Then
+                If Abs(x1 - x2) > Abs(y1 - y2) Then
+                    y2 = y1 + Abs(x1 - x2)
+                Else
+                    x2 = x1 - Abs(y1 - y2)
+                End If
+            Else
+                If Abs(x1 - x2) > Abs(y1 - y2) Then
+                    y2 = y1 - Abs(x1 - x2)
+                Else
+                    x2 = x1 - Abs(y1 - y2)
+                End If
+            End If
+        End If
+    End If
+
+    'Finally, calculate a left, top, width and height for this selection based off the current x1/x2/y1/y2 values
     If x1 < x2 Then
         selLeft = x1
         selWidth = x2 - x1
@@ -503,15 +540,6 @@ Private Sub updateInternalCoords()
         selTop = y2
         selHeight = y1 - y2
     End If
-    
-    'If a 1:1 aspect ratio has been requested, recalculate that now
-    'If isSquare Then
-    '    If selWidth < selHeight Then
-    '        selWidth = selHeight
-    '    Else
-    '        selHeight = selWidth
-    '    End If
-    'End If
     
     'Adjust the main form's selection text boxes to match the newly calculated values
     refreshTextBoxes

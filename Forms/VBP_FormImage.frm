@@ -195,15 +195,25 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
     AltDown = (Shift And vbAltMask) > 0
+    
+    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
+    If pdImages(Me.Tag).selectionActive Then pdImages(Me.Tag).mainSelection.requestSquare ShiftDown
+    
 End Sub
 
 Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
+
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
     AltDown = (Shift And vbAltMask) > 0
+    
+    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
+    If pdImages(Me.Tag).selectionActive Then pdImages(Me.Tag).mainSelection.requestSquare ShiftDown
+    
 End Sub
 
 'LOAD form
