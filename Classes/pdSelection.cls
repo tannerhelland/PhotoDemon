@@ -867,11 +867,6 @@ Private Sub createSelectionMask()
                 boundTop = selTop - featheringRadius
                 boundWidth = selWidth + featheringRadius * 2
                 boundHeight = selHeight + featheringRadius * 2
-                
-                'Do extra checking for feathering - if a bound is less than zero and feathering is enabled, we have to subtract the
-                ' pixels that lie over the edge from the bound width/height
-                If boundLeft < 0 And featheringRadius > 0 Then boundWidth = boundWidth + boundLeft
-                If boundTop < 0 And featheringRadius > 0 Then boundHeight = boundHeight + boundTop
             End If
             
         Case sCircle
@@ -886,11 +881,6 @@ Private Sub createSelectionMask()
                 boundTop = selTop - featheringRadius
                 boundWidth = selWidth + featheringRadius * 2
                 boundHeight = selHeight + featheringRadius * 2
-                
-                'Do extra checking for feathering - if a bound is less than zero and feathering is enabled, we have to subtract the
-                ' pixels that lie over the edge from the bound width/height
-                If boundLeft < 0 And featheringRadius > 0 Then boundWidth = boundWidth + boundLeft
-                If boundTop < 0 And featheringRadius > 0 Then boundHeight = boundHeight + boundTop
             End If
             
         Case Else
@@ -899,9 +889,15 @@ Private Sub createSelectionMask()
         
     End Select
     
-    'Do some basic bounds checking on the bound values to make sure they lie inside the image
-    If boundLeft < 0 Then boundLeft = 0
-    If boundTop < 0 Then boundTop = 0
+    'Do some basic bounds checking on the bound values to make sure they lie inside the image.
+    If boundLeft < 0 Then
+        boundWidth = boundWidth + boundLeft
+        boundLeft = 0
+    End If
+    If boundTop < 0 Then
+        boundHeight = boundHeight + boundTop
+        boundTop = 0
+    End If
     If boundLeft + boundWidth > containingPDImage.Width Then boundWidth = containingPDImage.Width - boundLeft
     If boundTop + boundHeight > containingPDImage.Height Then boundHeight = containingPDImage.Height - boundTop
     
