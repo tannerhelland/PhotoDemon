@@ -276,7 +276,7 @@ Begin VB.MDIForm FormMain
             EndProperty
             ForeColor       =   &H00606060&
             Height          =   285
-            Index           =   5
+            Index           =   3
             Left            =   120
             TabIndex        =   32
             Top             =   2640
@@ -322,7 +322,7 @@ Begin VB.MDIForm FormMain
             EndProperty
             ForeColor       =   &H00606060&
             Height          =   285
-            Index           =   3
+            Index           =   5
             Left            =   120
             TabIndex        =   28
             Top             =   5280
@@ -1739,8 +1739,7 @@ End Sub
 'Change selection smoothing (e.g. none, antialiased, fully feathered)
 Private Sub cmbSelSmoothing_Click(Index As Integer)
     
-    'Display the feathering slider as necessary
-    If cmbSelSmoothing(Index).ListIndex = sFullyFeathered Then sltSelectionFeathering.Visible = True Else sltSelectionFeathering.Visible = False
+    updateSelectionPanelLayout
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed Then
@@ -1754,9 +1753,8 @@ End Sub
 'Change selection type (e.g. interior, exterior, bordered)
 Private Sub cmbSelType_Click(Index As Integer)
 
-    'Display the border slider as necessary
-    If cmbSelType(Index).ListIndex = sBorder Then sltSelectionBorder.Visible = True Else sltSelectionBorder.Visible = False
-
+    updateSelectionPanelLayout
+    
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionType cmbSelType(Index).ListIndex
@@ -1856,12 +1854,12 @@ Private Sub resetToolButtonStates()
     
         'For rectangular selections, show the rounded corners option
         Case SELECT_RECT
-            FormMain.lblSelection(3).Visible = True
+            FormMain.lblSelection(5).Visible = True
             FormMain.sltCornerRounding.Visible = True
             
         'For elliptical selections, hide the rounded corners option
         Case SELECT_CIRC
-            FormMain.lblSelection(3).Visible = False
+            FormMain.lblSelection(5).Visible = False
             FormMain.sltCornerRounding.Visible = False
     
     End Select
@@ -3588,4 +3586,31 @@ End Function
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
 Public Sub requestMakeFormPretty()
     makeFormPretty Me, m_ToolTip
+End Sub
+
+'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the
+' panel concise and clean, we move other controls up or down depending on what controls are visible.
+Private Sub updateSelectionPanelLayout()
+
+    'Display the feathering slider as necessary
+    If cmbSelSmoothing(0).ListIndex = sFullyFeathered Then
+        sltSelectionFeathering.Visible = True
+        lblSelection(4).Top = sltSelectionFeathering.Top + 38
+    Else
+        sltSelectionFeathering.Visible = False
+        lblSelection(4).Top = cmbSelSmoothing(0).Top + 34
+    End If
+    cmbSelType(0).Top = lblSelection(4).Top + 24
+    sltSelectionBorder.Top = cmbSelType(0).Top + 26
+
+    'Display the border slider as necessary
+    If cmbSelType(0).ListIndex = sBorder Then
+        sltSelectionBorder.Visible = True
+        lblSelection(5).Top = sltSelectionBorder.Top + 38
+    Else
+        sltSelectionBorder.Visible = False
+        lblSelection(5).Top = cmbSelType(0).Top + 34
+    End If
+    sltCornerRounding.Top = lblSelection(5).Top + 24
+
 End Sub
