@@ -147,32 +147,41 @@ Private Const EncoderSaveAsCMYK       As String = "{A219BBC9-0A9D-4005-A3EE-3A42
 Private Const EncoderSaveFlag         As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
 Private Const CodecIImageBytes        As String = "{025D1823-6C7D-447B-BBDB-A3CBC3DFA2FC}"
 
-'GDI+ recognizes a variety of pixel formats:
-'Public Const PixelFormatIndexed = &H10000           ' Indexes into a palette
-'Public Const PixelFormatGDI = &H20000               ' Is a GDI-supported format
-'Public Const PixelFormatAlpha = &H40000             ' Has an alpha component
-'Public Const PixelFormatPAlpha = &H80000            ' Pre-multiplied alpha
-'Public Const PixelFormatExtended = &H100000         ' Extended color 16 bits/channel
-'Public Const PixelFormatCanonical = &H200000
-'
-'Public Const PixelFormatUndefined = 0
-'
-'Public Const PixelFormat1bppIndexed = &H30101
-'Public Const PixelFormat4bppIndexed = &H30402
-'Public Const PixelFormat8bppIndexed = &H30803
-'Public Const PixelFormat16bppGreyScale = &H101004
-'Public Const PixelFormat16bppRGB555 = &H21005
-'Public Const PixelFormat16bppRGB565 = &H21006
-'Public Const PixelFormat16bppARGB1555 = &H61007
-
+'GDI+ recognizes a variety of pixel formats, but we are only concerned with the ones relevant to PhotoDemon:
 Private Const PixelFormat24bppRGB = &H21808
 Private Const PixelFormat32bppARGB = &H26200A
-'Private Const PixelFormat32bppRGB = &H22009
 Private Const PixelFormat32bppPARGB = &HE200B
-'Public Const PixelFormat48bppRGB = &H10300C
-'Public Const PixelFormat64bppARGB = &H34400D
-'Public Const PixelFormat64bppPARGB = &H1C400E
-'Public Const PixelFormatMax = 15 '&HF
+
+'GDI+ supports a variety of different linecaps.  Anchor caps will center the cap at the end of the line.
+Public Enum LineCap
+   LineCapFlat = 0
+   LineCapSquare = 1
+   LineCapRound = 2
+   LineCapTriangle = 3
+   LineCapNoAnchor = &H10
+   LineCapSquareAnchor = &H11
+   LineCapRoundAnchor = &H12
+   LineCapDiamondAnchor = &H13
+   LineCapArrowAnchor = &H14
+   LineCapCustom = &HFF
+   LineCapAnchorMask = &HF0
+End Enum
+
+Public Enum DashStyle
+   DashStyleSolid = 0
+   DashStyleDash = 1
+   DashStyleDot = 2
+   DashStyleDashDot = 3
+   DashStyleDashDotDot = 4
+   DashStyleCustom = 5
+End Enum
+
+' Dash cap constants
+Public Enum DashCap
+   DashCapFlat = 0
+   DashCapRound = 2
+   DashCapTriangle = 3
+End Enum
 
 'GDI+ required types
 Private Type GdiplusStartupInput
@@ -256,7 +265,7 @@ Private Declare Function lstrlenA Lib "kernel32" (ByVal psString As Any) As Long
 'CopyMemory
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
-'GDI+ calls related to drawing circles and ellipses
+'GDI+ calls related to drawing lines and various shapes
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
 Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
@@ -281,6 +290,7 @@ Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) 
 Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
+Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal mPen As Long, ByVal startCap As LineCap, ByVal endCap As LineCap, ByVal dCap As DashCap) As Long
 
 ' Quality mode constants
 Private Enum QualityMode
@@ -422,7 +432,7 @@ Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single,
 End Function
 
 'Use GDI+ to render a line, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinecap As LineCap = 0) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -432,6 +442,9 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    
+    'If a custom line cap was specified, apply it now
+    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
     
     'Render the line
     GdipDrawLine iGraphics, iPen, x1, y1, x2, y2
