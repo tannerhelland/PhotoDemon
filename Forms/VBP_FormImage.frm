@@ -277,7 +277,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         Select Case g_CurrentTool
         
             'Rectangular selection
-            Case SELECT_RECT, SELECT_CIRC
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
                 'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
                 If pdImages(Me.Tag).selectionActive Then
@@ -297,11 +297,21 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     End If
                 
                 Else
-                        
+                    
+                    'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
+                    ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
+                    ' maintain desired behavior...
+                    DoEvents
+                    
                     'Activate the selection and pass in the first two points
                     pdImages(Me.Tag).selectionActive = True
+                    pdImages(Me.Tag).mainSelection.lockRelease
                     pdImages(Me.Tag).mainSelection.setSelectionShape g_CurrentTool
-                    pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
+                    If g_CurrentTool = SELECT_RECT Then
+                        pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
+                    ElseIf g_CurrentTool = SELECT_LINE Then
+                        pdImages(Me.Tag).mainSelection.setSelectionLineWidth FormMain.sltCornerRounding.Value
+                    End If
                     pdImages(Me.Tag).mainSelection.setSelectionType FormMain.cmbSelType(0).ListIndex
                     pdImages(Me.Tag).mainSelection.setBorderSize FormMain.sltSelectionBorder.Value
                     pdImages(Me.Tag).mainSelection.setSmoothingType FormMain.cmbSelSmoothing(0).ListIndex
@@ -312,10 +322,11 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     pdImages(Me.Tag).mainSelection.selHeight = 0
                     pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
                     pdImages(Me.Tag).mainSelection.refreshTextBoxes
+                    pdImages(Me.Tag).mainSelection.requestNewMask
                         
                     'Make the selection tools visible
                     tInit tSelection, True
-            
+                    
                     'Render the new selection
                     RenderViewport Me
                     
@@ -352,7 +363,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
         Select Case g_CurrentTool
         
-            Case SELECT_RECT, SELECT_CIRC
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
     
                 'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
                 If pdImages(Me.Tag).selectionActive Then
@@ -378,55 +389,33 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
         Select Case g_CurrentTool
         
-            Case SELECT_RECT, SELECT_CIRC
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
                 'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
                 ' ability to resize the selection.
                 If pdImages(Me.Tag).selectionActive Then
                 
-                    'This routine will return a best estimate for the location of the mouse. The possible return values are:
-                    ' 0 - Cursor is not near a selection point
-                    ' 1 - NW corner
-                    ' 2 - NE corner
-                    ' 3 - SE corner
-                    ' 4 - SW corner
-                    ' 5 - N edge
-                    ' 6 - E edge
-                    ' 7 - S edge
-                    ' 8 - W edge
-                    ' 9 - interior of selection, not near a corner or edge
+                    'This routine will return a best estimate for the location of the mouse.  We then pass its value
+                    ' to a sub that will use it to select the most appropriate mouse cursor.
                     Dim sCheck As Long
                     sCheck = findNearestSelectionCoordinates(x, y, Me)
                     
                     'Based on that return value, assign a new mouse cursor to the form
-                    Select Case sCheck
-                
-                        Case 0
-                            setArrowCursor Me
-                        Case 1
-                            setSizeNWSECursor Me
-                        Case 2
-                            setSizeNESWCursor Me
-                        Case 3
-                            setSizeNWSECursor Me
-                        Case 4
-                            setSizeNESWCursor Me
-                        Case 5
-                            setSizeNSCursor Me
-                        Case 6
-                            setSizeWECursor Me
-                        Case 7
-                            setSizeNSCursor Me
-                        Case 8
-                            setSizeWECursor Me
-                        Case 9
-                            setSizeAllCursor Me
-                            
-                    End Select
-                
+                    setSelectionCursor sCheck
+                    
                     'Set the active selection's transformation type to match
                     pdImages(Me.Tag).mainSelection.setTransformationType sCheck
                     
+                Else
+                
+                    'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
+                    ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
+                    If isMouseOverImage(x, y, Me) Then
+                        setArrowCursor Me
+                    Else
+                        setArrowCursor Me
+                    End If
+                
                 End If
         
             Case Else
@@ -461,7 +450,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     
         Select Case g_CurrentTool
         
-            Case SELECT_RECT, SELECT_CIRC
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
                 'If a selection was being drawn, lock it into place
                 If pdImages(Me.Tag).selectionActive Then
@@ -794,6 +783,69 @@ End Sub
 
 Private Sub VScroll_Scroll()
     ScrollViewport Me
+End Sub
+
+'Selection tools utilize a variety of cursors.  To keep the main MouseMove sub clean, cursors are set separately
+' by this routine.
+Private Sub setSelectionCursor(ByVal transformID As Long)
+
+    Select Case pdImages(Me.Tag).mainSelection.getSelectionShape()
+
+        Case sRectangle, sCircle
+        
+            'For a rectangle or circle selection, the possible transform IDs are:
+            ' 0 - Cursor is not near a selection point
+            ' 1 - NW corner
+            ' 2 - NE corner
+            ' 3 - SE corner
+            ' 4 - SW corner
+            ' 5 - N edge
+            ' 6 - E edge
+            ' 7 - S edge
+            ' 8 - W edge
+            ' 9 - interior of selection, not near a corner or edge
+            Select Case transformID
+        
+                Case 0
+                    setArrowCursor Me
+                Case 1
+                    setSizeNWSECursor Me
+                Case 2
+                    setSizeNESWCursor Me
+                Case 3
+                    setSizeNWSECursor Me
+                Case 4
+                    setSizeNESWCursor Me
+                Case 5
+                    setSizeNSCursor Me
+                Case 6
+                    setSizeWECursor Me
+                Case 7
+                    setSizeNSCursor Me
+                Case 8
+                    setSizeWECursor Me
+                Case 9
+                    setSizeAllCursor Me
+                    
+            End Select
+            
+        'For a line selection, the possible transform IDs are:
+        ' 0 - Cursor is not near an endpoint
+        ' 1 - Near x1/y1
+        ' 2 - Near x2/y2
+        Case sLine
+        
+            Select Case transformID
+                Case 0
+                    setArrowCursor Me
+                Case 1
+                    setSizeAllCursor Me
+                Case 2
+                    setSizeAllCursor Me
+            End Select
+        
+    End Select
+
 End Sub
 
 'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events.

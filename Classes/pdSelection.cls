@@ -117,11 +117,13 @@ Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode
 Public Enum SelectionShape
     sRectangle = 0
     sCircle = 1
+    sLine = 2
 End Enum
 
 #If False Then
     Const sRectangle = 0
     Const sCircle = 1
+    Const sLine = 2
 #End If
 
 Private sShape As SelectionShape
@@ -218,6 +220,9 @@ Private borderSize As Long
 ' specifically, feathering is implemented by applying a Gaussian blur to the selection mask with radius equal to the feathering size.
 Private featheringRadius As Long
 
+'Line selections have variable width.
+Private selectionLineWidth As Long
+
 'Request a 1:1 aspect ratio selection (squares, circles)
 Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
     
@@ -261,6 +266,17 @@ Public Sub setTransformationType(ByVal transShape As Long)
     selTransformationType = transShape
 End Sub
 
+'Get/set the selection's current coordinates
+Public Sub getSelectionCoordinates(ByVal numPoint As Long, ByRef xDst As Double, ByRef yDst As Double)
+    If numPoint = 1 Then
+        xDst = x1
+        yDst = y1
+    Else
+        xDst = x2
+        yDst = y2
+    End If
+End Sub
+
 'Get/set a selection shape
 Public Function getSelectionShape() As SelectionShape
     getSelectionShape = sShape
@@ -300,6 +316,16 @@ Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
     End If
 End Sub
 
+'Change the line width of line selections
+Public Sub setSelectionLineWidth(ByVal newLineWidth As Long)
+    isMaskReady = False
+    selectionLineWidth = newLineWidth
+    If lockedIn Then
+        createSelectionMask
+        RenderViewport containingPDImage.containingForm
+    End If
+End Sub
+
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
 ' Note that this this should only be called after a transformation type has been set.
 Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
@@ -310,77 +336,109 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
     'The use of setInitialCoordinates means this IS a transformation
     transformModeActive = True
     
-    'Based on the transform mode, set the initial points accordingly
-    Select Case selTransformationType
+    'Different selection types handle transformation differently.  For example, rectangular selections can be resized in multiple directions,
+    ' but a line selection will only move its endpoints.  So we must sort input twice - first, sort by selection type, and second, by
+    ' transformation type.
     
-        'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
-        Case 0
-            x1 = x
-            y1 = y
-            x2 = x
-            y2 = y
-        
-        '1 - NW corner
-        Case 1
-            x1 = selLeft + selWidth
-            y1 = selTop + selHeight
-            x2 = selLeft
-            y2 = selTop
-        
-        '2 - NE corner
-        Case 2
-            x1 = selLeft
-            y1 = selTop + selHeight
-            x2 = x
-            y2 = y
-        
-        '3 - SE corner
-        Case 3
-            x1 = selLeft
-            y1 = selTop
-            x2 = x
-            y2 = y
-        
-        '4 - SW corner
-        Case 4
-            x1 = selLeft + selWidth
-            y1 = selTop
-            x2 = x
-            y2 = y
-        
-        '5 - N edge
-        Case 5
-            x1 = selLeft
-            x2 = selLeft + selWidth
-            y1 = selTop + selHeight
-            y2 = y
-        
-        '6 - E edge
-        Case 6
-            x1 = selLeft
-            x2 = x
-            y1 = selTop
-            y2 = selTop + selHeight
-        
-        '7 - S edge
-        Case 7
-            x1 = selLeft
-            x2 = selLeft + selWidth
-            y1 = selTop
-            y2 = y
-        
-        '8 - W edge
-        Case 8
-            x1 = selLeft + selWidth
-            x2 = x
-            y1 = selTop
-            y2 = selTop + selHeight
-        
-        '9 - interior of selection, not near a corner or edge
-        Case 9
-            moveXDist = x - selLeft
-            moveYDist = y - selTop
+    Select Case sShape
     
+        'Rectangular and elliptical selections are handled identically
+        Case sRectangle, sCircle
+        
+            'Based on the transform mode, set the initial points accordingly
+            Select Case selTransformationType
+            
+                'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
+                Case 0
+                    x1 = x
+                    y1 = y
+                    x2 = x
+                    y2 = y
+                
+                '1 - NW corner
+                Case 1
+                    x1 = selLeft + selWidth
+                    y1 = selTop + selHeight
+                    x2 = selLeft
+                    y2 = selTop
+                
+                '2 - NE corner
+                Case 2
+                    x1 = selLeft
+                    y1 = selTop + selHeight
+                    x2 = x
+                    y2 = y
+                
+                '3 - SE corner
+                Case 3
+                    x1 = selLeft
+                    y1 = selTop
+                    x2 = x
+                    y2 = y
+                
+                '4 - SW corner
+                Case 4
+                    x1 = selLeft + selWidth
+                    y1 = selTop
+                    x2 = x
+                    y2 = y
+                
+                '5 - N edge
+                Case 5
+                    x1 = selLeft
+                    x2 = selLeft + selWidth
+                    y1 = selTop + selHeight
+                    y2 = y
+                
+                '6 - E edge
+                Case 6
+                    x1 = selLeft
+                    x2 = x
+                    y1 = selTop
+                    y2 = selTop + selHeight
+                
+                '7 - S edge
+                Case 7
+                    x1 = selLeft
+                    x2 = selLeft + selWidth
+                    y1 = selTop
+                    y2 = y
+                
+                '8 - W edge
+                Case 8
+                    x1 = selLeft + selWidth
+                    x2 = x
+                    y1 = selTop
+                    y2 = selTop + selHeight
+                
+                '9 - interior of selection, not near a corner or edge
+                Case 9
+                    moveXDist = x - selLeft
+                    moveYDist = y - selTop
+            
+            End Select
+        
+        
+        'Line selections
+        Case sLine
+        
+            'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
+            Case 0
+                x1 = x
+                y1 = y
+                x2 = x
+                y2 = y
+            
+            'First point is being moved
+            Case 1
+                x1 = x
+                y1 = y
+            
+            'Second point is being moved
+            Case 2
+                x2 = x
+                y2 = y
+        
     End Select
     
     updateInternalCoords
@@ -406,7 +464,7 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     'Set the second set of point to match the first set
     Select Case sShape
         
-        Case sRectangle, sCircle
+        Case sRectangle, sCircle, sLine
             x2 = x
             y2 = y
         
@@ -424,52 +482,72 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)
     If transformModeActive Then
-    
-        'Based on the transform mode, set the initial points accordingly
-        Select Case selTransformationType
         
-            'Cases 0 should never occur, but if it does - treat this like a normal subsequent coordinate call
-            'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
-            ' (See setInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
-            '  these to constants instead of numbers... :P)
-            Case 0 To 4
-                x2 = x
-                y2 = y
+        Select Case sShape
     
-                updateInternalCoords
+            Case sRectangle, sCircle
             
-            '5 - N edge
-            Case 5
-                y2 = y
-                updateInternalCoords
-            
-            '6 - E edge
-            Case 6
-                x2 = x
-                updateInternalCoords
-            
-            '7 - S edge
-            Case 7
-                y2 = y
-                updateInternalCoords
-            
-            '8 - W edge
-            Case 8
-                x2 = x
-                updateInternalCoords
-            
-            '9 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
-            Case 9
-            
-                x1 = x - moveXDist
-                y1 = y - moveYDist
-                x2 = x1 + selWidth
-                y2 = y1 + selHeight
-                                
-                updateInternalCoords
-                'Message x1 & "," & y1 & " <--> " & x2 & "," & y2 & " | " & selLeft & "," & selTop & " <--> " & selWidth & "," & selHeight
+                'Based on the transform mode, set the initial points accordingly
+                Select Case selTransformationType
+                
+                    'Cases 0 should never occur, but if it does - treat this like a normal subsequent coordinate call
+                    'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
+                    ' (See setInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
+                    '  these to constants instead of numbers... :P)
+                    Case 0 To 4
+                        x2 = x
+                        y2 = y
+                    
+                    '5 - N edge
+                    Case 5
+                        y2 = y
+                        
+                    '6 - E edge
+                    Case 6
+                        x2 = x
+                        
+                    '7 - S edge
+                    Case 7
+                        y2 = y
+                        
+                    '8 - W edge
+                    Case 8
+                        x2 = x
+                        
+                    '9 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
+                    Case 9
+                    
+                        x1 = x - moveXDist
+                        y1 = y - moveYDist
+                        x2 = x1 + selWidth
+                        y2 = y1 + selHeight
+                        'Message x1 & "," & y1 & " <--> " & x2 & "," & y2 & " | " & selLeft & "," & selTop & " <--> " & selWidth & "," & selHeight
+                
+                End Select
         
+            Case sLine
+            
+                'Based on the transform mode, set the initial points accordingly
+                Select Case selTransformationType
+            
+                    'Case 0 should never occur
+                    Case 0
+                    
+                    'First point is being moved
+                    Case 1
+                        x1 = x
+                        y1 = y
+                        
+                    'Second point is being moved
+                    Case 2
+                        x2 = x
+                        y2 = y
+                        
+                End Select
+                        
         End Select
+        
+        updateInternalCoords
     
     'No transform mode makes this easy; just update the second set of points and redraw the selection
     Else
@@ -588,18 +666,27 @@ Public Sub refreshTextBoxes()
 
     Dim targetTextBoxIndex As Long
     
+    'Different types of selections will display size and position differently
     Select Case sShape
     
+        'Rectangular and elliptical selections display left, top, width and height
         Case sRectangle, sCircle
             targetTextBoxIndex = 0
+            FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
+            FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
+            FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
+            FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
+        
+        'Line selections display x1, y1, x2, y2
+        Case sLine
+            targetTextBoxIndex = 0
+            FormMain.tudSelLeft(targetTextBoxIndex).Value = x1
+            FormMain.tudSelTop(targetTextBoxIndex).Value = y1
+            FormMain.tudSelWidth(targetTextBoxIndex).Value = x2
+            FormMain.tudSelHeight(targetTextBoxIndex).Value = y2
         
     End Select
     
-    FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
-    FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
-    FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
-    FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
-
     rejectRefreshRequests = False
 
 End Sub
@@ -622,10 +709,21 @@ Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
     If FormMain.tudSelHeight(textSourceIndex).IsValid(False) Then selHeight = FormMain.tudSelHeight(textSourceIndex)
     
     'Adjust the x1, y1, x2, y2 values to match these new ones
-    x1 = selLeft
-    y1 = selTop
-    x2 = selLeft + selWidth
-    y2 = selTop + selHeight
+    Select Case sShape
+    
+        Case sRectangle, sCircle
+            x1 = selLeft
+            y1 = selTop
+            x2 = selLeft + selWidth
+            y2 = selTop + selHeight
+            
+        Case sLine
+            x1 = selLeft
+            y1 = selTop
+            x2 = selWidth
+            y2 = selHeight
+        
+    End Select
     
     rejectRefreshRequests = False
     
@@ -680,6 +778,23 @@ Private Sub createSelectionMask()
         maskForeColor = RGB(255, 255, 255)
     End If
 
+    'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
+    Dim minX As Long, maxX As Long, minY As Long, maxY As Long
+    If x1 < x2 Then
+        minX = x1
+        maxX = x2
+    Else
+        minX = x2
+        maxX = x1
+    End If
+    If y1 < y2 Then
+        minY = y1
+        maxY = y2
+    Else
+        minY = y2
+        maxY = y1
+    End If
+
     'Start by creating a blank mask (this will also erase any existing mask)
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
     
@@ -700,9 +815,21 @@ Private Sub createSelectionMask()
     Dim ignoreBorderValue As Boolean
     ignoreBorderValue = False
     
+    'Border selections require a bit of extra calculation, depending on the shape - basically, all bordered selections are created by
+    ' rendering a smaller version of the selection within itself.  In the case of rectangles and ellipses, we don't want the smaller
+    ' version to have negative values, so we check it in advance to make sure the border value is acceptable.
     If sType = sBorder Then
-        If rectModifier < 1 Then rectModifier = 1
-        If rectModifier > minDimension \ 2 Then ignoreBorderValue = True
+        
+        Select Case sShape
+            
+            Case sRectangle, sCircle
+                If rectModifier < 1 Then rectModifier = 1
+                If rectModifier > minDimension \ 2 Then ignoreBorderValue = True
+                
+            Case Else
+            
+        End Select
+            
     End If
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).
@@ -813,7 +940,7 @@ Private Sub createSelectionMask()
                     DeleteObject maskRegion
                 End If
                 
-            'Border selections are a bit different; we must draw two rounded ellipses - an exterior and an interior one.
+            'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
             Else
             
                 If sSmooth > sNone Then
@@ -847,6 +974,67 @@ Private Sub createSelectionMask()
             'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)
             isTransformable = True
             
+        
+        'Line selections
+        Case sLine
+        
+            'Interior/exterior line selections use identical rendering code.
+            If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+            
+                If sSmooth > sNone Then
+                    GDIPlusDrawLineToDC selMask.getLayerDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, True, LineCapRound
+                Else
+                    GDIPlusDrawLineToDC selMask.getLayerDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, False, LineCapRound
+                End If
+                
+            'Border selections are a bit different; we must draw two lines - an interior and an exterior one
+            Else
+            
+                Dim useLineAA As Boolean
+                If sSmooth > sNone Then useLineAA = True Else useLineAA = False
+                
+                'Draw the exterior line
+                GDIPlusDrawLineToDC selMask.getLayerDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, useLineAA, LineCapRound
+                
+                'Next, draw the interior one
+                Dim xDiff As Double, yDiff As Double
+                xDiff = Abs(x1 - x2)
+                yDiff = Abs(y1 - y2)
+                Dim xModifier As Long, yModifier As Long
+                If xDiff > yDiff Then
+                    If xDiff = 0 Then xDiff = 0.00001
+                    xModifier = borderSize
+                    yModifier = borderSize * (yDiff / xDiff)
+                Else
+                    If yDiff = 0 Then yDiff = 0.00001
+                    xModifier = borderSize * (xDiff / yDiff)
+                    yModifier = borderSize
+                End If
+                
+                Dim newLineWidth As Double
+                newLineWidth = selectionLineWidth - borderSize
+                
+                If newLineWidth > 0 Then
+                    If x1 = minX Then
+                        If y1 = minY Then
+                            GDIPlusDrawLineToDC selMask.getLayerDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                        Else
+                            GDIPlusDrawLineToDC selMask.getLayerDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                        End If
+                    Else
+                        If y1 = minY Then
+                            GDIPlusDrawLineToDC selMask.getLayerDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                        Else
+                            GDIPlusDrawLineToDC selMask.getLayerDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                        End If
+                    End If
+                End If
+                
+            End If
+            
+            'Line regions are transformable (meaning the user can resize and move them after they've been created)
+            isTransformable = True
+        
         Case Else
     
     End Select
@@ -855,7 +1043,8 @@ Private Sub createSelectionMask()
     ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
     Select Case sShape
         
-        Case sRectangle
+        'Rectangle and ellipse selections are easy; bounds have already been set by the width/height values
+        Case sRectangle, sCircle
             
             If sType = sExterior Then
                 boundLeft = 0
@@ -869,18 +1058,19 @@ Private Sub createSelectionMask()
                 boundHeight = selHeight + featheringRadius * 2
             End If
             
-        Case sCircle
-        
+        'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
+        Case sLine
+
             If sType = sExterior Then
                 boundLeft = 0
                 boundTop = 0
                 boundWidth = containingPDImage.Width
                 boundHeight = containingPDImage.Height
             Else
-                boundLeft = selLeft - featheringRadius
-                boundTop = selTop - featheringRadius
-                boundWidth = selWidth + featheringRadius * 2
-                boundHeight = selHeight + featheringRadius * 2
+                boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
+                boundTop = minY - (selectionLineWidth / 2) - featheringRadius
+                boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
+                boundHeight = (maxY - minY) + selectionLineWidth + featheringRadius * 2
             End If
             
         Case Else
@@ -990,13 +1180,13 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
         dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
         dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
     Else
-        dstLeft = ((boundLeft - hScrollVal) * ZoomVal) + imgLeft
-        dstRight = ((boundLeft + boundWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
-        dstTop = ((boundTop - vScrollVal) * ZoomVal) + imgTop
-        dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+        dstLeft = ((x1 - hScrollVal) * ZoomVal) + imgLeft
+        dstRight = ((x2 - hScrollVal) * ZoomVal) + imgLeft + 0.5
+        dstTop = ((y1 - vScrollVal) * ZoomVal) + imgTop
+        dstBottom = ((y2 - vScrollVal) * ZoomVal) + imgTop + 0.5
     End If
     
-    'If this selection is transformable, we can now draw transform circles at the corners and edges of the selection.
+    'If this selection is transformable, we can now draw transform circles at appropriate locations for the selection's shape.
     If isTransformable Then
         
         Dim circRadius As Long
@@ -1005,23 +1195,36 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
         Dim circAlpha As Long
         circAlpha = 190
         
-        'Draw corner circles first
-        GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstTop, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstTop, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstBottom, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstBottom, circRadius, circAlpha
+        Select Case sShape
         
-        'Draw mid-line circles next
-        Dim midHorizontal As Long, midVertical As Long
-        midHorizontal = (dstLeft + dstRight) \ 2
-        midVertical = (dstTop + dstBottom) \ 2
+            Case sRectangle, sCircle
         
-        GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, midVertical, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstTop, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, midVertical, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstBottom, circRadius, circAlpha
+                'Draw corner circles first
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstBottom, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstBottom, circRadius, circAlpha
+                
+                'Draw mid-line circles next
+                Dim midHorizontal As Long, midVertical As Long
+                midHorizontal = (dstLeft + dstRight) \ 2
+                midVertical = (dstTop + dstBottom) \ 2
+                
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, midVertical, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, midVertical, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstBottom, circRadius, circAlpha
+                
+            Case sLine
+            
+                'Lines only need transform nodes at the end points of the line
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstBottom, circRadius, circAlpha
+                
+        End Select
+        
         dstForm.Picture = dstForm.Image
-        
+                
     End If
     
 End Sub
@@ -1296,6 +1499,9 @@ Private Sub Class_Initialize()
     
     'By default, don't round off the corners of rectangular selections
     roundedCorners = 0
+    
+    'By default, selection lines have a width of 10
+    selectionLineWidth = 1
     
 End Sub
 

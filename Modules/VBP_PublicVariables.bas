@@ -21,17 +21,21 @@ Public g_ProgBar As cProgressBar
 'Color variables
 Public g_EmbossEngraveColor As Long 'last used emboss/engrave color
 
-'Currently selected tool
+'Currently selected tool, previous tool
 Public g_CurrentTool As PDTools
+Public g_PreviousTool As PDTools
 
+'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form
 Public Enum PDTools
     SELECT_RECT = 0
     SELECT_CIRC = 1
+    SELECT_LINE = 2
 End Enum
 
 #If False Then
     Const SELECT_RECT = 0
     Const SELECT_CIRC = 1
+    Const SELECT_LINE = 2
 #End If
 
 'Filter variables

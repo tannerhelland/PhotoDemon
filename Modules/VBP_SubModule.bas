@@ -197,12 +197,6 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
     y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
     
-    'Force any invalid values to their nearest matching point in the image
-    'If x1 < 0 Then x1 = 0
-    'If y1 < 0 Then y1 = 0
-    'If x1 > pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width
-    'If y1 > pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height
-
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
     Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
     
@@ -223,91 +217,122 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     mouseAccuracy = mouseSelAccuracy * (1 / ZoomVal)
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
-    If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then
-        findNearestSelectionCoordinates = 0
-        Exit Function
-    End If
-    
-    'If we made it here, this mouse location is worth evaluating. Corners get preference, so check them first.
-    Dim nwDist As Double, neDist As Double, seDist As Double, swDist As Double
-    
-    nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
-    neDist = distanceTwoPoints(x1, y1, tRight, tTop)
-    swDist = distanceTwoPoints(x1, y1, tLeft, tBottom)
-    seDist = distanceTwoPoints(x1, y1, tRight, tBottom)
+    'If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then
+    '    findNearestSelectionCoordinates = 0
+    '    Exit Function
+    'End If
     
     'Find the smallest distance for this mouse position
     Dim minDistance As Double
-    Dim closestPoint As Long
     minDistance = mouseAccuracy
-    closestPoint = -1
     
-    If nwDist <= minDistance Then
-        minDistance = nwDist
-        closestPoint = 1
-    End If
+    Dim closestPoint As Long
     
-    If neDist <= minDistance Then
-        minDistance = neDist
-        closestPoint = 2
-    End If
+    'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
+    Select Case g_CurrentTool
     
-    If seDist <= minDistance Then
-        minDistance = seDist
-        closestPoint = 3
-    End If
+        Case SELECT_RECT, SELECT_CIRC
     
-    If swDist <= minDistance Then
-        minDistance = swDist
-        closestPoint = 4
-    End If
+            'Corners get preference, so check them first.
+            Dim nwDist As Double, neDist As Double, seDist As Double, swDist As Double
+            
+            nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
+            neDist = distanceTwoPoints(x1, y1, tRight, tTop)
+            swDist = distanceTwoPoints(x1, y1, tLeft, tBottom)
+            seDist = distanceTwoPoints(x1, y1, tRight, tBottom)
+            
+            'Find the smallest distance for this mouse position
+            closestPoint = -1
+            
+            If nwDist <= minDistance Then
+                minDistance = nwDist
+                closestPoint = 1
+            End If
+            
+            If neDist <= minDistance Then
+                minDistance = neDist
+                closestPoint = 2
+            End If
+            
+            If seDist <= minDistance Then
+                minDistance = seDist
+                closestPoint = 3
+            End If
+            
+            If swDist <= minDistance Then
+                minDistance = swDist
+                closestPoint = 4
+            End If
+            
+            'Was a close point found? If yes, then return that value
+            If closestPoint <> -1 Then
+                findNearestSelectionCoordinates = closestPoint
+                Exit Function
+            End If
+        
+            'If we're at this line of code, a closest corner was not found. So check edges next.
+            Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
+            
+            nDist = distanceOneDimension(y1, tTop)
+            eDist = distanceOneDimension(x1, tRight)
+            sDist = distanceOneDimension(y1, tBottom)
+            wDist = distanceOneDimension(x1, tLeft)
+            
+            If (nDist <= minDistance) Then
+                minDistance = nDist
+                closestPoint = 5
+            End If
+            
+            If (eDist <= minDistance) Then
+                minDistance = eDist
+                closestPoint = 6
+            End If
+            
+            If (sDist <= minDistance) Then
+                minDistance = sDist
+                closestPoint = 7
+            End If
+            
+            If (wDist <= minDistance) Then
+                minDistance = wDist
+                closestPoint = 8
+            End If
+            
+            'Was a close point found? If yes, then return that value.
+            If closestPoint <> -1 Then
+                findNearestSelectionCoordinates = closestPoint
+                Exit Function
+            End If
+        
+            'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
+            ' image's boundaries, and if it is, return the "move selection" ID, then exit.
+            If (x1 > tLeft) And (x1 < tRight) And (y1 > tTop) And (y1 < tBottom) Then
+                findNearestSelectionCoordinates = 9
+            Else
+                findNearestSelectionCoordinates = 0
+            End If
+            
+        Case SELECT_LINE
     
-    'Was a close point found? If yes, then return that value
-    If closestPoint <> -1 Then
-        findNearestSelectionCoordinates = closestPoint
-        Exit Function
-    End If
-
-    'If we're at this line of code, a closest corner was not found. So check edges next.
-    Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
-    
-    nDist = distanceOneDimension(y1, tTop)
-    eDist = distanceOneDimension(x1, tRight)
-    sDist = distanceOneDimension(y1, tBottom)
-    wDist = distanceOneDimension(x1, tLeft)
-    
-    If (nDist <= minDistance) Then
-        minDistance = nDist
-        closestPoint = 5
-    End If
-    
-    If (eDist <= minDistance) Then
-        minDistance = eDist
-        closestPoint = 6
-    End If
-    
-    If (sDist <= minDistance) Then
-        minDistance = sDist
-        closestPoint = 7
-    End If
-    
-    If (wDist <= minDistance) Then
-        minDistance = wDist
-        closestPoint = 8
-    End If
-    
-    'Was a close point found? If yes, then return that value.
-    If closestPoint <> -1 Then
-        findNearestSelectionCoordinates = closestPoint
-        Exit Function
-    End If
-
-    'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
-    ' image's boundaries, and if it is, return the "move selection" ID, then exit.
-    If (x1 > tLeft) And (x1 < tRight) And (y1 > tTop) And (y1 < tBottom) Then
-        findNearestSelectionCoordinates = 9
-    Else
-        findNearestSelectionCoordinates = 0
-    End If
+            'Line selections are simple - we only care if the mouse is by (x1,y1) or (x2,y2)
+            Dim xCoord As Double, yCoord As Double
+            Dim firstDist As Double, secondDist As Double
+            
+            closestPoint = 0
+            
+            pdImages(srcForm.Tag).mainSelection.getSelectionCoordinates 1, xCoord, yCoord
+            firstDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
+            
+            pdImages(srcForm.Tag).mainSelection.getSelectionCoordinates 2, xCoord, yCoord
+            secondDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
+                        
+            If firstDist <= minDistance Then closestPoint = 1
+            If secondDist <= minDistance Then closestPoint = 2
+            
+            'Was a close point found? If yes, then return that value.
+            findNearestSelectionCoordinates = closestPoint
+            Exit Function
+            
+    End Select
 
 End Function
