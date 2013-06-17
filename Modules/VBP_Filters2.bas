@@ -984,9 +984,7 @@ Public Sub MenuFilmNoir()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
-    Dim minVal As Long, maxVal As Long
-    Dim grayVal As Long, difVal As Long
-    Dim difDivide As Double
+    Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte

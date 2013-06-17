@@ -20,7 +20,7 @@ Option Explicit
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
 ' You can download the original at this link (good as of 13 June 2013): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
-Public Sub ConvertToFraction(ByVal V As Double, W As Double, N As Double, D As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
+Public Sub convertToFraction(ByVal V As Double, W As Double, N As Double, D As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
 
     Const MaxTerms As Integer = 50          'Limit to prevent infinite loop
     Const MinDivisor As Double = 1E-16      'Limit to prevent divide by zero
@@ -35,7 +35,6 @@ Public Sub ConvertToFraction(ByVal V As Double, W As Double, N As Double, D As D
     Dim T As Double
     Dim maxDenom As Double
     Dim bIsNegative As Boolean
-    Dim sDec As String
     
     If maxDenomDigits = 0 Or maxDenomDigits > 17 Then maxDenomDigits = 17
     maxDenom = 10 ^ maxDenomDigits

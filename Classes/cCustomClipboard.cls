@@ -329,7 +329,6 @@ Public Property Get FormatIDForName( _
 ' Searches for the Name sName on the Clipboard, and returns the
 ' format ID for it (or 0 if the item cannot be found)
 Dim i As Integer
-Dim iIndex As Integer
 Dim lId As Long
 
     GetCurrentFormats hWndOwner
@@ -466,7 +465,7 @@ Dim lHwndCache As Long
         End If
         GetTextData = True
     Else
-        Dim bData() As Byte, sR As String
+        Dim bData() As Byte
         If (GetBinaryData(lFormatId, bData())) Then
             sTextOut = StrConv(bData, vbUnicode)
             GetTextData = True

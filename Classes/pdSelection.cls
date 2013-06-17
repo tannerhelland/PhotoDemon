@@ -1265,9 +1265,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
-    Dim selMaskQuickVal As Long
     
-    Dim srcX As Long, srcY As Long
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = containingPDImage.Width - 1
     srcHeight = containingPDImage.Height - 1

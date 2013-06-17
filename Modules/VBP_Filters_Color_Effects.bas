@@ -770,7 +770,6 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, maxVal As Long, minVal As Long
-    Dim newR As Double, newG As Double, newB As Double
         
     'Apply the filter
     For x = initX To finalX

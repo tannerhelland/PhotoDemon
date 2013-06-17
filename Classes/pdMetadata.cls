@@ -167,7 +167,6 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     
     Dim ignoreThisTag As Boolean
     
-    Dim tmpLocation As Long
     Dim tmpString As String
     Dim tmpSplitOuter() As String, tmpSplitInner() As String
     
@@ -211,7 +210,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             '       zgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA
             '       ...many more lines of gibberish...
             '    </et:prt>
-            '    Not difficult to parse, but FYI there is really no reason to store or attempting to convert the specific binary values.
+            '    Not difficult to parse, but FYI there is really no reason to store or attempt to convert the specific binary values.
             
             ' 3) List-type values.  Used primarily by PhotoShop.  Looks like:
             '<et:prt>

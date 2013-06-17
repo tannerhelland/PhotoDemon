@@ -468,7 +468,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     leftOffset = mainSelection.boundLeft
     topOffset = mainSelection.boundTop
     
-    Dim x As Long, y As Long, i As Long
+    Dim x As Long, y As Long
     Dim thisAlpha As Long
     Dim blendAlpha As Double
     

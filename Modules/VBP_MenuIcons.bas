@@ -796,7 +796,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
     
     Dim IStream As IUnknown
     Dim tmpRect As RECTF
-    Dim gdiBitmap As Long, hBitmap As Long, hIcon As Long
+    Dim gdiBitmap As Long, hBitmap As Long
         
     CreateStreamOnHGlobal ImageData(0), 0&, IStream
     
@@ -995,7 +995,7 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
     
     Dim IStream As IUnknown
     Dim tmpRect As RECTF
-    Dim gdiBitmap As Long, hBitmap As Long, hIcon As Long
+    Dim gdiBitmap As Long, hBitmap As Long
         
     CreateStreamOnHGlobal ImageData(0), 0&, IStream
     

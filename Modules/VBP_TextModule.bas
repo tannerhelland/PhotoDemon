@@ -98,9 +98,7 @@ End Sub
 'Function to strip the extension from a filename
 Public Function GetExtension(sFile As String) As String
     
-    Dim pathLoc As Long, extLoc As Long
-    Dim i As Long, j As Long
-
+    Dim i As Long
     For i = Len(sFile) To 1 Step -1
     
         'If we find a path before we find an extension, return a blank string

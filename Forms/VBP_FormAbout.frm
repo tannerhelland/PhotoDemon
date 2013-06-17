@@ -295,7 +295,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         Dim linePadding As Long
         linePadding = 1
     
-        Dim mWidth As Single, mHeight As Single
+        Dim mHeight As Single
         
         Dim drawString As String
         drawString = creditList(blockIndex).Name

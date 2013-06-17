@@ -259,8 +259,6 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     Dim sNewOutput As String
     Dim lBytesRead As Long
     
-    Dim lRet As Long
-
     'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1024
     Const BUFSIZE = 1024
 

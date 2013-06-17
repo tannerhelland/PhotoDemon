@@ -787,7 +787,6 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
     Dim fitWidth As Long, fitHeight As Long
-    Dim newAspectRatio As Double, oldAspectRatio As Double
     
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(CurrentImage).Width
@@ -897,7 +896,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 'Create a filter support class, which will aid with edge handling and interpolation
                 Dim fSupport As pdFilterSupport
                 Set fSupport = New pdFilterSupport
-                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.MaxX, curLayerValues.MaxY
+                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.maxX, curLayerValues.maxY
     
                 'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
                 ' based on the size of the area to be processed.
@@ -968,7 +967,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     srcAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
     dstAspect = iWidth / iHeight
     
-    Dim dstX As Long, dstY As Long, dWidth As Long, dHeight As Long
+    Dim dstX As Long, dstY As Long
     
     'We now want to copy the resized image into the current image using the technique requested by the user.
     Select Case fitMethod

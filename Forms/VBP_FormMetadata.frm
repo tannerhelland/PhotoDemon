@@ -31,11 +31,19 @@ Begin VB.Form FormMetadata
       TabIndex        =   6
       Top             =   5760
       Width           =   2355
-      _extentx        =   4154
-      _extenty        =   953
-      caption         =   "use readable names"
-      value           =   1
-      font            =   "VBP_FormMetadata.frx":0000
+      _ExtentX        =   4154
+      _ExtentY        =   953
+      Caption         =   "use readable names"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.VScrollBar vsMetadata 
       Height          =   5340
@@ -92,7 +100,7 @@ Begin VB.Form FormMetadata
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   8910
+      Left            =   8880
       TabIndex        =   0
       Top             =   6510
       Width           =   1365
@@ -103,11 +111,19 @@ Begin VB.Form FormMetadata
       TabIndex        =   7
       Top             =   5760
       Width           =   2310
-      _extentx        =   4075
-      _extenty        =   953
-      caption         =   "use readable values"
-      value           =   1
-      font            =   "VBP_FormMetadata.frx":0028
+      _ExtentX        =   4075
+      _ExtentY        =   953
+      Caption         =   "use readable values"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -322,7 +338,7 @@ Private Sub lstMetadata_Click()
     curCategory = lstMetadata.ListIndex
         
     'First, determine if the vertical scrollbar needs to be visible or not
-    Dim maxMDSize As Long, mdOffset As Long
+    Dim maxMDSize As Long
     maxMDSize = BLOCKHEIGHT * mdCategories(curCategory).Count
     
     vsMetadata.Value = 0
@@ -376,8 +392,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         Dim linePadding As Long
         linePadding = 4
     
-        Dim mWidth As Single, mHeight As Single
-        
+        Dim mHeight As Single
         Dim drawString As String
         
         If CBool(chkFriendlyNames.Value) Then
