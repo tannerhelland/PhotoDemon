@@ -4,7 +4,8 @@ Attribute VB_Name = "Math_Functions"
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 13/June/13
-'Last update: added a function by VB6 code LaVolpe for converting decimals to fractions.  Used to display image aspect ratio.
+'Last update: added a function by VB6 coder LaVolpe that converts decimals to fractions.  PhotoDemon uses this function to
+'             approximate image aspect ratios from width/height values.
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
@@ -20,19 +21,19 @@ Option Explicit
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
 ' You can download the original at this link (good as of 13 June 2013): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
-Public Sub convertToFraction(ByVal V As Double, W As Double, N As Double, D As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
+Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
 
     Const MaxTerms As Integer = 50          'Limit to prevent infinite loop
     Const MinDivisor As Double = 1E-16      'Limit to prevent divide by zero
     Const MaxError As Double = 1E-50        'How close is enough
-    Dim F As Double                         'Fraction being converted
-    Dim A As Double     'Current term in continued fraction
+    Dim f As Double                         'Fraction being converted
+    Dim a As Double     'Current term in continued fraction
     Dim N1 As Double    'Numerator, denominator of last approx
     Dim D1 As Double
     Dim N2 As Double    'Numerator, denominator of previous approx
     Dim D2 As Double
     Dim i As Integer
-    Dim T As Double
+    Dim t As Double
     Dim maxDenom As Double
     Dim bIsNegative As Boolean
     
@@ -41,16 +42,16 @@ Public Sub convertToFraction(ByVal V As Double, W As Double, N As Double, D As D
     If Accuracy > 100 Or Accuracy < 1 Then Accuracy = 100
     Accuracy = Accuracy / 100#
     
-    bIsNegative = (V < 0)
-    W = Abs(Fix(V))
+    bIsNegative = (v < 0)
+    w = Abs(Fix(v))
     'V = Abs(V) - W << subtracting doubles can change the decimal portion by adding more numeral at end
     'TANNER'S NOTE: the original version of this included +1 to the string length, which gave me consistent errors.  So I removed it.
-    V = CDbl(Mid$(CStr(Abs(V)), Len(CStr(W))))
+    v = CDbl(Mid$(CStr(Abs(v)), Len(CStr(w))))
     
     ' check for no decimal or zero
-    If V = 0 Then GoTo RtnResult
+    If v = 0 Then GoTo RtnResult
     
-    F = V                       'Initialize fraction being converted
+    f = v                       'Initialize fraction being converted
     
     N1 = 1                      'Initialize fractions with 1/0, 0/1
     D1 = 0
@@ -59,46 +60,46 @@ Public Sub convertToFraction(ByVal V As Double, W As Double, N As Double, D As D
 
     On Error GoTo RtnResult
     For i = 0 To MaxTerms
-        A = Fix(F)              'Get next term
-        F = F - A               'Get new divisor
-        N = N1 * A + N2         'Calculate new fraction
-        D = D1 * A + D2
+        a = Fix(f)              'Get next term
+        f = f - a               'Get new divisor
+        n = N1 * a + N2         'Calculate new fraction
+        d = D1 * a + D2
         N2 = N1                 'Save last two fractions
         D2 = D1
-        N1 = N
-        D1 = D
+        N1 = n
+        D1 = d
                                 'Quit if dividing by zero
-        If F < MinDivisor Then Exit For
+        If f < MinDivisor Then Exit For
 
                                 'Quit if close enough
-        T = N / D               ' A=zero indicates exact match or extremely close
-        A = Abs(V - T)          ' Difference btwn actual V and calculated T
-        If A < MaxError Then Exit For
+        t = n / d               ' A=zero indicates exact match or extremely close
+        a = Abs(v - t)          ' Difference btwn actual V and calculated T
+        If a < MaxError Then Exit For
                                 'Quit if max denominator digits encountered
-        If D > maxDenom Then Exit For
+        If d > maxDenom Then Exit For
                                 ' Quit if preferred accuracy accomplished
-        If N Then
-            If T > V Then T = V / T Else T = T / V
-            If T >= Accuracy And Abs(T) < 1 Then Exit For
+        If n Then
+            If t > v Then t = v / t Else t = t / v
+            If t >= Accuracy And Abs(t) < 1 Then Exit For
         End If
-        F = 1# / F               'Take reciprocal
+        f = 1# / f               'Take reciprocal
     Next i
 
 RtnResult:
-    If Err Or D > maxDenom Then
+    If Err Or d > maxDenom Then
         ' in above case, use the previous best N & D
         If D2 = 0 Then
-            N = N1
-            D = D1
+            n = N1
+            d = D1
         Else
-            D = D2
-            N = N2
+            d = D2
+            n = N2
         End If
     End If
     
     ' correct for negative values
     If bIsNegative Then
-        If W Then W = -W Else N = -N
+        If w Then w = -w Else n = -n
     End If
     
     'TANNER'S NOTE: the original function included some simple code here to generate a user-friendly string of the result.
