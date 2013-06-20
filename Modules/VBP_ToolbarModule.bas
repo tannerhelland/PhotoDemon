@@ -3,8 +3,8 @@ Attribute VB_Name = "Toolbar"
 'Toolbar Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 26/May/13
-'Last update: Simplify the way 24/32bpp mode conversions are handled
+'Last updated: 20/June/13
+'Last update: add the new Select menu to the list of menus enabled/disabled when no images are loaded
 '
 'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June '12 in favor of
 ' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
@@ -88,19 +88,20 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                 ResetMenuIcons
             End If
             
-        'ImageOps is all Image-related menu items; it enables/disables the Image, Color, View (most items, anyway), and Print menus
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Select, Color, View (most items), and Print menus
         Case tImageOps
             If FormMain.MnuImageTop.Enabled <> tState Then
                 FormMain.MnuImageTop.Enabled = tState
                 'Use this same command to disable other menus
-                FormMain.MnuColorTop.Enabled = tState
                 FormMain.MnuPrint.Enabled = tState
-                FormMain.MnuWindowTop.Enabled = tState
                 FormMain.MnuFitOnScreen.Enabled = tState
                 FormMain.MnuFitWindowToImage.Enabled = tState
                 FormMain.MnuZoomIn.Enabled = tState
                 FormMain.MnuZoomOut.Enabled = tState
-                                
+                FormMain.MnuSelectTop.Enabled = tState
+                FormMain.MnuColorTop.Enabled = tState
+                FormMain.MnuWindowTop.Enabled = tState
+                
                 For i = 0 To FormMain.MnuSpecificZoom.Count - 1
                     FormMain.MnuSpecificZoom(i).Enabled = tState
                 Next i
