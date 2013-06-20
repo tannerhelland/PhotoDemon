@@ -197,18 +197,23 @@ Public Sub LoadTheProgram()
             g_SelectionRenderPreference = 0
         Next i
         
+        'Selection smoothing (currently none, antialiased, fully feathered)
+        FormMain.cmbSelSmoothing(0).ToolTipText = "This option controls how smoothly a selection blends with its surroundings."
+        FormMain.sltSelectionFeathering.ToolTipText = "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        FormMain.cmbSelSmoothing(0).AddItem "None", 0
+        FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
+        FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
+        FormMain.cmbSelSmoothing(0).ListIndex = 1
+        
         'Selection types (currently interior, exterior, border)
+        FormMain.cmbSelType(0).ToolTipText = "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
         FormMain.cmbSelType(0).AddItem "Interior", 0
         FormMain.cmbSelType(0).AddItem "Exterior", 1
         FormMain.cmbSelType(0).AddItem "Border", 2
         FormMain.cmbSelType(0).ListIndex = 0
         
-        'Selection smoothing (currently none, antialiased, fully feathered)
-        FormMain.cmbSelSmoothing(0).AddItem "None", 0
-        FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
-        FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
-        FormMain.cmbSelSmoothing(0).ListIndex = 1
-    
+        FormMain.sltCornerRounding.ToolTipText = "This option adjusts the roundness of a rectangular selection's corners."
+            
     g_UserPreferences.loadToolSettings
             
         
