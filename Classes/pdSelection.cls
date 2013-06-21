@@ -41,6 +41,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Used when writing/reading selection data to/from a file
+Private Const SELECTION_IDENTIFIER As String * 4 = "PDsd"
+Private Const SELECTION_FILE_VERSION_2013 As Long = &H1001
+
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Private Type SAFEARRAYBOUND
     cElements As Long
@@ -285,8 +289,8 @@ End Sub
 'Return all of this selection's important settings as a specifically formatted parameter string.  This string can be passed to a selection
 ' object at any future point to recreate this selection exactly.
 ' (See also: "initFromParamString" above)
-Public Function returnSelectionParamString() As String
-    returnSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight, x1, y1, x2, y2)
+Public Function getSelectionParamString() As String
+    getSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight, x1, y1, x2, y2)
 End Function
 
 'Request a 1:1 aspect ratio selection (squares, circles)
@@ -1591,3 +1595,74 @@ Private Sub Class_Terminate()
     End If
 
 End Sub
+
+'Read all relevant information about a selection from file, and populate this selection with the data.
+' (NOTE: this function will not generate a selection mask or render the selection on-screen - it will only apply the stored values to
+'        the relevant variables!  The calling function must explicitly request a redraw if desired.)
+Public Function readSelectionFromFile(ByVal srcFilename As String) As Boolean
+
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open srcFilename For Binary As #fileNum
+    
+        'Check to make sure this is actually a PhotoDemon selection file
+        Dim selectionIDCheck As String * 4
+        Get #fileNum, 1, selectionIDCheck
+        If (selectionIDCheck <> SELECTION_IDENTIFIER) Then
+            Close #fileNum
+            Message "Failed to load selection from file: file is not a valid PhotoDemon selection."
+            readSelectionFromFile = False
+            Exit Function
+        End If
+        
+        'Check to make sure this selection file verison is supported (not implemented right now, because there's only one selection version!)
+        Dim selectionVersionCheck As Long
+        Get #fileNum, , selectionVersionCheck
+        
+        'Was the selection locked in?
+        Get #fileNum, , lockedIn
+        
+        'Retrieve the selection parameters into a string
+        Dim paramString As String
+        Get #fileNum, , paramString
+    
+    Close #fileNum
+    
+    'Parse the parameter string into its individual components, and use those to initialize this selection
+    initFromParamString paramString
+
+    'If this selection was locked in at the time of its save, lock this selection in as well
+    If lockedIn Then lockIn FormMain.ActiveForm Else lockRelease
+
+    readSelectionFromFile = True
+
+End Function
+
+'Write all relevant information about this selection out to a file.
+Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
+
+    'Delete any existing file (overwrite)
+    If FileExist(dstFilename) Then Kill dstFilename
+        
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    'Open the file and dump out only the essential information
+    Open dstFilename For Binary As #fileNum
+    
+        'Identifiers
+        Put #fileNum, 1, SELECTION_IDENTIFIER
+        Put #fileNum, , SELECTION_FILE_VERSION_2013
+        
+        'Is the selection currently active?
+        Put #fileNum, , lockedIn
+        
+        'All relevant values in pdParamString format
+        Put #fileNum, , getSelectionParamString
+        
+    Close #fileNum
+    
+    writeSelectionToFile = True
+
+End Function

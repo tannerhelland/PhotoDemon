@@ -84,8 +84,9 @@ Option Explicit
     'State of undo/redo buttons
     Public UndoState As Boolean
     Public RedoState As Boolean
-    'IDs of the processes associated with each undo file
+    'IDs and types of the processes associated with each undo file
     Private UndoIDs() As String
+    Private UndoTypes() As Long
     
     'Current index of the zoom combo box
     Public CurrentZoomValue As Long
@@ -225,15 +226,29 @@ End Sub
 
 'Create an undo entry (a copy of the present image); also required is the ID of the process that required this action.
 ' This is used to generate a string of the undo action's name (for example, "Undo Blur")
-Public Sub BuildUndo(ByVal processID As String)
+Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long)
     
-    'Easy enough - just store a 24-bit bitmap of the current image
-    mainLayer.writeToFile GenerateUndoFile(UndoNum)
+    'Depending on the type of process being applied, save out image or selection data to file
+    Select Case processType
+    
+        'Pixel data
+        Case 1
+            mainLayer.writeToFile GenerateUndoFile(UndoNum)
+            
+        'Selection data
+        Case 2
+            mainSelection.writeSelectionToFile GenerateUndoFile(UndoNum)
+        
+    End Select
+    
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
     
     'Remember this processID for future use
     ReDim Preserve UndoIDs(0 To UndoNum) As String
     UndoIDs(UndoNum) = processID
+    
+    ReDim Preserve UndoTypes(0 To UndoNum) As Long
+    UndoTypes(UndoNum) = processType
     
     'If the present image is NOT the last image in the undo train (i.e., an Undo
     'was fired before running the current operation) treat this as the new "last"
@@ -264,11 +279,29 @@ Public Sub Undo()
     
     'If we're at the end of actions, save this image for Redo potential
     If UndoNum = UndoMax Then
-        mainLayer.writeToFile GenerateUndoFile(UndoNum)
+        
+        'Depending on the last action, write out a Redo file for that action
+        Select Case UndoTypes(UndoNum - 1)
+        
+            'Pixel undo data
+            Case 1
+                mainLayer.writeToFile GenerateUndoFile(UndoNum)
+            
+            'Selection undo data
+            Case 2
+                mainSelection.writeSelectionToFile GenerateUndoFile(UndoNum)
+            
+        End Select
+        
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
+        
         'Mirror the current processID
         ReDim Preserve UndoIDs(0 To UndoNum) As String
         UndoIDs(UndoNum) = UndoIDs(UndoNum - 1)
+        
+        ReDim Preserve UndoTypes(0 To UndoNum) As Long
+        UndoTypes(UndoNum) = UndoTypes(UndoNum - 1)
+        
     End If
     
     'If this is not the last Undo state, decrease the number of Undos available
@@ -348,6 +381,30 @@ Public Sub ClearUndos()
     
 End Sub
 
+'Return the process type associated with the current Undo state
+Public Function getUndoProcessType() As Long
+    
+    'If we don't have a relevant Undo state, return -1.  Otherwise return the proper process ID.
+    If UndoState = False Then
+        getUndoProcessType = 0
+    Else
+        getUndoProcessType = UndoTypes(UndoNum - 1)
+    End If
+        
+End Function
+
+'Return the process type associated with the current Redo state
+Public Function getRedoProcessType() As Long
+
+    'If we don't have a relevant Redo state, return -1.  Otherwise return the proper process ID.
+    If RedoState = False Then
+        getRedoProcessType = 0
+    Else
+        getRedoProcessType = UndoTypes(UndoNum)
+    End If
+
+End Function
+
 'Return the processID associated with the current Undo state
 Public Function getUndoProcessID() As String
     
@@ -411,6 +468,7 @@ Private Sub Class_Initialize()
     
     'Set up the process ID array
     ReDim UndoIDs(0) As String
+    ReDim UndoTypes(0) As Long
     
     'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
     Set mainLayer = New pdLayer

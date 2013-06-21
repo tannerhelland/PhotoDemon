@@ -25,24 +25,11 @@ Option Explicit
 ' Inputs:
 '  1) the ID string of the process that called this action (e.g. something like "Gaussian blur")
 '  2) optionally, the type of Undo that needs to be created.  By default, type 1 (image pixel undo) is assumed.
-Public Sub CreateUndoFile(ByVal processID As String, Optional ByVal undoType As Long = 1)
+Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As Long = 1)
     
     'All undo work is handled internally in the pdImage class
     Message "Saving Undo data..."
-    
-    Select Case undoType
-            
-        'Pixel undo data (filters, effects, color adjustments)
-        Case 1
-            pdImages(CurrentImage).BuildUndo processID
-        
-        'Selection undo data (create, modify selections)
-        Case 2
-        
-        'Should never occur...
-        Case Else
-        
-    End Select
+    pdImages(CurrentImage).BuildUndo processID, undoType
     
     'Since an undo exists, enable the Undo button and disable the Redo button
     tInit tUndo, pdImages(CurrentImage).UndoState
@@ -66,7 +53,7 @@ Public Sub RestoreUndoData()
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
         
     'Launch the undo bitmap loading routine
-    LoadUndo pdImages(CurrentImage).GetUndoFile
+    LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType
     
     'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
@@ -122,7 +109,7 @@ Public Sub RestoreRedoData()
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
         
     'Load the Redo bitmap file
-    LoadUndo pdImages(CurrentImage).GetUndoFile
+    LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType
     
     'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False

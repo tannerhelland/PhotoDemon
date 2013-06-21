@@ -135,7 +135,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' 2) If recording has been disabled for this action
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
         If MacroStatus <> MacroBATCH Then
-            If (Not ShowDialog) And RecordAction Then CreateUndoFile processID, createUndo
+            If (Not ShowDialog) And RecordAction Then CreateUndoData processID, createUndo
         End If
         
         'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.

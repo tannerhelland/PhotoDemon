@@ -1044,23 +1044,41 @@ LoadVBImageFail:
 End Function
 
 'UNDO loading
-Public Sub LoadUndo(ByVal UndoFile As String)
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
     
-    'The layer handles the actual loading of the undo data
-    pdImages(CurrentImage).mainLayer.createFromFile UndoFile
+    'Several Undo Types are supported
+    Select Case undoType
     
-    'Update the displayed size
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
-    
-    'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
-    ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
-    ' it before rendering the image or OOB errors may occur.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
-    
+        'Pixel data
+        Case 1
+        
+            'The layer handles the actual loading of the undo data
+            pdImages(CurrentImage).mainLayer.createFromFile undoFile
+            
+            'Update the displayed size
+            pdImages(CurrentImage).updateSize
+            DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
+            
+            'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
+            ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
+            ' it before rendering the image or OOB errors may occur.)
+            If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
+            
+        'Selection data
+        Case 2
+        
+            'Load the previous selection from file
+            pdImages(CurrentImage).mainSelection.readSelectionFromFile undoFile
+            
+            'Activate the selection as necessary
+            pdImages(CurrentImage).selectionActive = pdImages(CurrentImage).mainSelection.isLockedIn
+            tInit tSelection, pdImages(CurrentImage).selectionActive
+        
+    End Select
+        
     'Render the image to the screen
     PrepareViewport FormMain.ActiveForm, "LoadUndo"
-    
+        
     Message "Undo restored successfully."
     
 End Sub

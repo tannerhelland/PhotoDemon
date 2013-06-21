@@ -548,7 +548,7 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
 End Function
 
 'Convert this layer to 24bpp mode
-Public Function convertTo24bpp(Optional ByVal newBackcolor As Long = vbWhite) As Boolean
+Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
 
     'Make sure this layer is 32bpp. If it isn't, running this function pointless.
     If layerColorDepth = 32 Then
@@ -562,7 +562,7 @@ Public Function convertTo24bpp(Optional ByVal newBackcolor As Long = vbWhite) As
             tmpLayer.createFromExistingLayer Me
                         
             'Composite the temporary layer against a white background, per convention.
-            tmpLayer.compositeBackgroundColor ExtractR(newBackcolor), ExtractG(newBackcolor), ExtractB(newBackcolor)
+            tmpLayer.compositeBackgroundColor ExtractR(newBackColor), ExtractG(newBackColor), ExtractB(newBackColor)
             
             'Now erase our own layer
             eraseLayer
@@ -1091,7 +1091,6 @@ Public Sub createFromFile(ByRef srcFilename As String)
     Dim fileNum As Integer
     fileNum = FreeFile
     
-    'Open the file and dump out only the essential information
     Open srcFilename For Binary As #fileNum
     
         'Check to make sure this is actually a layer file
@@ -1152,7 +1151,7 @@ End Sub
 Public Sub writeToFile(ByRef dstFilename As String)
 
     'Delete any existing file (overwrite)
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(dstFilename) Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
@@ -1230,7 +1229,7 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
     
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
-    If FileExist(dstFilename) = True Then Kill dstFilename
+    If FileExist(dstFilename) Then Kill dstFilename
         
     Dim fileNum As Integer
     fileNum = FreeFile
