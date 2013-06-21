@@ -33,7 +33,7 @@ Public Type ProcessCall
     Id As String
     Dialog As Boolean
     Parameters As String
-    MakeUndo As Boolean
+    MakeUndo As Long
     Recorded As Boolean
 End Type
 
@@ -61,12 +61,15 @@ Private m_ProcessingTime As Double
 '                while "Blur", "False" will actually apply the blur.  If showDialog is true, no Undo will be created for the action.
 ' - *processParameters: all parameters for this function, concatenated into a single string.  The processor will automatically parse out
 '                       individual parameters as necessary.
-' - *createUndo: create an Undo entry for this action.  This is assumed TRUE for all actions, but some - like "Count image colors" must
-'                explicitly specify that no Undo is necessary.  NOTE: if showDialog is TRUE, this value will automatically be set to FALSE.
+' - *createUndo: ID describing what kind of Undo entry to create for this action.  0 prevents Undo creation, while values > 0 correspond
+'                to a specific type of Undo.  (1 = image undo, 2 = selection undo - these values are needed because undoing a selection
+'                requires completely different code vs undoing an image filter.)  This value is set to 1 by default, but some functions
+'                - like "Count image colors" - may explicitly specify that no Undo is necessary.  NOTE: if showDialog is TRUE, this value
+'                will automatically be set to 0, which means "DO NOT CREATE UNDO".
 ' - *recordAction: are macros allowed to record this action?  Actions are assumed to be recordable.  However, some PhotoDemon functions
 '                  are actually several actions strung together; when these are used, subsequent actions are marked as "not recordable"
 '                  to prevent them from being executed twice.
-Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As Boolean = True, Optional RecordAction As Boolean = True)
+Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As Long = 1, Optional RecordAction As Boolean = True)
 
     'Main error handler for the entire program is initialized by this line
     On Error GoTo MainErrHandler
@@ -117,11 +120,11 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     End If
     
     'If a dialog is being displayed, disable Undo creation
-    If ShowDialog Then createUndo = False
+    If ShowDialog Then createUndo = 0
     
     'If this action requires us to create an Undo, create it now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
-    If createUndo Then
+    If createUndo <> 0 Then
         
         'Temporarily disable drag-and-drop operations for the main form
         g_AllowDragAndDrop = False
@@ -132,7 +135,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' 2) If recording has been disabled for this action
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
         If MacroStatus <> MacroBATCH Then
-            If (Not ShowDialog) And RecordAction Then CreateUndoFile processID
+            If (Not ShowDialog) And RecordAction Then CreateUndoFile processID, createUndo
         End If
         
         'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.
@@ -203,12 +206,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             ClipboardEmpty
             
         Case "Undo"
-            RestoreImage
+            RestoreUndoData
+            
             'Also, redraw the current child form icon
             CreateCustomFormIcon FormMain.ActiveForm
             
         Case "Redo"
-            RedoImageRestore
+            RestoreRedoData
+            
             'Also, redraw the current child form icon
             CreateCustomFormIcon FormMain.ActiveForm
             
@@ -886,8 +891,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
     End Select
     
-    'If the user wants us to time this action, display the results now
-    If createUndo Then
+    'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
+    ' in some way, as determined by the createUndo param)
+    If createUndo > 0 Then
         If DISPLAY_TIMINGS Then Message "Time taken: " & Format$(Timer - m_ProcessingTime, "#0.####") & " seconds"
     End If
     
@@ -907,18 +913,16 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     End If
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw the form icon to match.
-    If createUndo And (MacroStatus <> MacroBATCH) Then CreateCustomFormIcon FormMain.ActiveForm
+    If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then CreateCustomFormIcon FormMain.ActiveForm
     
     'Unlock the main form
     FormMain.Enabled = True
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
-    If createUndo Then
+    If (createUndo > 0) Then
         If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
-    End If
-        
-    'Also, re-enable drag and drop operations
-    If createUndo >= 101 Then
+    
+        'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = 1
     End If

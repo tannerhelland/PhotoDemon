@@ -1,11 +1,10 @@
 Attribute VB_Name = "Undo_Handler"
 '***************************************************************************
 'Undo/Redo Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 12/August/12
-'Last update: BuildImageRestore requests are now required to supply the ID of the process requesting
-'             Undo generation.  This is used to generate text related to undos (e.g. "Undo Blur")
+'Last updated: 21/June/13
+'Last update: different Undo types are now allowed.  This was a key blocker for selections being added to the undo/redo chain!
 '
 'Handles all "Undo"/"Redo" operations.  I currently have it programmed to use the hard
 ' drive for all backups in order to free up RAM; this could be changed with in-memory images,
@@ -23,22 +22,39 @@ Option Explicit
 
 
 'Create an Undo entry (save a copy of the present image or tool to the temp directory)
-' Required: the ID of the process that called this action
-Public Sub CreateUndoFile(ByVal processID As String)
+' Inputs:
+'  1) the ID string of the process that called this action (e.g. something like "Gaussian blur")
+'  2) optionally, the type of Undo that needs to be created.  By default, type 1 (image pixel undo) is assumed.
+Public Sub CreateUndoFile(ByVal processID As String, Optional ByVal undoType As Long = 1)
     
     'All undo work is handled internally in the pdImage class
     Message "Saving Undo data..."
-    pdImages(CurrentImage).BuildUndo processID
+    
+    Select Case undoType
+            
+        'Pixel undo data (filters, effects, color adjustments)
+        Case 1
+            pdImages(CurrentImage).BuildUndo processID
+        
+        'Selection undo data (create, modify selections)
+        Case 2
+        
+        'Should never occur...
+        Case Else
+        
+    End Select
     
     'Since an undo exists, enable the Undo button and disable the Redo button
     tInit tUndo, pdImages(CurrentImage).UndoState
     tInit tRedo, pdImages(CurrentImage).RedoState
-    FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+    
+    '"Fade last effect" is reserved for filters and effects only
+    If undoType = 0 Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
 
 End Sub
 
 'Restore an undo entry : "Undo"
-Public Sub RestoreImage()
+Public Sub RestoreUndoData()
     
     'Let the internal pdImage Undo handler take care of any changes
     Message "Restoring Undo data..."
@@ -94,7 +110,7 @@ Public Sub ClearUndo(ByVal imageID As Long)
 End Sub
 
 'Restore an undo entry : "Redo"
-Public Sub RedoImageRestore()
+Public Sub RestoreRedoData()
     
     'Let pdImage handle the Redo by itself
     Message "Restoring Redo data..."
