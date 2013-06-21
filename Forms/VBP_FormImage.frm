@@ -303,23 +303,15 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     ' maintain desired behavior...
                     DoEvents
                     
-                    'Activate the selection and pass in the first two points
+                    'Activate the selection
                     pdImages(Me.Tag).selectionActive = True
                     pdImages(Me.Tag).mainSelection.lockRelease
-                    pdImages(Me.Tag).mainSelection.setSelectionShape g_CurrentTool
-                    If g_CurrentTool = SELECT_RECT Then
-                        pdImages(Me.Tag).mainSelection.setRoundedCornerAmount FormMain.sltCornerRounding.Value
-                    ElseIf g_CurrentTool = SELECT_LINE Then
-                        pdImages(Me.Tag).mainSelection.setSelectionLineWidth FormMain.sltCornerRounding.Value
-                    End If
-                    pdImages(Me.Tag).mainSelection.setSelectionType FormMain.cmbSelType(0).ListIndex
-                    pdImages(Me.Tag).mainSelection.setBorderSize FormMain.sltSelectionBorder.Value
-                    pdImages(Me.Tag).mainSelection.setSmoothingType FormMain.cmbSelSmoothing(0).ListIndex
-                    pdImages(Me.Tag).mainSelection.setFeatheringRadius FormMain.sltSelectionFeathering.Value
-                    pdImages(Me.Tag).mainSelection.selLeft = 0
-                    pdImages(Me.Tag).mainSelection.selTop = 0
-                    pdImages(Me.Tag).mainSelection.selWidth = 0
-                    pdImages(Me.Tag).mainSelection.selHeight = 0
+                    
+                    'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
+                    ' values and what they mean can be found in the corresponding pdSelection function
+                    pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, FormMain.cmbSelType(0).ListIndex, FormMain.cmbSelSmoothing(0).ListIndex, FormMain.sltSelectionFeathering.Value, FormMain.sltSelectionBorder.Value, FormMain.sltCornerRounding.Value, FormMain.sltCornerRounding.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+                    
+                    'Set the first two coordinates of this selection to this mouseclick's location
                     pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
                     pdImages(Me.Tag).mainSelection.refreshTextBoxes
                     pdImages(Me.Tag).mainSelection.requestNewMask
