@@ -265,8 +265,12 @@ Public Sub LoadTheProgram()
     'Initialize all system cursors we rely on (hand, busy, resizing, etc)
     InitAllCursors
     
-    'Set up the program's title bar
-    FormMain.Caption = App.Title & " v" & App.Major & "." & App.Minor
+    'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
+    If (CLng(App.Minor) Mod 2 = 0) Then
+        FormMain.Caption = App.Title & " " & App.Major & "." & App.Minor
+    Else
+        FormMain.Caption = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " beta (build " & App.Revision & ")"
+    End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
     initializeIconHandler
