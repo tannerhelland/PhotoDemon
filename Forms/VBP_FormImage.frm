@@ -84,10 +84,9 @@ Attribute VB_Exposed = False
 'Image Form (Child MDI form)
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 29/January/13
-'Last update: fixed a long-standing issue where maximized child forms, when closed, don't correctly trigger
-' the _Activate event of the form that receives focus. It's a known problem on Microsoft's
-' end, see http://support.microsoft.com/kb/190634 for details.
+'Last updated: 24/June/13
+'Last update: rewrote selection handling code to utilize Processor calls.  This means selections are now part of the program's
+'             Undo/Redo chain, and they can also be recorded as part of macros.
 '
 'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
 ' specialized program components in the MDIWindow module.
@@ -247,10 +246,10 @@ End Sub
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the main form is disabled, exit
-    If FormMain.Enabled = False Then Exit Sub
+    If Not FormMain.Enabled Then Exit Sub
     
     'If the image has not yet been loaded, exit
-    If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+    If Not pdImages(Me.Tag).loadedSuccessfully Then Exit Sub
     
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
@@ -288,6 +287,9 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     
                     'If that function did not return zero, notify the selection and exit
                     If sCheck <> 0 Then
+                        
+                        'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
+                        pdImages(Me.Tag).mainSelection.setBackupParamString
                         
                         pdImages(Me.Tag).mainSelection.setTransformationType sCheck
                         pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
@@ -335,10 +337,10 @@ End Sub
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
         
     'If the main form is disabled, exit
-    If FormMain.Enabled = False Then Exit Sub
+    If Not FormMain.Enabled Then Exit Sub
     
     'If the image has not yet been loaded, exit
-    If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+    If Not pdImages(Me.Tag).loadedSuccessfully Then Exit Sub
         
     'Ask Windows to track the mouse relative to this form
     requestMouseTracking Me.hWnd
@@ -433,7 +435,7 @@ End Sub
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the image has not yet been loaded, exit
-    If pdImages(Me.Tag).loadedSuccessfully = False Then Exit Sub
+    If Not pdImages(Me.Tag).loadedSuccessfully Then Exit Sub
         
     'Check mouse buttons
     If Button = vbLeftButton Then
@@ -450,21 +452,31 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
                     If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
-                        pdImages(Me.Tag).mainSelection.lockRelease
-                        pdImages(Me.Tag).selectionActive = False
-                        tInit tSelection, False
+                        Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
                     Else
                     
                         'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
                         If pdImages(Me.Tag).mainSelection.areAllCoordinatesInvalid Then
-                            pdImages(Me.Tag).mainSelection.lockRelease
-                            pdImages(Me.Tag).selectionActive = False
-                            tInit tSelection, False
+                            Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
                         Else
                         
-                            'Lock-in the active selection
-                            pdImages(Me.Tag).mainSelection.lockIn Me
-                            tInit tSelection, True
+                            'Depending on the type of transformation that may or may not have been applied, call the appropriate processor
+                            ' function.  This has no practical purpose at present, except to give the user a pleasant name for this action.
+                            Select Case pdImages(Me.Tag).mainSelection.getTransformationType
+                            
+                                'Creating a new selection
+                                Case 0
+                                    Process "Create selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                                    
+                                'Moving an existing selection
+                                Case 9
+                                    Process "Move selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                                    
+                                'Anything else is assumed to be resizing an existing selection
+                                Case Else
+                                    Process "Resize selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                                    
+                            End Select
                             
                         End If
                         

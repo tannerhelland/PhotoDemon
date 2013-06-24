@@ -1045,12 +1045,12 @@ End Function
 
 'UNDO loading
 Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
-    
+
     'Several Undo Types are supported
-    Select Case undoType
+    'Select Case undoType
     
         'Pixel data
-        Case 1
+        'Case 1
         
             'The layer handles the actual loading of the undo data
             pdImages(CurrentImage).mainLayer.createFromFile undoFile
@@ -1065,16 +1065,16 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
             If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
             
         'Selection data
-        Case 2
+        'Case 2
         
             'Load the previous selection from file
-            pdImages(CurrentImage).mainSelection.readSelectionFromFile undoFile
+            pdImages(CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
             
             'Activate the selection as necessary
             pdImages(CurrentImage).selectionActive = pdImages(CurrentImage).mainSelection.isLockedIn
             tInit tSelection, pdImages(CurrentImage).selectionActive
         
-    End Select
+    'End Select
         
     'Render the image to the screen
     PrepareViewport FormMain.ActiveForm, "LoadUndo"

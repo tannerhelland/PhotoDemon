@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2013 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 22/May/13
-'Last update: fixed a bug in 32bpp processing for the retrieveProcessedSelection function
+'Last updated: 24/June/13
+'Last update: rewrote all Undo functions to also operate on selection data
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -229,17 +229,17 @@ End Sub
 Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long)
     
     'Depending on the type of process being applied, save out image or selection data to file
-    Select Case processType
+    'Select Case processType
     
         'Pixel data
-        Case 1
+        'Case 1
             mainLayer.writeToFile GenerateUndoFile(UndoNum)
             
         'Selection data
-        Case 2
-            mainSelection.writeSelectionToFile GenerateUndoFile(UndoNum)
+        'Case 2
+            mainSelection.writeSelectionToFile GenerateUndoFile(UndoNum) & ".selection"
         
-    End Select
+    'End Select
     
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
     
@@ -266,10 +266,13 @@ Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long)
     UndoState = True
     RedoState = False
     
-    'Mark this image as NOT saved (because if we're creating an Undo file, the image has changed from its saved version)
-    HasBeenSaved = False
-    tInit tSave, True
-    
+    'If this action changed pixel data, mark the image as NOT saved (because if we're creating an Undo file, the image has changed
+    ' from its saved version)
+    If processType = 1 Then
+        HasBeenSaved = False
+        tInit tSave, True
+    End If
+
     Debug.Print "Undo created successfully."
 
 End Sub
@@ -281,17 +284,17 @@ Public Sub Undo()
     If UndoNum = UndoMax Then
         
         'Depending on the last action, write out a Redo file for that action
-        Select Case UndoTypes(UndoNum - 1)
+        'Select Case UndoTypes(UndoNum - 1)
         
             'Pixel undo data
-            Case 1
+            'Case 1
                 mainLayer.writeToFile GenerateUndoFile(UndoNum)
             
             'Selection undo data
-            Case 2
-                mainSelection.writeSelectionToFile GenerateUndoFile(UndoNum)
+            'Case 2
+                mainSelection.writeSelectionToFile GenerateUndoFile(UndoNum) & ".selection"
             
-        End Select
+        'End Select
         
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
         
@@ -328,6 +331,8 @@ Public Sub Undo()
         HasBeenSaved = False
         tInit tSave, Not HasBeenSaved
     End If
+    
+debugUndo
     
 End Sub
 
@@ -372,6 +377,8 @@ Public Sub ClearUndos()
     For x = 0 To UndoTotal
         tempFile = GenerateUndoFile(x)
         If FileExist(tempFile) Then Kill tempFile
+        tempFile = GenerateUndoFile(x) & ".selection"
+        If FileExist(tempFile) Then Kill tempFile
     Next x
     
     'Set the current and maximum Undo number to 0
@@ -383,14 +390,7 @@ End Sub
 
 'Return the process type associated with the current Undo state
 Public Function getUndoProcessType() As Long
-    
-    'If we don't have a relevant Undo state, return -1.  Otherwise return the proper process ID.
-    If UndoState = False Then
-        getUndoProcessType = 0
-    Else
-        getUndoProcessType = UndoTypes(UndoNum - 1)
-    End If
-        
+    getUndoProcessType = UndoTypes(UndoNum)
 End Function
 
 'Return the process type associated with the current Redo state
@@ -430,7 +430,7 @@ Public Function getRedoProcessID() As String
 End Function
 
 'Subroutine for generating an Undo/Redo filename
-Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
+Private Function GenerateUndoFile(ByVal uIndex As Long) As String
     GenerateUndoFile = g_UserPreferences.getTempPath & "~cPDU" & imageID & "_" & uIndex & ".tmp"
 End Function
 
@@ -569,3 +569,20 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     retrieveProcessedSelection = True
 
 End Function
+
+
+'Temporary sub for debugging undo data
+Public Sub debugUndo()
+
+    Dim i As Long
+    Debug.Print "---"
+    For i = 0 To UBound(UndoIDs) '- 1
+        If i = UndoNum Then
+            Debug.Print "* " & i & ": " & UndoIDs(i) & "," & UndoTypes(i)
+        Else
+            Debug.Print i & ": " & UndoIDs(i) & "," & UndoTypes(i)
+        End If
+    Next i
+
+End Sub
+

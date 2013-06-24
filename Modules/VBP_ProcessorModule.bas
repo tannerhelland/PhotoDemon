@@ -135,6 +135,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' 2) If recording has been disabled for this action
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
         If MacroStatus <> MacroBATCH Then
+            'MsgBox createUndo
             If (Not ShowDialog) And RecordAction Then CreateUndoData processID, createUndo
         End If
         
@@ -231,6 +232,24 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         Case "Scan image"
             Twain32Scan
+        
+        
+        'SELECTION FUNCTIONS
+        ' Any action that operates on selections - creating them, moving them, erasing them, etc
+        Case "Create selection"
+            CreateNewSelection cParams.getParamString
+        
+        Case "Remove selection"
+            RemoveCurrentSelection cParams.getParamString
+            
+        ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
+        Case "Move selection"
+            CreateNewSelection cParams.getParamString
+            
+        ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
+        Case "Resize selection"
+            CreateNewSelection cParams.getParamString
+            
         
         'HISTOGRAM FUNCTIONS
         ' Any action that relies on a histogram, including displaying the image's current histogram
