@@ -39,7 +39,7 @@ Public Type OldProcessCall
     pOPCODE8 As Variant
     pOPCODE9 As Variant
     LoadForm As Boolean
-    RecordAction As Boolean
+    recordAction As Boolean
 End Type
 
 'Array of processor calls - tracks what is going on
@@ -210,7 +210,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
                 For x = 0 To ProcessCount
                     Processes(x).ID = GetNameOfProcess(OldProcesses(x).MainType)
                     Processes(x).Dialog = OldProcesses(x).LoadForm
-                    Processes(x).Recorded = OldProcesses(x).RecordAction
+                    Processes(x).Recorded = OldProcesses(x).recordAction
                     Processes(x).MakeUndo = Not OldProcesses(x).LoadForm
                     Processes(x).Parameters = buildParams(OldProcesses(x).pOPCODE, OldProcesses(x).pOPCODE2, OldProcesses(x).pOPCODE3, OldProcesses(x).pOPCODE4, OldProcesses(x).pOPCODE5, , OldProcesses(x).pOPCODE6, , OldProcesses(x).pOPCODE7, , OldProcesses(x).pOPCODE8, , OldProcesses(x).pOPCODE9)
                 Next x
@@ -260,7 +260,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
     Dim tProc As Long
     For tProc = 1 To ProcessCount
         If Not Processes(tProc).Dialog Then
-            Process Processes(tProc).ID, Processes(tProc).Dialog, Processes(tProc).Parameters, Processes(tProc).MakeUndo, Processes(tProc).Recorded
+            Process Processes(tProc).ID, Processes(tProc).Dialog, Processes(tProc).Parameters, Processes(tProc).MakeUndo, Processes(tProc).Tool, Processes(tProc).Recorded
             'Do
             '    DoEvents
             'Loop While Processing = True

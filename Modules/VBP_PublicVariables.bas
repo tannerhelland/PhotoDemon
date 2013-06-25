@@ -205,3 +205,6 @@ Public g_IsFirstRun As Boolean
 ' must be disallowed - with the exception of common dialog boxes.  To make sure this behavior is carefully maintained,
 ' we track drag-and-drop enabling ourselves
 Public g_AllowDragAndDrop As Boolean
+
+'While Undo/Redo operations are active, certain tasks can be ignored.  This public value can be used to check Undo/Redo activity.
+Public g_UndoRedoActive As Boolean

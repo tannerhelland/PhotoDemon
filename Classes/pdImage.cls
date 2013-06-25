@@ -84,9 +84,15 @@ Option Explicit
     'State of undo/redo buttons
     Public UndoState As Boolean
     Public RedoState As Boolean
-    'IDs and types of the processes associated with each undo file
-    Private UndoIDs() As String
-    Private UndoTypes() As Long
+    
+    'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new Undos are created
+    Private Type undoEntry
+        ID As String
+        Type As Long
+        relevantTool As Long
+    End Type
+    
+    Private Undos() As undoEntry
     
     'Current index of the zoom combo box
     Public CurrentZoomValue As Long
@@ -226,7 +232,7 @@ End Sub
 
 'Create an undo entry (a copy of the present image); also required is the ID of the process that required this action.
 ' This is used to generate a string of the undo action's name (for example, "Undo Blur")
-Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long)
+Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long, ByVal curTool As Long)
     
     'Depending on the type of process being applied, save out image or selection data to file
     'Select Case processType
@@ -244,12 +250,13 @@ Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long)
     Debug.Print "Saved " & GenerateUndoFile(UndoNum) & " as Undo file #" & UndoNum & "."
     
     'Remember this processID for future use
-    ReDim Preserve UndoIDs(0 To UndoNum) As String
-    UndoIDs(UndoNum) = processID
-    
-    ReDim Preserve UndoTypes(0 To UndoNum) As Long
-    UndoTypes(UndoNum) = processType
-    
+    ReDim Preserve Undos(0 To UndoNum) As undoEntry
+    With Undos(UndoNum)
+        .ID = processID
+        .Type = processType
+        .relevantTool = curTool
+    End With
+    debugUndo
     'If the present image is NOT the last image in the undo train (i.e., an Undo
     'was fired before running the current operation) treat this as the new "last"
     UndoMax = UndoNum
@@ -298,12 +305,13 @@ Public Sub Undo()
         
         Debug.Print "Undo initiated by user. Saved " & GenerateUndoFile(UndoNum) & " for Redo purposes."
         
-        'Mirror the current processID
-        ReDim Preserve UndoIDs(0 To UndoNum) As String
-        UndoIDs(UndoNum) = UndoIDs(UndoNum - 1)
-        
-        ReDim Preserve UndoTypes(0 To UndoNum) As Long
-        UndoTypes(UndoNum) = UndoTypes(UndoNum - 1)
+        'Move neighboring values into the current Undo location (this makes Redo work properly)
+        ReDim Preserve Undos(0 To UndoNum) As undoEntry
+        With Undos(UndoNum)
+            .ID = Undos(UndoNum - 1).ID
+            .Type = Undos(UndoNum - 1).Type
+            .relevantTool = Undos(UndoNum - 1).relevantTool
+        End With
         
     End If
     
@@ -331,8 +339,6 @@ Public Sub Undo()
         HasBeenSaved = False
         tInit tSave, Not HasBeenSaved
     End If
-    
-debugUndo
     
 End Sub
 
@@ -388,19 +394,28 @@ Public Sub ClearUndos()
     
 End Sub
 
+'Return the tool associated with the current Undo state
+Public Function getUndoTool() As Long
+    getUndoTool = Undos(UndoNum).relevantTool
+End Function
+
 'Return the process type associated with the current Undo state
 Public Function getUndoProcessType() As Long
-    getUndoProcessType = UndoTypes(UndoNum)
+    If UndoState = False Then
+        getUndoProcessType = 0
+    Else
+        getUndoProcessType = Undos(UndoNum).Type
+    End If
 End Function
 
 'Return the process type associated with the current Redo state
 Public Function getRedoProcessType() As Long
 
-    'If we don't have a relevant Redo state, return -1.  Otherwise return the proper process ID.
+    'If we don't have a relevant Redo state, return nothing.  Otherwise return the proper process ID.
     If RedoState = False Then
         getRedoProcessType = 0
     Else
-        getRedoProcessType = UndoTypes(UndoNum)
+        getRedoProcessType = Undos(UndoNum).Type
     End If
 
 End Function
@@ -412,7 +427,7 @@ Public Function getUndoProcessID() As String
     If UndoState = False Then
         getUndoProcessID = ""
     Else
-        getUndoProcessID = g_Language.TranslateMessage(UndoIDs(UndoNum - 1))
+        getUndoProcessID = g_Language.TranslateMessage(Undos(UndoNum - 1).ID)
     End If
         
 End Function
@@ -424,7 +439,7 @@ Public Function getRedoProcessID() As String
     If RedoState = False Then
         getRedoProcessID = ""
     Else
-        getRedoProcessID = g_Language.TranslateMessage(UndoIDs(UndoNum))
+        getRedoProcessID = g_Language.TranslateMessage(Undos(UndoNum).ID)
     End If
 
 End Function
@@ -446,14 +461,6 @@ Public Function updateSize()
     Me.Height = mainLayer.getLayerHeight
 End Function
 
-'See if a file exists or not
-Private Function FileExist(fName As String) As Boolean
-    On Error Resume Next
-    Dim Temp As Long
-    Temp = GetAttr(fName)
-    FileExist = Not CBool(Err)
-End Function
-
 'INITIALIZE class
 Private Sub Class_Initialize()
 
@@ -467,8 +474,7 @@ Private Sub Class_Initialize()
     pngBackgroundColor = -1
     
     'Set up the process ID array
-    ReDim UndoIDs(0) As String
-    ReDim UndoTypes(0) As Long
+    ReDim Undos(0) As undoEntry
     
     'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
     Set mainLayer = New pdLayer
@@ -576,11 +582,11 @@ Public Sub debugUndo()
 
     Dim i As Long
     Debug.Print "---"
-    For i = 0 To UBound(UndoIDs) '- 1
+    For i = 0 To UBound(Undos) '- 1
         If i = UndoNum Then
-            Debug.Print "* " & i & ": " & UndoIDs(i) & "," & UndoTypes(i)
+            Debug.Print "* " & i & ": " & Undos(i).ID & "," & Undos(i).Type
         Else
-            Debug.Print i & ": " & UndoIDs(i) & "," & UndoTypes(i)
+            Debug.Print i & ": " & Undos(i).ID & "," & Undos(i).Type
         End If
     Next i
 

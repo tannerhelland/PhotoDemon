@@ -25,11 +25,11 @@ Option Explicit
 ' Inputs:
 '  1) the ID string of the process that called this action (e.g. something like "Gaussian blur")
 '  2) optionally, the type of Undo that needs to be created.  By default, type 1 (image pixel undo) is assumed.
-Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As Long = 1)
+Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As Long = 1, Optional ByVal relevantTool As Long = -1)
     
     'All undo work is handled internally in the pdImage class
     Message "Saving Undo data..."
-    pdImages(CurrentImage).BuildUndo processID, undoType
+    pdImages(CurrentImage).BuildUndo processID, undoType, relevantTool
     
     'Since an undo exists, enable the Undo button and disable the Redo button
     tInit tUndo, pdImages(CurrentImage).UndoState
@@ -43,9 +43,16 @@ End Sub
 'Restore an undo entry : "Undo"
 Public Sub RestoreUndoData()
     
+    g_UndoRedoActive = True
+    
     'Let the internal pdImage Undo handler take care of any changes
     Message "Restoring Undo data..."
     pdImages(CurrentImage).Undo
+    
+    'Select the relevant tool for this action, if relevant
+    If pdImages(CurrentImage).getUndoTool > -1 Then
+        FormMain.selectNewTool pdImages(CurrentImage).getUndoTool
+    End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
     tInit tUndo, pdImages(CurrentImage).UndoState
@@ -57,6 +64,8 @@ Public Sub RestoreUndoData()
     
     'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+    
+    g_UndoRedoActive = False
     
 End Sub
 
@@ -99,9 +108,16 @@ End Sub
 'Restore an undo entry : "Redo"
 Public Sub RestoreRedoData()
     
+    g_UndoRedoActive = True
+    
     'Let pdImage handle the Redo by itself
     Message "Restoring Redo data..."
     pdImages(CurrentImage).Redo
+    
+    'Select the relevant tool for this action, if relevant
+    If pdImages(CurrentImage).getUndoTool > -1 Then
+        FormMain.selectNewTool pdImages(CurrentImage).getUndoTool
+    End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
     tInit tUndo, pdImages(CurrentImage).UndoState
@@ -113,6 +129,8 @@ Public Sub RestoreRedoData()
     
     'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+    
+    g_UndoRedoActive = False
     
 End Sub
 

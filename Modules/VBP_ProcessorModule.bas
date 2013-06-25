@@ -30,10 +30,11 @@ Option Compare Text
 
 'Data type for tracking processor calls - used for macros (NOTE: this is the 2013 model; older models are no longer supported.)
 Public Type ProcessCall
-    Id As String
+    ID As String
     Dialog As Boolean
     Parameters As String
     MakeUndo As Long
+    Tool As Long
     Recorded As Boolean
 End Type
 
@@ -66,10 +67,14 @@ Private m_ProcessingTime As Double
 '                requires completely different code vs undoing an image filter.)  This value is set to 1 by default, but some functions
 '                - like "Count image colors" - may explicitly specify that no Undo is necessary.  NOTE: if showDialog is TRUE, this value
 '                will automatically be set to 0, which means "DO NOT CREATE UNDO".
+' - *relevantTool: some Process calls are initiated by a particular tool (for example, "create selection" will be called by one of the
+'                  selection tools).  This parameter can contain the relevant tool for a given action.  If Undo is used to return to a
+'                  previous state, the relevant tool will automatically be selected, making it much easier for the user to make changes
+'                  to an action using the proper tool.
 ' - *recordAction: are macros allowed to record this action?  Actions are assumed to be recordable.  However, some PhotoDemon functions
 '                  are actually several actions strung together; when these are used, subsequent actions are marked as "not recordable"
 '                  to prevent them from being executed twice.
-Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As Long = 1, Optional RecordAction As Boolean = True)
+Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As Long = 1, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     'Main error handler for the entire program is initialized by this line
     On Error GoTo MainErrHandler
@@ -84,7 +89,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     FormMain.Enabled = False
     
     'If we need to display an additional dialog, restore the default mouse cursor.  Otherwise, set the cursor to busy.
-    If ShowDialog Then
+    If showDialog Then
         If Not (FormMain.ActiveForm Is Nothing) Then setArrowCursor FormMain.ActiveForm
     Else
         Screen.MousePointer = vbHourglass
@@ -93,15 +98,16 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     'If we are to perform the last command, simply replace all the method parameters using data from the
     ' LastFilterCall object, then let the routine carry on as usual
     If processID = "Repeat last action" Then
-        processID = LastProcess.Id
-        ShowDialog = LastProcess.Dialog
+        processID = LastProcess.ID
+        showDialog = LastProcess.Dialog
         processParameters = LastProcess.Parameters
-        RecordAction = LastProcess.Recorded
         createUndo = LastProcess.MakeUndo
+        relevantTool = LastProcess.Tool
+        recordAction = LastProcess.Recorded
     End If
     
     'If the macro recorder is running and this action is marked as recordable, store it in our array of processor calls
-    If (MacroStatus = MacroSTART) And RecordAction Then
+    If (MacroStatus = MacroSTART) And recordAction Then
     
         'Increase the process count
         ProcessCount = ProcessCount + 1
@@ -110,17 +116,18 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ReDim Preserve Processes(0 To ProcessCount) As ProcessCall
         
         With Processes(ProcessCount)
-            .Id = processID
-            .Dialog = ShowDialog
+            .ID = processID
+            .Dialog = showDialog
             .Parameters = processParameters
-            .Recorded = RecordAction
             .MakeUndo = createUndo
+            .Tool = relevantTool
+            .Recorded = recordAction
         End With
         
     End If
     
     'If a dialog is being displayed, disable Undo creation
-    If ShowDialog Then createUndo = 0
+    If showDialog Then createUndo = 0
     
     'If this action requires us to create an Undo, create it now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
@@ -135,20 +142,22 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' 2) If recording has been disabled for this action
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
         If MacroStatus <> MacroBATCH Then
-            'MsgBox createUndo
-            If (Not ShowDialog) And RecordAction Then CreateUndoData processID, createUndo
+            If (Not showDialog) And recordAction Then CreateUndoData processID, createUndo, relevantTool
         End If
         
         'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.
         FormMain.MnuRepeatLast.Enabled = True
-        LastProcess.Id = processID
-        LastProcess.Dialog = ShowDialog
-        LastProcess.Parameters = processParameters
-        LastProcess.Recorded = RecordAction
-        LastProcess.MakeUndo = createUndo
+        With LastProcess
+            .ID = processID
+            .Dialog = showDialog
+            .Parameters = processParameters
+            .MakeUndo = createUndo
+            .Tool = relevantTool
+            .Recorded = recordAction
+        End With
         
         'If the user wants us to time how long this action takes, mark the current time now
-        If Not ShowDialog Then
+        If Not showDialog Then
             If DISPLAY_TIMINGS Then m_ProcessingTime = Timer
         End If
         
@@ -249,7 +258,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
         Case "Resize selection"
             CreateNewSelection cParams.getParamString
-            
+        
+        Case "Select all"
+            SelectWholeImage
         
         'HISTOGRAM FUNCTIONS
         ' Any action that relies on a histogram, including displaying the image's current histogram
@@ -260,14 +271,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FormHistogram.StretchHistogram
             
         Case "Equalize"
-            If ShowDialog Then
+            If showDialog Then
                 FormEqualize.Show vbModal, FormMain
             Else
                 FormEqualize.EqualizeHistogram cParams.GetBool(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
             End If
             
         Case "White balance"
-            If ShowDialog Then
+            If showDialog Then
                 FormWhiteBalance.Show vbModal, FormMain
             Else
                 FormWhiteBalance.AutoWhiteBalance cParams.GetDouble(1)
@@ -276,14 +287,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'MONOCHROME CONVERSION
         'All monochrome conversion functions have been condensed into a single main one.  (Past versions spread it across multiple functions.)
         Case "Color to monochrome"
-            If ShowDialog Then
+            If showDialog Then
                 FormBlackAndWhite.Show vbModal, FormMain
             Else
                 FormBlackAndWhite.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Monochrome to grayscale"
-            If ShowDialog Then
+            If showDialog Then
                 FormMonoToColor.Show vbModal, FormMain
             Else
                 FormMonoToColor.ConvertMonoToColor cParams.GetLong(1)
@@ -323,35 +334,35 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FilterSharpenMore
             
         Case "Unsharp mask"
-            If ShowDialog Then
+            If showDialog Then
                 FormUnsharpMask.Show vbModal, FormMain
             Else
                 FormUnsharpMask.UnsharpMask cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         Case "Diffuse"
-            If ShowDialog Then
+            If showDialog Then
                 FormDiffuse.Show vbModal, FormMain
             Else
                 FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
             
         Case "Pixelate"
-            If ShowDialog Then
+            If showDialog Then
                 FormPixelate.Show vbModal, FormMain
             Else
                 FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
             
         Case "Dilate (maximum rank)"
-            If ShowDialog Then
+            If showDialog Then
                 FormMedian.showMedianDialog 100
             Else
                 FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
             End If
             
         Case "Erode (minimum rank)"
-            If ShowDialog Then
+            If showDialog Then
                 FormMedian.showMedianDialog 1
             Else
                 FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
@@ -361,21 +372,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FilterGridBlur
             
         Case "Gaussian blur"
-            If ShowDialog Then
+            If showDialog Then
                 FormGaussianBlur.Show vbModal, FormMain
             Else
                 FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1)
             End If
             
         Case "Smart blur"
-            If ShowDialog Then
+            If showDialog Then
                 FormSmartBlur.Show vbModal, FormMain
             Else
                 FormSmartBlur.SmartBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
             End If
             
         Case "Box blur"
-            If ShowDialog Then
+            If showDialog Then
                 FormBoxBlur.Show vbModal, FormMain
             Else
                 FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
@@ -431,7 +442,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FilterEdgeEnhance
             
         Case "Trace contour"
-            If ShowDialog Then
+            If showDialog Then
                 FormContour.Show vbModal, FormMain
             Else
                 FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
@@ -440,7 +451,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'COLOR operations
         Case "Rechannel"
-            If ShowDialog Then
+            If showDialog Then
                 FormRechannel.Show vbModal, FormMain
             Else
                 FormRechannel.RechannelImage cParams.GetByte(1)
@@ -453,14 +464,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuCShift 0
             
         Case "Brightness and contrast"
-            If ShowDialog Then
+            If showDialog Then
                 FormBrightnessContrast.Show vbModal, FormMain
             Else
                 FormBrightnessContrast.BrightnessContrast cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
             
         Case "Gamma"
-            If ShowDialog Then
+            If showDialog Then
                 FormGamma.Show vbModal, FormMain
             Else
                 FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
@@ -491,21 +502,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuAutoEnhanceShadows
             
         Case "Levels"
-            If ShowDialog Then
+            If showDialog Then
                 FormLevels.Show vbModal, FormMain
             Else
                 FormLevels.MapImageLevels cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
             
         Case "Colorize"
-            If ShowDialog Then
+            If showDialog Then
                 FormColorize.Show vbModal, FormMain
             Else
                 FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
             End If
             
         Case "Reduce colors"
-            If ShowDialog Then
+            If showDialog Then
                 FormReduceColors.Show vbModal, FormMain
             Else
                 Select Case cParams.GetLong(1)
@@ -525,35 +536,35 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
             
         Case "Color temperature"
-            If ShowDialog Then
+            If showDialog Then
                 FormColorTemp.Show vbModal, FormMain
             Else
                 FormColorTemp.ApplyTemperatureToImage cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3)
             End If
             
         Case "Hue and saturation"
-            If ShowDialog Then
+            If showDialog Then
                 FormHSL.Show vbModal, FormMain
             Else
                 FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Color balance"
-            If ShowDialog Then
+            If showDialog Then
                 FormColorBalance.Show vbModal, FormMain
             Else
                 FormColorBalance.ApplyColorBalance cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Shadows and highlights"
-            If ShowDialog Then
+            If showDialog Then
                 FormShadowHighlight.Show vbModal, FormMain
             Else
                 FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         Case "Channel mixer"
-            If ShowDialog Then
+            If showDialog Then
                 FormChannelMixer.Show vbModal, FormMain
             Else
                 FormChannelMixer.ApplyChannelMixer cParams.getParamString
@@ -571,7 +582,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuFlip
             
         Case "Arbitrary rotation"
-            If ShowDialog Then
+            If showDialog Then
                 FormRotate.Show vbModal, FormMain
             Else
                 FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
@@ -593,21 +604,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FilterIsometric
             
         Case "Canvas size"
-            If ShowDialog Then
+            If showDialog Then
                 FormCanvasSize.Show vbModal, FormMain
             Else
                 FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Resize"
-            If ShowDialog Then
+            If showDialog Then
                 FormResize.Show vbModal, FormMain
             Else
                 FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
             
         Case "Tile"
-            If ShowDialog Then
+            If showDialog Then
                 FormTile.Show vbModal, FormMain
             Else
                 FormTile.GenerateTile cParams.GetByte(1), cParams.GetLong(2), cParams.GetLong(3)
@@ -617,7 +628,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuCropToSelection
             
         Case "Remove alpha channel"
-            If ShowDialog Then
+            If showDialog Then
                 FormConvert24bpp.Show vbModal, FormMain
             Else
                 ConvertImageColorDepth 24, cParams.GetLong(1)
@@ -627,63 +638,63 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             ConvertImageColorDepth 32
             
         Case "Swirl"
-            If ShowDialog Then
+            If showDialog Then
                 FormSwirl.Show vbModal, FormMain
             Else
                 FormSwirl.SwirlImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Apply lens distortion"
-            If ShowDialog Then
+            If showDialog Then
                 FormLens.Show vbModal, FormMain
             Else
                 FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
             
         Case "Correct lens distortion"
-            If ShowDialog Then
+            If showDialog Then
                 FormLensCorrect.Show vbModal, FormMain
             Else
                 FormLensCorrect.ApplyLensCorrection cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Ripple"
-            If ShowDialog Then
+            If showDialog Then
                 FormRipple.Show vbModal, FormMain
             Else
                 FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
             End If
             
         Case "Pinch and whirl"
-            If ShowDialog Then
+            If showDialog Then
                 FormPinch.Show vbModal, FormMain
             Else
                 FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Waves"
-            If ShowDialog Then
+            If showDialog Then
                 FormWaves.Show vbModal, FormMain
             Else
                 FormWaves.WaveImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
             End If
             
         Case "Figured glass"
-            If ShowDialog Then
+            If showDialog Then
                 FormFiguredGlass.Show vbModal, FormMain
             Else
                 FormFiguredGlass.FiguredGlassFX cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Kaleidoscope"
-            If ShowDialog Then
+            If showDialog Then
                 FormKaleidoscope.Show vbModal, FormMain
             Else
                 FormKaleidoscope.KaleidoscopeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetBool(5)
             End If
             
         Case "Polar conversion"
-            If ShowDialog Then
+            If showDialog Then
                 FormPolar.Show vbModal, FormMain
             Else
                 FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
@@ -693,49 +704,49 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             AutocropImage
             
         Case "Shear"
-            If ShowDialog Then
+            If showDialog Then
                 FormShear.Show vbModal, FormMain
             Else
                 FormShear.ShearImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Squish"
-            If ShowDialog Then
+            If showDialog Then
                 FormSquish.Show vbModal, FormMain
             Else
                 FormSquish.SquishImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Perspective"
-            If ShowDialog Then
+            If showDialog Then
                 FormTruePerspective.Show vbModal, FormMain
             Else
                 FormTruePerspective.PerspectiveImage cParams.getParamString
             End If
             
         Case "Pan and zoom"
-            If ShowDialog Then
+            If showDialog Then
                 FormPanAndZoom.Show vbModal, FormMain
             Else
                 FormPanAndZoom.PanAndZoomFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Poke"
-            If ShowDialog Then
+            If showDialog Then
                 FormPoke.Show vbModal, FormMain
             Else
                 FormPoke.ApplyPokeDistort cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
             
         Case "Spherize"
-            If ShowDialog Then
+            If showDialog Then
                 FormSpherize.Show vbModal, FormMain
             Else
                 FormSpherize.SpherizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetBool(6)
             End If
         
         Case "Miscellaneous distort"
-            If ShowDialog Then
+            If showDialog Then
                 FormMiscDistorts.Show vbModal, FormMain
             Else
                 FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
@@ -750,7 +761,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuAtmospheric
             
         Case "Black light"
-            If ShowDialog Then
+            If showDialog Then
                 FormBlackLight.Show vbModal, FormMain
             Else
                 FormBlackLight.fxBlackLight cParams.GetLong(1)
@@ -760,7 +771,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuDream
             
         Case "Posterize"
-            If ShowDialog Then
+            If showDialog Then
                 FormPosterize.Show vbModal, FormMain
             Else
                 FormPosterize.PosterizeImage cParams.GetByte(1)
@@ -770,21 +781,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuRadioactive
             
         Case "Solarize"
-            If ShowDialog Then
+            If showDialog Then
                 FormSolarize.Show vbModal, FormMain
             Else
                 FormSolarize.SolarizeImage cParams.GetByte(1)
             End If
             
         Case "Generate twins"
-            If ShowDialog Then
+            If showDialog Then
                 FormTwins.Show vbModal, FormMain
             Else
                 FormTwins.GenerateTwins cParams.GetByte(1)
             End If
             
         Case "Fade"
-            If ShowDialog Then
+            If showDialog Then
                 FormFade.Show vbModal, FormMain
             Else
                 FormFade.FadeImage cParams.GetDouble(1)
@@ -803,7 +814,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuWater
             
         Case "Add RGB noise"
-            If ShowDialog Then
+            If showDialog Then
                 FormNoise.Show vbModal, FormMain
             Else
                 FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
@@ -816,7 +827,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuLava
             
         Case "Custom filter"
-            If ShowDialog Then
+            If showDialog Then
                 FormCustomFilter.Show vbModal, FormMain
             Else
                 DoFilter , , cParams.getParamString
@@ -844,7 +855,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FormDespeckle.QuickDespeckle
             
         Case "Custom despeckle"
-            If ShowDialog Then
+            If showDialog Then
                 FormDespeckle.Show vbModal, FormMain
             Else
                 FormDespeckle.Despeckle cParams.GetLong(1)
@@ -860,7 +871,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuComicBook
             
         Case "Add film grain"
-            If ShowDialog Then
+            If showDialog Then
                 FormFilmGrain.Show vbModal, FormMain
             Else
                 FormFilmGrain.AddFilmGrain cParams.GetDouble(1), cParams.GetLong(2)
@@ -870,28 +881,28 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuFilmNoir
             
         Case "Vignetting"
-            If ShowDialog Then
+            If showDialog Then
                 FormVignette.Show vbModal, FormMain
             Else
                 FormVignette.ApplyVignette cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5)
             End If
             
         Case "Median"
-            If ShowDialog Then
+            If showDialog Then
                 FormMedian.showMedianDialog 50
             Else
                 FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
             End If
             
         Case "Modern art"
-            If ShowDialog Then
+            If showDialog Then
                 FormModernArt.Show vbModal, FormMain
             Else
                 FormModernArt.ApplyModernArt cParams.GetLong(1)
             End If
             
         Case "Photo filter"
-            If ShowDialog Then
+            If showDialog Then
                 FormPhotoFilters.Show vbModal, FormMain
             Else
                 FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)

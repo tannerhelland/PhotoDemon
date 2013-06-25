@@ -291,6 +291,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                         'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                         pdImages(Me.Tag).mainSelection.setBackupParamString
                         
+                        'Initialize a selection transformation
                         pdImages(Me.Tag).mainSelection.setTransformationType sCheck
                         pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
                         
@@ -452,12 +453,12 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
                     If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
-                        Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                        Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2, g_CurrentTool
                     Else
                     
                         'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
                         If pdImages(Me.Tag).mainSelection.areAllCoordinatesInvalid Then
-                            Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                            Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2, g_CurrentTool
                         Else
                         
                             'Depending on the type of transformation that may or may not have been applied, call the appropriate processor
@@ -466,15 +467,15 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                             
                                 'Creating a new selection
                                 Case 0
-                                    Process "Create selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                                    Process "Create selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2, g_CurrentTool
                                     
                                 'Moving an existing selection
                                 Case 9
-                                    Process "Move selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                                    Process "Move selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2, g_CurrentTool
                                     
                                 'Anything else is assumed to be resizing an existing selection
                                 Case Else
-                                    Process "Resize selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+                                    Process "Resize selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2, g_CurrentTool
                                     
                             End Select
                             

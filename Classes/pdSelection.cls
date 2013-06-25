@@ -303,6 +303,26 @@ Public Function getSelectionParamString() As String
     getSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight, x1, y1, x2, y2)
 End Function
 
+'Simple - use this to select the entire image attached to this selection object
+Public Sub selectAll()
+
+    'Set basic information about this selection
+    setSelectionType sInterior
+    setSelectionShape sRectangle
+    setFeatheringRadius 0
+    setSmoothingType sAntialiased
+    setRoundedCornerAmount 0
+    x1 = 0
+    y1 = 0
+    x2 = containingPDImage.Width
+    y2 = containingPDImage.Height
+    selLeft = 0
+    selTop = 0
+    selWidth = containingPDImage.Width
+    selHeight = containingPDImage.Height
+    
+End Sub
+
 'Request a 1:1 aspect ratio selection (squares, circles)
 Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
     
@@ -783,7 +803,7 @@ End Sub
 Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
 
     'Ignore text box update requests until the selection is locked in
-    If isLockedIn = False Then Exit Sub
+    If Not isLockedIn Then Exit Sub
 
     rejectRefreshRequests = True
 
@@ -840,9 +860,7 @@ End Sub
 
 '"Unlock" a selection
 Public Sub lockRelease()
-
     lockedIn = False
-
 End Sub
 
 'Create a selection mask based on the current selection type.  A few items to note:
@@ -867,20 +885,20 @@ Private Sub createSelectionMask()
     End If
 
     'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
-    Dim minX As Long, maxX As Long, minY As Long, maxY As Long
+    Dim MinX As Long, MaxX As Long, MinY As Long, MaxY As Long
     If x1 < x2 Then
-        minX = x1
-        maxX = x2
+        MinX = x1
+        MaxX = x2
     Else
-        minX = x2
-        maxX = x1
+        MinX = x2
+        MaxX = x1
     End If
     If y1 < y2 Then
-        minY = y1
-        maxY = y2
+        MinY = y1
+        MaxY = y2
     Else
-        minY = y2
-        maxY = y1
+        MinY = y2
+        MaxY = y1
     End If
 
     'Start by creating a blank mask (this will also erase any existing mask)
@@ -1103,14 +1121,14 @@ Private Sub createSelectionMask()
                 newLineWidth = selectionLineWidth - borderSize
                 
                 If newLineWidth > 0 Then
-                    If x1 = minX Then
-                        If y1 = minY Then
+                    If x1 = MinX Then
+                        If y1 = MinY Then
                             GDIPlusDrawLineToDC selMask.getLayerDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
                         Else
                             GDIPlusDrawLineToDC selMask.getLayerDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
                         End If
                     Else
-                        If y1 = minY Then
+                        If y1 = MinY Then
                             GDIPlusDrawLineToDC selMask.getLayerDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
                         Else
                             GDIPlusDrawLineToDC selMask.getLayerDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
@@ -1155,10 +1173,10 @@ Private Sub createSelectionMask()
                 boundWidth = containingPDImage.Width
                 boundHeight = containingPDImage.Height
             Else
-                boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
-                boundTop = minY - (selectionLineWidth / 2) - featheringRadius
-                boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
-                boundHeight = (maxY - minY) + selectionLineWidth + featheringRadius * 2
+                boundLeft = MinX - (selectionLineWidth / 2) - featheringRadius
+                boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
+                boundWidth = (MaxX - MinX) + selectionLineWidth + featheringRadius * 2
+                boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
             End If
             
         Case Else

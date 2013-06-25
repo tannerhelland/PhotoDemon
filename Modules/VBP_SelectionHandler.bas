@@ -24,9 +24,13 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     'Use the passed parameter string to initialize the selection
     pdImages(CurrentImage).mainSelection.initFromParamString paramString
     pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+    pdImages(CurrentImage).selectionActive = True
     
     'Change the selection-related menu items to match
     tInit tSelection, True
+    
+    'Draw the new selection to the screen
+    RenderViewport pdImages(CurrentImage).containingForm
 
 End Sub
 
@@ -39,5 +43,35 @@ Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
     
     'Change the selection-related menu items to match
     tInit tSelection, False
+    
+    'Redraw the image (with selection removed)
+    RenderViewport pdImages(CurrentImage).containingForm
+
+End Sub
+
+'Create a new selection using the settings stored in a pdParamString-compatible string
+Public Sub SelectWholeImage()
+    
+    'Unselect any existing selection
+    pdImages(CurrentImage).mainSelection.lockRelease
+    pdImages(CurrentImage).selectionActive = False
+    
+    'Select the rectangular selection tool
+    g_PreviousTool = g_CurrentTool
+    g_CurrentTool = 0
+    FormMain.selectNewTool 0
+        
+    'Create a new selection at the size of the image
+    pdImages(CurrentImage).mainSelection.selectAll
+    
+    'Lock in this selection
+    pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+    pdImages(CurrentImage).selectionActive = True
+    
+    'Change the selection-related menu items to match
+    tInit tSelection, True
+    
+    'Draw the new selection to the screen
+    RenderViewport pdImages(CurrentImage).containingForm
 
 End Sub

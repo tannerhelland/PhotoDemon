@@ -208,9 +208,9 @@ Begin VB.MDIForm FormMain
             Width           =   1320
             _extentx        =   2328
             _extenty        =   714
-            font            =   "VBP_FormMain.frx":0040
             min             =   -30000
             max             =   30000
+            font            =   "VBP_FormMain.frx":0040
          End
          Begin PhotoDemon.textUpDown tudSelTop 
             Height          =   405
@@ -221,9 +221,9 @@ Begin VB.MDIForm FormMain
             Width           =   1320
             _extentx        =   2328
             _extenty        =   714
-            font            =   "VBP_FormMain.frx":0068
             min             =   -30000
             max             =   30000
+            font            =   "VBP_FormMain.frx":0068
          End
          Begin PhotoDemon.textUpDown tudSelWidth 
             Height          =   405
@@ -234,9 +234,9 @@ Begin VB.MDIForm FormMain
             Width           =   1320
             _extentx        =   2328
             _extenty        =   714
-            font            =   "VBP_FormMain.frx":0090
             min             =   -30000
             max             =   30000
+            font            =   "VBP_FormMain.frx":0090
          End
          Begin PhotoDemon.textUpDown tudSelHeight 
             Height          =   405
@@ -247,9 +247,9 @@ Begin VB.MDIForm FormMain
             Width           =   1320
             _extentx        =   2328
             _extenty        =   714
-            font            =   "VBP_FormMain.frx":00B8
             min             =   -30000
             max             =   30000
+            font            =   "VBP_FormMain.frx":00B8
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
             CausesValidation=   0   'False
@@ -261,10 +261,10 @@ Begin VB.MDIForm FormMain
             Width           =   3000
             _extentx        =   5318
             _extenty        =   873
-            font            =   "VBP_FormMain.frx":00E0
             min             =   1
             max             =   100
             value           =   1
+            font            =   "VBP_FormMain.frx":00E0
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
             CausesValidation=   0   'False
@@ -275,8 +275,8 @@ Begin VB.MDIForm FormMain
             Width           =   3000
             _extentx        =   5318
             _extenty        =   873
-            font            =   "VBP_FormMain.frx":0108
             max             =   100
+            font            =   "VBP_FormMain.frx":0108
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -478,7 +478,7 @@ Begin VB.MDIForm FormMain
       Top             =   7560
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -539,7 +539,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":0134
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":015C
          disabledpicturemode=   1
          captioneffects  =   0
@@ -557,7 +557,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":15AE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":15D6
          disabledpicturemode=   1
          captioneffects  =   0
@@ -575,7 +575,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":2628
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":2650
          disabledpicturemode=   1
          captioneffects  =   0
@@ -594,7 +594,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":36A2
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":36CA
          disabledpicturemode=   1
          captioneffects  =   0
@@ -613,7 +613,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":471C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":4744
          disabledpicturemode=   1
          captioneffects  =   0
@@ -631,7 +631,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":5796
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":57BE
          disabledpicturemode=   1
          captioneffects  =   0
@@ -649,12 +649,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":6810
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":6838
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptitle    =   "Zoom In"
          tooltip         =   "Use this button to increase image zoom."
+         tooltiptitle    =   "Zoom In"
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   450
@@ -668,12 +668,12 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":6C8A
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_FormMain.frx":6CB2
          disabledpicturemode=   1
          captioneffects  =   0
-         tooltiptitle    =   "Zoom Out"
          tooltip         =   "Use this button to decrease image zoom."
+         tooltiptitle    =   "Zoom Out"
       End
       Begin VB.Line lineMain 
          BorderColor     =   &H80000002&
@@ -1057,9 +1057,14 @@ Begin VB.MDIForm FormMain
    End
    Begin VB.Menu MnuSelectTop 
       Caption         =   "&Select"
-      Begin VB.Menu MnuSelectPlaceholder 
-         Caption         =   "<coming soon>"
-         Enabled         =   0   'False
+      Begin VB.Menu MnuSelect 
+         Caption         =   "All"
+         Index           =   0
+         Shortcut        =   ^A
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "None"
+         Index           =   1
       End
    End
    Begin VB.Menu MnuColorTop 
@@ -1831,6 +1836,12 @@ Private Sub cmdSaveAs_Click()
     Process "Save as", True, , False
 End Sub
 
+'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
+' rectangular tool selector as the current tool)
+Public Sub selectNewTool(ByVal newToolID As Long)
+    cmdTools_Click CInt(newToolID)
+End Sub
+
 Private Sub cmdTools_Click(Index As Integer)
     g_PreviousTool = g_CurrentTool
     g_CurrentTool = Index
@@ -1848,7 +1859,7 @@ Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integ
 End Sub
 
 'When a new tool button is selected, we need to raise all the others and display the proper options box
-Private Sub resetToolButtonStates()
+Public Sub resetToolButtonStates()
     
     'Start by depressing the selected button and raising all unselected ones
     Dim i As Long
@@ -1908,27 +1919,17 @@ Private Sub resetToolButtonStates()
             lblSelection(5).Caption = g_Language.TranslateMessage("corner rounding")
             sltCornerRounding.Min = 0
             If (g_PreviousTool <> SELECT_RECT) And (g_PreviousTool <> SELECT_CIRC) Then
+                If selectionsAllowed And (Not g_UndoRedoActive) Then Process "Remove selection", , , 2, g_PreviousTool
                 If g_CurrentTool = SELECT_RECT Then sltCornerRounding.Value = 0
-                If selectionsAllowed Then
-                    pdImages(CurrentImage).mainSelection.lockRelease
-                    pdImages(CurrentImage).selectionActive = False
-                    tInit tSelection, False
-                    RenderViewport pdImages(CurrentImage).containingForm
-                End If
             End If
             
         'Line selections use two points, and the corner rounding slider gets repurposed as line width.
         Case SELECT_LINE
-            lblSelection(1).Caption = g_Language.TranslateMessage("first point")
-            lblSelection(2).Caption = g_Language.TranslateMessage("second point")
+            If selectionsAllowed And (Not g_UndoRedoActive) Then Process "Remove selection", , , 2, g_PreviousTool
+            lblSelection(1).Caption = g_Language.TranslateMessage("first point (x, y)")
+            lblSelection(2).Caption = g_Language.TranslateMessage("second point (x, y)")
             lblSelection(5).Caption = g_Language.TranslateMessage("line width")
             sltCornerRounding.Min = 1
-            If selectionsAllowed Then
-                pdImages(CurrentImage).mainSelection.lockRelease
-                pdImages(CurrentImage).selectionActive = False
-                tInit tSelection, False
-                RenderViewport pdImages(CurrentImage).containingForm
-            End If
             
     End Select
     
@@ -3165,6 +3166,23 @@ End Sub
 
 Private Sub MnuScreenCapture_Click()
     Process "Screen capture", , , False
+End Sub
+
+'All select menu items are handled here
+Private Sub MnuSelect_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Select all.  (Note that Square Selection is passed as the relevant tool for this action.)
+        Case 0
+            Process "Select all", , , 2, 0
+        
+        'Select none
+        Case 1
+            Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+    
+    End Select
+
 End Sub
 
 Private Sub MnuSelectScanner_Click()
