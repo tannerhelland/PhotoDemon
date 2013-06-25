@@ -402,16 +402,12 @@ End Sub
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
+    
     FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
     FormMain.lblImgSize.Refresh
     
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
     ' now is an excellent time to update them.
-    Dim i As Long
-    For i = 0 To FormMain.tudSelLeft.Count - 1
-        If pdImages(FormMain.ActiveForm.Tag).selectionActive Then pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests = True
-        If pdImages(FormMain.ActiveForm.Tag).selectionActive Then pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests = False
-    Next i
     If iWidth < iHeight Then FormMain.sltCornerRounding.Max = iWidth Else FormMain.sltCornerRounding.Max = iHeight
     If iWidth < iHeight Then FormMain.sltSelectionBorder.Max = iWidth Else FormMain.sltSelectionBorder.Max = iHeight
     
