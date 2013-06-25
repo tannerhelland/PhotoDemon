@@ -154,6 +154,18 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
                     FormMain.tudSelHeight(i).Value = 0
                 Next i
             End If
+            
+            'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
+            ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
+            ' actually draw a selection, it already has the attributes they want.
+            For i = 0 To FormMain.tudSelLeft.Count - 1
+                If FormMain.tudSelLeft(i).Enabled <> tState Then
+                    FormMain.tudSelLeft(i).Enabled = tState
+                    FormMain.tudSelTop(i).Enabled = tState
+                    FormMain.tudSelWidth(i).Enabled = tState
+                    FormMain.tudSelHeight(i).Enabled = tState
+                End If
+            Next i
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuImage(7).Enabled <> tState Then FormMain.MnuImage(7).Enabled = tState
