@@ -286,7 +286,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     sCheck = findNearestSelectionCoordinates(x, y, Me)
                     
                     'If that function did not return zero, notify the selection and exit
-                    If sCheck <> 0 Then
+                    If (sCheck <> 0) And pdImages(Me.Tag).mainSelection.isTransformable Then
                         
                         'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                         pdImages(Me.Tag).mainSelection.setBackupParamString
@@ -361,7 +361,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
     
                 'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
-                If pdImages(Me.Tag).selectionActive Then
+                If pdImages(Me.Tag).selectionActive And pdImages(Me.Tag).mainSelection.isTransformable Then
                                         
                     'Display the image coordinates under the mouse pointer
                     displayImageCoordinates x, y, Me, imgX, imgY
@@ -388,7 +388,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             
                 'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
                 ' ability to resize the selection.
-                If pdImages(Me.Tag).selectionActive Then
+                If pdImages(Me.Tag).selectionActive And pdImages(Me.Tag).mainSelection.isTransformable Then
                 
                     'This routine will return a best estimate for the location of the mouse.  We then pass its value
                     ' to a sub that will use it to select the most appropriate mouse cursor.

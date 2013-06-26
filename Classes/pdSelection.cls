@@ -229,11 +229,12 @@ Private selectionLineWidth As Long
 
 'For Undo/Redo purposes, it is sometimes necessary to store a separate set of selection parameters.  Such parameters
 ' are stored in this string
-Private backupParamString As String, backupSelectionState As Boolean
+Private backupParamString As String, backupSelectionState As Boolean, backupTransformable As Boolean
 
 'Undo functions involve writing past selection data to file.  That past data can be set by calling this function.
 Public Sub setBackupParamString()
     backupSelectionState = lockedIn
+    backupTransformable = isTransformable
     backupParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight, x1, y1, x2, y2)
 End Sub
 
@@ -303,7 +304,8 @@ Public Function getSelectionParamString() As String
     getSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight, x1, y1, x2, y2)
 End Function
 
-'Simple - use this to select the entire image attached to this selection object
+'Simple - use this to select the entire image attached to this selection object.  Note that this DOES NOT render the
+' new selection on-screen.  The caller is responsible for that.
 Public Sub selectAll()
 
     'Set basic information about this selection
@@ -575,6 +577,9 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
         Case sRectangle, sCircle, sLine
             x2 = x
             y2 = y
+            
+            'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
+            isTransformable = True
         
         Case Else
         
@@ -654,6 +659,9 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                 End Select
                         
         End Select
+        
+        'If a transform mode is active, re-mark the selection as being transformable
+        isTransformable = True
         
         updateInternalCoords
     
@@ -1025,10 +1033,7 @@ Private Sub createSelectionMask()
                 End If
                 
             End If
-            
-            'Also, mark this particular mask as transformable
-            isTransformable = True
-        
+                    
         'CIRCLES / ELLIPSES
         Case sCircle
         
@@ -1076,9 +1081,6 @@ Private Sub createSelectionMask()
                 End If
                         
             End If
-            
-            'Elliptical regions are transformable (meaning the user can resize and move them after they've been created)
-            isTransformable = True
             
         
         'Line selections
@@ -1138,8 +1140,6 @@ Private Sub createSelectionMask()
                 
             End If
             
-            'Line regions are transformable (meaning the user can resize and move them after they've been created)
-            isTransformable = True
         
         Case Else
     
@@ -1635,7 +1635,7 @@ End Sub
 'Read all relevant information about a selection from file, and populate this selection with the data.
 ' (NOTE: this function will not generate a selection mask or render the selection on-screen - it will only apply the stored values to
 '        the relevant variables!  The calling function must explicitly request a redraw if desired.)
-Public Function readSelectionFromFile(ByVal srcFilename As String) As Boolean
+Public Function readSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
 
     If Not FileExist(srcFilename) Then
         Message "Requested selection file could not be located.  Selection load abandoned."
@@ -1665,6 +1665,9 @@ Public Function readSelectionFromFile(ByVal srcFilename As String) As Boolean
         'Was the selection locked in?
         Get #fileNum, , lockedIn
         
+        'Is the selection transformable?
+        Get #fileNum, , isTransformable
+        
         'Retrieve the selection parameters into a string
         Dim paramString As String, lenParamString As Long
         Get #fileNum, , lenParamString
@@ -1679,12 +1682,14 @@ Public Function readSelectionFromFile(ByVal srcFilename As String) As Boolean
     initFromParamString paramString
 
     'If this selection was locked in at the time of its save, lock this selection in as well
-    If lockedIn Then
-        lockIn containingPDImage.containingForm
-        containingPDImage.selectionActive = True
-    Else
-        lockRelease
-        containingPDImage.selectionActive = False
+    If Not ignoreLockStatus Then
+        If lockedIn Then
+            lockIn containingPDImage.containingForm
+            containingPDImage.selectionActive = True
+        Else
+            lockRelease
+            containingPDImage.selectionActive = False
+        End If
     End If
 
     readSelectionFromFile = True
@@ -1711,8 +1716,10 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
         ' on the selection's current lock state.  This provides flexibility when creating Undo/Redo data, among other benefits.
         If Len(backupParamString) > 0 Then
             Put #fileNum, , backupSelectionState
+            Put #fileNum, , backupTransformable
         Else
             Put #fileNum, , lockedIn
+            Put #fileNum, , isTransformable
         End If
         
         'All relevant values in pdParamString format.  If a previous set of values was backed up (Undo/Redo will do this),
