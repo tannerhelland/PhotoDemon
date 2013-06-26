@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences (INI) Interface
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 19/November/12
-'Last update: provide an externally accessible function for seeing if a key/pair value exists in the INI file
+'Last updated: 26/June/13
+'Last update: create a \Selections subdirectory if one isn't found at run-time, and save it (if changed) to the INI
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing
 ' all interaction with user settings, which are currently stored in an INI file.  This class is also capable
@@ -120,11 +120,24 @@ Private INIPath As String
 Private TempPath As String
 Private IconPath As String
 Private LanguagePath As String
+Private SelectionPath As String
 
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
 '  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. FreeImage, zLib, EZTwain dlls)
 '  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user's INI file, saved filters)
 Private AppPath As String
+
+'Get/set the current Selection directory
+Public Function getSelectionPath() As String
+    getSelectionPath = SelectionPath
+End Function
+
+Public Sub setSelectionPath(ByVal newSelectionPath As String)
+    StripDirectory newSelectionPath
+    newSelectionPath = FixPath(newSelectionPath)
+    SelectionPath = newSelectionPath
+    SetPreference_String "Program Paths", "Selections", SelectionPath
+End Sub
 
 'Return the current Language directory
 Public Function getLanguagePath() As String
@@ -220,14 +233,17 @@ Public Sub initializePaths()
     DataPath = ProgramPath & "Data\"
     If Not DirectoryExist(DataPath) Then MkDir DataPath
     
-    'Within the \Data subfolder, check for three more folders - saved Macros, saved convolution filters...
+    'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     MacroPath = DataPath & "Macros\"
     If Not DirectoryExist(MacroPath) Then MkDir MacroPath
     
     FilterPath = DataPath & "Filters\"
     If Not DirectoryExist(FilterPath) Then MkDir FilterPath
         
-    'Finally, if it does not exist, create a folder to hold the MRU icons
+    SelectionPath = DataPath & "Selections\"
+    If Not DirectoryExist(SelectionPath) Then MkDir SelectionPath
+    
+    'Finally, if it does not exist, create a folder to hold all MRU icons
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
     
@@ -297,6 +313,9 @@ Public Sub loadUserSettings()
     
     'Extract the filter path from the INI
     FilterPath = GetPreference_String("Program Paths", "CustomFilter", FilterPath)
+    
+    'Extract the selection path from the INI
+    SelectionPath = GetPreference_String("Program Paths", "Selections", SelectionPath)
     
     'Get the canvas background preference (color vs checkerboard pattern)
     Dim x As Long
