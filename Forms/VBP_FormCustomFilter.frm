@@ -798,7 +798,7 @@ Private Sub cmdOpen_Click()
     Set CC = New cCommonDialog
     
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & "|"
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Filter") & " (." & FILTER_EXT & ")|*." & FILTER_EXT & ";*.thf|"
     cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String

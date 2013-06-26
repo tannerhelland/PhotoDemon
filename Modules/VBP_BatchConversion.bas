@@ -147,7 +147,7 @@ Public Sub PlayMacro()
     Set CC = New cCommonDialog
     
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
@@ -208,7 +208,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
                 Dim x As Long
             
                 For x = 0 To ProcessCount
-                    Processes(x).ID = GetNameOfProcess(OldProcesses(x).MainType)
+                    Processes(x).Id = GetNameOfProcess(OldProcesses(x).MainType)
                     Processes(x).Dialog = OldProcesses(x).LoadForm
                     Processes(x).Recorded = OldProcesses(x).recordAction
                     Processes(x).MakeUndo = Not OldProcesses(x).LoadForm
@@ -260,7 +260,7 @@ Public Sub PlayMacroFromFile(ByVal macroToPlay As String)
     Dim tProc As Long
     For tProc = 1 To ProcessCount
         If Not Processes(tProc).Dialog Then
-            Process Processes(tProc).ID, Processes(tProc).Dialog, Processes(tProc).Parameters, Processes(tProc).MakeUndo, Processes(tProc).Tool, Processes(tProc).Recorded
+            Process Processes(tProc).Id, Processes(tProc).Dialog, Processes(tProc).Parameters, Processes(tProc).MakeUndo, Processes(tProc).Tool, Processes(tProc).Recorded
             'Do
             '    DoEvents
             'Loop While Processing = True
