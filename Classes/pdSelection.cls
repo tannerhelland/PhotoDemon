@@ -747,7 +747,7 @@ Private Sub updateInternalCoords()
     End If
     
     'Adjust the main form's selection text boxes to match the newly calculated values
-    refreshTextBoxes
+    'refreshTextBoxes
 
 End Sub
 
@@ -776,36 +776,36 @@ Public Function areAllCoordinatesInvalid() As Boolean
 End Function
 
 'Use this to populate the text boxes on the main form with the current selection values
-Public Sub refreshTextBoxes()
-
-    rejectRefreshRequests = True
-
-    Dim targetTextBoxIndex As Long
-    
-    'Different types of selections will display size and position differently
-    Select Case sShape
-    
-        'Rectangular and elliptical selections display left, top, width and height
-        Case sRectangle, sCircle
-            targetTextBoxIndex = 0
-            FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
-            FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
-            FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
-            FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
-        
-        'Line selections display x1, y1, x2, y2
-        Case sLine
-            targetTextBoxIndex = 0
-            FormMain.tudSelLeft(targetTextBoxIndex).Value = x1
-            FormMain.tudSelTop(targetTextBoxIndex).Value = y1
-            FormMain.tudSelWidth(targetTextBoxIndex).Value = x2
-            FormMain.tudSelHeight(targetTextBoxIndex).Value = y2
-        
-    End Select
-    
-    rejectRefreshRequests = False
-
-End Sub
+'Public Sub refreshTextBoxes()
+'
+'    rejectRefreshRequests = True
+'
+'    Dim targetTextBoxIndex As Long
+'
+'    'Different types of selections will display size and position differently
+'    Select Case sShape
+'
+'        'Rectangular and elliptical selections display left, top, width and height
+'        Case sRectangle, sCircle
+'            targetTextBoxIndex = 0
+'            FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
+'            FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
+'            FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
+'            FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
+'
+'        'Line selections display x1, y1, x2, y2
+'        Case sLine
+'            targetTextBoxIndex = 0
+'            FormMain.tudSelLeft(targetTextBoxIndex).Value = x1
+'            FormMain.tudSelTop(targetTextBoxIndex).Value = y1
+'            FormMain.tudSelWidth(targetTextBoxIndex).Value = x2
+'            FormMain.tudSelHeight(targetTextBoxIndex).Value = y2
+'
+'    End Select
+'
+'    rejectRefreshRequests = False
+'
+'End Sub
 
 'Update this selection using the values in the main form's selection text boxes
 Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
@@ -862,7 +862,7 @@ Public Sub lockIn(ByRef targetForm As Form)
     If selHeight < 1 Then selHeight = 1
     
     'Adjust the main form's selection text boxes to match the newly calculated values
-    refreshTextBoxes
+    'refreshTextBoxes
         
 End Sub
 
