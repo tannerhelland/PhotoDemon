@@ -170,7 +170,7 @@ Public Sub ActivateWorkaround()
     'If a selection is active on this image, update the text boxes to match
     If pdImages(CurrentImage).selectionActive Then
         tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.refreshTextBoxes
+        'pdImages(CurrentImage).mainSelection.refreshTextBoxes
     Else
         tInit tSelection, False
     End If
@@ -297,6 +297,34 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                         
                         Exit Sub
                                         
+                    'If it did return zero, erase any existing selection and start a new one
+                    Else
+                    
+                        'Process "Remove selection", False, , 2
+                        'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
+                        pdImages(Me.Tag).mainSelection.setBackupParamString
+                    
+                        'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
+                        ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
+                        ' maintain desired behavior...
+                        DoEvents
+                        
+                        'Activate the selection
+                        pdImages(Me.Tag).selectionActive = True
+                        pdImages(Me.Tag).mainSelection.lockRelease
+                        
+                        'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
+                        ' values and what they mean can be found in the corresponding pdSelection function
+                        pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, FormMain.cmbSelType(0).ListIndex, FormMain.cmbSelSmoothing(0).ListIndex, FormMain.sltSelectionFeathering.Value, FormMain.sltSelectionBorder.Value, FormMain.sltCornerRounding.Value, FormMain.sltCornerRounding.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+                        
+                        'Set the first two coordinates of this selection to this mouseclick's location
+                        pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
+                        'pdImages(Me.Tag).mainSelection.refreshTextBoxes
+                        pdImages(Me.Tag).mainSelection.requestNewMask
+                            
+                        'Make the selection tools visible
+                        tInit tSelection, True
+                    
                     End If
                 
                 Else
@@ -316,7 +344,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     
                     'Set the first two coordinates of this selection to this mouseclick's location
                     pdImages(Me.Tag).mainSelection.setInitialCoordinates imgX, imgY
-                    pdImages(Me.Tag).mainSelection.refreshTextBoxes
+                    'pdImages(Me.Tag).mainSelection.refreshTextBoxes
                     pdImages(Me.Tag).mainSelection.requestNewMask
                         
                     'Make the selection tools visible
