@@ -213,6 +213,7 @@ Public Sub LoadTheProgram()
         FormMain.cmbSelType(0).ListIndex = 0
         
         FormMain.sltCornerRounding.ToolTipText = "This option adjusts the roundness of a rectangular selection's corners."
+        FormMain.sltSelectionLineWidth.ToolTipText = "This option adjusts the width of a line selection."
             
     g_UserPreferences.loadToolSettings
             
@@ -1054,15 +1055,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
         
             'The layer handles the actual loading of the undo data
             pdImages(CurrentImage).mainLayer.createFromFile undoFile
-            
-            'Update the displayed size
             pdImages(CurrentImage).updateSize
-            DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
-            
-            'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
-            ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
-            ' it before rendering the image or OOB errors may occur.)
-            If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
             
         'Selection data
         'Case 2
@@ -1072,9 +1065,20 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
             
             'Activate the selection as necessary
             pdImages(CurrentImage).selectionActive = pdImages(CurrentImage).mainSelection.isLockedIn
-            tInit tSelection, pdImages(CurrentImage).selectionActive
+            
+            'Synchronize the text boxes as necessary
+            syncTextToCurrentSelection CurrentImage
         
     'End Select
+    
+    'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
+    ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
+    ' it before rendering the image or OOB errors may occur.)
+    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
+    
+    'Display the new size on screen, and activate any selection controls as necessary
+    DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
+    tInit tSelection, pdImages(CurrentImage).selectionActive
         
     'Render the image to the screen
     PrepareViewport FormMain.ActiveForm, "LoadUndo"

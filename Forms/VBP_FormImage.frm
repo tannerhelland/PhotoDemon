@@ -287,15 +287,35 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                     
                     'If that function did not return zero, notify the selection and exit
                     If (sCheck <> 0) And pdImages(Me.Tag).mainSelection.isTransformable Then
+                    
+                        'If the selection type matches the current selection tool, start transforming the selection.
+                        If (pdImages(Me.Tag).mainSelection.getSelectionShape = g_CurrentTool) Then
                         
-                        'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
-                        pdImages(Me.Tag).mainSelection.setBackupParamString
+                            'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
+                            pdImages(Me.Tag).mainSelection.setBackupParamString
+                            
+                            'Initialize a selection transformation
+                            pdImages(Me.Tag).mainSelection.setTransformationType sCheck
+                            pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
+                            
+                            Exit Sub
+                            
+                        'If the selection type does NOT match the current selection tool, select the proper tool, then start transforming
+                        ' the selection.
+                        Else
                         
-                        'Initialize a selection transformation
-                        pdImages(Me.Tag).mainSelection.setTransformationType sCheck
-                        pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
+                            FormMain.selectNewTool pdImages(Me.Tag).mainSelection.getSelectionShape
+                            
+                            'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
+                            pdImages(Me.Tag).mainSelection.setBackupParamString
+                            
+                            'Initialize a selection transformation
+                            pdImages(Me.Tag).mainSelection.setTransformationType sCheck
+                            pdImages(Me.Tag).mainSelection.setInitialTransformCoordinates imgX, imgY
+                            
+                            Exit Sub
                         
-                        Exit Sub
+                        End If
                                         
                     'If it did return zero, erase any existing selection and start a new one
                     Else
@@ -357,6 +377,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
                     
                     'Pass new points to the active selection
                     pdImages(Me.Tag).mainSelection.setAdditionalCoordinates imgX, imgY
+                    syncTextToCurrentSelection Me.Tag
                                         
                 End If
                 
@@ -477,6 +498,8 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
                     pdImages(Me.Tag).mainSelection.lockRelease
                 End If
                 
+                'Synchronize the selection text box values with the final selection
+                syncTextToCurrentSelection Me.Tag
                 
             Case Else
                     
@@ -854,11 +877,11 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
     'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
     ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, FormMain.cmbSelType(0).ListIndex, FormMain.cmbSelSmoothing(0).ListIndex, FormMain.sltSelectionFeathering.Value, FormMain.sltSelectionBorder.Value, FormMain.sltCornerRounding.Value, FormMain.sltCornerRounding.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+    pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, FormMain.cmbSelType(0).ListIndex, FormMain.cmbSelSmoothing(0).ListIndex, FormMain.sltSelectionFeathering.Value, FormMain.sltSelectionBorder.Value, FormMain.sltCornerRounding.Value, FormMain.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
     
     'Set the first two coordinates of this selection to this mouseclick's location
     pdImages(Me.Tag).mainSelection.setInitialCoordinates x, y
-    'pdImages(Me.Tag).mainSelection.refreshTextBoxes
+    syncTextToCurrentSelection Me.Tag
     pdImages(Me.Tag).mainSelection.requestNewMask
         
     'Make the selection tools visible

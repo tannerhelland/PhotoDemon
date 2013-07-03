@@ -408,8 +408,15 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
     ' now is an excellent time to update them.
-    If iWidth < iHeight Then FormMain.sltCornerRounding.Max = iWidth Else FormMain.sltCornerRounding.Max = iHeight
-    If iWidth < iHeight Then FormMain.sltSelectionBorder.Max = iWidth Else FormMain.sltSelectionBorder.Max = iHeight
+    If iWidth < iHeight Then
+        FormMain.sltSelectionBorder.Max = iWidth
+        FormMain.sltCornerRounding.Max = iWidth
+        FormMain.sltSelectionLineWidth.Max = iHeight
+    Else
+        FormMain.sltSelectionBorder.Max = iHeight
+        FormMain.sltCornerRounding.Max = iHeight
+        FormMain.sltSelectionLineWidth.Max = iWidth
+    End If
     
 End Sub
 

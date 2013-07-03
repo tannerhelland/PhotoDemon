@@ -163,8 +163,8 @@ End Enum
 Private sSmooth As SelectionSmoothing
 
 'The coordinates of the current selection (if rectangular)
-Private x1 As Double, x2 As Double
-Private y1 As Double, y2 As Double
+Public x1 As Double, x2 As Double
+Public y1 As Double, y2 As Double
 
 'The actual coordinates passed from the user's mouse movements to this selection object.  These coordinates are not modified in any way.
 ' (e.g. these coordinates could lie outside the image, viewport, or screen, because no bounds checking is applied to them)
@@ -335,7 +335,7 @@ Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSel
     If forceSelectionRefresh And (Not containingPDImage Is Nothing) Then
         updateInternalCoords
         createSelectionMask
-        RenderViewport containingPDImage.containingForm
+        'RenderViewport containingPDImage.containingForm
     End If
     
 End Sub
@@ -420,20 +420,14 @@ End Sub
 Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
     isMaskReady = False
     roundedCorners = cornerRounding
-    If lockedIn Then
-        createSelectionMask
-        RenderViewport containingPDImage.containingForm
-    End If
+    If lockedIn Then createSelectionMask
 End Sub
 
 'Change the line width of line selections
 Public Sub setSelectionLineWidth(ByVal newLineWidth As Long)
     isMaskReady = False
     selectionLineWidth = newLineWidth
-    If lockedIn Then
-        createSelectionMask
-        RenderViewport containingPDImage.containingForm
-    End If
+    If lockedIn Then createSelectionMask
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
@@ -745,9 +739,6 @@ Private Sub updateInternalCoords()
         selTop = y2
         selHeight = y1 - y2
     End If
-    
-    'Adjust the main form's selection text boxes to match the newly calculated values
-    'refreshTextBoxes
 
 End Sub
 
@@ -774,38 +765,6 @@ Public Function areAllCoordinatesInvalid() As Boolean
     End If
 
 End Function
-
-'Use this to populate the text boxes on the main form with the current selection values
-'Public Sub refreshTextBoxes()
-'
-'    rejectRefreshRequests = True
-'
-'    Dim targetTextBoxIndex As Long
-'
-'    'Different types of selections will display size and position differently
-'    Select Case sShape
-'
-'        'Rectangular and elliptical selections display left, top, width and height
-'        Case sRectangle, sCircle
-'            targetTextBoxIndex = 0
-'            FormMain.tudSelLeft(targetTextBoxIndex).Value = selLeft
-'            FormMain.tudSelTop(targetTextBoxIndex).Value = selTop
-'            FormMain.tudSelWidth(targetTextBoxIndex).Value = selWidth
-'            FormMain.tudSelHeight(targetTextBoxIndex).Value = selHeight
-'
-'        'Line selections display x1, y1, x2, y2
-'        Case sLine
-'            targetTextBoxIndex = 0
-'            FormMain.tudSelLeft(targetTextBoxIndex).Value = x1
-'            FormMain.tudSelTop(targetTextBoxIndex).Value = y1
-'            FormMain.tudSelWidth(targetTextBoxIndex).Value = x2
-'            FormMain.tudSelHeight(targetTextBoxIndex).Value = y2
-'
-'    End Select
-'
-'    rejectRefreshRequests = False
-'
-'End Sub
 
 'Update this selection using the values in the main form's selection text boxes
 Public Sub updateViaTextBox()
@@ -843,9 +802,6 @@ Public Sub updateViaTextBox()
     
     rejectRefreshRequests = False
     
-    'Redraw the selection to the active form
-    RenderViewport containingPDImage.containingForm
-    
 End Sub
 
 '"Lock-in" a selection. Typically this is prompted by a _MouseUp event
@@ -860,9 +816,6 @@ Public Sub lockIn(ByRef targetForm As Form)
     'The final thing we need to check for is the width and height, which may be still be zero at this point.  Do not allow selections of size 0.
     If selWidth < 1 Then selWidth = 1
     If selHeight < 1 Then selHeight = 1
-    
-    'Adjust the main form's selection text boxes to match the newly calculated values
-    'refreshTextBoxes
         
 End Sub
 
