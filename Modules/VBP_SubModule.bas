@@ -278,22 +278,22 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
             sDist = distanceOneDimension(y1, tBottom)
             wDist = distanceOneDimension(x1, tLeft)
             
-            If (nDist <= minDistance) Then
+            If (nDist <= minDistance) And (x1 > (tLeft - minDistance)) And (x1 < (tRight + minDistance)) Then
                 minDistance = nDist
                 closestPoint = 5
             End If
             
-            If (eDist <= minDistance) Then
+            If (eDist <= minDistance) And (y1 > (tTop - minDistance)) And (y1 < (tBottom + minDistance)) Then
                 minDistance = eDist
                 closestPoint = 6
             End If
             
-            If (sDist <= minDistance) Then
+            If (sDist <= minDistance) And (x1 > (tLeft - minDistance)) And (x1 < (tRight + minDistance)) Then
                 minDistance = sDist
                 closestPoint = 7
             End If
             
-            If (wDist <= minDistance) Then
+            If (wDist <= minDistance) And (y1 > (tTop - minDistance)) And (y1 < (tBottom + minDistance)) Then
                 minDistance = wDist
                 closestPoint = 8
             End If
