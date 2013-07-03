@@ -3,8 +3,9 @@ Attribute VB_Name = "Toolbar"
 'Toolbar Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/June/13
-'Last update: add the new Select menu to the list of menus enabled/disabled when no images are loaded
+'Last updated: 03/July/13
+'Last update: added tSelectionTransform for more fine-grained selection activation/deactivation.  Transformable selections must also enable
+'             the coordinate text boxes on the main form, while non-transformable ones must deactivate these.
 '
 'Module for enabling/disabling toolbar buttons and menus.  Note that the toolbar was removed in June '12 in favor of
 ' the new left-hand bar; this module remains, however, because the code handles menu items and the left-hand bar
@@ -17,26 +18,28 @@ Attribute VB_Name = "Toolbar"
 
 Option Explicit
 
-Public Const tOpen As Byte = 0
-Public Const tSave As Byte = 1
-Public Const tSaveAs As Byte = 2
-Public Const tCopy As Byte = 3
-Public Const tPaste As Byte = 4
-Public Const tUndo As Byte = 5
-Public Const tImageOps As Byte = 6
-Public Const tFilter As Byte = 7
-Public Const tRedo As Byte = 8
-'Public Const tHistogram As Byte = 9
-Public Const tMacro As Byte = 10
-Public Const tEdit As Byte = 11
-Public Const tRepeatLast As Byte = 12
-Public Const tSelection As Byte = 13
-Public Const tImgMode32bpp As Byte = 14
-Public Const tMetadata As Byte = 15
-Public Const tGPSMetadata As Byte = 16
+Public Const tOpen As Long = 0
+Public Const tSave As Long = 1
+Public Const tSaveAs As Long = 2
+Public Const tCopy As Long = 3
+Public Const tPaste As Long = 4
+Public Const tUndo As Long = 5
+Public Const tImageOps As Long = 6
+Public Const tFilter As Long = 7
+Public Const tRedo As Long = 8
+'Public Const tHistogram As Long = 9
+Public Const tMacro As Long = 10
+Public Const tEdit As Long = 11
+Public Const tRepeatLast As Long = 12
+Public Const tSelection As Long = 13
+Public Const tSelectionTransform As Long = 14
+Public Const tImgMode32bpp As Long = 15
+Public Const tMetadata As Long = 16
+Public Const tGPSMetadata As Long = 17
+
 
 'tInit enables or disables a specified button and/or menu item
-Public Sub tInit(tButton As Byte, tState As Boolean)
+Public Sub tInit(tButton As Long, tState As Boolean)
     
     Dim i As Long
     
@@ -142,34 +145,36 @@ Public Sub tInit(tButton As Byte, tState As Boolean)
         Case tRepeatLast
             If FormMain.MnuRepeatLast.Enabled <> tState Then FormMain.MnuRepeatLast.Enabled = tState
             
-        'Selections
+        'Selections in general
         Case tSelection
             
             'If selections are not active, clear all the selection value textboxes
             If Not tState Then
-                For i = 0 To FormMain.tudSelLeft.Count - 1
-                    FormMain.tudSelLeft(i).Value = 0
-                    FormMain.tudSelTop(i).Value = 0
-                    FormMain.tudSelWidth(i).Value = 0
-                    FormMain.tudSelHeight(i).Value = 0
+                For i = 0 To FormMain.tudSel.Count - 1
+                    FormMain.tudSel(i).Value = 0
                 Next i
             End If
             
             'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
             ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
             ' actually draw a selection, it already has the attributes they want.
-            For i = 0 To FormMain.tudSelLeft.Count - 1
-                If FormMain.tudSelLeft(i).Enabled <> tState Then
-                    FormMain.tudSelLeft(i).Enabled = tState
-                    FormMain.tudSelTop(i).Enabled = tState
-                    FormMain.tudSelWidth(i).Enabled = tState
-                    FormMain.tudSelHeight(i).Enabled = tState
-                End If
+            For i = 0 To FormMain.tudSel.Count - 1
+                If FormMain.tudSel(i).Enabled <> tState Then FormMain.tudSel(i).Enabled = tState
             Next i
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuImage(7).Enabled <> tState Then FormMain.MnuImage(7).Enabled = tState
-            
+        
+        'Transformable selection controls specifically
+        Case tSelectionTransform
+        
+            'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
+            ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
+            ' actually draw a selection, it already has the attributes they want.
+            For i = 0 To FormMain.tudSel.Count - 1
+                If FormMain.tudSel(i).Enabled <> tState Then FormMain.tudSel(i).Enabled = tState
+            Next i
+        
         '32bpp color mode (e.g. add/remove alpha channel)
         Case tImgMode32bpp
             
