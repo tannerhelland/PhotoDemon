@@ -724,18 +724,18 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
         tsLeft = tsLeft + dstX
         If tsLeft < 0 Then tsLeft = 0
         If tsLeft > iWidth - 2 Then tsLeft = iWidth - 2
-        FormMain.tudSelLeft(0) = tsLeft
+        FormMain.tudSel(0) = tsLeft
         
         tsTop = tsTop + dstY
         If tsTop < 0 Then tsTop = 0
         If tsTop > iHeight - 2 Then tsTop = iHeight - 2
-        FormMain.tudSelTop(0) = Int(tsTop * hRatio)
-        FormMain.tudSelWidth(0) = tsWidth
-        FormMain.tudSelHeight(0) = tsHeight
+        FormMain.tudSel(1) = Int(tsTop * hRatio)
+        FormMain.tudSel(2) = tsWidth
+        FormMain.tudSel(3) = tsHeight
         
         'Reactivate the current selection with the new values
         tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.updateViaTextBox 0
+        pdImages(CurrentImage).mainSelection.updateViaTextBox
         pdImages(CurrentImage).selectionActive = True
         
         'Redraw the image
@@ -754,7 +754,7 @@ Private Sub updateAspectRatio()
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
     If tudWidth.IsValid And tudHeight.IsValid Then
-        ConvertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
+        convertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
         If CLng(Denominator) = 5 Then

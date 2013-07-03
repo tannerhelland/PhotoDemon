@@ -808,7 +808,7 @@ End Function
 'End Sub
 
 'Update this selection using the values in the main form's selection text boxes
-Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
+Public Sub updateViaTextBox()
 
     'Ignore text box update requests until the selection is locked in
     If Not isLockedIn Then Exit Sub
@@ -819,10 +819,10 @@ Public Sub updateViaTextBox(ByVal textSourceIndex As Long)
     isMaskReady = False
 
     'Check all text box entries for validity, then update the corresponding selection values
-    If FormMain.tudSelLeft(textSourceIndex).IsValid(False) Then selLeft = FormMain.tudSelLeft(textSourceIndex)
-    If FormMain.tudSelTop(textSourceIndex).IsValid(False) Then selTop = FormMain.tudSelTop(textSourceIndex)
-    If FormMain.tudSelWidth(textSourceIndex).IsValid(False) Then selWidth = FormMain.tudSelWidth(textSourceIndex)
-    If FormMain.tudSelHeight(textSourceIndex).IsValid(False) Then selHeight = FormMain.tudSelHeight(textSourceIndex)
+    If FormMain.tudSel(0).IsValid(False) Then selLeft = FormMain.tudSel(0)
+    If FormMain.tudSel(1).IsValid(False) Then selTop = FormMain.tudSel(1)
+    If FormMain.tudSel(2).IsValid(False) Then selWidth = FormMain.tudSel(2)
+    If FormMain.tudSel(3).IsValid(False) Then selHeight = FormMain.tudSel(3)
     
     'Adjust the x1, y1, x2, y2 values to match these new ones
     Select Case sShape

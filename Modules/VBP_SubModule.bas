@@ -189,6 +189,12 @@ End Sub
 ' 9 - interior of selection, not near a corner or edge
 Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form) As Long
 
+    'If the current selection is NOT transformable, return 0.
+    If Not pdImages(srcForm.Tag).mainSelection.isTransformable Then
+        findNearestSelectionCoordinates = 0
+        Exit Function
+    End If
+
     'Grab the current zoom value
     Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)

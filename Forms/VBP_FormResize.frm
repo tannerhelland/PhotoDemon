@@ -896,7 +896,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 'Create a filter support class, which will aid with edge handling and interpolation
                 Dim fSupport As pdFilterSupport
                 Set fSupport = New pdFilterSupport
-                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.maxX, curLayerValues.maxY
+                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.MaxX, curLayerValues.MaxY
     
                 'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
                 ' based on the size of the area to be processed.
@@ -1030,14 +1030,14 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     If selActive Then
         
         'Populate the selection text boxes (which are now invisible)
-        FormMain.tudSelLeft(0) = Int(tsLeft * wRatio)
-        FormMain.tudSelTop(0) = Int(tsTop * hRatio)
-        FormMain.tudSelWidth(0) = Int(tsWidth * wRatio)
-        FormMain.tudSelHeight(0) = Int(tsHeight * hRatio)
+        FormMain.tudSel(0) = Int(tsLeft * wRatio)
+        FormMain.tudSel(1) = Int(tsTop * hRatio)
+        FormMain.tudSel(2) = Int(tsWidth * wRatio)
+        FormMain.tudSel(3) = Int(tsHeight * hRatio)
         
         'Reactivate the current selection with the new values
         tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.updateViaTextBox 0
+        pdImages(CurrentImage).mainSelection.updateViaTextBox
         pdImages(CurrentImage).selectionActive = True
         
         'Redraw the image
@@ -1056,7 +1056,7 @@ Private Sub updateAspectRatio()
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
     If tudWidth.IsValid And tudHeight.IsValid Then
-        ConvertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
+        convertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
         If CLng(Denominator) = 5 Then
