@@ -26,6 +26,9 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
     pdImages(CurrentImage).selectionActive = True
     
+    'Synchronize all user-facing controls to match
+    syncTextToCurrentSelection CurrentImage
+    
     'Change the selection-related menu items to match
     tInit tSelection, True
     
@@ -40,6 +43,9 @@ Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
     'Use the passed parameter string to initialize the selection
     pdImages(CurrentImage).mainSelection.lockRelease
     pdImages(CurrentImage).selectionActive = False
+    
+    'Synchronize all user-facing controls to match
+    syncTextToCurrentSelection CurrentImage
     
     'Change the selection-related menu items to match
     tInit tSelection, False
@@ -68,6 +74,9 @@ Public Sub SelectWholeImage()
     pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
     pdImages(CurrentImage).selectionActive = True
     
+    'Synchronize all user-facing controls to match
+    syncTextToCurrentSelection CurrentImage
+    
     'Change the selection-related menu items to match
     tInit tSelection, True
     
@@ -77,43 +86,65 @@ Public Sub SelectWholeImage()
 End Sub
 
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.
-Public Sub LoadSelectionFromFile()
+Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal selectionPath As String = "")
 
-    'Simple open dialog
-    Dim CC As cCommonDialog
-        
-    Dim sFile As String
-    Set CC = New cCommonDialog
+    If displayDialog Then
     
-    Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
-    cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
-    
-    Dim cdTitle As String
-    cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
-    
-    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, , FormMain.hWnd, 0) Then
+        'Simple open dialog
+        Dim CC As cCommonDialog
+            
+        Dim sFile As String
+        Set CC = New cCommonDialog
         
-        Dim tmpSelection As pdSelection
-        Set tmpSelection = New pdSelection
-        Set tmpSelection.containingPDImage = pdImages(CurrentImage)
+        Dim cdFilter As String
+        cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
+        cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
         
-        If tmpSelection.readSelectionFromFile(sFile, True) Then
+        Dim cdTitle As String
+        cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
+        
+        If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, , FormMain.hWnd, 0) Then
             
-            'Save the new directory as the default path for future usage
-            g_UserPreferences.setSelectionPath sFile
+            'Use a temporary selection object to validate the requested selection file
+            Dim tmpSelection As pdSelection
+            Set tmpSelection = New pdSelection
+            Set tmpSelection.containingPDImage = pdImages(CurrentImage)
             
-            'Activate and redraw the seletion
-            Process "Load selection", False, tmpSelection.getSelectionParamString, 2
+            If tmpSelection.readSelectionFromFile(sFile, True) Then
+                
+                'Save the new directory as the default path for future usage
+                g_UserPreferences.setSelectionPath sFile
+                
+                'Call this function again, but with displayDialog set to FALSE and the path of the requested selection file
+                Process "Load selection", False, sFile, 2
+                    
+            Else
+                pdMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
+            End If
             
-        Else
-            pdMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
+            'Release the temporary selection object
+            Set tmpSelection.containingPDImage = Nothing
+            Set tmpSelection = Nothing
+            
         End If
         
-        'Release the temporary selection object
-        Set tmpSelection.containingPDImage = Nothing
-        Set tmpSelection = Nothing
+    Else
+    
+        Message "Loading selection..."
+        pdImages(CurrentImage).mainSelection.readSelectionFromFile selectionPath
+        pdImages(CurrentImage).selectionActive = True
         
+        'Synchronize all user-facing controls to match
+        syncTextToCurrentSelection CurrentImage
+        
+        'Change the selection-related menu items to match
+        tInit tSelection, True
+        tInit tSelectionTransform, pdImages(CurrentImage).mainSelection.isTransformable
+        
+        'Draw the new selection to the screen
+        RenderViewport pdImages(CurrentImage).containingForm
+        Message "Selection loaded successfully"
+    
     End If
     
 End Sub

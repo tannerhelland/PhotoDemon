@@ -2018,12 +2018,9 @@ Public Sub resetToolButtonStates()
     'Start by depressing the selected button and raising all unselected ones
     Dim i As Long
     For i = 0 To cmdTools.Count - 1
-        If i = g_CurrentTool Then
-            SendMessageA cmdTools(i).hWnd, BM_SETSTATE, True, 0
-        Else
-            SendMessageA cmdTools(i).hWnd, BM_SETSTATE, False, 0
-        End If
+        SendMessageA cmdTools(i).hWnd, BM_SETSTATE, False, 0
     Next i
+    SendMessageA cmdTools(g_CurrentTool).hWnd, BM_SETSTATE, True, 0
     
     'Next, we need to display the correct tool options panel.  There is no set pattern to this; some tools share
     ' panels, but show/hide certain controls as necessary.  Other tools require their own unique panel.  I've tried

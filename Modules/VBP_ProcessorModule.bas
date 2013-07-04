@@ -247,9 +247,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' Any action that operates on selections - creating them, moving them, erasing them, etc
         Case "Load selection"
             If ShowDialog Then
-                LoadSelectionFromFile
+                LoadSelectionFromFile True
             Else
-                CreateNewSelection cParams.getParamString
+                LoadSelectionFromFile False, cParams.getParamString
             End If
             
         Case "Save selection"
