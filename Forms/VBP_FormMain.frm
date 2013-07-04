@@ -1877,8 +1877,8 @@ Attribute VB_Exposed = False
 'Main Program MDI Form
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 29/April/13
-'Last update: rebuilt all selection code to utilize the new text/up-down custom control
+'Last updated: 04/July/13
+'Last update: overhauled much of the selection-related control code to better separate interface/domain handling
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -1927,7 +1927,7 @@ Private Sub cmbSelSmoothing_Click(Index As Integer)
     updateSelectionPanelLayout
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed Then
+    If selectionsAllowed(False) Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setSmoothingType cmbSelSmoothing(Index).ListIndex
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
         RenderViewport FormMain.ActiveForm
@@ -1941,7 +1941,7 @@ Private Sub cmbSelType_Click(Index As Integer)
     updateSelectionPanelLayout
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed Then
+    If selectionsAllowed(False) Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionType cmbSelType(Index).ListIndex
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
         RenderViewport FormMain.ActiveForm
@@ -2116,7 +2116,7 @@ Private Sub newToolSelected()
             FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
         
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
-            If selectionsAllowed And (Not g_UndoRedoActive) Then
+            If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
                 If (g_PreviousTool = SELECT_CIRC) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle) Then
                     pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
                     RenderViewport FormMain.ActiveForm
@@ -2129,7 +2129,7 @@ Private Sub newToolSelected()
             FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
         
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
-            If selectionsAllowed And (Not g_UndoRedoActive) Then
+            If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
                 If (g_PreviousTool = SELECT_RECT) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
                     pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
                     RenderViewport FormMain.ActiveForm
@@ -2143,7 +2143,7 @@ Private Sub newToolSelected()
             FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
             
             'If a selection is already active, remove the ability to transform it, then initialize a default line selection
-            If selectionsAllowed And (Not g_UndoRedoActive) Then
+            'If selectionsAllowed And (Not g_UndoRedoActive) Then
             '    pdImages(FormMain.ActiveForm.Tag).mainSelection.isTransformable = False
             '    RenderViewport FormMain.ActiveForm
             '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
@@ -2154,7 +2154,7 @@ Private Sub newToolSelected()
             '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionLineWidth FormMain.sltSelectionLineWidth.Value
             '    pdImages(FormMain.ActiveForm.Tag).selectionActive = False
             '    'RenderViewport FormMain.ActiveForm
-            End If
+            'End If
             
         Case Else
         
@@ -3346,7 +3346,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Select none
         Case 1
-            Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2
+            Process "Remove selection", , pdImages(CurrentImage).mainSelection.getSelectionParamString, 2
         
         'Select none
         Case 2
@@ -3815,37 +3815,47 @@ Private Sub picProgBar_Resize()
 End Sub
 
 Private Sub sltCornerRounding_Change()
-    If selectionsAllowed Then
+    If selectionsAllowed(True) Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
         RenderViewport FormMain.ActiveForm
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change()
-    If selectionsAllowed Then
+    If selectionsAllowed(False) Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
         RenderViewport FormMain.ActiveForm
     End If
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
-    If selectionsAllowed Then
+    If selectionsAllowed(False) Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
         RenderViewport FormMain.ActiveForm
     End If
 End Sub
 
 Private Sub sltSelectionLineWidth_Change()
-    If selectionsAllowed Then
+    If selectionsAllowed(True) Then
         pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionLineWidth sltSelectionLineWidth.Value
         RenderViewport FormMain.ActiveForm
     End If
 End Sub
 
-Private Function selectionsAllowed() As Boolean
+Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
     If NumOfWindows > 0 Then
-        If pdImages(FormMain.ActiveForm.Tag).selectionActive And (Not pdImages(FormMain.ActiveForm.Tag).mainSelection Is Nothing) And (pdImages(FormMain.ActiveForm.Tag).mainSelection.isTransformable) Then
-            selectionsAllowed = True
+        If pdImages(FormMain.ActiveForm.Tag).selectionActive And (Not pdImages(FormMain.ActiveForm.Tag).mainSelection Is Nothing) And (Not pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests) Then
+            
+            If transformableMatters Then
+                If pdImages(FormMain.ActiveForm.Tag).mainSelection.isTransformable Then
+                    selectionsAllowed = True
+                Else
+                    selectionsAllowed = False
+                End If
+            Else
+                selectionsAllowed = True
+            End If
+            
         Else
             selectionsAllowed = False
         End If
@@ -3893,7 +3903,7 @@ Private Sub tudSel_Change(Index As Integer)
 End Sub
 
 Private Sub updateSelectionsValuesViaText()
-    If selectionsAllowed Then
+    If selectionsAllowed(True) Then
         If Not pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests Then
             pdImages(FormMain.ActiveForm.Tag).mainSelection.updateViaTextBox
             RenderViewport FormMain.ActiveForm

@@ -351,13 +351,21 @@ Public Sub requestNewMask()
 
 End Sub
 
-'Set feathering radius
+'Get/set feathering radius
+Public Function getFeatheringRadius() As Long
+    getFeatheringRadius = featheringRadius
+End Function
+
 Public Sub setFeatheringRadius(ByVal newRadius As Long)
     isMaskReady = False
     featheringRadius = newRadius
 End Sub
 
-'Set the border size
+'Get/set the border size
+Public Function getBorderSize() As Long
+    getBorderSize = borderSize
+End Function
+
 Public Sub setBorderSize(ByVal newBorderSize As Long)
     isMaskReady = False
     borderSize = newBorderSize
@@ -417,13 +425,21 @@ Public Sub setSmoothingType(ByVal selSmooth As SelectionSmoothing)
 End Sub
 
 'Change the amount of corner rounding for rectangular selections
+Public Function getRoundedCornerAmount() As Long
+    getRoundedCornerAmount = roundedCorners
+End Function
+
 Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
     isMaskReady = False
     roundedCorners = cornerRounding
     If lockedIn Then createSelectionMask
 End Sub
 
-'Change the line width of line selections
+'Get/set the line width of line selections
+Public Function getSelectionLineWidth() As Long
+    getSelectionLineWidth = selectionLineWidth
+End Function
+
 Public Sub setSelectionLineWidth(ByVal newLineWidth As Long)
     isMaskReady = False
     selectionLineWidth = newLineWidth
