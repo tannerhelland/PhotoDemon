@@ -75,6 +75,33 @@ Public Function doesParamExist(ByVal pIndex As Long) As Boolean
     End If
 End Function
 
+'Change the value at a given location.  (This assumes setParamString has already been called, obviously.)
+Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
+
+    If pIndex <= m_numOfParams Then
+        m_Params(pIndex - 1) = newValue
+    End If
+
+End Sub
+
+'If setNewValueAtLocation has been used, this sub needs to be called to reassemble the modified parameter string
+Public Sub reassembleModifiedParamString()
+
+    'Build a new param string by concatenating all values into a single "|"-delimited string
+    Dim tmpString As String
+    tmpString = ""
+    
+    Dim i As Long
+    For i = 0 To m_numOfParams - 1
+        tmpString = tmpString & m_Params(i)
+        If i < (m_numOfParams - 1) Then tmpString = tmpString & "|"
+    Next i
+    
+    'Re-initialize this object with that string
+    setParamString tmpString
+
+End Sub
+
 'Retrieve a bool-type parameter
 Public Function GetBool(ByVal pIndex As Long, Optional ByVal defaultReturn As Boolean = False) As Boolean
 
