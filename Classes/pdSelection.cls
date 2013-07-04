@@ -1647,6 +1647,9 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     
     'MsgBox "read from file: " & vbCrLf & srcFilename & vbCrLf & lockedIn & vbCrLf & paramString
     
+    'Convert the relative values in the parameter string to absolute ones
+    paramString = translateParamStringToFileFormat(paramString, False)
+    
     'Parse the parameter string into its individual components, and use those to initialize this selection
     initFromParamString paramString
 
@@ -1699,6 +1702,10 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
         Else
             paramString = getSelectionParamString
         End If
+        
+        'Convert the absolute values in the parameter string to relative ones
+        paramString = translateParamStringToFileFormat(paramString, True)
+        
         Put #fileNum, , CLng(Len(paramString))
         Put #fileNum, , paramString
         
@@ -1711,4 +1718,80 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
     
     writeSelectionToFile = True
     
+End Function
+
+'Normally, a pdSelection's parameter string contains absolute coordinates (e.g. "100, 100" for x1, y1).  When saving to
+' file, we want to use relative formats (e.g. "0.5, 0.5" for a coordinate at the center of an image).  This allows selections
+' to be correctly applied to images of any size.  Thus, when writing to or reading from a selection file, this function
+' should be called; it will handle the translation of all coordinate values.
+Private Function translateParamStringToFileFormat(ByVal paramString As String, ByVal toRelativeFormat As Boolean) As String
+
+    Dim tmpParser As pdParamString
+    Set tmpParser = New pdParamString
+    tmpParser.setParamString paramString
+    
+    Dim tmpLong As Long, tmpDouble As Double
+
+    'Convert absolute values to relative values (typically used when WRITING a selection file)
+    If toRelativeFormat Then
+    
+        '08 - left
+        tmpParser.setNewValueAtLocation 8, CStr(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width))
+        
+        '09 - top
+        tmpParser.setNewValueAtLocation 9, CStr(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height))
+        
+        '10 - width
+        tmpParser.setNewValueAtLocation 10, CStr(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width))
+        
+        '11 - height
+        tmpParser.setNewValueAtLocation 11, CStr(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height))
+        
+        '12 - x1
+        tmpParser.setNewValueAtLocation 12, CStr(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width))
+        
+        '13 - y1
+        tmpParser.setNewValueAtLocation 13, CStr(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height))
+        
+        '14 - x2
+        tmpParser.setNewValueAtLocation 14, CStr(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width))
+        
+        '15 - y2
+        tmpParser.setNewValueAtLocation 15, CStr(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height))
+    
+    'Convert relative values to absolute values (typically used when READING a selection file)
+    Else
+    
+        '08 - left
+        tmpParser.setNewValueAtLocation 8, CStr(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width)))
+        
+        '09 - top
+        tmpParser.setNewValueAtLocation 9, CStr(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height)))
+        
+        '10 - width
+        tmpParser.setNewValueAtLocation 10, CStr(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width)))
+        
+        '11 - height
+        tmpParser.setNewValueAtLocation 11, CStr(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height)))
+        
+        '12 - x1
+        tmpParser.setNewValueAtLocation 12, CStr(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width)))
+        
+        '13 - y1
+        tmpParser.setNewValueAtLocation 13, CStr(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height)))
+        
+        '14 - x2
+        tmpParser.setNewValueAtLocation 14, CStr(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width)))
+        
+        '15 - y2
+        tmpParser.setNewValueAtLocation 15, CStr(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height)))
+    
+    End If
+    
+    'Rebuild the parameter string
+    tmpParser.reassembleModifiedParamString
+    
+    'Return the modified string
+    translateParamStringToFileFormat = tmpParser.getParamString
+
 End Function
