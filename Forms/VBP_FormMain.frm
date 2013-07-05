@@ -2119,6 +2119,12 @@ Private Sub newToolSelected()
                 If (g_PreviousTool = SELECT_CIRC) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle) Then
                     pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
                     RenderViewport FormMain.ActiveForm
+                Else
+                    If pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle Then
+                        tInit tSelectionTransform, True
+                    Else
+                        tInit tSelectionTransform, False
+                    End If
                 End If
             End If
             
@@ -2132,6 +2138,12 @@ Private Sub newToolSelected()
                 If (g_PreviousTool = SELECT_RECT) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
                     pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
                     RenderViewport FormMain.ActiveForm
+                Else
+                    If pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle Then
+                        tInit tSelectionTransform, True
+                    Else
+                        tInit tSelectionTransform, False
+                    End If
                 End If
             End If
             
@@ -2141,19 +2153,16 @@ Private Sub newToolSelected()
             'Load the visual style setting from the INI file
             FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
             
-            'If a selection is already active, remove the ability to transform it, then initialize a default line selection
-            'If selectionsAllowed And (Not g_UndoRedoActive) Then
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.isTransformable = False
-            '    RenderViewport FormMain.ActiveForm
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionType FormMain.cmbSelType(0).ListIndex
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize FormMain.sltSelectionBorder.Value
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSmoothingType FormMain.cmbSelSmoothing(0).ListIndex
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius FormMain.sltSelectionFeathering.Value
-            '    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionLineWidth FormMain.sltSelectionLineWidth.Value
-            '    pdImages(FormMain.ActiveForm.Tag).selectionActive = False
-            '    'RenderViewport FormMain.ActiveForm
-            'End If
+            'Deactivate the position text boxes - those shouldn't be accessible unless a line selection is presently active
+            If selectionsAllowed(True) Then
+                If pdImages(CurrentImage).mainSelection.getSelectionShape = sLine Then
+                    tInit tSelectionTransform, True
+                Else
+                    tInit tSelectionTransform, False
+                End If
+            Else
+                tInit tSelectionTransform, False
+            End If
             
         Case Else
         

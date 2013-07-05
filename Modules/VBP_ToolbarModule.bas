@@ -168,9 +168,7 @@ Public Sub tInit(tButton As Long, tState As Boolean)
         'Transformable selection controls specifically
         Case tSelectionTransform
         
-            'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
-            ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
-            ' actually draw a selection, it already has the attributes they want.
+            'Under certain circumstances, it is desirable to disable only the selection location boxes
             For i = 0 To FormMain.tudSel.Count - 1
                 If FormMain.tudSel(i).Enabled <> tState Then FormMain.tudSel(i).Enabled = tState
             Next i
