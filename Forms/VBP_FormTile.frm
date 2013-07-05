@@ -128,8 +128,8 @@ Begin VB.Form FormTile
       TabIndex        =   14
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 
@@ -428,6 +428,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
     End If
     

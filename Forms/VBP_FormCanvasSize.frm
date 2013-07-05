@@ -625,25 +625,11 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     srcWidth = pdImages(CurrentImage).Width
     srcHeight = pdImages(CurrentImage).Height
     
-    'If the image contains an active selection, automatically move it to fit in the same location on the new canvas
-    Dim selActive As Boolean
-    Dim tsLeft As Double, tsTop As Double, tsWidth As Double, tsHeight As Double
-    
+    'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(CurrentImage).selectionActive Then
-        selActive = True
-        
-        'Remember all the current selection values
-        tsLeft = pdImages(CurrentImage).mainSelection.boundLeft
-        tsTop = pdImages(CurrentImage).mainSelection.boundTop
-        tsWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        tsHeight = pdImages(CurrentImage).mainSelection.boundHeight
-        
-        'Deactivate the current selection
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
-        
-    Else
-        selActive = False
     End If
     
     'Based on the anchor position, determine x and y locations for the image on the new canvas
@@ -716,32 +702,6 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     
     'Fit the new image on-screen and redraw it to its viewport
     FitOnScreen
-    
-    'If the image had a selection, recreate it in its new position
-    If selActive Then
-        
-        'Populate the selection text boxes (which are now invisible)
-        tsLeft = tsLeft + dstX
-        If tsLeft < 0 Then tsLeft = 0
-        If tsLeft > iWidth - 2 Then tsLeft = iWidth - 2
-        FormMain.tudSel(0) = tsLeft
-        
-        tsTop = tsTop + dstY
-        If tsTop < 0 Then tsTop = 0
-        If tsTop > iHeight - 2 Then tsTop = iHeight - 2
-        FormMain.tudSel(1) = Int(tsTop * hRatio)
-        FormMain.tudSel(2) = tsWidth
-        FormMain.tudSel(3) = tsHeight
-        
-        'Reactivate the current selection with the new values
-        tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.updateViaTextBox
-        pdImages(CurrentImage).selectionActive = True
-        
-        'Redraw the image
-        RenderViewport pdImages(CurrentImage).containingForm
-        
-    End If
     
     Message "Finished."
     

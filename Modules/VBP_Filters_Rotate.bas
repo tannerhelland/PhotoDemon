@@ -19,6 +19,13 @@ Option Explicit
 ' (The threshold is required for JPEG images; pixels may not be identical due to lossy compression.)
 Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
 
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
+        tInit tSelection, False
+    End If
+
     'The image will be cropped in four steps.  Each edge will be cropped separately, starting with the top.
     
     Message "Analyzing top edge of image..."
@@ -263,6 +270,7 @@ Public Sub MenuCropToSelection()
     'Clear selections after "Crop to Selection"
     If g_UserPreferences.GetPreference_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
         Message "Crop complete.  (Note: the selected area was automatically unselected.)"
     Else
@@ -289,10 +297,15 @@ End Sub
 'Flip an image vertically
 Public Sub MenuFlip()
 
-    Message "Flipping image..."
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
+        tInit tSelection, False
+    End If
     
+    Message "Flipping image..."
     StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, 0, pdImages(CurrentImage).Height - 1, pdImages(CurrentImage).Width, -pdImages(CurrentImage).Height, vbSrcCopy
-        
     Message "Finished. "
     
     ScrollViewport FormMain.ActiveForm
@@ -302,10 +315,15 @@ End Sub
 'Flip an image horizontally
 Public Sub MenuMirror()
 
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
+        tInit tSelection, False
+    End If
+
     Message "Mirroring image..."
-    
     StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).Width - 1, 0, -pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, vbSrcCopy
-    
     Message "Finished. "
     
     ScrollViewport FormMain.ActiveForm
@@ -319,6 +337,7 @@ Public Sub MenuRotate90Clockwise()
     ' the selection to match the new image, but we can fix that at a later date.)
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
     End If
 
@@ -407,6 +426,13 @@ End Sub
 'Rotate an image 180°
 Public Sub MenuRotate180()
 
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(CurrentImage).selectionActive Then
+        pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
+        tInit tSelection, False
+    End If
+
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
         
@@ -425,6 +451,7 @@ Public Sub MenuRotate270Clockwise()
     ' the selection to match the new image, but we can fix that at a later date.)
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
     End If
 

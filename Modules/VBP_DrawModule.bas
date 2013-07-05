@@ -84,7 +84,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     If Not useOtherPictureSrc Then
         
         'Check to see if a selection is active; if it isn't, simply render the full form
-        If pdImages(CurrentImage).selectionActive = False Then
+        If Not pdImages(CurrentImage).selectionActive Then
         
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
                 Set tmpLayer = New pdLayer

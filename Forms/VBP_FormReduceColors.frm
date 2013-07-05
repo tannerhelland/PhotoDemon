@@ -524,6 +524,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
     End If
 

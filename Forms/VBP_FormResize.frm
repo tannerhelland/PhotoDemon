@@ -812,29 +812,11 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
         
     End Select
     
-    'If the image contains an active selection, automatically resize it to match the new image.
-    Dim selActive As Boolean
-    Dim tsLeft As Double, tsTop As Double, tsWidth As Double, tsHeight As Double
-    
+    'If the image contains an active selection, automatically deactivate it
     If pdImages(CurrentImage).selectionActive Then
-        selActive = True
-        
-        'Remember all the current selection values
-        tsLeft = pdImages(CurrentImage).mainSelection.boundLeft
-        tsTop = pdImages(CurrentImage).mainSelection.boundTop
-        tsWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        tsHeight = pdImages(CurrentImage).mainSelection.boundHeight
-        
-        'Deactivate the current selection
         pdImages(CurrentImage).selectionActive = False
+        pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False
-        
-        'Note the ratio between the original width/height values and the new ones
-        wRatio = iWidth / srcWidth
-        hRatio = iHeight / srcHeight
-        
-    Else
-        selActive = False
     End If
 
     'Because most resize methods require a temporary layer, create one here
@@ -1025,25 +1007,6 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     
     'Fit the new image on-screen and redraw it to its viewport
     FitOnScreen
-    
-    'If the image had a selection, recreate it - but make it match the new image size
-    If selActive Then
-        
-        'Populate the selection text boxes (which are now invisible)
-        FormMain.tudSel(0) = Int(tsLeft * wRatio)
-        FormMain.tudSel(1) = Int(tsTop * hRatio)
-        FormMain.tudSel(2) = Int(tsWidth * wRatio)
-        FormMain.tudSel(3) = Int(tsHeight * hRatio)
-        
-        'Reactivate the current selection with the new values
-        tInit tSelection, True
-        pdImages(CurrentImage).mainSelection.updateViaTextBox
-        pdImages(CurrentImage).selectionActive = True
-        
-        'Redraw the image
-        RenderViewport pdImages(CurrentImage).containingForm
-        
-    End If
     
     Message "Finished."
     
