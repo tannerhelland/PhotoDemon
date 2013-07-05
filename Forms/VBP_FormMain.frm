@@ -1993,7 +1993,9 @@ End Sub
 'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
 ' rectangular tool selector as the current tool)
 Public Sub selectNewTool(ByVal newToolID As Long)
-    cmdTools_Click CInt(newToolID)
+    g_PreviousTool = g_CurrentTool
+    g_CurrentTool = newToolID
+    resetToolButtonStates
 End Sub
 
 Private Sub cmdTools_Click(Index As Integer)
@@ -2002,10 +2004,10 @@ Private Sub cmdTools_Click(Index As Integer)
     resetToolButtonStates
 End Sub
 
-Private Sub cmdTools_LostFocus(Index As Integer)
-    g_CurrentTool = Index
-    resetToolButtonStates
-End Sub
+'Private Sub cmdTools_LostFocus(Index As Integer)
+    'g_CurrentTool = Index
+    'resetToolButtonStates
+'End Sub
 
 Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     g_CurrentTool = Index

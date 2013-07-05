@@ -304,7 +304,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
                         ' the selection.
                         Else
                         
-                            'FormMain.selectNewTool pdImages(Me.Tag).mainSelection.getSelectionShape
+                            FormMain.selectNewTool pdImages(Me.Tag).mainSelection.getSelectionShape
                             
                             'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                             pdImages(Me.Tag).mainSelection.setBackupParamString
