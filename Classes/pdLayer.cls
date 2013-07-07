@@ -171,7 +171,7 @@ Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 Private Const CLIPBOARD_FORMAT_DIB As Long = 8
 
 'AlphaBlend API call
-Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal widthSrc As Long, ByVal heightSrc As Long, ByVal blendFunct As Long) As Boolean
+Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'Variables related to the DIB
 'hDC for this layer
@@ -1147,6 +1147,64 @@ Public Sub createFromFile(ByRef srcFilename As String)
     
 End Sub
 
+'Load a layer's DIB information from file.  This differs from the function above because it takes a file ID rather than a path, and it assumes
+' the file has already been loaded and partially processed by other functions.  The passed file ID MUST HAVE THE POINTER IN THE CORRECT LOCATION.
+' This function does no seeking of its own!
+Public Sub createFromEmbeddedFile(ByRef fileNum As Integer)
+    
+    'Check to make sure this is actually a layer file
+    Dim LayerIDCheck As String * 4
+    Get #fileNum, , LayerIDCheck
+    If (LayerIDCheck <> LAYER_IDENTIFIER) Then
+        Close #fileNum
+        Message "Failed to load embedded image layer; invalid layer data found."
+        Exit Sub
+    End If
+
+    'Now check to make sure that the version number is supported (not implemented right now, because there's only one version)
+    Dim LayerVersionCheck As Long
+    Get #fileNum, , LayerVersionCheck
+                    
+    'Get color depth
+    Dim fColorDepth As Long
+    Get #fileNum, , fColorDepth
+    
+    'Get size
+    Dim fWidth As Long, fHeight As Long, fArrayWidth As Long
+    Get #fileNum, , fWidth
+    Get #fileNum, , fHeight
+    Get #fileNum, , fArrayWidth
+    
+    'Is it compressed? (Not implemented now; might be in the future)
+    Dim toUncompress As Boolean
+    Get #fileNum, , toUncompress
+    
+    'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
+    createBlank fWidth, fHeight, fColorDepth
+    
+    'Now pull the pixel data from the file
+    Dim fileData() As Byte
+    ReDim fileData(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
+    Get #fileNum, , fileData
+    
+    'Now it's time to overwrite our current DIB with the pixel data we pulled from the file.
+    'Start, as always, with a SafeArray
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    'Bulk copy the contents of fileData() over to iData() - which is pointing at this layer's DIB, remember
+    CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
+    
+    'With our work complete, point iData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
+    
+    'Note that this function DOES NOT CLOSE THE FILE.  The calling function must handle that on its own.
+    
+End Sub
+
 'Write this layer's DIB information to file.
 Public Sub writeToFile(ByRef dstFilename As String)
 
@@ -1190,6 +1248,44 @@ Public Sub writeToFile(ByRef dstFilename As String)
     'With our work complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     Erase iData
+
+End Sub
+
+'Embed this layer's DIB information inside an existing file.  All that's required is the file number, and it is assumed that the calling function
+' has already moved the file pointer to the desired location.
+Public Sub writeToExistingFile(ByRef fileNum As Integer)
+    
+    'Identifiers
+    Put #fileNum, , LAYER_IDENTIFIER
+    Put #fileNum, , LAYER_FILE_VERSION_2012
+    
+    'Color depth
+    Put #fileNum, , layerColorDepth
+    
+    'Size
+    Put #fileNum, , layerWidth
+    Put #fileNum, , layerHeight
+    Put #fileNum, , layerArrayWidth
+    
+    'Is it compressed? (Not implemented now; might be in the future)
+    Dim toCompress As Boolean
+    toCompress = False
+    Put #fileNum, , toCompress
+    
+    'And finally, the pixel data, which is presently uncompressed
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    'Now dump the entire array into the file. To my knowledge, this is the fastest way to do this in VB.
+    Put #fileNum, , iData
+    
+    'With our work complete, point iData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    Erase iData
+    
+    'Note that this function DOES NOT CLOSE THE FILE.  The calling function must handle that on its own.
 
 End Sub
 
