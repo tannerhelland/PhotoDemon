@@ -1223,9 +1223,15 @@ Public Sub DrawMenuShortcuts()
         FormMain.MnuImage(7).Caption = FormMain.MnuImage(7).Caption & vbTab & "Ctrl+Shift+X"
     
     'Color menu
-    FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
-    FormMain.MnuColor(1).Caption = FormMain.MnuColor(1).Caption & vbTab & "Ctrl+Shift+C"
-    FormMain.MnuColor(5).Caption = FormMain.MnuColor(5).Caption & vbTab & "Ctrl+Shift+H"
+        
+        'Brightness/contrast
+        'FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
+        
+        '
+        'FormMain.MnuColor(1).Caption = FormMain.MnuColor(1).Caption & vbTab & "Ctrl+Shift+C"
+        
+        '
+        'FormMain.MnuColor(5).Caption = FormMain.MnuColor(5).Caption & vbTab & "Ctrl+Shift+H"
     
     'Tools menu
     FormMain.mnuTool(4).Caption = FormMain.mnuTool(4).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
