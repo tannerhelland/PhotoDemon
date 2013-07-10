@@ -202,19 +202,20 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         Case "Save as"
             MenuSaveAs CurrentImage
+        
+        Case "Select scanner or camera"
+            Twain32SelectScanner
+            
+        Case "Scan image"
+            Twain32Scan
             
         Case "Screen capture"
             CaptureScreen
-            
-        Case "Copy to clipboard"
-            ClipboardCopy
-            
-        Case "Paste as new image"
-            ClipboardPaste
-            
-        Case "Empty clipboard"
-            ClipboardEmpty
-            
+        
+        
+        'EDIT MENU FUNCTIONS
+        ' This includes things like copying or pasting an image.  These actions are never recorded.
+        
         Case "Undo"
             RestoreUndoData
             
@@ -226,7 +227,19 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
             'Also, redraw the current child form icon
             CreateCustomFormIcon FormMain.ActiveForm
+        
+        Case "Copy to clipboard"
+            ClipboardCopy
             
+        Case "Paste as new image"
+            ClipboardPaste
+            
+        Case "Empty clipboard"
+            ClipboardEmpty
+        
+        
+        'TOOLS MENU FUNCTIONS
+        ' This includes things like macro recording.  These actions are never recorded.
         Case "Start macro recording"
             StartMacro
         
@@ -236,11 +249,104 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Play macro"
             PlayMacro
             
-        Case "Select scanner or camera"
-            Twain32SelectScanner
+        
+        'IMAGE MENU FUNCTIONS
+        ' This includes all actions that can only operate on a full image (never selections).  These actions are recorded.
+        
+        
+        
+        'Alpha channel addition/removal
+        Case "Add alpha channel"
+            ConvertImageColorDepth 32
+        
+        Case "Remove alpha channel"
+            If ShowDialog Then
+                FormConvert24bpp.Show vbModal, FormMain
+            Else
+                ConvertImageColorDepth 24, cParams.GetLong(1)
+            End If
             
-        Case "Scan image"
-            Twain32Scan
+            
+        'Resize operations
+        Case "Resize"
+            If ShowDialog Then
+                FormResize.Show vbModal, FormMain
+            Else
+                FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
+            End If
+        
+        Case "Canvas size"
+            If ShowDialog Then
+                FormCanvasSize.Show vbModal, FormMain
+            Else
+                FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+            End If
+        
+        
+        'Crop operations
+        Case "Crop"
+            MenuCropToSelection
+            
+        Case "Autocrop"
+            AutocropImage
+            
+            
+        'Rotate operations
+        Case "Rotate 90° clockwise"
+            MenuRotate90Clockwise
+            
+        Case "Rotate 180°"
+            MenuRotate180
+            
+        Case "Rotate 90° counter-clockwise"
+            MenuRotate270Clockwise
+            
+        Case "Arbitrary rotation"
+            If ShowDialog Then
+                FormRotate.Show vbModal, FormMain
+            Else
+                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+            
+        'Other coordinate transforms
+        Case "Flip vertical"
+            MenuFlip
+            
+        Case "Flip horizontal"
+            MenuMirror
+            
+        Case "Isometric conversion"
+            FilterIsometric
+            
+        Case "Tile"
+            If ShowDialog Then
+                FormTile.Show vbModal, FormMain
+            Else
+                FormTile.GenerateTile cParams.GetByte(1), cParams.GetLong(2), cParams.GetLong(3)
+            End If
+        
+        
+        'Other miscellaneous image-only items
+        Case "Reduce colors"
+            If ShowDialog Then
+                FormReduceColors.Show vbModal, FormMain
+            Else
+                Select Case cParams.GetLong(1)
+                
+                    Case REDUCECOLORS_AUTO
+                        FormReduceColors.ReduceImageColors_Auto cParams.GetLong(2)
+                
+                    Case REDUCECOLORS_MANUAL
+                        FormReduceColors.ReduceImageColors_BitRGB cParams.GetByte(2), cParams.GetByte(3), cParams.GetByte(4), cParams.GetBool(5)
+                
+                    Case REDUCECOLORS_MANUAL_ERRORDIFFUSION
+                        FormReduceColors.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(2), cParams.GetByte(3), cParams.GetByte(4), cParams.GetBool(5)
+                
+                    Case Else
+                        pdMsgBox "Unsupported color reduction method.", vbCritical + vbOKOnly + vbApplicationModal, "Color reduction error"
+                End Select
+            End If
         
         
         'SELECTION FUNCTIONS
@@ -525,25 +631,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
             End If
             
-        Case "Reduce colors"
-            If ShowDialog Then
-                FormReduceColors.Show vbModal, FormMain
-            Else
-                Select Case cParams.GetLong(1)
-                
-                    Case REDUCECOLORS_AUTO
-                        FormReduceColors.ReduceImageColors_Auto cParams.GetLong(2)
-                
-                    Case REDUCECOLORS_MANUAL
-                        FormReduceColors.ReduceImageColors_BitRGB cParams.GetByte(2), cParams.GetByte(3), cParams.GetByte(4), cParams.GetBool(5)
-                
-                    Case REDUCECOLORS_MANUAL_ERRORDIFFUSION
-                        FormReduceColors.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(2), cParams.GetByte(3), cParams.GetByte(4), cParams.GetBool(5)
-                
-                    Case Else
-                        pdMsgBox "Unsupported color reduction method.", vbCritical + vbOKOnly + vbApplicationModal, "Color reduction error"
-                End Select
-            End If
             
         Case "Color temperature"
             If ShowDialog Then
@@ -586,66 +673,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Minimum channel"
             FilterMaxMinChannel False
             
-    
-        'Coordinate filters/transformations
-        Case "Flip vertical"
-            MenuFlip
-            
-        Case "Arbitrary rotation"
+        Case "Vibrance"
             If ShowDialog Then
-                FormRotate.Show vbModal, FormMain
+                FormVibrance.Show vbModal, FormMain
             Else
-                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
+                FormVibrance.Vibrance cParams.GetDouble(1)
             End If
             
-        Case "Flip horizontal"
-            MenuMirror
-            
-        Case "Rotate 90° clockwise"
-            MenuRotate90Clockwise
-            
-        Case "Rotate 180°"
-            MenuRotate180
-            
-        Case "Rotate 90° counter-clockwise"
-            MenuRotate270Clockwise
-            
-        Case "Isometric conversion"
-            FilterIsometric
-            
-        Case "Canvas size"
-            If ShowDialog Then
-                FormCanvasSize.Show vbModal, FormMain
-            Else
-                FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
-            End If
-            
-        Case "Resize"
-            If ShowDialog Then
-                FormResize.Show vbModal, FormMain
-            Else
-                FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
-            End If
-            
-        Case "Tile"
-            If ShowDialog Then
-                FormTile.Show vbModal, FormMain
-            Else
-                FormTile.GenerateTile cParams.GetByte(1), cParams.GetLong(2), cParams.GetLong(3)
-            End If
-            
-        Case "Crop"
-            MenuCropToSelection
-            
-        Case "Remove alpha channel"
-            If ShowDialog Then
-                FormConvert24bpp.Show vbModal, FormMain
-            Else
-                ConvertImageColorDepth 24, cParams.GetLong(1)
-            End If
-            
-        Case "Add alpha channel"
-            ConvertImageColorDepth 32
             
         Case "Swirl"
             If ShowDialog Then
@@ -710,8 +744,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
-        Case "Autocrop"
-            AutocropImage
+        
             
         Case "Shear"
             If ShowDialog Then
@@ -803,16 +836,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Else
                 FormTwins.GenerateTwins cParams.GetByte(1)
             End If
-            
-        Case "Fade"
-            If ShowDialog Then
-                FormFade.Show vbModal, FormMain
-            Else
-                FormFade.FadeImage cParams.GetDouble(1)
-            End If
-            
-        Case "Unfade"
-            FormFade.UnfadeImage
             
         Case "Alien"
             MenuAlien
