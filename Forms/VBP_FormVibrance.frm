@@ -106,14 +106,21 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Vibrance Form
-'Copyright Â©2013 by audioglider
+'Vibrance Adjustment Tool
+'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 26/June/13
-'Last updated: 26/June/13
-'Last update: Initial build
+'Last updated: 10/July/13
+'Last update: final adjustments to fully merge the dialog into PD
 '
-'Similar to saturation, but slightly smarter, more subtle. Attempts to boost colors
-'that are less saturated more and boost already saturated colors less.
+'Vibrance is similar to saturation, but slightly smarter, more subtle.  The algorithm attempts to provide a greater boost
+' to colors that are less saturated, while performing a smaller adjustment to already saturated colors.
+'
+'Positive values indicate "more vibrance", while negative values indicate "less vibrance"
+'
+'Many thanks to contributor audioglider for developing this tool.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 
