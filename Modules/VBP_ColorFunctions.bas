@@ -253,8 +253,8 @@ End Function
 ' of the usual [0,1.0] one.
 Public Function getLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
     Dim Max As Long, Min As Long
-    Max = MaximumInt(r, g, b)
-    Min = MinimumInt(r, g, b)
+    Max = Max3Int(r, g, b)
+    Min = Min3Int(r, g, b)
     getLuminance = (Max + Min) \ 2
 End Function
 
@@ -274,8 +274,8 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
     ' Saturation: [0,1] (Note that if saturation = 0, hue is technically undefined)
     ' Lightness: [0,1]
 
-    Max = Maximum(rR, rG, rB)
-    Min = Minimum(rR, rG, rB)
+    Max = Max3Float(rR, rG, rB)
+    Min = Min3Float(rR, rG, rB)
         
     'Calculate luminance
     l = (Max + Min) / 2
@@ -388,72 +388,3 @@ Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long
    If b > 255 Then b = 255
    
 End Sub
-
-'Return the maximum of three variables
-Public Function Maximum(rR As Double, rG As Double, rB As Double) As Double
-   If (rR > rG) Then
-      If (rR > rB) Then
-         Maximum = rR
-      Else
-         Maximum = rB
-      End If
-   Else
-      If (rB > rG) Then
-         Maximum = rB
-      Else
-         Maximum = rG
-      End If
-   End If
-End Function
-
-'Return the minimum of three variables
-Public Function Minimum(rR As Double, rG As Double, rB As Double) As Double
-   If (rR < rG) Then
-      If (rR < rB) Then
-         Minimum = rR
-      Else
-         Minimum = rB
-      End If
-   Else
-      If (rB < rG) Then
-         Minimum = rB
-      Else
-         Minimum = rG
-      End If
-   End If
-End Function
-
-'Return the maximum of three variables
-Public Function MaximumInt(rR As Long, rG As Long, rB As Long) As Long
-   If (rR > rG) Then
-      If (rR > rB) Then
-         MaximumInt = rR
-      Else
-         MaximumInt = rB
-      End If
-   Else
-      If (rB > rG) Then
-         MaximumInt = rB
-      Else
-         MaximumInt = rG
-      End If
-   End If
-End Function
-
-'Return the minimum of three variables
-Public Function MinimumInt(rR As Long, rG As Long, rB As Long) As Long
-   If (rR < rG) Then
-      If (rR < rB) Then
-         MinimumInt = rR
-      Else
-         MinimumInt = rB
-      End If
-   Else
-      If (rB < rG) Then
-         MinimumInt = rB
-      Else
-         MinimumInt = rG
-      End If
-   End If
-End Function
-

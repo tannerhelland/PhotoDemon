@@ -487,7 +487,7 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
                 mK = mK / 255
                 yK = yK / 255
                 
-                bK = Minimum(cK, mK, yK)
+                bK = Min3Float(cK, mK, yK)
     
                 invBK = 1 - bK
                 If invBK = 0 Then invBK = 0.0001

@@ -781,12 +781,12 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
         b = ImageData(QuickVal, y)
         
         If useMax Then
-            maxVal = MaximumInt(r, g, b)
+            maxVal = Max3Int(r, g, b)
             If r < maxVal Then r = 0
             If g < maxVal Then g = 0
             If b < maxVal Then b = 0
         Else
-            minVal = MinimumInt(r, g, b)
+            minVal = Min3Int(r, g, b)
             If r > minVal Then r = 0
             If g > minVal Then g = 0
             If b > minVal Then b = 0

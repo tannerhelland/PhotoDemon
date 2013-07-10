@@ -691,7 +691,7 @@ Public Sub convertToCMYK32()
             yellow = 255 - iData(QuickX, y)
             
             'Key
-            K = CByte(MinimumInt(cyan, magenta, yellow))
+            K = CByte(Min3Int(cyan, magenta, yellow))
             iData(QuickX + 3, y) = K
             
             If K = 255 Then

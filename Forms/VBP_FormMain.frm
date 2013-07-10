@@ -2464,6 +2464,7 @@ Private Sub MnuColor_Click(Index As Integer)
         
         'Vibrance
         Case 10
+            Process "Vibrance", True
         
         'The third block of entries involves wholesale image color changes (grayscale, colorize, etc)
         

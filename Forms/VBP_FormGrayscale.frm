@@ -905,7 +905,7 @@ Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boo
         b = ImageData(QuickVal, y)
         
         'Find the highest or lowest of the RGB values
-        If maxOrMin = 0 Then grayVal = CByte(MinimumInt(r, g, b)) Else grayVal = CByte(MaximumInt(r, g, b))
+        If maxOrMin = 0 Then grayVal = CByte(Min3Int(r, g, b)) Else grayVal = CByte(Max3Int(r, g, b))
         
         'Assign that gray value to each color channel
         ImageData(QuickVal, y) = grayVal

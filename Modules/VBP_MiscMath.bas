@@ -182,3 +182,71 @@ Public Function Acos(ByVal x As Double) As Double
     Acos = Atan2(Sqr(1 - x * x), x)
 End Function
 
+
+'Return the maximum of three floating point values
+Public Function Max3Float(rR As Double, rG As Double, rB As Double) As Double
+   If (rR > rG) Then
+      If (rR > rB) Then
+         Max3Float = rR
+      Else
+         Max3Float = rB
+      End If
+   Else
+      If (rB > rG) Then
+         Max3Float = rB
+      Else
+         Max3Float = rG
+      End If
+   End If
+End Function
+
+'Return the minimum of three floating point values
+Public Function Min3Float(rR As Double, rG As Double, rB As Double) As Double
+   If (rR < rG) Then
+      If (rR < rB) Then
+         Min3Float = rR
+      Else
+         Min3Float = rB
+      End If
+   Else
+      If (rB < rG) Then
+         Min3Float = rB
+      Else
+         Min3Float = rG
+      End If
+   End If
+End Function
+
+'Return the maximum of three integer values
+Public Function Max3Int(rR As Long, rG As Long, rB As Long) As Long
+   If (rR > rG) Then
+      If (rR > rB) Then
+         Max3Int = rR
+      Else
+         Max3Int = rB
+      End If
+   Else
+      If (rB > rG) Then
+         Max3Int = rB
+      Else
+         Max3Int = rG
+      End If
+   End If
+End Function
+
+'Return the minimum of three integer values
+Public Function Min3Int(rR As Long, rG As Long, rB As Long) As Long
+   If (rR < rG) Then
+      If (rR < rB) Then
+         Min3Int = rR
+      Else
+         Min3Int = rB
+      End If
+   Else
+      If (rB < rG) Then
+         Min3Int = rB
+      Else
+         Min3Int = rG
+      End If
+   End If
+End Function
