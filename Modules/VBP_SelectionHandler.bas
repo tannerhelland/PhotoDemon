@@ -61,11 +61,6 @@ Public Sub SelectWholeImage()
     'Unselect any existing selection
     pdImages(CurrentImage).mainSelection.lockRelease
     pdImages(CurrentImage).selectionActive = False
-    
-    'Select the rectangular selection tool
-    g_PreviousTool = g_CurrentTool
-    g_CurrentTool = 0
-    FormMain.selectNewTool 0
         
     'Create a new selection at the size of the image
     pdImages(CurrentImage).mainSelection.selectAll

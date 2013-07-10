@@ -325,6 +325,8 @@ Public Sub selectAll()
     selTop = 0
     selWidth = containingPDImage.Width
     selHeight = containingPDImage.Height
+    isTransformable = True
+    isMaskReady = False
     
 End Sub
 
