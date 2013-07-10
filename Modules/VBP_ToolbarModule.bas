@@ -185,7 +185,7 @@ Public Sub tInit(tButton As Long, tState As Boolean)
         
         Case tGPSMetadata
         
-            If FormMain.MnuMetadata(2).Enabled <> tState Then FormMain.MnuMetadata(2).Enabled = tState
+            If FormMain.MnuMetadata(3).Enabled <> tState Then FormMain.MnuMetadata(3).Enabled = tState
             
     End Select
     

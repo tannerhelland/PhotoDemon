@@ -172,17 +172,9 @@ Begin VB.MDIForm FormMain
             TabIndex        =   27
             Top             =   5640
             Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   5318
+            _extenty        =   873
+            font            =   "VBP_FormMain.frx":0014
          End
          Begin VB.ComboBox cmbSelRender 
             Appearance      =   0  'Flat
@@ -198,9 +190,9 @@ Begin VB.MDIForm FormMain
             EndProperty
             Height          =   360
             Index           =   0
-            ItemData        =   "VBP_FormMain.frx":0014
+            ItemData        =   "VBP_FormMain.frx":003C
             Left            =   180
-            List            =   "VBP_FormMain.frx":0016
+            List            =   "VBP_FormMain.frx":003E
             Style           =   2  'Dropdown List
             TabIndex        =   16
             TabStop         =   0   'False
@@ -214,19 +206,11 @@ Begin VB.MDIForm FormMain
             TabIndex        =   17
             Top             =   1320
             Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   2328
+            _extenty        =   714
+            font            =   "VBP_FormMain.frx":0040
+            min             =   -30000
+            max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -235,19 +219,11 @@ Begin VB.MDIForm FormMain
             TabIndex        =   18
             Top             =   1320
             Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   2328
+            _extenty        =   714
+            font            =   "VBP_FormMain.frx":0068
+            min             =   -30000
+            max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -256,19 +232,11 @@ Begin VB.MDIForm FormMain
             TabIndex        =   19
             Top             =   2160
             Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   2328
+            _extenty        =   714
+            font            =   "VBP_FormMain.frx":0090
+            min             =   -30000
+            max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -277,19 +245,11 @@ Begin VB.MDIForm FormMain
             TabIndex        =   20
             Top             =   2160
             Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   2328
+            _extenty        =   714
+            font            =   "VBP_FormMain.frx":00B8
+            min             =   -30000
+            max             =   30000
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
             CausesValidation=   0   'False
@@ -299,20 +259,12 @@ Begin VB.MDIForm FormMain
             Top             =   4710
             Visible         =   0   'False
             Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Min             =   1
-            Max             =   100
-            Value           =   1
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   5318
+            _extenty        =   873
+            font            =   "VBP_FormMain.frx":00E0
+            min             =   1
+            max             =   100
+            value           =   1
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
             CausesValidation=   0   'False
@@ -321,18 +273,10 @@ Begin VB.MDIForm FormMain
             TabIndex        =   33
             Top             =   3390
             Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Max             =   100
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   5318
+            _extenty        =   873
+            font            =   "VBP_FormMain.frx":0108
+            max             =   100
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
             CausesValidation=   0   'False
@@ -341,20 +285,12 @@ Begin VB.MDIForm FormMain
             TabIndex        =   36
             Top             =   5640
             Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Min             =   1
-            Max             =   500
-            Value           =   10
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
+            _extentx        =   5318
+            _extenty        =   873
+            font            =   "VBP_FormMain.frx":0130
+            min             =   1
+            max             =   500
+            value           =   10
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -554,9 +490,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -596,9 +532,9 @@ Begin VB.MDIForm FormMain
             Strikethrough   =   0   'False
          EndProperty
          Height          =   360
-         ItemData        =   "VBP_FormMain.frx":0018
+         ItemData        =   "VBP_FormMain.frx":0158
          Left            =   60
-         List            =   "VBP_FormMain.frx":001A
+         List            =   "VBP_FormMain.frx":015A
          Style           =   2  'Dropdown List
          TabIndex        =   5
          ToolTipText     =   "Click to adjust image zoom"
@@ -611,25 +547,17 @@ Begin VB.MDIForm FormMain
          TabIndex        =   1
          Top             =   60
          Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":001C
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   1640
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":015C
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":0184
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdSave 
          Height          =   615
@@ -637,25 +565,17 @@ Begin VB.MDIForm FormMain
          TabIndex        =   2
          Top             =   1440
          Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":146E
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Save"
+         _extentx        =   1640
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":15D6
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":15FE
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Save"
       End
       Begin PhotoDemon.jcbutton cmdUndo 
          Height          =   615
@@ -663,26 +583,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   3
          Top             =   2820
          Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":24C0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Undo"
-         TooltipBackColor=   -2147483643
+         _extentx        =   1640
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":2650
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":2678
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Undo"
+         tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdRedo 
          Height          =   615
@@ -690,26 +602,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   4
          Top             =   3450
          Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":3512
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Redo"
-         TooltipBackColor=   -2147483643
+         _extentx        =   1640
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":36CA
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":36F2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Redo"
+         tooltipbackcolor=   -2147483643
       End
       Begin PhotoDemon.jcbutton cmdClose 
          Height          =   615
@@ -717,25 +621,17 @@ Begin VB.MDIForm FormMain
          TabIndex        =   10
          Top             =   690
          Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":4564
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Close"
+         _extentx        =   1640
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":4744
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":476C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Close"
       End
       Begin PhotoDemon.jcbutton cmdSaveAs 
          Height          =   615
@@ -743,25 +639,17 @@ Begin VB.MDIForm FormMain
          TabIndex        =   11
          Top             =   2070
          Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":55B6
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Save As"
+         _extentx        =   1640
+         _extenty        =   1085
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":57BE
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":57E6
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Save As"
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   450
@@ -769,26 +657,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   12
          Top             =   4800
          Width           =   480
-         _ExtentX        =   847
-         _ExtentY        =   794
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":6608
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   "Use this button to increase image zoom."
-         TooltipTitle    =   "Zoom In"
+         _extentx        =   847
+         _extenty        =   794
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":6838
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":6860
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Zoom In"
+         tooltip         =   "Use this button to increase image zoom."
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   450
@@ -796,26 +676,18 @@ Begin VB.MDIForm FormMain
          TabIndex        =   13
          Top             =   4800
          Width           =   480
-         _ExtentX        =   847
-         _ExtentY        =   794
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":6A5A
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   "Use this button to decrease image zoom."
-         TooltipTitle    =   "Zoom Out"
+         _extentx        =   847
+         _extenty        =   794
+         buttonstyle     =   13
+         font            =   "VBP_FormMain.frx":6CB2
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_FormMain.frx":6CDA
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Zoom Out"
+         tooltip         =   "Use this button to decrease image zoom."
       End
       Begin VB.Line lineMain 
          BorderColor     =   &H80000002&
@@ -1165,24 +1037,28 @@ Begin VB.MDIForm FormMain
          Index           =   12
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Isometric"
          Index           =   13
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Convert to isometric view"
+         Caption         =   "-"
          Index           =   14
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
+         Caption         =   "Indexed color..."
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Tile..."
          Index           =   16
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "-"
          Index           =   17
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   18
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -1192,8 +1068,12 @@ Begin VB.MDIForm FormMain
             Index           =   1
          End
          Begin VB.Menu MnuMetadata 
-            Caption         =   "Map photo location..."
+            Caption         =   "Count unique colors"
             Index           =   2
+         End
+         Begin VB.Menu MnuMetadata 
+            Caption         =   "Map photo location..."
+            Index           =   3
          End
       End
    End
@@ -1222,71 +1102,110 @@ Begin VB.MDIForm FormMain
       End
    End
    Begin VB.Menu MnuColorTop 
-      Caption         =   "&Color"
+      Caption         =   "&Adjustments"
       Begin VB.Menu MnuColor 
          Caption         =   "Brightness and contrast..."
          Index           =   0
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Color balance..."
-         Index           =   1
-      End
-      Begin VB.Menu MnuColor 
          Caption         =   "Gamma..."
-         Index           =   2
+         Index           =   1
          Shortcut        =   ^G
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Hue and saturation..."
-         Index           =   3
-         Shortcut        =   ^H
-      End
-      Begin VB.Menu MnuColor 
          Caption         =   "Levels..."
-         Index           =   4
+         Index           =   2
          Shortcut        =   ^L
       End
       Begin VB.Menu MnuColor 
          Caption         =   "Shadows and highlights..."
-         Index           =   5
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Temperature..."
-         Index           =   6
-         Shortcut        =   ^T
+         Index           =   3
       End
       Begin VB.Menu MnuColor 
          Caption         =   "White balance..."
-         Index           =   7
+         Index           =   4
          Shortcut        =   ^W
       End
       Begin VB.Menu MnuColor 
          Caption         =   "-"
+         Index           =   5
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Color balance..."
+         Index           =   6
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Hue and saturation..."
+         Index           =   7
+         Shortcut        =   ^H
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Photo filters..."
          Index           =   8
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Histogram"
+         Caption         =   "Temperature..."
          Index           =   9
-         Begin VB.Menu MnuHistogram 
-            Caption         =   "Display histogram"
-         End
-         Begin VB.Menu mnuHistogramSepBar1 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuHistogramEqualize 
-            Caption         =   "Equalize..."
-         End
-         Begin VB.Menu MnuHistogramStretch 
-            Caption         =   "Stretch"
-         End
+         Shortcut        =   ^T
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "-"
+         Caption         =   "Vibrance..."
          Index           =   10
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "Components"
+         Caption         =   "-"
          Index           =   11
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Colorize..."
+         Index           =   12
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Grayscale..."
+         Index           =   13
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Invert"
+         Index           =   14
+         Begin VB.Menu MnuNegative 
+            Caption         =   "Invert CMYK (film negative)"
+         End
+         Begin VB.Menu MnuInvertHue 
+            Caption         =   "Invert hue"
+         End
+         Begin VB.Menu mnuInvert 
+            Caption         =   "Invert RGB"
+         End
+         Begin VB.Menu mnuInvertSepBar0 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuCompoundInvert 
+            Caption         =   "Compound invert"
+         End
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Monochrome"
+         Index           =   15
+         Begin VB.Menu MnuMonochrome 
+            Caption         =   "Color to monochrome..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuMonochrome 
+            Caption         =   "Monochrome to grayscale..."
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Sepia"
+         Index           =   16
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "-"
+         Index           =   17
+      End
+      Begin VB.Menu MnuColor 
+         Caption         =   "Components"
+         Index           =   18
          Begin VB.Menu MnuColorComponents 
             Caption         =   "Channel mixer..."
             Index           =   0
@@ -1322,108 +1241,27 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuColor 
          Caption         =   "-"
-         Index           =   12
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Colorize..."
-         Index           =   13
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Enhance"
-         Index           =   14
-         Begin VB.Menu MnuAutoEnhance 
-            Caption         =   "Contrast"
-            Shortcut        =   +{F1}
-         End
-         Begin VB.Menu MnuAutoEnhanceHighlights 
-            Caption         =   "Highlights"
-            Shortcut        =   +{F2}
-         End
-         Begin VB.Menu MnuAutoEnhanceMidtones 
-            Caption         =   "Midtones"
-            Shortcut        =   +{F3}
-         End
-         Begin VB.Menu MnuAutoEnhanceShadows 
-            Caption         =   "Shadows"
-            Shortcut        =   +{F4}
-         End
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Fade"
-         Index           =   15
-         Begin VB.Menu MnuFadeLow 
-            Caption         =   "Low fade"
-         End
-         Begin VB.Menu MnuFadeMedium 
-            Caption         =   "Medium fade"
-         End
-         Begin VB.Menu MnuFadeHigh 
-            Caption         =   "High fade"
-         End
-         Begin VB.Menu MnuCustomFade 
-            Caption         =   "Custom fade..."
-         End
-         Begin VB.Menu MnuFadeSepBar1 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuUnfade 
-            Caption         =   "Unfade"
-         End
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Grayscale..."
-         Index           =   16
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Invert"
-         Index           =   17
-         Begin VB.Menu MnuNegative 
-            Caption         =   "Invert CMYK (film negative)"
-         End
-         Begin VB.Menu MnuInvertHue 
-            Caption         =   "Invert hue"
-         End
-         Begin VB.Menu mnuInvert 
-            Caption         =   "Invert RGB"
-         End
-         Begin VB.Menu mnuInvertSepBar0 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuCompoundInvert 
-            Caption         =   "Compound invert"
-         End
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Monochrome"
-         Index           =   18
-         Begin VB.Menu MnuMonochrome 
-            Caption         =   "Color to monochrome..."
-            Index           =   0
-         End
-         Begin VB.Menu MnuMonochrome 
-            Caption         =   "Monochrome to grayscale..."
-            Index           =   1
-         End
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Sepia"
          Index           =   19
       End
       Begin VB.Menu MnuColor 
-         Caption         =   "-"
+         Caption         =   "Histogram"
          Index           =   20
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Count unique colors"
-         Index           =   21
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Reduce color count..."
-         Index           =   22
+         Begin VB.Menu MnuHistogram 
+            Caption         =   "Display histogram"
+         End
+         Begin VB.Menu mnuHistogramSepBar1 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuHistogramEqualize 
+            Caption         =   "Equalize..."
+         End
+         Begin VB.Menu MnuHistogramStretch 
+            Caption         =   "Stretch"
+         End
       End
    End
    Begin VB.Menu MnuFilter 
-      Caption         =   "Effects"
+      Caption         =   "Effe&cts"
       Begin VB.Menu MnuFadeLastEffect 
          Caption         =   "Fade last effect"
          Enabled         =   0   'False
@@ -1435,32 +1273,28 @@ Begin VB.MDIForm FormMain
          Caption         =   "Artistic"
          Index           =   0
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Antique"
+            Caption         =   "Comic book"
             Index           =   0
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Comic book"
+            Caption         =   "Film noir"
             Index           =   1
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Film noir"
+            Caption         =   "Modern art..."
             Index           =   2
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Modern art..."
+            Caption         =   "Pencil drawing"
             Index           =   3
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Pencil drawing"
+            Caption         =   "Posterize..."
             Index           =   4
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Posterize..."
-            Index           =   5
-         End
-         Begin VB.Menu MnuArtistic 
             Caption         =   "Relief"
-            Index           =   6
+            Index           =   5
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1688,19 +1522,19 @@ Begin VB.MDIForm FormMain
          Caption         =   "Stylize"
          Index           =   9
          Begin VB.Menu MnuStylize 
-            Caption         =   "Diffuse..."
+            Caption         =   "Antique"
             Index           =   0
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Dilate..."
+            Caption         =   "Diffuse..."
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Erode..."
+            Caption         =   "Dilate..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Photo filters..."
+            Caption         =   "Erode..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
@@ -2477,49 +2311,33 @@ End Sub
 Private Sub MnuArtistic_Click(Index As Integer)
 
     Select Case Index
-    
-        'Antique
-        Case 0
-            Process "Antique"
-        
+            
         'Comic book
-        Case 1
+        Case 0
             Process "Comic book"
             
         'Film noir
-        Case 2
+        Case 1
             Process "Film noir"
         
         'Modern art
-        Case 3
+        Case 2
             Process "Modern art", True
         
         'Pencil drawing
-        Case 4
+        Case 3
             Process "Pencil drawing"
                 
         'Posterize
-        Case 5
+        Case 4
             Process "Posterize", True
             
         'Relief
-        Case 6
+        Case 5
             Process "Relief"
     
     End Select
 
-End Sub
-
-Private Sub MnuAutoEnhanceHighlights_Click()
-    Process "Auto-enhance highlights"
-End Sub
-
-Private Sub MnuAutoEnhanceMidtones_Click()
-    Process "Auto-enhance midtones"
-End Sub
-
-Private Sub MnuAutoEnhanceShadows_Click()
-    Process "Auto-enhance shadows"
 End Sub
 
 Private Sub MnuBatchConvert_Click()
@@ -2601,87 +2419,87 @@ Private Sub MnuColor_Click(Index As Integer)
 
     Select Case Index
     
+        'The first block of entries involves lighting fixes
+        
         'Brightness/Contrast
         Case 0
             Process "Brightness and contrast", True
         
-        'Color balance
-        Case 1
-            Process "Color balance", True
-        
         'Gamma correction
-        Case 2
+        Case 1
             Process "Gamma", True
             
-        'HSL
+        'Levels
+        Case 2
+            Process "Levels", True
+            
+        'Shadows/Midtones/Highlights
         Case 3
+            Process "Shadows and highlights", True
+            
+        'White balance
+        Case 4
+            Process "White balance", True
+            
+        'The second block of entries involves color fixes
+            
+        'Separator
+        Case 5
+        
+        'Color balance
+        Case 6
+            Process "Color balance", True
+            
+        'HSL
+        Case 7
             Process "Hue and saturation", True
             
-        'Levels
-        Case 4
-            Process "Levels", True
-        
-        'Shadows/Midtones/Highlights
-        Case 5
-            Process "Shadows and highlights", True
+        'Photo filters
+        Case 8
+            Process "Photo filter", True
         
         'Temperature
-        Case 6
+        Case 9
             Process "Color temperature", True
         
-        'White balance
-        Case 7
-            Process "White balance", True
-        
-        '<separator>
-        Case 8
-        
-        '<Histogram top-leve>
-        Case 9
-        
-        '<separator>
+        'Vibrance
         Case 10
         
-        '<Components top-level>
-        Case 11
-                
+        'The third block of entries involves wholesale image color changes (grayscale, colorize, etc)
+        
         '<separator>
-        Case 12
+        Case 11
         
         'Colorize
-        Case 13
+        Case 12
             Process "Colorize", True
-            
-        '<Enhance top-level>
-        Case 14
         
-        '<Fade top-level>
-        Case 15
-        
-        'Grayscale
-        Case 16
-            Process "Grayscale", True
+        'Grayscale (black and white)
+        Case 13
+            Process "Black and white", True
             
         '<Invert top-level>
-        Case 17
+        Case 14
         
         '<Monochrome top-level>
-        Case 18
+        Case 15
             
         'Sepia
-        Case 19
+        Case 16
             Process "Sepia"
+            
+        '<separator>
+        Case 17
+        
+        '<Components top-level>
+        Case 18
         
         '<separator>
+        Case 19
+        
+        '<Histogram top-level>
         Case 20
-        
-        'Count colors
-        Case 21
-            Process "Count image colors", True
-        
-        'Reduce color count
-        Case 22
-            Process "Reduce colors", True
+
         
     End Select
 
@@ -2728,10 +2546,6 @@ End Sub
 
 Private Sub MnuCompoundInvert_Click()
     Process "Compound invert", False, "128"
-End Sub
-
-Private Sub MnuCustomFade_Click()
-    Process "Fade", True
 End Sub
 
 Private Sub MnuCustomFilter_Click()
@@ -2839,20 +2653,8 @@ Private Sub MnuEdge_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuFadeHigh_Click()
-    Process "Fade", False, "0.75"
-End Sub
-
 Private Sub MnuFadeLastEffect_Click()
     Process "Fade last effect"
-End Sub
-
-Private Sub MnuFadeLow_Click()
-    Process "Fade", False, "0.25"
-End Sub
-
-Private Sub MnuFadeMedium_Click()
-    Process "Fade", False, "0.5"
 End Sub
 
 Private Sub MnuFitOnScreen_Click()
@@ -3029,22 +2831,26 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 12
             Process "Flip vertical"
         
-        'Separator
-        Case 13
-        
         'Isometric view
-        Case 14
+        Case 13
             Process "Isometric conversion"
+            
+        'Separator
+        Case 14
+        
+        'Indexed color
+        Case 15
+            Process "Reduce colors", True
         
         'Tile
-        Case 15
+        Case 16
             Process "Tile", True
             
         'Separator
-        Case 16
+        Case 17
         
         'Metadata top-level
-        Case 17
+        Case 18
     
     End Select
 
@@ -3107,8 +2913,12 @@ Private Sub MnuMetadata_Click(Index As Integer)
         'Separator
         Case 1
         
-        'Map photo location
+        'Count colors
         Case 2
+            Process "Count image colors", True
+        
+        'Map photo location
+        Case 3
             
             'Note that mapping can only be performed if GPS metadata exists for this image
             Dim gMapsURL As String, latString As String, lonString As String
@@ -3294,10 +3104,6 @@ Private Sub MnuRepeatLast_Click()
     Process "Repeat last action"
 End Sub
 
-Private Sub MnuAutoEnhance_Click()
-    Process "Auto-enhance contrast"
-End Sub
-
 Private Sub MnuRightPanel_Click()
     ChangeRightPane VISIBILITY_TOGGLE
 End Sub
@@ -3439,21 +3245,21 @@ Private Sub MnuStylize_Click(Index As Integer)
 
     Select Case Index
     
-        'Diffuse
+        'Antique
         Case 0
+            Process "Antique"
+    
+        'Diffuse
+        Case 1
             Process "Diffuse", True
         
         'Dilate (maximum rank)
-        Case 1
+        Case 2
             Process "Dilate (maximum rank)", True
         
         'Erode (minimum rank)
-        Case 2
-            Process "Erode (minimum rank)", True
-        
-        'Photo filters
         Case 3
-            Process "Photo filter", True
+            Process "Erode (minimum rank)", True
         
         'Solarize
         Case 4
@@ -3521,10 +3327,6 @@ End Sub
 
 Private Sub MnuUndo_Click()
     Process "Undo", , , False
-End Sub
-
-Private Sub MnuUnfade_Click()
-    Process "Unfade"
 End Sub
 
 Private Sub MnuVibrate_Click()

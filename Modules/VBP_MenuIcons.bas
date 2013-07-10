@@ -248,78 +248,66 @@ Public Sub ApplyAllMenuIcons()
         If g_ImageFormats.FreeImageEnabled Then AddMenuIcon "ROTATEANY", 3, 10, 3   'Rotate Arbitrary
     AddMenuIcon "MIRROR", 3, 11        'Mirror
     AddMenuIcon "FLIP", 3, 12          'Flip
-    AddMenuIcon "ISOMETRIC", 3, 14     'Isometric
-    AddMenuIcon "TILE", 3, 15          'Tile
-    AddMenuIcon "METADATA", 3, 17      'Metadata (top-level)
+    AddMenuIcon "ISOMETRIC", 3, 13     'Isometric
+    AddMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
+    AddMenuIcon "TILE", 3, 16          'Tile
+    AddMenuIcon "METADATA", 3, 18      'Metadata (top-level)
         '--> Metadata sub-menu
-        AddMenuIcon "BROWSEMD", 3, 17, 0     'Browse metadata
-        AddMenuIcon "MAPPHOTO", 3, 17, 2     'Map photo location
+        AddMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
+        AddMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
+        AddMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Select Menu
     
     
     'Color Menu
     AddMenuIcon "BRIGHT", 5, 0         'Brightness/Contrast
-    AddMenuIcon "COLORBALANCE", 5, 1   'Color balance
-    AddMenuIcon "GAMMA", 5, 2          'Gamma Correction
-    AddMenuIcon "HSL", 5, 3            'HSL adjustment
-    AddMenuIcon "LEVELS", 5, 4         'Levels
-    AddMenuIcon "SHDWHGHLGHT", 5, 5    'Shadow/Highlight
-    AddMenuIcon "TEMPERATURE", 5, 6    'Temperature
-    AddMenuIcon "WHITEBAL", 5, 7       'White Balance
-    AddMenuIcon "HISTOGRAM", 5, 9      'Histogram
-        '--> Histogram sub-menu
-        AddMenuIcon "HISTOGRAM", 5, 9, 0  'Display Histogram
-        AddMenuIcon "EQUALIZE", 5, 9, 2   'Equalize
-        AddMenuIcon "STRETCH", 5, 9, 3    'Stretch
-    AddMenuIcon "CHANNELMIX", 5, 11    'Components top-level
-        '--> Components sub-menu
-        AddMenuIcon "CHANNELMIX", 5, 11, 0   'Channel mixer
-        AddMenuIcon "RECHANNEL", 5, 11, 1    'Rechannel
-        AddMenuIcon "COLORSHIFTR", 5, 11, 3  'Shift Right
-        AddMenuIcon "COLORSHIFTL", 5, 11, 4  'Shift Left
-        AddMenuIcon "CHANNELMAX", 5, 11, 6   'Channel max
-        AddMenuIcon "CHANNELMIN", 5, 11, 7   'Channel min
-    AddMenuIcon "COLORIZE", 5, 13      'Colorize
-    AddMenuIcon "ENHANCE", 5, 14       'Enhance
-        '--> Enhance sub-menu
-        AddMenuIcon "ENCONTRAST", 5, 14, 0    'Contrast
-        AddMenuIcon "ENHIGHLIGHT", 5, 14, 1   'Highlights
-        AddMenuIcon "ENMIDTONE", 5, 14, 2     'Midtones
-        AddMenuIcon "ENSHADOW", 5, 14, 3      'Shadows
-    AddMenuIcon "FADE", 5, 15           'Fade
-        '--> Fade sub-menu
-        AddMenuIcon "FADELOW", 5, 15, 0       'Low Fade
-        AddMenuIcon "FADE", 5, 15, 1          'Medium Fade
-        AddMenuIcon "FADEHIGH", 5, 15, 2      'High Fade
-        AddMenuIcon "CUSTOMFADE", 5, 15, 3    'Custom Fade
-        AddMenuIcon "UNFADE", 5, 15, 5        'Unfade
-    AddMenuIcon "GRAYSCALE", 5, 16            'Grayscale
-    AddMenuIcon "INVERT", 5, 17         'Invert
-        '--> Invert sub-menu
-        AddMenuIcon "INVCMYK", 5, 17, 0       'Invert CMYK
-        AddMenuIcon "INVHUE", 5, 17, 1        'Invert Hue
-        AddMenuIcon "INVRGB", 5, 17, 2        'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 5, 17, 4   'Compound Invert
-    AddMenuIcon "MONOCHROME", 5, 18     'Monochrome
-        '--> Monochrome sub-menu
-        AddMenuIcon "COLORTOMONO", 5, 18, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 5, 18, 1   'Monochrome to grayscale
-    AddMenuIcon "SEPIA", 5, 19          'Sepia
-    AddMenuIcon "COUNTCOLORS", 5, 21    'Count Colors
-    AddMenuIcon "REDUCECOLORS", 5, 22   'Reduce Colors
+    AddMenuIcon "GAMMA", 5, 1          'Gamma Correction
+    AddMenuIcon "LEVELS", 5, 2         'Levels
+    AddMenuIcon "SHDWHGHLGHT", 5, 3    'Shadow/Highlight
+    AddMenuIcon "WHITEBAL", 5, 4       'White Balance
+    
+    AddMenuIcon "COLORBALANCE", 5, 6   'Color balance
+    AddMenuIcon "HSL", 5, 7            'HSL adjustment
+    AddMenuIcon "PHOTOFILTER", 5, 8    'Photo filters
+    AddMenuIcon "TEMPERATURE", 5, 9    'Temperature
+    'AddMenuIcon "VIBRANCE", 5, 10      'Vibrance
+    
+    AddMenuIcon "COLORIZE", 5, 12      'Colorize
+    AddMenuIcon "GRAYSCALE", 5, 13            'Grayscale
+    AddMenuIcon "INVERT", 5, 14         'Invert
+        AddMenuIcon "INVCMYK", 5, 14, 0       'Invert CMYK
+        AddMenuIcon "INVHUE", 5, 14, 1        'Invert Hue
+        AddMenuIcon "INVRGB", 5, 14, 2        'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 5, 14, 4   'Compound Invert
+    AddMenuIcon "MONOCHROME", 5, 15     'Monochrome
+        AddMenuIcon "COLORTOMONO", 5, 15, 0   'Color to monochrome
+        AddMenuIcon "MONOTOCOLOR", 5, 15, 1   'Monochrome to grayscale
+    AddMenuIcon "SEPIA", 5, 16          'Sepia
+    
+    AddMenuIcon "CHANNELMIX", 5, 18    'Components top-level
+        AddMenuIcon "CHANNELMIX", 5, 18, 0   'Channel mixer
+        AddMenuIcon "RECHANNEL", 5, 18, 1    'Rechannel
+        AddMenuIcon "COLORSHIFTR", 5, 18, 3  'Shift Right
+        AddMenuIcon "COLORSHIFTL", 5, 18, 4  'Shift Left
+        AddMenuIcon "CHANNELMAX", 5, 18, 6   'Channel max
+        AddMenuIcon "CHANNELMIN", 5, 18, 7   'Channel min
+        
+    AddMenuIcon "HISTOGRAM", 5, 20     'Histogram
+        AddMenuIcon "HISTOGRAM", 5, 20, 0   'Display Histogram
+        AddMenuIcon "EQUALIZE", 5, 20, 2    'Equalize
+        AddMenuIcon "STRETCH", 5, 20, 3     'Stretch
     
     'Effects (Filters) Menu
     AddMenuIcon "FADELAST", 6, 0        'Fade Last
     AddMenuIcon "ARTISTIC", 6, 2        'Artistic
         '--> Artistic sub-menu
-        AddMenuIcon "ANTIQUE", 6, 2, 0        'Antique (Sepia)
-        AddMenuIcon "COMICBOOK", 6, 2, 1      'Comic book
-        AddMenuIcon "FILMNOIR", 6, 2, 2       'Film Noir
-        AddMenuIcon "MODERNART", 6, 2, 3      'Modern Art
-        AddMenuIcon "PENCIL", 6, 2, 4         'Pencil
-        AddMenuIcon "POSTERIZE", 6, 2, 5      'Posterize
-        AddMenuIcon "RELIEF", 6, 2, 6         'Relief
+        AddMenuIcon "COMICBOOK", 6, 2, 0      'Comic book
+        AddMenuIcon "FILMNOIR", 6, 2, 1       'Film Noir
+        AddMenuIcon "MODERNART", 6, 2, 2      'Modern Art
+        AddMenuIcon "PENCIL", 6, 2, 3         'Pencil
+        AddMenuIcon "POSTERIZE", 6, 2, 4      'Posterize
+        AddMenuIcon "RELIEF", 6, 2, 5         'Relief
     AddMenuIcon "BLUR", 6, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur
@@ -385,10 +373,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "UNSHARP", 6, 9, 3       'Unsharp
     AddMenuIcon "STYLIZE", 6, 10     'Stylize
         '--> Stylize sub-menu
-        AddMenuIcon "DIFFUSE", 6, 10, 0       'Diffuse
-        AddMenuIcon "DILATE", 6, 10, 1        'Dilate
-        AddMenuIcon "ERODE", 6, 10, 2         'Erode
-        AddMenuIcon "PHOTOFILTER", 6, 10, 3   'Photo filters
+        AddMenuIcon "ANTIQUE", 6, 10, 0       'Antique (Sepia)
+        AddMenuIcon "DIFFUSE", 6, 10, 1       'Diffuse
+        AddMenuIcon "DILATE", 6, 10, 2        'Dilate
+        AddMenuIcon "ERODE", 6, 10, 3         'Erode
         AddMenuIcon "SOLARIZE", 6, 10, 4      'Solarize
         AddMenuIcon "TWINS", 6, 10, 5         'Twins
         AddMenuIcon "VIGNETTE", 6, 10, 6      'Vignetting
