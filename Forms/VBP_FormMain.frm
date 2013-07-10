@@ -492,7 +492,7 @@ Begin VB.MDIForm FormMain
       Top             =   7560
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin VB.PictureBox picLeftPane 
       Align           =   3  'Align Left
@@ -553,7 +553,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":015C
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":0184
          disabledpicturemode=   1
          captioneffects  =   0
@@ -571,7 +571,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":15D6
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":15FE
          disabledpicturemode=   1
          captioneffects  =   0
@@ -589,7 +589,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":2650
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":2678
          disabledpicturemode=   1
          captioneffects  =   0
@@ -608,7 +608,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":36CA
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":36F2
          disabledpicturemode=   1
          captioneffects  =   0
@@ -627,7 +627,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":4744
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":476C
          disabledpicturemode=   1
          captioneffects  =   0
@@ -645,7 +645,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":57BE
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":57E6
          disabledpicturemode=   1
          captioneffects  =   0
@@ -663,7 +663,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":6838
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":6860
          disabledpicturemode=   1
          captioneffects  =   0
@@ -682,7 +682,7 @@ Begin VB.MDIForm FormMain
          font            =   "VBP_FormMain.frx":6CB2
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "VBP_FormMain.frx":6CDA
          disabledpicturemode=   1
          captioneffects  =   0
@@ -1037,7 +1037,7 @@ Begin VB.MDIForm FormMain
          Index           =   12
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Isometric"
+         Caption         =   "Convert to isometric view"
          Index           =   13
       End
       Begin VB.Menu MnuImage 
@@ -2477,7 +2477,7 @@ Private Sub MnuColor_Click(Index As Integer)
         
         'Grayscale (black and white)
         Case 13
-            Process "Black and white", True
+            Process "Grayscale", True
             
         '<Invert top-level>
         Case 14
