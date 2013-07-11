@@ -52,7 +52,9 @@ Begin VB.Form FormSelectionDialogs
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
+      Min             =   1
       Max             =   500
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -138,7 +140,7 @@ Public Property Get ParamValue() As Double
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub ShowDialog(ByVal typeOfDialog As SelectionDialogType)
+Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
     
     'Based on the type of dialog requested, rebuild the dialog's text
     Dim titleText As String, sliderText As String
@@ -184,7 +186,7 @@ End Sub
 
 'Update the dialog's return value based on the pressed command button
 Private Sub CmdCancel_Click()
-    userAnswer = vbNo
+    userAnswer = vbCancel
     userValue = 0
     Me.Hide
 End Sub
@@ -192,7 +194,7 @@ End Sub
 Private Sub CmdOK_Click()
     
     If sltSelValue.IsValid Then
-        userAnswer = vbYes
+        userAnswer = vbOK
         userValue = sltSelValue.Value
         Me.Hide
     End If

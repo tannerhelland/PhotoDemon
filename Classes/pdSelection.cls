@@ -202,6 +202,9 @@ Public containingPDImage As pdImage
 ' White pixels represent selected ones.  Non-white and non-black pixels can be used for aliasing.
 Public selMask As pdLayer
 
+'Until a mask has been created, this value will remain "false".  It is used to optimize operations on blank selections.
+Public maskHasBeenCreated As Boolean
+
 'After the mask has been generated, its status will be set as "ready".  Any function that changes the selected area will reset this to "false".
 ' The selection rendering code can check this value to see if the mask needs to be recreated before rendering it to screen.
 Private isMaskReady As Boolean
@@ -866,6 +869,8 @@ End Sub
 '     relies on things like selLeft and selWidth to know where to render the mask.  For non-shape-based selections, this function will call a
 '     separate function to find the bounding rect.
 Private Sub createSelectionMask()
+
+    maskHasBeenCreated = True
 
     Dim maskBackColor As Long, maskForeColor As Long
     
@@ -1589,6 +1594,9 @@ Private Sub Class_Initialize()
     Set selMask = New pdLayer
     isMaskReady = False
     
+    'Note that a mask has never been created for this selection
+    maskHasBeenCreated = False
+    
     'Mark it as not transformable... yet
     isTransformable = False
     
@@ -1644,7 +1652,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
         Get #fileNum, 1, selectionIDCheck
         If (selectionIDCheck <> SELECTION_IDENTIFIER) Then
             Close #fileNum
-            Message "Failed to load selection from file: file is not a valid PhotoDemon selection."
+            Debug.Print "Blank or missing selection mask found.  Abandoning selection load for performance reasons..."
             readSelectionFromFile = False
             Exit Function
         End If
@@ -1686,6 +1694,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
             'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
             ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
             selMask.createFromExistingLayer tmpLayer, containingPDImage.Width, containingPDImage.Height, True
+            maskHasBeenCreated = True
             isMaskReady = True
             
         End If
@@ -1762,7 +1771,7 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
         Put #fileNum, , writeParamString
         
         'If this selection is not transformable, we must also embed the full selection mask.
-        If Not writeTransformable Then writeLayer.writeToExistingFile fileNum
+        If Not writeTransformable And maskHasBeenCreated Then writeLayer.writeToExistingFile fileNum
         
     Close #fileNum
     
@@ -1911,9 +1920,14 @@ End Sub
 'When working with raster selections (e.g. non-transformable ones), we still want to minimize selection processing time by processing the
 ' smallest possible rectangle that includes all selected pixels.  This function will scan the selection mask and populate the
 ' selLeft/Top/Width/Height and boundLeft/Top/Width/Height values automatically, based on the mask's contents.
-Private Sub findNewBoundsManually()
+Public Sub findNewBoundsManually()
 
     Message "Finding new selection boundaries..."
+
+    'This function assumes two things: that a selection is not transformable (otherwise we'd know the boundaries already), and
+    ' a mask has already been created.  If either of these two conditions is not met, this function may fail.
+    isTransformable = False
+    isMaskReady = True
 
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long

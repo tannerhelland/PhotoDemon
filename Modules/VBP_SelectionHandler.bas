@@ -40,7 +40,7 @@ End Enum
 Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef returnValue As Double) As VbMsgBoxResult
 
     Load FormSelectionDialogs
-    FormSelectionDialogs.ShowDialog typeOfDialog
+    FormSelectionDialogs.showDialog typeOfDialog
     
     displaySelectionDialog = FormSelectionDialogs.DialogResult
     returnValue = FormSelectionDialogs.ParamValue
@@ -479,5 +479,55 @@ Public Sub invertCurrentSelection()
     
     'Draw the new selection to the screen
     RenderViewport pdImages(CurrentImage).containingForm
+
+End Sub
+
+'Feather the current selection.  Note that this will make a transformable selection non-transformable.
+Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
+
+    'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
+    If showDialog Then
+        
+        Dim retRadius As Double
+        If displaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
+            Process "Feather selection", False, CStr(retRadius), 2
+        End If
+        
+    Else
+    
+        Message "Feathering selection..."
+    
+        'Unselect any existing selection
+        pdImages(CurrentImage).mainSelection.lockRelease
+        pdImages(CurrentImage).selectionActive = False
+        
+        'Use PD's built-in Gaussian blur function to apply the blur
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
+        CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
+        
+        'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
+        ' being non-transformable)
+        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        
+        'Lock in this selection
+        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).selectionActive = True
+        
+        'Change the selection-related menu items to match
+        tInit tSelection, True
+        
+        'Disable all transformable selection items
+        tInit tSelectionTransform, False
+        
+        SetProgBarVal 0
+        
+        Message "Feathering complete."
+        
+        'Draw the new selection to the screen
+        RenderViewport pdImages(CurrentImage).containingForm
+    
+    End If
 
 End Sub
