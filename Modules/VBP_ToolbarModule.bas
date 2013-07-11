@@ -165,7 +165,8 @@ Public Sub tInit(tButton As Long, tState As Boolean)
             'En/disable all selection menu items that rely on an existing selection to operate
             If FormMain.MnuSelect(2).Enabled <> tState Then
                 
-                'Invert selection
+                'Select none, invert selection
+                FormMain.MnuSelect(1).Enabled = tState
                 FormMain.MnuSelect(2).Enabled = tState
                 
                 'Grow/shrink/border/feather/sharpen selection
