@@ -125,10 +125,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 * Frank Donckers for extensive help with the translation engine.  Frank also created the Dutch, German, and French language files (30,000 words in total!)
 * GioRock for the Italian language file and additional translation debugging 
   (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
-* Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class
-  (http://www.vb-helper.com/howto_multi_line_tooltip.html)
+* audioglider for the new Channel Mixer and Vibrance tools
+  (https://github.com/audioglider)
 * Robert Rayment for detailed research and bug-testing on a variety of features
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1)
+* Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class
+  (http://www.vb-helper.com/howto_multi_line_tooltip.html)
 * Kroc of camendesign.com for many suggestions regarding UI design and organization
   (http://camendesign.com)
 * chrfb of deviantart.com for PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0)
@@ -179,7 +181,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://paulbourke.net/miscellaneous/)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to:
   * Allan Lima
-  * audioglider
   * Zhu JinYong
   * Andrew Yeoman
   * Dave Jamison
