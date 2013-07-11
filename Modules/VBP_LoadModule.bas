@@ -202,7 +202,8 @@ Public Sub LoadTheProgram()
         FormMain.sltSelectionFeathering.ToolTipText = "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
         FormMain.cmbSelSmoothing(0).AddItem "None", 0
         FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
-        FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
+        'Live feathering is not allowed on XP for performance reasons.  It must be applied via the Selection -> Feathering menu.
+        If g_IsVistaOrLater Then FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
         FormMain.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
