@@ -360,6 +360,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Invert selection"
             invertCurrentSelection
             
+        Case "Grow selection"
+            If showDialog Then
+                growCurrentSelection True
+            Else
+                growCurrentSelection False, cParams.GetDouble(1)
+            End If
+            
+        Case "Shrink selection"
+            If showDialog Then
+                shrinkCurrentSelection True
+            Else
+                shrinkCurrentSelection False, cParams.GetDouble(1)
+            End If
+        
         Case "Feather selection"
             If showDialog Then
                 featherCurrentSelection True

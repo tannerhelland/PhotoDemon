@@ -507,6 +507,9 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
         CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
         
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
+        
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
         pdImages(CurrentImage).mainSelection.findNewBoundsManually
@@ -530,4 +533,110 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
     
     End If
 
+End Sub
+
+'Grow the current selection.  Note that this will make a transformable selection non-transformable.
+Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal growSize As Double = 0#)
+
+    'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
+    If showDialog Then
+        
+        Dim retSize As Double
+        If displaySelectionDialog(SEL_GROW, retSize) = vbOK Then
+            Process "Grow selection", False, CStr(retSize), 2
+        End If
+        
+    Else
+    
+        Message "Growing selection..."
+    
+        'Unselect any existing selection
+        pdImages(CurrentImage).mainSelection.lockRelease
+        pdImages(CurrentImage).selectionActive = False
+        
+        'Use PD's built-in Gaussian blur function to apply the blur
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
+        CreateMedianLayer growSize, 100, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
+        
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
+        
+        'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
+        ' being non-transformable)
+        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        
+        'Lock in this selection
+        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).selectionActive = True
+        
+        'Change the selection-related menu items to match
+        tInit tSelection, True
+        
+        'Disable all transformable selection items
+        tInit tSelectionTransform, False
+        
+        SetProgBarVal 0
+        
+        Message "Selection resize complete."
+        
+        'Draw the new selection to the screen
+        RenderViewport pdImages(CurrentImage).containingForm
+    
+    End If
+    
+End Sub
+
+'Shrink the current selection.  Note that this will make a transformable selection non-transformable.
+Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
+
+    'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
+    If showDialog Then
+        
+        Dim retSize As Double
+        If displaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
+            Process "Shrink selection", False, CStr(retSize), 2
+        End If
+        
+    Else
+    
+        Message "Shrinking selection..."
+    
+        'Unselect any existing selection
+        pdImages(CurrentImage).mainSelection.lockRelease
+        pdImages(CurrentImage).selectionActive = False
+        
+        'Use PD's built-in Gaussian blur function to apply the blur
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
+        CreateMedianLayer shrinkSize, 1, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
+        
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
+        
+        'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
+        ' being non-transformable)
+        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        
+        'Lock in this selection
+        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).selectionActive = True
+        
+        'Change the selection-related menu items to match
+        tInit tSelection, True
+        
+        'Disable all transformable selection items
+        tInit tSelectionTransform, False
+        
+        SetProgBarVal 0
+        
+        Message "Selection resize complete."
+        
+        'Draw the new selection to the screen
+        RenderViewport pdImages(CurrentImage).containingForm
+    
+    End If
+    
 End Sub
