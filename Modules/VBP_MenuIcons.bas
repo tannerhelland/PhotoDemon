@@ -266,6 +266,8 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "SELECTBORDER", 4, 6    'Border selection
     AddMenuIcon "SELECTFTHR", 4, 7      'Feather selection
     AddMenuIcon "SELECTSHRP", 4, 8      'Sharpen selection
+    AddMenuIcon "SELECTLOAD", 4, 10     'Load selection from file
+    AddMenuIcon "SELECTSAVE", 4, 11     'Save selection to file
     
     'Color Menu
     AddMenuIcon "BRIGHT", 5, 0         'Brightness/Contrast
