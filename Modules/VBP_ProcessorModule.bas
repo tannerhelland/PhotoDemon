@@ -357,6 +357,10 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Remove selection"
             RemoveCurrentSelection cParams.getParamString
         
+        Case "Invert selection"
+            InvertCurrentSelection
+        
+        
         Case "Load selection"
             If ShowDialog Then
                 LoadSelectionFromFile True

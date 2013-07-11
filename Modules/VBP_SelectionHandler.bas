@@ -454,3 +454,30 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
 
 End Function
 
+'Invert the current selection.  Note that this will make a transformable selection non-transformable.
+Public Sub invertCurrentSelection()
+
+    'Unselect any existing selection
+    pdImages(CurrentImage).mainSelection.lockRelease
+    pdImages(CurrentImage).selectionActive = False
+        
+    'Ask the selection to invert itself
+    pdImages(CurrentImage).mainSelection.invertSelection
+    
+    'Lock in this selection
+    pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+    pdImages(CurrentImage).selectionActive = True
+    
+    'Synchronize all user-facing controls to match
+    'syncTextToCurrentSelection CurrentImage
+    
+    'Change the selection-related menu items to match
+    tInit tSelection, True
+    
+    'Disable all transformable selection items
+    tInit tSelectionTransform, False
+    
+    'Draw the new selection to the screen
+    RenderViewport pdImages(CurrentImage).containingForm
+
+End Sub

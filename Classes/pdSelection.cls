@@ -334,7 +334,7 @@ End Sub
 Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
     
     isSquare = requestChoice
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     
     'Redraw the selection if necessary
     If forceSelectionRefresh And (Not containingPDImage Is Nothing) Then
@@ -350,7 +350,11 @@ Public Sub requestNewMask()
 
     If (Not containingPDImage Is Nothing) Then
         updateInternalCoords
-        createSelectionMask
+        If isTransformable Then
+            createSelectionMask
+        Else
+        
+        End If
     End If
 
 End Sub
@@ -361,7 +365,7 @@ Public Function getFeatheringRadius() As Long
 End Function
 
 Public Sub setFeatheringRadius(ByVal newRadius As Long)
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     featheringRadius = newRadius
 End Sub
 
@@ -371,7 +375,7 @@ Public Function getBorderSize() As Long
 End Function
 
 Public Sub setBorderSize(ByVal newBorderSize As Long)
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     borderSize = newBorderSize
 End Sub
 
@@ -405,7 +409,7 @@ Public Function getSelectionShape() As SelectionShape
 End Function
 
 Public Sub setSelectionShape(ByVal selShape As SelectionShape)
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     sShape = selShape
 End Sub
 
@@ -424,7 +428,7 @@ Public Function getSmoothingType() As SelectionSmoothing
 End Function
 
 Public Sub setSmoothingType(ByVal selSmooth As SelectionSmoothing)
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     sSmooth = selSmooth
 End Sub
 
@@ -434,9 +438,9 @@ Public Function getRoundedCornerAmount() As Long
 End Function
 
 Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     roundedCorners = cornerRounding
-    If lockedIn Then createSelectionMask
+    'If lockedIn Then createSelectionMask
 End Sub
 
 'Get/set the line width of line selections
@@ -445,9 +449,9 @@ Public Function getSelectionLineWidth() As Long
 End Function
 
 Public Sub setSelectionLineWidth(ByVal newLineWidth As Long)
-    isMaskReady = False
+    If isTransformable Then isMaskReady = False
     selectionLineWidth = newLineWidth
-    If lockedIn Then createSelectionMask
+    'If lockedIn Then createSelectionMask
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
@@ -703,61 +707,66 @@ End Function
 'Whenever the x1, y1, x2, y2 values are changed, this sub needs to be called to update the left/right/width/height values accordingly
 Private Sub updateInternalCoords()
 
-    'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
-    isMaskReady = False
-
-    'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
+    'This function only needs to be run if the selection is transformable.  If it is not, the internal coordinates will already be correctly set.
+    If isTransformable Then
     
-    ' (This set of if/then blocks looks complicated, but it's actually very simple - we simply have to account for every variation
-    '  of quadrants, because the selection can be drawn up or down in both directions, giving eight possible variants of x1 </> x2
-    '  and y1 </> y2.  By covering all those cases, square selections can be drawn in any direction.)
-    If isSquare Then
-        If x1 < x2 Then
-            If y1 < y2 Then
-                If Abs(x1 - x2) > Abs(y1 - y2) Then
-                    y2 = y1 + Abs(x1 - x2)
+        'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
+        isMaskReady = False
+
+        'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
+        
+        ' (This set of if/then blocks looks complicated, but it's actually very simple - we simply have to account for every variation
+        '  of quadrants, because the selection can be drawn up or down in both directions, giving eight possible variants of x1 </> x2
+        '  and y1 </> y2.  By covering all those cases, square selections can be drawn in any direction.)
+        If isSquare Then
+            If x1 < x2 Then
+                If y1 < y2 Then
+                    If Abs(x1 - x2) > Abs(y1 - y2) Then
+                        y2 = y1 + Abs(x1 - x2)
+                    Else
+                        x2 = x1 + Abs(y1 - y2)
+                    End If
                 Else
-                    x2 = x1 + Abs(y1 - y2)
+                    If Abs(x1 - x2) > Abs(y1 - y2) Then
+                        y2 = y1 - Abs(x1 - x2)
+                    Else
+                        x2 = x1 + Abs(y1 - y2)
+                    End If
                 End If
             Else
-                If Abs(x1 - x2) > Abs(y1 - y2) Then
-                    y2 = y1 - Abs(x1 - x2)
+                If y1 < y2 Then
+                    If Abs(x1 - x2) > Abs(y1 - y2) Then
+                        y2 = y1 + Abs(x1 - x2)
+                    Else
+                        x2 = x1 - Abs(y1 - y2)
+                    End If
                 Else
-                    x2 = x1 + Abs(y1 - y2)
-                End If
-            End If
-        Else
-            If y1 < y2 Then
-                If Abs(x1 - x2) > Abs(y1 - y2) Then
-                    y2 = y1 + Abs(x1 - x2)
-                Else
-                    x2 = x1 - Abs(y1 - y2)
-                End If
-            Else
-                If Abs(x1 - x2) > Abs(y1 - y2) Then
-                    y2 = y1 - Abs(x1 - x2)
-                Else
-                    x2 = x1 - Abs(y1 - y2)
+                    If Abs(x1 - x2) > Abs(y1 - y2) Then
+                        y2 = y1 - Abs(x1 - x2)
+                    Else
+                        x2 = x1 - Abs(y1 - y2)
+                    End If
                 End If
             End If
         End If
-    End If
-
-    'Finally, calculate a left, top, width and height for this selection based off the current x1/x2/y1/y2 values
-    If x1 < x2 Then
-        selLeft = x1
-        selWidth = x2 - x1
-    Else
-        selLeft = x2
-        selWidth = x1 - x2
-    End If
-    
-    If y1 < y2 Then
-        selTop = y1
-        selHeight = y2 - y1
-    Else
-        selTop = y2
-        selHeight = y1 - y2
+        
+        'Finally, calculate a left, top, width and height for this selection based off the current x1/x2/y1/y2 values
+        If x1 < x2 Then
+            selLeft = x1
+            selWidth = x2 - x1
+        Else
+            selLeft = x2
+            selWidth = x1 - x2
+        End If
+        
+        If y1 < y2 Then
+            selTop = y1
+            selHeight = y2 - y1
+        Else
+            selTop = y2
+            selHeight = y1 - y2
+        End If
+        
     End If
 
 End Sub
@@ -830,12 +839,16 @@ Public Sub lockIn(ByRef targetForm As Form)
     'Mark this selection as locked-in
     lockedIn = True
         
-    'Update the internal coordinates one final time
-    updateInternalCoords
+    'For transformable selections, update the internal coordinates one final time
+    If isTransformable Then
+        
+        updateInternalCoords
     
-    'The final thing we need to check for is the width and height, which may be still be zero at this point.  Do not allow selections of size 0.
-    If selWidth < 1 Then selWidth = 1
-    If selHeight < 1 Then selHeight = 1
+        'The final thing we need to check for is the width and height, which may be still be zero at this point.  Do not allow selections of size 0.
+        If selWidth < 1 Then selWidth = 1
+        If selHeight < 1 Then selHeight = 1
+        
+    End If
         
 End Sub
 
@@ -882,6 +895,10 @@ Private Sub createSelectionMask()
         MaxY = y1
     End If
 
+    'At present, mask creation is only applicable for certain transformable shapes (rectangles, ellipses, lines).  Other functions,
+    ' like "Invert selection", rely on an already-created mask - so attempting to create a mask again will have undesirable behavior.
+    Debug.Print "Drawing new selection mask now"
+
     'Start by creating a blank mask (this will also erase any existing mask)
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
     
@@ -911,7 +928,7 @@ Private Sub createSelectionMask()
             
             Case sRectangle, sCircle
                 If rectModifier < 1 Then rectModifier = 1
-                If rectModifier > minDimension \ 2 Then ignoreBorderValue = True
+                If rectModifier > (minDimension \ 2) Then ignoreBorderValue = True
                 
             Case Else
             
@@ -1833,3 +1850,230 @@ Private Function translateParamStringToFileFormat(ByVal paramString As String, B
     translateParamStringToFileFormat = tmpParser.getParamString
 
 End Function
+
+'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
+' the "exterior"/"interior" options on the main form.
+Public Sub invertSelection()
+
+    Message "Inverting selection..."
+    
+    'Point a standard 2D byte array at the selection mask
+    Dim x As Long, y As Long
+    Dim QuickVal As Long
+    
+    Dim selMaskData() As Byte
+    Dim selMaskSA As SAFEARRAY2D
+    prepLayerSafeArray selMask, selMaskSA
+    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+    
+    Dim maskWidth As Long, maskHeight As Long
+    maskWidth = selMask.getLayerWidth - 1
+    maskHeight = selMask.getLayerHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    SetProgBarMax maskWidth
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'After all that work, the Invert code itself is very small and unexciting!
+    For x = 0 To maskWidth
+        QuickVal = x * 3
+    For y = 0 To maskHeight
+        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
+        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
+        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
+    Next y
+        If (x And progBarCheck) = 0 Then
+            'If userPressedESC() Then Exit For
+            SetProgBarVal x
+        End If
+    Next x
+    
+    'Release our temporary byte array
+    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+    Erase selMaskData
+    
+    'We now need to find selection boundaries.  Use a standalone function for that.
+    findNewBoundsManually
+    
+    'Inverting a selection makes it non-transformable
+    isTransformable = False
+    
+    'Mark the mask as ready (it should already be marked this way, but set it again just to be safe)
+    isMaskReady = True
+    
+    SetProgBarVal 0
+    Message "Selection inversion complete."
+
+End Sub
+
+'When working with raster selections (e.g. non-transformable ones), we still want to minimize selection processing time by processing the
+' smallest possible rectangle that includes all selected pixels.  This function will scan the selection mask and populate the
+' selLeft/Top/Width/Height and boundLeft/Top/Width/Height values automatically, based on the mask's contents.
+Private Sub findNewBoundsManually()
+
+    Message "Finding new selection boundaries..."
+
+    'Point a standard 2D byte array at the selection mask
+    Dim x As Long, y As Long
+    Dim QuickVal As Long
+    
+    Dim selMaskData() As Byte
+    Dim selMaskSA As SAFEARRAY2D
+    prepLayerSafeArray selMask, selMaskSA
+    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+    
+    Dim maskWidth As Long, maskHeight As Long
+    maskWidth = selMask.getLayerWidth - 1
+    maskHeight = selMask.getLayerHeight - 1
+    
+    Dim boundFound As Boolean
+    
+    'Find the top bound first.
+    boundFound = False
+    y = 0
+    Do
+    
+        For x = 0 To maskWidth
+            QuickVal = x * 3
+            If selMaskData(QuickVal, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+                boundFound = True
+            End If
+            
+            If boundFound Then
+                selTop = y
+                boundTop = selTop
+                Exit For
+            End If
+            
+        Next x
+        
+        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
+        If (Not boundFound) And (y = maskHeight) Then
+            Debug.Print "No top boundary found - is mask blank?"
+            boundFound = True
+            selTop = 0
+            boundTop = selTop
+        End If
+        
+        y = y + 1
+    
+    Loop While Not boundFound
+    
+    'Next, find the bottom bound
+    boundFound = False
+    y = maskHeight
+    
+    Do
+    
+        For x = 0 To maskWidth
+            QuickVal = x * 3
+            If selMaskData(QuickVal, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+                boundFound = True
+            End If
+            
+            If boundFound Then
+                selHeight = y - selTop + 1
+                boundHeight = selHeight
+                Exit For
+            End If
+            
+        Next x
+        
+        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
+        If (Not boundFound) And (y = 0) Then
+            Debug.Print "No bottom boundary found - is mask blank?"
+            boundFound = True
+            selHeight = maskHeight - selTop + 1
+            boundHeight = selHeight
+        End If
+        
+        y = y - 1
+    
+    Loop While Not boundFound
+    
+    'Next, find the left bound
+    boundFound = False
+    x = 0
+    Do
+    
+        For y = 0 To maskHeight
+            If selMaskData(x, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(x + 1, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(x + 2, y) <> 0 Then
+                boundFound = True
+            End If
+            
+            If boundFound Then
+                selLeft = x \ 3
+                boundLeft = selLeft
+                Exit For
+            End If
+            
+        Next y
+        
+        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
+        If (Not boundFound) And (x = maskWidth * 3) Then
+            Debug.Print "No left boundary found - is mask blank?"
+            boundFound = True
+            selLeft = 0
+            boundLeft = selLeft
+        End If
+        
+        x = x + 3
+    
+    Loop While Not boundFound
+    
+    'Finally, find the right bound
+    boundFound = False
+    x = maskWidth * 3
+    
+    Do
+    
+        For y = 0 To maskHeight
+            If selMaskData(x, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(x + 1, y) <> 0 Then
+                boundFound = True
+            ElseIf selMaskData(x + 2, y) <> 0 Then
+                boundFound = True
+            End If
+            
+            If boundFound Then
+                selWidth = (x \ 3) - selLeft + 1
+                boundWidth = selWidth
+                Exit For
+            End If
+            
+        Next y
+        
+        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
+        If (Not boundFound) And (x = 0) Then
+            Debug.Print "No right boundary found - is mask blank?"
+            boundFound = True
+            selWidth = maskWidth - selLeft + 1
+            boundWidth = selWidth
+        End If
+        
+        x = x - 3
+        
+    Loop While Not boundFound
+    
+    'All selection boundaries have now been located
+    
+    'Release our temporary byte array and exit
+    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+    Erase selMaskData
+    
+End Sub
