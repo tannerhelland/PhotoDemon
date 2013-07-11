@@ -258,7 +258,14 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Select Menu
-    
+    AddMenuIcon "SELECTALL", 4, 0       'Select all
+    AddMenuIcon "SELECTNONE", 4, 1      'Select none
+    AddMenuIcon "SELECTINVERT", 4, 2    'Invert selection
+    AddMenuIcon "SELECTGROW", 4, 4      'Grow selection
+    AddMenuIcon "SELECTSHRINK", 4, 5    'Shrink selection
+    AddMenuIcon "SELECTBORDER", 4, 6    'Border selection
+    AddMenuIcon "SELECTFTHR", 4, 7      'Feather selection
+    AddMenuIcon "SELECTSHRP", 4, 8      'Sharpen selection
     
     'Color Menu
     AddMenuIcon "BRIGHT", 5, 0         'Brightness/Contrast
@@ -271,7 +278,7 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "HSL", 5, 7            'HSL adjustment
     AddMenuIcon "PHOTOFILTER", 5, 8    'Photo filters
     AddMenuIcon "TEMPERATURE", 5, 9    'Temperature
-    'AddMenuIcon "VIBRANCE", 5, 10      'Vibrance
+    AddMenuIcon "VIBRANCE", 5, 10      'Vibrance
     
     AddMenuIcon "COLORIZE", 5, 12      'Colorize
     AddMenuIcon "GRAYSCALE", 5, 13            'Grayscale
