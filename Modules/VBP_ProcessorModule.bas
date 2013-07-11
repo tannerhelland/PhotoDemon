@@ -351,6 +351,12 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc
+        Case "Create selection"
+            CreateNewSelection cParams.getParamString
+        
+        Case "Remove selection"
+            RemoveCurrentSelection cParams.getParamString
+        
         Case "Load selection"
             If ShowDialog Then
                 LoadSelectionFromFile True
@@ -361,12 +367,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Save selection"
             SaveSelectionToFile
         
-        Case "Create selection"
-            CreateNewSelection cParams.getParamString
-        
-        Case "Remove selection"
-            RemoveCurrentSelection cParams.getParamString
-            
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
         Case "Move selection"
             CreateNewSelection cParams.getParamString

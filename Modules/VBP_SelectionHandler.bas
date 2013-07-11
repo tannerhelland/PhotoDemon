@@ -3,8 +3,8 @@ Attribute VB_Name = "Selection_Handler"
 'Selection Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 26/June/13
-'Last update: user-facing implementations of load/save selections to file
+'Last updated: 11/July/13
+'Last update: add support for the new multi-purpose selection tool dialog
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -17,6 +17,38 @@ Attribute VB_Name = "Selection_Handler"
 '***************************************************************************
 
 Option Explicit
+
+Public Enum SelectionDialogType
+    SEL_GROW = 0
+    SEL_SHRINK = 1
+    SEL_BORDER = 2
+    SEL_FEATHER = 3
+    SEL_SHARPEN = 4
+End Enum
+
+#If False Then
+    Const SEL_GROW = 0
+    Const SEL_SHRINK = 1
+    Const SEL_BORDER = 2
+    Const SEL_FEATHER = 3
+    Const SEL_SHARPEN = 4
+#End If
+
+'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
+' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
+' returnValue variable.
+Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef returnValue As Double) As VbMsgBoxResult
+
+    Load FormSelectionDialogs
+    FormSelectionDialogs.ShowDialog typeOfDialog
+    
+    displaySelectionDialog = FormSelectionDialogs.DialogResult
+    returnValue = FormSelectionDialogs.ParamValue
+    
+    Unload FormSelectionDialogs
+    Set FormSelectionDialogs = Nothing
+
+End Function
 
 'Create a new selection using the settings stored in a pdParamString-compatible string
 Public Sub CreateNewSelection(ByVal paramString As String)
