@@ -1694,6 +1694,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
             'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
             ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
             selMask.createFromExistingLayer tmpLayer, containingPDImage.Width, containingPDImage.Height, True
+            
             maskHasBeenCreated = True
             isMaskReady = True
             
@@ -1705,7 +1706,10 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
         
     'Parse the parameter string into its individual components, and use those to initialize this selection
     initFromParamString paramString
-
+    
+    'If this selection wasn't transformable, we need to find its boundaries now
+    If Not isTransformable Then findNewBoundsManually
+    
     'If this selection was locked in at the time of its save, lock this selection in as well
     If Not ignoreLockStatus Then
         If lockedIn Then
