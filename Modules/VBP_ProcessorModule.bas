@@ -388,6 +388,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 sharpenCurrentSelection False, cParams.GetDouble(1)
             End If
             
+        Case "Border selection"
+            If showDialog Then
+                borderCurrentSelection True
+            Else
+                borderCurrentSelection False, cParams.GetDouble(1)
+            End If
+            
         Case "Load selection"
             If showDialog Then
                 LoadSelectionFromFile True

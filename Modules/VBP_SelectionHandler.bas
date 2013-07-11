@@ -687,3 +687,52 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
     End If
     
 End Sub
+
+
+'Convert the current selection to border-type.  Note that this will make a transformable selection non-transformable.
+Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
+
+    'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
+    If showDialog Then
+        
+        Dim retSize As Double
+        If displaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
+            Process "Border selection", False, CStr(retSize), 2
+        End If
+        
+    Else
+    
+        Message "Finding selection border..."
+    
+        'Unselect any existing selection
+        pdImages(CurrentImage).mainSelection.lockRelease
+        pdImages(CurrentImage).selectionActive = False
+        
+        'Ask the layer to border itself
+        pdImages(CurrentImage).mainSelection.borderSelection borderRadius
+        
+        'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
+        ' being non-transformable)
+        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        
+        'Lock in this selection
+        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).selectionActive = True
+        
+        'Change the selection-related menu items to match
+        tInit tSelection, True
+        
+        'Disable all transformable selection items
+        tInit tSelectionTransform, False
+        
+        SetProgBarVal 0
+        
+        Message "Selection resize complete."
+        
+        'Draw the new selection to the screen
+        RenderViewport pdImages(CurrentImage).containingForm
+    
+    End If
+    
+End Sub
+

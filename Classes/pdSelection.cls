@@ -2201,3 +2201,38 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
     End If
         
 End Sub
+
+'Convert the selection to border-type
+Public Sub borderSelection(ByVal borderRadius As Long)
+
+    'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
+    ' to create the final bordered selection.
+    
+    'Start by creating the grow and shrink layers using the median function.
+    
+    'Create a second local array.  This will contain the a copy of the selection mask, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim growLayer As pdLayer
+    Set growLayer = New pdLayer
+    growLayer.createFromExistingLayer selMask
+    
+    Dim shrinkLayer As pdLayer
+    Set shrinkLayer = New pdLayer
+    shrinkLayer.createFromExistingLayer selMask
+            
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long
+    
+    'Unsharp masking requires a gaussian blur layer to operate.  Create one now.
+    CreateMedianLayer borderRadius, 1, selMask, shrinkLayer, False, selMask.getLayerWidth * 2
+    CreateMedianLayer borderRadius, 100, selMask, growLayer, False, selMask.getLayerWidth * 2, selMask.getLayerWidth
+    
+    'Blend those two layers over the existing mask
+    selMask.createFromExistingLayer growLayer
+    growLayer.eraseLayer
+    BitBlt selMask.getLayerDC, 0, 0, selMask.getLayerWidth, selMask.getLayerHeight, shrinkLayer.getLayerDC, 0, 0, vbSrcInvert
+    
+    'Erase the temporary layers
+    shrinkLayer.eraseLayer
+        
+End Sub
