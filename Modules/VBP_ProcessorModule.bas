@@ -381,7 +381,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 featherCurrentSelection False, cParams.GetDouble(1)
             End If
         
-        
+        Case "Sharpen selection"
+            If showDialog Then
+                sharpenCurrentSelection True
+            Else
+                sharpenCurrentSelection False, cParams.GetDouble(1)
+            End If
+            
         Case "Load selection"
             If showDialog Then
                 LoadSelectionFromFile True

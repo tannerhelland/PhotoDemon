@@ -2091,3 +2091,113 @@ Public Sub findNewBoundsManually()
     Erase selMaskData
     
 End Sub
+
+'Sharpen (un-feather?) the current selection.  In the future, this code will be replaced with a much simpler "sharpen layer" function, but until
+' that happens, a copy-and-paste implementation is provided here for ease of use.
+Public Sub sharpenSelection(ByVal sharpenRadius As Long)
+        
+    'Point an array at the current selection mask
+    Dim selMaskData() As Byte
+    Dim selMaskSA As SAFEARRAY2D
+    
+    'Create a second local array.  This will contain the a copy of the selection mask, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer selMask
+            
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long
+    
+    'Unsharp masking requires a gaussian blur layer to operate.  Create one now.
+    If CreateGaussianBlurLayer(sharpenRadius, selMask, srcLayer, False, selMask.getLayerHeight * 2 + selMask.getLayerWidth) Then
+    
+        'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
+        prepLayerSafeArray selMask, selMaskSA
+        CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+        
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepLayerSafeArray srcLayer, srcSA
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = 3
+        
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        progBarCheck = findBestProgBarValue()
+            
+        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
+        Dim scaleFactor As Double, invScaleFactor As Double
+        scaleFactor = sharpenRadius
+        invScaleFactor = 1 - scaleFactor
+    
+        Dim blendVal As Double
+        
+        'More color variables - in this case, sums for each color component
+        Dim r As Long, g As Long, b As Long, a As Long
+        Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim tLumDelta As Long
+        
+        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+        For x = 0 To selMask.getLayerWidth - 1
+            QuickVal = x * 3
+        For y = 0 To selMask.getLayerHeight - 1
+            
+            'Retrieve the original image's pixels
+            r = selMaskData(QuickVal + 2, y)
+            g = selMaskData(QuickVal + 1, y)
+            b = selMaskData(QuickVal, y)
+            
+            'Now, retrieve the gaussian pixels
+            r2 = srcImageData(QuickVal + 2, y)
+            g2 = srcImageData(QuickVal + 1, y)
+            b2 = srcImageData(QuickVal, y)
+            
+            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+                
+            newR = (scaleFactor * r) + (invScaleFactor * r2)
+            If newR > 255 Then newR = 255
+            If newR < 0 Then newR = 0
+                
+            newG = (scaleFactor * g) + (invScaleFactor * g2)
+            If newG > 255 Then newG = 255
+            If newG < 0 Then newG = 0
+                
+            newB = (scaleFactor * b) + (invScaleFactor * b2)
+            If newB > 255 Then newB = 255
+            If newB < 0 Then newB = 0
+            
+            blendVal = tLumDelta / 255
+            
+            newR = BlendColors(newR, r, blendVal)
+            newG = BlendColors(newG, g, blendVal)
+            newB = BlendColors(newB, b, blendVal)
+            
+            selMaskData(QuickVal + 2, y) = newR
+            selMaskData(QuickVal + 1, y) = newG
+            selMaskData(QuickVal, y) = newB
+                    
+        Next y
+            If (x And progBarCheck) = 0 Then
+                SetProgBarVal x + (selMask.getLayerHeight * 2)
+            End If
+        Next x
+        
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        srcLayer.eraseLayer
+        Set srcLayer = Nothing
+        
+        CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+        Erase selMaskData
+        
+    End If
+        
+End Sub
