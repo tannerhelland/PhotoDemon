@@ -1089,16 +1089,44 @@ Begin VB.MDIForm FormMain
          Index           =   1
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "-"
+         Caption         =   "Invert"
          Index           =   2
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Load selection..."
+         Caption         =   "-"
          Index           =   3
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
+         Caption         =   "Grow..."
          Index           =   4
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Shrink..."
+         Index           =   5
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Border..."
+         Index           =   6
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Feather..."
+         Index           =   7
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Sharpen..."
+         Index           =   8
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "-"
+         Index           =   9
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Load selection..."
+         Index           =   10
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Save current selection..."
+         Index           =   11
       End
    End
    Begin VB.Menu MnuColorTop 
@@ -3163,15 +3191,42 @@ Private Sub MnuSelect_Click(Index As Integer)
         Case 1
             Process "Remove selection", , pdImages(CurrentImage).mainSelection.getSelectionParamString, 2
         
-        'Select none
+        'Invert
         Case 2
+            Process "Invert selection", , , 2
+        
+        '<separator>
+        Case 3
+        
+        'Grow selection
+        Case 4
+            Process "Grow selection", True, , 0
+        
+        'Shrink selection
+        Case 5
+            Process "Shrink selection", True, , 0
+        
+        'Border selection
+        Case 6
+            Process "Border selection", True, , 0
+        
+        'Feather selection
+        Case 7
+            Process "Feather selection", True, , 0
+        
+        'Sharpen selection
+        Case 8
+            Process "Sharpen selection", True, , 0
+        
+        '<separator>
+        Case 9
         
         'Load selection
-        Case 3
+        Case 10
             Process "Load selection", True, , 0
         
         'Save current selection
-        Case 4
+        Case 11
             Process "Save selection", True, , 0
         
     End Select
