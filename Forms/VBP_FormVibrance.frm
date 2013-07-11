@@ -33,7 +33,7 @@ Begin VB.Form FormVibrance
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   -100
-      Max             =   100
+      Max             =   200
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -205,7 +205,7 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
         maxVal = Max3Int(r, g, b)
         
         'Get adjusted average
-        amtVal = ((Abs(maxVal - avgVal) / 64) * vibranceAdjustment)
+        amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
         
         If r <> maxVal Then
             r = r + (maxVal - r) * amtVal
