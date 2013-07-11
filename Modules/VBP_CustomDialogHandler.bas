@@ -3,7 +3,7 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 12/February/12
+'Last updated: 12/February/13
 'Last update: added support for the new language selection dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
