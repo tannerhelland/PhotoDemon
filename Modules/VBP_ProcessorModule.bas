@@ -605,18 +605,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Invert hue"
             MenuInvertHue
             
-        Case "Auto-enhance contrast"
-            MenuAutoEnhanceContrast
-            
-        Case "Auto-enhance highlights"
-            MenuAutoEnhanceHighlights
-            
-        Case "Auto-enhance midtones"
-            MenuAutoEnhanceMidtones
-            
-        Case "Auto-enhance shadows"
-            MenuAutoEnhanceShadows
-            
         Case "Levels"
             If ShowDialog Then
                 FormLevels.Show vbModal, FormMain
