@@ -94,7 +94,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This object really only needs one event raised: Change (which triggers when either the scrollbar or text box is modified)
+'This object provides a single raised event:
+' - Change (which triggers when either the scrollbar or text box is modified in any way)
 Public Event Change()
 
 Private WithEvents mFont As StdFont
