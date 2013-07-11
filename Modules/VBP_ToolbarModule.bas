@@ -162,6 +162,22 @@ Public Sub tInit(tButton As Long, tState As Boolean)
                 If FormMain.tudSel(i).Enabled <> tState Then FormMain.tudSel(i).Enabled = tState
             Next i
                                     
+            'En/disable all selection menu items that rely on an existing selection to operate
+            If FormMain.MnuSelect(2).Enabled <> tState Then
+                
+                'Invert selection
+                FormMain.MnuSelect(2).Enabled = tState
+                
+                'Grow/shrink/border/feather/sharpen selection
+                For i = 4 To 8
+                    FormMain.MnuSelect(i).Enabled = tState
+                Next i
+                
+                'Save selection
+                FormMain.MnuSelect(11).Enabled = tState
+                
+            End If
+                                    
             'Selection enabling/disabling also affects the Crop to Selection command
             If FormMain.MnuImage(7).Enabled <> tState Then FormMain.MnuImage(7).Enabled = tState
         
