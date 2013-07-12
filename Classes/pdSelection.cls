@@ -122,12 +122,14 @@ Public Enum SelectionShape
     sRectangle = 0
     sCircle = 1
     sLine = 2
+    sPolygon = 3
 End Enum
 
 #If False Then
     Const sRectangle = 0
     Const sCircle = 1
     Const sLine = 2
+    Const sPolygon = 3
 #End If
 
 Private sShape As SelectionShape
@@ -884,13 +886,13 @@ Private Sub createSelectionMask()
     End If
 
     'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
-    Dim MinX As Long, MaxX As Long, MinY As Long, MaxY As Long
+    Dim minX As Long, maxX As Long, MinY As Long, MaxY As Long
     If x1 < x2 Then
-        MinX = x1
-        MaxX = x2
+        minX = x1
+        maxX = x2
     Else
-        MinX = x2
-        MaxX = x1
+        minX = x2
+        maxX = x1
     End If
     If y1 < y2 Then
         MinY = y1
@@ -1118,7 +1120,7 @@ Private Sub createSelectionMask()
                 newLineWidth = selectionLineWidth - borderSize
                 
                 If newLineWidth > 0 Then
-                    If x1 = MinX Then
+                    If x1 = minX Then
                         If y1 = MinY Then
                             GDIPlusDrawLineToDC selMask.getLayerDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
                         Else
@@ -1169,9 +1171,9 @@ Private Sub createSelectionMask()
                 boundWidth = containingPDImage.Width
                 boundHeight = containingPDImage.Height
             Else
-                boundLeft = MinX - (selectionLineWidth / 2) - featheringRadius
+                boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
                 boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
-                boundWidth = (MaxX - MinX) + selectionLineWidth + featheringRadius * 2
+                boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
                 boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
             End If
             
@@ -1645,6 +1647,9 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     Dim fileNum As Integer
     fileNum = FreeFile
     
+    Dim layerLoadedSuccessfully As Boolean
+    layerLoadedSuccessfully = False
+    
     Open srcFilename For Binary As #fileNum
     
         'Check to make sure this is actually a PhotoDemon selection file
@@ -1689,11 +1694,11 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
             Dim tmpLayer As pdLayer
             Set tmpLayer = New pdLayer
             
-            tmpLayer.createFromEmbeddedFile fileNum
+            layerLoadedSuccessfully = tmpLayer.createFromEmbeddedFile(fileNum)
             
             'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
             ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
-            selMask.createFromExistingLayer tmpLayer, containingPDImage.Width, containingPDImage.Height, True
+            If layerLoadedSuccessfully Then selMask.createFromExistingLayer tmpLayer, containingPDImage.Width, containingPDImage.Height, True
             
             maskHasBeenCreated = True
             isMaskReady = True
@@ -1708,7 +1713,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     initFromParamString paramString
     
     'If this selection wasn't transformable, we need to find its boundaries now
-    If Not isTransformable Then findNewBoundsManually
+    If Not isTransformable And layerLoadedSuccessfully Then findNewBoundsManually
     
     'If this selection was locked in at the time of its save, lock this selection in as well
     If Not ignoreLockStatus Then
