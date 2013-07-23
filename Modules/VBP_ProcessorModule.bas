@@ -213,6 +213,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             CaptureScreen
         
         
+        
         'EDIT MENU FUNCTIONS
         ' This includes things like copying or pasting an image.  These actions are never recorded.
         
@@ -238,6 +239,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             ClipboardEmpty
         
         
+        
         'TOOLS MENU FUNCTIONS
         ' This includes things like macro recording.  These actions are never recorded.
         Case "Start macro recording"
@@ -250,10 +252,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             PlayMacro
             
         
+        
         'IMAGE MENU FUNCTIONS
         ' This includes all actions that can only operate on a full image (never selections).  These actions are recorded.
-        
-        
         
         'Alpha channel addition/removal
         Case "Add alpha channel"
@@ -265,7 +266,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 ConvertImageColorDepth 24, cParams.GetLong(1)
             End If
-            
             
         'Resize operations
         Case "Resize"
@@ -282,14 +282,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
         
-        
         'Crop operations
         Case "Crop"
             MenuCropToSelection
             
         Case "Autocrop"
             AutocropImage
-            
             
         'Rotate operations
         Case "Rotate 90° clockwise"
@@ -307,7 +305,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
             End If
-            
             
         'Other coordinate transforms
         Case "Flip vertical"
@@ -328,6 +325,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         
         'Other miscellaneous image-only items
+        Case "Count image colors"
+            MenuCountColors
+            
         Case "Reduce colors"
             If showDialog Then
                 FormReduceColors.Show vbModal, FormMain
@@ -349,14 +349,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         
+        
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc
+        
+        
+        'Create/remove selections
         Case "Create selection"
             CreateNewSelection cParams.getParamString
         
         Case "Remove selection"
             RemoveCurrentSelection cParams.getParamString
         
+        
+        'Modify the existing selection in some way
         Case "Invert selection"
             invertCurrentSelection
             
@@ -394,7 +400,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 borderCurrentSelection False, cParams.GetDouble(1)
             End If
-            
+        
+        'Load/save selection from/to file
         Case "Load selection"
             If showDialog Then
                 LoadSelectionFromFile True
@@ -416,19 +423,52 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Select all"
             SelectWholeImage
         
-        'HISTOGRAM FUNCTIONS
-        ' Any action that relies on a histogram, including displaying the image's current histogram
-        Case "Display histogram"
-            FormHistogram.Show 0, FormMain
         
-        Case "Stretch histogram"
-            FormHistogram.StretchHistogram
-            
-        Case "Equalize"
+        
+        'ADJUSTMENT FUNCTIONS
+        ' Any action that is used to fix or correct problems with an image, including basic color space transformations (e.g. grayscale/sepia)
+        
+        'Luminance adjustment functions
+        Case "Brightness and contrast"
             If showDialog Then
-                FormEqualize.Show vbModal, FormMain
+                FormBrightnessContrast.Show vbModal, FormMain
             Else
-                FormEqualize.EqualizeHistogram cParams.GetBool(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
+                FormBrightnessContrast.BrightnessContrast cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
+            End If
+        
+        Case "Curves"
+            If showDialog Then
+                FormCurves.Show vbModal, FormMain
+            Else
+                FormCurves.ApplyCurveToImage cParams.getParamString
+            End If
+        
+        Case "Exposure"
+            If showDialog Then
+                FormExposure.Show vbModal, FormMain
+            Else
+                FormExposure.Exposure cParams.GetDouble(1)
+            End If
+            
+        Case "Gamma"
+            If showDialog Then
+                FormGamma.Show vbModal, FormMain
+            Else
+                FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+            End If
+        
+        Case "Levels"
+            If showDialog Then
+                FormLevels.Show vbModal, FormMain
+            Else
+                FormLevels.MapImageLevels cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
+            End If
+            
+        Case "Shadows and highlights"
+            If showDialog Then
+                FormShadowHighlight.Show vbModal, FormMain
+            Else
+                FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         Case "White balance"
@@ -438,24 +478,51 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormWhiteBalance.AutoWhiteBalance cParams.GetDouble(1)
             End If
         
-        'MONOCHROME CONVERSION
-        'All monochrome conversion functions have been condensed into a single main one.  (Past versions spread it across multiple functions.)
-        Case "Color to monochrome"
+        'Color adjustments
+        Case "Color balance"
             If showDialog Then
-                FormBlackAndWhite.Show vbModal, FormMain
+                FormColorBalance.Show vbModal, FormMain
             Else
-                FormBlackAndWhite.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+                FormColorBalance.ApplyColorBalance cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
-        Case "Monochrome to grayscale"
+        Case "Hue and saturation"
             If showDialog Then
-                FormMonoToColor.Show vbModal, FormMain
+                FormHSL.Show vbModal, FormMain
             Else
-                FormMonoToColor.ConvertMonoToColor cParams.GetLong(1)
+                FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+            End If
+            
+        Case "Photo filter"
+            If showDialog Then
+                FormPhotoFilters.Show vbModal, FormMain
+            Else
+                FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
+            End If
+            
+        Case "Temperature"
+            If showDialog Then
+                FormColorTemp.Show vbModal, FormMain
+            Else
+                FormColorTemp.ApplyTemperatureToImage cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3)
+            End If
+            
+        Case "Vibrance"
+            If showDialog Then
+                FormVibrance.Show vbModal, FormMain
+            Else
+                FormVibrance.Vibrance cParams.GetDouble(1)
             End If
         
-        'GRAYSCALE conversion
-        'PhotoDemon supports many types of grayscale conversion.
+        'Miscellaneous adjustments
+        Case "Colorize"
+            If showDialog Then
+                FormColorize.Show vbModal, FormMain
+            Else
+                FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
+            End If
+        
+        'Grayscale conversions
         Case "Desaturate"
             FormGrayscale.MenuDesaturate
             
@@ -479,6 +546,81 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Grayscale (single channel)"
             FormGrayscale.MenuGrayscaleSingleChannel cParams.GetLong(1)
+        
+        'Invert operations
+        Case "Invert RGB"
+            MenuInvert
+            
+        Case "Compound invert"
+            MenuCompoundInvert cParams.GetLong(1)
+            
+        Case "Film negative"
+            MenuNegative
+            
+        Case "Invert hue"
+            MenuInvertHue
+        
+        'Monochrome conversion
+        ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
+        Case "Color to monochrome"
+            If showDialog Then
+                FormBlackAndWhite.Show vbModal, FormMain
+            Else
+                FormBlackAndWhite.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+            End If
+            
+        Case "Monochrome to grayscale"
+            If showDialog Then
+                FormMonoToColor.Show vbModal, FormMain
+            Else
+                FormMonoToColor.ConvertMonoToColor cParams.GetLong(1)
+            End If
+            
+        Case "Sepia"
+            MenuSepia
+            
+        'Channel operations
+        Case "Channel mixer"
+            If showDialog Then
+                FormChannelMixer.Show vbModal, FormMain
+            Else
+                FormChannelMixer.ApplyChannelMixer cParams.getParamString
+            End If
+            
+        Case "Rechannel"
+            If showDialog Then
+                FormRechannel.Show vbModal, FormMain
+            Else
+                FormRechannel.RechannelImage cParams.GetByte(1)
+            End If
+            
+        Case "Shift colors (left)"
+            MenuCShift 1
+            
+        Case "Shift colors (right)"
+            MenuCShift 0
+                    
+        Case "Maximum channel"
+            FilterMaxMinChannel True
+        
+        Case "Minimum channel"
+            FilterMaxMinChannel False
+            
+        'Histogram functions
+        Case "Display histogram"
+            FormHistogram.Show 0, FormMain
+        
+        Case "Stretch histogram"
+            FormHistogram.StretchHistogram
+            
+        Case "Equalize"
+            If showDialog Then
+                FormEqualize.Show vbModal, FormMain
+            Else
+                FormEqualize.EqualizeHistogram cParams.GetBool(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
+            End If
+        
+        
         
         'AREA filters
         Case "Sharpen"
@@ -603,110 +745,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         
-        'COLOR operations
-        Case "Rechannel"
-            If showDialog Then
-                FormRechannel.Show vbModal, FormMain
-            Else
-                FormRechannel.RechannelImage cParams.GetByte(1)
-            End If
-            
-        Case "Shift colors (left)"
-            MenuCShift 1
-            
-        Case "Shift colors (right)"
-            MenuCShift 0
-            
-        Case "Brightness and contrast"
-            If showDialog Then
-                FormBrightnessContrast.Show vbModal, FormMain
-            Else
-                FormBrightnessContrast.BrightnessContrast cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
-            End If
-            
-        Case "Gamma"
-            If showDialog Then
-                FormGamma.Show vbModal, FormMain
-            Else
-                FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-            
-        Case "Invert RGB"
-            MenuInvert
-            
-        Case "Compound invert"
-            MenuCompoundInvert cParams.GetLong(1)
-            
-        Case "Film negative"
-            MenuNegative
-            
-        Case "Invert hue"
-            MenuInvertHue
-            
-        Case "Levels"
-            If showDialog Then
-                FormLevels.Show vbModal, FormMain
-            Else
-                FormLevels.MapImageLevels cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
-            End If
-            
-        Case "Colorize"
-            If showDialog Then
-                FormColorize.Show vbModal, FormMain
-            Else
-                FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
-            End If
-            
-            
-        Case "Color temperature"
-            If showDialog Then
-                FormColorTemp.Show vbModal, FormMain
-            Else
-                FormColorTemp.ApplyTemperatureToImage cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3)
-            End If
-            
-        Case "Hue and saturation"
-            If showDialog Then
-                FormHSL.Show vbModal, FormMain
-            Else
-                FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-            
-        Case "Color balance"
-            If showDialog Then
-                FormColorBalance.Show vbModal, FormMain
-            Else
-                FormColorBalance.ApplyColorBalance cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
-            End If
-            
-        Case "Shadows and highlights"
-            If showDialog Then
-                FormShadowHighlight.Show vbModal, FormMain
-            Else
-                FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
-            End If
-            
-        Case "Channel mixer"
-            If showDialog Then
-                FormChannelMixer.Show vbModal, FormMain
-            Else
-                FormChannelMixer.ApplyChannelMixer cParams.getParamString
-            End If
-            
-        Case "Maximum channel"
-            FilterMaxMinChannel True
-        
-        Case "Minimum channel"
-            FilterMaxMinChannel False
-            
-        Case "Vibrance"
-            If showDialog Then
-                FormVibrance.Show vbModal, FormMain
-            Else
-                FormVibrance.Vibrance cParams.GetDouble(1)
-            End If
-            
-            
+        'Distort filters
         Case "Swirl"
             If showDialog Then
                 FormSwirl.Show vbModal, FormMain
@@ -769,8 +808,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
-            
-        
             
         Case "Shear"
             If showDialog Then
@@ -901,9 +938,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Fog"
             MenuFogEffect
             
-        Case "Count image colors"
-            MenuCountColors
-            
         Case "Rainbow"
             MenuRainbow
             
@@ -919,9 +953,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormDespeckle.Despeckle cParams.GetLong(1)
             End If
-            
-        Case "Sepia"
-            MenuSepia
             
         Case "Thermograph (heat map)"
             MenuHeatMap
@@ -959,14 +990,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormModernArt.ApplyModernArt cParams.GetLong(1)
             End If
-            
-        Case "Photo filter"
-            If showDialog Then
-                FormPhotoFilters.Show vbModal, FormMain
-            Else
-                FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
-            End If
-        
         
         'SPECIAL OPERATIONS
         Case "Fade last effect"
