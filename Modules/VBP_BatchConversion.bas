@@ -452,7 +452,7 @@ Private Function GetNameOfProcess(ByVal processID As Long) As String
         Case 616
             GetNameOfProcess = "Reduce Colors"
         Case 618
-            GetNameOfProcess = "Color Temperature"
+            GetNameOfProcess = "Temperature"
         Case 619
             GetNameOfProcess = "Hue and Saturation"
         Case 620

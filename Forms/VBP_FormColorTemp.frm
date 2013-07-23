@@ -257,7 +257,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the temperature input for validity
     If sltTemperature.IsValid And sltStrength.IsValid Then
         Me.Visible = False
-        Process "Color temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2)
+        Process "Temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2)
         Unload Me
     End If
     
