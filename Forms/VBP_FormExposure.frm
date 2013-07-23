@@ -42,7 +42,7 @@ Begin VB.Form FormExposure
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   3480
+      Top             =   3840
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -132,7 +132,7 @@ Begin VB.Form FormExposure
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   3120
+      Top             =   3480
       Width           =   1590
    End
 End
@@ -142,13 +142,33 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Exposure Form
-'Copyright Â©2013 by audioglider
+'Exposure Dialog
+'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 13/July/13
 'Last updated: 13/July/13
 'Last update: Initial build
 '
-'Simple exposure adjustment
+'Basic image exposure adjustment dialog.  Exposure is a complex topic in photography, and (obviously) the best way to
+' adjust it is at image capture time.  This is because true exposure relies on a number of variables (see
+' http://en.wikipedia.org/wiki/Exposure_%28photography%29) inherent in the scene itself, with a technical definition
+' of "the accumulated physical quantity of visible light energy applied to a surface during a given exposure time."
+' Once a set amount of light energy has been applied to a digital sensor and the resulting photo is captured, actual
+' exposure can never fully be corrected or adjusted in post-production.
+'
+'That said, in the event that a poor choice is made at time of photography, certain approximate adjustments can be
+' applied in post-production, with the understanding that missing shadows and highlights cannot be "magically"
+' recreated out of thin air.  This is done by approximating an EV adjustment using a simple logarithmic formula.
+' For more information on exposure compensation, see http://en.wikipedia.org/wiki/Exposure_value#Exposure_compensation_in_EV
+'
+'The formula used here (1 - e ^ (-component * EV)) is based off work originally done by Jerry Huxtable of JH Labs.
+' Jerry's original code is licensed under an Apache 2.0 license.  You may download his original version at the
+' following link (good as of 23 July '13): http://www.jhlabs.com/ip/filters/index.html
+'
+'Many thanks to audioglider for developing both the exposure function and the corresponding interface (including the
+' very helpful exposure curve display).
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 
@@ -157,10 +177,12 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'CANCEL button
 Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'OK button
 Private Sub CmdOK_Click()
 
     If sltExposure.IsValid Then
@@ -171,9 +193,10 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+'Adjust an image's exposure
 Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Adjusting exposure..."
+    If Not toPreview Then Message "Adjusting image exposure..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -201,7 +224,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
     
     Dim r As Long, g As Long, b As Long
     
-    'exposure can be easily applied using a look-up table
+    'Exposure can be easily applied using a look-up table
     Dim gLookup(0 To 2, 0 To 255) As Byte
     Dim tmpVal As Double
     
@@ -303,8 +326,8 @@ Private Sub updatePreview()
     curX = 0
     curY = yHeight
     
+    'Draw the corresponding exposure curve for this EV
     If expVal > 0 Then
-        'Draw the curve
         For x = 0 To xWidth
             tmpVal = x / xWidth
             tmpVal = (1 - Exp(-tmpVal * expVal))
@@ -320,5 +343,7 @@ Private Sub updatePreview()
     picChart.Picture = picChart.Image
     picChart.Refresh
 
+    'Finally, apply the exposure correction to the preview image
     Exposure sltExposure, True, fxPreview
+    
 End Sub

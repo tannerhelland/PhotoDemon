@@ -272,41 +272,42 @@ Public Sub ApplyAllMenuIcons()
     'Color Menu
     AddMenuIcon "BRIGHT", 5, 0         'Brightness/Contrast
     'AddMenuIcon "CURVES", 5, 1         'Curves
-    AddMenuIcon "GAMMA", 5, 2          'Gamma Correction
-    AddMenuIcon "LEVELS", 5, 3         'Levels
-    AddMenuIcon "SHDWHGHLGHT", 5, 4    'Shadow/Highlight
-    AddMenuIcon "WHITEBAL", 5, 5       'White Balance
+    'AddMenuIcon "EXPOSURE", 5, 2         'Exposure
+    AddMenuIcon "GAMMA", 5, 3          'Gamma Correction
+    AddMenuIcon "LEVELS", 5, 4         'Levels
+    AddMenuIcon "SHDWHGHLGHT", 5, 5    'Shadow/Highlight
+    AddMenuIcon "WHITEBAL", 5, 6       'White Balance
     
-    AddMenuIcon "COLORBALANCE", 5, 7   'Color balance
-    AddMenuIcon "HSL", 5, 8            'HSL adjustment
-    AddMenuIcon "PHOTOFILTER", 5, 9    'Photo filters
-    AddMenuIcon "TEMPERATURE", 5, 10   'Temperature
-    AddMenuIcon "VIBRANCE", 5, 11      'Vibrance
+    AddMenuIcon "COLORBALANCE", 5, 8   'Color balance
+    AddMenuIcon "HSL", 5, 9            'HSL adjustment
+    AddMenuIcon "PHOTOFILTER", 5, 10    'Photo filters
+    AddMenuIcon "TEMPERATURE", 5, 11   'Temperature
+    AddMenuIcon "VIBRANCE", 5, 12      'Vibrance
     
-    AddMenuIcon "COLORIZE", 5, 13      'Colorize
-    AddMenuIcon "GRAYSCALE", 5, 14            'Grayscale
-    AddMenuIcon "INVERT", 5, 15         'Invert
-        AddMenuIcon "INVCMYK", 5, 15, 0       'Invert CMYK
-        AddMenuIcon "INVHUE", 5, 15, 1        'Invert Hue
-        AddMenuIcon "INVRGB", 5, 15, 2        'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 5, 15, 4   'Compound Invert
-    AddMenuIcon "MONOCHROME", 5, 16     'Monochrome
-        AddMenuIcon "COLORTOMONO", 5, 16, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 5, 16, 1   'Monochrome to grayscale
-    AddMenuIcon "SEPIA", 5, 17          'Sepia
+    AddMenuIcon "COLORIZE", 5, 14      'Colorize
+    AddMenuIcon "GRAYSCALE", 5, 15            'Grayscale
+    AddMenuIcon "INVERT", 5, 16         'Invert
+        AddMenuIcon "INVCMYK", 5, 16, 0       'Invert CMYK
+        AddMenuIcon "INVHUE", 5, 16, 1        'Invert Hue
+        AddMenuIcon "INVRGB", 5, 16, 2        'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 5, 16, 4   'Compound Invert
+    AddMenuIcon "MONOCHROME", 5, 17     'Monochrome
+        AddMenuIcon "COLORTOMONO", 5, 17, 0   'Color to monochrome
+        AddMenuIcon "MONOTOCOLOR", 5, 17, 1   'Monochrome to grayscale
+    AddMenuIcon "SEPIA", 5, 18          'Sepia
     
-    AddMenuIcon "CHANNELMIX", 5, 19    'Components top-level
-        AddMenuIcon "CHANNELMIX", 5, 19, 0   'Channel mixer
-        AddMenuIcon "RECHANNEL", 5, 19, 1    'Rechannel
-        AddMenuIcon "COLORSHIFTR", 5, 19, 3  'Shift Right
-        AddMenuIcon "COLORSHIFTL", 5, 19, 4  'Shift Left
-        AddMenuIcon "CHANNELMAX", 5, 19, 6   'Channel max
-        AddMenuIcon "CHANNELMIN", 5, 19, 7   'Channel min
+    AddMenuIcon "CHANNELMIX", 5, 20    'Components top-level
+        AddMenuIcon "CHANNELMIX", 5, 20, 0   'Channel mixer
+        AddMenuIcon "RECHANNEL", 5, 20, 1    'Rechannel
+        AddMenuIcon "COLORSHIFTR", 5, 20, 3  'Shift Right
+        AddMenuIcon "COLORSHIFTL", 5, 20, 4  'Shift Left
+        AddMenuIcon "CHANNELMAX", 5, 20, 6   'Channel max
+        AddMenuIcon "CHANNELMIN", 5, 20, 7   'Channel min
         
-    AddMenuIcon "HISTOGRAM", 5, 21     'Histogram
-        AddMenuIcon "HISTOGRAM", 5, 21, 0   'Display Histogram
-        AddMenuIcon "EQUALIZE", 5, 21, 2    'Equalize
-        AddMenuIcon "STRETCH", 5, 21, 3     'Stretch
+    AddMenuIcon "HISTOGRAM", 5, 22     'Histogram
+        AddMenuIcon "HISTOGRAM", 5, 22, 0   'Display Histogram
+        AddMenuIcon "EQUALIZE", 5, 22, 2    'Equalize
+        AddMenuIcon "STRETCH", 5, 22, 3     'Stretch
     
     'Effects (Filters) Menu
     AddMenuIcon "FADELAST", 6, 0        'Fade Last
