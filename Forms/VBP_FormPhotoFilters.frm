@@ -177,7 +177,7 @@ Attribute VB_Exposed = False
 'Traditioanl photo filter simulation tool.  A full discussion of photographic filters and how they work are available
 ' at this Wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
 '
-'This code is very similar to PhotoDemon's "color temperature" algorithm.  The main difference is the way the user
+'This code is very similar to PhotoDemon's "Temperature" algorithm.  The main difference is the way the user
 ' selects a filter to apply.  The available list of filters is flexible, and I have simply based it off Photoshop's
 ' photo filter list.
 '
@@ -266,7 +266,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the temperature input for validity
     If sltDensity.IsValid Then
         Me.Visible = False
-        Process "Photo filter", , buildParams(picColor.backColor, sltDensity.Value, True)
+        Process "Photo filter", , buildParams(PicColor.backColor, sltDensity.Value, True)
         Unload Me
     End If
     
@@ -533,7 +533,7 @@ End Sub
 Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     curFilter = getFilterAtPosition(x, y)
-    picColor.backColor = fArray(curFilter).RGBColor
+    PicColor.backColor = fArray(curFilter).RGBColor
     redrawFilterList
     updatePreview
     
@@ -565,7 +565,7 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    ApplyPhotoFilter picColor.backColor, sltDensity.Value, True, True, fxPreview
+    ApplyPhotoFilter PicColor.backColor, sltDensity.Value, True, True, fxPreview
 End Sub
 
 'Cast an image with a new temperature value
