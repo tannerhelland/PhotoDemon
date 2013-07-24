@@ -148,6 +148,8 @@ Attribute VB_Exposed = False
 'Last updated: 13/July/13
 'Last update: Initial build
 '
+'Many thanks to talented contributer audioglider for creating this tool.
+'
 'Basic image exposure adjustment dialog.  Exposure is a complex topic in photography, and (obviously) the best way to
 ' adjust it is at image capture time.  This is because true exposure relies on a number of variables (see
 ' http://en.wikipedia.org/wiki/Exposure_%28photography%29) inherent in the scene itself, with a technical definition
@@ -163,9 +165,6 @@ Attribute VB_Exposed = False
 'The formula used here (1 - e ^ (-component * EV)) is based off work originally done by Jerry Huxtable of JH Labs.
 ' Jerry's original code is licensed under an Apache 2.0 license.  You may download his original version at the
 ' following link (good as of 23 July '13): http://www.jhlabs.com/ip/filters/index.html
-'
-'Many thanks to audioglider for developing both the exposure function and the corresponding interface (including the
-' very helpful exposure curve display).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
