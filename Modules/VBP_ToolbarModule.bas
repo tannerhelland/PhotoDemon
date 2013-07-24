@@ -159,7 +159,7 @@ Public Sub tInit(tButton As Long, tState As Boolean)
             ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
             ' actually draw a selection, it already has the attributes they want.
             For i = 0 To FormMain.tudSel.Count - 1
-                If FormMain.tudSel(i).Enabled <> tState Then FormMain.tudSel(i).Enabled = tState
+                FormMain.tudSel(i).Enabled = tState
             Next i
                                     
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -187,7 +187,7 @@ Public Sub tInit(tButton As Long, tState As Boolean)
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
             For i = 0 To FormMain.tudSel.Count - 1
-                If FormMain.tudSel(i).Enabled <> tState Then FormMain.tudSel(i).Enabled = tState
+                FormMain.tudSel(i).Enabled = tState
             Next i
         
         '32bpp color mode (e.g. add/remove alpha channel)
