@@ -292,14 +292,15 @@ Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, 
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
 Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal mPen As Long, ByVal startCap As LineCap, ByVal endCap As LineCap, ByVal dCap As DashCap) As Long
 
-' Quality mode constants
+'Quality mode constants (only supported by certain functions!)
 Private Enum QualityMode
    QualityModeInvalid = -1
    QualityModeDefault = 0
-   QualityModeLow = 1       ' Best performance
-   QualityModeHigh = 2       ' Best rendering quality
+   QualityModeLow = 1       'Best performance
+   QualityModeHigh = 2      'Best rendering quality
 End Enum
 
+'Instead of specifying certain smoothing modes, quality modes (see above) can be used instead.
 Private Enum SmoothingMode
    SmoothingModeInvalid = QualityModeInvalid
    SmoothingModeDefault = QualityModeDefault
@@ -343,7 +344,7 @@ End Type
 'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
 Public g_GDIPlusToken As Long
 
-'GDI+ v1.1 allows for advanced fx work.  When we initialize GDI+, we check the version as well
+'GDI+ v1.1 allows for advanced fx work.  When we initialize GDI+, check the availability of version 1.1.
 Public g_GDIPlusFXAvailable As Boolean
 
 'Use GDI+ to blur a layer with variable radius
@@ -477,11 +478,11 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
 End Function
 
 'Use GDI+ to render a filled ellipse, with optional antialiasing
-Public Function GDIPlusDrawEllipse(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawEllipse(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
-    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    GdipCreateFromHDC dstDC, iGraphics
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
         
     'Create a solid fill brush

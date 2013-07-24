@@ -1038,7 +1038,7 @@ Private Sub createSelectionMask()
             If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
             
                 If sSmooth > sNone Then
-                    GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                    GDIPlusDrawEllipse selMask.getLayerDC, selLeft, selTop, selWidth, selHeight, maskForeColor, True
                 Else
                     SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
                     maskRegion = CreateEllipticRgnIndirect(maskRect)
@@ -1054,10 +1054,10 @@ Private Sub createSelectionMask()
                 If sSmooth > sNone Then
                 
                     'Draw the exterior oval
-                    GDIPlusDrawEllipse selMask, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                    GDIPlusDrawEllipse selMask.getLayerDC, selLeft, selTop, selWidth, selHeight, maskForeColor, True
                     
                     'Next, draw the interior one
-                    GDIPlusDrawEllipse selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
+                    GDIPlusDrawEllipse selMask.getLayerDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
                         
                 Else
                     
