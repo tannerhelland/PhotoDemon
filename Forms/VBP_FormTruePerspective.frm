@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormTruePerspective 
+Begin VB.Form FormPerspective 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -209,7 +209,7 @@ Begin VB.Form FormTruePerspective
       Width           =   1845
    End
 End
-Attribute VB_Name = "FormTruePerspective"
+Attribute VB_Name = "FormPerspective"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -218,8 +218,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 29/April/13
-'Last update: render the workspace lines with antialiasing (much prettier)
+'Last updated: 24/July/13
+'Last update: modified the interactive area UI to better align with the style of other interactive UIs in the program
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -368,7 +368,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, cParams.GetLong(9), cParams.GetBool(10), curLayerValues.MaxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, cParams.GetLong(9), cParams.GetBool(10), curLayerValues.maxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -638,7 +638,7 @@ Private Sub redrawPreviewBox()
     
     'Start by drawing a grid through the center of the image
     picDraw.DrawWidth = 1
-    picDraw.ForeColor = RGB(160, 160, 160)
+    picDraw.ForeColor = RGB(172, 172, 172)
     picDraw.Line (0, picDraw.Height / 2)-(picDraw.Width, picDraw.Height / 2)
     picDraw.Line (picDraw.Width / 2, 0)-(picDraw.Width / 2, picDraw.Height)
     
@@ -654,27 +654,25 @@ Private Sub redrawPreviewBox()
     
     'Next, draw connecting lines to form an image outline.  Use GDI+ for superior results (e.g. antialiasing).
     Dim oTransparency As Long
-    oTransparency = 220
+    oTransparency = 192
     
-    picDraw.ForeColor = RGB(255, 0, 0)
+    picDraw.ForeColor = RGB(0, 0, 255)
     For i = 0 To 3
         If i < 3 Then
-            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(i + 1).pX, m_nPoints(i + 1).pY, picDraw.ForeColor, oTransparency
+            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(i + 1).pX, m_nPoints(i + 1).pY, picDraw.ForeColor, oTransparency, 2
         Else
-            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(0).pX, m_nPoints(0).pY, picDraw.ForeColor, oTransparency
+            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, m_nPoints(0).pX, m_nPoints(0).pY, picDraw.ForeColor, oTransparency, 2
         End If
     Next i
     
     'Next, draw circles at the corners of the perspective area
-    picDraw.ForeColor = RGB(0, 0, 255)
-    
     For i = 0 To 3
-        GDIPlusDrawCircleToDC picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, 5, picDraw.ForeColor, oTransparency
+        GDIPlusDrawCanvasCircle picDraw.hDC, m_nPoints(i).pX, m_nPoints(i).pY, 7, oTransparency
     Next i
     
     'Finally, draw the center cross to help the user orient to the center point of the perspective effect
-    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(0).pX, m_nPoints(0).pY, m_nPoints(2).pX, m_nPoints(2).pY, picDraw.ForeColor, oTransparency
-    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(1).pX, m_nPoints(1).pY, m_nPoints(3).pX, m_nPoints(3).pY, picDraw.ForeColor, oTransparency
+    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(0).pX, m_nPoints(0).pY, m_nPoints(2).pX, m_nPoints(2).pY, RGB(0, 0, 255), 128
+    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(1).pX, m_nPoints(1).pY, m_nPoints(3).pX, m_nPoints(3).pY, RGB(0, 0, 255), 128
     
     picDraw.Refresh
 

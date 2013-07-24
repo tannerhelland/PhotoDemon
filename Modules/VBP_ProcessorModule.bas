@@ -825,9 +825,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Perspective"
             If showDialog Then
-                FormTruePerspective.Show vbModal, FormMain
+                FormPerspective.Show vbModal, FormMain
             Else
-                FormTruePerspective.PerspectiveImage cParams.getParamString
+                FormPerspective.PerspectiveImage cParams.getParamString
             End If
             
         Case "Pan and zoom"
