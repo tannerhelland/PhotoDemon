@@ -4,7 +4,7 @@ Begin VB.Form FormCurves
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Curves"
-   ClientHeight    =   8220
+   ClientHeight    =   8205
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   13095
@@ -20,29 +20,49 @@ Begin VB.Form FormCurves
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   548
+   ScaleHeight     =   547
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cboHistogram 
+      Appearance      =   0  'Flat
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   8040
+      Style           =   2  'Dropdown List
+      TabIndex        =   9
+      Top             =   5850
+      Width           =   4815
+   End
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset curve"
       Height          =   615
       Left            =   240
       TabIndex        =   5
-      Top             =   6360
-      Width           =   5520
+      Top             =   6720
+      Width           =   5400
    End
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   5160
       Left            =   6000
-      ScaleHeight     =   342
+      ScaleHeight     =   344
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   462
+      ScaleWidth      =   464
       TabIndex        =   4
       Top             =   120
       Width           =   6960
@@ -51,7 +71,7 @@ Begin VB.Form FormCurves
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
-      Left            =   10080
+      Left            =   10140
       TabIndex        =   0
       Top             =   7590
       Width           =   1365
@@ -60,7 +80,7 @@ Begin VB.Form FormCurves
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
-      Left            =   11550
+      Left            =   11610
       TabIndex        =   1
       Top             =   7590
       Width           =   1365
@@ -71,38 +91,55 @@ Begin VB.Form FormCurves
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "NOTE: this tool is still under heavy development!"
-      BeginProperty Font 
+   Begin PhotoDemon.smartCheckBox chkGrid 
+      Height          =   480
+      Left            =   6240
+      TabIndex        =   10
+      Top             =   6360
+      Width           =   2175
+      _ExtentX        =   3836
+      _ExtentY        =   847
+      Caption         =   "display guidance grid"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H000000C0&
-      Height          =   285
-      Index           =   1
-      Left            =   6960
-      TabIndex        =   7
-      Top             =   5880
-      Width           =   5205
    End
    Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
+      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "other options:"
+      Caption         =   "histogram overlay:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   240
+      Index           =   1
+      Left            =   6240
+      TabIndex        =   8
+      Top             =   5910
+      Width           =   1605
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "additional options:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -115,10 +152,29 @@ Begin VB.Form FormCurves
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   5400
+      Width           =   1980
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   960
       Left            =   120
       TabIndex        =   6
-      Top             =   5880
-      Width           =   1500
+      Top             =   5760
+      Width           =   5655
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -140,7 +196,23 @@ Attribute VB_Exposed = False
 'Last updated: 11/July/13
 'Last update: merge the code from a standalone project into PhotoDemon
 '
-'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors.
+'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
+' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
+' like full-AA, dynamic node highlighting, and background histogram are nice improvements over other Curves tools.
+'
+'As the on-dialog instructions state, the LMB can be used to add new nodes or drag existing nodes.  RMB will delete
+' nodes.  There is no hard-coded upper limit on nodes, but because each horizontal pixel can only belong to a single
+' node, nodes will be automatically removed if the count exceeds the pixel width of the curve box.  (Never gonna happen,
+' but I coded against it anyway!)
+'
+'The function that actually applies the curve to the image is fully ParamString compatible, meaning this function
+' works beautifully with the macro tool despite the complex parameters it requires.  I have also heavily optimized the
+' render function to make it extremely quick, and it is currently comparable to brightness/contrast adjustment in speed
+' (e.g. VERY FAST!).
+'
+'At present, only the image's luminance curve can be adjusted.  I've debated adding color curves as well, but I have my
+' doubts about the utility of this.  It complicates the interface greatly to add those features, and at what benefit to
+' the end-user?  If research shows a good technical reason for RGB curves as well, I'll consider adding it later.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -179,10 +251,32 @@ Private cResults() As Double
 'It is difficult to see the results of the curve if they lie directly on the preview box border.  To circumvent this
 ' problem, we render the curve dialog to the center of the picture box, with this value specifying the size of the
 ' blank border used.
-Private Const previewBorder As Long = 8
+Private Const previewBorder As Long = 10
+
+'These five arrays will hold histogram data for the current image.  They are filled when the form is activated, and
+' not modified again unless the form is unloaded and reopened.
+Private hData() As Double
+Private hDataLog() As Double
+Private hMax() As Double
+Private hMaxLog() As Double
+Private hMaxPosition() As Byte
+
+'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these layers.
+Private hLayer As pdLayer, hLogLayer As pdLayer
+
+'While the form is loading, we want to disable preview updating
+Private isFormLoading As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+Private Sub cboHistogram_Click()
+    If Not isFormLoading Then updatePreview
+End Sub
+
+Private Sub chkGrid_Click()
+    updatePreview
+End Sub
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -307,9 +401,67 @@ Private Sub cmdReset_Click()
 End Sub
 
 Private Sub Form_Activate()
-        
+    
+    isFormLoading = True
+    
+    'Populate the explanation label
+    Dim addInstructions As String
+    addInstructions = ""
+    addInstructions = g_Language.TranslateMessage("additional instructions:")
+    addInstructions = addInstructions & vbCrLf
+    addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("left-click to add new nodes or drag existing nodes")
+    addInstructions = addInstructions & vbCrLf
+    addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("right-click to remove nodes")
+    
+    lblExplanation.Caption = addInstructions
+    
+    'Populate the histogram display drop-down
+    cboHistogram.Clear
+    cboHistogram.AddItem " " & g_Language.TranslateMessage("none"), 0
+    cboHistogram.AddItem " " & g_Language.TranslateMessage("standard"), 1
+    cboHistogram.AddItem " " & g_Language.TranslateMessage("logarithmic"), 2
+    cboHistogram.ListIndex = 1
+    
+    'If translations are active, the translated text may not fit the explanation label.  Automatically adjust it to fit.
+    fitWordwrapLabel lblExplanation, Me
+    
     'Mark the mouse as not being down
     isMouseDown = False
+    
+    'Fill the histogram arrays
+    fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    
+    'Initialize the background histogram image layers
+    Set hLayer = New pdLayer
+    Set hLogLayer = New pdLayer
+    hLayer.createBlank picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+    hLogLayer.createFromExistingLayer hLayer
+    
+    'Build a look-up table of x-positions for the histogram data
+    Dim hLookupX(0 To 255) As Double
+    Dim i As Long
+    
+    For i = 0 To 255
+        hLookupX(i) = (CDbl(i) / 255) * hLayer.getLayerWidth
+    Next i
+    
+    'Render the luminance histogram data to each layer (one for regular, one for logarithmic)
+    Dim yMax As Double
+    yMax = 0.9 * hLayer.getLayerHeight
+    
+    For i = 1 To 255
+        GDIPlusDrawLineToDC hLayer.getLayerDC, hLookupX(i - 1), hLayer.getLayerHeight - (hData(3, i - 1) / hMax(3)) * yMax, hLookupX(i), hLayer.getLayerHeight - (hData(3, i) / hMax(3)) * yMax, RGB(192, 192, 192), 255
+        GDIPlusDrawLineToDC hLogLayer.getLayerDC, hLookupX(i - 1), hLayer.getLayerHeight - (hDataLog(3, i - 1) / hMaxLog(3)) * yMax, hLookupX(i), hLayer.getLayerHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax, RGB(192, 192, 192), 255
+    Next i
+    
+    'Beneath each line, add an even lighter "filled" version of the line
+    For i = 0 To 255
+        GDIPlusDrawLineToDC hLayer.getLayerDC, hLookupX(i), hLayer.getLayerHeight - (hData(3, i) / hMax(3)) * yMax - 1, hLookupX(i), hLayer.getLayerHeight, RGB(192, 192, 192), 128
+        GDIPlusDrawLineToDC hLogLayer.getLayerDC, hLookupX(i), hLayer.getLayerHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax - 1, hLookupX(i), hLayer.getLayerHeight, RGB(192, 192, 192), 128
+    Next i
+    
+    'Now that everything has been initialized, allow preview updating
+    isFormLoading = False
     
     'Reset the curve data
     resetCurvePoints
@@ -373,21 +525,45 @@ Private Sub redrawPreviewBox()
 
     picDraw.Picture = LoadPicture("")
     
-    'Start by drawing a grid through the center of the image
+    'Start by copying the proper histogram image into the picture box
+    Select Case cboHistogram.ListIndex
+    
+        'No histogram
+        Case 0
+        
+        'Normal histogram
+        Case 1
+            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hLayer.getLayerWidth, hLayer.getLayerHeight, hLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+        'Logarithmic histogram
+        Case 2
+            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hLayer.getLayerWidth, hLayer.getLayerHeight, hLogLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+    End Select
+    
+    'Next, draw a grid that separates the image into 16 segments; this helps orient the user, and it also provides a
+    ' border for the drawing area (important since that area sits well within the picture box itself).
     picDraw.DrawWidth = 1
-    picDraw.ForeColor = RGB(160, 160, 160)
-    picDraw.Line (previewBorder, picDraw.Height / 2)-(picDraw.ScaleWidth - previewBorder, picDraw.Height / 2)
-    picDraw.Line (picDraw.Width / 2, previewBorder)-(picDraw.Width / 2, picDraw.ScaleHeight - previewBorder)
+    picDraw.ForeColor = RGB(172, 172, 172)
+    
+    Dim i As Long
+    Dim loopUpperLimit As Long
+    
+    If CBool(chkGrid) Then loopUpperLimit = 4 Else loopUpperLimit = 1
+    
+    For i = 0 To loopUpperLimit
+        picDraw.Line (previewBorder + (i / loopUpperLimit) * (picDraw.ScaleWidth - previewBorder * 2), previewBorder)-(previewBorder + (i / loopUpperLimit) * (picDraw.ScaleWidth - previewBorder * 2), picDraw.ScaleHeight - previewBorder)
+        picDraw.Line (previewBorder, previewBorder + (i / loopUpperLimit) * (picDraw.ScaleHeight - previewBorder * 2))-(picDraw.ScaleWidth - previewBorder, previewBorder + (i / loopUpperLimit) * (picDraw.ScaleHeight - previewBorder * 2))
+    Next i
     
     'Use the newly created results array to draw the cubic spline onto picDraw, while using GDI+ for antialiasing
-    Dim i As Long
     For i = previewBorder + 1 To picDraw.ScaleWidth - previewBorder
-        GDIPlusDrawLineToDC picDraw.hDC, i, cResults(i), i - 1, cResults(i - 1), RGB(0, 0, 255)
+        GDIPlusDrawLineToDC picDraw.hDC, i, cResults(i), i - 1, cResults(i - 1), RGB(0, 0, 255), 192, 2
     Next i
     
     'Next, render the spline control points.
     Dim circRadius As Long
-    circRadius = 7
+    circRadius = 8
     
     Dim circAlpha As Long
     circAlpha = 190
@@ -396,8 +572,13 @@ Private Sub redrawPreviewBox()
     'NOTE: this function requires fillResultsArray() to have been called immediately prior.  Otherwise, the
     '       cResults array will not contain the entries necessary to generate a parameter list.
     For i = 1 To numOfNodes
-        GDIPlusDrawCircleToDC picDraw.hDC, cNodes(i).pX, cNodes(i).pY, circRadius, RGB(128, 0, 128), circAlpha, 1, True
+        GDIPlusDrawEllipseToDC picDraw.hDC, cNodes(i).pX - (circRadius / 2), cNodes(i).pY - (circRadius / 2), circRadius, circRadius, RGB(32, 32, 255), True
     Next i
+    
+    'Render a special highlight around the currently selected node
+    If selectedNode > 0 Then
+        GDIPlusDrawCanvasCircle picDraw.hDC, cNodes(selectedNode).pX, cNodes(selectedNode).pY, circRadius, circAlpha
+    End If
     
     'Lock the image, force a refresh, and our work here is done
     picDraw.Picture = picDraw.Image
@@ -463,11 +644,15 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
                 For i = numOfNodes To 1 Step -1
                     If cNodes(i).pX < previewBorder Then deleteCurveNode i
                 Next i
+                
+                'Mark this node as the currently selected one
+                selectedNode = pointFound
             
             'If no neighboring point was found, this point should be inserted at the end of the curve
             Else
                 cNodes(numOfNodes).pX = x
                 cNodes(numOfNodes).pY = y
+                selectedNode = numOfNodes
             End If
             
             'Request a full redraw of the curve
@@ -505,6 +690,8 @@ Private Sub deleteCurveNode(ByVal nodeIndex As Long)
         numOfNodes = numOfNodes - 1
         ReDim Preserve cNodes(0 To numOfNodes) As fPoint
     
+        selectedNode = -1
+    
     End If
 
 End Sub
@@ -517,10 +704,16 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
         'If the user is close to a knot, change the mousepointer to 'move'
         If checkClick(x, y) > -1 Then
             If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
+            selectedNode = checkClick(x, y)
         Else
             If picDraw.MousePointer <> 0 Then picDraw.MousePointer = 0
+            selectedNode = -1
         End If
-    
+        
+        'Redraw just the preview box, with the selected node highlighted
+        fillResultsArray
+        redrawPreviewBox
+            
     'If the mouse *is* down, move the current point and redraw the preview
     Else
     
@@ -547,6 +740,10 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             If cNodes(selectedNode).pY > picDraw.ScaleHeight - previewBorder Then cNodes(selectedNode).pY = picDraw.ScaleHeight - previewBorder
             
             updatePreview
+            
+        Else
+            fillResultsArray
+            redrawPreviewBox
         End If
     
     End If
@@ -590,12 +787,12 @@ Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
     Dim t As Double
     'derived curve equation (which uses p's and u's for coefficients)
     t = (v - cNodes(i).pX) / u(i)
-    getCurvePoint = t * cNodes(i + 1).pY + (1 - t) * cNodes(i).pY + u(i) * u(i) * (F(t) * p(i + 1) + F(1 - t) * p(i)) / 6#
+    getCurvePoint = t * cNodes(i + 1).pY + (1 - t) * cNodes(i).pY + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
 End Function
 
 'Original required spline function:
-Private Function F(ByRef x As Double) As Double
-        F = x * x * x - x
+Private Function f(ByRef x As Double) As Double
+        f = x * x * x - x
 End Function
 
 'Original required spline function:
