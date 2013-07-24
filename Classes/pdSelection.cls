@@ -1038,7 +1038,7 @@ Private Sub createSelectionMask()
             If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
             
                 If sSmooth > sNone Then
-                    GDIPlusDrawEllipseToDC selMask.getLayerDC, selLeft, selTop, selWidth, selHeight, maskForeColor, True
+                    GDIPlusDrawEllipseToDC selMask.getLayerDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, True
                 Else
                     SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
                     maskRegion = CreateEllipticRgnIndirect(maskRect)
