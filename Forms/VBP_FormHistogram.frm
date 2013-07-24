@@ -601,9 +601,6 @@ Attribute VB_Exposed = False
    '    first derivatives must be equal at knots
    '    second derivatives must be equal at knots
 '
-'Additional thanks go out to Ron van Tilburg, for his native-VB implementation of Xiaolin Wu's line antialiasing algorithm.
-' (See the "Outside_mGfxWu" module for details.)
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
@@ -612,25 +609,25 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Have we generated a histogram yet?
-Dim histogramGenerated As Boolean
+Private histogramGenerated As Boolean
 
 'Histogram data for each particular type (r/g/b/luminance)
-Dim hData(0 To 3, 0 To 255) As Double
-Dim hDataLog(0 To 3, 0 To 255) As Double
+Private hData() As Double
+Private hDataLog() As Double
 
 'Maximum histogram values (r/g/b/luminance)
-'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Dim HMax(0 To 3) As Double
-Dim hMax As Double, hMaxLog As Double
-Dim channelMax(0 To 3) As Double
-Dim channelMaxLog(0 To 3) As Double
-Dim channelMaxPosition(0 To 3) As Byte
-Dim maxChannel As Byte          'This identifies the channel with the highest value (red, green, or blue)
+'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Private HMax(0 To 3) As Double
+Private hMax As Double, hMaxLog As Double
+Private channelMax() As Double
+Private channelMaxLog() As Double
+Private channelMaxPosition() As Byte
+Private maxChannel As Byte          'This identifies the channel with the highest value (red, green, or blue)
 
 'Which histograms does the user want drawn?
-Dim hEnabled(0 To 3) As Boolean
+Private hEnabled(0 To 3) As Boolean
 
 'Loop and position variables
-Dim x As Long, y As Long
+Private x As Long, y As Long
 
 'Modified cubic spline variables:
 Dim nPoints As Integer
@@ -1141,105 +1138,12 @@ Public Sub TallyHistogramValues()
         lblValue(i) = ""
     Next i
     
-    'Create a local array and point it at the pixel data we want to scan
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    'Use our new external function to fill the important histogram arrays
+    fillHistogramArrays hData, hDataLog, channelMax, channelMaxLog, channelMaxPosition
     
-    prepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
-    
-    'These variables will hold temporary histogram values
-    Dim r As Long, g As Long, b As Long, l As Long
-    
-    'If the histogram has already been used, we need to clear out all the
-    'maximum values and histogram values
-    hMax = 0:    hMaxLog = 0
-    
-    For x = 0 To 3
-        channelMax(x) = 0
-        channelMaxLog(x) = 0
-        For y = 0 To 255
-            hData(x, y) = 0
-        Next y
-    Next x
-    
-    'Build a look-up table for luminance conversion; 765 = 255 * 3
-    Dim lumLookup(0 To 765) As Byte
-    
-    For x = 0 To 765
-        lumLookup(x) = x \ 3
-    Next x
-    
-    'Run a quick loop through the image, gathering what we need to calculate our histogram
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we'll use
-        ' a simpler average value.
-        
-        l = lumLookup(r + g + b)
-        
-        'Increment each value in the array, depending on its present value; this will let us see how many pixels of
-        ' each color value (and luminance value) there are in the image
-        
-        'Red
-        hData(0, r) = hData(0, r) + 1
-        'Green
-        hData(1, g) = hData(1, g) + 1
-        'Blue
-        hData(2, b) = hData(2, b) + 1
-        'Luminance
-        hData(3, l) = hData(3, l) + 1
-        
-    Next y
-    Next x
-    
-    'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    'Run a quick loop through the completed array to find maximum values
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) > channelMax(x) Then
-                channelMax(x) = hData(x, y)
-                channelMaxPosition(x) = y
-            End If
-        Next y
-    Next x
-    
-    'Now calculate the logarithmic version of the histogram
-    For x = 0 To 3
-        If channelMax(x) <> 0 Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0
-    Next x
-    
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) <> 0 Then
-                hDataLog(x, y) = Log(hData(x, y))
-            Else
-                hDataLog(x, y) = 0
-            End If
-        Next y
-    Next x
+    'If the histogram has already been used, we need to clear out two additional maximum values
+    hMax = 0
+    hMaxLog = 0
     
     histogramGenerated = True
     
