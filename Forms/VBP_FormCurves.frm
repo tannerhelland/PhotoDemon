@@ -99,10 +99,30 @@ Begin VB.Form FormCurves
       Left            =   6240
       TabIndex        =   10
       Top             =   6360
-      Width           =   2175
-      _ExtentX        =   3836
+      Width           =   1350
+      _ExtentX        =   2381
       _ExtentY        =   847
-      Caption         =   "display guidance grid"
+      Caption         =   "display grid"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkDiagonal 
+      Height          =   480
+      Left            =   6240
+      TabIndex        =   11
+      Top             =   6840
+      Width           =   3465
+      _ExtentX        =   6112
+      _ExtentY        =   847
+      Caption         =   "display original curve (diagonal line)"
       Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -170,10 +190,10 @@ Begin VB.Form FormCurves
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   960
-      Left            =   120
+      Left            =   240
       TabIndex        =   6
       Top             =   5760
-      Width           =   5655
+      Width           =   5535
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblBackground 
@@ -198,7 +218,10 @@ Attribute VB_Exposed = False
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
-' like full-AA, dynamic node highlighting, and background histogram are nice improvements over other Curves tools.
+' like full-AA, dynamic node highlighting, and background histogram are nice improvements over other Curves tools.  I
+' have also used some trickery with the picture box that handles the curve edit area - note that the edit area sits
+' well within the borders of the picture box.  This is necessary so that nodes at the edge of the histogram are not
+' cut-off by the picture box boundaries.  Even when highlighted, nodes at the edges are fully rendered.
 '
 'As the on-dialog instructions state, the LMB can be used to add new nodes or drag existing nodes.  RMB will delete
 ' nodes.  There is no hard-coded upper limit on nodes, but because each horizontal pixel can only belong to a single
@@ -272,6 +295,10 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub cboHistogram_Click()
     If Not isFormLoading Then updatePreview
+End Sub
+
+Private Sub chkDiagonal_Click()
+    updatePreview
 End Sub
 
 Private Sub chkGrid_Click()
@@ -407,7 +434,7 @@ Private Sub Form_Activate()
     'Populate the explanation label
     Dim addInstructions As String
     addInstructions = ""
-    addInstructions = g_Language.TranslateMessage("additional instructions:")
+    addInstructions = g_Language.TranslateMessage("instructions:")
     addInstructions = addInstructions & vbCrLf
     addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("left-click to add new nodes or drag existing nodes")
     addInstructions = addInstructions & vbCrLf
@@ -556,7 +583,12 @@ Private Sub redrawPreviewBox()
         picDraw.Line (previewBorder, previewBorder + (i / loopUpperLimit) * (picDraw.ScaleHeight - previewBorder * 2))-(picDraw.ScaleWidth - previewBorder, previewBorder + (i / loopUpperLimit) * (picDraw.ScaleHeight - previewBorder * 2))
     Next i
     
-    'Use the newly created results array to draw the cubic spline onto picDraw, while using GDI+ for antialiasing
+    'Next, draw a diagonal per the user's request
+    If CBool(chkDiagonal) Then
+        GDIPlusDrawLineToDC picDraw.hDC, previewBorder, picDraw.ScaleHeight - previewBorder, picDraw.ScaleWidth - previewBorder, previewBorder, RGB(127, 127, 127), 127
+    End If
+    
+    'Use the previously created spline array (cResults) to draw the cubic spline onto picDraw, while using GDI+ for antialiasing
     For i = previewBorder + 1 To picDraw.ScaleWidth - previewBorder
         GDIPlusDrawLineToDC picDraw.hDC, i, cResults(i), i - 1, cResults(i - 1), RGB(0, 0, 255), 192, 2
     Next i
