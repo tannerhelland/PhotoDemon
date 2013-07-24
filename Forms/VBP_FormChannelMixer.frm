@@ -339,8 +339,8 @@ Attribute VB_Exposed = False
 'Channel Mixer Form
 'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 08/June/13
-'Last updated: 09/June/13
-'Last update: added "preserve luminance" and applied a few final fixes
+'Last updated: 24/July/13
+'Last update: fixed a typo that prevented the constant slider from affecting blue values
 '
 'Many thanks to talented contributer audioglider for creating this tool.
 '
@@ -549,7 +549,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
         
             newR = r * channelModifiers(0, 0) + g * channelModifiers(0, 1) + b * channelModifiers(0, 2) + channelModifiers(0, 3)
             newG = r * channelModifiers(1, 0) + g * channelModifiers(1, 1) + b * channelModifiers(1, 2) + channelModifiers(1, 3)
-            newB = r * channelModifiers(2, 0) + g * channelModifiers(2, 1) + b * channelModifiers(2, 2) + channelModifiers(3, 3)
+            newB = r * channelModifiers(2, 0) + g * channelModifiers(2, 1) + b * channelModifiers(2, 2) + channelModifiers(2, 3)
             
             'Fit everything in the [0, 255] range
             If newR > 255 Then newR = 255
