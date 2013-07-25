@@ -207,7 +207,7 @@ Begin VB.Form FormSoftwareUpdate
    Begin VB.Label lblAnnouncementExplanation 
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Caption         =   "To learn about the latest version before downloading it, please visit:"
+      Caption         =   "To learn about the latest version before downloading, please visit:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
