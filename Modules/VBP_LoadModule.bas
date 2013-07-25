@@ -3,8 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 09/June/13
-'Last update: fixed "Duplicate Image" handling of filenames without extensions (e.g. images from the clipboard or scanner)
+'Last updated: 25/July/13
+'Last update: advanced GDI+ features are now checked at load time, and if not found, certain features are automatically disabled
+'             regardless of OS.  (This should help any Vista users, if such people still exist...)
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -202,8 +203,9 @@ Public Sub LoadTheProgram()
         FormMain.sltSelectionFeathering.ToolTipText = "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
         FormMain.cmbSelSmoothing(0).AddItem "None", 0
         FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
-        'Live feathering is not allowed on XP for performance reasons.  It must be applied via the Selection -> Feathering menu.
-        If g_IsVistaOrLater Then FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
+        'Live feathering is not allowed on XP or Vista for performance reasons (GDI+ can't be used).
+        ' On these OSes, feathering must be applied via the Selection -> Feathering menu.
+        If g_GDIPlusFXAvailable Then FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
         FormMain.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
