@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl fxPreviewCtl 
+   AccessKeys      =   "T"
    BackColor       =   &H80000005&
    ClientHeight    =   5685
    ClientLeft      =   0
@@ -65,8 +66,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 14/January/13
-'Last update: miscellaneous optimizations and bugfixes
+'Last updated: 26/July/13
+'Last update: use Alt+T as an accelerator to toggle between original and preview image
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -79,7 +80,7 @@ Attribute VB_Exposed = False
 '
 'At present, there isn't much to the control.  It is capable of storing a copy of the original image and any
 ' filter-modified versions of the image.  The user can toggle between these by using the command link below the
-' main picture box.  This replaces the side-by-side "before and after" of past versions.
+' main picture box, or by pressing Alt+T.  This replaces the side-by-side "before and after" of past versions.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -126,7 +127,7 @@ Public Sub setFXImage(ByRef srcLayer As pdLayer)
     
     'If the user was previously examining the original image, reset the label caption to match the new preview
     If Not curImageState Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t)"
         curImageState = True
     End If
 
@@ -156,9 +157,9 @@ Private Sub lblBeforeToggle_Click()
     
     'Before doing anything else, change the label caption
     If curImageState Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show effect preview") & " "
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show effect preview") & " (alt+t)"
     Else
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t)"
     End If
     lblBeforeToggle.Refresh
     
@@ -176,6 +177,11 @@ Private Sub lblBeforeToggle_Click()
         End If
     End If
     
+End Sub
+
+'When the control's access key is pressed (alt+t), toggle the original/current image
+Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
+    lblBeforeToggle_Click
 End Sub
 
 Private Sub UserControl_AmbientChanged(PropertyName As String)
@@ -222,9 +228,9 @@ End Sub
 Private Sub UserControl_Show()
     'Translate the user control text
     If Ambient.UserMode Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " "
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t)"
     Else
-        lblBeforeToggle.Caption = "show original image "
+        lblBeforeToggle.Caption = "show original image (alt+t)"
     End If
 End Sub
 
