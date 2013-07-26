@@ -110,7 +110,7 @@ Begin VB.Form FormBatchWizard
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   191
          TabIndex        =   117
-         Top             =   2730
+         Top             =   3210
          Width           =   2865
       End
       Begin VB.PictureBox picBackColor 
@@ -125,7 +125,7 @@ Begin VB.Form FormBatchWizard
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   55
          TabIndex        =   113
-         Top             =   2085
+         Top             =   2565
          Width           =   855
       End
       Begin VB.ComboBox cmbResizeFit 
@@ -143,11 +143,11 @@ Begin VB.Form FormBatchWizard
          Left            =   6600
          Style           =   2  'Dropdown List
          TabIndex        =   112
-         Top             =   2160
+         Top             =   2640
          Width           =   4095
       End
       Begin VB.CommandButton cmdSelectMacro 
-         Caption         =   "Select macro file..."
+         Caption         =   "Select macro..."
          Height          =   525
          Left            =   8640
          TabIndex        =   31
@@ -175,14 +175,14 @@ Begin VB.Form FormBatchWizard
       End
       Begin PhotoDemon.smartCheckBox chkActions 
          Height          =   480
-         Index           =   1
+         Index           =   2
          Left            =   600
          TabIndex        =   102
          Top             =   4320
-         Width           =   3330
-         _ExtentX        =   5874
+         Width           =   3750
+         _ExtentX        =   6615
          _ExtentY        =   847
-         Caption         =   "all actions from a saved macro file"
+         Caption         =   "custom actions from a saved macro file"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -195,14 +195,14 @@ Begin VB.Form FormBatchWizard
       End
       Begin PhotoDemon.smartCheckBox chkActions 
          Height          =   480
-         Index           =   0
+         Index           =   1
          Left            =   600
          TabIndex        =   103
-         Top             =   1560
-         Width           =   1470
-         _ExtentX        =   2593
+         Top             =   2040
+         Width           =   1560
+         _ExtentX        =   2752
          _ExtentY        =   847
-         Caption         =   "resize image"
+         Caption         =   "resize images"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -217,7 +217,7 @@ Begin VB.Form FormBatchWizard
          Height          =   405
          Left            =   1800
          TabIndex        =   104
-         Top             =   2160
+         Top             =   2640
          Width           =   1200
          _ExtentX        =   2117
          _ExtentY        =   714
@@ -237,7 +237,7 @@ Begin VB.Form FormBatchWizard
          Height          =   405
          Left            =   1800
          TabIndex        =   105
-         Top             =   2640
+         Top             =   3120
          Width           =   1200
          _ExtentX        =   2117
          _ExtentY        =   714
@@ -294,6 +294,26 @@ Begin VB.Form FormBatchWizard
             Strikethrough   =   0   'False
          EndProperty
       End
+      Begin PhotoDemon.smartCheckBox chkActions 
+         Height          =   480
+         Index           =   0
+         Left            =   600
+         TabIndex        =   118
+         Top             =   1560
+         Width           =   3315
+         _ExtentX        =   5847
+         _ExtentY        =   847
+         Caption         =   "fix exposure and lighting problems"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
       Begin VB.Label lblExplanation 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
@@ -334,7 +354,7 @@ Begin VB.Form FormBatchWizard
          Height          =   240
          Left            =   5040
          TabIndex        =   111
-         Top             =   2220
+         Top             =   2700
          Width           =   1425
       End
       Begin VB.Label lblTitle 
@@ -358,7 +378,7 @@ Begin VB.Form FormBatchWizard
          Index           =   3
          Left            =   1110
          TabIndex        =   110
-         Top             =   2220
+         Top             =   2700
          Width           =   540
       End
       Begin VB.Label lblTitle 
@@ -382,7 +402,7 @@ Begin VB.Form FormBatchWizard
          Index           =   4
          Left            =   1110
          TabIndex        =   109
-         Top             =   2700
+         Top             =   3180
          Width           =   600
       End
       Begin VB.Label lblTitle 
@@ -405,7 +425,7 @@ Begin VB.Form FormBatchWizard
          Index           =   5
          Left            =   3090
          TabIndex        =   108
-         Top             =   2220
+         Top             =   2700
          Width           =   480
       End
       Begin VB.Label lblTitle 
@@ -428,7 +448,7 @@ Begin VB.Form FormBatchWizard
          Index           =   6
          Left            =   3090
          TabIndex        =   107
-         Top             =   2700
+         Top             =   3180
          Width           =   480
       End
       Begin VB.Label lblAspectRatio 
@@ -450,7 +470,7 @@ Begin VB.Form FormBatchWizard
          Height          =   240
          Left            =   1110
          TabIndex        =   106
-         Top             =   3240
+         Top             =   3720
          Width           =   2040
       End
    End
@@ -2359,10 +2379,8 @@ Private Sub cmdAddFiles_Click()
 End Sub
 
 'Cancel and exit the dialog, with optional prompts as necessary (see Form_QueryUnload)
-Private Sub CmdCancel_Click()
-    
+Private Sub cmdCancel_Click()
     Unload Me
-    
 End Sub
 
 Private Function allowedToExit() As Boolean
@@ -2491,13 +2509,13 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
             If optActions(1) Then
             
                 'If the user wants to resize the image, make sure the width and height values are valid
-                If CBool(chkActions(0)) Then
+                If CBool(chkActions(1)) Then
                     If Not tudWidth.IsValid Then Exit Sub
                     If Not tudHeight.IsValid Then Exit Sub
                 End If
                 
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
-                If CBool(chkActions(1)) And ((txtMacro.Text = "no macro selected") Or (txtMacro.Text = "")) Then
+                If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (txtMacro.Text = "")) Then
                     pdMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
                     AutoSelectText txtMacro
                     Exit Sub
@@ -2869,7 +2887,7 @@ Private Sub cmdSelectMacro_Click()
         txtMacro.Text = sFile
         
         'Also, select the macro option button by default
-        chkActions(0).Value = vbChecked
+        chkActions(2).Value = vbChecked
         
     End If
 
@@ -2954,10 +2972,10 @@ Private Sub Form_Load()
             updateAspectRatio
             
         'By default, select "apply no photo editing actions"
-            optActions(0).Value = True
             For i = 0 To chkActions.Count - 1
                 chkActions(i).Value = vbUnchecked
             Next i
+            optActions(0).Value = True
                 
     'Populate all file-format-related combo boxes, tooltips, and options
     
@@ -3576,13 +3594,18 @@ Private Sub prepareForBatchConversion()
                 'With the image loaded, it is time to apply any requested photo editing actions.
                 If optActions(1) Then
                 
-                    'If the user has requested an image resize, apply it now
+                    'If the user has requested automatic lighting fixes, apply it now
                     If CBool(chkActions(0)) Then
+                        Process "White balance", , "0.1"
+                    End If
+                
+                    'If the user has requested an image resize, apply it now
+                    If CBool(chkActions(1)) Then
                         Process "Resize", , buildParams(tudWidth, tudHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, picBackColor.backColor)
                     End If
                 
                     'If the user has requested a macro, play it now
-                    If CBool(chkActions(1)) Then PlayMacroFromFile txtMacro
+                    If CBool(chkActions(2)) Then PlayMacroFromFile txtMacro
                     
                 End If
             
@@ -3809,12 +3832,12 @@ End Sub
 ' 1) Select the "resize image" check box if it isn't already selected
 ' 2) Update the on-screen "new aspect ratio" label
 Private Sub tudHeight_Change()
-    If Not CBool(chkActions(0)) Then chkActions(0).Value = vbChecked
+    If Not CBool(chkActions(1)) Then chkActions(1).Value = vbChecked
     updateAspectRatio
 End Sub
 
 Private Sub tudWidth_Change()
-    If Not CBool(chkActions(0)) Then chkActions(0).Value = vbChecked
+    If Not CBool(chkActions(1)) Then chkActions(1).Value = vbChecked
     updateAspectRatio
 End Sub
 
