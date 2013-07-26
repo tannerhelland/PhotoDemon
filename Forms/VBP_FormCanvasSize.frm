@@ -700,8 +700,8 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     pdImages(CurrentImage).updateSize
     DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
     
-    'Fit the new image on-screen and redraw it to its viewport
-    FitOnScreen
+    'Fit the new image on-screen and redraw its viewport
+    PrepareViewport FormMain.ActiveForm, "Canvas resize"
     
     Message "Finished."
     
