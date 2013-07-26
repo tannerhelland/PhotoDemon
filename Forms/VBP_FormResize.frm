@@ -141,7 +141,9 @@ Begin VB.Form FormResize
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
+      Min             =   1
       Max             =   32767
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -160,7 +162,9 @@ Begin VB.Form FormResize
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
+      Min             =   1
       Max             =   32767
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -576,7 +580,7 @@ Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
             addResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE
             addResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL
             addResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL
-            addResample g_Language.TranslateMessage("Sinc (Lanczos3)"), RESIZE_LANCZOS
+            addResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), RESIZE_LANCZOS
         End If
                 
     End If
@@ -878,7 +882,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 'Create a filter support class, which will aid with edge handling and interpolation
                 Dim fSupport As pdFilterSupport
                 Set fSupport = New pdFilterSupport
-                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.MaxX, curLayerValues.MaxY
+                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.maxX, curLayerValues.MaxY
     
                 'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
                 ' based on the size of the area to be processed.
