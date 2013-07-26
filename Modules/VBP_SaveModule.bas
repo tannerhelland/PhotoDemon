@@ -719,7 +719,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         'Check to see if the current image had its colors counted before coming here.  If not, count it.
         Dim numColors As Long
         If g_LastImageScanned <> srcPDImage.imageID Then
-            numColors = getQuickColorCount(srcPDImage, srcPDImage)
+            numColors = getQuickColorCount(srcPDImage, srcPDImage.imageID)
         Else
             numColors = g_LastColorCount
         End If
