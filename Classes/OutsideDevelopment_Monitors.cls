@@ -213,7 +213,7 @@ CenterFormOnMonitor_Err:
     End If
 End Function
 
-Public Function GetMonitorFromXYPoint(X As Long, Y As Long, dwFlags As Long) As Long
+Public Function GetMonitorFromXYPoint(x As Long, y As Long, dwFlags As Long) As Long
     '==========================================
     'Gets a monitor handle from the xy point
     'Workaround for the GetMonitorFromPoint API
@@ -225,10 +225,10 @@ Public Function GetMonitorFromXYPoint(X As Long, Y As Long, dwFlags As Long) As 
     
     'Transfer the x y into a rect 1 pixel square
     With rcRect
-        .Top = Y
-        .Left = X
-        .Right = X + 1
-        .Bottom = Y + 1
+        .Top = y
+        .Left = x
+        .Right = x + 1
+        .Bottom = y + 1
     End With
     On Error Resume Next
     lReturn = MonitorFromRect(rcRect, dwFlags)
