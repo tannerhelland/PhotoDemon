@@ -77,7 +77,7 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
+   Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
       Height          =   495
@@ -86,7 +86,7 @@ Begin VB.Form FormResize
       Top             =   7590
       Width           =   1365
    End
-   Begin VB.CommandButton CmdCancel 
+   Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
@@ -661,7 +661,7 @@ Private Sub ChkRatio_Click()
 End Sub
 
 'Perform a resize operation
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
     If tudWidth.IsValid And tudHeight.IsValid Then
@@ -681,7 +681,7 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
@@ -1096,11 +1096,11 @@ Private Sub updateFormLayout()
         
         'Move the command bar into place
         lblBackground.Top = chkNames.Top + chkNames.Height + 16
-        CmdOK.Top = lblBackground.Top + 10
-        CmdCancel.Top = CmdOK.Top
+        cmdOK.Top = lblBackground.Top + 10
+        cmdCancel.Top = cmdOK.Top
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (cmdOK.Top + cmdOK.Height + 10) * Screen.TwipsPerPixelY
     
     Else
     
@@ -1123,11 +1123,11 @@ Private Sub updateFormLayout()
         
         'Move the command bar into place
         lblBackground.Top = lblSubtext(2).Top + lblSubtext(2).Height + 16
-        CmdOK.Top = lblBackground.Top + 10
-        CmdCancel.Top = CmdOK.Top
+        cmdOK.Top = lblBackground.Top + 10
+        cmdCancel.Top = cmdOK.Top
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (cmdOK.Top + cmdOK.Height + 10) * Screen.TwipsPerPixelY
     
     End If
 

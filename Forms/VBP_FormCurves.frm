@@ -306,12 +306,12 @@ Private Sub chkGrid_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
     Process "Curves", , getCurvesParamString()
     Unload Me
