@@ -79,7 +79,7 @@ Begin VB.Form FormCustomFilter
       Top             =   3480
       Width           =   1215
    End
-   Begin VB.TextBox TxtWeight 
+   Begin VB.TextBox txtWeight 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -604,8 +604,8 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   33
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -706,7 +706,7 @@ Private cImgCtl As clsControlImage
 Dim m_ToolTip As clsToolTip
 
 'When the user clicks OK...
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Before we do anything else, check to make sure every text box has a
     'valid number in it (no range checking is necessary)
@@ -718,8 +718,8 @@ Private Sub CmdOK_Click()
             Exit Sub
         End If
     Next x
-    If Not NumberValid(TxtWeight) Then
-        AutoSelectText TxtWeight
+    If Not NumberValid(txtWeight) Then
+        AutoSelectText txtWeight
         Exit Sub
     End If
     If Not NumberValid(txtBias) Then
@@ -743,7 +743,7 @@ Private Sub CmdOK_Click()
     Next x
         
     'What to divide the final value by
-    g_FilterWeight = Val(TxtWeight.Text)
+    g_FilterWeight = Val(txtWeight.Text)
     
     'Any offset value
     g_FilterBias = Val(txtBias.Text)
@@ -751,7 +751,7 @@ Private Sub CmdOK_Click()
     'Set that we have created a filter during this program session, and save it accordingly
     g_HasCreatedFilter = True
     
-    SaveCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
+    saveCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
     Process "Custom filter", , g_UserPreferences.getTempPath & "~PD_CF.tmp"
     
     Unload Me
@@ -759,7 +759,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
@@ -779,7 +779,7 @@ Private Sub Form_Activate()
     End With
     
     'If a filter has been used previously, load it from the temp file
-    If g_HasCreatedFilter = True Then OpenCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
+    If g_HasCreatedFilter = True Then openCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -805,7 +805,7 @@ Private Sub cmdOpen_Click()
     cdTitle = g_Language.TranslateMessage("Open a custom filter")
     
     If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getFilterPath, cdTitle, , FormCustomFilter.hWnd, 0) Then
-        If OpenCustomFilter(sFile) = True Then
+        If openCustomFilter(sFile) = True Then
             
             'Save the new directory as the default path for future usage
             g_UserPreferences.setFilterPath sFile
@@ -841,105 +841,90 @@ Private Sub cmdSave_Click()
         g_UserPreferences.setFilterPath sFile
         
         'Write out the file
-        SaveCustomFilter sFile
+        saveCustomFilter sFile
         
     End If
     
 End Sub
 
-'Load a custom filter from file
-Private Function OpenCustomFilter(ByRef srcFilterPath As String) As Boolean
+'Load a custom filter from file using the new pdXML class
+Private Function openCustomFilter(ByRef srcFilterPath As String) As Boolean
     
-    Dim tmpVal As Integer
-    Dim tmpValLong As Long
+    'Create a pdXML class, which will help us load and parse the source file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
     
-    Dim x As Long
+    'Load the XML file into memory
+    xmlEngine.loadXMLFile srcFilterPath
     
-    'Open the specified path
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon filter file
+    If xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
     
-    Open srcFilterPath For Binary As #fileNum
+        'Next, check the filter's version number, and make sure it's still supported
+        Dim verCheck As String
+        verCheck = xmlEngine.getUniqueTag_String("pdFilterVersion")
         
-        'Verify that the filter is actually a valid filter file
-        Dim VerifyID As String * 4
-        Get #fileNum, 1, VerifyID
-        If (VerifyID <> CUSTOM_FILTER_ID) Then
-            Close #fileNum
-            OpenCustomFilter = False
-            Exit Function
-        End If
-        'End verification
-       
-        'Next get the version number (gotta have this for backwards compatibility)
-        Dim VersionNumber As Long
-        Get #fileNum, , VersionNumber
-        If (VersionNumber <> CUSTOM_FILTER_VERSION_2003) And (VersionNumber <> CUSTOM_FILTER_VERSION_2012) Then
-            Message "Unsupported custom filter version."
-            Close #fileNum
-            OpenCustomFilter = False
-            Exit Function
-        End If
-        'End version check
+        Select Case verCheck
         
-        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            Get #fileNum, , tmpVal
-            TxtWeight = tmpVal
-            Get #fileNum, , tmpVal
-            txtBias = tmpVal
-        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            Get #fileNum, , tmpValLong
-            TxtWeight = tmpValLong
-            Get #fileNum, , tmpValLong
-            txtBias = tmpValLong
-        End If
+            'The current filter version (e.g. the first draft of the new XML format)
+            Case CUSTOM_FILTER_VERSION_2013
+            
+                'Load the divisor and offset values
+                txtWeight = xmlEngine.getUniqueTag_Long("filterDivisor")
+                txtBias = xmlEngine.getUniqueTag_Long("filterOffset")
+                
+                'Load the individual text box values
+                Dim i As Long
+                For i = 0 To TxtF.UBound
+                    TxtF(i) = xmlEngine.getUniqueTag_Long("filterEntry_" & i)
+                Next i
+            
+            Case Else
+                Message "Incompatible filter version found.  Filter load abandoned."
+                openCustomFilter = False
+                Exit Function
         
-        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            For x = 0 To 24
-                Get #fileNum, , tmpVal
-                TxtF(x) = tmpVal
-            Next x
-        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            For x = 0 To 24
-                Get #fileNum, , tmpValLong
-                TxtF(x) = tmpValLong
-            Next x
-        End If
+        End Select
         
-    Close #fileNum
-    
-    OpenCustomFilter = True
+        'Mark the load as successful and exit
+        openCustomFilter = True
+        Exit Function
+        
+    Else
+        openCustomFilter = False
+        Exit Function
+    End If
     
 End Function
 
-'Save a custom filter to file
-Private Function SaveCustomFilter(ByRef dstFilterPath As String) As Boolean
+'Save a custom filter to file using the new pdXML class
+Private Function saveCustomFilter(ByRef dstFilterPath As String) As Boolean
 
-    If FileExist(dstFilterPath) Then Kill dstFilterPath
+    'Create a pdXML class, which will help us assemble the file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.prepareBlankXML
     
-    Dim x As Long
+    'Write out the XML version we're using for this filter
+    xmlEngine.writeTag "pdFilterVersion", CUSTOM_FILTER_VERSION_2013
+    xmlEngine.writeBlankLine
     
-    'Open the specified file
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    'Write out the user-supplied divisor and offset values
+    xmlEngine.writeTag "filterDivisor", txtWeight
+    xmlEngine.writeTag "filterOffset", txtBias
+    xmlEngine.writeBlankLine
     
-    Open dstFilterPath For Binary As #fileNum
-        'Place the identifier
-        Put #fileNum, 1, CUSTOM_FILTER_ID
-        'Place the current version number
-        Put #fileNum, , CUSTOM_FILTER_VERSION_2012
-        'Strip the information out of the text boxes and send it
-        Dim tmpVal As Long
-        tmpVal = Val(TxtWeight.Text)
-        Put #fileNum, , tmpVal
-        tmpVal = Val(txtBias.Text)
-        Put #fileNum, , tmpVal
-        For x = 0 To 24
-            tmpVal = Val(TxtF(x).Text)
-            Put #fileNum, , tmpVal
-        Next x
-    Close #fileNum
-    SaveCustomFilter = True
+    'Write out the contents of the text boxes
+    Dim i As Long
+    For i = 0 To TxtF.UBound
+        xmlEngine.writeTag "filterEntry_" & i, TxtF(i)
+    Next i
+    
+    'Finally, ask the XML file to write itself out to file.
+    xmlEngine.writeBlankLine
+    xmlEngine.writeXMLToFile dstFilterPath
+    
+    saveCustomFilter = True
     
 End Function
 
@@ -966,11 +951,11 @@ Private Sub TxtF_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub TxtWeight_GotFocus()
-    AutoSelectText TxtWeight
+    AutoSelectText txtWeight
 End Sub
 
 Private Sub TxtWeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate TxtWeight, True
+    textValidate txtWeight, True
     updatePreview
 End Sub
 
@@ -984,7 +969,7 @@ Private Sub updatePreview()
         If Not EntryValid(TxtF(x), -1000000, 1000000, False, False) Then Exit Sub
     Next x
     
-    If Not EntryValid(TxtWeight, -1000000, 1000000, False, False) Then Exit Sub
+    If Not EntryValid(txtWeight, -1000000, 1000000, False, False) Then Exit Sub
     
     If Not EntryValid(txtBias, -1000000, 1000000, False, False) Then Exit Sub
     
@@ -1000,7 +985,7 @@ Private Sub updatePreview()
     Next x
         
     'What to divide the final value by
-    g_FilterWeight = Val(TxtWeight.Text)
+    g_FilterWeight = Val(txtWeight.Text)
     
     'Offset value
     g_FilterBias = Val(txtBias.Text)

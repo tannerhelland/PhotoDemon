@@ -23,6 +23,7 @@ Option Explicit
 Public Const CUSTOM_FILTER_ID As String * 4 = "DScf"
 Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
 Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
+Public Const CUSTOM_FILTER_VERSION_2013 As String = "8.2013"
 
 'The omnipotent DoFilter routine - it takes whatever is in g_FM() - the "filter matrix" and applies it to the image
 Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByVal InvertResult As Boolean = False, Optional ByVal srcFilterFile As String = "", Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -56,8 +57,8 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     finalY = curLayerValues.Bottom
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
-    checkXMin = curLayerValues.MinX
-    checkXMax = curLayerValues.MaxX
+    checkXMin = curLayerValues.minX
+    checkXMax = curLayerValues.maxX
     checkYMin = curLayerValues.MinY
     checkYMax = curLayerValues.MaxY
             
@@ -229,78 +230,65 @@ End Sub
 'This subroutine will load the data from a custom filter file straight into the g_FM() array
 Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     
-    'These are used to load values from the filter file; previously, they were integers, but in
-    ' 2012 I changed them to Longs.  PhotoDemon loads both types.
-    Dim tmpVal As Integer
-    Dim tmpValLong As Long
+    'Create a pdXML class, which will help us load and parse the source file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
     
-    Dim x As Long, y As Long
+    'Load the XML file into memory
+    xmlEngine.loadXMLFile srcFilterPath
     
-    'Open the specified path
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon filter file
+    If xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
     
-    Open srcFilterPath For Binary As #fileNum
+        'Next, check the filter's version number, and make sure it's still supported
+        Dim verCheck As String
+        verCheck = xmlEngine.getUniqueTag_String("pdFilterVersion")
         
-        'Verify that the filter is actually a valid filter file
-        Dim VerifyID As String * 4
-        Get #fileNum, 1, VerifyID
-        If (VerifyID <> CUSTOM_FILTER_ID) Then
-            Close #fileNum
-            LoadCustomFilterData = False
-            Exit Function
-        End If
-        'End verification
-       
-        'Next get the version number (gotta have this for backwards compatibility)
-        Dim VersionNumber As Long
-        Get #fileNum, , VersionNumber
-        If (VersionNumber <> CUSTOM_FILTER_VERSION_2003) And (VersionNumber <> CUSTOM_FILTER_VERSION_2012) Then
-            Message "Unsupported custom filter version."
-            Close #fileNum
-            LoadCustomFilterData = False
-        End If
-        'End version check
+        Select Case verCheck
         
-        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            Get #fileNum, , tmpVal
-            g_FilterWeight = tmpVal
-            Get #fileNum, , tmpVal
-            g_FilterBias = tmpVal
-        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            Get #fileNum, , tmpValLong
-            g_FilterWeight = tmpValLong
-            Get #fileNum, , tmpValLong
-            g_FilterBias = tmpValLong
-        End If
+            'The current filter version (e.g. the first draft of the new XML format)
+            Case CUSTOM_FILTER_VERSION_2013
+            
+                'Load the divisor and offset values
+                g_FilterWeight = xmlEngine.getUniqueTag_Long("filterDivisor")
+                g_FilterBias = xmlEngine.getUniqueTag_Long("filterOffset")
+                
+                'This temporary array will hold the matrix data loaded from file
+                Dim tFilterArray(0 To 24) As Long
         
-        'Resize the filter array to fit the default filter size
-        g_FilterSize = 5
-        ReDim g_FM(-2 To 2, -2 To 2) As Long
-        'Dim a temporary array from which to load the array data
-        Dim tFilterArray(0 To 24) As Long
+                'Load the individual text box values
+                Dim i As Long
+                For i = 0 To 24
+                    tFilterArray(i) = xmlEngine.getUniqueTag_Long("filterEntry_" & i)
+                Next i
+                
+                'Convert the 1D temporary array into the 2D array required by the filter function
+                g_FilterSize = 5
+                ReDim g_FM(-2 To 2, -2 To 2) As Long
+                
+                Dim x As Long, y As Long
+                For x = -2 To 2
+                For y = -2 To 2
+                    g_FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
+                Next y
+                Next x
+            
+            Case Else
+                Message "Incompatible filter version found.  Filter load abandoned."
+                LoadCustomFilterData = False
+                Exit Function
         
-        If VersionNumber = CUSTOM_FILTER_VERSION_2003 Then
-            For x = 0 To 24
-                Get #fileNum, , tmpVal
-                tFilterArray(x) = tmpVal
-            Next x
-        ElseIf VersionNumber = CUSTOM_FILTER_VERSION_2012 Then
-            For x = 0 To 24
-                Get #fileNum, , tmpValLong
-                tFilterArray(x) = tmpValLong
-            Next x
-        End If
+        End Select
         
-        'Now dump the temporary array into the filter array
-        For x = -2 To 2
-        For y = -2 To 2
-            g_FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
-        Next y
-        Next x
-    'Close the file up
-    Close #fileNum
-    LoadCustomFilterData = True
+        'Mark the load as successful and exit
+        LoadCustomFilterData = True
+        Exit Function
+        
+    Else
+        LoadCustomFilterData = False
+        Exit Function
+    End If
+    
 End Function
 
 'Sharpen an image via convolution filter
