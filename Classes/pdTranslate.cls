@@ -355,7 +355,7 @@ Public Sub CheckAvailableLanguages()
     numOfLanguages = 0
     ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
     
-    'Scan the MRU icon directory for .xml files.  Ignore anything that isn't XML.
+    'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim chkFile As String, curFileAsText As String
     chkFile = Dir(g_UserPreferences.getLanguagePath & "*.xml", vbNormal)
         
