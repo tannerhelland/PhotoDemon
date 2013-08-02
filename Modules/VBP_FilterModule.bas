@@ -30,7 +30,7 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     
     'If requested, load the custom filter data from a file
     If srcFilterFile <> "" Then
-        If toPreview = False Then Message "Loading custom filter information..."
+        If Not toPreview Then Message "Loading custom filter information..."
         Dim FilterReturn As Boolean
         FilterReturn = LoadCustomFilterData(srcFilterFile)
         If FilterReturn = False Then
@@ -238,7 +238,7 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     xmlEngine.loadXMLFile srcFilterPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon filter file
-    If xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
+    If xmlEngine.isPDDataType("Convolution filter") And xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
     
         'Next, check the filter's version number, and make sure it's still supported
         Dim verCheck As String
