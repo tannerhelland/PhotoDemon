@@ -2,6 +2,7 @@
 	
 	<pdData>
 		
+		<pdDataType>Convolution filter</pdDataType>
 		<pdFilterVersion>8.2013</pdFilterVersion>
 		
 		<filterDivisor>250</filterDivisor>
