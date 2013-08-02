@@ -604,8 +604,8 @@ Begin VB.Form FormCustomFilter
       TabIndex        =   33
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -685,12 +685,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 08/September/12
-'Last update: several routines from this form have been moved to the Filters_Area module, which is a more sensible place for them.
+'Last updated: 02/August/13
+'Last update: rewrote all filter load/save operations against the new, much-improved XML filter file format
 '
-'This form handles creation/loading/saving of user-defined filters.
+'This dialog allows the user to create custom convolution filters.  It also allows the user to save those filters to
+' file, or to load previously saved convolution filter files.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -706,7 +707,7 @@ Private cImgCtl As clsControlImage
 Dim m_ToolTip As clsToolTip
 
 'When the user clicks OK...
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Before we do anything else, check to make sure every text box has a
     'valid number in it (no range checking is necessary)
@@ -759,7 +760,7 @@ Private Sub cmdOK_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
@@ -858,7 +859,7 @@ Private Function openCustomFilter(ByRef srcFilterPath As String) As Boolean
     xmlEngine.loadXMLFile srcFilterPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon filter file
-    If xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
+    If xmlEngine.isPDDataType("Convolution filter") And xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
     
         'Next, check the filter's version number, and make sure it's still supported
         Dim verCheck As String
@@ -891,6 +892,8 @@ Private Function openCustomFilter(ByRef srcFilterPath As String) As Boolean
         Exit Function
         
     Else
+        
+        pdMsgBox "Unfortunately, this custom filter file is no longer supported by the current version of PhotoDemon." & vbCrLf & vbCrLf & "In version 6.0, PhotoDemon filter files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that custom filters created prior to version 6.0 are no longer compatible.  You will need to re-enter those filters from scratch." & vbCrLf & vbCrLf & "(Note that any old custom filter files will still work in old versions of PhotoDemon, if you absolutely need to access them.)", vbInformation + vbOKOnly, "Unsupported custom filter"
         openCustomFilter = False
         Exit Function
     End If
@@ -903,7 +906,7 @@ Private Function saveCustomFilter(ByRef dstFilterPath As String) As Boolean
     'Create a pdXML class, which will help us assemble the file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
-    xmlEngine.prepareBlankXML
+    xmlEngine.prepareNewXML "Convolution filter"
     
     'Write out the XML version we're using for this filter
     xmlEngine.writeTag "pdFilterVersion", CUSTOM_FILTER_VERSION_2013
