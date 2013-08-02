@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="windows-1252"?>
+	
+	<pdData>
+		
+		<pdDataType>Macro</pdDataType>
+		<pdMacroVersion>8.2013</pdMacroVersion>
+		<processCount>4</processCount>
+		
+		<processEntry index="1">
+			<ID>Create selection</ID>
+			<Parameters>1|0|1|0|1|0|10|136|88|362|306|136|88|498|394</Parameters>
+			<MakeUndo>2</MakeUndo>
+			<Tool>1</Tool>
+		</processEntry>
+		
+		<processEntry index="2">
+			<ID>Resize selection</ID>
+			<Parameters>1|0|1|0|1|0|10|136|34|362|360|136|394|498|34</Parameters>
+			<MakeUndo>2</MakeUndo>
+			<Tool>1</Tool>
+		</processEntry>
+		
+		<processEntry index="3">
+			<ID>Invert RGB</ID>
+			<Parameters></Parameters>
+			<MakeUndo>1</MakeUndo>
+			<Tool>-1</Tool>
+		</processEntry>
+		
+		<processEntry index="4">
+			<ID>Remove selection</ID>
+			<Parameters>1|0|2|49|1|0|10|592|102|0|0|592|102|592|102</Parameters>
+			<MakeUndo>2</MakeUndo>
+			<Tool>1</Tool>
+		</processEntry>
+		
+	</pdData>
+	
