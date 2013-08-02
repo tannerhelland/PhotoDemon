@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 30/July/13
-'Last updated: 01/August/13
-'Last update: initial build
+'Last updated: 02/August/13
+'Last update: many new functions to support XML-format macro files
 '
 'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 ' IT IS NOT MEANT TO BE A FULL-FEATURED TO-SPEC XML PARSER, but it could certainly be extended to support additional
 ' XML features as needed.
 '
-'Many thanks to Frank Donckers, who helped prototype the original translation XML engine (which I referenced frequently
-' while designing this class).
+'Many thanks to Frank Donckers, who helped prototype the original translation XML engine (which heavily influenced
+' the design and code of this class).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -45,17 +45,34 @@ Option Explicit
 'All PhotoDemon-compatible files must have their data wrapped in the following top-level tag
 Private Const ROOT_TAG As String = "<pdData>"
 Private Const ROOT_TAG_CLOSE As String = "</pdData>"
+Private Const PD_DATA_ID As String = "<pdDataType>"
+Private Const PD_DATA_ID_CLOSE As String = "</pdDataType>"
 
 'The contents of the assigned XML file, stored in memory as one (potentially very long) string.
 Private xmlContents As String
 
 'If this class is being used to write out a new XML file, this function can be called to initialize the blank file.
-Public Sub prepareBlankXML()
+Public Sub prepareNewXML(ByVal pdDataType As String)
 
     xmlContents = "<?xml version=""1.0"" encoding=""windows-1252""?>" & vbCrLf & vbCrLf
-    xmlContents = xmlContents & ROOT_TAG & vbCrLf & vbCrLf & ROOT_TAG_CLOSE & vbCrLf
+    xmlContents = xmlContents & ROOT_TAG & vbCrLf & vbCrLf & PD_DATA_ID & pdDataType & PD_DATA_ID_CLOSE & vbCrLf & ROOT_TAG_CLOSE & vbCrLf
 
 End Sub
+
+'PhotoDemon-specific XML files are required to encode a data type (filter, macro, etc).  This function can be used to quickly
+' retrieve that type, allowing the calling function to determine if a proper filetype has been loaded for their operation.
+Public Function isPDDataType(ByVal expectedType As String) As Boolean
+    
+    Dim reportedType As String
+    reportedType = getTextBetweenTags("pdDataType")
+    
+    If StrComp(reportedType, expectedType, vbTextCompare) = 0 Then
+        isPDDataType = True
+    Else
+        isPDDataType = False
+    End If
+    
+End Function
 
 'Write a blank line into the XML file.  This has no practical purpose, but I'm a big fan of pretty XML output, so I like to use
 ' blank lines to separate tag families.
@@ -106,7 +123,7 @@ End Function
 
 'Write a new XML tag to the master XML string.  By default, new tags are written to the end of the file, but the writeAtStart
 ' param can be set to TRUE to write tags at the top.
-Public Function writeTag(ByVal tagName As String, ByVal tagValue As String, Optional ByVal writeAtStart As Boolean = False) As Boolean
+Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal writeAtStart As Boolean = False) As Boolean
 
     'Find the </pdData> tag that signifies the end of PD-compatible XML data
     Dim tagLocation As Long
@@ -128,7 +145,7 @@ Public Function writeTag(ByVal tagName As String, ByVal tagValue As String, Opti
         
         'Build a string with the tag name and value we were passed
         Dim newTagLine As String
-        newTagLine = "<" & tagName & ">" & tagValue & "</" & tagName & ">" & vbCrLf
+        newTagLine = "<" & tagName & ">" & tagContents & "</" & tagName & ">" & vbCrLf
         
         'Reassemble the primary string
         xmlContents = topHalf & newTagLine & bottomHalf
@@ -138,6 +155,68 @@ Public Function writeTag(ByVal tagName As String, ByVal tagValue As String, Opti
         writeTag = False
     End If
 
+End Function
+
+'Write a new XML tag to the master XML string, including a single attribute and value.  By default, new tags are written to the end of
+' the file, but the writeAtStart param can be set to TRUE to write tags at the top.
+' If you don't want the tag automatically closed, set the doNotCloseTag parameter to TRUE.
+Public Function writeTagWithAttribute(ByVal tagName As String, ByVal tagAttribute As String, ByVal attributeValue As String, ByVal tagContents As String, Optional ByVal doNotCloseTag As Boolean = False, Optional ByVal writeAtStart As Boolean = False) As Boolean
+
+    'Find the </pdData> tag that signifies the end of PD-compatible XML data
+    Dim tagLocation As Long
+    If writeAtStart Then
+        tagLocation = InStr(1, xmlContents, ROOT_TAG, vbBinaryCompare)
+    Else
+        tagLocation = InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare)
+    End If
+
+    If tagLocation > 0 Then
+    
+        'Split the XML file into two halves: the half before the root tag, and the half after
+        Dim topHalf As String, bottomHalf As String
+        If writeAtStart Then
+            splitStringIn2 xmlContents, tagLocation + Len(ROOT_TAG), topHalf, bottomHalf
+        Else
+            splitStringIn2 xmlContents, tagLocation - 1, topHalf, bottomHalf
+        End If
+        
+        'Build a string with the tag name and value we were passed
+        Dim newTagLine As String
+        newTagLine = "<" & tagName & " " & tagAttribute & "=""" & attributeValue & """>" & tagContents
+        
+        If Not doNotCloseTag Then newTagLine = newTagLine & "</" & tagName & ">" & vbCrLf Else newTagLine = newTagLine & vbCrLf
+        
+        'Reassemble the primary string
+        xmlContents = topHalf & newTagLine & bottomHalf
+        
+        writeTagWithAttribute = True
+    Else
+        writeTagWithAttribute = False
+    End If
+
+End Function
+
+'Close a tag that has been previously left open
+Public Function closeTag(ByVal tagName As String) As Boolean
+    
+    'Find the </pdData> tag that signifies the end of PD-compatible XML data
+    Dim tagLocation As Long
+    tagLocation = InStrRev(xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
+    
+    If tagLocation > 0 Then
+    
+        'Split the XML file into two halves: the half before the root tag, and the half after
+        Dim topHalf As String, bottomHalf As String
+        splitStringIn2 xmlContents, tagLocation - 1, topHalf, bottomHalf
+        
+        'Reassemble the primary string with the closing tag inserted
+        xmlContents = topHalf & "</" & tagName & ">" & vbCrLf & bottomHalf
+        
+        closeTag = True
+    Else
+        closeTag = False
+    End If
+    
 End Function
 
 'Given a string and a position, split it into two strings at that position
@@ -152,6 +231,12 @@ Public Function validateLoadedXMLData(ParamArray expectedTags() As Variant) As B
 
     'Start by looking for the <pdData> tags that surround all PhotoDemon-specific XML files
     If (InStr(1, xmlContents, ROOT_TAG, vbBinaryCompare) = 0) Or (InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare) = 0) Then
+        validateLoadedXMLData = False
+        Exit Function
+    End If
+    
+    'Next, make sure the file specifies some type of PhotoDemon data
+    If InStr(1, xmlContents, PD_DATA_ID, vbBinaryCompare) = 0 Then
         validateLoadedXMLData = False
         Exit Function
     End If
@@ -310,10 +395,10 @@ End Function
 
 'The next block of functions returns a unique tag value in the specified format.  "Unique" tags are those that only exist once in
 ' a file, so their location does not matter, as they can only appear once.
-Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "") As String
+Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1) As String
     
     Dim tmpString As String
-    tmpString = getTextBetweenTags(tagName)
+    tmpString = getTextBetweenTags(tagName, searchLocation)
     
     If Len(tagName) > 0 Then
         getUniqueTag_String = CStr(tmpString)
@@ -323,16 +408,51 @@ Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defa
     
 End Function
 
-Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaultReturn As Long = 0) As String
+Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As String
     
     Dim tmpString As String
-    tmpString = getTextBetweenTags(tagName)
+    tmpString = getTextBetweenTags(tagName, searchLocation)
     
     If Len(tagName) > 0 Then
         getUniqueTag_Long = CLng(tmpString)
     Else
         getUniqueTag_Long = defaultReturn
     End If
+    
+End Function
+
+'Return a location pointer immediately following the location of a given tag+attribute combo
+Public Function getLocationOfTagPlusAttribute(ByVal tagName As String, ByVal tagAttribute As String, ByVal tagAttributeValue As String) As Long
+
+    Dim searchLocation As Long
+    searchLocation = InStr(1, xmlContents, "<" & tagName & " ", vbTextCompare)
+
+    Dim tagStart As Long, tagEnd As Long
+    
+    'Run a loop, finding matching tag entries as we go.
+    Do While searchLocation > 0
+    
+        'Search location is now pointing at the location of the next tagName occurrence in the XML file.  From that location, look for
+        ' a matching attribute tag.  (It's assumed that one exists...)
+        Dim attributeLocation As Long
+        attributeLocation = InStr(searchLocation, xmlContents, tagAttribute, vbTextCompare)
+        
+        'From the attribute location, we know the value has to appear immediately following tagAttribute=", so look for it there
+        If StrComp(tagAttributeValue, Mid$(xmlContents, attributeLocation + Len(attributeLocation) + 3, Len(tagAttributeValue))) = 0 Then
+            
+            'A match was found!  Return this tag location and exit.
+            getLocationOfTagPlusAttribute = attributeLocation + 5
+            Exit Function
+            
+        End If
+        
+        'If we're here, a matching attribute was not found.  Find the next matching tag occurrence and continue.
+        searchLocation = InStr(attributeLocation, xmlContents, "<" & tagName & " ", vbTextCompare)
+        
+    Loop
+    
+    'If we made it all the way here, we were unable to find a matching tag/attribute combination.
+    getLocationOfTagPlusAttribute = 0
     
 End Function
 
@@ -344,6 +464,11 @@ Private Function getTextBetweenTags(ByRef tagName As String, Optional ByVal sear
 
     Dim tagStart As Long, tagEnd As Long
     tagStart = InStr(searchLocation, xmlContents, "<" & tagName & ">", vbTextCompare)
+
+    'If the tag was not found, it's possible that the tag has an attribute inside it, making the previous check fail.  Try again now.
+    If tagStart = 0 Then
+        tagStart = InStr(searchLocation, xmlContents, "<" & tagName & " ", vbTextCompare)
+    End If
 
     'If the tag was found in the file, we also need to find the closing tag.
     If tagStart > 0 Then
