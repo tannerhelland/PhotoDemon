@@ -3,8 +3,8 @@ Attribute VB_Name = "Selection_Handler"
 'Selection Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 11/July/13
-'Last update: add support for the new multi-purpose selection tool dialog
+'Last updated: 03/August/13
+'Last update: fix some initialization behavior to get selections working with macros
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -33,6 +33,13 @@ End Enum
     Const SEL_FEATHER = 3
     Const SEL_SHARPEN = 4
 #End If
+
+'During Macro recording, lazy Undo/Redo initialization gets us into trouble because certain adjustments (like live feathering changes) are not
+' recorded via traditional means.  Thus we have to call this function to make sure all selection attributes are properly stored.
+Public Sub backupSelectionSettingsForMacro(ByVal sParamString As String)
+    'MsgBox sParamString
+    CreateNewSelection sParamString
+End Sub
 
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
@@ -231,7 +238,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
                     FormMain.tudSel(1).Value = pdImages(formID).mainSelection.selTop
                     FormMain.tudSel(2).Value = pdImages(formID).mainSelection.selWidth
                     FormMain.tudSel(3).Value = pdImages(formID).mainSelection.selHeight
-        
+                    
                 'Line selections display x1, y1, x2, y2
                 Case sLine
                     FormMain.tudSel(0).Value = pdImages(formID).mainSelection.x1

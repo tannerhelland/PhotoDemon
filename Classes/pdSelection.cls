@@ -15,11 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 14/June/13
-'Last update: selections can now lie partially off the image.  All bounds checking has been moved to a singular location
-'             (after the mask is rendered) which means there are no limits on where the user draws the selection; it simply
-'             has to cover at least one pixel of the image.  (If it doesn't, it will be deactivated.)  This is great when
-'             drawing elliptical/circular selections, as they can be used to cover arc-like portions of the image.
+'Last updated: 03/August/13
+'Last update: set transformability automatically when setting shape.  This is not only better behavior, but it was
+'             required to get selections in macros performing correctly.
 '
 'This class handles all selections in PhotoDemon.  Rectangular and elliptical selections are now implemented, with more
 ' to follow in the coming months.
@@ -250,6 +248,9 @@ End Sub
 ' list of variables into a single string.  This function is especially helpful when writing full selection data to/from file.
 Public Sub initFromParamString(ByVal paramString As String)
 
+    'First, mark the mask as "not ready"
+    isMaskReady = False
+
     'Start by creating a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types upon request.
     Dim cParams As pdParamString
@@ -414,6 +415,15 @@ Public Function getSelectionShape() As SelectionShape
 End Function
 
 Public Sub setSelectionShape(ByVal selShape As SelectionShape)
+    
+    'Certain types of shapes are transformable.  Mark those now.
+    Select Case selShape
+        
+        Case sRectangle, sCircle, sLine
+            isTransformable = True
+        
+    End Select
+    
     If isTransformable Then isMaskReady = False
     sShape = selShape
 End Sub

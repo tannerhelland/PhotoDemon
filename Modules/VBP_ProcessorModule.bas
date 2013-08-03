@@ -3,10 +3,9 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 03/June/13
-'Last update: started the painful process of rebuilding the software processor from scratch.  All params will now be string-based,
-'              which introduces some overhead, but will make macro recording infinitely simpler.  It will also enable a filter browser,
-'              which I have wanted since I first started work on PhotoDemon some 12 years ago.
+'Last updated: 03/August/13
+'Last update: added additional code for forcing selection parameter recording during macros.  This is necessary to avoid loss of selection
+'             data due to our "lazy" tracking system for selection parameter changes.
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -26,7 +25,6 @@ Attribute VB_Name = "Processor"
 
 Option Explicit
 Option Compare Text
-
 
 'Data type for tracking processor calls - used for macros (NOTE: this is the 2013 model; older models are no longer supported.)
 Public Type ProcessCall
@@ -69,7 +67,7 @@ Private m_ProcessingTime As Double
 '                will automatically be set to 0, which means "DO NOT CREATE UNDO".
 ' - *relevantTool: some Process calls are initiated by a particular tool (for example, "create selection" will be called by one of the
 '                  selection tools).  This parameter can contain the relevant tool for a given action.  If Undo is used to return to a
-'                  previous state, the relevant tool will automatically be selected, making it much easier for the user to make changes
+'                  previous state, the relevant tool can automatically be selected, making it much easier for the user to make changes
 '                  to an action using the proper tool.
 ' - *recordAction: are macros allowed to record this action?  Actions are assumed to be recordable.  However, some PhotoDemon functions
 '                  are actually several actions strung together; when these are used, subsequent actions are marked as "not recordable"
@@ -108,6 +106,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If the macro recorder is running and this action is marked as recordable, store it in our array of processor calls
     If (MacroStatus = MacroSTART) And recordAction Then
+    
+        'First things first: if the current action is NOT selection-related, but the last one was, make a backup of all selection settings.
+        If (createUndo <> 2) And (LastProcess.MakeUndo = 2) And (Not (LastProcess.Id = "Finalize selection for macro")) Then
+            Process "Finalize selection for macro", False, pdImages(CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool, True
+        End If
     
         'Increase the process count
         ProcessCount = ProcessCount + 1
@@ -361,6 +364,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Remove selection"
             RemoveCurrentSelection cParams.getParamString
         
+        
+        'Backup selection settings during a recorded macro (required to avoid "lazy" tracking method used on selection changes)
+        Case "Finalize selection for macro"
+            backupSelectionSettingsForMacro cParams.getParamString
+            
         
         'Modify the existing selection in some way
         Case "Invert selection"
