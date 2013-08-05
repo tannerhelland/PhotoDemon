@@ -279,7 +279,7 @@ Begin VB.Form FormCanvasSize
       X1              =   262
       X2              =   262
       Y1              =   57
-      Y2              =   106
+      Y2              =   105
    End
    Begin VB.Line Line3 
       BorderColor     =   &H00808080&
