@@ -41,7 +41,7 @@ Option Explicit
 
 'Used when writing/reading selection data to/from a file
 Private Const SELECTION_IDENTIFIER As String * 4 = "PDsd"
-Private Const SELECTION_FILE_VERSION_2013 As Long = &H1001
+Private Const SELECTION_FILE_VERSION_2013 As Long = &H1002
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Private Type SAFEARRAYBOUND
@@ -1682,12 +1682,6 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
         Get #fileNum, , origWidth
         Get #fileNum, , origHeight
         
-        'Was the selection locked in?
-        Get #fileNum, , lockedIn
-        
-        'Is the selection transformable?
-        Get #fileNum, , isTransformable
-        
         'Retrieve the selection parameters into a string
         Dim paramString As String, lenParamString As Long
         Get #fileNum, , lenParamString
@@ -1696,6 +1690,15 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
         
         'Convert the relative values in the parameter string to absolute ones
         paramString = translateParamStringToFileFormat(paramString, False)
+        
+        'Parse the parameter string into its individual components, and use those to initialize this selection
+        initFromParamString paramString
+        
+        'Was the selection locked in?
+        Get #fileNum, , lockedIn
+        
+        'Is the selection transformable?
+        Get #fileNum, , isTransformable
         
         'If this selection was not transformable (meaning it could not be described in vector format), a full copy of its selection mask
         ' will be embedded in the file.  Load that data now.
@@ -1718,9 +1721,6 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     Close #fileNum
     
     'MsgBox "read from file: " & vbCrLf & srcFilename & vbCrLf & lockedIn & vbCrLf & paramString
-        
-    'Parse the parameter string into its individual components, and use those to initialize this selection
-    initFromParamString paramString
     
     'If this selection wasn't transformable, we need to find its boundaries now
     If Not isTransformable And layerLoadedSuccessfully Then findNewBoundsManually
@@ -1780,14 +1780,15 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
             If Not writeTransformable Then writeLayer.createFromExistingLayer selMask
         End If
         
-        Put #fileNum, , writeSelectionState
-        Put #fileNum, , writeTransformable
-        
         'Convert the absolute values in the parameter string to relative ones
         writeParamString = translateParamStringToFileFormat(writeParamString, True)
         
         Put #fileNum, , CLng(Len(writeParamString))
         Put #fileNum, , writeParamString
+        
+        'Write out the selection's current stated (locked in or not), as well as its transformability.
+        Put #fileNum, , writeSelectionState
+        Put #fileNum, , writeTransformable
         
         'If this selection is not transformable, we must also embed the full selection mask.
         If Not writeTransformable And maskHasBeenCreated Then writeLayer.writeToExistingFile fileNum
