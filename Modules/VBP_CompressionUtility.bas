@@ -1,13 +1,13 @@
-Attribute VB_Name = "Plugin_zLib_Handler"
+Attribute VB_Name = "Plugin_zLib_Interface"
 '***************************************************************************
 'File Compression Interface (via zLib)
-'Copyright ©2003-2013 by Tanner Helland
+'Copyright ©2002-2013 by Tanner Helland
 'Created: 3/02/02
-'Last updated: 24/October/07
-'Last update: cleaned up error handling
+'Last updated: 05/August/13
+'Last update: standalone functions for compressing and decompressing arrays.  I still need to tie the compress/decompress file
+'              routines into these, to avoid duplicating code unnecessarily.
 '
-'Module to handle file compression and decompression to a custom file format
-' via the zLib compression library.
+'Module to handle file compression and decompression to a custom file format via the zLib compression library.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -36,7 +36,7 @@ Private FileHeader As CompressionHeader
 Private dstFilename As String
 
 'Used to compare compression ratios
-Private OriginalSize As Long, CompressedSize As Long
+Private OriginalSize As Long, compressedSize As Long
 
 'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
 Public Function isZLibAvailable() As Boolean
@@ -93,26 +93,26 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     OriginalSize = UBound(DataBytes) + 1
 
     'Allocate memory for a temporary compression array
-    Dim BufferSize As Long
+    Dim bufferSize As Long
     Dim TempBuffer() As Byte
-    BufferSize = UBound(DataBytes) + 1
-    BufferSize = BufferSize + (BufferSize * 0.01) + 12
-    ReDim TempBuffer(BufferSize)
+    bufferSize = UBound(DataBytes) + 1
+    bufferSize = bufferSize + (bufferSize * 0.01) + 12
+    ReDim TempBuffer(bufferSize)
 
     'Compress the data using zLib
     Dim result As Long
-    result = compress(TempBuffer(0), BufferSize, DataBytes(0), UBound(DataBytes) + 1)
+    result = compress(TempBuffer(0), bufferSize, DataBytes(0), UBound(DataBytes) + 1)
 
     'Copy the compressed data back into our first array
-    ReDim DataBytes(BufferSize - 1)
-    CopyMemory DataBytes(0), TempBuffer(0), BufferSize
+    ReDim DataBytes(bufferSize - 1)
+    CopyMemory DataBytes(0), TempBuffer(0), bufferSize
 
     'Kill the now useless buffer
     Erase TempBuffer
 
     'Some very simple error handling
     If result = 0 Then
-        CompressedSize = UBound(DataBytes) + 1
+        compressedSize = UBound(DataBytes) + 1
     Else
         pdMsgBox "An error (#%1) has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error", Err.Number
         Exit Function
@@ -143,7 +143,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     'If SrcFilename <> DstFilename Then Kill SrcFilename
 
     'Report the compression ratio
-    If DispResults Then pdMsgBox "File compressed from %1 bytes to %2 bytes.  Ratio: %3 %", vbInformation + vbOKOnly, "Compression results", OriginalSize, CompressedSize, CStr(100 - (100 * (CDbl(CompressedSize) / CDbl(OriginalSize))))
+    If DispResults Then pdMsgBox "File compressed from %1 bytes to %2 bytes.  Ratio: %3 %", vbInformation + vbOKOnly, "Compression results", OriginalSize, compressedSize, CStr(100 - (100 * (CDbl(compressedSize) / CDbl(OriginalSize))))
 
     'Return
     CompressFile = True
@@ -183,23 +183,23 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     OriginalSize = UBound(DataBytes) + 1
     
     'Allocate memory for buffers
-    Dim BufferSize As Long
+    Dim bufferSize As Long
     Dim TempBuffer() As Byte
-    BufferSize = FileHeader.OriginalSize
-    BufferSize = BufferSize + (BufferSize * 0.01) + 12
-    ReDim TempBuffer(BufferSize)
+    bufferSize = FileHeader.OriginalSize
+    bufferSize = bufferSize + (bufferSize * 0.01) + 12
+    ReDim TempBuffer(bufferSize)
     
     'Decompress the data using zLib
     Dim result As Long
-    result = uncompress(TempBuffer(0), BufferSize, DataBytes(0), UBound(DataBytes) + 1)
+    result = uncompress(TempBuffer(0), bufferSize, DataBytes(0), UBound(DataBytes) + 1)
     
     'Copy the uncompressed data back into our first array
-    ReDim DataBytes(BufferSize - 1)
-    CopyMemory DataBytes(0), TempBuffer(0), BufferSize
+    ReDim DataBytes(bufferSize - 1)
+    CopyMemory DataBytes(0), TempBuffer(0), bufferSize
     
     'Some very simple error handling
     If result = 0 Then
-        CompressedSize = UBound(DataBytes) + 1
+        compressedSize = UBound(DataBytes) + 1
     Else
         pdMsgBox "An error (#%1) has occurred.  Compression halted.", vbCritical + vbOKOnly + vbApplicationModal, "zLib error", Err.Number
         Exit Function
@@ -230,9 +230,83 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     If srcFilename <> dstFilename Then Kill srcFilename
     
     'Display decompression results
-    If DispResults Then pdMsgBox "File decompressed from %1 bytes to %2 bytes.", vbInformation + vbOKOnly, "Compression results", OriginalSize, CompressedSize
+    If DispResults Then pdMsgBox "File decompressed from %1 bytes to %2 bytes.", vbInformation + vbOKOnly, "Compression results", OriginalSize, compressedSize
     
     'Return
     DecompressFile = True
     
+End Function
+
+'Fill a destination array with the compressed version of a source array.
+Public Function compressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, Optional ByRef origSize As Long = 0, Optional ByRef compressSize As Long = 0) As Boolean
+
+    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    Dim hLib As Long
+    hLib = LoadLibrary(g_PluginPath & "zlibwapi.dll")
+
+    'Mark the original size
+    origSize = UBound(srcArray) - LBound(srcArray) + 1
+
+    'Allocate memory for a temporary compression array.  Per the zLib spec, the buffer should be slightly larger than
+    ' the original array to allow space for generating the compression data.
+    Dim bufferSize As Long
+    bufferSize = origSize + (origSize * 0.01) + 12
+    ReDim dstArray(0 To bufferSize) As Byte
+
+    'Compress the data using zLib
+    Dim zResult As Long
+    zResult = compress(dstArray(0), bufferSize, srcArray(0), origSize)
+    
+    'Let VB repopulate its SafeArray structure by redimming the array.
+    ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
+
+    'Free the zLib library from memory
+    FreeLibrary hLib
+
+    'Return success or failure (zLib returns 0 upon a successful compression)
+    If zResult = 0 Then
+        compressSize = bufferSize
+        compressArray = True
+    Else
+        compressSize = 0
+        compressArray = False
+    End If
+
+End Function
+
+'Fill a destination array with the compressed version of a source array.  Also, ask for the original size,
+' which allows us to avoid wasting time creating poorly sized buffers.
+Public Function decompressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByRef origSize As Long) As Boolean
+
+    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    Dim hLib As Long
+    hLib = LoadLibrary(g_PluginPath & "zlibwapi.dll")
+
+    'Calculate the size of the compressed array
+    Dim compressedSize As Long
+    compressedSize = UBound(srcArray) - LBound(srcArray) + 1
+
+    'Allocate memory for a temporary decompression array.  Per the zLib spec, the buffer should be slightly larger than
+    ' the original array to allow space for generating the compression data.
+    Dim bufferSize As Long
+    bufferSize = origSize + (origSize * 0.01) + 12
+    ReDim dstArray(0 To bufferSize - 1) As Byte
+
+    'Decompress the data using zLib
+    Dim zResult As Long
+    zResult = uncompress(dstArray(0), bufferSize, srcArray(0), compressedSize)
+    
+    'Let VB repopulate its SafeArray structure by redimming the array.
+    ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
+
+    'Free the zLib library from memory
+    FreeLibrary hLib
+
+    'Return success or failure (zLib returns 0 upon a successful compression)
+    If zResult = 0 Then
+        decompressArray = True
+    Else
+        decompressArray = False
+    End If
+
 End Function
