@@ -1707,7 +1707,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
             Dim tmpLayer As pdLayer
             Set tmpLayer = New pdLayer
             
-            layerLoadedSuccessfully = tmpLayer.createFromEmbeddedFile(fileNum)
+            layerLoadedSuccessfully = tmpLayer.createFromFile("", True, fileNum)
             
             'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
             ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
@@ -1791,7 +1791,7 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
         Put #fileNum, , writeTransformable
         
         'If this selection is not transformable, we must also embed the full selection mask.
-        If Not writeTransformable And maskHasBeenCreated Then writeLayer.writeToExistingFile fileNum
+        If Not writeTransformable And maskHasBeenCreated Then writeLayer.writeToFile "", True, True, fileNum
         
     Close #fileNum
     

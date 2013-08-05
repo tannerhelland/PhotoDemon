@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 16/May/13
-'Last update: added support for writing 32bpp images to the clipboard in PNG format, which preserves transparency
+'Last updated: 05/August/13
+'Last update: added support for compressing layer data when writing it out to file (and decompressing it at load-time).
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
 ' pdLayer is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
@@ -1085,80 +1085,24 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 
 End Sub
 
-'Load a layer's DIB information from file.
-Public Sub createFromFile(ByRef srcFilename As String)
-                
-    Dim fileNum As Integer
-    fileNum = FreeFile
+'Load a layer's DIB information from file.  If the file is compressed, it will automatically be decompressed.
+' Optionally, if the layer data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
+' load layer data from the current file pointer location.  (In this case, just supply a blank filename.)
+Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByRef fileNum As Integer = 0) As Boolean
     
-    Open srcFilename For Binary As #fileNum
+    'If this is not an embedded file, create and open it now
+    If Not useEmbeddedLocation Then
+        fileNum = FreeFile
+        Open srcFilename For Binary As #fileNum
+    End If
     
-        'Check to make sure this is actually a layer file
-        Dim LayerIDCheck As String * 4
-        Get #fileNum, 1, LayerIDCheck
-        If (LayerIDCheck <> LAYER_IDENTIFIER) Then
-            Close #fileNum
-            Message "Failed to load layer from disk: invalid layer file specified."
-            Exit Sub
-        End If
-    
-        'Now check to make sure that the version number is supported (not implemented right now, because there's only one version)
-        Dim LayerVersionCheck As Long
-        Get #fileNum, , LayerVersionCheck
-                        
-        'Get color depth
-        Dim fColorDepth As Long
-        Get #fileNum, , fColorDepth
-        
-        'Get size
-        Dim fWidth As Long, fHeight As Long, fArrayWidth As Long
-        Get #fileNum, , fWidth
-        Get #fileNum, , fHeight
-        Get #fileNum, , fArrayWidth
-        
-        'Is it compressed? (Not implemented now; might be in the future)
-        Dim toUncompress As Boolean
-        Get #fileNum, , toUncompress
-        
-        'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
-        createBlank fWidth, fHeight, fColorDepth
-        
-        'Now pull the pixel data from the file
-        Dim fileData() As Byte
-        ReDim fileData(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
-        Get #fileNum, , fileData
-        
-    'We're done with the file at this point, so close it
-    Close #fileNum
-    
-    'Now it's time to overwrite our current DIB with the pixel data we pulled from the file.
-    'Start, as always, with a SafeArray
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepInternalSafeArray tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-    'Bulk copy the contents of fileData() over to iData() - which is pointing at this layer's DIB, remember
-    CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
-    
-    'With our work complete, point iData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
-    
-End Sub
-
-'Load a layer's DIB information from file.  This differs from the function above because it takes a file ID rather than a path, and it assumes
-' the file has already been loaded and partially processed by other functions.  The passed file ID MUST HAVE THE POINTER IN THE CORRECT LOCATION.
-' This function does no seeking of its own!
-Public Function createFromEmbeddedFile(ByRef fileNum As Integer) As Boolean
-    
-    'Check to make sure this is actually a layer file
+    'Check to make sure this file actually contains layer data
     Dim LayerIDCheck As String * 4
     Get #fileNum, , LayerIDCheck
     If (LayerIDCheck <> LAYER_IDENTIFIER) Then
         Close #fileNum
         Message "Failed to load embedded image layer; invalid layer data found."
-        createFromEmbeddedFile = False
+        createFromFile = False
         Exit Function
     End If
 
@@ -1176,90 +1120,115 @@ Public Function createFromEmbeddedFile(ByRef fileNum As Integer) As Boolean
     Get #fileNum, , fHeight
     Get #fileNum, , fArrayWidth
     
-    'Is it compressed? (Not implemented now; might be in the future)
-    Dim toUncompress As Boolean
-    Get #fileNum, , toUncompress
-        
-    'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
-    If createBlank(fWidth, fHeight, fColorDepth) Then
+    'Is the layer data compressed?
+    Dim toDecompress As Boolean
+    Get #fileNum, , toDecompress
     
-        'Now pull the pixel data from the file
-        Dim fileData() As Byte
+    Dim fileData() As Byte
+    
+    'If the data is compressed, we need to retrieve two additional pieces of information: the original and compressed size
+    Dim origDataSize As Long, compressedDataSize As Long
+    
+    If toDecompress Then
+    
+        'If zLib is not enabled for some reason, abandon the load
+        If Not g_ZLibEnabled Then
+            Message "Layer data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue."
+            createFromFile = False
+            Exit Function
+        End If
+        
+        Get #fileNum, , origDataSize
+        Get #fileNum, , compressedDataSize
+        
+        'Pull the raw pixel data straight from the file
+        ReDim fileData(0 To compressedDataSize) As Byte
+        Get #fileNum, , fileData
+        
+    Else
+        
+        'Pull the raw pixel data straight from the file
         ReDim fileData(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
         Get #fileNum, , fileData
         
+    End If
+    
+    'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
+    If createBlank(fWidth, fHeight, fColorDepth) Then
+        
         'Now it's time to overwrite our current DIB with the pixel data we pulled from the file.
-        'Start, as always, with a SafeArray
+        ' Start, as always, with a SafeArray pointed at the layer DIB data.
         Dim iData() As Byte
         Dim tmpSA As SAFEARRAY2D
         prepInternalSafeArray tmpSA
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
-        'Bulk copy the contents of fileData() over to iData() - which is pointing at this layer's DIB, remember
-        CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
+        'If the layer data is compressed, decompress it now
+        If toDecompress Then
+        
+            Dim uncompressedImageData() As Byte
+            
+            'If the data is decompressed succesfully, convert it to a 2D array and copy it into the layer DIB memory
+            If decompressArray(fileData, uncompressedImageData, origDataSize) Then
+            
+                Dim iData2D() As Byte
+                ReDim iData2D(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
+                CopyMemory iData2D(0, 0), uncompressedImageData(0), UBound(uncompressedImageData) + 1
+                CopyMemory iData(0, 0), iData2D(0, 0), fArrayWidth * fHeight
+                
+                Erase iData2D
+                Erase uncompressedImageData
+                Erase fileData
+            
+            'If decompression failed, abandon further processing
+            Else
+                
+                Message "Decompression was not successful (unspecified zLib plugin error).  Layer processing abandoned."
+                CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                Erase iData
+                createFromFile = False
+                Exit Function
+                
+            End If
+        
+        'If the layer data is not compressed, copy it straight into the DIB
+        Else
+        
+            'Bulk copy the contents of fileData() over to iData() - which is pointing at this layer's DIB, remember
+            CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
+        
+        End If
         
         'With our work complete, point iData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(iData), 0&, 4
         Erase iData
         
-        createFromEmbeddedFile = True
+        createFromFile = True
     Else
-        createFromEmbeddedFile = False
+        createFromFile = False
     End If
     
-    'Note that this function DOES NOT CLOSE THE FILE.  The calling function must handle that on its own.
+    'If this is an embedded file, leave the file open for further processing.  Otherwise, close it.
+    If Not useEmbeddedLocation Then Close #fileNum
     
 End Function
 
-'Write this layer's DIB information to file.
-Public Sub writeToFile(ByRef dstFilename As String)
-
-    'Delete any existing file (overwrite)
-    If FileExist(dstFilename) Then Kill dstFilename
-        
-    Dim fileNum As Integer
-    fileNum = FreeFile
+'Write this layer's DIB information to file.  Compression can optionally be applied to the layer data.
+' Also, if the calling function wants to embed the layer's data inside an existing file, specify the embedInFile parameter and pass a valid
+' file handle, with the pointer already moved to the location desired for embedding.
+Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompress As Boolean = True, Optional ByVal embedInFile As Boolean = False, Optional ByRef fileNum As Integer) As Boolean
     
-    'Open the file and dump out only the essential information
-    Open dstFilename For Binary As #fileNum
-    
-        'Identifiers
-        Put #fileNum, 1, LAYER_IDENTIFIER
-        Put #fileNum, , LAYER_FILE_VERSION_2012
+    'If we are not embedding the data inside an existing file, create a new file now.
+    If Not embedInFile Then
         
-        'Color depth
-        Put #fileNum, , layerColorDepth
+        'Delete any existing file (overwrite)
+        If FileExist(dstFilename) Then Kill dstFilename
         
-        'Size
-        Put #fileNum, , layerWidth
-        Put #fileNum, , layerHeight
-        Put #fileNum, , layerArrayWidth
+        'Open the file
+        fileNum = FreeFile
+        Open dstFilename For Binary As #fileNum
         
-        'Is it compressed? (Not implemented now; might be in the future)
-        Dim toCompress As Boolean
-        toCompress = False
-        Put #fileNum, , toCompress
-        
-        'And finally, the pixel data, which is presently uncompressed
-        Dim iData() As Byte
-        Dim tmpSA As SAFEARRAY2D
-        prepInternalSafeArray tmpSA
-        CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-        
-        'Now dump the entire array into the file. To my knowledge, this is the fastest way to do this in VB.
-        Put #fileNum, , iData
-        
-    Close #fileNum
-    
-    'With our work complete, point iData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
-
-End Sub
-
-'Embed this layer's DIB information inside an existing file.  All that's required is the file number, and it is assumed that the calling function
-' has already moved the file pointer to the desired location.
-Public Sub writeToExistingFile(ByRef fileNum As Integer)
+    End If
     
     'Identifiers
     Put #fileNum, , LAYER_IDENTIFIER
@@ -1272,28 +1241,72 @@ Public Sub writeToExistingFile(ByRef fileNum As Integer)
     Put #fileNum, , layerWidth
     Put #fileNum, , layerHeight
     Put #fileNum, , layerArrayWidth
-    
-    'Is it compressed? (Not implemented now; might be in the future)
-    Dim toCompress As Boolean
-    toCompress = False
-    Put #fileNum, , toCompress
-    
-    'And finally, the pixel data, which is presently uncompressed
+        
+    'And finally, the pixel data.  Start by pointing a VB array at the layer's DIB data
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    'Now dump the entire array into the file. To my knowledge, this is the fastest way to do this in VB.
-    Put #fileNum, , iData
+    If toCompress And Not g_ZLibEnabled Then Message "Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed."
     
-    'With our work complete, point iData() away from the DIB and deallocate it
+    'If compression has been requested, and zLib is available, apply compression now.
+    If toCompress And g_ZLibEnabled Then
+        
+        'Convert the DIB to a 1D array
+        Dim src1DImage() As Byte
+        Dim aSize As Long
+        aSize = (UBound(iData, 1) + 1) * (UBound(iData, 2) + 1) - 1
+        ReDim src1DImage(0 To aSize) As Byte
+        CopyMemory src1DImage(0), iData(0, 0), aSize
+        
+        'Compress that 1D array
+        Dim origSize As Long, compressSize As Long
+        Dim compressedImageData() As Byte
+        
+        CopyMemory ByVal VarPtrArray(iData), 0&, 4
+        Erase iData
+        
+        'If compression was successful, write out the compressed data to file
+        If compressArray(src1DImage, compressedImageData, origSize, compressSize) Then
+        
+            'Mark the data as compressed
+            Put #fileNum, , toCompress
+            
+            'Write the original size of the array, followed by the compressed size, followed by the image data itself.  (The array sizes will
+            ' help us automatically create intelligently-sized buffers at decompression time.)
+            Put #fileNum, , origSize
+            Put #fileNum, , compressSize
+            Put #fileNum, , compressedImageData
+        
+        'If compression failed, write uncompressed data instead.
+        Else
+            Message "Compression failed (unspecified zLib plugin error).  Uncompressed data written instead."
+            toCompress = False
+            Put #fileNum, , toCompress
+            Put #fileNum, , iData
+        End If
+        
+        Erase compressedImageData
+        
+    'If compression has not been requested, or zLib is unavailable, dump the raw image data to file.
+    Else
+        
+        'Now dump the entire array into the file. To my knowledge, this is the fastest way to do this in VB.
+        toCompress = False
+        Put #fileNum, , toCompress
+        Put #fileNum, , iData
+        
+    End If
+    
+    'Release the VB array that points at the layer DIB
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     Erase iData
     
-    'Note that this function DOES NOT CLOSE THE FILE.  The calling function must handle that on its own.
+    'If this is not an embedding, close the file now
+    If Not embedInFile Then Close #fileNum
 
-End Sub
+End Function
 
 'Write this layer's DIB information to a valid BMP file.
 Public Sub writeToBitmapFile(ByRef dstFilename As String)
