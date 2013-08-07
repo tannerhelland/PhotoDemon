@@ -2166,7 +2166,7 @@ Private Sub UpdatePluginLabels()
     pluginStatus = popPluginLabel(0, "FreeImage", "3.15.4", isFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
     
     'zLib
-    pluginStatus = pluginStatus And popPluginLabel(1, "zLib", "1.2.5", isZLibAvailable, g_ZLibEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(1, "zLib", "1.2.8", isZLibAvailable, g_ZLibEnabled)
     
     'EZTwain
     pluginStatus = pluginStatus And popPluginLabel(2, "EZTwain", "1.18.0", isEZTwainAvailable, g_ScanEnabled)

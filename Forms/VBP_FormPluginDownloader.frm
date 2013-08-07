@@ -540,7 +540,7 @@ Dim pngnqSize As Double
 Dim exifToolSize As Double
 
 'Download size estimates if the user is not connected to the Internet
-Private Const estZLibSize As Long = 139000
+Private Const estZLibSize As Long = 170000
 Private Const estFreeImageSize As Long = 1007000
 Private Const estEzTW32Size As Long = 27000
 Private Const estPngnqSize As Long = 298000
