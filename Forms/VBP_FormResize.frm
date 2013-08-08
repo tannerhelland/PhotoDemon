@@ -661,7 +661,7 @@ Private Sub ChkRatio_Click()
 End Sub
 
 'Perform a resize operation
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Before resizing anything, check to make sure the textboxes have valid input
     If tudWidth.IsValid And tudHeight.IsValid Then
@@ -681,7 +681,7 @@ Private Sub cmdOK_Click()
     
 End Sub
 
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
@@ -882,7 +882,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 'Create a filter support class, which will aid with edge handling and interpolation
                 Dim fSupport As pdFilterSupport
                 Set fSupport = New pdFilterSupport
-                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.maxX, curLayerValues.MaxY
+                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.MaxX, curLayerValues.MaxY
     
                 'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
                 ' based on the size of the area to be processed.
@@ -1096,11 +1096,11 @@ Private Sub updateFormLayout()
         
         'Move the command bar into place
         lblBackground.Top = chkNames.Top + chkNames.Height + 16
-        cmdOK.Top = lblBackground.Top + 10
-        cmdCancel.Top = cmdOK.Top
+        CmdOK.Top = lblBackground.Top + 10
+        CmdCancel.Top = CmdOK.Top
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (cmdOK.Top + cmdOK.Height + 10) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
     
     Else
     
@@ -1123,11 +1123,11 @@ Private Sub updateFormLayout()
         
         'Move the command bar into place
         lblBackground.Top = lblSubtext(2).Top + lblSubtext(2).Height + 16
-        cmdOK.Top = lblBackground.Top + 10
-        cmdCancel.Top = cmdOK.Top
+        CmdOK.Top = lblBackground.Top + 10
+        CmdCancel.Top = CmdOK.Top
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (cmdOK.Top + cmdOK.Height + 10) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
     
     End If
 

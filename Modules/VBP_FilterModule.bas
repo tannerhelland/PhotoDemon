@@ -57,8 +57,8 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     finalY = curLayerValues.Bottom
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
-    checkXMin = curLayerValues.minX
-    checkXMax = curLayerValues.maxX
+    checkXMin = curLayerValues.MinX
+    checkXMax = curLayerValues.MaxX
     checkYMin = curLayerValues.MinY
     checkYMax = curLayerValues.MaxY
             

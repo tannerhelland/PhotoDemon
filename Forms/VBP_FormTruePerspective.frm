@@ -368,7 +368,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, cParams.GetLong(9), cParams.GetBool(10), curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, cParams.GetLong(9), cParams.GetBool(10), curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

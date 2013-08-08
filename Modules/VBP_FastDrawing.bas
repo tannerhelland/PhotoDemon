@@ -40,7 +40,7 @@ Public Type FilterInfo
     MinY As Long
     MaxX As Long            'The highest coordinate the filter is allowed to check.  This is almost always (width, height)
     MaxY As Long
-    colorDepth As Long      'The colorDepth of the current layer; right now, this should always be 24 or 32
+    ColorDepth As Long      'The colorDepth of the current layer; right now, this should always be 24 or 32
     BytesPerPixel As Long   'BPP is colorDepth / 8.  It is provided for convenience.
     LayerX As Long          'Filters shouldn't have to worry about where the layer is physically located, but when it comes
     LayerY As Long          ' time to set the layer back in place, these may be useful (as when previewing, for example)
@@ -225,7 +225,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .MinY = 0
         .MaxX = workingLayer.getLayerWidth - 1
         .MaxY = workingLayer.getLayerHeight - 1
-        .colorDepth = workingLayer.getLayerColorDepth
+        .ColorDepth = workingLayer.getLayerColorDepth
         .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
         .LayerX = 0
         .LayerY = 0

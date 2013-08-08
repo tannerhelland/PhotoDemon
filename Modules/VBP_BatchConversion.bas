@@ -193,14 +193,14 @@ Public Sub PlayMacro()
 End Sub
 
 'Given a valid macro file, play back its recorded actions.
-Public Function PlayMacroFromFile(ByVal macroPath As String) As Boolean
+Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     
     'Create a pdXML class, which will help us load and parse the source file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
     'Load the XML file into memory
-    xmlEngine.loadXMLFile macroPath
+    xmlEngine.loadXMLFile MacroPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon macro file
     If xmlEngine.isPDDataType("Macro") And xmlEngine.validateLoadedXMLData("pdMacroVersion") Then
