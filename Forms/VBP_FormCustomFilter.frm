@@ -24,13 +24,32 @@ Begin VB.Form FormCustomFilter
    ScaleWidth      =   664
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkNormalize 
+      Height          =   480
+      Left            =   6360
+      TabIndex        =   36
+      Top             =   3000
+      Width           =   1215
+      _ExtentX        =   2143
+      _ExtentY        =   847
+      Caption         =   "normalize"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.CommandButton cmdSave 
       Caption         =   "Save filter"
       Height          =   1200
       Left            =   8040
       TabIndex        =   35
       ToolTipText     =   "Save the current filter to file.  This allows you to use the filter later, or share the filter with other PhotoDemon users."
-      Top             =   4200
+      Top             =   4440
       Width           =   1695
    End
    Begin VB.CommandButton cmdOpen 
@@ -39,7 +58,7 @@ Begin VB.Form FormCustomFilter
       Left            =   6120
       TabIndex        =   34
       ToolTipText     =   "Open a previously saved convolution filter."
-      Top             =   4200
+      Top             =   4440
       Width           =   1695
    End
    Begin VB.CommandButton CmdOK 
@@ -60,7 +79,7 @@ Begin VB.Form FormCustomFilter
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.TextBox txtBias 
+   Begin VB.TextBox txtOffset 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -76,10 +95,10 @@ Begin VB.Form FormCustomFilter
       Left            =   8280
       TabIndex        =   28
       Text            =   "1"
-      Top             =   3480
+      Top             =   3840
       Width           =   1215
    End
-   Begin VB.TextBox txtWeight 
+   Begin VB.TextBox txtDivisor 
       Alignment       =   2  'Center
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -95,7 +114,7 @@ Begin VB.Form FormCustomFilter
       Left            =   6360
       TabIndex        =   27
       Text            =   "1"
-      Top             =   3480
+      Top             =   3840
       Width           =   1215
    End
    Begin VB.TextBox TxtF 
@@ -632,7 +651,7 @@ Begin VB.Form FormCustomFilter
       Height          =   285
       Left            =   8160
       TabIndex        =   31
-      Top             =   3120
+      Top             =   3480
       Width           =   675
    End
    Begin VB.Label lblDivisor 
@@ -653,7 +672,7 @@ Begin VB.Form FormCustomFilter
       Height          =   285
       Left            =   6240
       TabIndex        =   30
-      Top             =   3135
+      Top             =   3495
       Width           =   795
    End
    Begin VB.Label lblConvolution 
@@ -687,8 +706,8 @@ Attribute VB_Exposed = False
 'Custom Filter Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 02/August/13
-'Last update: rewrote all filter load/save operations against the new, much-improved XML filter file format
+'Last updated: 08/August/13
+'Last update: new "normalize" option to automatically populate divisor and offset values
 '
 'This dialog allows the user to create custom convolution filters.  It also allows the user to save those filters to
 ' file, or to load previously saved convolution filter files.
@@ -706,6 +725,11 @@ Private cImgCtl As clsControlImage
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'Normalizing automatically computes divisor and offset for the user
+Private Sub chkNormalize_Click()
+    updatePreview
+End Sub
+
 'When the user clicks OK...
 Private Sub CmdOK_Click()
     
@@ -719,12 +743,12 @@ Private Sub CmdOK_Click()
             Exit Sub
         End If
     Next x
-    If Not NumberValid(txtWeight) Then
-        AutoSelectText txtWeight
+    If Not NumberValid(txtDivisor) Then
+        AutoSelectText txtDivisor
         Exit Sub
     End If
-    If Not NumberValid(txtBias) Then
-        AutoSelectText txtBias
+    If Not NumberValid(txtOffset) Then
+        AutoSelectText txtOffset
         Exit Sub
     End If
     
@@ -735,7 +759,7 @@ Private Sub CmdOK_Click()
         
     g_FilterSize = 5
         
-    ReDim g_FM(-2 To 2, -2 To 2) As Long
+    ReDim g_FM(-2 To 2, -2 To 2) As Double
     
     For x = -2 To 2
     For y = -2 To 2
@@ -744,10 +768,11 @@ Private Sub CmdOK_Click()
     Next x
         
     'What to divide the final value by
-    g_FilterWeight = Val(txtWeight.Text)
+    g_FilterWeight = CDbl(txtDivisor.Text)
+    If g_FilterWeight = 0 Then g_FilterWeight = 1
     
     'Any offset value
-    g_FilterBias = Val(txtBias.Text)
+    g_FilterBias = CDbl(txtOffset.Text)
     
     'Set that we have created a filter during this program session, and save it accordingly
     g_HasCreatedFilter = True
@@ -780,8 +805,8 @@ Private Sub Form_Activate()
     End With
     
     'If a filter has been used previously, load it from the temp file
-    If g_HasCreatedFilter = True Then openCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
-        
+    If g_HasCreatedFilter Then openCustomFilter g_UserPreferences.getTempPath & "~PD_CF.tmp"
+    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
@@ -806,7 +831,11 @@ Private Sub cmdOpen_Click()
     cdTitle = g_Language.TranslateMessage("Open a custom filter")
     
     If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getFilterPath, cdTitle, , FormCustomFilter.hWnd, 0) Then
-        If openCustomFilter(sFile) = True Then
+        
+        'Disable normalizing during load, as it may erase saved weight/offset values
+        chkNormalize = vbUnchecked
+        
+        If openCustomFilter(sFile) Then
             
             'Save the new directory as the default path for future usage
             g_UserPreferences.setFilterPath sFile
@@ -817,6 +846,7 @@ Private Sub cmdOpen_Click()
         Else
             pdMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid custom filter file.", vbOKOnly + vbExclamation + vbApplicationModal, "Custom Filter Error", sFile
         End If
+        
     End If
     
 End Sub
@@ -871,13 +901,13 @@ Private Function openCustomFilter(ByRef srcFilterPath As String) As Boolean
             Case CUSTOM_FILTER_VERSION_2013
             
                 'Load the divisor and offset values
-                txtWeight = xmlEngine.getUniqueTag_Long("filterDivisor")
-                txtBias = xmlEngine.getUniqueTag_Long("filterOffset")
+                txtDivisor = xmlEngine.getUniqueTag_Double("filterDivisor")
+                txtOffset = xmlEngine.getUniqueTag_Double("filterOffset")
                 
                 'Load the individual text box values
                 Dim i As Long
                 For i = 0 To TxtF.UBound
-                    TxtF(i) = xmlEngine.getUniqueTag_Long("filterEntry_" & i)
+                    TxtF(i) = xmlEngine.getUniqueTag_Double("filterEntry_" & i)
                 Next i
             
             Case Else
@@ -913,8 +943,8 @@ Private Function saveCustomFilter(ByRef dstFilterPath As String) As Boolean
     xmlEngine.writeBlankLine
     
     'Write out the user-supplied divisor and offset values
-    xmlEngine.writeTag "filterDivisor", txtWeight
-    xmlEngine.writeTag "filterOffset", txtBias
+    xmlEngine.writeTag "filterDivisor", txtDivisor
+    xmlEngine.writeTag "filterOffset", txtOffset
     xmlEngine.writeBlankLine
     
     'Write out the contents of the text boxes
@@ -935,12 +965,12 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub TxtBias_GotFocus()
-    AutoSelectText txtBias
+Private Sub txtOffset_GotFocus()
+    AutoSelectText txtOffset
 End Sub
 
-Private Sub txtBias_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtBias, True
+Private Sub txtOffset_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtOffset, True, True
     updatePreview
 End Sub
 
@@ -949,16 +979,16 @@ Private Sub TxtF_GotFocus(Index As Integer)
 End Sub
 
 Private Sub TxtF_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
-    textValidate TxtF(Index), True
+    textValidate TxtF(Index), True, True
     updatePreview
 End Sub
 
-Private Sub TxtWeight_GotFocus()
-    AutoSelectText txtWeight
+Private Sub txtDivisor_GotFocus()
+    AutoSelectText txtDivisor
 End Sub
 
-Private Sub TxtWeight_KeyUp(KeyCode As Integer, Shift As Integer)
-    textValidate txtWeight, True
+Private Sub txtDivisor_KeyUp(KeyCode As Integer, Shift As Integer)
+    textValidate txtDivisor, True, True
     updatePreview
 End Sub
 
@@ -972,14 +1002,41 @@ Private Sub updatePreview()
         If Not EntryValid(TxtF(x), -1000000, 1000000, False, False) Then Exit Sub
     Next x
     
-    If Not EntryValid(txtWeight, -1000000, 1000000, False, False) Then Exit Sub
+    If Not EntryValid(txtDivisor, -1000000, 1000000, False, False) Then Exit Sub
     
-    If Not EntryValid(txtBias, -1000000, 1000000, False, False) Then Exit Sub
+    If Not EntryValid(txtOffset, -1000000, 1000000, False, False) Then Exit Sub
+    
+    'If normalization has been requested, apply it now
+    txtDivisor.Enabled = Not CBool(chkNormalize)
+    txtOffset.Enabled = Not CBool(chkNormalize)
+    
+    If CBool(chkNormalize) Then
+    
+        'Sum up the total of all filter boxes
+        Dim filterSum As Double
+        filterSum = 0
+        For x = 0 To 24
+            filterSum = filterSum + CDbl(TxtF(x))
+        Next x
+        
+        'Generate automatic divisor and offset values based on the total.
+        If filterSum = 0 Then
+            txtDivisor = 1
+            txtOffset = 127
+        ElseIf filterSum > 0 Then
+            txtDivisor = filterSum
+            txtOffset = 0
+        Else
+            txtDivisor = Abs(filterSum)
+            txtOffset = 255
+        End If
+    
+    End If
     
     'Copy the values from the text boxes into an array
     g_FilterSize = 5
         
-    ReDim g_FM(-2 To 2, -2 To 2) As Long
+    ReDim g_FM(-2 To 2, -2 To 2) As Double
     
     For x = -2 To 2
     For y = -2 To 2
@@ -988,10 +1045,10 @@ Private Sub updatePreview()
     Next x
         
     'What to divide the final value by
-    g_FilterWeight = Val(txtWeight.Text)
+    g_FilterWeight = CDbl(txtDivisor.Text)
     
     'Offset value
-    g_FilterBias = Val(txtBias.Text)
+    g_FilterBias = CDbl(txtOffset.Text)
         
     'Apply the preview
     DoFilter g_Language.TranslateMessage("Preview"), False, , True, fxPreview
