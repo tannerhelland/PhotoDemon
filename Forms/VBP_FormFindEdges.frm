@@ -236,7 +236,7 @@ End Sub
 
 Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = -4
     g_FM(-1, 0) = -2
     g_FM(0, -1) = -2
@@ -250,7 +250,7 @@ End Sub
 
 Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 5
-    ReDim g_FM(-2 To 2, -2 To 2) As Long
+    ReDim g_FM(-2 To 2, -2 To 2) As Double
     g_FM(-1, -2) = 1
     g_FM(-2, 1) = 1
     g_FM(1, 2) = 1
@@ -263,7 +263,7 @@ End Sub
 
 Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = -1
     g_FM(-1, 1) = -1
     g_FM(1, -1) = -1
@@ -276,7 +276,7 @@ End Sub
 
 Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = -1
     g_FM(-1, 0) = -1
     g_FM(-1, 1) = -1
@@ -290,7 +290,7 @@ End Sub
 
 Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = 1
     g_FM(0, -1) = 1
     g_FM(1, -1) = 1
@@ -304,7 +304,7 @@ End Sub
 
 Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = -1
     g_FM(-1, 0) = -2
     g_FM(-1, 1) = -1
@@ -318,7 +318,7 @@ End Sub
 
 Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = 1
     g_FM(0, -1) = 2
     g_FM(1, -1) = 1
@@ -332,7 +332,7 @@ End Sub
 
 Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, 0) = -1
     g_FM(0, -1) = -1
     g_FM(0, 1) = -1

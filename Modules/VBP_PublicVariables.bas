@@ -1,7 +1,7 @@
 Attribute VB_Name = "Public_Variables"
 
 'Contains any and all publicly-declared variables.  I am trying to move
-' all public variables to here for obvious reasons, but the transition may
+' all public variables here (for obvious reasons), but the transition may
 ' not be completely done as long as this comment remains!
 
 Option Explicit
@@ -40,13 +40,13 @@ End Enum
 
 'Filter variables
 'The array containing the filter data
-Public g_FM() As Long
+Public g_FM() As Double
 'The size (1x1, 3x3, 5x5, etc) of the filter array
-Public g_FilterSize As Byte
+Public g_FilterSize As Long
 'The weight (i.e. / by)
-Public g_FilterWeight As Long
+Public g_FilterWeight As Double
 'The bias (i.e. +/-)
-Public g_FilterBias As Long
+Public g_FilterBias As Double
 
 'Selection variables
 

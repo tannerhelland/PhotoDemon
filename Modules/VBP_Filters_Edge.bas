@@ -19,7 +19,7 @@ Option Explicit
 Public Sub FilterPencil()
     
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     
     g_FM(-1, -1) = -1
     g_FM(-1, 0) = -1
@@ -43,7 +43,7 @@ End Sub
 'A typical relief filter, that makes the image seem pseudo-3D.
 Public Sub FilterRelief()
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, -1) = 2
     g_FM(-1, 0) = 1
     g_FM(0, 1) = 1
@@ -59,7 +59,7 @@ End Sub
 'A lighter version of a traditional sharpen filter; it's designed to bring out edge detail without the blowout typical of sharpening
 Public Sub FilterEdgeEnhance()
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     g_FM(-1, 0) = -1
     g_FM(1, 0) = -1
     g_FM(0, -1) = -1

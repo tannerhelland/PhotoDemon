@@ -80,21 +80,21 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     CalcVar = (g_FilterSize \ 2)
         
     'iFM() will hold the contents of g_FM() - the filter matrix; we don't use FM directly in case other events want to access it
-    Dim iFM() As Long
+    Dim iFM() As Double
     
     'Resize iFM according to the size of the filter matrix, then copy over the contents of g_FM()
-    If g_FilterSize = 3 Then ReDim iFM(-1 To 1, -1 To 1) As Long Else ReDim iFM(-2 To 2, -2 To 2) As Long
+    If g_FilterSize = 3 Then ReDim iFM(-1 To 1, -1 To 1) As Double Else ReDim iFM(-2 To 2, -2 To 2) As Double
     iFM = g_FM
     
     'FilterWeightA and FilterBiasA are copies of the global g_FilterWeight and g_FilterBias variables; again, we don't use the originals in case other events
     ' want to access them
-    Dim FilterWeightA As Long, FilterBiasA As Long
+    Dim FilterWeightA As Double, FilterBiasA As Double
     FilterWeightA = g_FilterWeight
     FilterBiasA = g_FilterBias
     
     'FilterWeightTemp will be reset for every pixel, and decremented appropriately when attempting to calculate the value for pixels
     ' outside the image perimeter
-    Dim FilterWeightTemp As Long
+    Dim FilterWeightTemp As Double
     
     'Temporary calculation variables
     Dim CalcX As Long, CalcY As Long
@@ -154,9 +154,9 @@ NextCustomFilterPixel:  Next y2
         'If a weight has been set, apply it now
         If (FilterWeightTemp <> 1) Then
             If (FilterWeightTemp <> 0) Then
-                r = r \ FilterWeightTemp
-                g = g \ FilterWeightTemp
-                b = b \ FilterWeightTemp
+                r = r / FilterWeightTemp
+                g = g / FilterWeightTemp
+                b = b / FilterWeightTemp
             Else
                 r = 0
                 g = 0
@@ -203,7 +203,7 @@ NextCustomFilterPixel:  Next y2
         ImageData(QuickVal, y) = b
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -250,21 +250,21 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
             Case CUSTOM_FILTER_VERSION_2013
             
                 'Load the divisor and offset values
-                g_FilterWeight = xmlEngine.getUniqueTag_Long("filterDivisor")
-                g_FilterBias = xmlEngine.getUniqueTag_Long("filterOffset")
+                g_FilterWeight = xmlEngine.getUniqueTag_Double("filterDivisor")
+                g_FilterBias = xmlEngine.getUniqueTag_Double("filterOffset")
                 
                 'This temporary array will hold the matrix data loaded from file
-                Dim tFilterArray(0 To 24) As Long
+                Dim tFilterArray(0 To 24) As Double
         
                 'Load the individual text box values
                 Dim i As Long
                 For i = 0 To 24
-                    tFilterArray(i) = xmlEngine.getUniqueTag_Long("filterEntry_" & i)
+                    tFilterArray(i) = xmlEngine.getUniqueTag_Double("filterEntry_" & i)
                 Next i
                 
                 'Convert the 1D temporary array into the 2D array required by the filter function
                 g_FilterSize = 5
-                ReDim g_FM(-2 To 2, -2 To 2) As Long
+                ReDim g_FM(-2 To 2, -2 To 2) As Double
                 
                 Dim x As Long, y As Long
                 For x = -2 To 2
@@ -295,7 +295,7 @@ End Function
 Public Sub FilterSharpen()
     
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     
     g_FM(-1, -1) = -1
     g_FM(0, -1) = -1
@@ -320,7 +320,7 @@ End Sub
 Public Sub FilterSharpenMore()
 
     g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Long
+    ReDim g_FM(-1 To 1, -1 To 1) As Double
     
     g_FM(-1, -1) = 0
     g_FM(0, -1) = -1

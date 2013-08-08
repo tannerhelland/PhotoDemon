@@ -899,7 +899,7 @@ End Sub
 'Makes the picture appear like it has been shaken
 Public Sub MenuVibrate()
     g_FilterSize = 5
-    ReDim g_FM(-2 To 2, -2 To 2) As Long
+    ReDim g_FM(-2 To 2, -2 To 2) As Double
     g_FM(-2, -2) = 1
     g_FM(-1, -1) = -1
     g_FM(0, 0) = 1
