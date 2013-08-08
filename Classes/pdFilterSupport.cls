@@ -15,8 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter Support Class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/January/13
-'Last updated: 05/June/13
-'Last update: added a "force pixels" option, which functions can use to wipe out pixels at a given location
+'Last updated: 08/August/13
+'Last update: improve edge interpolation for certain edge handling modes (wrap, most notably).  Instead of a harsh
+'             line at edge boundaries for wrap/reflect modes, the edge results will now be interpolated.  This does
+'             slow filter processing somewhat, but only when AA is enabled - so the trade-off seems reasonable to me.
 '
 'Per its name, this class provides support routines for certain types of image filters, namely: filters
 ' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
@@ -202,29 +204,54 @@ Private Function pInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iDat
     'Retrieve the four surrounding pixel values
     Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
     topLeft = iData(Int(x1) * m_ColorDepth + iOffset, Int(y1))
+    Dim fixX As Double, fixY As Double
     
     'Pixels at the far edges of the image require special treatment during interpolation
     If x1 < m_FinalX Then
         topRight = iData(Int(x1 + 1) * m_ColorDepth + iOffset, Int(y1))
     Else
-        topRight = iData(Int(x1) * m_ColorDepth + iOffset, Int(y1))
+        fixX = x1 + 1
+        fixY = y1
+        If FixDistortEdges(fixX, fixY) Then
+            topRight = 0
+        Else
+            topRight = iData(Int(fixX) * m_ColorDepth + iOffset, Int(y1))
+        End If
     End If
     If y1 < m_FinalY Then
         bottomLeft = iData(Int(x1) * m_ColorDepth + iOffset, Int(y1 + 1))
     Else
-        bottomLeft = iData(Int(x1) * m_ColorDepth + iOffset, Int(y1))
+        fixX = x1
+        fixY = y1 + 1
+        If FixDistortEdges(fixX, fixY) Then
+            bottomLeft = 0
+        Else
+            bottomLeft = iData(Int(x1) * m_ColorDepth + iOffset, Int(fixY))
+        End If
     End If
     If x1 < m_FinalX Then
         If y1 < m_FinalY Then
             bottomRight = iData(Int(x1 + 1) * m_ColorDepth + iOffset, Int(y1 + 1))
         Else
-            bottomRight = iData(Int(x1 + 1) * m_ColorDepth + iOffset, Int(y1))
+            fixX = x1 + 1
+            fixY = y1 + 1
+            If FixDistortEdges(fixX, fixY) Then
+                bottomRight = 0
+            Else
+                bottomRight = iData(Int(x1 + 1) * m_ColorDepth + iOffset, Int(fixY))
+            End If
         End If
     Else
-        If y1 < m_FinalY Then
-            bottomRight = iData(Int(x1) * m_ColorDepth + iOffset, Int(y1 + 1))
+        fixX = x1 + 1
+        fixY = y1 + 1
+        If FixDistortEdges(fixX, fixY) Then
+            bottomRight = 0
         Else
-            bottomRight = iData(Int(x1) * m_ColorDepth + iOffset, Int(y1))
+            If y1 < m_FinalY Then
+                bottomRight = iData(Int(fixX) * m_ColorDepth + iOffset, Int(y1 + 1))
+            Else
+                bottomRight = iData(Int(fixX) * m_ColorDepth + iOffset, Int(fixY))
+            End If
         End If
     End If
     
