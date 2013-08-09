@@ -380,8 +380,7 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "SHARPEN", 6, 9         'Sharpen
         '--> Sharpen sub-menu
         AddMenuIcon "SHARPEN", 6, 9, 0       'Sharpen
-        AddMenuIcon "SHARPENMORE", 6, 9, 1   'Sharpen More
-        AddMenuIcon "UNSHARP", 6, 9, 3       'Unsharp
+        AddMenuIcon "UNSHARP", 6, 9, 1       'Unsharp
     AddMenuIcon "STYLIZE", 6, 10        'Stylize
         '--> Stylize sub-menu
         AddMenuIcon "ANTIQUE", 6, 10, 0       'Antique (Sepia)

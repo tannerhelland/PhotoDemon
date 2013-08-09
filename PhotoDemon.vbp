@@ -167,6 +167,7 @@ Form=Forms\VBP_FormCurves.frm
 Form=Forms\VBP_FormExposure.frm
 Class=pdXML; Classes\pdXML.cls
 ResFile32="Resources\PD_icons.RES"
+Form=Forms\VBP_FormSharpen.frm
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""

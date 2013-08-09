@@ -632,10 +632,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         'AREA filters
         Case "Sharpen"
-            FilterSharpen
-            
-        Case "Sharpen more"
-            FilterSharpenMore
+            If showDialog Then
+                FormSharpen.Show vbModal, FormMain
+            Else
+                FormSharpen.ApplySharpenFilter cParams.GetDouble(1)
+            End If
             
         Case "Unsharp mask"
             If showDialog Then

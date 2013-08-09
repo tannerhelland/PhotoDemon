@@ -57,8 +57,8 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     finalY = curLayerValues.Bottom
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
-    checkXMin = curLayerValues.MinX
-    checkXMax = curLayerValues.MaxX
+    checkXMin = curLayerValues.minX
+    checkXMax = curLayerValues.maxX
     checkYMin = curLayerValues.MinY
     checkYMax = curLayerValues.MaxY
             
@@ -290,56 +290,6 @@ Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
     End If
     
 End Function
-
-'Sharpen an image via convolution filter
-Public Sub FilterSharpen()
-    
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    
-    g_FM(-1, -1) = -1
-    g_FM(0, -1) = -1
-    g_FM(1, -1) = -1
-    
-    g_FM(-1, 0) = -1
-    g_FM(0, 0) = 15
-    g_FM(1, 0) = -1
-    
-    g_FM(-1, 1) = -1
-    g_FM(0, 1) = -1
-    g_FM(1, 1) = -1
-    
-    g_FilterWeight = 7
-    g_FilterBias = 0
-    
-    DoFilter g_Language.TranslateMessage("Sharpen")
-  
-End Sub
-
-'Strongly sharpen an image via convolution filter
-Public Sub FilterSharpenMore()
-
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    
-    g_FM(-1, -1) = 0
-    g_FM(0, -1) = -1
-    g_FM(1, -1) = 0
-    
-    g_FM(-1, 0) = -1
-    g_FM(0, 0) = 5
-    g_FM(1, 0) = -1
-    
-    g_FM(-1, 1) = 0
-    g_FM(0, 1) = -1
-    g_FM(1, 1) = 0
-    
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    
-    DoFilter g_Language.TranslateMessage("Strong Sharpen")
-  
-End Sub
 
 'Apply a grid blur to an image; basically, blur every vertical line, then every horizontal line, then average the results
 Public Sub FilterGridBlur()

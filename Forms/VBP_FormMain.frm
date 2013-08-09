@@ -1666,20 +1666,12 @@ Begin VB.MDIForm FormMain
          Caption         =   "Sharpen"
          Index           =   8
          Begin VB.Menu MnuSharpen 
-            Caption         =   "Sharpen"
+            Caption         =   "Sharpen..."
             Index           =   0
          End
          Begin VB.Menu MnuSharpen 
-            Caption         =   "Sharpen more"
-            Index           =   1
-         End
-         Begin VB.Menu MnuSharpen 
-            Caption         =   "-"
-            Index           =   2
-         End
-         Begin VB.Menu MnuSharpen 
             Caption         =   "Unsharp masking..."
-            Index           =   3
+            Index           =   1
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3384,20 +3376,13 @@ End Sub
 Private Sub MnuSharpen_Click(Index As Integer)
 
     Select Case Index
-    
+            
         'Sharpen
         Case 0
-            Process "Sharpen"
-            
-        'Sharpen More
-        Case 1
-            Process "Sharpen more"
-        
-        'Separator bar
-        Case 2
+            Process "Sharpen", True
         
         'Unsharp mask
-        Case 3
+        Case 1
             Process "Unsharp mask", True
             
     End Select
