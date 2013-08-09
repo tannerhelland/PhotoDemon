@@ -1449,16 +1449,20 @@ Begin VB.MDIForm FormMain
             Index           =   2
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Pencil drawing"
+            Caption         =   "Oil painting..."
             Index           =   3
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Posterize..."
+            Caption         =   "Pencil drawing"
             Index           =   4
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Relief"
+            Caption         =   "Posterize..."
             Index           =   5
+         End
+         Begin VB.Menu MnuArtistic 
+            Caption         =   "Relief"
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2480,16 +2484,20 @@ Private Sub MnuArtistic_Click(Index As Integer)
         Case 2
             Process "Modern art", True
         
-        'Pencil drawing
+        'Oil painting
         Case 3
+            Process "Oil painting", True
+            
+        'Pencil drawing
+        Case 4
             Process "Pencil drawing"
                 
         'Posterize
-        Case 4
+        Case 5
             Process "Posterize", True
             
         'Relief
-        Case 5
+        Case 6
             Process "Relief"
     
     End Select

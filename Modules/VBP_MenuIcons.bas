@@ -316,9 +316,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "COMICBOOK", 6, 2, 0      'Comic book
         AddMenuIcon "FILMNOIR", 6, 2, 1       'Film Noir
         AddMenuIcon "MODERNART", 6, 2, 2      'Modern Art
-        AddMenuIcon "PENCIL", 6, 2, 3         'Pencil
-        AddMenuIcon "POSTERIZE", 6, 2, 4      'Posterize
-        AddMenuIcon "RELIEF", 6, 2, 5         'Relief
+        AddMenuIcon "OILPAINTING", 6, 2, 3    'Oil painting
+        AddMenuIcon "PENCIL", 6, 2, 4         'Pencil
+        AddMenuIcon "POSTERIZE", 6, 2, 5      'Posterize
+        AddMenuIcon "RELIEF", 6, 2, 6         'Relief
     AddMenuIcon "BLUR", 6, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur

@@ -999,6 +999,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormModernArt.ApplyModernArt cParams.GetLong(1)
             End If
+            
+        Case "Oil painting"
+            If showDialog Then
+                FormOilPainting.Show vbModal, FormMain
+            Else
+                FormOilPainting.ApplyOilPaintingEffect cParams.GetLong(1), cParams.GetDouble(2)
+            End If
         
         'SPECIAL OPERATIONS
         Case "Fade last effect"
