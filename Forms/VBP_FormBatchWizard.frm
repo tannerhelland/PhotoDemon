@@ -2379,7 +2379,7 @@ Private Sub cmdAddFiles_Click()
 End Sub
 
 'Cancel and exit the dialog, with optional prompts as necessary (see Form_QueryUnload)
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
@@ -2420,9 +2420,9 @@ Private Sub cmdLoadList_Click()
     
     Dim sFile As String
     
-    'Get the last "open/save image list" path from the INI file
+    'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Preferences", "ListFolder", "")
     
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -2433,7 +2433,7 @@ Private Sub cmdLoadList_Click()
         Dim listPath As String
         listPath = sFile
         StripDirectory listPath
-        g_UserPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
+        g_UserPreferences.SetPref_String "Batch Preferences", "ListFolder", listPath
         
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -2781,9 +2781,9 @@ End Sub
 
 Private Function saveCurrentBatchList() As Boolean
 
-    'Get the last "open/save image list" path from the INI file
+    'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "ListFolder", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Preferences", "ListFolder", "")
     
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -2795,7 +2795,7 @@ Private Function saveCurrentBatchList() As Boolean
         Dim listPath As String
         listPath = sFile
         StripDirectory listPath
-        g_UserPreferences.SetPreference_String "Batch Preferences", "ListFolder", listPath
+        g_UserPreferences.SetPref_String "Batch Preferences", "ListFolder", listPath
         
         If FileExist(sFile) Then Kill sFile
         Dim fileNum As Integer
@@ -2865,9 +2865,9 @@ End Sub
 'Open a common dialog and allow the user to select a macro file (to apply to each image in the batch list)
 Private Sub cmdSelectMacro_Click()
     
-    'Get the last macro-related path from the INI file
+    'Get the last macro-related path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "Macro", "")
+    tempPathString = g_UserPreferences.GetPref_String("Program Paths", "Macro", "")
     
     'Prepare a common dialog object
     Dim cDialog As cCommonDialog
@@ -2881,7 +2881,7 @@ Private Sub cmdSelectMacro_Click()
         'As a convenience to the user, save this directory as the default macro path
         tempPathString = sFile
         StripDirectory tempPathString
-        g_UserPreferences.SetPreference_String "Program Paths", "Macro", tempPathString
+        g_UserPreferences.SetPref_String "Program Paths", "Macro", tempPathString
         
         'Display the selected macro location in the relevant text box
         txtMacro.Text = sFile
@@ -2919,7 +2919,7 @@ Private Sub cmdSelectOutputPath_Click()
         txtOutputPath.Text = FixPath(tString)
     
         'Save this new directory as the default path for future usage
-        g_UserPreferences.SetPreference_String "Batch Preferences", "OutputFolder", tString
+        g_UserPreferences.SetPref_String "Batch Preferences", "OutputFolder", tString
     End If
 End Sub
 
@@ -3062,13 +3062,13 @@ Private Sub Form_Load()
             chkPNGBackground.ToolTipText = g_Language.TranslateMessage("PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.")
             cmbPPMFormat.ToolTipText = g_Language.TranslateMessage("Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)")
             
-    'Build default paths from INI file values
+    'Build default paths from preference file values
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "DriveBox", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Preferences", "DriveBox", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Drive1 = tempPathString
-    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "InputFolder", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Preferences", "InputFolder", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
-    tempPathString = g_UserPreferences.GetPreference_String("Batch Preferences", "OutputFolder", "")
+    tempPathString = g_UserPreferences.GetPref_String("Batch Preferences", "OutputFolder", "")
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
         
     'Populate a combo box that will display user-friendly summaries of all possible input image types
@@ -3513,9 +3513,9 @@ Private Sub prepareForBatchConversion()
 
     Me.Visible = False
     
-    'Before doing anything, save relevant folder locations to the INI file
-    g_UserPreferences.SetPreference_String "Batch Preferences", "DriveBox", Drive1
-    g_UserPreferences.SetPreference_String "Batch Preferences", "InputFolder", Dir1.Path
+    'Before doing anything, save relevant folder locations to the preferences file
+    g_UserPreferences.SetPref_String "Batch Preferences", "DriveBox", Drive1
+    g_UserPreferences.SetPref_String "Batch Preferences", "InputFolder", Dir1.Path
 
     'Let the rest of the program know that batch processing has begun
     MacroStatus = MacroBATCH
@@ -3579,7 +3579,7 @@ Private Sub prepareForBatchConversion()
             'Check the user's preference regarding multipage images.  If they have specifically requested that we load
             ' only the first page of the image, ignore any subsequent pages.
             If howManyPages > 0 Then
-                If g_UserPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0) = 1 Then howManyPages = 1
+                If g_UserPreferences.GetPref_Long("General Preferences", "MultipageImagePrompt", 0) = 1 Then howManyPages = 1
             Else
                 howManyPages = 1
             End If

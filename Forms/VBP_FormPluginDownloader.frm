@@ -519,8 +519,8 @@ Attribute VB_Exposed = False
 'Note that compression of the original plugin files must be performed using a custom PhotoDemon-based tool.  These are
 ' NOT generic .zip files (they are actually smaller than generic .zip files, owing to their simpler headers).
 '
-'Additionally, this form interfaces with the .INI file so the user can opt to not download the plugins and never be
-' reminded again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)
+'Additionally, this form interfaces with the user preferences file so the user can opt to not download the plugins and
+' never be reminded again. (FYI - this option can be enabled/disabled from the 'Tools' -> 'Options' menu.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -581,7 +581,7 @@ Private Sub cmdChoice_Click(Index As Integer)
         Case 1
         
             'Store this preference
-            g_UserPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", True
+            g_UserPreferences.SetPref_Boolean "General Preferences", "PromptForPluginDownload", True
     
             'Close our Internet connection, if any
             If hInternetSession Then InternetCloseHandle hInternetSession
@@ -593,7 +593,7 @@ Private Sub cmdChoice_Click(Index As Integer)
         Case 2
             
             'Store this preference
-            g_UserPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", False
+            g_UserPreferences.SetPref_Boolean "General Preferences", "PromptForPluginDownload", False
     
             'Close our Internet connection, if any
             If hInternetSession Then InternetCloseHandle hInternetSession

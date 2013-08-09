@@ -6,13 +6,10 @@ Attribute VB_Name = "MRU_List_Handler"
 'Last updated: 25/November/12
 'Last update: finished debugging MRU icons and preferences related to MRU caption length
 '
-'Handles the creation and maintenance of the program's MRU list.  Originally
-' this stored our MRU information in the registry, but I have rewritten the
-' entire thing to use only the INI file. PhotoDemon doesn't touch the registry!
+'Handles the creation and maintenance of the program's MRU list.  The MRU list is stored in the user preferences file.
 '
-'Special thanks to Randy Birch for the original version of the path shrinking code.
-' You can download his original version from this link (good as of 22 Nov '12):
-' http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm
+'Special thanks to Randy Birch for the original version of the path shrinking code. You can download his original
+' version from this link (good as of 22 Nov '12): http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -130,15 +127,15 @@ Public Function getSpecificMRU(ByVal mIndex As Long) As String
 
 End Function
 
-'Load the MRU list from the program's INI file
-Public Sub MRU_LoadFromINI()
+'Load the MRU list from the user's preference file
+Public Sub MRU_LoadFromFile()
 
     'Reset the hash storage
     ReDim mruHashes(0) As mruHash
     numOfMRUHashes = 0
     
-    'Get the number of MRU entries from the INI file
-    numEntries = g_UserPreferences.GetPreference_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
+    'Get the number of MRU entries from the preferences file
+    numEntries = g_UserPreferences.GetPref_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
     
     'Only load entries if MRU data exists
     If numEntries > 0 Then
@@ -148,7 +145,7 @@ Public Sub MRU_LoadFromINI()
         
         'Loop through each MRU entry, loading them onto the menu as we go
         For x = 0 To numEntries - 1
-            MRUlist(x) = g_UserPreferences.GetPreference_String("MRU", "f" & x, "")
+            MRUlist(x) = g_UserPreferences.GetPref_String("MRU", "f" & x, "")
             If x <> 0 Then
                 Load FormMain.mnuRecDocs(x)
             Else
@@ -156,7 +153,7 @@ Public Sub MRU_LoadFromINI()
             End If
             
             'Based on the user's preference for captioning, display either the full path or just the filename
-            If g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+            If g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
@@ -185,17 +182,17 @@ Public Sub MRU_LoadFromINI()
 End Sub
 
 'Save the current MRU list to file (currently done at program close)
-Public Sub MRU_SaveToINI()
+Public Sub MRU_SaveToFile()
 
     'Save the number of current entries
-    g_UserPreferences.SetPreference_Long "MRU", "NumberOfEntries", numEntries
+    g_UserPreferences.SetPref_Long "MRU", "NumberOfEntries", numEntries
     
     Dim x As Long
     
     'Only save entries if MRU data exists
     If numEntries <> 0 Then
         For x = 0 To numEntries - 1
-            g_UserPreferences.SetPreference_String "MRU", "f" & x, MRUlist(x)
+            g_UserPreferences.SetPref_String "MRU", "f" & x, MRUlist(x)
         Next x
     End If
     
@@ -314,7 +311,7 @@ MRUEntryFound:
     End If
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    If g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+    If g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
         FormMain.mnuRecDocs(0).Caption = getFilename(newFile)
     Else
         FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile)
@@ -334,7 +331,7 @@ MRUEntryFound:
             Load FormMain.mnuRecDocs(x)
             
             'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-            If g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+            If g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
@@ -445,13 +442,13 @@ Public Sub MRU_ClearList()
     numEntries = 0
     ReDim MRUlist(0) As String
     
-    'Clear all entries in the INI file
+    'Clear all entries in the preferences file
     For i = 0 To RECENT_FILE_COUNT - 1
-        g_UserPreferences.SetPreference_String "MRU", "f" & i, ""
+        g_UserPreferences.SetPref_String "MRU", "f" & i, ""
     Next i
     
-    'Tell the INI that no files are left
-    g_UserPreferences.SetPreference_Long "MRU", "NumberOfEntries", 0
+    'Reset the MRU count in the preferences file
+    g_UserPreferences.SetPref_Long "MRU", "NumberOfEntries", 0
     
     'The icons in the MRU sub-menu need to be reset after this action
     ResetMenuIcons

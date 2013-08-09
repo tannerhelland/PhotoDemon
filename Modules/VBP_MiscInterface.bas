@@ -312,11 +312,11 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
     
         Case VISIBILITY_TOGGLE
         
-            'Write the new value to the INI
-            g_UserPreferences.SetPreference_Boolean "General Preferences", "HideLeftPanel", Not g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False)
+            'Write the new value to the preferences files
+            g_UserPreferences.SetPref_Boolean "General Preferences", "HideLeftPanel", Not g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False)
 
             'Toggle the text and picture box accordingly
-            If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+            If g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False) Then
                 FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
                 FormMain.picLeftPane.Visible = False
             Else
@@ -345,11 +345,11 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
     
         Case VISIBILITY_TOGGLE
         
-            'Write the new value to the INI
-            g_UserPreferences.SetPreference_Boolean "General Preferences", "HideRightPanel", Not g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False)
+            'Write the new value to the preferences file
+            g_UserPreferences.SetPref_Boolean "General Preferences", "HideRightPanel", Not g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False)
 
             'Toggle the text and picture box accordingly
-            If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
+            If g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False) Then
                 FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
                 FormMain.picRightPane.Visible = False
             Else

@@ -1959,57 +1959,57 @@ Private Sub CmdOK_Click()
     Me.Visible = False
     
     'Remember the current container the user is viewing
-    g_UserPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", lstPlugins.ListIndex
+    g_UserPreferences.SetPref_Long "Plugin Preferences", "LastPluginPreferencesPage", lstPlugins.ListIndex
     
-    'Save all plugin-specific settings to the INI file
+    'Save all plugin-specific settings to the preferences file
     
     'pngnq-s9 settings
         
         'Alpha extenuation
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", CBool(chkPngnqAlphaExtenuation.Value)
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", CBool(chkPngnqAlphaExtenuation.Value)
         
         'YUV
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", CBool(chkPngnqYUVA.Value)
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "PngnqYUV", CBool(chkPngnqYUVA.Value)
         
         'Color sample size
-        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", -1 * hsPngnqSample.Value
+        g_UserPreferences.SetPref_Long "Plugin Preferences", "PngnqColorSample", -1 * hsPngnqSample.Value
         
         'Dithering
-        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", hsPngnqDither.Value
+        g_UserPreferences.SetPref_Long "Plugin Preferences", "PngnqDithering", hsPngnqDither.Value
             
-    'Write all enabled/disabled plugin changes to the INI file
+    'Write all enabled/disabled plugin changes to the preferences file
     If g_ImageFormats.FreeImageEnabled Then
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
     Else
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", True
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceFreeImageDisable", True
     End If
             
     'zLib
     If g_ZLibEnabled Then
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceZLibDisable", False
     Else
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", True
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceZLibDisable", True
     End If
         
     'EZTwain
     If g_ScanEnabled Then
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
     Else
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", True
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceEZTwainDisable", True
     End If
         
     'pngnq-s9
     If g_ImageFormats.pngnqEnabled Then
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForcePngnqDisable", False
     Else
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", True
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForcePngnqDisable", True
     End If
     
     'ExifTool
     If g_ExifToolEnabled Then
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceExifToolDisable", False
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceExifToolDisable", False
     Else
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceExifToolDisable", True
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceExifToolDisable", True
     End If
     
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
@@ -2031,30 +2031,30 @@ End Sub
 Private Sub cmdReset_Click()
 
     'Set current container to zero
-    g_UserPreferences.SetPreference_Long "Plugin Preferences", "LastPluginPreferencesPage", 0
+    g_UserPreferences.SetPref_Long "Plugin Preferences", "LastPluginPreferencesPage", 0
     
-    'Reset all plugin-specific settings in the INI file
+    'Reset all plugin-specific settings in the preferences file
     
     'pngnq-s9 settings
         
         'Alpha extenuation
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", False
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "PngnqAlphaExtenuation", False
         
         'YUV
-        g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "PngnqYUV", True
+        g_UserPreferences.SetPref_Boolean "Plugin Preferences", "PngnqYUV", True
         
         'Color sample size
-        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqColorSample", 3
+        g_UserPreferences.SetPref_Long "Plugin Preferences", "PngnqColorSample", 3
         
         'Dithering
-        g_UserPreferences.SetPreference_Long "Plugin Preferences", "PngnqDithering", 5
+        g_UserPreferences.SetPref_Long "Plugin Preferences", "PngnqDithering", 5
 
     'Enable all plugins if possible
-    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
-    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceZLibDisable", False
-    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
-    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForcePngnqDisable", False
-    g_UserPreferences.SetPreference_Boolean "Plugin Preferences", "ForceExifToolDisable", False
+    g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceFreeImageDisable", False
+    g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceZLibDisable", False
+    g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceEZTwainDisable", False
+    g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForcePngnqDisable", False
+    g_UserPreferences.SetPref_Boolean "Plugin Preferences", "ForceExifToolDisable", False
     
     'Reload the plugins (from a system standpoint)
     LoadPlugins
@@ -2085,7 +2085,7 @@ Private Sub Form_Load()
     
     lstPlugins.ListIndex = 0
     
-    'Load all user-editable settings from the INI, and populate all plugin information
+    'Load all user-editable settings from the preferences file, and populate all plugin information
     LoadAllPluginSettings
         
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
@@ -2135,24 +2135,24 @@ Private Sub LoadAllPluginSettings()
     Next i
     
     'Enable the last container the user selected
-    lstPlugins.ListIndex = g_UserPreferences.GetPreference_Long("Plugin Preferences", "LastPluginPreferencesPage", 0)
+    lstPlugins.ListIndex = g_UserPreferences.GetPref_Long("Plugin Preferences", "LastPluginPreferencesPage", 0)
     picContainer(lstPlugins.ListIndex).Visible = True
     
-    'Load all plugin settings from the INI file
+    'Load all plugin settings from the preferences file
     
     'pngnq-s9 settings
         
         'Alpha extenuation
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then chkPngnqAlphaExtenuation.Value = vbChecked Else chkPngnqAlphaExtenuation.Value = vbUnchecked
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then chkPngnqAlphaExtenuation.Value = vbChecked Else chkPngnqAlphaExtenuation.Value = vbUnchecked
         
         'YUV
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then chkPngnqYUVA.Value = vbChecked Else chkPngnqYUVA.Value = vbUnchecked
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "PngnqYUV", True) Then chkPngnqYUVA.Value = vbChecked Else chkPngnqYUVA.Value = vbUnchecked
         
         'Color sample size
-        hsPngnqSample.Value = -1 * g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3)
+        hsPngnqSample.Value = -1 * g_UserPreferences.GetPref_Long("Plugin Preferences", "PngnqColorSample", 3)
         
         'Dithering
-        hsPngnqDither.Value = g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5)
+        hsPngnqDither.Value = g_UserPreferences.GetPref_Long("Plugin Preferences", "PngnqDithering", 5)
         
 End Sub
 

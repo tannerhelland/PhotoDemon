@@ -2289,15 +2289,15 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2002-2013 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 22/October/12
 'Last update: revamped entire interface; settings are now sorted by category.
 '
-'Module for interfacing with the user's desired program preferences.  Handles
-' reading from and copying to the program's ".INI" file.
+'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
+' XML file that actually stores any preferences.
 '
-'Note that this form interacts heavily with the INIProcessor module.
+'Note that this form interacts heavily with the pdPreferences class.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -2456,10 +2456,10 @@ Private Sub CmdOK_Click()
     'First, remember the panel(s) that the user was looking at
     Dim i As Long
     For i = 0 To cmdCategory.Count - 1
-        If cmdCategory(i).Value = True Then g_UserPreferences.SetPreference_Long "General Preferences", "LastPreferencesPage", i
+        If cmdCategory(i).Value = True Then g_UserPreferences.SetPref_Long "General Preferences", "LastPreferencesPage", i
     Next i
     
-    g_UserPreferences.SetPreference_Long "General Preferences", "LastFilePreferencesPage", cmbFiletype.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "LastFilePreferencesPage", cmbFiletype.ListIndex
     
     'We may need to access a generic "form" object multiple times, so I declare it at the top of this sub.
     Dim tForm As Form
@@ -2467,34 +2467,34 @@ Private Sub CmdOK_Click()
     'Save all file format preferences
     
     'BMP RLE
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "BitmapRLE", CBool(chkBMPRLE.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "BitmapRLE", CBool(chkBMPRLE.Value)
     
     'PNG compression
-    g_UserPreferences.SetPreference_Long "General Preferences", "PNGCompression", hsPNGCompression.Value
+    g_UserPreferences.SetPref_Long "General Preferences", "PNGCompression", hsPNGCompression.Value
     
     'PNG interlacing
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "PNGInterlacing", CBool(chkPNGInterlacing.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "PNGInterlacing", CBool(chkPNGInterlacing.Value)
     
     'PNG background preservation
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "PNGBackgroundPreservation", CBool(chkPNGBackground.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "PNGBackgroundPreservation", CBool(chkPNGBackground.Value)
     
     'PPM encoding
-    g_UserPreferences.SetPreference_Long "General Preferences", "PPMExportFormat", cmbPPMFormat.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "PPMExportFormat", cmbPPMFormat.ListIndex
     
     'TGA RLE encoding
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "TGARLE", CBool(chkTGARLE.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "TGARLE", CBool(chkTGARLE.Value)
     
     'TIFF compression
-    g_UserPreferences.SetPreference_Long "General Preferences", "TIFFCompression", cmbTIFFCompression.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "TIFFCompression", cmbTIFFCompression.ListIndex
     
     'TIFF CMYK
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "TIFFCMYK", CBool(chkTIFFCMYK.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "TIFFCMYK", CBool(chkTIFFCMYK.Value)
         
     'End file format preferences
     
     'Store whether the user wants to be prompted when closing unsaved images
     g_ConfirmClosingUnsaved = CBool(chkConfirmUnsaved.Value)
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "ConfirmClosingUnsaved", g_ConfirmClosingUnsaved
+    g_UserPreferences.SetPref_Boolean "General Preferences", "ConfirmClosingUnsaved", g_ConfirmClosingUnsaved
     
     If g_ConfirmClosingUnsaved Then
         FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
@@ -2503,28 +2503,28 @@ Private Sub CmdOK_Click()
     End If
     
     'Store the user's preferred behavior for outgoing color depth
-    g_UserPreferences.SetPreference_Long "General Preferences", "OutgoingColorDepth", cmbExportColorDepth.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "OutgoingColorDepth", cmbExportColorDepth.ListIndex
     
     'Store the user's preferred behavior for the "Save" command's behavior
-    g_UserPreferences.SetPreference_Long "General Preferences", "SaveBehavior", cmbSaveBehavior.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "SaveBehavior", cmbSaveBehavior.ListIndex
         
     'Store the user's preferred behavior for the "Save As" dialog's suggested file format
-    g_UserPreferences.SetPreference_Long "General Preferences", "DefaultSaveFormat", cmbDefaultSaveFormat.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "DefaultSaveFormat", cmbDefaultSaveFormat.ListIndex
     
     'Store the user's preferred behavior for metadata export
-    g_UserPreferences.SetPreference_Long "General Preferences", "MetadataExport", cmbMetadata.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "MetadataExport", cmbMetadata.ListIndex
     
     'Store the user's preference for verifying incoming color depth
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "VerifyInitialColorDepth", CBool(chkInitialColorDepth.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "VerifyInitialColorDepth", CBool(chkInitialColorDepth.Value)
     
     'Store whether PhotoDemon is allowed to check for updates
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "CheckForUpdates", CBool(chkProgramUpdates.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "CheckForUpdates", CBool(chkProgramUpdates.Value)
     
     'Store whether PhotoDemon is allowed to offer the automatic download of missing core plugins
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "PromptForPluginDownload", CBool(chkPromptPluginDownload.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "PromptForPluginDownload", CBool(chkPromptPluginDownload.Value)
     
     'Check to see if the new caption length setting matches the old one.  If it does not, rewrite all form captions to match
-    If cmbImageCaption.ListIndex <> g_UserPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
+    If cmbImageCaption.ListIndex <> g_UserPreferences.GetPref_Long("General Preferences", "ImageCaptionSize", 0) Then
         For Each tForm In VB.Forms
             If tForm.Name = "FormImage" Then
                 If cmbImageCaption.ListIndex = 0 Then
@@ -2535,57 +2535,57 @@ Private Sub CmdOK_Click()
             End If
         Next
     End If
-    g_UserPreferences.SetPreference_Long "General Preferences", "ImageCaptionSize", cmbImageCaption.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "ImageCaptionSize", cmbImageCaption.ListIndex
     
     'Similarly, check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-    If cmbMRUCaption.ListIndex <> g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0) Then
-        g_UserPreferences.SetPreference_Long "General Preferences", "MRUCaptionSize", cmbMRUCaption.ListIndex
-        MRU_SaveToINI
-        MRU_LoadFromINI
+    If cmbMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) Then
+        g_UserPreferences.SetPref_Long "General Preferences", "MRUCaptionSize", cmbMRUCaption.ListIndex
+        MRU_SaveToFile
+        MRU_LoadFromFile
         ResetMenuIcons
     End If
         
     'Store whether PhotoDemon should validate incoming alpha channel data
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "ValidateAlphaChannels", CBool(chkValidateAlpha.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "ValidateAlphaChannels", CBool(chkValidateAlpha.Value)
     
     'Store whether HDR images should be tone-mapped at load time
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "UseToneMapping", CBool(chkToneMapping.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "UseToneMapping", CBool(chkToneMapping.Value)
     
     'Store whether we'll log system messages or not
     g_LogProgramMessages = CBool(chkLogMessages.Value)
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "LogProgramMessages", g_LogProgramMessages
+    g_UserPreferences.SetPref_Boolean "General Preferences", "LogProgramMessages", g_LogProgramMessages
     
     'Store the preference for rendering a drop shadow onto the canvas surrounding an image
     g_CanvasDropShadow = CBool(chkDropShadow.Value)
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "CanvasDropShadow", g_CanvasDropShadow
+    g_UserPreferences.SetPref_Boolean "General Preferences", "CanvasDropShadow", g_CanvasDropShadow
     
     If g_CanvasDropShadow Then g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
     
     'Dynamic taskbar icon preference; if it has changed, reset the main form icon
-    If Not CBool(chkTaskBarIcon.Value) And g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+    If Not CBool(chkTaskBarIcon.Value) And g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
         setNewTaskbarIcon origIcon32
         setNewAppIcon origIcon16
     End If
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "DynamicTaskbarIcon", CBool(chkTaskBarIcon.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "DynamicTaskbarIcon", CBool(chkTaskBarIcon.Value)
     
     'Store the canvas background preference
-    g_UserPreferences.SetPreference_Long "General Preferences", "CanvasBackground", g_CanvasBackground
+    g_UserPreferences.SetPref_Long "General Preferences", "CanvasBackground", g_CanvasBackground
         
     'Store the alpha checkerboard preference
-    g_UserPreferences.SetPreference_Long "General Preferences", "AlphaCheckMode", CLng(cmbAlphaCheck.ListIndex)
-    g_UserPreferences.SetPreference_Long "General Preferences", "AlphaCheckOne", CLng(picAlphaOne.backColor)
-    g_UserPreferences.SetPreference_Long "General Preferences", "AlphaCheckTwo", CLng(picAlphaTwo.backColor)
+    g_UserPreferences.SetPref_Long "General Preferences", "AlphaCheckMode", CLng(cmbAlphaCheck.ListIndex)
+    g_UserPreferences.SetPref_Long "General Preferences", "AlphaCheckOne", CLng(picAlphaOne.backColor)
+    g_UserPreferences.SetPref_Long "General Preferences", "AlphaCheckTwo", CLng(picAlphaTwo.backColor)
     
     'Store the alpha checkerboard size preference
     g_AlphaCheckSize = cmbAlphaCheckSize.ListIndex
-    g_UserPreferences.SetPreference_Long "General Preferences", "AlphaCheckSize", g_AlphaCheckSize
+    g_UserPreferences.SetPref_Long "General Preferences", "AlphaCheckSize", g_AlphaCheckSize
     
     'Remember how the user wants multipage images to be handled
-    g_UserPreferences.SetPreference_Long "General Preferences", "MultipageImagePrompt", cmbMultiImage.ListIndex
+    g_UserPreferences.SetPref_Long "General Preferences", "MultipageImagePrompt", cmbMultiImage.ListIndex
     
     'Remember whether or not to autog_Zoom large images
     g_AutosizeLargeImages = cmbLargeImages.ListIndex
-    g_UserPreferences.SetPreference_Long "General Preferences", "AutosizeLargeImages", g_AutosizeLargeImages
+    g_UserPreferences.SetPref_Long "General Preferences", "AutosizeLargeImages", g_AutosizeLargeImages
     
     'Verify the temporary path
     If LCase(TxtTempPath.Text) <> LCase(g_UserPreferences.getTempPath) Then g_UserPreferences.setTempPath TxtTempPath.Text
@@ -2598,15 +2598,15 @@ Private Sub CmdOK_Click()
     End If
     
     'Store the user's preference regarding interface fonts on modern versions of Windows
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "UseFancyFonts", g_UseFancyFonts
+    g_UserPreferences.SetPref_Boolean "General Preferences", "UseFancyFonts", g_UseFancyFonts
     
     'Store the user's preference for remembering window location
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "RememberWindowLocation", CBool(chkWindowLocation.Value)
+    g_UserPreferences.SetPref_Boolean "General Preferences", "RememberWindowLocation", CBool(chkWindowLocation.Value)
     
     'Store tool preferences
     
     'Clear selections after "Crop to Selection"
-    g_UserPreferences.SetPreference_Boolean "Tool Preferences", "ClearSelectionAfterCrop", CBool(chkSelectionClearCrop.Value)
+    g_UserPreferences.SetPref_Boolean "Tool Preferences", "ClearSelectionAfterCrop", CBool(chkSelectionClearCrop.Value)
     
     'Because some settings affect the way image canvases are rendered, redraw every active canvas
     Message "Saving preferences..."
@@ -2619,14 +2619,14 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'Regenerate the INI file from scratch.  This can be an effective way to "reset" a PhotoDemon installation.
+'Regenerate the preferences file from scratch.  This can be an effective way to "reset" a PhotoDemon installation.
 Private Sub cmdReset_Click()
 
     'Before resetting, warn the user
     Dim confirmReset As VbMsgBoxResult
     confirmReset = pdMsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all preferences")
 
-    'If the user gives final permission, rewrite the INI file from scratch and repopulate this form
+    'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
     If confirmReset = vbYes Then
         g_UserPreferences.resetPreferences
         LoadAllPreferences
@@ -2641,7 +2641,7 @@ Private Sub CmdTmpPath_Click()
     If tString <> "" Then TxtTempPath.Text = FixPath(tString)
 End Sub
 
-'Load all relevant values from the INI file, and populate their corresponding controls with the user's current settings
+'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
 Private Sub LoadAllPreferences()
     
     'Prepare the various file type panels and listboxes
@@ -2655,25 +2655,25 @@ Private Sub LoadAllPreferences()
     cmbFiletype.ListIndex = 0
     
     'Set the check box for 8bpp BMP RLE encoding
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "BitmapRLE", False) Then chkBMPRLE.Value = vbChecked Else chkBMPRLE.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "BitmapRLE", False) Then chkBMPRLE.Value = vbChecked Else chkBMPRLE.Value = vbUnchecked
     
     'Set the scroll bar for PNG compression
-    hsPNGCompression.Value = g_UserPreferences.GetPreference_Long("General Preferences", "PNGCompression", 9)
+    hsPNGCompression.Value = g_UserPreferences.GetPref_Long("General Preferences", "PNGCompression", 9)
     
     'Set the check box for PNG interlacing
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False) Then chkPNGInterlacing.Value = vbChecked Else chkPNGInterlacing.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "PNGInterlacing", False) Then chkPNGInterlacing.Value = vbChecked Else chkPNGInterlacing.Value = vbUnchecked
     
     'Preserve PNG background color
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGBackgroundPreservation", True) Then chkPNGBackground.Value = vbChecked Else chkPNGBackground.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "PNGBackgroundPreservation", True) Then chkPNGBackground.Value = vbChecked Else chkPNGBackground.Value = vbUnchecked
     
     'Populate the combo box for PPM export
     cmbPPMFormat.Clear
     cmbPPMFormat.AddItem " binary encoding (faster, smaller file size)", 0
     cmbPPMFormat.AddItem " ASCII encoding (human-readable, multi-platform)", 1
-    cmbPPMFormat.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "PPMExportFormat", 0)
+    cmbPPMFormat.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "PPMExportFormat", 0)
     
     'Set the check box for TGA RLE encoding
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "TGARLE", False) Then chkTGARLE.Value = vbChecked Else chkTGARLE.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "TGARLE", False) Then chkTGARLE.Value = vbChecked Else chkTGARLE.Value = vbUnchecked
     
     'Populate the combo box for TIFF compression
     cmbTIFFCompression.Clear
@@ -2687,10 +2687,10 @@ Private Sub LoadAllPreferences()
     cmbTIFFCompression.AddItem " CCITT Group 3 fax encoding - 1bpp only", 7
     cmbTIFFCompression.AddItem " CCITT Group 4 fax encoding - 1bpp only", 8
     
-    cmbTIFFCompression.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+    cmbTIFFCompression.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "TIFFCompression", 0)
     
     'Set the check box for TIFF CMYK encoding
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False) Then chkTIFFCMYK.Value = vbChecked Else chkTIFFCMYK.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "TIFFCMYK", False) Then chkTIFFCMYK.Value = vbChecked Else chkTIFFCMYK.Value = vbUnchecked
     
     'Start with the canvas background (which also requires populating the canvas background combo box)
     userInitiatedColorSelection = False
@@ -2718,7 +2718,7 @@ Private Sub LoadAllPreferences()
     userInitiatedColorSelection = True
     
     'Update the check box for dynamic taskbar icon updating
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then chkTaskBarIcon.Value = vbChecked Else chkTaskBarIcon.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then chkTaskBarIcon.Value = vbChecked Else chkTaskBarIcon.Value = vbUnchecked
     If Not g_ImageFormats.FreeImageEnabled Then
         chkTaskBarIcon.Enabled = False
         chkTaskBarIcon.Caption = g_Language.TranslateMessage(" dynamically update taskbar icon to match current image (FreeImage plugin required)")
@@ -2729,19 +2729,19 @@ Private Sub LoadAllPreferences()
     cmbExportColorDepth.AddItem " to match the image file's original color depth", 0
     cmbExportColorDepth.AddItem " automatically", 1
     cmbExportColorDepth.AddItem " by asking me what color depth I want to use", 2
-    cmbExportColorDepth.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
+    cmbExportColorDepth.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "OutgoingColorDepth", 1)
     
     'Populate the combo box for default save behavior
     cmbSaveBehavior.Clear
     cmbSaveBehavior.AddItem " overwrite the current file (standard behavior)", 0
     cmbSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
-    cmbSaveBehavior.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0)
+    cmbSaveBehavior.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "SaveBehavior", 0)
     
     'Populate the combo box for default save file format
     cmbDefaultSaveFormat.Clear
     cmbDefaultSaveFormat.AddItem " the current file format of the image being saved", 0
     cmbDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
-    cmbDefaultSaveFormat.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "DefaultSaveFormat", 0)
+    cmbDefaultSaveFormat.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "DefaultSaveFormat", 0)
         
     'Populate the combo box for default metadata export handling
     cmbMetadata.Clear
@@ -2749,28 +2749,28 @@ Private Sub LoadAllPreferences()
     cmbMetadata.AddItem " preserve all relevant metadata", 1
     cmbMetadata.AddItem " preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)", 2
     cmbMetadata.AddItem " do not preserve metadata", 3
-    cmbMetadata.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "MetadataExport", 1)
+    cmbMetadata.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "MetadataExport", 1)
         
     'Populate the check box for initial color depth calcuations
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Then chkInitialColorDepth.Value = vbChecked Else chkInitialColorDepth.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "VerifyInitialColorDepth", True) Then chkInitialColorDepth.Value = vbChecked Else chkInitialColorDepth.Value = vbUnchecked
     
     'Populate the combo boxes for caption-related preferences
     cmbImageCaption.Clear
     cmbImageCaption.AddItem " compact - file name only", 0
     cmbImageCaption.AddItem " descriptive - full location, including folder(s)", 1
-    cmbImageCaption.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0)
+    cmbImageCaption.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "ImageCaptionSize", 0)
     
     cmbMRUCaption.Clear
     cmbMRUCaption.AddItem " compact - file names only", 0
     cmbMRUCaption.AddItem " descriptive - full locations, including folder(s)", 1
-    cmbMRUCaption.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "MRUCaptionSize", 0)
+    cmbMRUCaption.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0)
     
     'Populate the combo box for multipage image handling
     cmbMultiImage.Clear
     cmbMultiImage.AddItem " ask me how I want to proceed", 0
     cmbMultiImage.AddItem " load only the first image", 1
     cmbMultiImage.AddItem " load all the images in the file", 2
-    cmbMultiImage.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
+    cmbMultiImage.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "MultipageImagePrompt", 0)
     
     'Next, get the values for alpha-channel checkerboard rendering
     userInitiatedAlphaSelection = False
@@ -2799,10 +2799,10 @@ Private Sub LoadAllPreferences()
     cmbAlphaCheckSize.ListIndex = g_AlphaCheckSize
     
     'Assign the check box for validating incoming alpha channels on 32bpp images
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "ValidateAlphaChannels", True) Then chkValidateAlpha.Value = vbChecked Else chkValidateAlpha.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "ValidateAlphaChannels", True) Then chkValidateAlpha.Value = vbChecked Else chkValidateAlpha.Value = vbUnchecked
     
     'Assign the check box for using tone mapping on HDR images
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "UseToneMapping", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
     
     'Assign the check box for logging program messages
     If g_LogProgramMessages Then chkLogMessages.Value = vbChecked Else chkLogMessages.Value = vbUnchecked
@@ -2816,24 +2816,24 @@ Private Sub LoadAllPreferences()
     'Display the current temporary file path
     TxtTempPath.Text = g_UserPreferences.getTempPath
     
-    'We have to pull the "offer to download plugins" value from the INI file, since we don't track
+    'We have to pull the "offer to download plugins" value from the preferences file, since we don't track
     ' it internally (it's only accessed when PhotoDemon is first loaded)
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "PromptForPluginDownload", True) Then chkPromptPluginDownload.Value = vbChecked Else chkPromptPluginDownload.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "PromptForPluginDownload", True) Then chkPromptPluginDownload.Value = vbChecked Else chkPromptPluginDownload.Value = vbUnchecked
     
     'Same for checking for software updates
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "CheckForUpdates", True) Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "CheckForUpdates", True) Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
     
     'Same for remember last-used window location
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then chkWindowLocation.Value = vbChecked Else chkWindowLocation.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "RememberWindowLocation", True) Then chkWindowLocation.Value = vbChecked Else chkWindowLocation.Value = vbUnchecked
     
     'Populate the "what to do when loading large images" combo box
     cmbLargeImages.Clear
     cmbLargeImages.AddItem " automatically fit the image on-screen", 0
     cmbLargeImages.AddItem " 1:1 (100% zoom, or ""actual size"")", 1
-    cmbLargeImages.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
+    cmbLargeImages.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "AutosizeLargeImages", 0)
     
     'Hide the modern typefaces box if the user in on XP.  If the user is on Vista or later, set the box according
-    ' to the preference stated in their INI file.
+    ' to the preference stated in their preferences file.
     If Not g_IsVistaOrLater Then
         chkFancyFonts.Caption = g_Language.TranslateMessage("render PhotoDemon text with modern typefaces (only available on Vista or newer)")
         chkFancyFonts.Enabled = False
@@ -2856,7 +2856,7 @@ Private Sub LoadAllPreferences()
     'Next, it's time for tool preferences
     
     'Clear selections after "Crop to Selection"
-    If g_UserPreferences.GetPreference_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then chkSelectionClearCrop.Value = vbChecked Else chkSelectionClearCrop.Value = vbUnchecked
+    If g_UserPreferences.GetPref_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then chkSelectionClearCrop.Value = vbChecked Else chkSelectionClearCrop.Value = vbUnchecked
 
     'If any preferences rely on FreeImage to operate, en/disable them as necessary
     If g_ImageFormats.FreeImageEnabled = False Then
@@ -2888,7 +2888,7 @@ Private Sub LoadAllPreferences()
 
 End Sub
 
-'When the form is loaded, populate the various checkboxes and textboxes with the values from the INI file
+'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
 
     'Populate all controls with their corresponding values
@@ -2960,12 +2960,12 @@ Private Sub Form_Load()
     Next i
     
     'Activate the last preferences panel that the user looked at
-    picContainer(g_UserPreferences.GetPreference_Long("General Preferences", "LastPreferencesPage", 0)).Visible = True
-    cmdCategory(g_UserPreferences.GetPreference_Long("General Preferences", "LastPreferencesPage", 0)).Value = True
+    picContainer(g_UserPreferences.GetPref_Long("General Preferences", "LastPreferencesPage", 0)).Visible = True
+    cmdCategory(g_UserPreferences.GetPref_Long("General Preferences", "LastPreferencesPage", 0)).Value = True
     
     'Also, activate the last file preferences sub-panel that the user looked at
-    cmbFiletype.ListIndex = g_UserPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)
-    picFileContainer(g_UserPreferences.GetPreference_Long("General Preferences", "LastFilePreferencesPage", 1)).Visible = True
+    cmbFiletype.ListIndex = g_UserPreferences.GetPref_Long("General Preferences", "LastFilePreferencesPage", 1)
+    picFileContainer(g_UserPreferences.GetPref_Long("General Preferences", "LastFilePreferencesPage", 1)).Visible = True
     
     'Translate and decorate the form; note that a custom tooltip object is passed.  makeFormPretty will automatically
     ' populate this object for us, which allows for themed and multiline tooltips.

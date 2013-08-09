@@ -441,7 +441,7 @@ Public Sub UpdateMDIStatus()
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
         'Finally, if dynamic icons are enabled, restore the main program icon and clear the icon cache
-        If g_UserPreferences.GetPreference_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        If g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
             destroyAllIcons
             setNewTaskbarIcon origIcon32
             setNewAppIcon origIcon16
@@ -502,12 +502,12 @@ Public Sub UpdateMDIStatus()
     
 End Sub
 
-'Restore the main form to the window coordinates saved in the INI file
+'Restore the main form to the window coordinates saved in the preferences file
 Public Sub restoreMainWindowLocation()
 
     'First, check which state the window was in previously.
     Dim lWindowState As Long
-    lWindowState = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowState", 0)
+    lWindowState = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowState", 0)
         
     Dim lWindowLeft As Long, lWindowTop As Long
     Dim lWindowWidth As Long, lWindowHeight As Long
@@ -518,8 +518,8 @@ Public Sub restoreMainWindowLocation()
     'If the window state was "maximized", set that and ignore the saved width/height values
     If lWindowState = vbMaximized Then
             
-        lWindowLeft = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
-        lWindowTop = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
+        lWindowLeft = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowLeft", 1)
+        lWindowTop = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowTop", 1)
         FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX
         FormMain.Top = lWindowTop * Screen.TwipsPerPixelY
         FormMain.WindowState = vbMaximized
@@ -527,11 +527,11 @@ Public Sub restoreMainWindowLocation()
     'If the window state is normal, attempt to restore the last-used values
     Else
             
-        'Start by pulling the last left/top/width/height values from the INI file
-        lWindowLeft = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
-        lWindowTop = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
-        lWindowWidth = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
-        lWindowHeight = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
+        'Start by pulling the last left/top/width/height values from the preferences file
+        lWindowLeft = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowLeft", 1)
+        lWindowTop = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowTop", 1)
+        lWindowWidth = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowWidth", 1)
+        lWindowHeight = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowHeight", 1)
             
         'If the left/top/width/height values all equal "1" (the default value), then a previous location has never
         ' been saved.  Center the form on the current screen at its default size.
@@ -567,9 +567,9 @@ Public Sub restoreMainWindowLocation()
         
     'Store the current window location to file (in case it hasn't been saved before, or we had to move it from
     ' an unavailable monitor to an available one)
-    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowLeft", FormMain.Left / Screen.TwipsPerPixelX
-    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowTop", FormMain.Top / Screen.TwipsPerPixelY
-    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowWidth", FormMain.Width / Screen.TwipsPerPixelX
-    g_UserPreferences.SetPreference_Long "General Preferences", "LastWindowHeight", FormMain.Height / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPref_Long "General Preferences", "LastWindowLeft", FormMain.Left / Screen.TwipsPerPixelX
+    g_UserPreferences.SetPref_Long "General Preferences", "LastWindowTop", FormMain.Top / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPref_Long "General Preferences", "LastWindowWidth", FormMain.Width / Screen.TwipsPerPixelX
+    g_UserPreferences.SetPref_Long "General Preferences", "LastWindowHeight", FormMain.Height / Screen.TwipsPerPixelY
     
 End Sub

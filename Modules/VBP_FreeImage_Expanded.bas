@@ -158,7 +158,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             End If
             
             'Based on the user's preference for multipage images, we can handle the image one of several ways
-            Select Case g_UserPreferences.GetPreference_Long("General Preferences", "MultipageImagePrompt", 0)
+            Select Case g_UserPreferences.GetPref_Long("General Preferences", "MultipageImagePrompt", 0)
             
                 'Prompt the user for an action
                 Case 0
@@ -352,7 +352,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
         'As of 25 Nov '12, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
         ' Check that preference before tone-mapping the image.
-        If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
+        If g_UserPreferences.GetPref_Boolean("General Preferences", "UseToneMapping", True) Then
             
             If showMessages Then If showMessages Then Message "Tone mapping HDR image to preserve tonal range..."
             
@@ -420,7 +420,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     If (fi_BPP = 64) Or (fi_BPP = 128) Then
     
         'Again, check for the user's preference on tone-mapping
-        If g_UserPreferences.GetPreference_Boolean("General Preferences", "UseToneMapping", True) Then
+        If g_UserPreferences.GetPref_Boolean("General Preferences", "UseToneMapping", True) Then
         
             If showMessages Then Message "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
         

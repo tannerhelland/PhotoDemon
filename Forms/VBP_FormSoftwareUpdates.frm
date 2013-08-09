@@ -342,8 +342,8 @@ Attribute VB_Exposed = False
 'Interface for notifying the user that a new version of PhotoDemon is available for download.  This code is simply the
 ' notification part; the actual update checking is handled within the SoftwareUpdater module.
 '
-'Note that this code interfaces with the .INI file so the user can opt to not check for updates and never be
-' notified again. (FYI - this option can be enabled/disabled from the 'Edit' -> 'Program Preferences' menu.)
+'Note that this code interfaces with the user preferences file so the user can opt to not check for updates and never be
+' notified again. (FYI - this option can be enabled/disabled from the 'Tools' -> 'Options' menu.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -360,7 +360,7 @@ Dim m_ToolTip As clsToolTip
 'Do not download the update, but prompt the user again in the future
 Private Sub cmdNoDownload_Click()
     
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "CheckForUpdates", True
+    g_UserPreferences.SetPref_Boolean "General Preferences", "CheckForUpdates", True
     
     Message "Automatic update canceled."
     
@@ -380,7 +380,7 @@ End Sub
 'Do not download the update, and do not prompt the user again
 Private Sub cmdNoDownloadNoReminder_Click()
     
-    g_UserPreferences.SetPreference_Boolean "General Preferences", "CheckForUpdates", False
+    g_UserPreferences.SetPref_Boolean "General Preferences", "CheckForUpdates", False
     
     Message "Automatic update canceled."
     

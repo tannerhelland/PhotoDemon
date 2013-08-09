@@ -72,7 +72,7 @@ Public Sub LoadTheProgram()
     
     g_UserPreferences.initializePaths
     
-    'Now, ask the preferences handler to load all other user settings from the INI file
+    'Now, ask the preferences handler to load all other user settings from the preferences file
     LoadMessage "Loading all user settings..."
     
     g_UserPreferences.loadUserSettings
@@ -99,10 +99,10 @@ Public Sub LoadTheProgram()
         
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
     Dim wRect As RECT
-    wRect.Left = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowLeft", 1)
-    wRect.Top = g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowTop", 1)
-    wRect.Right = wRect.Left + g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowWidth", 1)
-    wRect.Bottom = wRect.Top + g_UserPreferences.GetPreference_Long("General Preferences", "LastWindowHeight", 1)
+    wRect.Left = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowLeft", 1)
+    wRect.Top = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowTop", 1)
+    wRect.Right = wRect.Left + g_UserPreferences.GetPref_Long("General Preferences", "LastWindowWidth", 1)
+    wRect.Bottom = wRect.Top + g_UserPreferences.GetPref_Long("General Preferences", "LastWindowHeight", 1)
     g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
     
     'Make the splash screen's message display match the rest of PD
@@ -240,14 +240,14 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing user interface..."
                 
-    'Display or hide the main form's tool panes according to the saved setting in the INI file
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideLeftPanel", False) Then
+    'Display or hide the main form's tool panes according to the saved setting in the preferences file
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False) Then
         ChangeLeftPane VISIBILITY_FORCEHIDE
     Else
         ChangeLeftPane VISIBILITY_FORCEDISPLAY
     End If
     
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "HideRightPanel", False) Then
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False) Then
         ChangeRightPane VISIBILITY_FORCEHIDE
     Else
         ChangeRightPane VISIBILITY_FORCEDISPLAY
@@ -285,7 +285,7 @@ Public Sub LoadTheProgram()
     initializeIconHandler
     
     'Before displaying the main window, see if the user wants to restore last-used window location.
-    If g_UserPreferences.GetPreference_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
+    If g_UserPreferences.GetPref_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
         
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
     If g_UseFancyFonts Then
@@ -310,7 +310,7 @@ Public Sub LoadTheProgram()
     If g_IsProgramCompiled Then FormMain.MnuTest.Visible = False Else FormMain.MnuTest.Visible = True
     
     'Load the most-recently-used file list (MRU)
-    MRU_LoadFromINI
+    MRU_LoadFromFile
     
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadMenuShortcuts
@@ -708,7 +708,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If targetImage.mainLayer.getLayerColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
-            If g_UserPreferences.GetPreference_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
+            If g_UserPreferences.GetPref_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
             
                 If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
@@ -751,7 +751,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
         ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
         
-        If isThisPrimaryImage And (g_UserPreferences.GetPreference_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors) Then
+        If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors) Then
             
             colorCountCheck = getQuickColorCount(targetImage, CurrentImage)
         
@@ -846,7 +846,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             DisplaySize targetImage.Width, targetImage.Height
             
             If imgFormTitle = "" Then
-                If g_UserPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
+                If g_UserPreferences.GetPref_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
                     FormMain.ActiveForm.Caption = getFilename(sFile(thisImage))
                 Else
                     FormMain.ActiveForm.Caption = sFile(thisImage)
@@ -1352,7 +1352,7 @@ Public Sub LoadPlugins()
     If isEZTwainAvailable Then
                 
         'If we do find the DLL, check to see if EZTwain has been forcibly disabled by the user.
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
             g_ScanEnabled = False
         Else
             g_ScanEnabled = True
@@ -1375,7 +1375,7 @@ Public Sub LoadPlugins()
     If isZLibAvailable Then
     
         'Check to see if zLib has been forcibly disabled.
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceZLibDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceZLibDisable", False) Then
             g_ZLibEnabled = False
         Else
             g_ZLibEnabled = True
@@ -1389,7 +1389,7 @@ Public Sub LoadPlugins()
     If isFreeImageAvailable Then
         
         'Check to see if FreeImage has been forcibly disabled
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceFreeImageDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceFreeImageDisable", False) Then
             g_ImageFormats.FreeImageEnabled = False
         Else
             g_ImageFormats.FreeImageEnabled = True
@@ -1406,7 +1406,7 @@ Public Sub LoadPlugins()
     If isPngnqAvailable Then
         
         'Check to see if pngnq-s9 has been forcibly disabled
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForcePngnqDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForcePngnqDisable", False) Then
             g_ImageFormats.pngnqEnabled = False
         Else
             g_ImageFormats.pngnqEnabled = True
@@ -1420,7 +1420,7 @@ Public Sub LoadPlugins()
     If isExifToolAvailable Then
         
         'Check to see if ExifTool has been forcibly disabled
-        If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "ForceExifToolDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceExifToolDisable", False) Then
             g_ExifToolEnabled = False
         Else
             g_ExifToolEnabled = True

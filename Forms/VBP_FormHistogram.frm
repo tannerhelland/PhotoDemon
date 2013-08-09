@@ -665,9 +665,9 @@ Private Sub cmdExportHistogram_Click()
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
     
-    'Get the last "save image" path from the INI file
+    'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "MainSave", "")
+    tempPathString = g_UserPreferences.GetPref_String("Program Paths", "SaveImage", "")
     
     Dim cdfStr As String
     
@@ -695,7 +695,7 @@ Private Sub cmdExportHistogram_Click()
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        g_UserPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
+        g_UserPreferences.SetPref_String "Program Paths", "SaveImage", tempPathString
         
         Message "Saving histogram to file..."
         

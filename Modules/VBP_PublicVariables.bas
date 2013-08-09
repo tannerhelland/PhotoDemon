@@ -70,7 +70,7 @@ End Type
 
 Public g_Zoom As ZoomData
 
-'Whether or not to resize large images to fit on-screen (preference is stored in the INI file; 0 means "yes," 1 means "no")
+'Whether or not to resize large images to fit on-screen (0 means "yes," 1 means "no")
 Public g_AutosizeLargeImages As Long
 
 'The path where DLLs and related support libraries are kept, currently "ProgramPath\App\PhotoDemon\Plugins\"
@@ -113,7 +113,7 @@ Public g_IsProgramCompiled As Boolean
 Public g_FixScrolling As Boolean
 
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
-' the boxes to that.  (Note that these values are stored in the INI file as well, but that is only accessed
+' the boxes to that.  (Note that these values are stored in the preferences file as well, but that is only accessed
 ' upon program load and unload.)
 Public g_LastOpenFilter As Long
 Public g_LastSaveFilter As Long
@@ -197,8 +197,8 @@ Public g_LastImageScanned As Long
 ' Just make sure to initialize it properly (in case the last function didn't!).
 'Public g_Processing As Boolean
 
-'If this is the first time the user has run PhotoDemon (as determined by the lack of an .INI file), this variable will
-' be set to TRUE early in the load process.  Other routines can then modify their behavior accordingly.
+'If this is the first time the user has run PhotoDemon (as determined by the lack of a preferences XML file), this
+' variable will be set to TRUE early in the load process.  Other routines can then modify their behavior accordingly.
 Public g_IsFirstRun As Boolean
 
 'Drag and drop operations are allowed at certain times, but not others.  Any time a modal form is displayed, drag-and-drop

@@ -145,7 +145,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
+Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
 
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
     ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
@@ -216,11 +216,11 @@ Private Sub cmdAnswer_Click(Index As Integer)
     
         Case 0
             userAnswer = vbYes
-            If CBool(chkRepeat.Value) Then g_UserPreferences.SetPreference_Long "General Preferences", "MultipageImagePrompt", 2
+            If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Long "General Preferences", "MultipageImagePrompt", 2
             
         Case 1
             userAnswer = vbNo
-            If CBool(chkRepeat.Value) Then g_UserPreferences.SetPreference_Long "General Preferences", "MultipageImagePrompt", 1
+            If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Long "General Preferences", "MultipageImagePrompt", 1
             
     End Select
         

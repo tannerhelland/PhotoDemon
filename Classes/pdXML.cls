@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 30/July/13
-'Last updated: 02/August/13
-'Last update: many new functions to support XML-format macro files
+'Last updated: 08/August/13
+'Last update: many new functions to support the new XML-format primary preferences file
 '
 'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
@@ -80,7 +80,7 @@ Public Function writeBlankLine() As Boolean
 
     'Find the </pdData> tag that signifies the end of PD-compatible XML data
     Dim tagLocation As Long
-    tagLocation = InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare)
+    tagLocation = InStrRev(xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     
     If tagLocation > 0 Then
     
@@ -103,7 +103,7 @@ Public Function writeComment(ByVal commentText As String) As Boolean
 
     'Find the </pdData> tag that signifies the end of PD-compatible XML data
     Dim tagLocation As Long
-    tagLocation = InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare)
+    tagLocation = InStrRev(xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     
     If tagLocation > 0 Then
     
@@ -123,14 +123,14 @@ End Function
 
 'Write a new XML tag to the master XML string.  By default, new tags are written to the end of the file, but the writeAtStart
 ' param can be set to TRUE to write tags at the top.
-Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal writeAtStart As Boolean = False) As Boolean
+Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal doNotCloseTag As Boolean = False, Optional ByVal writeAtStart As Boolean = False) As Boolean
 
     'Find the </pdData> tag that signifies the end of PD-compatible XML data
     Dim tagLocation As Long
     If writeAtStart Then
         tagLocation = InStr(1, xmlContents, ROOT_TAG, vbBinaryCompare)
     Else
-        tagLocation = InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare)
+        tagLocation = InStrRev(xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     End If
 
     If tagLocation > 0 Then
@@ -145,7 +145,9 @@ Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, O
         
         'Build a string with the tag name and value we were passed
         Dim newTagLine As String
-        newTagLine = "<" & tagName & ">" & tagContents & "</" & tagName & ">" & vbCrLf
+        newTagLine = "<" & tagName & ">" & tagContents
+        
+        If Not doNotCloseTag Then newTagLine = newTagLine & "</" & tagName & ">" & vbCrLf Else newTagLine = newTagLine & vbCrLf
         
         'Reassemble the primary string
         xmlContents = topHalf & newTagLine & bottomHalf
@@ -153,6 +155,77 @@ Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, O
         writeTag = True
     Else
         writeTag = False
+    End If
+
+End Function
+
+'Update an already existant tag located within a specific subsection of the XML file.  If the tag is not found, it will be added
+' at the end of the section.
+Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
+
+    'Create a start and end tag to search for, which will vary contingent on the presence of a section request
+    Dim startTag As String, closeTag As String
+    If Len(sectionName) > 0 Then
+        startTag = "<" & sectionName & ">"
+        closeTag = "</" & sectionName & ">"
+    Else
+        startTag = ROOT_TAG
+        closeTag = ROOT_TAG_CLOSE
+    End If
+    
+    'If a section is specified, add the tag at the end of that section.  Otherwise, add it at the end of the XML file.
+    Dim sectionLocation As Long
+    sectionLocation = InStrRev(xmlContents, closeTag, , vbTextCompare)
+    
+    If sectionLocation > 0 Then
+    
+        'See if the tag already exists
+        Dim tagLocation As Long
+        tagLocation = InStrRev(xmlContents, "<" & tagName & ">", sectionLocation, vbTextCompare)
+        
+        Dim topHalf As String, bottomHalf As String
+        
+        'If the tag already exists, just update its value.  Otherwise, write out the tag as new at the end of the requested section.
+        If tagLocation > 0 Then
+        
+            'Split the XML file into two halves: the half before the relevant tag, and the half after
+            Dim tagCloseLocation As Long
+            tagCloseLocation = InStr(tagLocation, xmlContents, "</" & tagName & ">", vbTextCompare)
+            splitStringIn2 xmlContents, tagCloseLocation - 1, topHalf, bottomHalf
+            
+            'The "topHalf" string now includes everything before the closing tag.  We want to split it again, leaving out the
+            ' previous value so we can replace it with our own.
+            
+            'Reassemble the string with the new value
+            xmlContents = Left$(topHalf, tagLocation + Len(tagName) + 1) & tagContents & bottomHalf
+            
+            updateTag = True
+        
+        'The tag does not exist, so we need to add it to the end of the requested section
+        Else
+        
+            If createIfMissing Then
+            
+                'Split the XML file into two halves: the half before the closing tag, and the half after
+                splitStringIn2 xmlContents, sectionLocation - 1, topHalf, bottomHalf
+                
+                'Build a string with the tag name and value we were passed
+                Dim newTagLine As String
+                newTagLine = "<" & tagName & ">" & tagContents & "</" & tagName & ">" & vbCrLf
+                
+                'Reassemble the primary string
+                xmlContents = topHalf & newTagLine & bottomHalf
+                
+                updateTag = True
+                
+            Else
+                updateTag = False
+            End If
+            
+        End If
+        
+    Else
+        updateTag = False
     End If
 
 End Function
@@ -363,6 +436,15 @@ Private Sub applyIndentation(ByRef srcString As String)
         
     Next i
     
+    'Finally, remove any lines following the trailing </pdData> tag
+    i = UBound(xmlArray)
+    Do While (InStr(1, xmlArray(i), ROOT_TAG_CLOSE, vbBinaryCompare) = 0) And (i > 0)
+        i = i - 1
+    Loop
+    
+    'The i variable is now pointing at the line number of the closing tag.  ReDim the array to remove anything past this point.
+    If i > 0 Then ReDim Preserve xmlArray(0 To i + 1) As String
+    
     'Once all tabs have been inserted, reassemble the original string
     srcString = Join$(xmlArray, vbCrLf)
 
@@ -395,7 +477,15 @@ End Function
 
 'The next block of functions returns a unique tag value in the specified format.  "Unique" tags are those that only exist once in
 ' a file, so their location does not matter, as they can only appear once.
-Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1) As String
+Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "") As String
+    
+    If Len(xmlSection) > 0 Then
+        searchLocation = InStr(1, xmlContents, "<" & xmlSection & ">", vbTextCompare)
+        If searchLocation = 0 Then
+            getUniqueTag_String = defaultReturn
+            Exit Function
+        End If
+    End If
     
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
@@ -419,6 +509,24 @@ Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaul
         getUniqueTag_Long = defaultReturn
     End If
     
+End Function
+
+Public Function getUniqueTag_Double(ByVal tagName As String, Optional ByVal defaultReturn As Double = 0, Optional ByVal searchLocation As Long = 1) As Double
+    
+    Dim tmpString As String
+    tmpString = getTextBetweenTags(tagName, searchLocation)
+    
+    If Len(tagName) > 0 Then
+        getUniqueTag_Double = CDbl(tmpString)
+    Else
+        getUniqueTag_Double = defaultReturn
+    End If
+    
+End Function
+
+'Return a location pointer immediately following the location of a given tag (assumed to be unique)
+Public Function getLocationOfTag(ByVal tagName As String) As Long
+    getLocationOfTag = InStr(1, xmlContents, "<" & tagName & ">", vbTextCompare)
 End Function
 
 'Return a location pointer immediately following the location of a given tag+attribute combo
@@ -484,7 +592,7 @@ Private Function getTextBetweenTags(ByRef tagName As String, Optional ByVal sear
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
             If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(tagName) + 2
-            getTextBetweenTags = Mid(xmlContents, tagStart, tagEnd - tagStart)
+            getTextBetweenTags = Mid$(xmlContents, tagStart, tagEnd - tagStart)
             
         Else
             getTextBetweenTags = "ERROR: requested tag wasn't properly closed!"

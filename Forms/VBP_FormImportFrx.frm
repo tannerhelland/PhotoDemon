@@ -301,9 +301,9 @@ Private Sub Form_Load()
     
     requestUnload = False
     
-    'Get the last "open FRX" path from the INI file
+    'Get the last "open FRX" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "ImportFRX", "")
+    tempPathString = g_UserPreferences.GetPref_String("Program Paths", "ImportFRX", "")
     
     'File returned from the CommonDialog
     Dim sFile As String
@@ -330,7 +330,7 @@ TryBinaryImportAgain:
         sFile = Left$(sFile, lstrlen(sFile))
         tempPathString = sFile
         StripDirectory tempPathString
-        g_UserPreferences.SetPreference_String "Program Paths", "ImportFRX", tempPathString
+        g_UserPreferences.SetPref_String "Program Paths", "ImportFRX", tempPathString
    
         'Assign the file (note: this may take some time if the file is invalid)
         m_cff.Path = sFile

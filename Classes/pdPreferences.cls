@@ -12,25 +12,29 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Preferences (INI) Interface
-'Copyright ©2011-2013 by Tanner Helland
+'PhotoDemon Preferences Interface
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 26/June/13
-'Last update: create a \Selections subdirectory if one isn't found at run-time, and save it (if changed) to the INI
+'Last updated: 08/August/13
+'Last update: rewrote the entire Preferences class against XML files instead of INI.
 '
-'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing
-' all interaction with user settings, which are currently stored in an INI file.  This class is also capable
-' of generating a default INI file (necessary for first run), determining system folders (also necessary for
-' first run), and saving/loading any user preferences to and from file.
+'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
+' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
+' (necessary for first run), determining system folders (also necessary for first run), and saving/loading any user preferences
+' to/from a persistent file on the user's HDD.
 '
-'Because the INI file receives changes with almost every new version of the software, this class must also
-' be capable of translating values between INI versions.  Typically these just means having a contingency plan
-' for values that do not yet exist in the INI.
+'Because the preferences XML file may receive new preferences with any new version of the software, this class must also handle the
+' possibility of missing values.  As such, any requests for preferences must specify a default value, which will be used if the
+' requested preference does not exist in the file.  Also, if a preference update is requested and that preference cannot be found,
+' it will automatically be appended to the end of its section.
 '
-'When PhotoDemon is run for the first time, a default INI file is created.  To increase usability, I
-' autopopulate this file with intelligently selected preferences - such as setting the user's initial Open/Save
-' folders to the system "Pictures" directory, and automatically setting the "Temp" directory to the system's
-' specified temp directory.
+'When PhotoDemon is run for the first time, a default preferences file is created.  To increase usability, this file is automatically
+' populated with intelligent preferences - such as setting the user's initial Open/Save folders to the system "Pictures" folder,
+' and automatically setting the "Temp" folder to the OS Temp folder.
+'
+'Finally, please do not interact with the XML file directly.  Always pass preference writes and reads through this class.  I cannot
+' guarantee that the XML format or style will remain consistent between versions, but as long as you stick to the wrapping functions
+' in this class, your preferences will be read/written correctly.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -54,51 +58,8 @@ Private Declare Function SHGetFolderPath Lib "shfolder.dll" Alias "SHGetFolderPa
 
 'Windows Folder Constants
 Public Enum CSIDLs
-    CSIDL_MY_DOCUMENTS = &H5 'My Documents
-    ' CSIDL_WINDOWS = &H24 'GetWindowsDirectory()
-    ' CSIDL_SYSTEM = &H25 'GetSystemDirectory()
-    ' CSIDL_PROGRAM_FILES = &H26 'C:\Program Files
-    ' CSIDL_START_MENU = &HB '{user name}\Start Menu
-    ' CSIDL_FONTS = &H14 'windows\fonts
-    ' CSIDL_DESKTOP = &H0 '{desktop}
-    ' CSIDL_INTERNET = &H1 'Internet Explorer (icon on desktop)
-    ' CSIDL_PROGRAMS = &H2 'Start Menu\Programs
-    ' CSIDL_CONTROLS = &H3 'My Computer\Control Panel
-    ' CSIDL_PRINTERS = &H4 'My Computer\Printers
-    ' CSIDL_FAVORITES = &H6 '{user name}\Favorites
-    ' CSIDL_STARTUP = &H7 'Start Menu\Programs\Startup
-    ' CSIDL_RECENT = &H8 '{user name}\Recent
-    ' CSIDL_SENDTO = &H9 '{user name}\SendTo
-    ' CSIDL_BITBUCKET = &HA '{desktop}\Recycle Bin
-    ' CSIDL_DESKTOPDIRECTORY = &H10 '{user name}\Desktop
-    ' CSIDL_DRIVES = &H11 'My Computer
-    ' CSIDL_NETWORK = &H12 'Network Neighborhood
-    ' CSIDL_NETHOOD = &H13 '{user name}\nethood
-    ' CSIDL_TEMPLATES = &H15
-    ' CSIDL_COMMON_STARTMENU = &H16 'All Users\Start Menu
-    ' CSIDL_COMMON_PROGRAMS = &H17 'All Users\Programs
-    ' CSIDL_COMMON_STARTUP = &H18 'All Users\Startup
-    ' CSIDL_COMMON_DESKTOPDIRECTORY = &H19 'All Users\Desktop
-    ' CSIDL_APPDATA = &H1A '{user name}\Application Data
-    ' CSIDL_PRINTHOOD = &H1B '{user name}\PrintHood
-    ' CSIDL_LOCAL_APPDATA = &H1C '{user name}\Local Settings\Application Data (non roaming)
-    ' CSIDL_ALTSTARTUP = &H1D 'non localized startup
-    ' CSIDL_COMMON_ALTSTARTUP = &H1E 'non localized common startup
-    ' CSIDL_COMMON_FAVORITES = &H1F
-    ' CSIDL_INTERNET_CACHE = &H20
-    ' CSIDL_COOKIES = &H21
-    ' CSIDL_HISTORY = &H22
-    ' CSIDL_COMMON_APPDATA = &H23 'All Users\Application Data
-    CSIDL_MYPICTURES = &H27 'C:\Program Files\My Pictures
-    ' CSIDL_PROFILE = &H28 'USERPROFILE
-    ' CSIDL_SYSTEMX86 = &H29 'x86 system directory on RISC
-    ' CSIDL_PROGRAM_FILESX86 = &H2A 'x86 C:\Program Files on RISC
-    ' CSIDL_PROGRAM_FILES_COMMON = &H2B 'C:\Program Files\Common
-    ' CSIDL_PROGRAM_FILES_COMMONX86 = &H2C 'x86 Program Files\Common on RISC
-    ' CSIDL_COMMON_TEMPLATES = &H2D 'All Users\Templates
-    ' CSIDL_COMMON_DOCUMENTS = &H2E 'All Users\Documents
-    ' CSIDL_COMMON_ADMINTOOLS = &H2F 'All Users\Start Menu\Programs\Administrative Tools
-    ' CSIDL_ADMINTOOLS = &H30 '{user name}\Start Menu\Programs\Administrative Tools
+    CSIDL_MY_DOCUMENTS = &H5
+    CSIDL_MYPICTURES = &H27
 End Enum
 
 Private Const CSIDL_FLAG_CREATE As Long = 32768 '&H8000 'combine with CSIDL_ value to force create on SHGetSpecialFolderLocation()
@@ -116,15 +77,15 @@ Private ProgramPath As String
 Private DataPath As String
 Private MacroPath As String
 Private FilterPath As String
-Private INIPath As String
+Private PreferencesPath As String
 Private TempPath As String
 Private IconPath As String
 Private LanguagePath As String
 Private SelectionPath As String
 
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
-'  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. FreeImage, zLib, EZTwain dlls)
-'  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user's INI file, saved filters)
+'  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
+'  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user prefs, saved macros)
 Private AppPath As String
 
 'Get/set the current Selection directory
@@ -136,7 +97,7 @@ Public Sub setSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
     newSelectionPath = FixPath(newSelectionPath)
     SelectionPath = newSelectionPath
-    SetPreference_String "Program Paths", "Selections", SelectionPath
+    SetPref_String "Program Paths", "Selections", SelectionPath
 End Sub
 
 'Return the current Language directory
@@ -159,7 +120,7 @@ Public Sub setTempPath(ByVal newTempPath As String)
     'Ensure that this directory exists AND that we have write access to it.  If we do not, substitute the default system temp folder.
     If DirectoryExist(TempPath) = False Then TempPath = GetTemporaryPath()
     
-    SetPreference_String "Program Paths", "TempPath", TempPath
+    SetPref_String "Program Paths", "TempFiles", TempPath
     
 End Sub
 
@@ -188,7 +149,7 @@ Public Sub setMacroPath(ByVal newMacroPath As String)
     StripDirectory newMacroPath
     newMacroPath = FixPath(newMacroPath)
     MacroPath = newMacroPath
-    SetPreference_String "Program Paths", "Macro", MacroPath
+    SetPref_String "Program Paths", "Macro", MacroPath
 End Sub
 
 'Return the current filter directory
@@ -201,7 +162,7 @@ Public Sub setFilterPath(ByVal newFilterPath As String)
     StripDirectory newFilterPath
     newFilterPath = FixPath(newFilterPath)
     FilterPath = newFilterPath
-    SetPreference_String "Program Paths", "Filter", FilterPath
+    SetPref_String "Program Paths", "Filter", FilterPath
 End Sub
 
 'Return the current MRU icon directory
@@ -228,8 +189,8 @@ Public Sub initializePaths()
     LanguagePath = AppPath & "Languages\"
     If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
         
-    'Create a "Data" path based off the ProgramPath - this is where the INI file and any other user-specific files (saved filters, macros) will be stored.
-    ' Also, make sure the directory exists; if it doesn't, create it.
+    'Create a "Data" path based off the ProgramPath - this is where the preferences file and any other user-specific files
+    ' (saved filters, macros) will be stored.  Also, make sure the directory exists; if it doesn't, create it.
     DataPath = ProgramPath & "Data\"
     If Not DirectoryExist(DataPath) Then MkDir DataPath
     
@@ -247,8 +208,8 @@ Public Sub initializePaths()
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
     
-    'The INI file is also located in the \Data subdirectory
-    INIPath = DataPath & PROGRAMNAME & "_settings.ini"
+    'The user preferences file is also located in the \Data subdirectory
+    PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"
     
     'Historically, language files were stored in a different location.  We need to move any valid language files from
     ' the old language directory to the new language directory.
@@ -278,11 +239,11 @@ End Sub
 'Load all user settings from file
 Public Sub loadUserSettings()
         
-    'If no INI file exists, build a default one
-    If FileExist(INIPath) = False Then createNewINIFile
+    'If no preferences file exists, build a default one
+    If Not FileExist(PreferencesPath) Then createNewPreferencesFile
             
     'Get the LogProgramMessages preference
-    g_LogProgramMessages = GetPreference_Boolean("General Preferences", "LogProgramMessages", False)
+    g_LogProgramMessages = GetPref_Boolean("General Preferences", "LogProgramMessages", False)
     
     'If the user wants us to log program messages, open the log file and write out the current date and time
     If g_LogProgramMessages Then
@@ -300,62 +261,49 @@ Public Sub loadUserSettings()
         
     End If
             
-    'Extract the temporary path from the INI and make sure it exists. (If it doesn't,
-    ' transparently set it to the system temporary path.)
-    TempPath = GetPreference_String("Program Paths", "TempPath", "")
+    'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
+    ' the system temp path.)
+    TempPath = GetPref_String("Program Paths", "TempFiles", "")
     If Not DirectoryExist(TempPath) Then
         TempPath = GetTemporaryPath
-        SetPreference_String "Program Paths", "TempPath", TempPath
+        SetPref_String "Program Paths", "TempFiles", TempPath
     End If
     
-    'Extract the macro path from the INI
-    MacroPath = GetPreference_String("Program Paths", "Macro", MacroPath)
+    'Pull all other stored paths
+    MacroPath = GetPref_String("Program Paths", "Macro", MacroPath)
+    FilterPath = GetPref_String("Program Paths", "CustomFilter", FilterPath)
+    SelectionPath = GetPref_String("Program Paths", "Selections", SelectionPath)
     
-    'Extract the filter path from the INI
-    FilterPath = GetPreference_String("Program Paths", "CustomFilter", FilterPath)
-    
-    'Extract the selection path from the INI
-    SelectionPath = GetPreference_String("Program Paths", "Selections", SelectionPath)
-    
-    'Get the canvas background preference (color vs checkerboard pattern)
-    Dim x As Long
-    x = GetPreference_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
-    
-    'A value of -1 previously indicated a checkerboard background, which is no longer allowed.
-    ' If that value is found, overwrite it with a pleasant shade of blue.
-    If x = -1 Then
-        x = RGB(201, 211, 226)
-        SetPreference_Long "General Preferences", "CanvasBackground", CStr(RGB(201, 211, 226))
-    End If
-    g_CanvasBackground = x
+    'Get the canvas background color
+    g_CanvasBackground = GetPref_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
     
     'Get the canvas drop shadow preference
-    g_CanvasDropShadow = GetPreference_Boolean("General Preferences", "CanvasDropShadow", False)
+    g_CanvasDropShadow = GetPref_Boolean("General Preferences", "CanvasDropShadow", False)
     
-    'Get the alpha transparency checkerboard pattern
-    g_AlphaCheckMode = GetPreference_Long("General Preferences", "AlphaCheckMode", 1)
+    'Get the alpha transparency checkerboard color mode (light/moderate/dark/custom)
+    g_AlphaCheckMode = GetPref_Long("General Preferences", "AlphaCheckMode", 1)
     
     'Get the alpha transparency checkerboard colors
-    g_AlphaCheckOne = GetPreference_Long("General Preferences", "AlphaCheckOne", RGB(153, 153, 153))
-    g_AlphaCheckTwo = GetPreference_Long("General Preferences", "AlphaCheckTwo", RGB(102, 102, 102))
+    g_AlphaCheckOne = GetPref_Long("General Preferences", "AlphaCheckOne", RGB(153, 153, 153))
+    g_AlphaCheckTwo = GetPref_Long("General Preferences", "AlphaCheckTwo", RGB(102, 102, 102))
     
     'Get the alpha checkerboard size
-    g_AlphaCheckSize = GetPreference_Long("General Preferences", "AlphaCheckSize", 1)
+    g_AlphaCheckSize = GetPref_Long("General Preferences", "AlphaCheckSize", 1)
     
     'Check if the user wants us to prompt them about closing unsaved images
-    g_ConfirmClosingUnsaved = GetPreference_Boolean("General Preferences", "ConfirmClosingUnsaved", True)
+    g_ConfirmClosingUnsaved = GetPref_Boolean("General Preferences", "ConfirmClosingUnsaved", True)
         
     'Check if the user wants the interface to use modern typefaces if available
-    g_UseFancyFonts = GetPreference_Boolean("General Preferences", "UseFancyFonts", False)
+    g_UseFancyFonts = GetPref_Boolean("General Preferences", "UseFancyFonts", False)
     
     'Check if the user wants large images automatically zoomed when loaded
-    g_AutosizeLargeImages = GetPreference_Long("General Preferences", "AutosizeLargeImages", 0)
+    g_AutosizeLargeImages = GetPref_Long("General Preferences", "AutosizeLargeImages", 0)
     
     'Grab the last-used common dialog filters
-    g_LastOpenFilter = GetPreference_Long("File Formats", "LastOpenFilter", 1)
-    g_LastSaveFilter = GetPreference_Long("File Formats", "LastSaveFilter", 3)
+    g_LastOpenFilter = GetPref_Long("File Formats", "LastOpenFilter", 1)
+    g_LastSaveFilter = GetPref_Long("File Formats", "LastSaveFilter", 3)
     
-    'Initialize a few other settings to default values, despite them not coming from the INI file
+    'Initialize a few other settings to default values, despite them not coming from the preferences file
     
     'No custom filters have been created yet
     g_HasCreatedFilter = False
@@ -384,7 +332,7 @@ Public Sub loadToolSettings()
     'Selection type
     Dim i As Long
     For i = 0 To FormMain.cmbSelRender.Count - 1
-        FormMain.cmbSelRender(i).ListIndex = GetPreference_Long("Tool Preferences", "LastSelectionShape", 0)
+        FormMain.cmbSelRender(i).ListIndex = GetPref_Long("Tool Preferences", "LastSelectionShape", 0)
     Next i
     
 End Sub
@@ -392,289 +340,308 @@ End Sub
 Public Sub saveToolSettings()
     
     'Last-used tool
-    SetPreference_Long "Tool Preferences", "LastActiveTool", g_CurrentTool
+    SetPref_Long "Tool Preferences", "LastActiveTool", g_CurrentTool
         
 End Sub
 
-'Reset the INI file to its default state.  (Basically, delete any existing file then call createNewINIFile.)
+'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Public Sub resetPreferences()
-
-    If FileExist(INIPath) Then Kill INIPath
-    
-    createNewINIFile
-
+    If FileExist(PreferencesPath) Then Kill PreferencesPath
+    createNewPreferencesFile
     loadUserSettings
-
 End Sub
 
-'Create a new INI file from scratch
-Private Sub createNewINIFile()
+'Create a new preferences XML file from scratch.  When new preferences are added to the preferences dialog, they should also be
+' added to this function, to ensure that the most intelligent preference is selected by default.
+Private Sub createNewPreferencesFile()
 
     'This function is used to determine whether PhotoDemon is being run for the first time.  Why do it here?
-    ' 1) When first downloaded, PhotoDemon doesn't come with an INI.  Thus this routine MUST be called.
+    ' 1) When first downloaded, PhotoDemon doesn't come with a prefs file.  Thus this routine MUST be called.
     ' 2) When preferences are reset, this file is deleted.  That is an appropriate time to mark the program as "first run".
-    ' 3) If the user moves PhotoDemon but leaves behind the old INI file.  There's no easy way to check this, but
+    ' 3) If the user moves PhotoDemon but leaves behind the old prefs file.  There's no easy way to check this, but
     '     treating the program as if its being run for the first time is as good a plan as any.
     g_IsFirstRun = True
+    
+    'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.prepareNewXML "PhotoDemon User Preferences"
+    xmlEngine.writeBlankLine
+    
+    'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
+    xmlEngine.writeComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
+    xmlEngine.writeBlankLine
+    
+    'Write out the first block of settings: program paths
+    xmlEngine.writeTag "ProgramPaths", "", True
+        xmlEngine.writeTag "TempFiles", GetTemporaryPath
+        xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "ImportFRX", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
+        xmlEngine.writeTag "CustomFilter", FilterPath
+        xmlEngine.writeTag "Macro", MacroPath
+        xmlEngine.writeTag "Selections", SelectionPath
+    xmlEngine.closeTag "ProgramPaths"
+    xmlEngine.writeBlankLine
 
-    'This routine needs to open a file.  To prevent "duplicate declarations in current scope," use a free file value
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
-    'Open the file (which will create it when it doesn't exist)
-    Open INIPath For Append As #fileNum
-    
-        'Write out the INI header
-        Print #fileNum, "[PhotoDemon Program Specifications]"
-        Print #fileNum, "BuildVersion=Beta"
-        Print #fileNum, ""
-        
-        'Write out all program paths
-        Print #fileNum, "[Program Paths]"
-        Print #fileNum, "TempPath=" & GetTemporaryPath
-        Print #fileNum, "MainOpen=" & GetWindowsFolder(CSIDL_MYPICTURES)
-        Print #fileNum, "MainSave=" & GetWindowsFolder(CSIDL_MYPICTURES)
-        Print #fileNum, "ImportFRX=" & GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-        Print #fileNum, "CustomFilter=" & FilterPath
-        Print #fileNum, "Macro=" & MacroPath
-        Print #fileNum, ""
-                
-        'Write out general preferences
-        Print #fileNum, "[General Preferences]"
-        Print #fileNum, "AlphaCheckMode=0"
-        Print #fileNum, "AlphaCheckOne=" & RGB(255, 255, 255)
-        Print #fileNum, "AlphaCheckTwo=" & RGB(204, 204, 204)
-        Print #fileNum, "AlphaCheckSize=1"
-        Print #fileNum, "AutosizeLargeImages=0"
-        Print #fileNum, "BitmapRLE=0"
-        Print #fileNum, "CanvasBackground=" & vb3DShadow 'RGB(201, 211, 226)
-        Print #fileNum, "CanvasDropShadow=1"
-        Print #fileNum, "CheckForUpdates=1"
-        Print #fileNum, "ConfirmClosingUnsaved=1"
-        Print #fileNum, "CurrentLanguageFile="
-        Print #fileNum, "DefaultSaveFormat=0"
-        Print #fileNum, "DisplayIDEWarning=1"
-        Print #fileNum, "DynamicTaskbarIcon=1"
-        Print #fileNum, "HasGitHubAccount="
-        Print #fileNum, "HideLeftPanel=0"
-        Print #fileNum, "HideRightPanel=0"
-        Print #fileNum, "ImageCaptionSize=0"
-        Print #fileNum, "LastUpdateCheck="
-        Print #fileNum, "LastPreferencesPage=0"
-        Print #fileNum, "LastFilePreferencesPage=1"
-        Print #fileNum, "LogProgramMessages=0"
-        Print #fileNum, "MetadataExport=0"
-        Print #fileNum, "MRUCaptionSize=0"
-        Print #fileNum, "MultipageImagePrompt=0"
-        Print #fileNum, "OutgoingColorDepth=1"
-        Print #fileNum, "PNGBackgroundPreservation=1"
-        Print #fileNum, "PNGCompression=9"
-        Print #fileNum, "PNGInterlacing=0"
-        Print #fileNum, "PPMExportFormat=0"
-        Print #fileNum, "PromptForPluginDownload=1"
-        Print #fileNum, "RememberWindowLocation=1"
-        Print #fileNum, "LastWindowState=0"
-        Print #fileNum, "LastWindowLeft=1"
-        Print #fileNum, "LastWindowTop=1"
-        Print #fileNum, "LastWindowWidth=1"
-        Print #fileNum, "LastWindowHeight=1"
-        Print #fileNum, "SaveBehavior=0"
-        Print #fileNum, "TGARLE=0"
-        Print #fileNum, "TIFFCMYK=0"
-        Print #fileNum, "TIFFCompression=0"
+    'Write out the second block of settings: general preferences
+    xmlEngine.writeTag "GeneralPreferences", "", True
+        xmlEngine.writeTag "AlphaCheckMode", "0"
+        xmlEngine.writeTag "AlphaCheckOne", CStr(RGB(255, 255, 255))
+        xmlEngine.writeTag "AlphaCheckTwo", CStr(RGB(204, 204, 204))
+        xmlEngine.writeTag "AlphaCheckSize", "1"
+        xmlEngine.writeTag "AutosizeLargeImages", "0"
+        xmlEngine.writeTag "BitmapRLE", "False"
+        xmlEngine.writeTag "CanvasBackground", CStr(vb3DShadow) 'RGB(201, 211, 226)
+        xmlEngine.writeTag "CanvasDropShadow", "True"
+        xmlEngine.writeTag "CheckForUpdates", "True"
+        xmlEngine.writeTag "ConfirmClosingUnsaved", "True"
+        xmlEngine.writeTag "CurrentLanguageFile", ""
+        xmlEngine.writeTag "DefaultSaveFormat", "0"
+        xmlEngine.writeTag "DisplayIDEWarning", "True"
+        xmlEngine.writeTag "DynamicTaskbarIcon", "True"
+        xmlEngine.writeTag "HasGitHubAccount", ""
+        xmlEngine.writeTag "HideLeftPanel", "False"
+        xmlEngine.writeTag "HideRightPanel", "False"
+        xmlEngine.writeTag "ImageCaptionSize", "0"
+        xmlEngine.writeTag "LastUpdateCheck", ""
+        xmlEngine.writeTag "LastPreferencesPage", "0"
+        xmlEngine.writeTag "LastFilePreferencesPage", "1"
+        xmlEngine.writeTag "LogProgramMessages", "False"
+        xmlEngine.writeTag "MetadataExport", "0"
+        xmlEngine.writeTag "MRUCaptionSize", "0"
+        xmlEngine.writeTag "MultipageImagePrompt", "0"
+        xmlEngine.writeTag "OutgoingColorDepth", "1"
+        xmlEngine.writeTag "PNGBackgroundPreservation", "True"
+        xmlEngine.writeTag "PNGCompression", "9"
+        xmlEngine.writeTag "PNGInterlacing", "False"
+        xmlEngine.writeTag "PPMExportFormat", "0"
+        xmlEngine.writeTag "PromptForPluginDownload", "True"
+        xmlEngine.writeTag "RememberWindowLocation", "True"
+        xmlEngine.writeTag "LastWindowState", "0"
+        xmlEngine.writeTag "LastWindowLeft", "1"
+        xmlEngine.writeTag "LastWindowTop", "1"
+        xmlEngine.writeTag "LastWindowWidth", "1"
+        xmlEngine.writeTag "LastWindowHeight", "1"
+        xmlEngine.writeTag "SaveBehavior", "0"
+        xmlEngine.writeTag "TGARLE", "False"
+        xmlEngine.writeTag "TIFFCMYK", "False"
+        xmlEngine.writeTag "TIFFCompression", "0"
         'On Vista and later, Segoe UI is used as the interface font instead of Tahoma
-        If g_IsVistaOrLater Then Print #fileNum, "UseFancyFonts=1" Else Print #fileNum, "UseFancyFonts=0"
-        Print #fileNum, "UseToneMapping=1"
-        Print #fileNum, "ValidateAlphaChannels=1"
-        Print #fileNum, "VerifyInitialColorDepth=1"
-        Print #fileNum, ""
+        If g_IsVistaOrLater Then xmlEngine.writeTag "UseFancyFonts", "True" Else xmlEngine.writeTag "UseFancyFonts", "False"
+        xmlEngine.writeTag "UseToneMapping", "True"
+        xmlEngine.writeTag "ValidateAlphaChannels", "True"
+        xmlEngine.writeTag "VerifyInitialColorDepth", "True"
+    xmlEngine.closeTag "GeneralPreferences"
+    xmlEngine.writeBlankLine
+    
+    'Write out the third block of settings: plugin preferences
+    xmlEngine.writeTag "PluginPreferences", "", True
+        xmlEngine.writeTag "ForceFreeImageDisable", "False"
+        xmlEngine.writeTag "ForceZLibDisable", "False"
+        xmlEngine.writeTag "ForceEZTwainDisable", "False"
+        xmlEngine.writeTag "ForcePngnqDisable", "False"
+        xmlEngine.writeTag "ForceExifToolDisable", "False"
+        xmlEngine.writeTag "LastPluginPreferencesPage", "0"
+        xmlEngine.writeTag "PngnqAlphaExtenuation", "False"
+        xmlEngine.writeTag "PngnqYUV", "True"
+        xmlEngine.writeTag "PngnqColorSample", "3"
+        xmlEngine.writeTag "PngnqDithering", "5"
+    xmlEngine.closeTag "PluginPreferences"
+    xmlEngine.writeBlankLine
+    
+    'Write out batch conversion preferences
+    xmlEngine.writeTag "BatchPreferences", "", True
+        xmlEngine.writeTag "DriveBox", ""
+        xmlEngine.writeTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
+    xmlEngine.closeTag "BatchPreferences"
+    xmlEngine.writeBlankLine
         
-        'Write out plugin preferences
-        Print #fileNum, "[Plugin Preferences]"
-        Print #fileNum, "ForceFreeImageDisable=0"
-        Print #fileNum, "ForceZLibDisable=0"
-        Print #fileNum, "ForceEZTwainDisable=0"
-        Print #fileNum, "ForcePngnqDisable=0"
-        Print #fileNum, "ForceExifToolDisable=0"
-        Print #fileNum, "LastPluginPreferencesPage=0"
-        Print #fileNum, "PngnqAlphaExtenuation=0"
-        Print #fileNum, "PngnqYUV=1"
-        Print #fileNum, "PngnqColorSample=3"
-        Print #fileNum, "PngnqDithering=5"
-        Print #fileNum, ""
+    'Write out file format preferences
+    xmlEngine.writeTag "FileFormats", "", True
+        xmlEngine.writeTag "LastOpenFilter", "1"   'Default to "All Compatible Graphics" filter for loading
+        xmlEngine.writeTag "LastSaveFilter", "-1"  'Mark the last-used save filter as "unknown"
+    xmlEngine.closeTag "FileFormat"
+    xmlEngine.writeBlankLine
         
-        'Write out batch conversion preferences
-        Print #fileNum, "[Batch Preferences]"
-        Print #fileNum, "DriveBox="
-        Print #fileNum, "InputFolder=" & GetWindowsFolder(CSIDL_MYPICTURES)
-        Print #fileNum, "OutputFolder=" & GetWindowsFolder(CSIDL_MYPICTURES)
-        Print #fileNum, "ListFolder=" & GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-        Print #fileNum, ""
-        
-        'Write out file format preferences
-        Print #fileNum, "[File Formats]"
-        Print #fileNum, "LastOpenFilter=1"   'Default to "All Compatible Graphics" filter for loading
-        Print #fileNum, "LastSaveFilter=-1"  'Mark the last-used save filter as "unknown"
-        Print #fileNum, ""
-        
-        'Write out tool preferences
-        Print #fileNum, "[Tool Preferences]"
-        Print #fileNum, "ClearSelectionAfterCrop=1"
-        Print #fileNum, "LastSelectionShape=0"
-        Print #fileNum, "LastActiveTool=0"
-        Print #fileNum, ""
+    'Write out tool preferences
+    xmlEngine.writeTag "ToolPreferences", "", True
+        xmlEngine.writeTag "ClearSelectionAfterCrop", "True"
+        xmlEngine.writeTag "LastSelectionShape", "0"
+        xmlEngine.writeTag "LastActiveTool", "0"
+    xmlEngine.closeTag "ToolPreferences"
+    xmlEngine.writeBlankLine
                 
-        'Finally, write out MRU placeholders
-        Print #fileNum, "[MRU]"
-        Print #fileNum, "NumberOfEntries=0"
-        Print #fileNum, "f0="
-        Print #fileNum, "f1="
-        Print #fileNum, "f2="
-        Print #fileNum, "f3="
-        Print #fileNum, "f4="
-        Print #fileNum, "f5="
-        Print #fileNum, "f6="
-        Print #fileNum, "f7="
-        Print #fileNum, "f8="
-        
-    'Close the newly created INI file
-    Close #fileNum
+    'Finally, write out MRU placeholders
+    xmlEngine.writeTag "MRU", "", True
+        xmlEngine.writeTag "NumberOfEntries", "0"
+        xmlEngine.writeTag "f0", ""
+        xmlEngine.writeTag "f1", ""
+        xmlEngine.writeTag "f2", ""
+        xmlEngine.writeTag "f3", ""
+        xmlEngine.writeTag "f4", ""
+        xmlEngine.writeTag "f5", ""
+        xmlEngine.writeTag "f6", ""
+        xmlEngine.writeTag "f7", ""
+        xmlEngine.writeTag "f8", ""
+    xmlEngine.closeTag "MRU"
+    xmlEngine.writeBlankLine
+    
+    'With all tags successfully written, we can now close the XML data and write it out to file.
+    xmlEngine.writeXMLToFile PreferencesPath
     
 End Sub
 
-'Get a Boolean-type value from the INI file.  (A default value must be supplied; this is used if no value exists in the INI file.)
-Public Function GetPreference_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As Boolean) As Boolean
+'Get a Boolean-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
+Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As Boolean) As Boolean
 
-    'Get the value (as a string) from the INI file
+    'Request the value (as a string)
     Dim tmpString As String
-    tmpString = GetINIString(preferenceSection, preferenceName)
+    tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If tmpString = "" Then
+    If Len(tmpString) = 0 Then
         
-        'To prevent future blank results, write the default value to the INI file
-        SetPreference_Boolean preferenceSection, preferenceName, defaultValue
-        
-        GetPreference_Boolean = defaultValue
+        'To prevent future blank results, write out a default value
+        SetPref_Boolean preferenceSection, preferenceName, defaultValue
+        GetPref_Boolean = defaultValue
             
     'If the requested value DOES exist, convert it to boolean type and return it
     Else
         
-        'A string of "0" is treated as FALSE.  All other values are treated as TRUE.
-        If tmpString = "0" Then
-            GetPreference_Boolean = False
+        If tmpString = "False" Then
+            GetPref_Boolean = False
         Else
-            GetPreference_Boolean = True
+            GetPref_Boolean = True
         End If
     
     End If
 
 End Function
 
-'Set a Boolean-type value to the INI file.
-Public Sub SetPreference_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
+'Write a Boolean-type value to the preferences file.
+Public Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
 
-    'If the boolean value is FALSE, set "0" to the INI file.  Otherwise, set "1".
     If boolVal Then
-        WriteINIString preferenceSection, preferenceName, "1"
+        WritePreference preferenceSection, preferenceName, "True"
     Else
-        WriteINIString preferenceSection, preferenceName, "0"
+        WritePreference preferenceSection, preferenceName, "False"
     End If
 
 End Sub
 
-'Get a Long-type value from the INI file.  (A default value must be supplied; this is used if no value exists in the INI file.)
-Public Function GetPreference_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As Long) As Long
+'Get a Long-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
+Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As Long) As Long
 
     'Get the value (as a string) from the INI file
     Dim tmpString As String
-    tmpString = GetINIString(preferenceSection, preferenceName)
+    tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If tmpString = "" Then
+    If Len(tmpString) = 0 Then
     
-        'To prevent future blank results, write the default value to the INI file
-        SetPreference_Long preferenceSection, preferenceName, defaultValue
-    
-        GetPreference_Long = defaultValue
+        'To prevent future blank results, write out a default value
+        SetPref_Long preferenceSection, preferenceName, defaultValue
+        GetPref_Long = defaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
     Else
-        GetPreference_Long = CLng(tmpString)
+        GetPref_Long = CLng(tmpString)
     End If
 
 End Function
 
-'Set a Long-type value to the INI file.
-Public Sub SetPreference_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
-
-    WriteINIString preferenceSection, preferenceName, CStr(longVal)
-
+'Set a Long-type value to the preferences file.
+Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
+    WritePreference preferenceSection, preferenceName, CStr(longVal)
 End Sub
 
-'Get a String-type value from the INI file.  (A default value must be supplied; this is used if no value exists in the INI file.)
-Public Function GetPreference_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As String) As String
+'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
+Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As String) As String
 
-    'Get the requested value from the INI file
+    'Get the requested value from the preferences file
     Dim tmpString As String
-    tmpString = GetINIString(preferenceSection, preferenceName)
+    tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If tmpString = "" Then
+    If Len(tmpString) = 0 Then
         
-        'To prevent future blank results, write the default value to the INI file
-        SetPreference_String preferenceSection, preferenceName, defaultValue
-    
-        GetPreference_String = defaultValue
+        'To prevent future blank results, write out a default value
+        SetPref_String preferenceSection, preferenceName, defaultValue
+        GetPref_String = defaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
     Else
-        GetPreference_String = tmpString
+        GetPref_String = tmpString
     End If
 
 End Function
 
 'Set a String-type value to the INI file.
-Public Sub SetPreference_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
-
-    WriteINIString preferenceSection, preferenceName, stringVal
-
+Public Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
+    WritePreference preferenceSection, preferenceName, stringVal
 End Sub
 
 'Sometimes we want to know if a value exists at all.  This function handles that.
 Public Function doesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
     Dim tmpString As String
-    tmpString = GetINIString(preferenceSection, preferenceName)
-    If tmpString = "" Then doesValueExist = False Else doesValueExist = True
+    tmpString = GetPreference(preferenceSection, preferenceName)
+    If Len(tmpString) = 0 Then doesValueExist = False Else doesValueExist = True
 End Function
 
-'Read a value from an INI file and return it (as a string)
-Private Function GetINIString(ByRef strSectionHeader As String, ByRef strVariableName As String) As String
+'Read a value from the preferences file and return it (as a string)
+Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariableName As String) As String
     
-    'Blank out the return string (required by the API call)
-    Dim strReturn As String
-    strReturn = String(255, Chr(0))
+    'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
+    ' spaces in the name.  So remove any spaces before interacting with the XML file.
+    strSectionHeader = Replace$(strSectionHeader, " ", "")
+    strVariableName = Replace$(strVariableName, " ", "")
     
-    'Get the value form the file
-    Dim chkReturn As String
-    chkReturn = Left$(strReturn, GetPrivateProfileString(strSectionHeader, ByVal strVariableName, "", strReturn, Len(strReturn), INIPath))
+    'Create an XML object and load the XML settings file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.loadXMLFile PreferencesPath
     
-    'Make sure a non-null string was returned
-    If chkReturn <> "" Then
-        GetINIString = chkReturn
+    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
+    If xmlEngine.isPDDataType("PhotoDemon User Preferences") And xmlEngine.validateLoadedXMLData("GeneralPreferences") Then
     
-    'If a null string was returned, it may be because this key/value pair doesn't appear in the INI file.
-    ' Force a write of this key/pair to ensure that it exists in the file.
+        'Return the tag at that location
+        GetPreference = xmlEngine.getUniqueTag_String(strVariableName, , , strSectionHeader)
+        
     Else
-        WritePrivateProfileString strSectionHeader, strVariableName, "", INIPath
-        GetINIString = ""
+        GetPreference = ""
     End If
     
 End Function
 
-'Write a string value to an INI file
-Public Function WriteINIString(strSectionHeader As String, strVariableName As String, strValue As String) As Long
-    WriteINIString = WritePrivateProfileString(strSectionHeader, strVariableName, strValue, INIPath)
+'Write a string value to the preferences file
+Public Function WritePreference(strSectionHeader As String, strVariableName As String, strValue As String) As Boolean
+
+    'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
+    ' spaces in the name.  So remove any spaces before interacting with the XML file.
+    strSectionHeader = Replace$(strSectionHeader, " ", "")
+    strVariableName = Replace$(strVariableName, " ", "")
+    
+    'Create an XML object and load the XML settings file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.loadXMLFile PreferencesPath
+    
+    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
+    If xmlEngine.isPDDataType("PhotoDemon User Preferences") And xmlEngine.validateLoadedXMLData("GeneralPreferences") Then
+    
+        'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
+        If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then
+            WritePreference = True
+            xmlEngine.writeXMLToFile PreferencesPath
+        Else
+            WritePreference = False
+        End If
+        
+    End If
+    
 End Function
 
 'Get the current Windows-specified temp directory

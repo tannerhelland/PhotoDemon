@@ -34,9 +34,9 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     'Common dialog interface
     Dim CC As cCommonDialog
     
-    'Get the last "open image" path from the INI file
+    'Get the last "open image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "MainOpen", "")
+    tempPathString = g_UserPreferences.GetPref_String("Program Paths", "OpenImage", "")
     
     Set CC = New cCommonDialog
         
@@ -84,22 +84,22 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
             ReDim Preserve listOfFiles(0 To UBound(listOfFiles) - 1)
             
             'Save the new directory as the default path for future usage
-            g_UserPreferences.SetPreference_String "Program Paths", "MainOpen", imagesPath
+            g_UserPreferences.SetPref_String "Program Paths", "OpenImage", imagesPath
             
         'If there is only one file in the array (e.g. the user only opened one image), we don't need to do all
-        ' that extra processing - just save the new directory to the INI file
+        ' that extra processing - just save the new directory to the preferences file
         Else
         
             'Save the new directory as the default path for future usage
             tempPathString = listOfFiles(0)
             StripDirectory tempPathString
         
-            g_UserPreferences.SetPreference_String "Program Paths", "MainOpen", tempPathString
+            g_UserPreferences.SetPref_String "Program Paths", "OpenImage", tempPathString
             
         End If
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        g_UserPreferences.SetPreference_Long "File Formats", "LastOpenFilter", g_LastOpenFilter
+        g_UserPreferences.SetPref_Long "File Formats", "LastOpenFilter", g_LastOpenFilter
         
         'All done!
         PhotoDemon_OpenImageDialog = True
@@ -134,7 +134,7 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         Dim dstFilename As String
                 
         'If the user has requested that we only save copies of current images, we need to come up with a new filename
-        If g_UserPreferences.GetPreference_Long("General Preferences", "SaveBehavior", 0) = 0 Then
+        If g_UserPreferences.GetPref_Long("General Preferences", "SaveBehavior", 0) = 0 Then
             dstFilename = pdImages(imageID).LocationOnDisk
         Else
         
@@ -181,9 +181,9 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
     
-    'Get the last "save image" path from the INI file
+    'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPreference_String("Program Paths", "MainSave", "")
+    tempPathString = g_UserPreferences.GetPref_String("Program Paths", "SaveImage", "")
         
     'g_LastSaveFilter will be set to "-1" if the user has never saved a file before.  If that happens, default to JPEG
     If g_LastSaveFilter = -1 Then
@@ -197,7 +197,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         ' 1) The current image's format (standard behavior)
         ' 2) The last format the user specified in the Save As screen (my preferred behavior)
         ' Use that preference to determine which save filter we select.
-        If g_UserPreferences.GetPreference_Long("General Preferences", "DefaultSaveFormat", 0) = 0 Then
+        If g_UserPreferences.GetPref_Long("General Preferences", "DefaultSaveFormat", 0) = 0 Then
         
             g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(pdImages(imageID).CurrentFileFormat) + 1
     
@@ -234,10 +234,10 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        g_UserPreferences.SetPreference_String "Program Paths", "MainSave", tempPathString
+        g_UserPreferences.SetPref_String "Program Paths", "SaveImage", tempPathString
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
-        g_UserPreferences.SetPreference_Long "File Formats", "LastSaveFilter", g_LastSaveFilter
+        g_UserPreferences.SetPref_Long "File Formats", "LastSaveFilter", g_LastSaveFilter
                         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         MenuSaveAs = PhotoDemon_SaveImage(pdImages(imageID), sFile, imageID, True)
@@ -245,7 +245,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         'If the save was successful, update the associated window caption to reflect the new name and/or location
         If MenuSaveAs Then
             
-            If g_UserPreferences.GetPreference_Long("General Preferences", "ImageCaptionSize", 0) Then
+            If g_UserPreferences.GetPref_Long("General Preferences", "ImageCaptionSize", 0) Then
                 pdImages(imageID).containingForm.Caption = getFilename(sFile)
             Else
                 pdImages(imageID).containingForm.Caption = sFile

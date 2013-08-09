@@ -148,11 +148,11 @@ Public Function translationActive() As Boolean
 
 End Function
 
-'Given an index in the availableLanguages array, mark that as the new language (including saving it to the INI file)
+'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
 Public Sub activateNewLanguage(ByVal newLangIndex As Long)
 
     curLanguage = newLangIndex
-    g_UserPreferences.SetPreference_String "General Preferences", "CurrentLanguageFile", availableLanguages(newLangIndex).FileName
+    g_UserPreferences.SetPref_String "General Preferences", "CurrentLanguageFile", availableLanguages(newLangIndex).FileName
     ApplyLanguage
 
 End Sub
@@ -201,11 +201,11 @@ Public Sub DetermineLanguage()
             m_needToShowLanguageDialog = True
         End If
         
-    'If this is not the first run, retrieve the user's language preference from the INI file
+    'If this is not the first run, retrieve the user's language preference from the preferences file
     Else
     
         Dim curLanguageFile As String
-        curLanguageFile = g_UserPreferences.GetPreference_String("General Preferences", "CurrentLanguageFile", "")
+        curLanguageFile = g_UserPreferences.GetPref_String("General Preferences", "CurrentLanguageFile", "")
         
         'If no specific file has been named, use the default language
         If curLanguageFile = "" Then

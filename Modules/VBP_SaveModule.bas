@@ -5,7 +5,8 @@ Attribute VB_Name = "Saving"
 'Created: 4/15/01
 'Last updated: 26/March/13
 'Last update: Rewrote all save subs to use string-based parameters.  Also, moved all handling of preferences to external forms.
-'              Save functions don't rely on the INI now - they expect external functions to explicitly request any special save parameters.
+'              Save functions don't rely on any saved preferences now - they expect external functions to explicitly request any
+'              special save parameters.
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -29,10 +30,10 @@ Option Explicit
 '
 'INPUTS:
 '   1) pdImage to be saved
-'   2) destination file path
-'   3) Optional: imageID (if provided, the function can write information about the save to the relevant object in the pdImages array)
+'   2) Destination file path
+'   3) Optional: imageID (if provided, the function can write information about the save to the relevant object in the pdImages array - this primarily exists for legacy reasons)
 '   4) Optional: whether to display a form for the user to input additional save options (JPEG quality, etc)
-'   5) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the INI file.
+'   5) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the preferences file.
 Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1) As Boolean
     
     'Only update the MRU list if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
@@ -66,7 +67,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     
         Dim colorDepthMode As Long
         If forceColorDepthMethod = -1 Then
-            colorDepthMode = g_UserPreferences.GetPreference_Long("General Preferences", "OutgoingColorDepth", 1)
+            colorDepthMode = g_UserPreferences.GetPref_Long("General Preferences", "OutgoingColorDepth", 1)
         Else
             colorDepthMode = forceColorDepthMethod
         End If
@@ -185,7 +186,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     Set cParams = New pdParamString
     cParams.setParamString saveParamString
     
-    'NOTE: If explicit save parameters were not provided, relevant values will be loaded from the INI on a per-format basis.
+    'NOTE: If explicit save parameters were not provided, relevant values will be loaded from the preferences file
+    '      on a per-format basis.
         
     
     '****************************************************************************************************
@@ -269,12 +271,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         'PNG
         Case FIF_PNG
             
-            'PNGs support a number of specialized parameters.  If we weren't passed any, retrieve corresponding values from the INI.
-            ' (Specifically, the parameters include: PNG compression level (0-9), interlacing (bool), BKGD preservation (bool).)
+            'PNGs support a number of specialized parameters.  If we weren't passed any, retrieve corresponding values from the preferences
+            ' file (specifically, the parameters include: PNG compression level (0-9), interlacing (bool), BKGD preservation (bool).)
             If Not cParams.doesParamExist(1) Then
-                cParams.setParamString CStr(g_UserPreferences.GetPreference_Long("General Preferences", "PNGCompression", 9))
-                cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGInterlacing", False))
-                cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "PNGBackgroundPreservation", True))
+                cParams.setParamString CStr(g_UserPreferences.GetPref_Long("General Preferences", "PNGCompression", 9))
+                cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPref_Boolean("General Preferences", "PNGInterlacing", False))
+                cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPref_Boolean("General Preferences", "PNGBackgroundPreservation", True))
             End If
             
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
@@ -290,12 +292,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
         'PPM
         Case FIF_PPM
-            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPreference_Long("General Preferences", "PPMExportFormat", 0))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPref_Long("General Preferences", "PPMExportFormat", 0))
             updateMRU = SavePPMImage(srcPDImage, dstPath, cParams.getParamString)
                 
         'TGA
         Case FIF_TARGA
-            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "TGARLE", False))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPref_Boolean("General Preferences", "TGARLE", False))
             updateMRU = SaveTGAImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'JPEG-2000
@@ -331,7 +333,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'TIFFs use two parameters - compression type, and CMYK encoding (true/false)
             If Not cParams.doesParamExist(1) Then
-                cParams.setParamString CStr(g_UserPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)) & "|" & CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "TIFFCMYK", False))
+                cParams.setParamString CStr(g_UserPreferences.GetPref_Long("General Preferences", "TIFFCompression", 0)) & "|" & CStr(g_UserPreferences.GetPref_Boolean("General Preferences", "TIFFCMYK", False))
             End If
             
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
@@ -348,8 +350,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         'Anything else must be a bitmap
         Case FIF_BMP
             
-            'If the user has not provided explicit BMP parameters, load their default values from the INI file
-            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPreference_Boolean("General Preferences", "BitmapRLE", False))
+            'If the user has not provided explicit BMP parameters, load their default values from the preferences file
+            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPref_Boolean("General Preferences", "BitmapRLE", False))
             updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         Case Else
@@ -365,7 +367,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
     If updateMRU And g_ExifToolEnabled Then
         
-        updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPreference_Long("General Preferences", "MetadataExport", 1), srcPDImage)
+        updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPref_Long("General Preferences", "MetadataExport", 1), srcPDImage)
         
     End If
     
@@ -864,7 +866,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 
                 'Alpha extenuation (only relevant for 32bpp images)
                 If srcPDImage.mainLayer.getLayerColorDepth = 32 Then
-                    If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then
+                    If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "PngnqAlphaExtenuation", False) Then
                         shellPath = shellPath & "-t15 "
                     Else
                         shellPath = shellPath & "-t0 "
@@ -872,20 +874,20 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 End If
         
                 'YUV
-                If g_UserPreferences.GetPreference_Boolean("Plugin Preferences", "PngnqYUV", True) Then
+                If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "PngnqYUV", True) Then
                     shellPath = shellPath & "-Cy "
                 Else
                     shellPath = shellPath & "-Cr "
                 End If
         
                 'Color sample size
-                shellPath = shellPath & "-s" & g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqColorSample", 3) & " "
+                shellPath = shellPath & "-s" & g_UserPreferences.GetPref_Long("Plugin Preferences", "PngnqColorSample", 3) & " "
         
                 'Dithering
-                If g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) = 0 Then
+                If g_UserPreferences.GetPref_Long("Plugin Preferences", "PngnqDithering", 5) = 0 Then
                     shellPath = shellPath & "-Qn "
                 Else
-                    shellPath = shellPath & "-Q" & g_UserPreferences.GetPreference_Long("Plugin Preferences", "PngnqDithering", 5) & " "
+                    shellPath = shellPath & "-Q" & g_UserPreferences.GetPref_Long("Plugin Preferences", "PngnqDithering", 5) & " "
                 End If
                 
                 'Append the name of the current image
@@ -1313,7 +1315,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
     'TIFFs have some unique considerations regarding compression techniques.  If a color-depth-specific compression
     ' technique has been requested, modify the output depth accordingly.
-    Select Case g_UserPreferences.GetPreference_Long("General Preferences", "TIFFCompression", 0)
+    Select Case g_UserPreferences.GetPref_Long("General Preferences", "TIFFCompression", 0)
         
         'JPEG compression
         Case 6

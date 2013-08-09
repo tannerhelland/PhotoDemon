@@ -268,7 +268,7 @@ Public Sub MenuCropToSelection()
     
     'Deactivate the current selection, as it's no longer needed
     'Clear selections after "Crop to Selection"
-    If g_UserPreferences.GetPreference_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then
+    If g_UserPreferences.GetPref_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
         tInit tSelection, False

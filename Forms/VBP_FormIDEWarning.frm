@@ -191,7 +191,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub ShowDialog()
+Public Sub showDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
@@ -218,7 +218,7 @@ End Sub
 'OK button
 Private Sub CmdOK_Click()
 
-    If CBool(chkRepeat.Value) Then g_UserPreferences.SetPreference_Boolean "General Preferences", "DisplayIDEWarning", False
+    If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Boolean "General Preferences", "DisplayIDEWarning", False
     Me.Hide
 
 End Sub
