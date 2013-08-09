@@ -46,9 +46,9 @@ Begin VB.Form FormExposure
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
+      Min             =   -5
       Max             =   5
       SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -118,7 +118,7 @@ Begin VB.Form FormExposure
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "exposure (EV):"
+      Caption         =   "exposure compensation (stops):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -133,7 +133,7 @@ Begin VB.Form FormExposure
       Left            =   6000
       TabIndex        =   2
       Top             =   3480
-      Width           =   1590
+      Width           =   3405
    End
 End
 Attribute VB_Name = "FormExposure"
@@ -145,8 +145,8 @@ Attribute VB_Exposed = False
 'Exposure Dialog
 'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 13/July/13
-'Last updated: 13/July/13
-'Last update: Initial build
+'Last updated: 09/August/13
+'Last update: rewrote the exposure calculation to operate on a "stops" (power-of-2) scale
 '
 'Many thanks to talented contributer audioglider for creating this tool.
 '
@@ -159,12 +159,9 @@ Attribute VB_Exposed = False
 '
 'That said, in the event that a poor choice is made at time of photography, certain approximate adjustments can be
 ' applied in post-production, with the understanding that missing shadows and highlights cannot be "magically"
-' recreated out of thin air.  This is done by approximating an EV adjustment using a simple logarithmic formula.
-' For more information on exposure compensation, see http://en.wikipedia.org/wiki/Exposure_value#Exposure_compensation_in_EV
-'
-'The formula used here (1 - e ^ (-component * EV)) is based off work originally done by Jerry Huxtable of JH Labs.
-' Jerry's original code is licensed under an Apache 2.0 license.  You may download his original version at the
-' following link (good as of 23 July '13): http://www.jhlabs.com/ip/filters/index.html
+' recreated out of thin air.  This is done by approximating an EV adjustment using a simple power-of-two formula.
+' For more information on exposure compensation, see
+' http://en.wikipedia.org/wiki/Exposure_value#Exposure_compensation_in_EV
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -192,7 +189,10 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'Adjust an image's exposure
+'Adjust an image's exposure.
+' PRIMARY INPUT: exposureAdjust represents the number of stops to correct the image.  Each stop corresponds to a power-of-2
+'                 increase (+values) or decrease (-values) in luminance.  Thus an EV of -1 will cut the amount of light in
+'                 half, while an EV of +1 will double the amount of light.
 Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting image exposure..."
@@ -224,29 +224,20 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
     Dim r As Long, g As Long, b As Long
     
     'Exposure can be easily applied using a look-up table
-    Dim gLookup(0 To 2, 0 To 255) As Byte
+    Dim gLookup(0 To 255) As Byte
     Dim tmpVal As Double
     
-    For y = 0 To 2
     For x = 0 To 255
         tmpVal = x / 255
-        Select Case y
-            Case 0
-                tmpVal = (1 - Exp(-tmpVal * exposureAdjust))
-            Case 1
-                tmpVal = (1 - Exp(-tmpVal * exposureAdjust))
-            Case 2
-                tmpVal = (1 - Exp(-tmpVal * exposureAdjust))
-        End Select
+        tmpVal = tmpVal * 2 ^ (exposureAdjust)
         tmpVal = tmpVal * 255
         
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookup(y, x) = tmpVal
+        gLookup(x) = tmpVal
     Next x
-    Next y
-
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
@@ -257,9 +248,10 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        ImageData(QuickVal + 2, y) = gLookup(0, r)
-        ImageData(QuickVal + 1, y) = gLookup(1, g)
-        ImageData(QuickVal, y) = gLookup(2, b)
+        'Apply a new value based on the lookup table
+        ImageData(QuickVal + 2, y) = gLookup(r)
+        ImageData(QuickVal + 1, y) = gLookup(g)
+        ImageData(QuickVal, y) = gLookup(b)
         
     Next y
         If Not toPreview Then
@@ -296,9 +288,10 @@ End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltExposure_Change()
-    updatePreview
+    If sltExposure.IsValid Then updatePreview
 End Sub
 
+'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
 Private Sub updatePreview()
     
     Dim prevX As Double, prevY As Double
@@ -314,30 +307,27 @@ Private Sub updatePreview()
     picChart.ForeColor = RGB(127, 127, 127)
     GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
     
+    'Draw the corresponding exposure curve (line, actually) for this EV
     Dim expVal As Double, tmpVal As Double
-      
     expVal = sltExposure
-            
+    
     picChart.ForeColor = RGB(0, 0, 255)
-        
+    
     prevX = 0
     prevY = yHeight
     curX = 0
     curY = yHeight
     
-    'Draw the corresponding exposure curve for this EV
-    If expVal > 0 Then
-        For x = 0 To xWidth
-            tmpVal = x / xWidth
-            tmpVal = (1 - Exp(-tmpVal * expVal))
-            tmpVal = yHeight - (tmpVal * yHeight)
-            curY = tmpVal
-            curX = x
-            GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
-            prevX = curX
-            prevY = curY
-        Next x
-    End If
+    For x = 0 To xWidth
+        tmpVal = x / xWidth
+        tmpVal = tmpVal * 2 ^ (expVal)
+        tmpVal = yHeight - (tmpVal * yHeight)
+        curY = tmpVal
+        curX = x
+        GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+        prevX = curX
+        prevY = curY
+    Next x
     
     picChart.Picture = picChart.Image
     picChart.Refresh
