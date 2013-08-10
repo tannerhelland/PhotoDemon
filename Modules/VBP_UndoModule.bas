@@ -36,7 +36,7 @@ Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As 
     tInit tRedo, pdImages(CurrentImage).RedoState
     
     '"Fade last effect" is reserved for filters and effects only
-    If undoType = 0 Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
+    If (undoType = 0) Or (undoType = 1) Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
 
 End Sub
 

@@ -82,8 +82,8 @@ Public Sub tInit(tButton As Long, tState As Boolean)
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If tState Then
-                FormMain.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID ' GetNameOfProcess(pdImages(CurrentImage).getUndoProcessID)
-                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getUndoProcessID)
+                FormMain.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID
+                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID
                 ResetMenuIcons
             Else
                 FormMain.cmdUndo.ToolTip = ""
