@@ -12,6 +12,7 @@
 
 # Build results
 [Dd]ebug/
+
 [Rr]elease/
 *_i.c
 *_p.c
@@ -114,3 +115,10 @@ README_PSC-version.txt
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
 /Data/PhotoDemon_settings.xml
+
+# I keep copies of rc.exe and rcdll.dll in this folder,
+# but to my knowledge these are not redistributable, so
+# end users will need to use their own copy or obtain
+# one from something like Visual Studio Express.
+/Resources/Assets/RC.EXE
+/Resources/Assets/RCDLL.DLL

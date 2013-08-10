@@ -1,0 +1,8 @@
+IMPORTANT NOTE: the files in this directory MAY NOT BE LICENSED UNDER THE SAME BSD LICENSE AS PHOTODEMON.
+
+Some of the files in this directory are my own creation, but many have been adopted from other open source projects.  
+ If you want to use any of these files in your own project, you first need to contact me for licensing information.  
+ I can tell you which images come from which projects, and what their licensing details are.
+
+I can be contacted via the following link:
+ http://www.tannerhelland.com/contact/
