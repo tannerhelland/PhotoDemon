@@ -1,0 +1,297 @@
+// Icon for the main application
+AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
+
+//PNGs for use in menus - these are stored as custom data-types
+
+//File menu
+OPENIMG      CUSTOM  MOVEABLE        LOADONCALL      image.png
+OPENREC      CUSTOM  MOVEABLE        LOADONCALL      clock_arrow.png
+//--> Recent documents sub-menu
+CLEARRECENT  CUSTOM  MOVEABLE        LOADONCALL      clear.png
+
+IMPORT       CUSTOM  MOVEABLE        LOADONCALL      image_import.png
+//--> Import sub-menu
+SCANNER      CUSTOM  MOVEABLE        LOADONCALL      scanner.png
+SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
+DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
+SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
+FRXIMPORT    CUSTOM  MOVEABLE        LOADONCALL      compile.png
+
+SAVE         CUSTOM  MOVEABLE        LOADONCALL      tango_save.png
+SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      tango_save_as.png
+CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
+BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
+PRINT        CUSTOM  MOVEABLE        LOADONCALL      printer.png
+EXIT         CUSTOM  MOVEABLE        LOADONCALL      exit.png
+
+
+//Edit menu
+UNDO         CUSTOM  MOVEABLE        LOADONCALL      edit_undo.png
+REDO         CUSTOM  MOVEABLE        LOADONCALL      edit_redo.png
+REPEAT       CUSTOM  MOVEABLE        LOADONCALL      arrow_repeat.png
+COPY         CUSTOM  MOVEABLE        LOADONCALL      blue_document_copy.png
+PASTE        CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_image.png
+CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
+
+
+//View menu
+ZOOMIN       CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_in.png
+ZOOMOUT      CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_out.png
+ZOOMACTUAL   CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_actual_equal.png
+FITWINIMG    CUSTOM  MOVEABLE        LOADONCALL      layer_resize_actual.png
+FITONSCREEN  CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_fit.png
+LEFTPANHIDE  CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_collapse.png
+LEFTPANSHOW  CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_expand.png
+RIGHTPANHIDE CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_collapse_right.png
+RIGHTPANSHOW CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_expand_right.png
+
+
+//Image menu
+DUPLICATE    CUSTOM  MOVEABLE        LOADONCALL      duplicate_image.png
+METADATA     CUSTOM  MOVEABLE        LOADONCALL      document_list.png
+BROWSEMD     CUSTOM  MOVEABLE        LOADONCALL      document_search_result.png
+MAPPHOTO     CUSTOM  MOVEABLE        LOADONCALL      map_pin.png
+TRANSPARENCY CUSTOM  MOVEABLE        LOADONCALL      layer_transparent.png
+//--> Transparency sub-menu
+ADDTRANS     CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_plus.png
+REMOVETRANS  CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_cross.png
+//
+CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
+RESIZE       CUSTOM  MOVEABLE        LOADONCALL      image_resize.png
+CROPSEL      CUSTOM  MOVEABLE        LOADONCALL      image_crop.png
+AUTOCROP     CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
+//--> Rotate sub-menu
+ROTATECW     CUSTOM  MOVEABLE        LOADONCALL      image_rotate_90.png
+ROTATECCW    CUSTOM  MOVEABLE        LOADONCALL      image_rotate_270.png
+ROTATE180    CUSTOM  MOVEABLE        LOADONCALL      image_rotate_180.png
+ROTATEANY    CUSTOM  MOVEABLE        LOADONCALL      image_rotate_arbitrary.png
+//
+FLIP         CUSTOM  MOVEABLE        LOADONCALL      layer_flip.png
+MIRROR       CUSTOM  MOVEABLE        LOADONCALL      layer_mirror.png
+ISOMETRIC    CUSTOM  MOVEABLE        LOADONCALL      controller.png
+TILE         CUSTOM  MOVEABLE        LOADONCALL      image_tiled.png
+REDUCECOLORS CUSTOM  MOVEABLE        LOADONCALL      palette.png
+COUNTCOLORS  CUSTOM  MOVEABLE        LOADONCALL      counter.png
+
+
+//Select menu
+SELECTALL    CUSTOM  MOVEABLE        LOADONCALL      select_all.png
+SELECTNONE   CUSTOM  MOVEABLE        LOADONCALL      select_none.png
+SELECTINVERT CUSTOM  MOVEABLE        LOADONCALL      select_invert.png
+SELECTGROW   CUSTOM  MOVEABLE        LOADONCALL      select_grow.png
+SELECTSHRINK CUSTOM  MOVEABLE        LOADONCALL      select_shrink.png
+SELECTBORDER CUSTOM  MOVEABLE        LOADONCALL      select_border.png
+SELECTFTHR   CUSTOM  MOVEABLE        LOADONCALL      select_feather.png
+SELECTSHRP   CUSTOM  MOVEABLE        LOADONCALL      select_sharpen.png
+SELECTLOAD   CUSTOM  MOVEABLE        LOADONCALL      select_load.png
+SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      tango_save.png
+
+
+//Adjustments menu
+BRIGHT       CUSTOM  MOVEABLE        LOADONCALL      contrast.png
+CURVES       CUSTOM  MOVEABLE        LOADONCALL      layer_shape_curve.png
+EXPOSURE     CUSTOM  MOVEABLE        LOADONCALL      occluder.png
+GAMMA        CUSTOM  MOVEABLE        LOADONCALL      television_test.png
+LEVELS       CUSTOM  MOVEABLE        LOADONCALL      color_adjustment.png
+SHDWHGHLGHT  CUSTOM  MOVEABLE        LOADONCALL      ghost.png
+WHITEBAL     CUSTOM  MOVEABLE        LOADONCALL      weather_clouds.png
+
+COLORBALANCE CUSTOM  MOVEABLE        LOADONCALL      chart_pie_separate.png
+HSL          CUSTOM  MOVEABLE        LOADONCALL      color.png
+PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
+TEMPERATURE  CUSTOM  MOVEABLE        LOADONCALL      thermometer.png
+VIBRANCE     CUSTOM  MOVEABLE        LOADONCALL      image_saturation_up.png
+
+COLORIZE     CUSTOM  MOVEABLE        LOADONCALL      color_swatch.png
+GRAYSCALE    CUSTOM  MOVEABLE        LOADONCALL      image_gray.png
+INVERT       CUSTOM  MOVEABLE        LOADONCALL      images.png
+//--> Invert sub-menu
+INVCMYK      CUSTOM  MOVEABLE        LOADONCALL      invert_film.png
+INVHUE       CUSTOM  MOVEABLE        LOADONCALL      invert_hue.png
+INVRGB       CUSTOM  MOVEABLE        LOADONCALL      invert_rgb.png
+INVCOMPOUND  CUSTOM  MOVEABLE        LOADONCALL      invert_compound.png
+//
+MONOCHROME   CUSTOM  MOVEABLE        LOADONCALL      checkerboard.png
+//--> Monochrome sub-menu
+COLORTOMONO  CUSTOM  MOVEABLE        LOADONCALL      color_to_monochrome.png
+MONOTOCOLOR  CUSTOM  MOVEABLE        LOADONCALL      monochrome_to_color.png
+//
+SEPIA        CUSTOM  MOVEABLE        LOADONCALL      zone.png
+
+CHANNELMIX   CUSTOM  MOVEABLE        LOADONCALL      block.png
+//--> Components sub-menu
+RECHANNEL    CUSTOM  MOVEABLE        LOADONCALL      arrow_merge_blue.png
+COLORSHIFTR  CUSTOM  MOVEABLE        LOADONCALL      arrow_switch.png
+COLORSHIFTL  CUSTOM  MOVEABLE        LOADONCALL      arrow_switch_180.png
+CHANNELMAX   CUSTOM  MOVEABLE        LOADONCALL      channel_maximum.png
+CHANNELMIN   CUSTOM  MOVEABLE        LOADONCALL      channel_minimum.png
+
+HISTOGRAM    CUSTOM  MOVEABLE        LOADONCALL      chart.png
+//--> Histogram sub-menu
+EQUALIZE     CUSTOM  MOVEABLE        LOADONCALL      equalizer_flat.png
+STRETCH      CUSTOM  MOVEABLE        LOADONCALL      ui_splitter_horizontal.png
+
+
+//Filters menu
+FADELAST     CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png
+ARTISTIC     CUSTOM  MOVEABLE        LOADONCALL      paintbrush.png
+//--> Artistic sub-menu
+ANTIQUE      CUSTOM  MOVEABLE        LOADONCALL      radio_old.png
+COMICBOOK    CUSTOM  MOVEABLE        LOADONCALL      book_open_text_image.png
+FILMNOIR     CUSTOM  MOVEABLE        LOADONCALL      user_detective_gray.png
+MODERNART    CUSTOM  MOVEABLE        LOADONCALL      stickman_smiley.png
+OILPAINTING  CUSTOM  MOVEABLE        LOADONCALL      palette_paintbrush.png
+PENCIL       CUSTOM  MOVEABLE        LOADONCALL      pencil.png
+POSTERIZE    CUSTOM  MOVEABLE        LOADONCALL      categories.png
+RELIEF       CUSTOM  MOVEABLE        LOADONCALL      wall.png
+//
+BLUR         CUSTOM  MOVEABLE        LOADONCALL      glass.png
+//--> Blur sub-menu
+BOXBLUR      CUSTOM  MOVEABLE        LOADONCALL      box.png
+GAUSSBLUR    CUSTOM  MOVEABLE        LOADONCALL      image_blur.png
+GRIDBLUR     CUSTOM  MOVEABLE        LOADONCALL      image_empty.png
+PIXELATE     CUSTOM  MOVEABLE        LOADONCALL      grid.png
+SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      brain.png
+//
+DISTORT      CUSTOM  MOVEABLE        LOADONCALL      mizuhiki_paper_cord.png
+//--> Distort sub-menu
+FIGGLASS     CUSTOM  MOVEABLE        LOADONCALL      jar_empty.png
+KALEIDOSCOPE CUSTOM  MOVEABLE        LOADONCALL      flower_modified.png
+LENSDISTORT  CUSTOM  MOVEABLE        LOADONCALL      camera_lens_plus.png
+FIXLENS      CUSTOM  MOVEABLE        LOADONCALL      camera_lens_minus.png
+MISCDISTORT  CUSTOM  MOVEABLE        LOADONCALL      shopping_basket.png
+PANANDZOOM   CUSTOM  MOVEABLE        LOADONCALL      arrow_out.png
+PERSPECTIVE  CUSTOM  MOVEABLE        LOADONCALL      image_select.png
+PINCHWHIRL   CUSTOM  MOVEABLE        LOADONCALL      weather_tornado.png
+POKE         CUSTOM  MOVEABLE        LOADONCALL      hand_point_90.png
+POLAR        CUSTOM  MOVEABLE        LOADONCALL      santa_hat.png
+RIPPLE       CUSTOM  MOVEABLE        LOADONCALL      water.png
+SHEAR        CUSTOM  MOVEABLE        LOADONCALL      image_medium_slant.png
+SPHERIZE     CUSTOM  MOVEABLE        LOADONCALL      sport_tennis.png
+SQUISH       CUSTOM  MOVEABLE        LOADONCALL      weight.png
+SWIRL        CUSTOM  MOVEABLE        LOADONCALL      lollipop.png
+WAVES        CUSTOM  MOVEABLE        LOADONCALL      zodiac.png
+//
+EDGES        CUSTOM  MOVEABLE        LOADONCALL      fingerprint_recognition.png
+//--> Edges sub-menu
+EMBOSS       CUSTOM  MOVEABLE        LOADONCALL      stamp.png
+EDGEENHANCE  CUSTOM  MOVEABLE        LOADONCALL      layer_select.png
+TRACECONTOUR CUSTOM  MOVEABLE        LOADONCALL      quill.png
+//
+NATURAL      CUSTOM  MOVEABLE        LOADONCALL      leaf_plant.png
+//--> Natural sub-menu
+ATMOSPHERE   CUSTOM  MOVEABLE        LOADONCALL      weather_moon_clouds.png
+BURN         CUSTOM  MOVEABLE        LOADONCALL      fire_big.png
+FOG          CUSTOM  MOVEABLE        LOADONCALL      weather_fog.png
+FREEZE       CUSTOM  MOVEABLE        LOADONCALL      ice.png
+LAVA         CUSTOM  MOVEABLE        LOADONCALL      zodiac_lava.png
+RAINBOW      CUSTOM  MOVEABLE        LOADONCALL      rainbow.png
+STEEL        CUSTOM  MOVEABLE        LOADONCALL      shield.png
+RAIN         CUSTOM  MOVEABLE        LOADONCALL      weather_rain.png
+//
+NOISE        CUSTOM  MOVEABLE        LOADONCALL      speaker.png
+//--> Noise sub-menu
+FILMGRAIN    CUSTOM  MOVEABLE        LOADONCALL      film.png
+ADDNOISE     CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_up.png
+DESPECKLE    CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_mute.png
+MEDIAN       CUSTOM  MOVEABLE        LOADONCALL      balance.png
+REMOVEORPHAN CUSTOM  MOVEABLE        LOADONCALL      broom.png
+//
+OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
+//--> Other sub-menu
+ALIEN        CUSTOM  MOVEABLE        LOADONCALL      game.png
+BLACKLIGHT   CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
+DREAM        CUSTOM  MOVEABLE        LOADONCALL      smiley_sleep.png
+HEATMAP      CUSTOM  MOVEABLE        LOADONCALL      spectrum_emission.png
+RADIOACTIVE  CUSTOM  MOVEABLE        LOADONCALL      radioactivity.png
+SYNTHESIZE   CUSTOM  MOVEABLE        LOADONCALL      drill.png
+VIBRATE      CUSTOM  MOVEABLE        LOADONCALL      lightning.png
+//
+SHARPEN      CUSTOM  MOVEABLE        LOADONCALL      spectacle.png
+//--> Sharpen sub-menu
+UNSHARP      CUSTOM  MOVEABLE        LOADONCALL      spectacle_sunglass.png
+//
+STYLIZE      CUSTOM  MOVEABLE        LOADONCALL      tie.png
+//--> Stylize sub-menu
+DIFFUSE      CUSTOM  MOVEABLE        LOADONCALL      bomb.png
+DILATE       CUSTOM  MOVEABLE        LOADONCALL      dilate.png
+ERODE        CUSTOM  MOVEABLE        LOADONCALL      erode.png
+SOLARIZE     CUSTOM  MOVEABLE        LOADONCALL      solar_panel.png
+TWINS        CUSTOM  MOVEABLE        LOADONCALL      image_twins.png
+VIGNETTE     CUSTOM  MOVEABLE        LOADONCALL      photo_sunset.png
+//
+
+CUSTFILTER   CUSTOM  MOVEABLE        LOADONCALL      table_pencil.png
+
+
+//Tools menu
+LANGUAGES    CUSTOM  MOVEABLE        LOADONCALL      language.png
+//--> Macro sub-menu
+OPENMACRO    CUSTOM  MOVEABLE        LOADONCALL      folder_video.png
+RECORD       CUSTOM  MOVEABLE        LOADONCALL      video.png
+RECORDSTOP   CUSTOM  MOVEABLE        LOADONCALL      stop.png
+//
+PREFERENCES  CUSTOM  MOVEABLE        LOADONCALL      cog_edit.png
+PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
+
+//Window menu
+TILEHOR      CUSTOM  MOVEABLE        LOADONCALL      application_tile_horizontal.png
+TILEVER      CUSTOM  MOVEABLE        LOADONCALL      application_tile_vertical.png
+CASCADE      CUSTOM  MOVEABLE        LOADONCALL      application_cascade.png
+ARNGICONS    CUSTOM  MOVEABLE        LOADONCALL      application_view_tile.png
+MINALL       CUSTOM  MOVEABLE        LOADONCALL      minimize_all.png
+RESTOREALL   CUSTOM  MOVEABLE        LOADONCALL      restore_all.png
+NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png
+PREVIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow_180.png
+
+//Help menu
+FAVORITE     CUSTOM  MOVEABLE        LOADONCALL      favorite.png
+UPDATES      CUSTOM  MOVEABLE        LOADONCALL      software_update_available.png
+FEEDBACK     CUSTOM  MOVEABLE        LOADONCALL      mail_send.png
+BUG          CUSTOM  MOVEABLE        LOADONCALL      bug_error.png
+PDWEBSITE    CUSTOM  MOVEABLE        LOADONCALL      globe_green_arrow.png
+DOWNLOADSRC  CUSTOM  MOVEABLE        LOADONCALL      git.png
+LICENSE      CUSTOM  MOVEABLE        LOADONCALL      creative_commons.png
+ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
+
+//Special-purpose images
+
+//Toolbox icons
+T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
+T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
+T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
+
+//Placeholder for missing MRU icons
+MRUHOLDER    CUSTOM  MOVEABLE        LOADONCALL      folder_image.png
+
+//Large (32x32) command button images
+LRGSAVE      CUSTOM  MOVEABLE        LOADONCALL      document_save_large.png
+LRGDONTSAVE  CUSTOM  MOVEABLE        LOADONCALL      image_missing.png
+LRGUNDO      CUSTOM  MOVEABLE        LOADONCALL      edit_undo_32.png
+LRGIMGMULTI  CUSTOM  MOVEABLE        LOADONCALL      multi_image.png
+LRGIMGSMALL  CUSTOM  MOVEABLE        LOADONCALL      image_small.png
+LRGOPENDOC   CUSTOM  MOVEABLE        LOADONCALL      document_open.png
+ARROWDOWN    CUSTOM  MOVEABLE        LOADONCALL      arrow_down_32x32.png
+PLUS         CUSTOM  MOVEABLE        LOADONCALL      plus_32.png
+ARROWRIGHT   CUSTOM  MOVEABLE        LOADONCALL      arrow_right_32.png
+ARROWLEFT    CUSTOM  MOVEABLE        LOADONCALL      arrow_left_32.png
+LRGCANCEL    CUSTOM  MOVEABLE        LOADONCALL      cross_32.png
+LRGDELAY     CUSTOM  MOVEABLE        LOADONCALL      calendar_blue_32.png
+LRGUPDATE    CUSTOM  MOVEABLE        LOADONCALL      software_update_32.png
+
+//Arrow icons for the "canvas size" anchor function
+IMGMEDIUM    CUSTOM  MOVEABLE        LOADONCALL      image_medium.png
+MARROWUP     CUSTOM  MOVEABLE        LOADONCALL      arrow_090_medium.png
+MARROWUPR    CUSTOM  MOVEABLE        LOADONCALL      arrow_045_medium.png
+MARROWUPL    CUSTOM  MOVEABLE        LOADONCALL      arrow_135_medium.png
+MARROWLEFT   CUSTOM  MOVEABLE        LOADONCALL      arrow_180_medium.png
+MARROWRIGHT  CUSTOM  MOVEABLE        LOADONCALL      arrow_000_medium.png
+MARROWDOWN   CUSTOM  MOVEABLE        LOADONCALL      arrow_270_medium.png
+MARROWDOWNR  CUSTOM  MOVEABLE        LOADONCALL      arrow_315_medium.png
+MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
+
+//Sample image for rendering sample effects
+RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
+RSZ_FITIN    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_inclusive.png
+RSZ_FITEX    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_exclusive.png
+//SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg
