@@ -349,20 +349,22 @@ Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
     End If
 End Function
 
-'Search the Languages folder, and make a list of all available languages
-Public Sub CheckAvailableLanguages()
-    
-    numOfLanguages = 0
-    ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
+'Add all the language files in a given folder.  The function will return the number of languages found.
+' Optionally, a language offset count can be provided.  This is required for any folders besides the first, as the
+' function will use that as the array index where it can place found language file data.
+Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional ByVal langOffset As Long = 0) As Long
+
+    Dim nLanguages As Long
+    nLanguages = 0
     
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim chkFile As String, curFileAsText As String
-    chkFile = Dir(g_UserPreferences.getLanguagePath & "*.xml", vbNormal)
+    chkFile = Dir(srcFolder & "*.xml", vbNormal)
         
-    Do While chkFile <> ""
+    Do While (chkFile <> "")
                 
         'Load the first 1024 bytes of the file into a string (this is done to keep this routine fast)
-        curFileAsText = getPartialFileAsString(g_UserPreferences.getLanguagePath & chkFile)
+        curFileAsText = getPartialFileAsString(srcFolder & chkFile)
         
         'If the file has actual contents, investigate further.
         If Len(curFileAsText) > 0 Then
@@ -371,9 +373,12 @@ Public Sub CheckAvailableLanguages()
             If verifyXMLHeader(curFileAsText) Then
             
                 'If this is a valid language file, get the language information (if available).
-                fillLanguageInfo curFileAsText, availableLanguages(numOfLanguages)
-                availableLanguages(numOfLanguages).FileName = chkFile
-                numOfLanguages = numOfLanguages + 1
+                fillLanguageInfo curFileAsText, availableLanguages(nLanguages + langOffset)
+                availableLanguages(nLanguages + langOffset).FileName = chkFile
+                nLanguages = nLanguages + 1
+                
+                'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
+                If nLanguages + langOffset > UBound(availableLanguages) Then ReDim Preserve availableLanguages(0 To (nLanguages + langOffset) * 2) As pdLanguageFile
             
             End If
             
@@ -383,6 +388,22 @@ Public Sub CheckAvailableLanguages()
         chkFile = Dir
     
     Loop
+    
+    tallyLanguageFilesInFolder = nLanguages
+
+End Function
+
+'Search the Languages folder, and make a list of all available languages
+Public Sub CheckAvailableLanguages()
+    
+    numOfLanguages = 0
+    ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
+    
+    'Find all available OFFICIAL language files
+    numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath, 0)
+    
+    'Find all available USER language files
+    numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages)
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
     availableLanguages(numOfLanguages).FileName = ""
@@ -401,7 +422,7 @@ Public Sub CheckAvailableLanguages()
     'Populate the languages menu
     populateLanguageMenu
     
-    'Mark the default language location, as other functions may need to know it
+    'Mark the location in the array of the default language, as other functions may need to know it
     Dim i As Long
     For i = 0 To numOfLanguages - 1
         If StrComp(availableLanguages(i).langName, "English (US) - Default", vbTextCompare) = 0 Then defaultLanguage = i
