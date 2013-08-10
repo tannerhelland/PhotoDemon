@@ -72,21 +72,22 @@ Private Const S_OK = 0
 Private Const S_FALSE = 1
 '***
 
-'Location of various relevant program directories
+'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
+'  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
+'  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user prefs, saved macros)
 Private ProgramPath As String
+Private AppPath As String
 Private DataPath As String
+
+'Within the /App and /Data folders are additional subfolders, whose purposes should be obvious from their titles
 Private MacroPath As String
 Private FilterPath As String
 Private PreferencesPath As String
 Private TempPath As String
 Private IconPath As String
 Private LanguagePath As String
+Private UserLanguagePath As String
 Private SelectionPath As String
-
-'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
-'  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
-'  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user prefs, saved macros)
-Private AppPath As String
 
 'Get/set the current Selection directory
 Public Function getSelectionPath() As String
@@ -101,8 +102,12 @@ Public Sub setSelectionPath(ByVal newSelectionPath As String)
 End Sub
 
 'Return the current Language directory
-Public Function getLanguagePath() As String
-    getLanguagePath = LanguagePath
+Public Function getLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
+    If getUserLanguagePathInstead Then
+        getLanguagePath = UserLanguagePath
+    Else
+        getLanguagePath = LanguagePath
+    End If
 End Function
 
 'Return the current temporary directory
@@ -177,7 +182,7 @@ Public Sub initializePaths()
     ProgramPath = App.Path
     ProgramPath = FixPath(ProgramPath)
     
-    'Create an "App" path based off the ProgramPath - this is where essential plugins are stored.
+    'Create an "App" path based off the ProgramPath - this is where essential application files (like plugins) are stored.
     ' Also, make sure the directory exists; if it doesn't, create it.
     AppPath = ProgramPath & "App\"
     If Not DirectoryExist(AppPath) Then MkDir AppPath
@@ -185,7 +190,7 @@ Public Sub initializePaths()
     AppPath = AppPath & "PhotoDemon\"
     If Not DirectoryExist(AppPath) Then MkDir AppPath
     
-    'Within the App\PhotoDemon\ folder, create a folder for any available translations
+    'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL translations.  (User translations go in the Data folder.)
     LanguagePath = AppPath & "Languages\"
     If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
         
@@ -204,6 +209,9 @@ Public Sub initializePaths()
     SelectionPath = DataPath & "Selections\"
     If Not DirectoryExist(SelectionPath) Then MkDir SelectionPath
     
+    UserLanguagePath = DataPath & "Languages\"
+    If Not DirectoryExist(UserLanguagePath) Then MkDir UserLanguagePath
+    
     'Finally, if it does not exist, create a folder to hold all MRU icons
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
@@ -213,26 +221,26 @@ Public Sub initializePaths()
     
     'Historically, language files were stored in a different location.  We need to move any valid language files from
     ' the old language directory to the new language directory.
-    On Error Resume Next
-    Dim chkFile As String
-    
-    chkFile = Dir(DataPath & "Languages\" & "*.xml", vbNormal)
-        
-    If chkFile <> "" Then
-        
-        LoadMessage "Moving language files to updated folder location..."
-        
-        Do While chkFile <> ""
-            If FileExist(DataPath & "Languages\" & chkFile) Then
-                FileCopy DataPath & "Languages\" & chkFile, LanguagePath & chkFile
-                Kill DataPath & "Languages\" & chkFile
-            End If
-            chkFile = Dir
-        Loop
-                
-        RmDir DataPath & "Languages\"
-        
-    End If
+    'On Error Resume Next
+    'Dim chkFile As String
+    '
+    'chkFile = Dir(DataPath & "Languages\" & "*.xml", vbNormal)
+    '
+    'If chkFile <> "" Then
+    '
+    '    LoadMessage "Moving language files to updated folder location..."
+    '
+    '    Do While chkFile <> ""
+    '        If FileExist(DataPath & "Languages\" & chkFile) Then
+    '            FileCopy DataPath & "Languages\" & chkFile, LanguagePath & chkFile
+    '            Kill DataPath & "Languages\" & chkFile
+    '        End If
+    '        chkFile = Dir
+    '    Loop
+    '
+    '    RmDir DataPath & "Languages\"
+    '
+    'End If
         
 End Sub
 
