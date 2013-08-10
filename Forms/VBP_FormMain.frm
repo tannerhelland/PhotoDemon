@@ -3056,6 +3056,8 @@ End Sub
 'When a language is clicked, immediately activate it
 Private Sub mnuLanguages_Click(Index As Integer)
 
+    Screen.MousePointer = vbHourglass
+    
     'Remove the existing translation
     Message "Removing existing translation..."
     g_Language.undoTranslations FormMain
@@ -3065,7 +3067,9 @@ Private Sub mnuLanguages_Click(Index As Integer)
     g_Language.activateNewLanguage Index
     
     Message "Language changed successfully."
-
+    
+    Screen.MousePointer = vbDefault
+    
 End Sub
 
 'The user can toggle the appearance of the left-hand panel from this menu.  This toggle is also stored in the preferences file.
