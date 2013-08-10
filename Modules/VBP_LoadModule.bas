@@ -1538,25 +1538,9 @@ End Sub
 
 'Check for IDE or compiled EXE, and set program parameters accordingly
 Private Sub CheckLoadingEnvironment()
-    
-    'Check the run-time environment.
-    
-    'App is compiled:
     If App.LogMode = 1 Then
-        
         g_IsProgramCompiled = True
-        
-        'Determine the version automatically from the EXE information
-        'FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
-                
-    'App is not compiled:
     Else
-    
         g_IsProgramCompiled = False
-
-        'Add a gentle reminder to compile the program
-        'FormSplash.lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision & " - please compile!"
-        
     End If
-    
 End Sub
