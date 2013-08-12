@@ -46,9 +46,12 @@ Private Const SPI_GETFONTSMOOTHING As Long = &H4A
 Private Const SPI_SETFONTSMOOTHING As Long = &H4B
 Private Const SPI_GETFONTSMOOTHINGTYPE As Long = &H200A
 Private Const SPI_SETFONTSMOOTHINGTYPE As Long = &H200B
+Private Const SPIF_SENDCHANGE As Long = &H2
 Private Const SmoothingClearType As Long = &H2
 Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
+
+Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit
 Private hadToChangeSmoothing As Boolean
@@ -151,16 +154,16 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
         ' redraw all control fonts using Segoe UI.
-        If g_IsVistaOrLater And ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
-            If g_UseFancyFonts Then
+        If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
+            If g_IsVistaOrLater And g_UseFancyFonts Then
                 eControl.FontName = "Segoe UI"
             Else
                 eControl.FontName = "Tahoma"
             End If
         End If
         
-        If g_IsVistaOrLater And ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown)) Then
-            If g_UseFancyFonts Then
+        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown)) Then
+            If g_IsVistaOrLater And g_UseFancyFonts Then
                 eControl.Font.Name = "Segoe UI"
             Else
                 eControl.Font.Name = "Tahoma"
@@ -246,14 +249,10 @@ Public Sub handleClearType(ByVal startingProgram As Boolean)
         
         If pv = 0 Then
             hadToChangeSmoothing = True
-            SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
             
-            'On Vista/7 use ClearType, on XP use standard AA
-            If g_IsVistaOrLater Then
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingClearType, 0
-            Else
-                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingStandardType, 0
-            End If
+            'Enable ClearType for the duration of the program
+            SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
+            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingClearType, 0
             
         Else
             hadToChangeSmoothing = False
@@ -263,7 +262,7 @@ Public Sub handleClearType(ByVal startingProgram As Boolean)
     
         If hadToChangeSmoothing Then
             SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
-            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, SmoothingNone, 0
+            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingNone, 0
         End If
     
     End If
