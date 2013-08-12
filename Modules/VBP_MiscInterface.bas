@@ -53,8 +53,12 @@ Private Const SmoothingNone As Long = &H0
 
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 
-'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit
-Private hadToChangeSmoothing As Boolean
+'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
+' can contain the following values:
+' 0: did not have to change smoothing, as ClearType is already enabled
+' 1: had to change smoothing type from Standard to ClearType
+' 2: had to turn on smoothing, as it was originally turned off
+Private hadToChangeSmoothing As Long
 
 'Request mouse tracking of a particular hWnd.  (NOTE: Windows requires you to re-request tracking after a tracking message is posted.)
 Public Sub requestMouseTracking(ByVal srcHwnd As Long, Optional ByVal stopTracking As Boolean = False)
@@ -243,27 +247,54 @@ Public Sub handleClearType(ByVal startingProgram As Boolean)
     'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
     If startingProgram Then
     
+        hadToChangeSmoothing = 0
+    
         'Get current font smoothing setting
         Dim pv As Long
         SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
         
-        If pv = 0 Then
-            hadToChangeSmoothing = True
-            
-            'Enable ClearType for the duration of the program
-            SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
-            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingClearType, 0
-            
-        Else
-            hadToChangeSmoothing = False
+        'If font smoothing is disabled, mark it
+        If pv = 0 Then hadToChangeSmoothing = 2
+        
+        'If font smoothing is enabled but set to Standard instead of ClearType, mark it
+        If pv <> 0 Then
+            SystemParametersInfo SPI_GETFONTSMOOTHINGTYPE, 0, pv, 0
+            If pv = SmoothingStandardType Then hadToChangeSmoothing = 1
         End If
+        
+        Select Case hadToChangeSmoothing
+        
+            'ClearType is enabled, no changes necessary
+            Case 0
+            
+            'Standard smoothing is enabled; switch it to ClearType for the duration of the program
+            Case 1
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingClearType, 0
+                
+            'No smoothing is enabled; turn it on and activate ClearType for the duration of the program
+            Case 2
+                SystemParametersInfo SPI_SETFONTSMOOTHING, 1, pv, 0
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingClearType, 0
+            
+        End Select
     
     Else
-    
-        If hadToChangeSmoothing Then
-            SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
-            SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingNone, 0
-        End If
+        
+        Select Case hadToChangeSmoothing
+        
+            'ClearType was enabled, no action necessary
+            Case 0
+            
+            'Standard smoothing was enabled; restore it now
+            Case 1
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingStandardType, 0
+                
+            'No smoothing was enabled; restore that setting now
+            Case 2
+                SystemParametersInfo SPI_SETFONTSMOOTHING, 0, pv, 0
+                SystemParametersInfo SPI_SETFONTSMOOTHINGTYPE, 0, ByVal SmoothingNone, 0
+        
+        End Select
     
     End If
     
