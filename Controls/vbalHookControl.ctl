@@ -261,7 +261,7 @@ Dim eShiftCode As ShiftConstants
 End Function
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-   m_bRunTime = (UserControl.Ambient.UserMode)
+   m_bRunTime = g_UserModeFix
    Enabled = PropBag.ReadProperty("Enabled", True)
 End Sub
 

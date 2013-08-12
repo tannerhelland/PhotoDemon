@@ -195,8 +195,14 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Give the user control the same font as the rest of the program
-    lblBeforeToggle.FontName = g_InterfaceFont
+    'Give the user control the same font as the rest of the program; note that a check must be made for IDE behavior so
+    ' the project will compile; VB's initialization of user controls during the compile process causes no shortage of
+    ' odd issues...
+    If g_UserModeFix Then
+        lblBeforeToggle.FontName = g_InterfaceFont
+    Else
+        lblBeforeToggle.FontName = "Tahoma"
+    End If
     
     curImageState = True
     
@@ -222,8 +228,8 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_Show()
-    'Translate the user control text
-    If Ambient.UserMode Then
+    'Translate the user control text in the compiled EXE
+    If g_UserModeFix Then
         lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
     Else
         lblBeforeToggle.Caption = "show original image (alt+t) "

@@ -50,7 +50,7 @@ Public Sub Main()
     ' safe, use On Error Resume Next.
     On Error Resume Next
     
-    'The follow block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
+    'The following block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
     Dim hMod As Long
     hMod = LoadLibraryA("shell32.dll")
     InitCommonControlsEx iccex
@@ -63,10 +63,14 @@ Public Sub Main()
     
     On Error GoTo 0
     
+    'Because Ambient.UserMode does not report IDE behavior properly, we use our own UserMode tracker.  Many thanks to
+    ' Kroc of camendesign.com for suggesting this fix.
+    g_UserModeFix = True
+    
     Load FormMain
     
     'FormMain will be now be loaded.  If the shell32 library was loaded successfully, once FormMain is closed, we
-    ' need to unload the library handle
+    ' need to unload the library handle.
     If hMod Then FreeLibrary hMod
     
 End Sub

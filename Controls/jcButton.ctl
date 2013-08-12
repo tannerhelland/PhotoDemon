@@ -3309,7 +3309,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     UserControl_Resize
 
     On Error GoTo h:
-    If Ambient.UserMode Then                                                              'If we're not in design mode
+    If g_UserModeFix Then                                                              'If we're not in design mode
         TrackUser32 = IsFunctionSupported("TrackMouseEvent", "User32")
 
         If Not TrackUser32 Then IsFunctionSupported "_TrackMouseEvent", "ComCtl32"

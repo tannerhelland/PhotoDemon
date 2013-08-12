@@ -209,3 +209,8 @@ Public g_AllowDragAndDrop As Boolean
 
 'While Undo/Redo operations are active, certain tasks can be ignored.  This public value can be used to check Undo/Redo activity.
 Public g_UndoRedoActive As Boolean
+
+'Per the excellent advice of Kroc (camendesign.com), a custom UserMode variable is less prone to errors than the usual
+' Ambient.UserMode value supplied to ActiveX controls.  This fixes a problem where ActiveX controls sometimes think they
+' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
+Public g_UserModeFix As Boolean
