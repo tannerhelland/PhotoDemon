@@ -324,11 +324,7 @@ Private Sub Class_Initialize()
         .lfClipPrecision = 0
         .lfQuality = CLEARTYPE_QUALITY
         .lfPitchAndFamily = 0
-        If g_UseFancyFonts Then
-            .lfFaceName = "Segoe UI" & Chr(0)
-        Else
-            .lfFaceName = "Tahoma" & Chr(0)
-        End If
+        .lfFaceName = g_InterfaceFont & Chr(0)
     End With
     
     curFont = 0

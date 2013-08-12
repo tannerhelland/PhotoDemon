@@ -106,11 +106,12 @@ Public Sub LoadTheProgram()
     g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
     
     'Make the splash screen's message display match the rest of PD
-    If g_UseFancyFonts Then
-        FormSplash.lblMessage.FontName = "Segoe UI"
+    If g_IsVistaOrLater And g_UseFancyFonts Then
+        g_InterfaceFont = "Segoe UI"
     Else
-        FormSplash.lblMessage.FontName = "Tahoma"
+        g_InterfaceFont = "Tahoma"
     End If
+    FormSplash.lblMessage.FontName = g_InterfaceFont
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show

@@ -127,7 +127,7 @@ Public Sub setFXImage(ByRef srcLayer As pdLayer)
     
     'If the user was previously examining the original image, reset the label caption to match the new preview
     If Not curImageState Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t)"
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
         curImageState = True
     End If
 
@@ -157,9 +157,9 @@ Private Sub lblBeforeToggle_Click()
     
     'Before doing anything else, change the label caption
     If curImageState Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show effect preview") & " (alt+t)"
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show effect preview") & " (alt+t) "
     Else
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t)"
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
     End If
     lblBeforeToggle.Refresh
     
@@ -179,7 +179,7 @@ Private Sub lblBeforeToggle_Click()
     
 End Sub
 
-'When the control's access key is pressed (alt+t), toggle the original/current image
+'When the control's access key is pressed (alt+t) , toggle the original/current image
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     lblBeforeToggle_Click
 End Sub
@@ -196,11 +196,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     'Give the user control the same font as the rest of the program
-    If g_IsVistaOrLater And g_UseFancyFonts Then
-        lblBeforeToggle.FontName = "Segoe UI"
-    Else
-        lblBeforeToggle.FontName = "Tahoma"
-    End If
+    lblBeforeToggle.FontName = g_InterfaceFont
     
     curImageState = True
     
@@ -228,9 +224,9 @@ End Sub
 Private Sub UserControl_Show()
     'Translate the user control text
     If Ambient.UserMode Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t)"
+        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
     Else
-        lblBeforeToggle.Caption = "show original image (alt+t)"
+        lblBeforeToggle.Caption = "show original image (alt+t) "
     End If
 End Sub
 
