@@ -480,7 +480,7 @@ Private Sub Form_Load()
         If m_Subclass.ssc_Subclass(Me.hWnd, , 1, Me) Then m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
         If m_Subclass.ssc_Subclass(picBuffer.hWnd, picBuffer.hWnd, 1, Me) Then
             m_Subclass.ssc_AddMsg picBuffer.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-            m_Subclass.ssc_AddMsg picBuffer.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear pixel coordinate display)
+            m_Subclass.ssc_AddMsg picBuffer.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear the actively hovered block)
         End If
         
     End If
