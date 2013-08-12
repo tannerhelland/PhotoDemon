@@ -159,19 +159,11 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
         ' redraw all control fonts using Segoe UI.
         If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
-            If g_IsVistaOrLater And g_UseFancyFonts Then
-                eControl.FontName = "Segoe UI"
-            Else
-                eControl.FontName = "Tahoma"
-            End If
+            eControl.FontName = g_InterfaceFont
         End If
         
         If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown)) Then
-            If g_IsVistaOrLater And g_UseFancyFonts Then
-                eControl.Font.Name = "Segoe UI"
-            Else
-                eControl.Font.Name = "Tahoma"
-            End If
+            eControl.Font.Name = g_InterfaceFont
         End If
                         
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this

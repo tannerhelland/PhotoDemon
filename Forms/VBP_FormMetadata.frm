@@ -231,11 +231,7 @@ Private Sub Form_Load()
     End If
         
     'Make the invisible buffer's font match the rest of PD
-    If g_UseFancyFonts Then
-        picBuffer.FontName = "Segoe UI"
-    Else
-        picBuffer.FontName = "Tahoma"
-    End If
+    picBuffer.FontName = g_InterfaceFont
     
     'Initialize the category array
     ReDim mdCategories(0) As mdCategory

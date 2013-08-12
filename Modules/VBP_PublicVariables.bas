@@ -143,6 +143,7 @@ Public g_IsThemingEnabled As Boolean
 
 'Render the interface using Segoe UI if the user specifies as much in the Preferences dialog
 Public g_UseFancyFonts As Boolean
+Public g_InterfaceFont As String
 
 'This g_cMonitors object contains data on all monitors on this system.  It is used to handle multiple monitor situations.
 Public g_cMonitors As clsMonitors
