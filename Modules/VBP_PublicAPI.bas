@@ -7,6 +7,11 @@ Attribute VB_Name = "Public_API"
 
 Option Explicit
 
+Public Type POINTAPI
+   x As Long
+   y As Long
+End Type
+
 Public Type RECT
     Left    As Long
     Top     As Long
@@ -16,7 +21,7 @@ End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
 Public Type SAFEARRAYBOUND
     cElements As Long
