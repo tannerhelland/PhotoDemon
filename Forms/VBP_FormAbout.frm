@@ -152,7 +152,6 @@ Private Sub Form_Load()
     GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
     GenerateThankyou "audioglider", "https://github.com/audioglider"
     GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
-    GenerateThankyou "Brad Martinez", "http://btmtz.mvps.org/gfxfromfrx/"
     GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
     GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"

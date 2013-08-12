@@ -87,18 +87,18 @@ Private TempPath As String
 Private IconPath As String
 Private LanguagePath As String
 Private UserLanguagePath As String
-Private SelectionPath As String
+Private selectionPath As String
 
 'Get/set the current Selection directory
 Public Function getSelectionPath() As String
-    getSelectionPath = SelectionPath
+    getSelectionPath = selectionPath
 End Function
 
 Public Sub setSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
     newSelectionPath = FixPath(newSelectionPath)
-    SelectionPath = newSelectionPath
-    SetPref_String "Program Paths", "Selections", SelectionPath
+    selectionPath = newSelectionPath
+    SetPref_String "Program Paths", "Selections", selectionPath
 End Sub
 
 'Return the current Language directory
@@ -206,8 +206,8 @@ Public Sub initializePaths()
     FilterPath = DataPath & "Filters\"
     If Not DirectoryExist(FilterPath) Then MkDir FilterPath
         
-    SelectionPath = DataPath & "Selections\"
-    If Not DirectoryExist(SelectionPath) Then MkDir SelectionPath
+    selectionPath = DataPath & "Selections\"
+    If Not DirectoryExist(selectionPath) Then MkDir selectionPath
     
     UserLanguagePath = DataPath & "Languages\"
     If Not DirectoryExist(UserLanguagePath) Then MkDir UserLanguagePath
@@ -280,7 +280,7 @@ Public Sub loadUserSettings()
     'Pull all other stored paths
     MacroPath = GetPref_String("Program Paths", "Macro", MacroPath)
     FilterPath = GetPref_String("Program Paths", "CustomFilter", FilterPath)
-    SelectionPath = GetPref_String("Program Paths", "Selections", SelectionPath)
+    selectionPath = GetPref_String("Program Paths", "Selections", selectionPath)
     
     'Get the canvas background color
     g_CanvasBackground = GetPref_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
@@ -385,10 +385,9 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "TempFiles", GetTemporaryPath
         xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
         xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "ImportFRX", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
         xmlEngine.writeTag "CustomFilter", FilterPath
         xmlEngine.writeTag "Macro", MacroPath
-        xmlEngine.writeTag "Selections", SelectionPath
+        xmlEngine.writeTag "Selections", selectionPath
     xmlEngine.closeTag "ProgramPaths"
     xmlEngine.writeBlankLine
 

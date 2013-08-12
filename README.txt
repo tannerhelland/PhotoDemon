@@ -141,13 +141,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   (http://www.vbaccelerator.com/home/VB/index.asp)
 * Floris van de Berg and Hervé Drolon for the FreeImage library, and Carsten Klein for the VB interface
   (http://freeimage.sourceforge.net/)
-* Brad Martinez for the original implementation of VB binary file extraction
-  (http://btmtz.mvps.org/gfxfromfrx/)
 * Jason Bullen for a native-VB implementation of knot-based cubic spline interpolation
   (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
 * Dosadi for the EZTW32 scanner/digital camera library
   (http://eztwain.com/eztwain1.htm)
-* Jean-Loup Gailly and Mark Adler for the zLib compression library, and Gilles Vollant for the WAPI wrapper
+* Jean-Loup Gailly and Mark Adler for the zLib compression library
   (http://www.winimage.com/zLibDll/index.html)
 * Waty Thierry for many insights regarding printer interfacing in VB
   (http://www.ppreview.net/)
