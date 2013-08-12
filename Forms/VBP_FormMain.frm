@@ -938,12 +938,6 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuScreenCapture 
             Caption         =   "Screen capture..."
          End
-         Begin VB.Menu MnuImportSepBar3 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuImportFrx 
-            Caption         =   "Visual Basic binary file..."
-         End
       End
       Begin VB.Menu MnuFileSepBar 
          Caption         =   "-"
@@ -3040,11 +3034,6 @@ Private Sub MnuImportFromInternet_Click()
     If FormInternetImport.Visible = False Then FormInternetImport.Show vbModal, FormMain
 End Sub
 
-Private Sub MnuImportFrx_Click()
-    On Error Resume Next
-    If FormImportFrx.Visible = False Then FormImportFrx.Show vbModal, FormMain
-End Sub
-
 Private Sub MnuAlien_Click()
     Process "Alien"
 End Sub
@@ -3556,12 +3545,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Capture the screen
     If ctlAccelerator.Key(nIndex) = "Screen_Capture" Then Process "Screen capture", , , False
     
-    'Import from FRX
-    If ctlAccelerator.Key(nIndex) = "Import_FRX" Then
-        On Error Resume Next
-        If Not FormImportFrx.Visible Then FormImportFrx.Show vbModal, FormMain
-    End If
-
     'Open program preferences
     If ctlAccelerator.Key(nIndex) = "Preferences" Then
         If Not FormPreferences.Visible Then FormPreferences.Show vbModal, FormMain

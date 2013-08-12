@@ -205,12 +205,10 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "SCANNERSEL", 0, 2, 3  'Select Scanner
         AddMenuIcon "DOWNLOAD", 0, 2, 5    'Online Image
         AddMenuIcon "SCREENCAP", 0, 2, 7   'Screen Capture
-        AddMenuIcon "FRXIMPORT", 0, 2, 9   'Import from FRX
     Else
         AddMenuIcon "PASTE", 0, 2, 0       'From Clipboard (Paste as New Image)
         AddMenuIcon "DOWNLOAD", 0, 2, 2    'Online Image
         AddMenuIcon "SCREENCAP", 0, 2, 4   'Screen Capture
-        AddMenuIcon "FRXIMPORT", 0, 2, 6   'Import from FRX
     End If
         
     'Edit Menu

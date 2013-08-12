@@ -1128,7 +1128,6 @@ Public Sub LoadMenuShortcuts()
         .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save_As"
         .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet_Import"
         .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen_Capture"
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask Or vbShiftMask, "Import_FRX"
         
             'Most-recently used files
             .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
@@ -1196,7 +1195,6 @@ Public Sub DrawMenuShortcuts()
     FormMain.MnuSaveAs.Caption = FormMain.MnuSaveAs.Caption & vbTab & "Ctrl+Shift+S"
     FormMain.MnuImportFromInternet.Caption = FormMain.MnuImportFromInternet.Caption & vbTab & "Ctrl+Shift+I"
     FormMain.MnuScreenCapture.Caption = FormMain.MnuScreenCapture.Caption & vbTab & "Ctrl+Alt+I"
-    FormMain.MnuImportFrx.Caption = FormMain.MnuImportFrx.Caption & vbTab & "Ctrl+Alt+Shift+I"
     FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module

@@ -15,7 +15,6 @@ SCANNER      CUSTOM  MOVEABLE        LOADONCALL      scanner.png
 SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
 DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
 SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
-FRXIMPORT    CUSTOM  MOVEABLE        LOADONCALL      compile.png
 
 SAVE         CUSTOM  MOVEABLE        LOADONCALL      tango_save.png
 SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      tango_save_as.png
