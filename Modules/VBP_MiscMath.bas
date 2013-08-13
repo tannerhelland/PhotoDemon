@@ -142,6 +142,11 @@ Public Function distanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal 
     distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
+'Return the distance between two 3D points
+Public Function distanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double)
+    distanceThreeDimensions = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)
+End Function
+
 'Return the arctangent of two values (rise / run)
 Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
  
