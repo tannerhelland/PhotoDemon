@@ -261,7 +261,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         'Alpha channel addition/removal
         Case "Add alpha channel"
-            ConvertImageColorDepth 32
+            If showDialog Then
+                FormConvert32bpp.Show vbModal, FormMain
+            Else
+                FormConvert32bpp.advancedConvert32bpp cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
         
         Case "Remove alpha channel"
             If showDialog Then
