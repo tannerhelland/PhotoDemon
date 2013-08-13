@@ -481,7 +481,10 @@ Private Sub SubclassWindowProcedure( _
             RaiseEvent MouseIn
         End If
         Let ReturnValue = 1
-        Let Handled = True
+        
+        'Tanner's fix: allow VB's internal MouseMove events to still fire
+        'Let Handled = True
+        Handled = False
         
     ElseIf Message = WM_SETCURSOR Then '-----------------------------------------------
         If IsOut = False And MousePointer > 0 Then
