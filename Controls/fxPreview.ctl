@@ -66,8 +66,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 26/July/13
-'Last update: use Alt+T as an accelerator to toggle between original and preview image
+'Last updated: 12/August/13
+'Last update: add a property + code for selecting a color from the preview window; containers can use the ColorSelected
+'             event and SelectedColor property (I just realized how confusing that is... oops) to handle the input
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -89,13 +90,66 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Has this control been given a copy of the original image?
-Dim m_HasOriginal As Boolean, m_HasFX As Boolean
+'Some preview boxes allow the user to click and select a color from the source image
+Public Event ColorSelected()
+Private isColorSelectionAllowed As Boolean, curColor As Long
+Private colorJustClicked As Long
 
-Dim originalImage As pdLayer, fxImage As pdLayer
+'Has this control been given a copy of the original image?
+Private m_HasOriginal As Boolean, m_HasFX As Boolean
+
+Private originalImage As pdLayer, fxImage As pdLayer
 
 'The control's current state: whether it is showing the original image or the fx preview
-Dim curImageState As Boolean
+Private curImageState As Boolean
+
+'GetPixel is used to retrieve colors from the image
+Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+
+'Mouse events are raised with the help of a bluMouseEvents class
+Private WithEvents cMouseEvents As bluMouseEvents
+Attribute cMouseEvents.VB_VarHelpID = -1
+
+'Mouse enter/leave events will be handled by the bluMouseEvents object
+Private Sub cMouseEvents_MouseIn()
+    
+    'If this preview control instance allows the user to select a color, display the original image upon mouse entrance
+    If AllowColorSelection Then
+        setPNGCursorToHwnd picPreview.hWnd, "C_PIPETTE", 0, 0
+        If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+    End If
+    
+End Sub
+
+Private Sub cMouseEvents_MouseOut()
+    
+    'If this preview control instance allows the user to select a color, restore whatever image was previously
+    ' displayed upon mouse exit
+    If AllowColorSelection Then
+        setArrowCursorToHwnd picPreview.hWnd
+        If curImageState Then
+            If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
+        Else
+            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+        End If
+    End If
+    
+End Sub
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get SelectedColor() As Long
+    SelectedColor = curColor
+End Property
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get AllowColorSelection() As Boolean
+    AllowColorSelection = isColorSelectionAllowed
+End Property
+
+Public Property Let AllowColorSelection(ByVal isAllowed As Boolean)
+    isColorSelectionAllowed = isAllowed
+    PropertyChanged "AllowColorSelection"
+End Property
 
 'Use this to supply the preview with a copy of the original image's data.  The preview object can use this to display
 ' the original image when the user clicks the "show original image" link.
@@ -109,6 +163,7 @@ Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
     
     originalImage.eraseLayer
     originalImage.createFromExistingLayer srcLayer
+    If originalImage.getLayerColorDepth = 32 Then originalImage.compositeBackgroundColor
 
 End Sub
 
@@ -125,10 +180,19 @@ Public Sub setFXImage(ByRef srcLayer As pdLayer)
     fxImage.eraseLayer
     fxImage.createFromExistingLayer srcLayer
     
-    'If the user was previously examining the original image, reset the label caption to match the new preview
-    If Not curImageState Then
+    'If the user was previously examining the original image, and color selection is not allowed, be helpful and
+    ' automatically restore the previewed image.
+    If (Not isColorSelectionAllowed) Then
+        fxImage.renderToPictureBox picPreview
         lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
         curImageState = True
+    'If color selection is allowed, the user may want to select more colors - so leave it on "original" mode if it
+    ' is already there.
+    Else
+        If curImageState Then
+            fxImage.renderToPictureBox picPreview
+            lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
+        End If
     End If
 
 End Sub
@@ -179,6 +243,30 @@ Private Sub lblBeforeToggle_Click()
     
 End Sub
 
+'If color selection is allowed, raise that event now
+Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If isColorSelectionAllowed Then
+        curColor = GetPixel(picPreview.hDC, X, Y)
+        If AllowColorSelection Then colorJustClicked = 1
+        RaiseEvent ColorSelected
+    End If
+End Sub
+
+'When the user is selecting a color, we want to give them a preview of how that color will affect the previewed image.
+' This is handled in the _MouseDown event above.  After the color has been selected, we want to restore the original
+' image on the next mouse move, in case the user wants to select a different color.
+Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    'COMMENTED OUT PENDING A FIX FROM KROC
+    'If colorJustClicked > 0 Then
+    '    If colorJustClicked < 2 Then
+    '        colorJustClicked = colorJustClicked + 1
+    '    Else
+    '        colorJustClicked = 0
+    '        If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+    '    End If
+    'End If
+End Sub
+
 'When the control's access key is pressed (alt+t) , toggle the original/current image
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     lblBeforeToggle_Click
@@ -195,6 +283,12 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
+    'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
+    If g_UserModeFix Then
+        Set cMouseEvents = New bluMouseEvents
+        cMouseEvents.Attach picPreview.hWnd, UserControl.hWnd
+    End If
+    
     'Give the user control the same font as the rest of the program; note that a check must be made for IDE behavior so
     ' the project will compile; VB's initialization of user controls during the compile process causes no shortage of
     ' odd issues...
@@ -205,9 +299,7 @@ Private Sub UserControl_Initialize()
     End If
     
     curImageState = True
-    
-    setArrowCursorToHwnd UserControl.hWnd
-    setArrowCursorToHwnd picPreview.hWnd
+    curColor = 0
             
 End Sub
 
@@ -220,6 +312,17 @@ Private Sub UserControl_InitProperties()
     'Mark the original image as having NOT been set
     m_HasOriginal = False
     
+    'By default, the control cannot be used for color selection
+    isColorSelectionAllowed = False
+    
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+    
+    With PropBag
+        AllowColorSelection = .ReadProperty("ColorSelection", False)
+    End With
+    
 End Sub
 
 'Redraw the user control after it has been resized
@@ -228,12 +331,18 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_Show()
+    
     'Translate the user control text in the compiled EXE
     If g_UserModeFix Then
         lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
     Else
         lblBeforeToggle.Caption = "show original image (alt+t) "
     End If
+    
+    'Reset the mouse cursors
+    setArrowCursorToHwnd picPreview.hWnd
+    setArrowCursorToHwnd UserControl.hWnd
+    
 End Sub
 
 Private Sub UserControl_Terminate()
@@ -254,4 +363,13 @@ Private Sub redrawControl()
     lblBeforeToggle.Top = ScaleHeight - 24
     picPreview.Height = lblBeforeToggle.Top - (ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
         
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+
+    'Store all associated properties
+    With PropBag
+        .WriteProperty "ColorSelection", AllowColorSelection, False
+    End With
+    
 End Sub

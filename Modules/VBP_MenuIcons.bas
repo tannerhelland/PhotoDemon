@@ -34,7 +34,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -788,7 +788,7 @@ End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), return it as a cursor object.
 ' The calling function is responsible for deleting the cursor once they are done with it.
-Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVal curHotSpotX As Long = 8, Optional ByVal curHotSpotY As Long = 16) As Long
+Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
     
     'Start by extracting the PNG data into a bytestream
     Dim ImageData() As Byte
@@ -819,8 +819,8 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
                 Dim icoInfo As ICONINFO
                 With icoInfo
                     .fIcon = False
-                    .xHotspot = curHotSpotX
-                    .yHotspot = curHotSpotY
+                    .xHotspot = curHotspotX
+                    .yHotspot = curHotspotY
                     .hbmMask = MonoBmp
                     .hbmColor = hBitmap
                 End With
@@ -878,7 +878,7 @@ Public Sub unloadAllCursors()
 End Sub
 
 'Use any 32bpp PNG resource as a cursor (yes, it's amazing!)
-Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String)
+Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
     SetClassLong dstHwnd, GCL_HCURSOR, requestCustomCursor(pngTitle)
 End Sub
 
@@ -941,7 +941,7 @@ End Sub
 
 'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store
 ' the cursor resource for future reference (so the image doesn't have to be loaded again).
-Private Function requestCustomCursor(ByVal cursorName As String) As Long
+Private Function requestCustomCursor(ByVal cursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
 
     Dim i As Long
     Dim cursorLocation As Long
@@ -970,7 +970,7 @@ Private Function requestCustomCursor(ByVal cursorName As String) As Long
         requestCustomCursor = customCursorHandles(cursorLocation)
     Else
         Dim tmpHandle As Long
-        tmpHandle = createCursorFromResource(cursorName)
+        tmpHandle = createCursorFromResource(cursorName, cursorHotspotX, cursorHotspotY)
         
         ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
         ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long

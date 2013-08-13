@@ -260,6 +260,9 @@ T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
 T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
 T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
 
+//Cursors
+C_PIPETTE    CUSTOM  MOVEABLE        LOADONCALL      pipette_cursor.png
+
 //Placeholder for missing MRU icons
 MRUHOLDER    CUSTOM  MOVEABLE        LOADONCALL      folder_image.png
 
