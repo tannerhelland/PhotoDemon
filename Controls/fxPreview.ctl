@@ -126,7 +126,7 @@ Private Sub cMouseEvents_MouseOut()
     'If this preview control instance allows the user to select a color, restore whatever image was previously
     ' displayed upon mouse exit
     If AllowColorSelection Then
-        setArrowCursorToHwnd picPreview.hWnd
+        setHandCursorToHwnd picPreview.hWnd
         If curImageState Then
             If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
         Else
