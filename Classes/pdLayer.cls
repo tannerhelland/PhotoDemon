@@ -593,7 +593,7 @@ Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
 End Function
 
 'Convert this layer to 32bpp mode
-Public Function convertTo32bpp() As Boolean
+Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
 
     'Make sure this layer is 24bpp. If it isn't, running this function is pointless.
     If layerColorDepth = 24 Then
@@ -632,7 +632,7 @@ Public Function convertTo32bpp() As Boolean
                 For x = 0 To layerWidth - 1
                     QuickX = x * 4
                 For y = 0 To layerHeight - 1
-                    iData(QuickX + 3, y) = 255
+                    iData(QuickX + 3, y) = newTransparency
                 Next y
                 Next x
     
