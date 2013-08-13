@@ -72,6 +72,7 @@ Begin VB.Form FormConvert24bpp
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      ColorSelection  =   -1  'True
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -145,7 +146,7 @@ End Sub
 'OK button
 Private Sub CmdOK_Click()
     Me.Visible = False
-    Process "Remove alpha channel", , buildParams(picColor.backColor)
+    Process "Remove alpha channel", , buildParams(PicColor.backColor)
     Unload Me
 End Sub
 
@@ -154,7 +155,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor picColor
+    setHandCursor PicColor
     
     'Render a preview of the emboss/engrave effect
     updatePreview
@@ -165,13 +166,18 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Sub fxPreview_ColorSelected()
+    PicColor.backColor = fxPreview.SelectedColor
+    updatePreview
+End Sub
+
 'Clicking on the picture box allows the user to select a new color
 Private Sub PicColor_Click()
 
     'Use the default color dialog to select a new color
     Dim newColor As Long
-    If showColorDialog(newColor, Me, picColor.backColor) Then
-        picColor.backColor = newColor
+    If showColorDialog(newColor, Me, PicColor.backColor) Then
+        PicColor.backColor = newColor
         updatePreview
     End If
     
@@ -181,6 +187,6 @@ End Sub
 Private Sub updatePreview()
     Dim tmpSA As SAFEARRAY2D
     prepImageData tmpSA, True, fxPreview
-    workingLayer.convertTo24bpp picColor.backColor
+    workingLayer.convertTo24bpp PicColor.backColor
     finalizeImageData True, fxPreview
 End Sub

@@ -94,6 +94,7 @@ Begin VB.Form FormVignette
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton optShape 
       Height          =   360
@@ -321,7 +322,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltRadius.IsValid And sltFeathering.IsValid And sltTransparency.IsValid Then
         Me.Visible = False
-        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, picColor.backColor)
+        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor)
         Unload Me
     End If
     
@@ -345,7 +346,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -412,13 +413,13 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     Dim blendVal As Double
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = x - midX
-        nY = y - midY
+        nX = X - midX
+        nY = Y - midY
         nX2 = nX * nX
         nY2 = nY * nY
                 
@@ -430,9 +431,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
             
             If nY2 > sRadiusMax Then
                 
-                dstImageData(QuickVal + 2, y) = BlendColors(newR, dstImageData(QuickVal + 2, y), vTransparency)
-                dstImageData(QuickVal + 1, y) = BlendColors(newG, dstImageData(QuickVal + 1, y), vTransparency)
-                dstImageData(QuickVal, y) = BlendColors(newB, dstImageData(QuickVal, y), vTransparency)
+                dstImageData(QuickVal + 2, Y) = BlendColors(newR, dstImageData(QuickVal + 2, Y), vTransparency)
+                dstImageData(QuickVal + 1, Y) = BlendColors(newG, dstImageData(QuickVal + 1, Y), vTransparency)
+                dstImageData(QuickVal, Y) = BlendColors(newB, dstImageData(QuickVal, Y), vTransparency)
                 
             'Otherwise, check for feathering
             Else
@@ -442,9 +443,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                     blendVal = (nY2 - sRadiusMin) / vFeathering2
                     blendVal = blendVal * (1 - vTransparency)
                     
-                    dstImageData(QuickVal + 2, y) = BlendColors(dstImageData(QuickVal + 2, y), newR, blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(dstImageData(QuickVal + 1, y), newG, blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(dstImageData(QuickVal, y), newB, blendVal)
+                    dstImageData(QuickVal + 2, Y) = BlendColors(dstImageData(QuickVal + 2, Y), newR, blendVal)
+                    dstImageData(QuickVal + 1, Y) = BlendColors(dstImageData(QuickVal + 1, Y), newG, blendVal)
+                    dstImageData(QuickVal, Y) = BlendColors(dstImageData(QuickVal, Y), newB, blendVal)
                 End If
                     
             End If
@@ -454,9 +455,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
             'If the values are going to be out-of-bounds, force them to black
             If (nX2 + nY2) > sRadiusCircular Then
-                dstImageData(QuickVal + 2, y) = BlendColors(newR, dstImageData(QuickVal + 2, y), vTransparency)
-                dstImageData(QuickVal + 1, y) = BlendColors(newG, dstImageData(QuickVal + 1, y), vTransparency)
-                dstImageData(QuickVal, y) = BlendColors(newB, dstImageData(QuickVal, y), vTransparency)
+                dstImageData(QuickVal + 2, Y) = BlendColors(newR, dstImageData(QuickVal + 2, Y), vTransparency)
+                dstImageData(QuickVal + 1, Y) = BlendColors(newG, dstImageData(QuickVal + 1, Y), vTransparency)
+                dstImageData(QuickVal, Y) = BlendColors(newB, dstImageData(QuickVal, Y), vTransparency)
                 
             'Otherwise, check for feathering
             Else
@@ -465,23 +466,23 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                     blendVal = (nX2 + nY2 - sRadiusMin) / vFeathering2
                     blendVal = blendVal * (1 - vTransparency)
                     
-                    dstImageData(QuickVal + 2, y) = BlendColors(dstImageData(QuickVal + 2, y), newR, blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(dstImageData(QuickVal + 1, y), newG, blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(dstImageData(QuickVal, y), newB, blendVal)
+                    dstImageData(QuickVal + 2, Y) = BlendColors(dstImageData(QuickVal + 2, Y), newR, blendVal)
+                    dstImageData(QuickVal + 1, Y) = BlendColors(dstImageData(QuickVal + 1, Y), newG, blendVal)
+                    dstImageData(QuickVal, Y) = BlendColors(dstImageData(QuickVal, Y), newB, blendVal)
                 End If
                 
             End If
                 
         End If
                         
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -500,12 +501,17 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor picColor
+    setHandCursor PicColor
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub fxPreview_ColorSelected()
+    PicColor.backColor = fxPreview.SelectedColor
+    updatePreview
 End Sub
 
 Private Sub optShape_Click(Index As Integer)
@@ -516,8 +522,8 @@ Private Sub PicColor_Click()
 
     'Use the default color dialog to select a new color
     Dim newColor As Long
-    If showColorDialog(newColor, Me, picColor.backColor) Then
-        picColor.backColor = newColor
+    If showColorDialog(newColor, Me, PicColor.backColor) Then
+        PicColor.backColor = newColor
         updatePreview
     End If
     
@@ -537,5 +543,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, picColor.backColor, True, fxPreview
+    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor, True, fxPreview
 End Sub
