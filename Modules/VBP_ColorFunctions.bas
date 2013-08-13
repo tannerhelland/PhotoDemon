@@ -3,8 +3,8 @@ Attribute VB_Name = "Color_Functions"
 'Miscellaneous Color Functions
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 13/June/13
-'Last update: created a dedicated module for color processing functions
+'Last updated: 13/August/13
+'Last update: added XYZ and CieLAB color conversions
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June 2013.  This module is now used to store all the random bits of specialized color processing code
@@ -262,7 +262,7 @@ End Function
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     
     Dim Max As Double, Min As Double
-    Dim delta As Double
+    Dim Delta As Double
     Dim rR As Double, rG As Double, rB As Double
     
     rR = r / 255
@@ -286,23 +286,23 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
         h = 0
     Else
         
-        delta = Max - Min
+        Delta = Max - Min
         
         'Calculate saturation
         If l <= 0.5 Then
-            s = delta / (Max + Min)
+            s = Delta / (Max + Min)
         Else
-            s = delta / (2 - Max - Min)
+            s = Delta / (2 - Max - Min)
         End If
         
         'Calculate hue
         
         If rR = Max Then
-            h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
+            h = (rG - rB) / Delta    '{Resulting color is between yellow and magenta}
         ElseIf rG = Max Then
-            h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
+            h = 2 + (rB - rR) / Delta '{Resulting color is between cyan and yellow}
         ElseIf rB = Max Then
-            h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
+            h = 4 + (rR - rG) / Delta '{Resulting color is between magenta and cyan}
         End If
         
         'If you prefer hue in the [0,360] range instead of [-1, 5] you can use this code
@@ -388,3 +388,66 @@ Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long
    If b > 255 Then b = 255
    
 End Sub
+
+'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB, per
+Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
+
+    Dim x As Double, y As Double, z As Double
+    RGBtoXYZ r, g, b, x, y, z
+    XYZtoLab x, y, z, labL, labA, labB
+
+End Sub
+
+'Convert RGB to XYZ space, using an sRGB conversion and the assumption of a D65 (e.g. color temperature of 6500k) illuminant
+' Formula adopted from http://www.easyrgb.com/index.php?X=MATH&H=02#text2
+Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef x As Double, ByRef y As Double, ByRef z As Double)
+
+    'Normalize RGB to [0, 1]
+    Dim rFloat As Double, gFloat As Double, bFloat As Double
+    rFloat = r / 255
+    gFloat = g / 255
+    bFloat = b / 255
+    
+    'Convert RGB values to the sRGB color space
+    If rFloat > 0.04045 Then
+        rFloat = ((rFloat + 0.055) / (1.055)) ^ 2.2
+    Else
+        rFloat = rFloat / 12.92
+    End If
+    
+    If gFloat > 0.04045 Then
+        gFloat = ((gFloat + 0.055) / (1.055)) ^ 2.2
+    Else
+        gFloat = gFloat / 12.92
+    End If
+    
+    If bFloat > 0.04045 Then
+        bFloat = ((bFloat + 0.055) / (1.055)) ^ 2.2
+    Else
+        bFloat = bFloat / 12.92
+    End If
+    
+    'Calculate XYZ using D65 correction
+    x = rFloat * 0.4124 + gFloat * 0.3576 + bFloat * 0.1805
+    y = rFloat * 0.2126 + gFloat * 0.7152 + bFloat * 0.0722
+    z = rFloat * 0.0193 + gFloat * 0.1192 + bFloat * 0.9505
+    
+End Sub
+
+'Convert an XYZ color to CIELab.  As with the original XYZ calculation, D65 is assumed.
+' Formula adopted from http://www.easyrgb.com/index.php?X=MATH&H=07#text7, with minor changes by me (not re-applying D65 values until after
+'  fXYZ has been calculated)
+Public Sub XYZtoLab(ByVal x As Double, ByVal y As Double, ByVal z As Double, ByRef l As Double, ByRef a As Double, ByRef b As Double)
+    l = 116 * fXYZ(y) - 16
+    a = 500 * (fXYZ(x / 0.9505) - fXYZ(y))
+    b = 200 * (fXYZ(y) - fXYZ(z / 1.089))
+End Sub
+
+Private Function fXYZ(ByVal t As Double) As Double
+    If t > 0.008856 Then
+        fXYZ = t ^ (1 / 3)
+    Else
+        fXYZ = (7.787 * t) + (16 / 116)
+    End If
+End Function
+
