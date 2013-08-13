@@ -254,17 +254,21 @@ End Sub
 
 'When the user is selecting a color, we want to give them a preview of how that color will affect the previewed image.
 ' This is handled in the _MouseDown event above.  After the color has been selected, we want to restore the original
-' image on the next mouse move, in case the user wants to select a different color.
+' image on a subsequent mouse move, in case the user wants to select a different color.
 Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    'COMMENTED OUT PENDING A FIX FROM KROC
-    'If colorJustClicked > 0 Then
-    '    If colorJustClicked < 2 Then
-    '        colorJustClicked = colorJustClicked + 1
-    '    Else
-    '        colorJustClicked = 0
-    '        If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
-    '    End If
-    'End If
+    
+    If colorJustClicked > 0 Then
+    
+        'To accomodate shaky hands, allow a few mouse movements before resetting the image
+        If colorJustClicked < 4 Then
+            colorJustClicked = colorJustClicked + 1
+        Else
+            colorJustClicked = 0
+            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+        End If
+        
+    End If
+    
 End Sub
 
 'When the control's access key is pressed (alt+t) , toggle the original/current image
@@ -283,19 +287,17 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
+    'A check must be made for IDE behavior so the project will compile; VB's initialization of user controls during
+    ' compiling and design process causes no shortage of odd issues and errors otherwise
     If g_UserModeFix Then
+        
+        'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
         Set cMouseEvents = New bluMouseEvents
         cMouseEvents.Attach picPreview.hWnd, UserControl.hWnd
-    End If
-    
-    'Give the user control the same font as the rest of the program; note that a check must be made for IDE behavior so
-    ' the project will compile; VB's initialization of user controls during the compile process causes no shortage of
-    ' odd issues...
-    If g_UserModeFix Then
+        
+        'Give the toggle image text the same font as the rest of the project.
         lblBeforeToggle.FontName = g_InterfaceFont
-    Else
-        lblBeforeToggle.FontName = "Tahoma"
+        
     End If
     
     curImageState = True
