@@ -179,20 +179,20 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             prepSafeArray selSA, tmpSelectionMask
             CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
                         
-            Dim X As Long, Y As Long
-            For X = 0 To workingLayer.getLayerWidth - 1
-            For Y = 0 To workingLayer.getLayerHeight - 1
+            Dim x As Long, y As Long
+            For x = 0 To workingLayer.getLayerWidth - 1
+            For y = 0 To workingLayer.getLayerHeight - 1
                 
                 'If the image is already 32bpp, instead of relying solely on the selection mask values, we need to blend any
                 ' transparent pixels with the selection mask's transparency - this will give an accurate portrayal of how
                 ' the final processed area will look.
                 If already32bpp Then
-                    wlImageData(X * 4 + 3, Y) = wlImageData(X * 4 + 3, Y) * (selImageData(X * 3, Y) / 255)
+                    wlImageData(x * 4 + 3, y) = wlImageData(x * 4 + 3, y) * (selImageData(x * 3, y) / 255)
                 Else
-                    wlImageData(X * 4 + 3, Y) = selImageData(X * 3, Y)
+                    wlImageData(x * 4 + 3, y) = selImageData(x * 3, y)
                 End If
-            Next Y
-            Next X
+            Next y
+            Next x
             
             'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
             CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
@@ -267,7 +267,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     Dim selImageData() As Byte
     Dim selSA As SAFEARRAY2D
     
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     'If this is not a preview, our job is simple - get the newly processed DIB rendered to the screen.
     If Not isPreview Then
@@ -308,10 +308,10 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Dim workingLayerCD As Long
             workingLayerCD = workingLayer.getLayerColorDepth \ 8
             
-            For X = 0 To workingLayer.getLayerWidth - 1
-            For Y = 0 To workingLayer.getLayerHeight - 1
+            For x = 0 To workingLayer.getLayerWidth - 1
+            For y = 0 To workingLayer.getLayerHeight - 1
                 
-                thisAlpha = selImageData((leftOffset + X) * 3, topOffset + Y)
+                thisAlpha = selImageData((leftOffset + x) * 3, topOffset + y)
                 
                 Select Case thisAlpha
                     
@@ -321,7 +321,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                     'This pixel completely replaces the destination one, so simply copy it over
                     Case 255
                         For i = 0 To dstQuickVal - 1
-                            dstImageData((leftOffset + X) * dstQuickVal + i, topOffset + Y) = wlImageData(X * workingLayerCD + i, Y)
+                            dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y) = wlImageData(x * workingLayerCD + i, y)
                         Next i
                         
                     'This pixel is antialiased or feathered, so it needs to be blended with the destination at the level specified
@@ -329,13 +329,13 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                     Case Else
                         blendAlpha = thisAlpha / 255
                         For i = 0 To dstQuickVal - 1
-                            dstImageData((leftOffset + X) * dstQuickVal + i, topOffset + Y) = BlendColors(dstImageData((leftOffset + X) * dstQuickVal + i, topOffset + Y), wlImageData(X * workingLayerCD + i, Y), blendAlpha)
+                            dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y) = BlendColors(dstImageData((leftOffset + x) * dstQuickVal + i, topOffset + y), wlImageData(x * workingLayerCD + i, y), blendAlpha)
                         Next i
                     
                 End Select
                 
-            Next Y
-            Next X
+            Next y
+            Next x
             
             'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
             CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
@@ -348,6 +348,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             
             
         Else
+            If workingLayer.getLayerColorDepth = 32 Then pdImages(CurrentImage).mainLayer.convertTo32bpp
             BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
         End If
                 
@@ -379,15 +380,15 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Dim already32bpp As Boolean
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then already32bpp = False Else already32bpp = True
             
-            For X = 0 To workingLayer.getLayerWidth - 1
-            For Y = 0 To workingLayer.getLayerHeight - 1
+            For x = 0 To workingLayer.getLayerWidth - 1
+            For y = 0 To workingLayer.getLayerHeight - 1
                 If already32bpp Then
-                    If selImageData(X * 3, Y) = 0 Then wlImageData(X * 4 + 3, Y) = 0
+                    If selImageData(x * 3, y) = 0 Then wlImageData(x * 4 + 3, y) = 0
                 Else
-                    wlImageData(X * 4 + 3, Y) = selImageData(X * 3, Y)
+                    wlImageData(x * 4 + 3, y) = selImageData(x * 3, y)
                 End If
-            Next Y
-            Next X
+            Next y
+            Next x
             
             'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
             CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
