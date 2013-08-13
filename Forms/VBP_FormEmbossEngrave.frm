@@ -228,6 +228,7 @@ End Sub
 
 Private Sub fxPreview_ColorSelected()
     PicColor.backColor = fxPreview.SelectedColor
+    chkToColor.Value = vbChecked
     UpdateEmbossPreview
 End Sub
 
