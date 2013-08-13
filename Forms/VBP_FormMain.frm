@@ -3497,7 +3497,7 @@ Private Sub MnuTransparency_Click(Index As Integer)
             
             'Ignore if the current image is already in 32bpp mode
             If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then Exit Sub
-            Process "Add alpha channel"
+            Process "Add alpha channel", True
 
         'Remove alpha channel
         Case 1
