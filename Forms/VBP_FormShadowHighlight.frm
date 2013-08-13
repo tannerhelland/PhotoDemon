@@ -72,6 +72,7 @@ Begin VB.Form FormShadowHighlight
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
@@ -252,7 +253,7 @@ Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold) Then
         CalculateOptimalMidtone
     Else
-        picColor.backColor = RGB(127, 127, 127)
+        PicColor.backColor = RGB(127, 127, 127)
     End If
     updatePreview
 End Sub
@@ -268,7 +269,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If sltShadow.IsValid And sltHighlight.IsValid Then
         Me.Visible = False
-        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(picColor.backColor))
+        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(PicColor.backColor))
         Unload Me
     End If
     
@@ -279,7 +280,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor picColor
+    setHandCursor PicColor
     
     'Render a preview
     updatePreview
@@ -306,12 +307,17 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Sub fxPreview_ColorSelected()
+    PicColor.backColor = fxPreview.SelectedColor
+    updatePreview
+End Sub
+
 Private Sub PicColor_Click()
     
     'Use the default color dialog to select a new color
     Dim newColor As Long
-    If showColorDialog(newColor, Me, picColor.backColor) Then
-        picColor.backColor = newColor
+    If showColorDialog(newColor, Me, PicColor.backColor) Then
+        PicColor.backColor = newColor
         updatePreview
     End If
 
@@ -327,7 +333,7 @@ Private Sub CalculateOptimalMidtone()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
                 
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -346,14 +352,14 @@ Private Sub CalculateOptimalMidtone()
     Dim NumOfPixels As Long
                 
     'Loop through each pixel in the image, tallying values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
                 
         rLookup(r) = rLookup(r) + 1
         gLookup(g) = gLookup(g) + 1
@@ -362,8 +368,8 @@ Private Sub CalculateOptimalMidtone()
         'Increment the pixel count
         NumOfPixels = NumOfPixels + 1
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -375,35 +381,35 @@ Private Sub CalculateOptimalMidtone()
     NumOfPixels = NumOfPixels \ 2
                        
     Dim rCount As Long, gCount As Long, bCount As Long
-    x = 0
+    X = 0
                     
     'Find the median value for each color channel
     Do
-        rCount = rCount + rLookup(x)
-        x = x + 1
+        rCount = rCount + rLookup(X)
+        X = X + 1
     Loop While rCount < NumOfPixels
     
-    rCount = x - 1
+    rCount = X - 1
     
-    x = 0
+    X = 0
     
     Do
-        gCount = gCount + gLookup(x)
-        x = x + 1
+        gCount = gCount + gLookup(X)
+        X = X + 1
     Loop While gCount < NumOfPixels
     
-    gCount = x - 1
+    gCount = X - 1
     
-    x = 0
+    X = 0
     
     Do
-        bCount = bCount + bLookup(x)
-        x = x + 1
+        bCount = bCount + bLookup(X)
+        X = X + 1
     Loop While bCount < NumOfPixels
     
-    bCount = x - 1
+    bCount = X - 1
     
-    picColor.backColor = RGB(255 - rCount, 255 - gCount, 255 - bCount)
+    PicColor.backColor = RGB(255 - rCount, 255 - gCount, 255 - bCount)
         
 End Sub
 
@@ -416,6 +422,6 @@ Private Sub sltShadow_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyShadowHighlight sltShadow, sltHighlight, CLng(picColor.backColor), True, fxPreview
+    ApplyShadowHighlight sltShadow, sltHighlight, CLng(PicColor.backColor), True, fxPreview
 End Sub
 
