@@ -218,11 +218,11 @@ Private Sub chkFirst_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
-Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
@@ -285,7 +285,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
@@ -307,7 +307,7 @@ End Sub
 
 Private Sub UserControl_Show()
 
-        'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
+    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
     m_ToolString = Extender.ToolTipText
     
