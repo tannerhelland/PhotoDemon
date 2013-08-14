@@ -4,10 +4,10 @@ Begin VB.Form FormSoftwareUpdate
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Update Notifier"
-   ClientHeight    =   5310
+   ClientHeight    =   5295
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   10710
+   ClientWidth     =   10695
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,9 +20,9 @@ Begin VB.Form FormSoftwareUpdate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   354
+   ScaleHeight     =   353
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   714
+   ScaleWidth      =   713
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOKNo 
@@ -36,6 +36,7 @@ Begin VB.Form FormSoftwareUpdate
    End
    Begin VB.PictureBox picNo 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   5295
@@ -50,7 +51,6 @@ Begin VB.Form FormSoftwareUpdate
       Width           =   10815
       Begin VB.TextBox txtNoExplanation 
          Appearance      =   0  'Flat
-         BackColor       =   &H8000000F&
          BorderStyle     =   0  'None
          BeginProperty Font 
             Name            =   "Tahoma"
