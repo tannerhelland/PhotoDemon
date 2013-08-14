@@ -1997,7 +1997,7 @@ End Sub
     'resetToolButtonStates
 'End Sub
 
-Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
     g_CurrentTool = Index
     resetToolButtonStates
 End Sub
@@ -2286,26 +2286,26 @@ Private Sub MDIForm_Load()
     
         Message "Checking for software updates (this feature can be disabled from the Tools -> Options menu)..."
     
-        Dim updateNeeded As Long
+        Dim updateNeeded As UpdateCheck
         updateNeeded = CheckForSoftwareUpdate
         
         'CheckForSoftwareUpdate can return one of three values:
-        ' 0 - something went wrong (no Internet connection, etc)
-        ' 1 - the check was successful, but this version is up-to-date
-        ' 2 - the check was successful, and an update is available
+        ' UPDATE_ERROR - something went wrong (no Internet connection, etc)
+        ' UPDATE_NOT_NEEDED - the check was successful, but this version is up-to-date
+        ' UPDATE_AVAILABLE - the check was successful, and an update is available
         
         Select Case updateNeeded
         
-            Case 0
+            Case UPDATE_ERROR
                 Message "An error occurred while checking for updates.  Please make sure you have an active Internet connection."
             
-            Case 1
+            Case UPDATE_NOT_NEEDED
                 Message "Software is up-to-date."
                 
                 'Because the software is up-to-date, we can mark this as a successful check in the preferences file
                 g_UserPreferences.SetPref_String "General Preferences", "LastUpdateCheck", Format$(Now, "Medium Date")
                 
-            Case 2
+            Case UPDATE_AVAILABLE
                 Message "Software update found!  Launching update notifier..."
                 FormSoftwareUpdate.Show vbModal, Me
             
@@ -2316,7 +2316,7 @@ Private Sub MDIForm_Load()
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so ignore this request if the user was already notified of an update.)
-    If (updateNeeded <> 2) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngnqAvailable) Or (Not isExifToolAvailable)) Then
+    If (updateNeeded <> UPDATE_AVAILABLE) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngnqAvailable) Or (Not isExifToolAvailable)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
@@ -2325,7 +2325,7 @@ Private Sub MDIForm_Load()
         promptToDownload = g_UserPreferences.GetPref_Boolean("General Preferences", "PromptForPluginDownload", True)
                 
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
-        If promptToDownload = True Then
+        If promptToDownload Then
             FormPluginDownloader.Show vbModal, FormMain
             
             'Since plugins may have been downloaded, update the interface to match any new features that may be available.
@@ -2355,7 +2355,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2391,7 +2391,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
