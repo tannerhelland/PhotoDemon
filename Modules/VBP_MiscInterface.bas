@@ -74,7 +74,7 @@ Public Sub requestMouseTracking(ByVal srcHwnd As Long, Optional ByVal stopTracki
             .dwHoverTime = 0
             .hWndTrack = srcHwnd
         End With
-        TrackMouseEvent tracker
+        TRACKMOUSEEVENT tracker
     Else
     
         With tracker
@@ -83,7 +83,7 @@ Public Sub requestMouseTracking(ByVal srcHwnd As Long, Optional ByVal stopTracki
             .dwHoverTime = 0
             .hWndTrack = srcHwnd
         End With
-        TrackMouseEvent tracker
+        TRACKMOUSEEVENT tracker
     
     End If
 
@@ -162,7 +162,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.FontName = g_InterfaceFont
         End If
         
-        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown)) Then
+        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is commandBar)) Then
             eControl.Font.Name = g_InterfaceFont
         End If
                         
@@ -573,11 +573,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    getPixelWidthOfString = txtSize.X
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    getPixelHeightOfString = txtSize.Y
 End Function

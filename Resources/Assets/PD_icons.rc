@@ -266,6 +266,9 @@ C_PIPETTE    CUSTOM  MOVEABLE        LOADONCALL      pipette_cursor.png
 //Placeholder for missing MRU icons
 MRUHOLDER    CUSTOM  MOVEABLE        LOADONCALL      folder_image.png
 
+//Button images for the command bar on each tool form
+RESETBUTTON  CUSTOM  MOVEABLE        LOADONCALL      arrow_circle_double_135_24x24.png
+
 //Large (32x32) command button images
 LRGSAVE      CUSTOM  MOVEABLE        LOADONCALL      document_save_large.png
 LRGDONTSAVE  CUSTOM  MOVEABLE        LOADONCALL      image_missing.png
