@@ -409,7 +409,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "LastPreferencesPage", "0"
         xmlEngine.writeTag "LastFilePreferencesPage", "1"
         xmlEngine.writeTag "LogProgramMessages", "False"
-        xmlEngine.writeTag "MetadataExport", "0"
+        xmlEngine.writeTag "MetadataExport", "1"
         xmlEngine.writeTag "MRUCaptionSize", "0"
         xmlEngine.writeTag "MultipageImagePrompt", "0"
         xmlEngine.writeTag "OutgoingColorDepth", "1"
