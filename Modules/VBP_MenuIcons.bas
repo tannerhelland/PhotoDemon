@@ -3,9 +3,8 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 08/May/13
-'Last update: completed a very exciting function that allows me to use any 32bpp PNG file as a cursor.  No subclassing
-'              required! First of its kind in VB, and a bitch to reverse-engineer... but well worth the effort, I think.
+'Last updated: 14/August/13
+'Last update: modified loading/unloading of system cursors; see https://github.com/tannerhelland/PhotoDemon/issues/78
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -100,17 +99,6 @@ Public Const IDC_UPARROW = 32516&
 Public Const IDC_WAIT = 32514&
 
 Private Const GCL_HCURSOR = (-12)
-
-'These variables will hold the values of all custom-loaded cursors.
-' They need to be deleted (via DestroyCursor) when the program exits; this is handled by unloadAllCursors.
-Private hc_Handle_Arrow As Long
-Private hc_Handle_Cross As Long
-Public hc_Handle_Hand As Long       'The hand cursor handle is used by the jcButton control as well, so it is declared publicly.
-Private hc_Handle_SizeAll As Long
-Private hc_Handle_SizeNESW As Long
-Private hc_Handle_SizeNS As Long
-Private hc_Handle_SizeNWSE As Long
-Private hc_Handle_SizeWE As Long
 
 Dim numOfCustomCursors As Long
 Dim customCursorNames() As String
@@ -845,30 +833,19 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
     
 End Function
 
-'Load all system cursors into memory
+'Load all relevant program cursors into memory
 Public Sub InitAllCursors()
 
-    hc_Handle_Arrow = LoadCursor(0, IDC_ARROW)
-    hc_Handle_Cross = LoadCursor(0, IDC_CROSS)
-    hc_Handle_Hand = LoadCursor(0, IDC_HAND)
-    hc_Handle_SizeAll = LoadCursor(0, IDC_SIZEALL)
-    hc_Handle_SizeNESW = LoadCursor(0, IDC_SIZENESW)
-    hc_Handle_SizeNS = LoadCursor(0, IDC_SIZENS)
-    hc_Handle_SizeNWSE = LoadCursor(0, IDC_SIZENWSE)
-    hc_Handle_SizeWE = LoadCursor(0, IDC_SIZEWE)
+    'Previously, system cursors were cached here.  This is no longer needed per https://github.com/tannerhelland/PhotoDemon/issues/78
+    ' I am leaving this sub in case I need to pre-load tool cursors in the future.
+    
+    'Note that unloadAllCursors below is still required, as the program may dynamically generate custom cursors while running, and
+    ' these cursors will not be automatically deleted by the system.
 
 End Sub
 
-'Remove the hand cursor from memory
+'Unload any custom cursors from memory
 Public Sub unloadAllCursors()
-    DestroyCursor hc_Handle_Hand
-    DestroyCursor hc_Handle_Arrow
-    DestroyCursor hc_Handle_Cross
-    DestroyCursor hc_Handle_SizeAll
-    DestroyCursor hc_Handle_SizeNESW
-    DestroyCursor hc_Handle_SizeNS
-    DestroyCursor hc_Handle_SizeNWSE
-    DestroyCursor hc_Handle_SizeWE
     
     Dim i As Long
     For i = 0 To numOfCustomCursors - 1
@@ -886,62 +863,62 @@ End Sub
 Public Sub setHandCursor(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Hand
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub
 
 Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
-    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Hand
+    SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub
 
 'Set a single object to use the arrow cursor
 Public Sub setArrowCursorToObject(ByRef tControl As Control)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 0
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
 Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
-    SetClassLong dstHwnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
 'Set a single form to use the arrow cursor
 Public Sub setArrowCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Arrow
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
 'Set a single form to use the cross cursor
 Public Sub setCrossCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_Cross
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_CROSS)
 End Sub
     
 'Set a single form to use the Size All cursor
 Public Sub setSizeAllCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeAll
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEALL)
 End Sub
 
 'Set a single form to use the Size NESW cursor
 Public Sub setSizeNESWCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNESW
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENESW)
 End Sub
 
 'Set a single form to use the Size NS cursor
 Public Sub setSizeNSCursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNS
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENS)
 End Sub
 
 'Set a single form to use the Size NWSE cursor
 Public Sub setSizeNWSECursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeNWSE
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENWSE)
 End Sub
 
 'Set a single form to use the Size WE cursor
 Public Sub setSizeWECursor(ByRef tControl As Form)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, hc_Handle_SizeWE
+    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEWE)
 End Sub
 
 'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store
 ' the cursor resource for future reference (so the image doesn't have to be loaded again).
-Private Function requestCustomCursor(ByVal cursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
+Private Function requestCustomCursor(ByVal CursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
 
     Dim i As Long
     Dim cursorLocation As Long
@@ -955,7 +932,7 @@ Private Function requestCustomCursor(ByVal cursorName As String, Optional ByVal 
     
         For i = 0 To numOfCustomCursors - 1
         
-            If customCursorNames(i) = cursorName Then
+            If customCursorNames(i) = CursorName Then
                 cursorAlreadyLoaded = True
                 cursorLocation = i
                 Exit For
@@ -970,12 +947,12 @@ Private Function requestCustomCursor(ByVal cursorName As String, Optional ByVal 
         requestCustomCursor = customCursorHandles(cursorLocation)
     Else
         Dim tmpHandle As Long
-        tmpHandle = createCursorFromResource(cursorName, cursorHotspotX, cursorHotspotY)
+        tmpHandle = createCursorFromResource(CursorName, cursorHotspotX, cursorHotspotY)
         
         ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
         ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
         
-        customCursorNames(numOfCustomCursors) = cursorName
+        customCursorNames(numOfCustomCursors) = CursorName
         customCursorHandles(numOfCustomCursors) = tmpHandle
         
         numOfCustomCursors = numOfCustomCursors + 1
