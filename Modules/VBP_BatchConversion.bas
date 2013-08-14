@@ -166,9 +166,10 @@ Public Sub PlayMacro()
 
     'Automatically launch the load Macro data routine
     Dim CC As cCommonDialog
-    Dim sFile As String
     Set CC = New cCommonDialog
     
+    Dim sFile As String
+        
     Dim cdFilter As String
     cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
