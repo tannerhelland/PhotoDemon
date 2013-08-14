@@ -233,7 +233,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
                 iMetadata(maxMetadataCount).isValueBinary = False
                 iMetadata(maxMetadataCount).isValueList = False
             Else
-                'The current value is eithr binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
+                'The current value is either binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
                 If (InStr(1, xmlLines(curLine + 1), "<rdf:Bag>") > 0) Then
                     iMetadata(maxMetadataCount).isValueBinary = False
                     iMetadata(maxMetadataCount).isValueList = True
