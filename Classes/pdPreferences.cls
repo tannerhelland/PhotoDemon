@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 08/August/13
-'Last update: rewrote the entire Preferences class against XML files instead of INI.
+'Last updated: 14/August/13
+'Last update: removed the last bit of INI code from the project.  PhotoDemon is now 100% XML instead of INI.
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
 ' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
@@ -43,17 +43,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-
-'API calls for interfacing with an INI file
-Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
-Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any, ByVal lpString As Any, ByVal lpFileName As String) As Long
-
-'API call for determining certain system folders
+'API for determining certain system folders
 Private Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
 Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
 
-'***
-'API call for determining specific system-related folders
+'API for determining specific system-related folders
 Private Declare Function SHGetFolderPath Lib "shfolder.dll" Alias "SHGetFolderPathA" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As String) As Long
 
 'Windows Folder Constants
@@ -264,7 +258,7 @@ Public Sub loadUserSettings()
             Print #fileNum, vbCrLf
             Print #fileNum, "**********************************************"
             Print #fileNum, "Date: " & Date
-            Print #fileNum, "Time: " & time
+            Print #fileNum, "Time: " & Time
         Close #fileNum
         
     End If
@@ -688,19 +682,3 @@ Private Function GetWindowsFolder(eFolder As CSIDLs) As String
     End If
     
 End Function
-
-'The next two functions are used as part of the update process.  Thus they require specifying an arbitrary INI path as well.
-
-'Read values from an arbitrary INI file (e.g. NOT the core PhotoDemon one)
-Public Function GetFromArbitraryIni(strINIFile As String, strSectionHeader As String, strVariableName As String) As String
-    Dim strReturn As String
-    'Blank out the string (required by the API call)
-    strReturn = String(255, Chr(0))
-    GetFromArbitraryIni = Left$(strReturn, GetPrivateProfileString(strSectionHeader, ByVal strVariableName, "", strReturn, Len(strReturn), strINIFile))
-End Function
-
-'Set values into an arbitrary INI file (e.g. NOT the core PhotoDemon one)
-Public Function WriteToArbitraryIni(strINIFile As String, strSectionHeader As String, strVariableName As String, strValue As String) As Long
-    WriteToArbitraryIni = WritePrivateProfileString(strSectionHeader, strVariableName, strValue, strINIFile)
-End Function
-
