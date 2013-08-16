@@ -159,14 +159,43 @@ Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, O
 
 End Function
 
+'Simple - does a given tag exist?  Both simple and complex tags will be checked.
+Public Function doesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = "", Optional ByVal attributeValue As String = "") As Boolean
+
+    'If an attribute is provided, finding the tag is a bit messier
+    If Len(attributeName) > 0 Then
+    
+        If InStr(1, xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", vbTextCompare) Then
+            doesTagExist = True
+        Else
+            doesTagExist = False
+        End If
+    
+    'If no attribute is provided, finding the tag is simple
+    Else
+    
+        If InStr(1, xmlContents, "<" & tagName & ">", vbTextCompare) Then
+            doesTagExist = True
+        Else
+            doesTagExist = False
+        End If
+        
+    End If
+
+End Function
+
 'Update an already existant tag located within a specific subsection of the XML file.  If the tag is not found, it will be added
 ' at the end of the section.
-Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
+Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
 
     'Create a start and end tag to search for, which will vary contingent on the presence of a section request
     Dim startTag As String, closeTag As String
     If Len(sectionName) > 0 Then
-        startTag = "<" & sectionName & ">"
+        If Len(sectionAttribute) > 0 Then
+            startTag = "<" & sectionName & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
+        Else
+            startTag = "<" & sectionName & ">"
+        End If
         closeTag = "</" & sectionName & ">"
     Else
         startTag = ROOT_TAG
@@ -477,10 +506,17 @@ End Function
 
 'The next block of functions returns a unique tag value in the specified format.  "Unique" tags are those that only exist once in
 ' a file, so their location does not matter, as they can only appear once.
-Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "") As String
+Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "", Optional ByVal xmlSectionAttribute As String = "", Optional ByVal xmlSectionAttributeValue As String = "") As String
     
+    'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
+    ' that section, but only because we know it will never happen!
     If Len(xmlSection) > 0 Then
-        searchLocation = InStr(1, xmlContents, "<" & xmlSection & ">", vbTextCompare)
+    
+        If Len(xmlSectionAttribute) > 0 Then
+            searchLocation = InStr(1, xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", vbTextCompare)
+        Else
+            searchLocation = InStr(1, xmlContents, "<" & xmlSection & ">", vbTextCompare)
+        End If
         If searchLocation = 0 Then
             getUniqueTag_String = defaultReturn
             Exit Function
@@ -601,5 +637,37 @@ Private Function getTextBetweenTags(ByRef tagName As String, Optional ByVal sear
     Else
         getTextBetweenTags = ""
     End If
+
+End Function
+
+'Given a string, replace any characters that are not allowed with underscores; this is used to generate dynamic tag names
+Public Function getXMLSafeTagName(ByVal srcText As String) As String
+
+    Dim goodString As String
+    
+    'Remove any incidental white space before processing
+    goodString = Trim(srcText)
+    
+    'Create a string of valid numerical characters, based on the XML spec at http://www.w3.org/TR/1998/REC-xml-19980210.html#sec-common-syn
+    Dim validChars As String
+    validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    validChars = validChars & "0123456789"
+    validChars = validChars & ".-_:"
+    
+    'Loop through the text box contents and remove any invalid characters
+    Dim i As Long
+    Dim invLoc As Long
+    
+    For i = 1 To Len(goodString)
+        
+        'Compare a single character from the text against our list of valid characters. If a character is NOT found
+        ' in the list of valid characters, replace it with an underscore.
+        If InStr(validChars, Mid$(goodString, i, 1)) = 0 Then
+            goodString = Left$(goodString, i - 1) & "_" & Right$(goodString, Len(goodString) - i)
+        End If
+            
+    Next i
+    
+    getXMLSafeTagName = goodString
 
 End Function
