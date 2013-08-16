@@ -81,18 +81,24 @@ Private TempPath As String
 Private IconPath As String
 Private LanguagePath As String
 Private UserLanguagePath As String
-Private selectionPath As String
+Private SelectionPath As String
+Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
+
+'Get the current Preset path
+Public Function getPresetPath() As String
+    getPresetPath = PresetPath
+End Function
 
 'Get/set the current Selection directory
 Public Function getSelectionPath() As String
-    getSelectionPath = selectionPath
+    getSelectionPath = SelectionPath
 End Function
 
 Public Sub setSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
     newSelectionPath = FixPath(newSelectionPath)
-    selectionPath = newSelectionPath
-    SetPref_String "Program Paths", "Selections", selectionPath
+    SelectionPath = newSelectionPath
+    SetPref_String "Program Paths", "Selections", SelectionPath
 End Sub
 
 'Return the current Language directory
@@ -200,13 +206,15 @@ Public Sub initializePaths()
     FilterPath = DataPath & "Filters\"
     If Not DirectoryExist(FilterPath) Then MkDir FilterPath
         
-    selectionPath = DataPath & "Selections\"
-    If Not DirectoryExist(selectionPath) Then MkDir selectionPath
+    SelectionPath = DataPath & "Selections\"
+    If Not DirectoryExist(SelectionPath) Then MkDir SelectionPath
     
     UserLanguagePath = DataPath & "Languages\"
     If Not DirectoryExist(UserLanguagePath) Then MkDir UserLanguagePath
     
-    'Finally, if it does not exist, create a folder to hold all MRU icons
+    PresetPath = DataPath & "Presets\"
+    If Not DirectoryExist(PresetPath) Then MkDir PresetPath
+    
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
     
@@ -274,7 +282,7 @@ Public Sub loadUserSettings()
     'Pull all other stored paths
     MacroPath = GetPref_String("Program Paths", "Macro", MacroPath)
     FilterPath = GetPref_String("Program Paths", "CustomFilter", FilterPath)
-    selectionPath = GetPref_String("Program Paths", "Selections", selectionPath)
+    SelectionPath = GetPref_String("Program Paths", "Selections", SelectionPath)
     
     'Get the canvas background color
     g_CanvasBackground = GetPref_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
@@ -381,7 +389,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
         xmlEngine.writeTag "CustomFilter", FilterPath
         xmlEngine.writeTag "Macro", MacroPath
-        xmlEngine.writeTag "Selections", selectionPath
+        xmlEngine.writeTag "Selections", SelectionPath
     xmlEngine.closeTag "ProgramPaths"
     xmlEngine.writeBlankLine
 
