@@ -108,19 +108,18 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 16/August/13
-'Last update: wrapped up initial build
+'Last update: completed initial build
 '
-'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool
-' dialog.  These two buttons were dutifully copy+pasted every time a new tool was built, and beyond that they
-' received little thought.
+'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
+' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
 '
-'As the program has grown more complex, I have wanted to add a variety of new features to each tool - things like
-' dedicated "Help" and "Reset" buttons.  Tool presets.  Maybe even a Randomize button.  Adding all these features
-' to each tool individually would be a RIDICULOUSLY time-consuming task, so rather than do that, I have wrapped
-' all universal tool features into a single command bar, which can be dropped onto any new tool form at will.
+'As the program has grown more complex, I have wanted to add a variety of new features to each tool - things like dedicated
+' "Help" and "Reset" buttons.  Tool presets.  Maybe even a Randomize button.  Adding each of these features to each tool
+' individually would be a RIDICULOUSLY time-consuming task, so rather than do that, I have wrapped all universal tool
+' features into a single command bar, which can be dropped onto any new tool form at will.
 '
-'The command bar encapsulates a huge variety of functionality, some obvious, some not.  Things this control will
-' handle for a tool dialog includes:
+'This command bar control encapsulates a huge variety of functionality: some obvious, some not.  Things this control handles
+' for a tool dialog includes:
 ' - Unloading the parent when Cancel is pressed
 ' - Validating the contents of all numeric controls when OK is pressed
 ' - Hiding and unloading the parent form when OK is pressed and all controls succesfully validate
@@ -143,9 +142,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'For some reason, the preset combo box cannot detect Enter keypresses, so we use getAsyncKeyState to check.
-Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-
 'Clicking the OK and CANCEL buttons raise their respective events
 Public Event OKClick()
 Public Event CancelClick()
@@ -167,6 +163,12 @@ Public Event ExtraValidations()
 'After this control has modified other controls on the page, it may need to request a preview.  When that
 ' occurs, this event will be raised; the parent form simply needs to add an "updatePreview" call inside.
 Public Event RequestPreviewUpdate()
+
+'Certain dialogs (like Curves) use custom user controls whose information cannot automatically be read/written as
+' part of preset data.  For that reason, two events exist that allow the user to add their own information to a
+' given preset.
+Public Event AddCustomPresetData()
+Public Event ReadCustomPresetData()
 
 'Used to render images onto the command buttons
 Private cImgCtl As clsControlImage
@@ -197,22 +199,32 @@ Private controlFullyLoaded As Boolean
 'When the user control is in the midst of setting control values, this will be set to FALSE.
 Private allowPreviews As Boolean
 
+'If the user wants to enable/disable previews, this value will be set.  We will check this in addition to our own
+' internal preview checks when requesting previews.
+Private userAllowsPreviews As Boolean
+
+'When the user is writing reading/custom preview data to file, we need a way for them to transfer their custom
+' data to this control.
+Private numUserPresetEntries As Long
+Private userPresetNames() As String
+Private userPresetData() As String
+Private curPresetEntry As String
 
 'Because this user control will change the values of dialog controls at run-time, it is necessary to suspend previewing
 ' while changing values (so that each value change doesn't prompt a preview redraw, and thus slow down the process.)
 ' This property will be automatically set by this control as necessary, and the parent form can also set it - BUT IF IT
 ' DOES, IT NEEDS TO RESET IT WHEN DONE, as obviously this control won't know when the parent is finished with its work.
 Public Function previewsAllowed() As Boolean
-    previewsAllowed = allowPreviews
+    previewsAllowed = (allowPreviews And controlFullyLoaded And userAllowsPreviews)
 End Function
 
 Public Sub markPreviewStatus(ByVal newPreviewSetting As Boolean)
     
-    allowPreviews = newPreviewSetting
+    userAllowsPreviews = newPreviewSetting
     
     'If the client is setting this value to true, it means their work is done - which in turn means we should
     ' request a new preview.
-    If allowPreviews Then RaiseEvent RequestPreviewUpdate
+    If userAllowsPreviews Then RaiseEvent RequestPreviewUpdate
     
 End Sub
 
@@ -332,6 +344,9 @@ Private Sub cmdRandomize_Click()
     'Finally, raise the RandomizeClick event in case the user needs to do their own randomizing of custom controls
     RaiseEvent RandomizeClick
     
+    'For good measure, erase any preset name in the combo box
+    cmbPreset.Text = ""
+    
     'Enable preview
     allowPreviews = True
     
@@ -401,8 +416,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -563,6 +578,9 @@ Private Sub cmdReset_Click()
     
     RaiseEvent ResetClick
     
+    'For good measure, erase any preset name in the combo box
+    cmbPreset.Text = ""
+    
     'Enable previews
     allowPreviews = True
     
@@ -576,10 +594,11 @@ Private Sub UserControl_Initialize()
     'Disable certain actions until the control is fully prepped and ready
     controlFullyLoaded = False
     allowPreviews = False
+    userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -655,8 +674,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
-    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
+    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
+    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
 
 End Sub
 
@@ -673,12 +692,12 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply the selected action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
-            .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This can demonstrate how different settings affect the image.")
+            .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
-            .AddTool cmbPreset, g_Language.TranslateMessage("Any saved presets will appear here.  You can add a new one by typing a name and clicking the Save button on the left.")
+            .AddTool cmbPreset, g_Language.TranslateMessage("Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save button on the left.")
             
         End With
     
@@ -804,11 +823,47 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "Last used set
         
     Next eControl
     
-    'TODO: add any user-requested attributes here
+    'We assume the user does not have any additional entries
+    numUserPresetEntries = 0
+    
+    'Allow the user to add any custom attributes here
+    RaiseEvent AddCustomPresetData
+    
+    'If the user added any custom preset data, the numUserPresetEntries value will have incremented
+    If numUserPresetEntries > 0 Then
+    
+        'Loop through the user data, and add each entry to the XML file
+        Dim i As Long
+        For i = 0 To numUserPresetEntries - 1
+            xmlEngine.updateTag "custom:" & userPresetNames(i), userPresetData(i), "presetEntry", "id", xmlSafePresetName
+        Next i
+    
+    End If
     
     'We have now added all relevant values to the XML file.
     
 End Sub
+
+'This function is called when the user wants to add new preset data to the current preset
+Public Function addPresetData(ByVal presetName As String, ByVal presetData As String)
+    
+    'Increase the array size
+    ReDim Preserve userPresetNames(0 To numUserPresetEntries) As String
+    ReDim Preserve userPresetData(0 To numUserPresetEntries) As String
+
+    'Add the entries
+    userPresetNames(numUserPresetEntries) = presetName
+    userPresetData(numUserPresetEntries) = presetData
+
+    'Increment the custom data count
+    numUserPresetEntries = numUserPresetEntries + 1
+    
+End Function
+
+'This function is called when the user wants to read custom preset data from file
+Public Function retrievePresetData(ByVal presetName As String) As String
+    retrievePresetData = xmlEngine.getUniqueTag_String("custom:" & presetName, "", , "presetEntry", "id", curPresetEntry)
+End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
 ' "presetName" section.  By default, it will look for the last-used settings, as this is its most common request.
@@ -841,7 +896,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "Last use
         controlType = TypeName(eControl)
         
         'See if an entry exists for this control
-        controlValue = xmlEngine.getUniqueTag_String(controlName, "", 1, "presetEntry", "id", xmlSafePresetName)
+        controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
         If Len(controlValue) > 0 Then
         
             'An entry exists!  Assign out its value according to the type of control this is.
@@ -870,7 +925,9 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "Last use
         
     Next eControl
     
-    'TODO: add any user-requested attributes here
+    'Allow the user to retrieve any of their custom preset data from the file
+    curPresetEntry = xmlSafePresetName
+    RaiseEvent ReadCustomPresetData
     
     'We have now filled all controls with their relevant values from the XML file.
     readXMLSettings = True
