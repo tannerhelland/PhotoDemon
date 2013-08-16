@@ -202,10 +202,28 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
         closeTag = ROOT_TAG_CLOSE
     End If
     
-    'If a section is specified, add the tag at the end of that section.  Otherwise, add it at the end of the XML file.
-    Dim sectionLocation As Long
-    sectionLocation = InStrRev(xmlContents, closeTag, , vbTextCompare)
+    Dim sectionLocation As Long, sectionStartLocation As Long
+    sectionStartLocation = 0
     
+    'If a section is specified, add the tag at the end of that section.  Otherwise, add it at the end of the XML file.
+    If Len(sectionAttribute) > 0 Then
+    
+        'Finding the proper section close tag for sections with attributes is a bit trickier.  Start by finding the
+        ' start location of the requested section+attribute, then find the close tag that follows that.
+        sectionStartLocation = InStr(1, xmlContents, startTag, vbTextCompare)
+        
+        If sectionStartLocation > 0 Then
+            sectionLocation = InStr(sectionStartLocation, xmlContents, closeTag, vbTextCompare)
+        Else
+            updateTag = False
+            Exit Function
+        End If
+    
+    Else
+        sectionLocation = InStrRev(xmlContents, closeTag, , vbTextCompare)
+    End If
+    
+    'We can only update the tag if its section was found.
     If sectionLocation > 0 Then
     
         'See if the tag already exists
@@ -215,7 +233,7 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
         Dim topHalf As String, bottomHalf As String
         
         'If the tag already exists, just update its value.  Otherwise, write out the tag as new at the end of the requested section.
-        If tagLocation > 0 Then
+        If (tagLocation > 0) And (tagLocation > sectionStartLocation) Then
         
             'Split the XML file into two halves: the half before the relevant tag, and the half after
             Dim tagCloseLocation As Long
@@ -669,5 +687,50 @@ Public Function getXMLSafeTagName(ByVal srcText As String) As String
     Next i
     
     getXMLSafeTagName = goodString
+
+End Function
+
+'Given a tag name and attribute type, find all the matching attribute values in the file.  The calling function can then use
+' these to pull specific tags from a given tag/attribute section.
+Public Function findAllAttributeValues(ByRef sArray() As String, ByVal tagName As String, ByVal attributeName As String) As Boolean
+
+    ReDim sArray(0) As String
+    Dim tmpString As String, tmpStringArray() As String
+    
+    Dim tagsFound As Long
+    tagsFound = 0
+    
+    'Find the first occurrence of the string in the file (if any)
+    Dim searchLocation As Long, endLocation As Long
+    searchLocation = 1
+    searchLocation = InStr(searchLocation, xmlContents, "<" & tagName & " " & attributeName & "=""", vbTextCompare)
+    
+    Do While searchLocation > 0
+    
+        'Make room in the target array for the new string
+        tagsFound = tagsFound + 1
+        ReDim Preserve sArray(0 To tagsFound - 1) As String
+        
+        'This is a somewhat sloppy way to extract the attribute, but oh well - find the end of this tag line.
+        endLocation = InStr(searchLocation, xmlContents, ">", vbBinaryCompare)
+        
+        'Strip out just this tag, using the start and end locations we've found
+        tmpString = Mid$(xmlContents, searchLocation, endLocation - searchLocation)
+        
+        'Now, parse the string by quotation mark (").  The middle entry contains the attribute ID we want.
+        tmpStringArray = Split(tmpString, """")
+        sArray(tagsFound - 1) = tmpStringArray(1)
+        
+        'Find the next occurrence of the requested string
+        searchLocation = InStr(searchLocation + 2, xmlContents, "<" & tagName & " " & attributeName & "=""", vbTextCompare)
+    
+    Loop
+    
+    'If at least one matching tag was found, return true
+    If tagsFound > 0 Then
+        findAllAttributeValues = True
+    Else
+        findAllAttributeValues = False
+    End If
 
 End Function
