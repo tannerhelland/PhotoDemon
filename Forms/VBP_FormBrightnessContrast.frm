@@ -163,7 +163,7 @@ Attribute VB_Exposed = False
 'Brightness and Contrast Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/6/01
-'Last updated: 15/August/13
+'Last updated: 16/August/13
 'Last update: this dialog is my testbed for the new command bar user control, so it received a number of changes
 '              relating to proper command bar implementation.
 '
@@ -185,9 +185,6 @@ Dim previewSampledContrast As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'Previews are not allowed until the form has been fully loaded
-Dim allowPreview As Boolean
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
@@ -376,11 +373,17 @@ Private Sub cmdBar_OKClick()
     Process "Brightness and contrast", , buildParams(sltBright, sltContrast, CBool(chkSample.Value))
 End Sub
 
-'RESET button.  All control default values must be applied here.  The values visible in the IDE designer do not matter.
+'Sometimes the command bar will perform actions (like loading a preset) that require an updated preview.  This function
+' is fired by the control when it's ready for such an update.
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+'RESET button.  All control default values will be reset according to the rules specified in the commandBar user control
+' source.  If we want a different default value applied, we can specify that here.  The important thing to note is
+' that THE VALUES VISIBLE IN THE IDE DESIGNER DO NOT MATTER.
 Private Sub cmdBar_ResetClick()
-    sltBright = 0
-    sltContrast = 0
-    chkSample.Value = vbChecked
+    
 End Sub
 
 Private Sub Form_Activate()
@@ -391,9 +394,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    allowPreview = True
-    updatePreview
     
 End Sub
 
@@ -410,5 +410,5 @@ Private Sub sltContrast_Change()
 End Sub
 
 Private Sub updatePreview()
-    If allowPreview Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, fxPreview
 End Sub
