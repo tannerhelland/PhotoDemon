@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1252"?>
+	
+	<pdData>
+		
+		<pdDataType>Tool preset</pdDataType>
+		
+		<toolName>BrightnessContrast</toolName>
+		<toolDescription>Brightness/Contrast</toolDescription>
+		<presetCount>0</presetCount>
+		
+		<!-- Everything past this point is tool preset data.  Presets are grouped by name. -->
+		
+		<presetEntry id="Last_used_settings">
+			<fullPresetName>Last used settings</fullPresetName>
+			<chkSample>1</chkSample>
+			<sltBright>-20</sltBright>
+			<sltContrast>20</sltContrast>
+		</presetEntry>
+		
+	</pdData>
+	
