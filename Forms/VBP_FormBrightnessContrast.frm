@@ -28,7 +28,7 @@ Begin VB.Form FormBrightnessContrast
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5790
       Width           =   12075
       _ExtentX        =   21299
@@ -52,7 +52,6 @@ Begin VB.Form FormBrightnessContrast
       _ExtentX        =   9604
       _ExtentY        =   847
       Caption         =   "sample image for true contrast (slower but more accurate)"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -66,7 +65,7 @@ Begin VB.Form FormBrightnessContrast
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,13 +74,14 @@ Begin VB.Form FormBrightnessContrast
    Begin PhotoDemon.sliderTextCombo sltBright 
       Height          =   495
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   -255
       Max             =   255
+      Value           =   -10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -95,13 +95,14 @@ Begin VB.Form FormBrightnessContrast
    Begin PhotoDemon.sliderTextCombo sltContrast 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   -100
       Max             =   100
+      Value           =   10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -128,7 +129,7 @@ Begin VB.Form FormBrightnessContrast
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   5
       Top             =   2655
       Width           =   930
    End
@@ -148,7 +149,7 @@ Begin VB.Form FormBrightnessContrast
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   4
       Top             =   1800
       Width           =   1185
    End
@@ -162,8 +163,9 @@ Attribute VB_Exposed = False
 'Brightness and Contrast Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/6/01
-'Last updated: 25/April/13
-'Last update: greatly simplified code by using new slider/text custom control
+'Last updated: 15/August/13
+'Last update: this dialog is my testbed for the new command bar user control, so it received a number of changes
+'              relating to proper command bar implementation.
 '
 'The central brightness/contrast handler.  Everything is done via look-up tables, so it's extremely fast.
 ' It's all linear (not logarithmic; sorry). Maybe someday I'll change that, maybe not... honestly, I probably
@@ -184,6 +186,9 @@ Dim previewSampledContrast As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'Previews are not allowed until the form has been fully loaded
+Dim allowPreview As Boolean
+
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
     updatePreview
@@ -193,7 +198,7 @@ End Sub
 ' contrast is (-100,100).  Optionally, the image can be sampled to obtain a true midpoint for the contrast function.
 Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Adjusting image brightness..."
+    If Not toPreview Then Message "Adjusting image brightness..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -203,7 +208,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -239,31 +244,31 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         Dim BrightTable(0 To 255) As Byte
         Dim BTCalc As Long
         
-        For X = 0 To 255
-            BTCalc = X + Bright
+        For x = 0 To 255
+            BTCalc = x + Bright
             If BTCalc > 255 Then BTCalc = 255
             If BTCalc < 0 Then BTCalc = 0
-            BrightTable(X) = CByte(BTCalc)
-        Next X
+            BrightTable(x) = CByte(BTCalc)
+        Next x
         
         'Loop through each pixel in the image, converting values as we go
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, Y) = BrightTable(ImageData(QuickVal, Y))
-            ImageData(QuickVal + 1, Y) = BrightTable(ImageData(QuickVal + 1, Y))
-            ImageData(QuickVal + 2, Y) = BrightTable(ImageData(QuickVal + 2, Y))
+            ImageData(QuickVal, y) = BrightTable(ImageData(QuickVal, y))
+            ImageData(QuickVal + 1, y) = BrightTable(ImageData(QuickVal + 1, y))
+            ImageData(QuickVal + 2, y) = BrightTable(ImageData(QuickVal + 2, y))
             
-        Next Y
+        Next y
             If toPreview = False Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal X
+                    SetProgBarVal x
                 End If
             End If
-        Next X
+        Next x
         
     End If
     
@@ -295,15 +300,15 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
                 Dim NumOfPixels As Long
                 NumOfPixels = 0
                 
-                For X = initX To finalX
-                    QuickVal = X * qvDepth
-                For Y = initY To finalY
-                    rTotal = rTotal + ImageData(QuickVal + 2, Y)
-                    gTotal = gTotal + ImageData(QuickVal + 1, Y)
-                    bTotal = bTotal + ImageData(QuickVal, Y)
+                For x = initX To finalX
+                    QuickVal = x * qvDepth
+                For y = initY To finalY
+                    rTotal = rTotal + ImageData(QuickVal + 2, y)
+                    gTotal = gTotal + ImageData(QuickVal + 1, y)
+                    bTotal = bTotal + ImageData(QuickVal, y)
                     NumOfPixels = NumOfPixels + 1
-                Next Y
-                Next X
+                Next y
+                Next x
                 
                 rTotal = rTotal \ NumOfPixels
                 gTotal = gTotal \ NumOfPixels
@@ -329,31 +334,31 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         'Like brightness, contrast works beautifully with look-up tables
         Dim ContrastTable(0 To 255) As Byte, CTCalc As Long
                 
-        For X = 0 To 255
-            CTCalc = X + (((X - Mean) * Contrast) \ 100)
+        For x = 0 To 255
+            CTCalc = x + (((x - Mean) * Contrast) \ 100)
             If CTCalc > 255 Then CTCalc = 255
             If CTCalc < 0 Then CTCalc = 0
-            ContrastTable(X) = CByte(CTCalc)
-        Next X
+            ContrastTable(x) = CByte(CTCalc)
+        Next x
         
         'Loop through each pixel in the image, converting values as we go
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, Y) = ContrastTable(ImageData(QuickVal, Y))
-            ImageData(QuickVal + 1, Y) = ContrastTable(ImageData(QuickVal + 1, Y))
-            ImageData(QuickVal + 2, Y) = ContrastTable(ImageData(QuickVal + 2, Y))
+            ImageData(QuickVal, y) = ContrastTable(ImageData(QuickVal, y))
+            ImageData(QuickVal + 1, y) = ContrastTable(ImageData(QuickVal + 1, y))
+            ImageData(QuickVal + 2, y) = ContrastTable(ImageData(QuickVal + 2, y))
             
-        Next Y
+        Next y
             If toPreview = False Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    If Bright <> 0 Then SetProgBarVal X + finalX Else SetProgBarVal X
+                    If Bright <> 0 Then SetProgBarVal x + finalX Else SetProgBarVal x
                 End If
             End If
-        Next X
+        Next x
         
     End If
     
@@ -383,12 +388,12 @@ Private Sub Form_Activate()
     previewHasSampled = 0
     previewSampledContrast = 0
     
-    'Create the preview
-    updatePreview
-    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    allowPreview = True
+    updatePreview
     
 End Sub
 
@@ -405,5 +410,5 @@ Private Sub sltContrast_Change()
 End Sub
 
 Private Sub updatePreview()
-    BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, fxPreview
+    If allowPreview Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, fxPreview
 End Sub
