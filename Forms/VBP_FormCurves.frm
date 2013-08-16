@@ -25,6 +25,25 @@ Begin VB.Form FormCurves
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   8
+      Top             =   7455
+      Width           =   13095
+      _ExtentX        =   23098
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cboHistogram 
       Appearance      =   0  'Flat
       BeginProperty Font 
@@ -40,17 +59,9 @@ Begin VB.Form FormCurves
       Height          =   360
       Left            =   8040
       Style           =   2  'Dropdown List
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   5850
       Width           =   4815
-   End
-   Begin VB.CommandButton cmdReset 
-      Caption         =   "Reset curve"
-      Height          =   615
-      Left            =   240
-      TabIndex        =   5
-      Top             =   6720
-      Width           =   5400
    End
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
@@ -63,32 +74,14 @@ Begin VB.Form FormCurves
       ScaleHeight     =   344
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   464
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   6960
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   10140
-      TabIndex        =   0
-      Top             =   7590
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   11610
-      TabIndex        =   1
-      Top             =   7590
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -97,7 +90,7 @@ Begin VB.Form FormCurves
    Begin PhotoDemon.smartCheckBox chkGrid 
       Height          =   480
       Left            =   6240
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   6360
       Width           =   1350
       _ExtentX        =   2381
@@ -117,7 +110,7 @@ Begin VB.Form FormCurves
    Begin PhotoDemon.smartCheckBox chkDiagonal 
       Height          =   480
       Left            =   6240
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   6840
       Width           =   3465
       _ExtentX        =   6112
@@ -152,7 +145,7 @@ Begin VB.Form FormCurves
       Height          =   240
       Index           =   1
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   5910
       Width           =   1605
    End
@@ -173,7 +166,7 @@ Begin VB.Form FormCurves
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   5400
       Width           =   1980
    End
@@ -189,19 +182,12 @@ Begin VB.Form FormCurves
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   960
+      Height          =   1440
       Left            =   240
-      TabIndex        =   6
-      Top             =   5760
+      TabIndex        =   2
+      Top             =   5910
       Width           =   5535
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -2400
-      TabIndex        =   2
-      Top             =   7440
-      Width           =   16095
    End
 End
 Attribute VB_Name = "FormCurves"
@@ -213,8 +199,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright ©2008-2013 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 11/July/13
-'Last update: merge the code from a standalone project into PhotoDemon
+'Last updated: 16/August/13
+'Last update: rewrote the dialog against the new Command Bar user control
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -287,14 +273,11 @@ Private hMaxPosition() As Byte
 'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these layers.
 Private hLayer As pdLayer, hLogLayer As pdLayer
 
-'While the form is loading, we want to disable preview updating
-Private isFormLoading As Boolean
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
 Private Sub cboHistogram_Click()
-    If Not isFormLoading Then updatePreview
+    updatePreview
 End Sub
 
 Private Sub chkDiagonal_Click()
@@ -303,18 +286,6 @@ End Sub
 
 Private Sub chkGrid_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    Me.Visible = False
-    Process "Curves", , getCurvesParamString()
-    Unload Me
 End Sub
 
 'Apply a curve to an image's luminance values
@@ -421,15 +392,103 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
         
 End Sub
 
-'Reset the curve to its default state
-Private Sub cmdReset_Click()
-    resetCurvePoints
+'Nodes from the Curves dialog must be manually added to the preset file when requested.  This event will be raised
+' whenever the command bar needs custom data from us.
+Private Sub cmdBar_AddCustomPresetData()
+    
+    'Write the number of nodes to file
+    cmdBar.addPresetData "NodeCount", CStr(numOfNodes)
+    
+    'Next, place all node data in one giant string
+    Dim nodeString As String
+    nodeString = ""
+    
+    Dim i As Long
+    For i = 0 To numOfNodes
+        nodeString = nodeString & CStr(cNodes(i).pX) & "," & CStr(cNodes(i).pY)
+        If i < numOfNodes Then nodeString = nodeString & ","
+    Next i
+    
+    cmdBar.addPresetData "NodeData", nodeString
+    
+End Sub
+
+'Randomizing the curves array is a bit more complicated than normal tools, because we have to randomize it ourselves.
+Private Sub cmdBar_RandomizeClick()
+
+    Randomize Timer
+
+    'Initialize the control to somewhere between 3 and 6 points
+    numOfNodes = Int(Rnd * 4) + 3
+    ReDim cNodes(0 To numOfNodes) As fPoint
+    
+    'Start by equally spacing the nodes
+    Dim i As Long
+    For i = 0 To numOfNodes
+        cNodes(i).pX = (i - 1) * ((picDraw.ScaleWidth - previewBorder * 2) / (numOfNodes - 1))
+        cNodes(i).pY = (picDraw.ScaleHeight - previewBorder * 2) - (cNodes(i).pX / (picDraw.ScaleWidth - previewBorder * 2)) * (picDraw.ScaleHeight - previewBorder * 2)
+        cNodes(i).pX = cNodes(i).pX + previewBorder
+        cNodes(i).pY = cNodes(i).pY + previewBorder
+    Next i
+    
+    'Finally, move all nodes a random amount up or down, left or right
+    For i = 0 To numOfNodes
+        
+        cNodes(i).pX = cNodes(i).pX + Int(-20 + Rnd * 41)
+        If cNodes(i).pX < previewBorder Then cNodes(i).pX = previewBorder
+        If cNodes(i).pX > (picDraw.ScaleWidth - previewBorder) Then cNodes(i).pX = (picDraw.ScaleWidth - previewBorder)
+        
+        cNodes(i).pY = cNodes(i).pY + Int(-40 + Rnd * 81)
+        If cNodes(i).pY < previewBorder Then cNodes(i).pY = previewBorder
+        If cNodes(i).pY > (picDraw.ScaleHeight - previewBorder) Then cNodes(i).pY = (picDraw.ScaleHeight - previewBorder)
+        
+    Next i
+    
+End Sub
+
+'When a preset is loaded from file, we need to retrieve the custom curve information alongside it
+Private Sub cmdBar_ReadCustomPresetData()
+    
+    'Retrieve the number of nodes in this preset
+    Dim tmpString As String, tmpStringArray() As String
+    tmpString = cmdBar.retrievePresetData("NodeCount")
+    numOfNodes = CLng(tmpString)
+    
+    'Using that as our guide, repopulate the cNodes array
+    ReDim cNodes(0 To numOfNodes) As fPoint
+    
+    'Retrieve the string that contains the node coordinates
+    tmpString = cmdBar.retrievePresetData("NodeData")
+    
+    'With the help of a paramString class, parse out individual coordinates into the cNodes array
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString Replace(tmpString, ",", "|")
+    
+    Dim i As Long
+    For i = 0 To numOfNodes
+        
+        'Retrieve this node's x and y values
+        cNodes(i).pX = cParams.GetLong(i * 2 + 1)
+        cNodes(i).pY = cParams.GetLong(i * 2 + 2)
+        
+    Next i
+    
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Curves", , getCurvesParamString()
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    resetCurvePoints
+End Sub
+
 Private Sub Form_Activate()
-    
-    isFormLoading = True
     
     'Populate the explanation label
     Dim addInstructions As String
@@ -441,14 +500,7 @@ Private Sub Form_Activate()
     addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("right-click to remove nodes")
     
     lblExplanation.Caption = addInstructions
-    
-    'Populate the histogram display drop-down
-    cboHistogram.Clear
-    cboHistogram.AddItem " " & g_Language.TranslateMessage("none"), 0
-    cboHistogram.AddItem " " & g_Language.TranslateMessage("standard"), 1
-    cboHistogram.AddItem " " & g_Language.TranslateMessage("logarithmic"), 2
-    cboHistogram.ListIndex = 1
-    
+        
     'If translations are active, the translated text may not fit the explanation label.  Automatically adjust it to fit.
     fitWordwrapLabel lblExplanation, Me
     
@@ -486,19 +538,26 @@ Private Sub Form_Activate()
         GDIPlusDrawLineToDC hLayer.getLayerDC, hLookupX(i), hLayer.getLayerHeight - (hData(3, i) / hMax(3)) * yMax - 1, hLookupX(i), hLayer.getLayerHeight, RGB(192, 192, 192), 128
         GDIPlusDrawLineToDC hLogLayer.getLayerDC, hLookupX(i), hLayer.getLayerHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax - 1, hLookupX(i), hLayer.getLayerHeight, RGB(192, 192, 192), 128
     Next i
-    
-    'Now that everything has been initialized, allow preview updating
-    isFormLoading = False
-    
-    'Reset the curve data
-    resetCurvePoints
-    
-    'Redraw the curve box and image preview
-    updatePreview
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+
+    cmdBar.markPreviewStatus False
+    
+    'Populate the histogram display drop-down
+    cboHistogram.Clear
+    cboHistogram.AddItem " " & g_Language.TranslateMessage("none"), 0
+    cboHistogram.AddItem " " & g_Language.TranslateMessage("standard"), 1
+    cboHistogram.AddItem " " & g_Language.TranslateMessage("logarithmic"), 2
+    cboHistogram.ListIndex = 1
     
 End Sub
 
@@ -508,15 +567,19 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-
-    'Start by generating a list of points that correspond to the cubic spline used for the curve
-    fillResultsArray
     
-    'Redraw the preview box
-    redrawPreviewBox
+    If cmdBar.previewsAllowed Then
     
-    'Redraw the image effect preview
-    ApplyCurveToImage getCurvesParamString(), True, fxPreview
+        'Start by generating a list of points that correspond to the cubic spline used for the curve
+        fillResultsArray
+        
+        'Redraw the preview box
+        redrawPreviewBox
+        
+        'Redraw the image effect preview
+        ApplyCurveToImage getCurvesParamString(), True, fxPreview
+        
+    End If
     
 End Sub
 
@@ -549,6 +612,8 @@ Private Function getCurvesParamString() As String
 End Function
 
 Private Sub redrawPreviewBox()
+
+    If Not cmdBar.previewsAllowed Then Exit Sub
 
     picDraw.Picture = LoadPicture("")
     
