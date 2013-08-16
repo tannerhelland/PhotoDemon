@@ -44,13 +44,13 @@ End Sub
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
 ' returnValue variable.
-Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef returnValue As Double) As VbMsgBoxResult
+Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef ReturnValue As Double) As VbMsgBoxResult
 
     Load FormSelectionDialogs
     FormSelectionDialogs.showDialog typeOfDialog
     
     displaySelectionDialog = FormSelectionDialogs.DialogResult
-    returnValue = FormSelectionDialogs.ParamValue
+    ReturnValue = FormSelectionDialogs.ParamValue
     
     Unload FormSelectionDialogs
     Set FormSelectionDialogs = Nothing
@@ -120,7 +120,7 @@ Public Sub SelectWholeImage()
 End Sub
 
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.
-Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal selectionPath As String = "")
+Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal SelectionPath As String = "")
 
     If displayDialog Then
     
@@ -165,7 +165,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
     Else
     
         Message "Loading selection..."
-        pdImages(CurrentImage).mainSelection.readSelectionFromFile selectionPath
+        pdImages(CurrentImage).mainSelection.readSelectionFromFile SelectionPath
         pdImages(CurrentImage).selectionActive = True
         
         'Synchronize all user-facing controls to match

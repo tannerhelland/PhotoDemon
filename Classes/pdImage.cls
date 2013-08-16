@@ -87,7 +87,7 @@ Option Explicit
     
     'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new Undos are created
     Private Type undoEntry
-        ID As String
+        Id As String
         Type As Long
         relevantTool As Long
     End Type
@@ -252,7 +252,7 @@ Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long, ByVal
     'Remember this processID for future use
     ReDim Preserve Undos(0 To UndoNum) As undoEntry
     With Undos(UndoNum)
-        .ID = processID
+        .Id = processID
         .Type = processType
         .relevantTool = curTool
     End With
@@ -308,7 +308,7 @@ Public Sub Undo()
         'Move neighboring values into the current Undo location (this makes Redo work properly)
         ReDim Preserve Undos(0 To UndoNum) As undoEntry
         With Undos(UndoNum)
-            .ID = Undos(UndoNum - 1).ID
+            .Id = Undos(UndoNum - 1).Id
             .Type = Undos(UndoNum - 1).Type
             .relevantTool = Undos(UndoNum - 1).relevantTool
         End With
@@ -427,7 +427,7 @@ Public Function getUndoProcessID() As String
     If UndoState = False Then
         getUndoProcessID = ""
     Else
-        getUndoProcessID = g_Language.TranslateMessage(Undos(UndoNum - 1).ID)
+        getUndoProcessID = g_Language.TranslateMessage(Undos(UndoNum - 1).Id)
     End If
         
 End Function
@@ -439,7 +439,7 @@ Public Function getRedoProcessID() As String
     If RedoState = False Then
         getRedoProcessID = ""
     Else
-        getRedoProcessID = g_Language.TranslateMessage(Undos(UndoNum).ID)
+        getRedoProcessID = g_Language.TranslateMessage(Undos(UndoNum).Id)
     End If
 
 End Function
@@ -584,9 +584,9 @@ Public Sub debugUndo()
     Debug.Print "---"
     For i = 0 To UBound(Undos) '- 1
         If i = UndoNum Then
-            Debug.Print "* " & i & ": " & Undos(i).ID & "," & Undos(i).Type
+            Debug.Print "* " & i & ": " & Undos(i).Id & "," & Undos(i).Type
         Else
-            Debug.Print i & ": " & Undos(i).ID & "," & Undos(i).Type
+            Debug.Print i & ": " & Undos(i).Id & "," & Undos(i).Type
         End If
     Next i
 

@@ -202,8 +202,8 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
     qvDepth = curLayerValues.BytesPerPixel
     
     'Pre-calculate the largest possible processed x-value
-    Dim MaxX As Long
-    MaxX = finalX * qvDepth
+    Dim maxX As Long
+    maxX = finalX * qvDepth
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -233,9 +233,9 @@ Public Sub GenerateTwins(ByVal tType As Byte, Optional ByVal toPreview As Boolea
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If tType = 0 Then
-            r2 = srcImageData(MaxX - QuickVal + 2, y)
-            g2 = srcImageData(MaxX - QuickVal + 1, y)
-            b2 = srcImageData(MaxX - QuickVal, y)
+            r2 = srcImageData(maxX - QuickVal + 2, y)
+            g2 = srcImageData(maxX - QuickVal + 1, y)
+            b2 = srcImageData(maxX - QuickVal, y)
         Else
             r2 = srcImageData(QuickVal + 2, finalY - y)
             g2 = srcImageData(QuickVal + 1, finalY - y)
