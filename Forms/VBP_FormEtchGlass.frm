@@ -349,7 +349,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

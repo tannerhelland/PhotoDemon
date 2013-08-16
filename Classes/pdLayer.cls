@@ -75,8 +75,8 @@ Private Type BITMAPINFOHEADER
     BitCount As Integer
     Compression As Long
     ImageSize As Long
-    XPelsPerMeter As Long
-    YPelsPerMeter As Long
+    xPelsPerMeter As Long
+    yPelsPerMeter As Long
     Colorused As Long
     ColorImportant As Long
 End Type

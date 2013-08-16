@@ -128,8 +128,8 @@ Begin VB.Form FormTile
       TabIndex        =   14
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBackground 
       BeginProperty Font 

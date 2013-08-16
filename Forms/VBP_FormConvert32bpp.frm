@@ -464,7 +464,7 @@ Public Sub advancedConvert32bpp(ByVal convertType As Long, Optional ByVal conver
         CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
             
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-        Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = curLayerValues.Left
         initY = curLayerValues.Top
         finalX = curLayerValues.Right
@@ -506,14 +506,14 @@ Public Sub advancedConvert32bpp(ByVal convertType As Long, Optional ByVal conver
         Dim newAlpha As Long
             
         'Loop through each pixel in the image, converting values as we go
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
         
             'Get the source pixel color values
-            r = ImageData(QuickVal + 2, Y)
-            g = ImageData(QuickVal + 1, Y)
-            b = ImageData(QuickVal, Y)
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
             
             'Convert the color to the L*a*b* color space
             RGBtoLAB r, g, b, labL, labA, labB
@@ -525,7 +525,7 @@ Public Sub advancedConvert32bpp(ByVal convertType As Long, Optional ByVal conver
             'If the distance is below the erasure threshold, remove it completely
             If cDistance < eraseThreshold Then
             
-                ImageData(QuickVal + 3, Y) = 0
+                ImageData(QuickVal + 3, y) = 0
                 
             'If the color is between the erasure and blend threshold, feather it against a partial alpha and
             ' color-correct it to remove any "color fringing" from the removed color.
@@ -556,21 +556,21 @@ Public Sub advancedConvert32bpp(ByVal convertType As Long, Optional ByVal conver
                 If b < 0 Then b = 0
                 
                 'Assign the new color and alpha values
-                ImageData(QuickVal + 2, Y) = r
-                ImageData(QuickVal + 1, Y) = g
-                ImageData(QuickVal, Y) = b
-                ImageData(QuickVal + 3, Y) = newAlpha
+                ImageData(QuickVal + 2, y) = r
+                ImageData(QuickVal + 1, y) = g
+                ImageData(QuickVal, y) = b
+                ImageData(QuickVal + 3, y) = newAlpha
                     
             End If
             
-        Next Y
+        Next y
             If Not toPreview Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal X
+                    SetProgBarVal x
                 End If
             End If
-        Next X
+        Next x
         
         'With our work complete, point ImageData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

@@ -277,8 +277,8 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
     qvDepth = curLayerValues.BytesPerPixel
     
-    Dim MaxX As Long
-    MaxX = finalX * qvDepth
+    Dim maxX As Long
+    maxX = finalX * qvDepth
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -311,16 +311,16 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
         'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
         ' "wrapPixels" setting.
         If wrapPixels Then
-            If QuickValDiffuseX < 0 Then QuickValDiffuseX = QuickValDiffuseX + MaxX
+            If QuickValDiffuseX < 0 Then QuickValDiffuseX = QuickValDiffuseX + maxX
             If QuickValDiffuseY < 0 Then QuickValDiffuseY = QuickValDiffuseY + finalY
             
-            If QuickValDiffuseX > MaxX Then QuickValDiffuseX = QuickValDiffuseX - MaxX
+            If QuickValDiffuseX > maxX Then QuickValDiffuseX = QuickValDiffuseX - maxX
             If QuickValDiffuseY > finalY Then QuickValDiffuseY = QuickValDiffuseY - finalY
         Else
             If QuickValDiffuseX < 0 Then QuickValDiffuseX = 0
             If QuickValDiffuseY < 0 Then QuickValDiffuseY = 0
             
-            If QuickValDiffuseX > MaxX Then QuickValDiffuseX = MaxX
+            If QuickValDiffuseX > maxX Then QuickValDiffuseX = maxX
             If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
         End If
             

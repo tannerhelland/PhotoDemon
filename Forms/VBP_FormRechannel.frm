@@ -444,7 +444,7 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
     
-    Dim cK As Double, mK As Double, yK As Double, bK As Double, invBK As Double
+    Dim cK As Double, MK As Double, yK As Double, bK As Double, invBK As Double
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
     For x = initX To finalX
@@ -480,14 +480,14 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
             'Rechannel CMYK
             Case Else
                 cK = 255 - ImageData(QuickVal + 2, y)
-                mK = 255 - ImageData(QuickVal + 1, y)
+                MK = 255 - ImageData(QuickVal + 1, y)
                 yK = 255 - ImageData(QuickVal, y)
                 
                 cK = cK / 255
-                mK = mK / 255
+                MK = MK / 255
                 yK = yK / 255
                 
-                bK = Min3Float(cK, mK, yK)
+                bK = Min3Float(cK, MK, yK)
     
                 invBK = 1 - bK
                 If invBK = 0 Then invBK = 0.0001
@@ -500,9 +500,9 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
                 End If
                 
                 If rType = 7 Then
-                    mK = ((mK - bK) / invBK) * 255
+                    MK = ((MK - bK) / invBK) * 255
                     ImageData(QuickVal + 2, y) = 255
-                    ImageData(QuickVal + 1, y) = 255 - mK
+                    ImageData(QuickVal + 1, y) = 255 - MK
                     ImageData(QuickVal, y) = 255
                 End If
                 
