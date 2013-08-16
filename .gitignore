@@ -115,6 +115,7 @@ README_PSC-version.txt
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
 /Data/PhotoDemon_settings.xml
+/Data/Presets
 
 # I keep copies of rc.exe and rcdll.dll in this folder,
 # but to my knowledge these are not redistributable, so
