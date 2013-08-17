@@ -199,8 +199,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright ©2008-2013 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 16/August/13
-'Last update: rewrote the dialog against the new Command Bar user control
+'Last updated: 17/August/13
+'Last update: minor fixes to the command bar interface (don't write out the [0] curve point entry, as it's irrelevant)
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -404,7 +404,7 @@ Private Sub cmdBar_AddCustomPresetData()
     nodeString = ""
     
     Dim i As Long
-    For i = 0 To numOfNodes
+    For i = 1 To numOfNodes
         nodeString = nodeString & CStr(cNodes(i).pX) & "," & CStr(cNodes(i).pY)
         If i < numOfNodes Then nodeString = nodeString & ","
     Next i
@@ -466,11 +466,11 @@ Private Sub cmdBar_ReadCustomPresetData()
     cParams.setParamString Replace(tmpString, ",", "|")
     
     Dim i As Long
-    For i = 0 To numOfNodes
+    For i = 1 To numOfNodes
         
         'Retrieve this node's x and y values
-        cNodes(i).pX = cParams.GetLong(i * 2 + 1)
-        cNodes(i).pY = cParams.GetLong(i * 2 + 2)
+        cNodes(i).pX = cParams.GetLong((i - 1) * 2 + 1)
+        cNodes(i).pY = cParams.GetLong((i - 1) * 2 + 2)
         
     Next i
     
@@ -484,8 +484,14 @@ Private Sub cmdBar_OKClick()
     Process "Curves", , getCurvesParamString()
 End Sub
 
+'Reset the curve to three points in a straight line
 Private Sub cmdBar_ResetClick()
+
     resetCurvePoints
+    
+    'Also, reset will automatically select the first entry in a combo box.  In this case, we actually want the 1st one.
+    cboHistogram.ListIndex = 1
+    
 End Sub
 
 Private Sub Form_Activate()
