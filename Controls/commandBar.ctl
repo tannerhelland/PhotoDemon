@@ -108,7 +108,8 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 17/August/13
-'Last update: if a preset is merely being overwritten, do not add it to the preset box again
+'Last update: fixed preset saving/loading to properly detect controls that are part of a control array (and thus share the
+'             same name as other controls
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -426,8 +427,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -553,7 +554,7 @@ Private Sub cmdReset_Click()
                 If eControl.Min <= 0 Then
                     eControl.Value = 0
                 Else
-                    eControl.Value = eControl.minimum
+                    eControl.Value = eControl.Min
                 End If
             
             'Color pickers are turned white
@@ -612,8 +613,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -689,8 +690,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
-    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
+    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
+    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
 
 End Sub
 
@@ -707,8 +708,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -802,11 +803,13 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "Last used set
     
     'Iterate through each control on the form.  Check its type, then write out its relevant "value" property.
     Dim controlName As String, controlType As String, controlValue As String
+    Dim controlIndex As Long
     
     Dim eControl As Object
     For Each eControl In Parent.Controls
         
         controlName = eControl.Name
+        If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
         controlType = TypeName(eControl)
         controlValue = ""
             
@@ -837,7 +840,13 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "Last used set
         
         'If this control has a valid value property, add it to the XML file
         If Len(controlValue) > 0 Then
-            xmlEngine.updateTag controlName, controlValue, "presetEntry", "id", xmlSafePresetName
+        
+            'If this control is part of a control array, we need to remember its index as well
+            If controlIndex >= 0 Then
+                xmlEngine.updateTag controlName & ":" & controlIndex, controlValue, "presetEntry", "id", xmlSafePresetName
+            Else
+                xmlEngine.updateTag controlName, controlValue, "presetEntry", "id", xmlSafePresetName
+            End If
         End If
         
     Next eControl
@@ -907,15 +916,22 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "Last use
     'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
     ' saved preset file.
     Dim controlName As String, controlType As String, controlValue As String
+    Dim controlIndex As Long
     
     Dim eControl As Object
     For Each eControl In Parent.Controls
         
         controlName = eControl.Name
+        If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
         controlType = TypeName(eControl)
         
-        'See if an entry exists for this control
-        controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
+        'See if an entry exists for this control; note that controls that are part of an array use a unique identifier of the type
+        ' controlname:controlindex
+        If controlIndex >= 0 Then
+            controlValue = xmlEngine.getUniqueTag_String(controlName & ":" & controlIndex, "", , "presetEntry", "id", xmlSafePresetName)
+        Else
+            controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
+        End If
         If Len(controlValue) > 0 Then
         
             'An entry exists!  Assign out its value according to the type of control this is.
@@ -985,3 +1001,9 @@ Private Sub findAllXMLPresets()
     cmbPreset.Text = ""
 
 End Sub
+
+'This beautiful little function comes courtesy of coder Merri:
+' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
+Private Function InControlArray(Ctl As Object) As Boolean
+    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+End Function
