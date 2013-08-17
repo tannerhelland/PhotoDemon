@@ -107,8 +107,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 16/August/13
-'Last update: completed initial build
+'Last updated: 17/August/13
+'Last update: if a preset is merely being overwritten, do not add it to the preset box again
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -369,6 +369,9 @@ Private Sub cmdSavePreset_Click()
     End If
     
     'If a name has been entered but it is the same as an existing preset, prompt the user to overwrite.
+    Dim overwritingExistingPreset As Boolean
+    overwritingExistingPreset = False
+    
     Dim i As Long
     For i = 0 To cmbPreset.ListCount - 1
         If (StrComp(cmbPreset.List(i), cmbPreset.Text, vbTextCompare) = 0) Or ((StrComp(xmlEngine.getXMLSafeTagName(cmbPreset.List(i)), xmlEngine.getXMLSafeTagName(cmbPreset.Text), vbTextCompare) = 0)) Then
@@ -381,6 +384,7 @@ Private Sub cmdSavePreset_Click()
             
                 'If the user selects YES, continue on like normal
                 Case vbYes
+                    overwritingExistingPreset = True
                 
                 'If the user selects NO, exit and let them enter a new name
                 Case vbNo
@@ -409,15 +413,17 @@ Private Sub cmdSavePreset_Click()
     xmlEngine.writeXMLToFile parentToolPath
     
     'Also, add this preset to the combo box
-    cmbPreset.AddItem " " & cmbPreset.Text
+    If Not overwritingExistingPreset Then
+        cmbPreset.AddItem " " & Trim$(cmbPreset.Text)
+    End If
 
 End Sub
 
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set cmdOK.Font = mFont
-    Set cmdCancel.Font = mFont
+    Set CmdOK.Font = mFont
+    Set CmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -597,8 +603,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd cmdOK.hWnd
-    setHandCursorToHwnd cmdCancel.hWnd
+    setHandCursorToHwnd CmdOK.hWnd
+    setHandCursorToHwnd CmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -674,8 +680,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
-    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
+    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
+    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
 
 End Sub
 
@@ -692,8 +698,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
