@@ -27,7 +27,7 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   1320
       Width           =   5925
       _ExtentX        =   10451
@@ -48,7 +48,7 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   1860
       Width           =   5610
       _ExtentX        =   9895
@@ -63,24 +63,6 @@ Begin VB.Form FormBlackAndWhite
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin VB.ComboBox cboDither 
       BackColor       =   &H00FFFFFF&
@@ -97,14 +79,14 @@ Begin VB.Form FormBlackAndWhite
       Height          =   330
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2880
       Width           =   4935
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -114,7 +96,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   615
       Index           =   0
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3840
       Width           =   2775
       _ExtentX        =   9763
@@ -125,18 +107,30 @@ Begin VB.Form FormBlackAndWhite
       Height          =   615
       Index           =   1
       Left            =   9000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   3840
       Width           =   2775
       _ExtentX        =   4895
       _ExtentY        =   1085
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
       Left            =   0
-      TabIndex        =   6
-      Top             =   5760
-      Width           =   12255
+      TabIndex        =   9
+      Top             =   5790
+      Width           =   12150
+      _ExtentX        =   21431
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -154,7 +148,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   3480
       Width           =   3945
    End
@@ -174,7 +168,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2520
       Width           =   2130
    End
@@ -194,7 +188,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   960
       Width           =   1080
    End
@@ -208,8 +202,8 @@ Attribute VB_Exposed = False
 'Black/White Color Reduction Form
 'Copyright ©2002-2013 by Tanner Helland
 'Created: some time 2002
-'Last updated: 24/April/13
-'Last update: greatly simplify code by using new slider/text custom control
+'Last updated: 17/August/13
+'Last update: greatly simplify code by using new command bar custom control
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
@@ -243,22 +237,25 @@ Private Sub chkAutoThreshold_Click()
     
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Color to monochrome", , buildParams(sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color)
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
 
-    'Before processing, ensure the threshold value is valid
-    If sltThreshold.IsValid Then
-        Me.Visible = False
-        Process "Color to monochrome", , buildParams(sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color)
-        Unload Me
-    Else
-        Exit Sub
-    End If
+'When resetting, set the color boxes to black and white, and the dithering combo box to 6 (Stucki)
+Private Sub cmdBar_ResetClick()
+    
+    colorPicker(0).Color = RGB(0, 0, 0)
+    colorPicker(1).Color = RGB(255, 255, 255)
+    cboDither.ListIndex = 6     'Stucki dithering
+    
+    'Standard threshold value
+    chkAutoThreshold.Value = vbUnchecked
+    sltThreshold.Value = 127
     
 End Sub
 
@@ -267,7 +264,18 @@ Private Sub colorPicker_ColorChanged(Index As Integer)
 End Sub
 
 Private Sub Form_Activate()
-  
+        
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Draw the preview
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
     'Populate the dither combobox
     cboDither.Clear
     cboDither.AddItem "None", 0
@@ -283,13 +291,6 @@ Private Sub Form_Activate()
     cboDither.AddItem "Sierra Lite", 10
     cboDither.AddItem "Atkinson / Classic Macintosh", 11
     cboDither.ListIndex = 6
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
-    'Draw the preview
-    updatePreview
     
 End Sub
 
@@ -956,5 +957,5 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub updatePreview()
-    masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, fxPreview
+    If cmdBar.previewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, fxPreview
 End Sub
