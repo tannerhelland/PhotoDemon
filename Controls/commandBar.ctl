@@ -275,6 +275,7 @@ Private Sub cmdRandomize_Click()
     
     'By default, controls are randomized according to the following pattern:
     ' 1) If a control is numeric, it will be set to a random value between its Min and Max properties.
+    ' 2) Color pickers will be assigned a random color.
     ' 3) Check boxes will be randomly set to checked or unchecked.
     ' 4) Each option button has a 1 in (num of option buttons) chance of being set to TRUE.
     ' 5) Listboxes and comboboxes will be given a random ListIndex value.
@@ -304,7 +305,10 @@ Private Sub cmdRandomize_Click()
             'Custom PD numeric controls have exposed .Min, .Max, and .Value properties; use them to randomize properly
             Case "sliderTextCombo", "textUpDown"
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
-                
+            
+            Case "colorSelector"
+                eControl.Color = Rnd * 16777216
+            
             'Check boxes have a 50/50 chance of being set to checked
             Case "smartCheckBox"
                 If Int(Rnd * 2) = 0 Then
@@ -524,10 +528,11 @@ Private Sub cmdReset_Click()
     'By default, controls are reset according to the following pattern:
     ' 1) If a numeric control can be set to 0, it will be.
     ' 2) If a numeric control cannot be set to 0, it will be set to its MINIMUM value.
-    ' 3) Check boxes will be CHECKED.
-    ' 4) The FIRST encountered option button on the dialog will be selected.
-    ' 5) The FIRST entry in a listbox or combobox will be selected.
-    ' 6) Text boxes will be set to 0.
+    ' 3) Color pickers will be turned WHITE.
+    ' 4) Check boxes will be CHECKED.
+    ' 5) The FIRST encountered option button on the dialog will be selected.
+    ' 6) The FIRST entry in a listbox or combobox will be selected.
+    ' 7) Text boxes will be set to 0.
     ' If other settings are expected or required, they must be set by the client in the ResetClick event.
     
     Dim controlType As String
@@ -550,7 +555,11 @@ Private Sub cmdReset_Click()
                 Else
                     eControl.Value = eControl.minimum
                 End If
-                
+            
+            'Color pickers are turned white
+            Case "colorSelector"
+                eControl.Color = RGB(255, 255, 255)
+            
             'Check boxes are always checked
             Case "smartCheckBox"
                 eControl.Value = vbChecked
@@ -808,6 +817,10 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "Last used set
             Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
                 controlValue = CStr(eControl.Value)
             
+            'Color pickers have a .Color property
+            Case "colorSelector"
+                controlValue = CStr(eControl.Color)
+            
             'Intrinsic VB controls may have different names for their value properties
             Case "HScrollBar"
                 controlValue = CStr(eControl.Value)
@@ -914,6 +927,10 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "Last use
                 
                 Case "smartOptionButton"
                     eControl.Value = CBool(controlValue)
+                
+                'Color pickers have a .Color property
+                Case "colorSelector"
+                    eControl.Color = CLng(controlValue)
                 
                 'Intrinsic VB controls may have different names for their value properties
                 Case "HScrollBar"

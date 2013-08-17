@@ -109,24 +109,9 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   50
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   191
-         TabIndex        =   117
+         TabIndex        =   116
          Top             =   3210
          Width           =   2865
-      End
-      Begin VB.PictureBox picBackColor 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00FFFFFF&
-         ForeColor       =   &H80000008&
-         Height          =   495
-         Left            =   10800
-         MouseIcon       =   "VBP_FormBatchWizard.frx":1418
-         MousePointer    =   99  'Custom
-         ScaleHeight     =   31
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   55
-         TabIndex        =   113
-         Top             =   2565
-         Width           =   855
       End
       Begin VB.ComboBox cmbResizeFit 
          BeginProperty Font 
@@ -257,7 +242,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   114
+         TabIndex        =   113
          Top             =   120
          Width           =   3675
          _ExtentX        =   6482
@@ -278,7 +263,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Index           =   1
          Left            =   120
-         TabIndex        =   115
+         TabIndex        =   114
          Top             =   1080
          Width           =   4260
          _ExtentX        =   7514
@@ -298,7 +283,7 @@ Begin VB.Form FormBatchWizard
          Height          =   480
          Index           =   0
          Left            =   600
-         TabIndex        =   118
+         TabIndex        =   117
          Top             =   1560
          Width           =   3315
          _ExtentX        =   5847
@@ -313,6 +298,15 @@ Begin VB.Form FormBatchWizard
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+      End
+      Begin PhotoDemon.colorSelector colorPicker 
+         Height          =   450
+         Left            =   10800
+         TabIndex        =   118
+         Top             =   2580
+         Width           =   855
+         _ExtentX        =   1508
+         _ExtentY        =   794
       End
       Begin VB.Label lblExplanation 
          AutoSize        =   -1  'True
@@ -331,7 +325,7 @@ Begin VB.Form FormBatchWizard
          Height          =   240
          Index           =   1
          Left            =   600
-         TabIndex        =   116
+         TabIndex        =   115
          Top             =   540
          Width           =   6615
       End
@@ -2163,8 +2157,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright ©2007-2013 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 03/June/13
-'Last update: left panel text is now auto-fitted (with word-wrap!) after translations are applied
+'Last updated: 17/August/13
+'Last update: replaced the stock picture box with the new colorPicker control
 '
 'PhotoDemon's batch process wizard is one of its most unique - and in my opinion, most impressive - features.  It integrates
 ' tightly with the macro recording feature to allow any combination of actions to be applied to any set of images.
@@ -2336,7 +2330,7 @@ End Sub
 Private Sub cmbResizeFit_Click()
     
     'If the selected option is "fit inclusively", display the color selection box at right
-    If cmbResizeFit.ListIndex = 1 Then picBackColor.Visible = True Else picBackColor.Visible = False
+    If cmbResizeFit.ListIndex = 1 Then colorPicker.Visible = True Else colorPicker.Visible = False
     
     'Display a sample image of the selected resize method
     Dim tmpLayer As pdLayer
@@ -3216,12 +3210,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub picBackColor_Click()
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, picBackColor.backColor) Then picBackColor.backColor = newColor
-End Sub
-
 Private Sub sltJP2Quality_Change()
     updateJP2ComboBox
 End Sub
@@ -3601,7 +3589,7 @@ Private Sub prepareForBatchConversion()
                 
                     'If the user has requested an image resize, apply it now
                     If CBool(chkActions(1)) Then
-                        Process "Resize", , buildParams(tudWidth, tudHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, picBackColor.backColor)
+                        Process "Resize", , buildParams(tudWidth, tudHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, colorPicker.Color)
                     End If
                 
                     'If the user has requested a macro, play it now
