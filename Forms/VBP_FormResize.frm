@@ -24,19 +24,6 @@ Begin VB.Form FormResize
    ScaleWidth      =   468
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox picBackColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   1080
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   359
-      TabIndex        =   20
-      Top             =   6090
-      Width           =   5415
-   End
    Begin PhotoDemon.smartOptionButton optFit 
       Height          =   375
       Index           =   0
@@ -215,6 +202,15 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   495
+      Left            =   1080
+      TabIndex        =   22
+      Top             =   6120
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   873
+   End
    Begin VB.Label lblSubtext 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -234,7 +230,7 @@ Begin VB.Form FormResize
       Height          =   240
       Index           =   0
       Left            =   1080
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   5070
       Width           =   2910
    End
@@ -257,7 +253,7 @@ Begin VB.Form FormResize
       Height          =   240
       Index           =   2
       Left            =   1080
-      TabIndex        =   21
+      TabIndex        =   20
       Top             =   7110
       Width           =   4110
    End
@@ -674,7 +670,7 @@ Private Sub CmdOK_Click()
             If optFit(i).Value Then fitMethod = i
         Next i
             
-        Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID, fitMethod, picBackColor.backColor)
+        Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID, fitMethod, colorPicker.Color)
         Unload Me
         
     End If
@@ -714,7 +710,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor picBackColor
         
     'If the user unchecks the "lock aspect ratio" button, we will recenter the dialog once (as it's quite tall)
     dialogNeedsCentering = True
@@ -729,7 +724,7 @@ Private Sub Form_Load()
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
     
         'Hide the background color selectors
-        picBackColor.Visible = False
+        colorPicker.Visible = False
         
         'Move up the controls beneath it
         optFit(2).Top = optFit(1).Top + 48
@@ -1036,17 +1031,6 @@ Private Sub updateAspectRatio()
 
 End Sub
 
-Private Sub picBackColor_Click()
-    
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, picBackColor.backColor) Then
-        picBackColor.backColor = newColor
-        'updatePreview
-    End If
-    
-End Sub
-
 'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
 Private Sub tudHeight_Change()
     If CBool(chkRatio) And allowedToUpdateWidth Then
@@ -1092,7 +1076,7 @@ Private Sub updateFormLayout()
             lblSubtext(i).Visible = False
         Next i
         
-        picBackColor.Visible = False
+        colorPicker.Visible = False
         
         'Move the command bar into place
         lblBackground.Top = chkNames.Top + chkNames.Height + 16
@@ -1117,9 +1101,7 @@ Private Sub updateFormLayout()
         
         'Hide the background color selector only if the image is not 32bpp.  (If it is 32bpp, blank space will
         ' be filled by transparency, not color.)
-        If pdImages(CurrentImage).mainLayer.getLayerColorDepth <> 32 Then
-            picBackColor.Visible = True
-        End If
+        If pdImages(CurrentImage).mainLayer.getLayerColorDepth <> 32 Then colorPicker.Visible = True
         
         'Move the command bar into place
         lblBackground.Top = lblSubtext(2).Top + lblSubtext(2).Height + 16

@@ -24,10 +24,20 @@ Begin VB.Form FormEmbossEngrave
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   615
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   3480
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1085
+      curColor        =   16744576
+   End
    Begin PhotoDemon.smartCheckBox chkToColor 
       Height          =   480
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   2880
       Width           =   5580
       _ExtentX        =   9843
@@ -81,34 +91,10 @@ Begin VB.Form FormEmbossEngrave
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.PictureBox PicColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FF8080&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   6000
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   367
-      TabIndex        =   4
-      TabStop         =   0   'False
-      Top             =   3480
-      Width           =   5535
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -146,7 +132,7 @@ Begin VB.Form FormEmbossEngrave
       EndProperty
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   5760
       Width           =   11895
    End
@@ -177,7 +163,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub ChkToColor_Click()
-    UpdateEmbossPreview
+    updatePreview
 End Sub
 
 'CANCEL button
@@ -189,11 +175,11 @@ End Sub
 Private Sub CmdOK_Click()
     
     'Used to remember the last color used for embossing
-    g_EmbossEngraveColor = PicColor.backColor
+    g_EmbossEngraveColor = colorPicker.Color
     Me.Visible = False
     
     Dim newColor As Long
-    If CBool(chkToColor.Value) Then newColor = PicColor.backColor Else newColor = RGB(127, 127, 127)
+    If CBool(chkToColor.Value) Then newColor = colorPicker.Color Else newColor = RGB(127, 127, 127)
     
     'Dependent: filter to grey OR to a background color
     If optEmboss.Value Then
@@ -206,19 +192,23 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+Private Sub colorPicker_ColorChanged()
+    chkToColor.Value = vbChecked
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
     
     'Remember the last emboss/engrave color selection
-    PicColor.backColor = g_EmbossEngraveColor
+    colorPicker.Color = g_EmbossEngraveColor
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    'setHandCursor PicColor
     setArrowCursor Me
     
     'Render a preview of the emboss/engrave effect
-    UpdateEmbossPreview
+    updatePreview
     
 End Sub
 
@@ -227,31 +217,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub fxPreview_ColorSelected()
-    PicColor.backColor = fxPreview.SelectedColor
+    colorPicker.Color = fxPreview.SelectedColor
     chkToColor.Value = vbChecked
-    UpdateEmbossPreview
+    updatePreview
 End Sub
 
 'When the emboss/engrave options are clicked, redraw the preview
 Private Sub OptEmboss_Click()
-    UpdateEmbossPreview
+    updatePreview
 End Sub
 
 Private Sub OptEngrave_Click()
-    UpdateEmbossPreview
-End Sub
-
-'Clicking on the picture box allows the user to select a new color
-Private Sub PicColor_Click()
-
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, PicColor.backColor) Then
-        PicColor.backColor = newColor
-        chkToColor.Value = vbChecked
-        UpdateEmbossPreview
-    End If
-    
+    updatePreview
 End Sub
 
 'Emboss an image
@@ -477,10 +454,10 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
 End Sub
 
 'Render a new preview
-Private Sub UpdateEmbossPreview()
+Private Sub updatePreview()
     If optEmboss.Value Then
-        If CBool(chkToColor.Value) Then FilterEmbossColor PicColor.backColor, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
+        If CBool(chkToColor.Value) Then FilterEmbossColor colorPicker.Color, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
     Else
-        If CBool(chkToColor.Value) Then FilterEngraveColor PicColor.backColor, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
+        If CBool(chkToColor.Value) Then FilterEngraveColor colorPicker.Color, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
     End If
 End Sub

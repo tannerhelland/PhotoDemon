@@ -24,28 +24,6 @@ Begin VB.Form FormShadowHighlight
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox PicColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H007F7F7F&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
-      Height          =   495
-      Left            =   6120
-      ScaleHeight     =   465
-      ScaleWidth      =   5625
-      TabIndex        =   7
-      TabStop         =   0   'False
-      Top             =   2640
-      Width           =   5655
-   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -77,7 +55,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3240
       Width           =   3690
       _ExtentX        =   6509
@@ -96,8 +74,8 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.sliderTextCombo sltShadow 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
-      Top             =   1770
+      TabIndex        =   8
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -117,7 +95,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.sliderTextCombo sltHighlight 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   4170
       Width           =   5895
       _ExtentX        =   10398
@@ -134,6 +112,16 @@ Begin VB.Form FormShadowHighlight
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   2640
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   873
+      curColor        =   8421504
    End
    Begin VB.Label lblMidtone 
       Appearance      =   0  'Flat
@@ -205,7 +193,7 @@ Begin VB.Form FormShadowHighlight
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1440
+      Top             =   1320
       Width           =   1005
    End
 End
@@ -253,7 +241,7 @@ Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold) Then
         CalculateOptimalMidtone
     Else
-        PicColor.backColor = RGB(127, 127, 127)
+        colorPicker.Color = RGB(127, 127, 127)
     End If
     updatePreview
 End Sub
@@ -269,10 +257,14 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the gamma input for validity
     If sltShadow.IsValid And sltHighlight.IsValid Then
         Me.Visible = False
-        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(PicColor.backColor))
+        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(colorPicker.Color))
         Unload Me
     End If
     
+End Sub
+
+Private Sub colorPicker_ColorChanged()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -280,7 +272,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor PicColor
     
     'Render a preview
     updatePreview
@@ -308,19 +299,8 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub fxPreview_ColorSelected()
-    PicColor.backColor = fxPreview.SelectedColor
+    colorPicker.Color = fxPreview.SelectedColor
     updatePreview
-End Sub
-
-Private Sub PicColor_Click()
-    
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, PicColor.backColor) Then
-        PicColor.backColor = newColor
-        updatePreview
-    End If
-
 End Sub
 
 Private Sub CalculateOptimalMidtone()
@@ -409,7 +389,7 @@ Private Sub CalculateOptimalMidtone()
     
     bCount = x - 1
     
-    PicColor.backColor = RGB(255 - rCount, 255 - gCount, 255 - bCount)
+    colorPicker.Color = RGB(255 - rCount, 255 - gCount, 255 - bCount)
         
 End Sub
 
@@ -422,6 +402,6 @@ Private Sub sltShadow_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyShadowHighlight sltShadow, sltHighlight, CLng(PicColor.backColor), True, fxPreview
+    ApplyShadowHighlight sltShadow, sltHighlight, CLng(colorPicker.Color), True, fxPreview
 End Sub
 

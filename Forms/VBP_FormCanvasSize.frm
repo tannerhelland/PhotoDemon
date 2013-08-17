@@ -28,7 +28,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   8
       Left            =   1800
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   4080
       Width           =   570
    End
@@ -36,7 +36,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   7
       Left            =   1200
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   4080
       Width           =   570
    End
@@ -44,7 +44,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   6
       Left            =   600
-      TabIndex        =   21
+      TabIndex        =   20
       Top             =   4080
       Width           =   570
    End
@@ -52,7 +52,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   5
       Left            =   1800
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   3480
       Width           =   570
    End
@@ -60,7 +60,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   4
       Left            =   1200
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   3480
       Width           =   570
    End
@@ -68,7 +68,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   3
       Left            =   600
-      TabIndex        =   18
+      TabIndex        =   17
       Top             =   3480
       Width           =   570
    End
@@ -76,7 +76,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   2
       Left            =   1800
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   2880
       Width           =   570
    End
@@ -84,7 +84,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   1
       Left            =   1200
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   2880
       Width           =   570
    End
@@ -92,22 +92,9 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   0
       Left            =   600
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   2880
       Width           =   570
-   End
-   Begin VB.PictureBox picBackColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   600
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   343
-      TabIndex        =   14
-      Top             =   5280
-      Width           =   5175
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -184,6 +171,15 @@ Begin VB.Form FormCanvasSize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   495
+      Left            =   600
+      TabIndex        =   23
+      Top             =   5280
+      Width           =   5175
+      _ExtentX        =   9128
+      _ExtentY        =   873
    End
    Begin VB.Label lblAnchor 
       Appearance      =   0  'Flat
@@ -530,7 +526,7 @@ Private Sub updateAnchorButtons()
 
 End Sub
 
-Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub
@@ -542,7 +538,7 @@ Private Sub CmdOK_Click()
     If tudWidth.IsValid And tudHeight.IsValid Then
         
         Me.Visible = False
-        Process "Canvas size", , buildParams(tudWidth, tudHeight, m_CurrentAnchor, picBackColor.backColor)
+        Process "Canvas size", , buildParams(tudWidth, tudHeight, m_CurrentAnchor, colorPicker.Color)
         Unload Me
         
     End If
@@ -583,7 +579,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor picBackColor
         
 End Sub
 
@@ -595,7 +590,7 @@ Private Sub Form_Load()
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
     
         'Hide the background color selectors
-        picBackColor.Visible = False
+        colorPicker.Visible = False
         
         Dim formHeightDifference As Long
         Me.ScaleMode = vbTwips
@@ -725,16 +720,6 @@ Private Sub updateAspectRatio()
         lblAspectRatio.Caption = g_Language.TranslateMessage("new aspect ratio will be %1:%2", Numerator, Denominator)
     End If
 
-End Sub
-
-Private Sub picBackColor_Click()
-    
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, picBackColor.backColor) Then
-        picBackColor.backColor = newColor
-    End If
-    
 End Sub
 
 'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync

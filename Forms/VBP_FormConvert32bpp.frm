@@ -28,7 +28,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   375
       Index           =   1
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3720
       Width           =   2355
       _ExtentX        =   4154
@@ -62,33 +62,10 @@ Begin VB.Form FormConvert32bpp
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.PictureBox PicColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   615
-      Left            =   6600
-      ScaleHeight     =   39
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   329
-      TabIndex        =   2
-      TabStop         =   0   'False
-      Top             =   1080
-      Width           =   4965
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -99,7 +76,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   375
       Index           =   2
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   4200
       Width           =   2505
       _ExtentX        =   4419
@@ -119,7 +96,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   375
       Index           =   0
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   600
       Width           =   2250
       _ExtentX        =   3969
@@ -139,7 +116,7 @@ Begin VB.Form FormConvert32bpp
    Begin PhotoDemon.sliderTextCombo sltErase 
       Height          =   495
       Left            =   6480
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   2160
       Width           =   5205
       _ExtentX        =   9181
@@ -160,7 +137,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   375
       Index           =   3
       Left            =   6240
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   4680
       Width           =   1995
       _ExtentX        =   3519
@@ -179,7 +156,7 @@ Begin VB.Form FormConvert32bpp
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   495
       Left            =   6480
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   5160
       Width           =   5205
       _ExtentX        =   9181
@@ -200,7 +177,7 @@ Begin VB.Form FormConvert32bpp
    Begin PhotoDemon.sliderTextCombo sltBlend 
       Height          =   495
       Left            =   6480
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   3120
       Width           =   5205
       _ExtentX        =   9181
@@ -216,6 +193,16 @@ Begin VB.Form FormConvert32bpp
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   615
+      Left            =   6600
+      TabIndex        =   14
+      Top             =   1080
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   1085
+      curColor        =   49152
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -234,7 +221,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   285
       Index           =   2
       Left            =   6600
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   2760
       Width           =   1590
    End
@@ -255,7 +242,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   285
       Index           =   0
       Left            =   6600
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   1800
       Width           =   1710
    End
@@ -276,7 +263,7 @@ Begin VB.Form FormConvert32bpp
       Height          =   285
       Index           =   1
       Left            =   5880
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   120
       Width           =   2820
    End
@@ -292,7 +279,7 @@ Begin VB.Form FormConvert32bpp
       EndProperty
       Height          =   855
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   5760
       Width           =   11895
    End
@@ -360,11 +347,15 @@ Private Sub CmdOK_Click()
         End If
         
         Me.Visible = False
-        Process "Add alpha channel", , buildParams(convertType, convertConstant, PicColor.backColor, sltErase.Value, sltBlend.Value)
+        Process "Add alpha channel", , buildParams(convertType, convertConstant, colorPicker.Color, sltErase.Value, sltBlend.Value)
         Unload Me
         
     End If
     
+End Sub
+
+Private Sub colorPicker_ColorChanged()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -374,7 +365,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor PicColor
     
     'Render a preview of the alpha effect
     allowPreviews = True
@@ -388,24 +378,12 @@ End Sub
 
 'The user can select a color from the preview window; this helps green screen calculation immensely
 Private Sub fxPreview_ColorSelected()
-    PicColor.backColor = fxPreview.SelectedColor
+    colorPicker.Color = fxPreview.SelectedColor
     updatePreview
 End Sub
 
 Private Sub optAlpha_Click(Index As Integer)
     updatePreview
-End Sub
-
-'Clicking on the picture box also allows the user to select a new color
-Private Sub PicColor_Click()
-
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, PicColor.backColor) Then
-        PicColor.backColor = newColor
-        updatePreview
-    End If
-    
 End Sub
 
 'Render a new preview
@@ -430,7 +408,7 @@ Private Sub updatePreview()
             convertConstant = sltConstant.Value
         End If
         
-        advancedConvert32bpp convertType, convertConstant, PicColor.backColor, sltErase.Value, sltBlend.Value, True, fxPreview
+        advancedConvert32bpp convertType, convertConstant, colorPicker.Color, sltErase.Value, sltBlend.Value, True, fxPreview
         
     End If
     

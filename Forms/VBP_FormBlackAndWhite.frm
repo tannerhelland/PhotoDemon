@@ -27,7 +27,7 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   1320
       Width           =   5925
       _ExtentX        =   10451
@@ -48,7 +48,7 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   1860
       Width           =   5610
       _ExtentX        =   9895
@@ -82,32 +82,6 @@ Begin VB.Form FormBlackAndWhite
       Top             =   5910
       Width           =   1365
    End
-   Begin VB.PictureBox picBWColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   1
-      Left            =   9000
-      ScaleHeight     =   465
-      ScaleWidth      =   2745
-      TabIndex        =   7
-      Top             =   3840
-      Width           =   2775
-   End
-   Begin VB.PictureBox picBWColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00000000&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   0
-      Left            =   6120
-      ScaleHeight     =   465
-      ScaleWidth      =   2745
-      TabIndex        =   6
-      Top             =   3840
-      Width           =   2775
-   End
    Begin VB.ComboBox cboDither 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -130,16 +104,37 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   615
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   3840
+      Width           =   2775
+      _ExtentX        =   9763
+      _ExtentY        =   1085
+      curColor        =   0
+   End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   615
+      Index           =   1
+      Left            =   9000
+      TabIndex        =   11
+      Top             =   3840
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   1085
+   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   5760
       Width           =   12255
    End
@@ -259,12 +254,16 @@ Private Sub CmdOK_Click()
     'Before processing, ensure the threshold value is valid
     If sltThreshold.IsValid Then
         Me.Visible = False
-        Process "Color to monochrome", , buildParams(sltThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor)
+        Process "Color to monochrome", , buildParams(sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color)
         Unload Me
     Else
         Exit Sub
     End If
     
+End Sub
+
+Private Sub colorPicker_ColorChanged(Index As Integer)
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -288,8 +287,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor picBWColor(0)
-    setHandCursor picBWColor(1)
     
     'Draw the preview
     updatePreview
@@ -298,18 +295,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-'Allow the user to select a custom color for each
-Private Sub picBWColor_Click(Index As Integer)
-    
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, picBWColor(Index).backColor) Then
-        picBWColor(Index).backColor = newColor
-        updatePreview
-    End If
-    
 End Sub
 
 'Calculate the optimal threshold for the current image
@@ -971,5 +956,5 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub updatePreview()
-    masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, picBWColor(0).backColor, picBWColor(1).backColor, True, fxPreview
+    masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, fxPreview
 End Sub

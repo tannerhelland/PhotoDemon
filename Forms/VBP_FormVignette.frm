@@ -29,7 +29,7 @@ Begin VB.Form FormVignette
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   4440
       Width           =   1500
       _ExtentX        =   2646
@@ -45,28 +45,6 @@ Begin VB.Form FormVignette
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.PictureBox PicColor 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00000000&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   6120
-      ScaleHeight     =   465
-      ScaleWidth      =   5625
-      TabIndex        =   8
-      TabStop         =   0   'False
-      Top             =   3360
-      Width           =   5655
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -100,7 +78,7 @@ Begin VB.Form FormVignette
       Height          =   360
       Index           =   1
       Left            =   8880
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   4440
       Width           =   1050
       _ExtentX        =   1852
@@ -119,7 +97,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   810
       Width           =   5895
       _ExtentX        =   10398
@@ -140,7 +118,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.sliderTextCombo sltFeathering 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   1650
       Width           =   5895
       _ExtentX        =   10398
@@ -161,7 +139,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.sliderTextCombo sltTransparency 
       Height          =   495
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   2490
       Width           =   5895
       _ExtentX        =   10398
@@ -179,6 +157,16 @@ Begin VB.Form FormVignette
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   14
+      Top             =   3480
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   873
+      curColor        =   0
+   End
    Begin VB.Label lblShape 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -195,7 +183,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4080
       Width           =   705
    End
@@ -322,7 +310,7 @@ Private Sub CmdOK_Click()
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltRadius.IsValid And sltFeathering.IsValid And sltTransparency.IsValid Then
         Me.Visible = False
-        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor)
+        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color)
         Unload Me
     End If
     
@@ -493,6 +481,10 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
 End Sub
 
+Private Sub colorPicker_ColorChanged()
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
     
     'Draw a preview of the effect
@@ -501,7 +493,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setHandCursor PicColor
     
 End Sub
 
@@ -510,23 +501,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub fxPreview_ColorSelected()
-    PicColor.backColor = fxPreview.SelectedColor
+    colorPicker.Color = fxPreview.SelectedColor
     updatePreview
 End Sub
 
 Private Sub optShape_Click(Index As Integer)
     updatePreview
-End Sub
-
-Private Sub PicColor_Click()
-
-    'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, Me, PicColor.backColor) Then
-        PicColor.backColor = newColor
-        updatePreview
-    End If
-    
 End Sub
 
 Private Sub sltFeathering_Change()
@@ -543,5 +523,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, PicColor.backColor, True, fxPreview
+    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, True, fxPreview
 End Sub
