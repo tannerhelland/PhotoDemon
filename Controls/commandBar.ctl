@@ -300,7 +300,7 @@ Private Sub cmdRandomize_Click()
         
         controlType = TypeName(eControl)
             
-        'How we reset a control is dependent on its type (obviously).
+        'How we randomize a control is dependent on its type (obviously).
         Select Case controlType
         
             'Custom PD numeric controls have exposed .Min, .Max, and .Value properties; use them to randomize properly
@@ -427,8 +427,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set cmdOK.Font = mFont
-    Set cmdCancel.Font = mFont
+    Set CmdOK.Font = mFont
+    Set CmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -556,7 +556,7 @@ Private Sub cmdReset_Click()
                 Else
                     eControl.Value = eControl.Min
                 End If
-            
+                
             'Color pickers are turned white
             Case "colorSelector"
                 eControl.Color = RGB(255, 255, 255)
@@ -575,7 +575,7 @@ Private Sub cmdReset_Click()
             'Scroll bars obey the same rules as other numeric controls
             Case "HScrollBar"
                 If eControl.Min <= 0 Then eControl.Value = 0 Else eControl.Value = eControl.Min
-            
+                
             'List boxes and combo boxes are set to their first entry
             Case "ListBox", "ComboBox"
             
@@ -613,8 +613,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd cmdOK.hWnd
-    setHandCursorToHwnd cmdCancel.hWnd
+    setHandCursorToHwnd CmdOK.hWnd
+    setHandCursorToHwnd CmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -690,8 +690,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
-    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
+    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
+    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
 
 End Sub
 
@@ -708,8 +708,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -741,7 +741,7 @@ Private Sub UserControl_Show()
         If Not readXMLSettings() Then
         
             'If no last-used settings were found, fire the Reset event, which will supply proper default values
-            RaiseEvent ResetClick
+            cmdReset_Click
             
             'The ResetClick event will enable previews again, so forcibly disable them
             allowPreviews = False
@@ -749,6 +749,10 @@ Private Sub UserControl_Show()
         End If
         
     End If
+    
+    'For now, I'm going to set a standard font size of 10.  May revisit later.
+    mFont.Size = 10
+    mFont_FontChanged ""
     
     'Enable previews, and request a refresh
     controlFullyLoaded = True
@@ -782,7 +786,7 @@ End Sub
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
 ' those values in the section titles presetName.
-Private Sub fillXMLSettings(Optional ByVal presetName As String = "Last used settings")
+Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used settings")
     
     presetName = Trim$(presetName)
     
@@ -895,7 +899,7 @@ End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
 ' "presetName" section.  By default, it will look for the last-used settings, as this is its most common request.
-Private Function readXMLSettings(Optional ByVal presetName As String = "Last used settings") As Boolean
+Private Function readXMLSettings(Optional ByVal presetName As String = "last-used settings") As Boolean
     
     presetName = Trim$(presetName)
     
