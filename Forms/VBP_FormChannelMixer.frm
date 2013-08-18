@@ -41,32 +41,14 @@ Begin VB.Form FormChannelMixer
       Left            =   6120
       List            =   "VBP_FormChannelMixer.frx":0002
       Style           =   2  'Dropdown List
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   480
       Width           =   5820
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +57,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   1260
       Width           =   6015
       _ExtentX        =   10398
@@ -95,7 +77,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2160
       Width           =   6015
       _ExtentX        =   10398
@@ -115,7 +97,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3060
       Width           =   6015
       _ExtentX        =   10610
@@ -135,7 +117,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.smartCheckBox chkMonochrome 
       Height          =   570
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   5040
       Width           =   1785
       _ExtentX        =   3149
@@ -154,7 +136,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   3960
       Width           =   6015
       _ExtentX        =   10610
@@ -174,7 +156,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   570
       Left            =   8640
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   5040
       Width           =   2430
       _ExtentX        =   4286
@@ -183,6 +165,25 @@ Begin VB.Form FormChannelMixer
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   14
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -206,7 +207,7 @@ Begin VB.Form FormChannelMixer
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   16
+      TabIndex        =   13
       Top             =   4680
       Width           =   1500
    End
@@ -234,7 +235,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   12
       Top             =   120
       Width           =   1665
    End
@@ -255,16 +256,9 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   3630
       Width           =   975
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -283,7 +277,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2730
       Width           =   540
    End
@@ -304,7 +298,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1830
       Width           =   690
    End
@@ -325,7 +319,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   930
       Width           =   435
    End
@@ -339,8 +333,10 @@ Attribute VB_Exposed = False
 'Channel Mixer Form
 'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 08/June/13
-'Last updated: 24/July/13
-'Last update: fixed a typo that prevented the constant slider from affecting blue values
+'Last updated: 18/August/13
+'Last update: add command bar support.  This was a messy one because there are a whole bunch of stored values that
+'             are not visible on-screen, so the automatic preset code (obviously) couldn't handle most of what this
+'             tool does.  I believe save/load preset works, but I will need to do some extra testing just to be safe.
 '
 'Many thanks to talented contributer audioglider for creating this tool.
 '
@@ -436,24 +432,6 @@ Private Sub cmbChannel_Click()
     forbidUpdate = False
     
     updatePreview
-    
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    'Validate all textbox entries
-    If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid And sltConstant.IsValid Then
-        Me.Visible = False
-        updateStoredValues
-        Process "Channel mixer", , createChannelParamString()
-        Unload Me
-    End If
     
 End Sub
 
@@ -590,12 +568,84 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+Private Sub cmdBar_AddCustomPresetData()
+
+    'Because this control encompasses a bunch of "invisible" settings, e.g. channel values for channels other
+    ' than the selected one, we must write out the ENTIRE CHANNEL ARRAY to the preset file
+    cmdBar.addPresetData "channelArray", createChannelParamString
+
+End Sub
+
+'OK button
+Private Sub cmdBar_OKClick()
+    updateStoredValues
+    Process "Channel mixer", , createChannelParamString()
+End Sub
+
+Private Sub cmdBar_RandomizeClick()
     
+    'We actually want to randomize the entire stored value array, including channels that are not current visible
+    Dim x As Long, y As Long
+    For x = 0 To 3
+        For y = 0 To 3
+            If x < 3 Then
+                curSliderValues(x, y) = -200 + Int(Rnd * 401)
+            Else
+                curSliderValues(x, y) = -255 + Int(Rnd * 511)
+            End If
+        Next y
+    Next x
+    
+    updateStoredValues
+    
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+
+    'Because this control encompasses a bunch of "invisible" settings, e.g. channel values for channels other
+    ' than the selected one, we must read out a custom preset string that contains the ENTIRE CHANNEL ARRAY
+    Dim tmpParamString As String
+    tmpParamString = cmdBar.retrievePresetData("channelArray")
+    
+    'We can now parse that string to retrieve the values for each individual channel
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString tmpParamString
+    
+    Dim x As Long, y As Long
+    For x = 0 To 3
+        For y = 0 To 3
+            curSliderValues(x, y) = cParams.GetLong((x * 4) + y + 1)
+        Next y
+    Next x
+    
+    'Sync the on-screen controls with whatever slider values are relevant
+    forbidUpdate = True
+    If Not CBool(chkMonochrome) Then
+        cmbChannel.Enabled = True
+        sltRed.Value = curSliderValues(cmbChannel.ListIndex, RedInput)
+        sltGreen.Value = curSliderValues(cmbChannel.ListIndex, GreenInput)
+        sltBlue.Value = curSliderValues(cmbChannel.ListIndex, BlueInput)
+        sltConstant.Value = curSliderValues(cmbChannel.ListIndex, ConstantInput)
+    Else
+        cmbChannel.Enabled = False
+        sltRed.Value = curSliderValues(GrayOutput, RedInput)
+        sltGreen.Value = curSliderValues(GrayOutput, GreenInput)
+        sltBlue.Value = curSliderValues(GrayOutput, BlueInput)
+        sltConstant.Value = curSliderValues(GrayOutput, ConstantInput)
+    End If
+    forbidUpdate = False
+
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updateStoredValues
+    updatePreview
+End Sub
+
+'RESET button
+Private Sub cmdBar_ResetClick()
+
     'Fill the "stored value" array with default settings appropriate to each channel; basically, set each channel
     ' to their current value (e.g. red = "red 100%", "0%" for all other channels)
     Dim i As Long
@@ -633,6 +683,33 @@ Private Sub Form_Activate()
     
     Next i
     
+    'Reset the combo box and sliders on this page to default values
+    cmbChannel.ListIndex = 0
+    sltRed.Value = 100
+    sltGreen.Value = 0
+    sltBlue.Value = 0
+    sltConstant.Value = 0
+    chkMonochrome.Value = vbUnchecked
+    chkLuminance.Value = vbChecked
+    
+End Sub
+
+Private Sub Form_Activate()
+        
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'To account for translation width possibilities, align the monochrome and luminance check boxes manually
+    chkLuminance.Left = chkMonochrome.Left + chkMonochrome.Width + 24
+    
+    'Display the previewed effect in the neighboring window
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
     'Per convention, monochrome mode is handled via a separate checkbox.  This is also an easier solution for us, as
     ' it's difficult to apply changes to an imaginary "gray channel" (we'd have to divvy up any "gray channel"
     ' changes to each of red, green, and blue, and without a consistent way to do that the results would be
@@ -642,12 +719,6 @@ Private Sub Form_Activate()
     cmbChannel.AddItem " green", 1
     cmbChannel.AddItem " blue", 2
     cmbChannel.ListIndex = 0
-    
-    'To account for translation width possibilities, align the monochrome and luminance check boxes manually
-    chkLuminance.Left = chkMonochrome.Left + chkMonochrome.Width + 24
-    
-    'Display the previewed effect in the neighboring window
-    updatePreview
     
 End Sub
 
@@ -684,7 +755,7 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyChannelMixer createChannelParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyChannelMixer createChannelParamString(), True, fxPreview
 End Sub
 
 'Because the user can change multiple channels at once, we need to store all current channel values in memory.

@@ -27,7 +27,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.sliderTextCombo sltWidth 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
@@ -45,28 +45,10 @@ Begin VB.Form FormBoxBlur
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +57,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3840
       Width           =   2880
       _ExtentX        =   5080
@@ -95,7 +77,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
@@ -103,6 +85,25 @@ Begin VB.Form FormBoxBlur
       Min             =   1
       Max             =   500
       Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   7
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -129,7 +130,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2880
       Width           =   1215
    End
@@ -149,7 +150,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   1920
       Width           =   1140
    End
@@ -167,18 +168,11 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H000000FF&
       Height          =   975
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   2
-      Top             =   5760
-      Width           =   12135
    End
 End
 Attribute VB_Name = "FormBoxBlur"
@@ -216,24 +210,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub chkUnison_Click()
     If CBool(chkUnison) Then syncScrollBars True
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Validate text box entries
-    If Not sltWidth.IsValid Then Exit Sub
-    If Not sltHeight.IsValid Then Exit Sub
-    
-    Me.Visible = False
-    Process "Box blur", , buildParams(sltWidth, sltHeight)
-    Unload Me
-    
 End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
@@ -545,19 +521,15 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
 
 End Sub
 
-Private Sub Form_Activate()
+Private Sub cmdBar_OKClick()
+    Process "Box blur", , buildParams(sltWidth, sltHeight)
+End Sub
 
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
-
-    'Draw a preview of the effect
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -567,6 +539,22 @@ Private Sub Form_Activate()
     If Not g_IsProgramCompiled Then
         lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
+    End If
+    
+    'Draw a preview of the effect
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
     End If
     
 End Sub
@@ -592,7 +580,7 @@ Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
 End Sub
 Private Sub updatePreview()
-    BoxBlurFilter sltWidth, sltHeight, True, fxPreview
+    If cmdBar.previewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, fxPreview
 End Sub
 
 Private Sub sltHeight_Change()
