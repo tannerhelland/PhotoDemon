@@ -3,8 +3,8 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 14/August/13
-'Last update: modified loading/unloading of system cursors; see https://github.com/tannerhelland/PhotoDemon/issues/78
+'Last updated: 19/August/13
+'Last update: properly pass along cursor hotspot requests sent to the setPNGCursorToHwnd function
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -33,7 +33,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -856,7 +856,7 @@ End Sub
 
 'Use any 32bpp PNG resource as a cursor (yes, it's amazing!)
 Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
-    SetClassLong dstHwnd, GCL_HCURSOR, requestCustomCursor(pngTitle)
+    SetClassLong dstHwnd, GCL_HCURSOR, requestCustomCursor(pngTitle, curHotspotX, curHotspotY)
 End Sub
 
 'Set a single object to use the hand cursor

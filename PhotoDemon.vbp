@@ -179,7 +179,7 @@ Description="PhotoDemon"
 CompatibleMode="0"
 MajorVer=5
 MinorVer=9
-RevisionVer=606
+RevisionVer=612
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="©2000-2013 Tanner Helland -  www.tannerhelland.com"
@@ -188,7 +188,7 @@ VersionFileDescription="PhotoDemon Photo Editor"
 VersionLegalCopyright="Copyright ©2000-2013 by Tanner Helland"
 VersionProductName="PhotoDemon Photo Editor"
 CompilationType=0
-OptimizationType=0
+OptimizationType=1
 FavorPentiumPro(tm)=0
 CodeViewDebugInfo=0
 NoAliasing=-1
@@ -196,7 +196,7 @@ BoundsCheck=-1
 OverflowCheck=-1
 FlPointCheck=-1
 FDIVCheck=-1
-UnroundedFP=0
+UnroundedFP=-1
 StartMode=0
 Unattended=0
 Retained=0
@@ -218,3 +218,7 @@ ReplaceIcon=0
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
+
+
+
+
