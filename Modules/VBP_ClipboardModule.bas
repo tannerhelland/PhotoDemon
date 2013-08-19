@@ -3,8 +3,8 @@ Attribute VB_Name = "Clipboard_Handler"
 'Clipboard Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 06/September/12
-'Last update: rewrote copy/paste against the new layer class.
+'Last updated: 19/August/13
+'Last update: removed all references to metafile handling; there are no plans for me to restore EMF/WMF clipboard support
 '
 'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; Cut is not included
 ' (as there is no purpose for it at present), though Empty Clipboard does make an appearance.
@@ -24,7 +24,6 @@ Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 
 Private Const CF_HDROP As Long = 15
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
-Private Const CLIPBOARD_FORMAT_METAFILE As Long = 3
 
 'Copy image
 Public Sub ClipboardCopy()

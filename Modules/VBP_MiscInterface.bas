@@ -46,12 +46,10 @@ Private Const SPI_GETFONTSMOOTHING As Long = &H4A
 Private Const SPI_SETFONTSMOOTHING As Long = &H4B
 Private Const SPI_GETFONTSMOOTHINGTYPE As Long = &H200A
 Private Const SPI_SETFONTSMOOTHINGTYPE As Long = &H200B
-Private Const SPIF_SENDCHANGE As Long = &H2
+'Private Const SPIF_SENDCHANGE As Long = &H2
 Private Const SmoothingClearType As Long = &H2
 Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
-
-Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
 ' can contain the following values:
@@ -573,11 +571,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.X
+    getPixelWidthOfString = txtSize.x
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.Y
+    getPixelHeightOfString = txtSize.y
 End Function
