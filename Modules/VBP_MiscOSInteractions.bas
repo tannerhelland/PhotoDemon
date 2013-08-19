@@ -54,17 +54,17 @@ Private Type LARGE_INTEGER
      highpart As Long
 End Type
 
-Private Type MEMORYSTATUSEX
-  dwLength As Long
-  dwMemoryLoad As Long
-  ullTotalPhys As LARGE_INTEGER
-  ullAvailPhys As LARGE_INTEGER
-  ullTotalPageFile As LARGE_INTEGER
-  ullAvailPageFile As LARGE_INTEGER
-  ullTotalVirtual As LARGE_INTEGER
-  ullAvailVirtual As LARGE_INTEGER
-  ullAvailExtendedVirtual As LARGE_INTEGER
-End Type
+'Private Type MEMORYSTATUSEX
+'  dwLength As Long
+'  dwMemoryLoad As Long
+'  ullTotalPhys As LARGE_INTEGER
+'  ullAvailPhys As LARGE_INTEGER
+'  ullTotalPageFile As LARGE_INTEGER
+'  ullAvailPageFile As LARGE_INTEGER
+'  ullTotalVirtual As LARGE_INTEGER
+'  ullAvailVirtual As LARGE_INTEGER
+'  ullAvailExtendedVirtual As LARGE_INTEGER
+'End Type
 
 Private Declare Function EnumProcesses Lib "PSAPI.DLL" (lpidProcess As Long, ByVal cb As Long, cbNeeded As Long) As Long
 Private Declare Function EnumProcessModules Lib "PSAPI.DLL" (ByVal hProcess As Long, lphModule As Long, ByVal cb As Long, lpcbNeeded As Long) As Long

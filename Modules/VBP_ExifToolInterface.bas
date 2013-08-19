@@ -45,7 +45,7 @@ Private Const DUPLICATE_CLOSE_SOURCE = &H1
 Private Const DUPLICATE_SAME_ACCESS = &H2
 
 'Potential error codes (not used at present, but could be added in the future)
-Private Const ERROR_BROKEN_PIPE = 109
+'Private Const ERROR_BROKEN_PIPE = 109
 
 Private Type SECURITY_ATTRIBUTES
     nLength As Long

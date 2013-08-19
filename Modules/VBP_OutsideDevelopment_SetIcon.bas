@@ -22,18 +22,18 @@ Private Const SM_CYSMICON = 50
    
 Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
    
-Private Const LR_DEFAULTCOLOR = &H0
-Private Const LR_MONOCHROME = &H1
-Private Const LR_COLOR = &H2
-Private Const LR_COPYRETURNORG = &H4
-Private Const LR_COPYDELETEORG = &H8
-Private Const LR_LOADFROMFILE = &H10
-Private Const LR_LOADTRANSPARENT = &H20
-Private Const LR_DEFAULTSIZE = &H40
-Private Const LR_VGACOLOR = &H80
-Private Const LR_LOADMAP3DCOLORS = &H1000
-Private Const LR_CREATEDIBSECTION = &H2000
-Private Const LR_COPYFROMRESOURCE = &H4000
+'Private Const LR_DEFAULTCOLOR = &H0
+'Private Const LR_MONOCHROME = &H1
+'Private Const LR_COLOR = &H2
+'Private Const LR_COPYRETURNORG = &H4
+'Private Const LR_COPYDELETEORG = &H8
+'Private Const LR_LOADFROMFILE = &H10
+'Private Const LR_LOADTRANSPARENT = &H20
+'Private Const LR_DEFAULTSIZE = &H40
+'Private Const LR_VGACOLOR = &H80
+'Private Const LR_LOADMAP3DCOLORS = &H1000
+'Private Const LR_CREATEDIBSECTION = &H2000
+'Private Const LR_COPYFROMRESOURCE = &H4000
 Private Const LR_SHARED = &H8000&
 
 Private Const IMAGE_ICON = 1
@@ -57,8 +57,8 @@ Public origIcon32 As Long, origIcon16 As Long
 Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
 
     Dim lHwnd As Long
-    Dim cX As Long
-    Dim cY As Long
+    Dim cx As Long
+    Dim cy As Long
     Dim hIconLarge As Long
     Dim hIconSmall As Long
       
@@ -74,17 +74,17 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
         Loop
     End If
        
-    cX = GetSystemMetrics(SM_CXICON)
-    cY = GetSystemMetrics(SM_CYICON)
-    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    cx = GetSystemMetrics(SM_CXICON)
+    cy = GetSystemMetrics(SM_CYICON)
+    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cx, cy, LR_SHARED)
     origIcon32 = hIconLarge
     
     If bSetAsAppIcon Then SendMessageLong lHwndTop, WM_SETICON, ICON_BIG, hIconLarge
     SendMessageLong hWnd, WM_SETICON, ICON_BIG, hIconLarge
        
-    cX = GetSystemMetrics(SM_CXSMICON)
-    cY = GetSystemMetrics(SM_CYSMICON)
-    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    cx = GetSystemMetrics(SM_CXSMICON)
+    cy = GetSystemMetrics(SM_CYSMICON)
+    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cx, cy, LR_SHARED)
     origIcon16 = hIconSmall
     
     If bSetAsAppIcon Then SendMessageLong lHwndTop, WM_SETICON, ICON_SMALL, hIconSmall
