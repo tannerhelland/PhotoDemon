@@ -1,8 +1,10 @@
-# PhotoDemon
+# PhotoDemon v6.0 alpha
 
-## A free, portable photo editor focused on performance and usability. Macro recording and batch processing are key features. English, Dutch, French, German, and Italian translations included.
+### A free, portable photo editor focused on performance and usability. Macro recording and batch processing are key features. English, Dutch, French, German, and Italian translations included.
 
 ### For more info, visit http://tannerhelland.com/photodemon
+
+***
 
 ## What makes PhotoDemon preferable to other photo editing tools?
 
@@ -15,17 +17,18 @@ PhotoDemon provides full macro support. Simply click “Record Macro”, then perfor
 ### Emphasis on usability
 Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built with input from professional designers – not just software engineers – and small touches like unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and forward-back button support, and descriptive menu icons make PhotoDemon useful to novices and professionals alike.
 
-### A comprehensive selection of image editing tools and filters
-* 2D transformations: image resize, crop, rotate, shear, isometric conversion.
-* Color tools: levels, curves, white balance, shadow/highlights, grayscale, sepia, color reduction, full-featured histogram (including equalization and stretching), green screen, Wratten filters, and many more.
-* Filters and effects: blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, and many more.
-* 80+ tools are provided in the current build – and that’s not including a custom filter tool that allows you to construct your own filters.
+### A comprehensive collection of image editing tools and filters
+* Powerful selection tools, with full support for antialiasing, feathering, and on-canvas sizing/moving.
+* 2D transformations: image resize, crop, autocrop, rotate, shear, isometric conversion.
+* Color tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram (including equalization and stretching), green screen, Wratten filters, and many more.
+* Filters and effects: context-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, sphere wrapping, film grain, and many more.
+* 100+ tools are provided in the current build, plus a custom filter tool that allows you to construct your own convolution filters.
 
 ### What doesn't PhotoDemon do?
 
-* PhotoDemon does not provide any on-canvas painting tools. These are coming, but they did not make the cut for this version.
-* PhotoDemon does not provide advanced color management (ICC profiles). Specifically, it currently ignores embedded ICC profiles. As a tool designed for consumers and hobbyists, it is unlikely to ever gain ICC profile support. If color management is integral to your work, PhotoDemon is not the right tool for you. (Note: if you're interested, PhotoDemon relies on DIB sections via the Windows GDI, which default to the sRGB space - see http://technet.microsoft.com/en-us/query/ms536845
-* PhotoDemon does not run on non-Windows operating systems...probably. Wine (http://www.winehq.org/) finally added full DIB support in March 2012 (v1.4). Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 (or later) installed. However, should you choose to go down this route, you are effectively on your own. PhotoDemon's developer doesn't have the resources to support Wine in any official capacity.
+* PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but they did not make the cut for this version.
+* PhotoDemon does not provide advanced color management (ICC profiles). More specifically, it ignores embedded ICC profiles. Even MORE specifically, PhotoDemon relies on DIB sections via the Windows GDI, which default to the sRGB space - see http://technet.microsoft.com/en-us/query/ms536845
+* PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later. However, should you choose to go down this route, you are effectively on your own.
 
 ## PhotoDemon FAQ
 
@@ -46,8 +49,6 @@ If you can't contribute monetarily to the project, here are other ways to help:
 
 ### How is PhotoDemon and its source code licensed?
 
-PhotoDemon is copyright (c) 2013 by Tanner Helland, http://www.tannerhelland.com
-
 PhotoDemon is released under a BSD license. You may read more about this license at the following location: http://creativecommons.org/licenses/BSD/. A full copy of this license is included at the bottom of this section.
 
 Sections of this source code were written by third-parties and may be subject to additional licenses. Documentation within a specific source code file supercedes the BSD license governing this project as a whole.
@@ -56,7 +57,7 @@ Questions regarding licensing should be directed to: http://tannerhelland.com/co
 
 Full text of BSD license follows.
 
-Copyright (c) 2013, Tanner Helland
+Copyright (c) 2013, Tanner Helland.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,9 +97,4 @@ PhotoDemon would not be possible without the following talented contributers.
 * Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License) (http://www.sno.phy.queensu.ca/~phil/exiftool/)
 * Bernhard Stockmann for his many excellent GIMP tutorials (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)
 * Paul Bourke for references on miscellaneous image distortions (http://paulbourke.net/miscellaneous/)
-* All those who have contributed patches, bug reports, and donations, with extra special thanks to:
-* Allan Lima
-* Zhu JinYong
-* Andrew Yeoman
-* Dave Jamison
-* Alfred Hellmueller
+* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
