@@ -68,7 +68,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ### Who has contributed to PhotoDemon's development?
 
-PhotoDemon would not be possible without the following talented contributers.
+PhotoDemon would not be possible without the following talented contributors.  Thank you to...
 * Frank Donckers for extensive help with the translation engine. Frank also created the Dutch, German, and French language files (30,000 words in total!)
 * GioRock for the Italian language file and additional translation debugging (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
 * audioglider for the Channel Mixer and Vibrance tools (https://github.com/audioglider)
