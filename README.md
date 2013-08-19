@@ -1,26 +1,30 @@
-# PhotoDemon v6.0 alpha
+# PhotoDemon (currently v6.0 alpha)
 
-### A free, portable photo editor focused on performance and usability. Macro recording and batch processing are key features. English, Dutch, French, German, and Italian translations included.
+### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-### For more info, visit http://tannerhelland.com/photodemon
+PhotoDemon provides a comprehensive selection of photo editing tools - including a full-featured macro recorder and batch processor - in a tiny 6 MB download.  It runs on any Windows machine from XP through Windows 8 and it *does not* require installation.  It can easily be run from a portable USB drive or memory card.  English, Dutch, French, German, and Italian translations are included.
+
+PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its speed will surprise you!)  Outside contributions from both coders and translators are always welcome.
+
+For information on the forthcoming 6.0 release, please visit http://www.tannerhelland.com/4996/photodemon-60-preview/
 
 ***
 
-## What makes PhotoDemon preferable to other photo editing tools?
+## What makes PhotoDemon unique?
 
-### Portable and lightweight
-PhotoDemon is designed to be run as a standalone .exe. No installer is provided or required. PhotoDemon does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.
+### It is lightweight and completely portable
+PhotoDemon is designed to be run as a standalone .exe. No installer is provided or required. PhotoDemon does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.
 
-### Powerful macro and batch processor support
-PhotoDemon provides full macro support. Simply click “Record Macro”, then perform as many actions as you’d like. When finished, save that macro to the hard drive (in human-readable XML format) so you can repeat it at any point in the future. Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply that macro to every image automagically.
+### It integrates macro recording and batch processing
+PhotoDemon provides full macro support. Simply click “Record Macro”, then perform as many actions as you’d like. When finished, save that macro to the hard drive (in human-readable XML format) so you can repeat it at any point in the future. Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
 
-### Emphasis on usability
+### It emphasizes usability
 Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built with input from professional designers – not just software engineers – and small touches like unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and forward-back button support, and descriptive menu icons make PhotoDemon useful to novices and professionals alike.
 
-### A comprehensive collection of image editing tools and filters
+### It provides a comprehensive selection of editing tools
 * Powerful selection tools, with full support for antialiasing, feathering, and on-canvas sizing/moving.
 * 2D transformations: image resize, crop, autocrop, rotate, shear, isometric conversion.
-* Color tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram (including equalization and stretching), green screen, Wratten filters, and many more.
+* Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram (including equalization and stretching), green screen, Wratten filters, and many more.
 * Filters and effects: context-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, sphere wrapping, film grain, and many more.
 * 100+ tools are provided in the current build, plus a custom filter tool that allows you to construct your own convolution filters.
 
@@ -29,8 +33,6 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 * PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but they did not make the cut for this version.
 * PhotoDemon does not provide advanced color management (ICC profiles). More specifically, it ignores embedded ICC profiles. Even MORE specifically, PhotoDemon relies on DIB sections via the Windows GDI, which default to the sRGB space - see http://technet.microsoft.com/en-us/query/ms536845
 * PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later. However, should you choose to go down this route, you are effectively on your own.
-
-## PhotoDemon FAQ
 
 ### How can I get involved? 
 PhotoDemon is written and maintained by a single individual with a family to support.  The program is provided free-of-charge under an extremely permissive open-source license, and no fees or money will ever be charged for its use.
@@ -68,7 +70,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ### Who has contributed to PhotoDemon's development?
 
-PhotoDemon would not be possible without the following talented contributors.  Thank you to...
+PhotoDemon would not be possible without the help of many talented contributors, including...
 * Frank Donckers for extensive help with the translation engine. Frank also created the Dutch, German, and French language files (30,000 words in total!)
 * GioRock for the Italian language file and additional translation debugging (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
 * audioglider for the Channel Mixer and Vibrance tools (https://github.com/audioglider)
