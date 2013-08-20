@@ -24,23 +24,24 @@ Begin VB.Form FormColorTemp
    ScaleWidth      =   822
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9360
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10830
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5790
+      Width           =   12330
+      _ExtentX        =   21749
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picTempDemo 
       Appearance      =   0  'Flat
@@ -61,14 +62,14 @@ Begin VB.Form FormColorTemp
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   303
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2400
       Width           =   4575
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -77,7 +78,7 @@ Begin VB.Form FormColorTemp
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3720
       Width           =   6135
       _ExtentX        =   10821
@@ -98,7 +99,7 @@ Begin VB.Form FormColorTemp
    Begin PhotoDemon.sliderTextCombo sltTemperature 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   1830
       Width           =   6135
       _ExtentX        =   10821
@@ -116,13 +117,6 @@ Begin VB.Form FormColorTemp
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   7
-      Top             =   5760
-      Width           =   12375
-   End
    Begin VB.Label lblCool 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -139,7 +133,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   10125
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2880
       Width           =   735
    End
@@ -159,7 +153,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   6360
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   2880
       Width           =   840
    End
@@ -179,7 +173,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3360
       Width           =   960
    End
@@ -199,7 +193,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1440
       Width           =   2280
    End
@@ -245,23 +239,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    'The scroll bar max and min values are used to check the temperature input for validity
-    If sltTemperature.IsValid And sltStrength.IsValid Then
-        Me.Visible = False
-        Process "Temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2)
-        Unload Me
-    End If
-    
-End Sub
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
@@ -351,6 +328,20 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
     
+End Sub
+
+Private Sub cmdBar_OKClick()
+    Process "Temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+'Reset temperature to 5500k and strength to 50
+Private Sub cmdBar_ResetClick()
+    sltTemperature.Value = 5500
+    sltStrength.Value = 50
 End Sub
 
 'When the form is activated (e.g. made visible and receives focus),
@@ -464,5 +455,5 @@ Private Sub sltTemperature_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, fxPreview
 End Sub

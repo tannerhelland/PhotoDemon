@@ -24,10 +24,29 @@ Begin VB.Form FormColorize
    ScaleWidth      =   823
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   5
+      Top             =   5820
+      Width           =   12345
+      _ExtentX        =   21775
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkSaturation 
       Height          =   480
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3240
       Width           =   2745
       _ExtentX        =   4842
@@ -44,30 +63,12 @@ Begin VB.Form FormColorize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9360
-      TabIndex        =   0
-      Top             =   5925
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10830
-      TabIndex        =   1
-      Top             =   5925
-      Width           =   1365
-   End
    Begin VB.HScrollBar hsHue 
       Height          =   375
       Left            =   6240
       Max             =   359
       Min             =   1
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2160
       Value           =   180
       Width           =   5790
@@ -91,14 +92,14 @@ Begin VB.Form FormColorize
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   352
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2640
       Width           =   5310
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -120,16 +121,9 @@ Begin VB.Form FormColorize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   1680
       Width           =   1545
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12375
    End
 End
 Attribute VB_Name = "FormColorize"
@@ -157,23 +151,17 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+Private Sub cmdBar_OKClick()
+    Process "Colorize", , buildParams(CDbl((CDbl(hsHue.Value) - 60) / 60), CBool(chkSaturation.Value))
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
 'When the "maintain saturation" check box is clicked, redraw the image
 Private Sub chkSaturation_Click()
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    Me.Visible = False
-    Process "Colorize", , buildParams(CDbl((CDbl(hsHue.Value) - 60) / 60), CBool(chkSaturation.Value))
-    Unload Me
-    
+    updatePreview
 End Sub
 
 'Colorize an image using a hue defined between -1 and 5
@@ -253,6 +241,10 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     
 End Sub
 
+'Reset the hue bar to the center position
+Private Sub cmdBar_ResetClick()
+    hsHue.Value = 180
+End Sub
 
 Private Sub Form_Activate()
 
@@ -284,7 +276,7 @@ Private Sub Form_Activate()
     makeFormPretty Me, m_ToolTip
     
     'Display the previewed effect in the neighboring window
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -294,9 +286,13 @@ End Sub
 
 'When the hue scroll bar is changed, redraw the preview
 Private Sub hsHue_Change()
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
+    updatePreview
 End Sub
 
 Private Sub hsHue_Scroll()
-    If chkSaturation.Value = vbChecked Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), True, True, fxPreview Else ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), False, True, fxPreview
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    If cmdBar.previewsAllowed Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), CBool(chkSaturation), True, fxPreview
 End Sub
