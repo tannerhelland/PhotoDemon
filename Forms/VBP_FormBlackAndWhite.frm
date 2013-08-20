@@ -124,7 +124,7 @@ Begin VB.Form FormBlackAndWhite
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -219,7 +219,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub cboDither_Click()
-    If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold(cboDither.ListIndex)
+    If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold()
     updatePreview
 End Sub
 
@@ -227,7 +227,7 @@ End Sub
 Private Sub chkAutoThreshold_Click()
     
     If CBool(chkAutoThreshold.Value) Then
-        sltThreshold = calculateOptimalThreshold(cboDither.ListIndex)
+        sltThreshold = calculateOptimalThreshold()
         sltThreshold.Enabled = False
     Else
         sltThreshold.Enabled = True
@@ -299,7 +299,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Calculate the optimal threshold for the current image
-Private Function calculateOptimalThreshold(ByVal DitherMethod As Long) As Long
+Private Function calculateOptimalThreshold() As Long
 
     'Create a local array and point it at the pixel data of the image
     Dim ImageData() As Byte

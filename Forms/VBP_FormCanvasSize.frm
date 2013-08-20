@@ -413,10 +413,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to toggle the command button state of the toolbox buttons
-Private Const BM_SETSTATE = &HF3
-Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-
 'Used to render images onto the tool buttons at run-time
 ' NOTE: TOOLBOX IMAGES WILL NOT APPEAR IN THE IDE.  YOU MUST COMPILE FIRST.
 Private cImgCtl As clsControlImage
@@ -504,16 +500,6 @@ Private Sub updateAnchorButtons()
             
         End If
         
-        'Finally, depress the active button
-        'For i = 0 To cmdAnchor.Count - 1
-        '    If i = m_CurrentAnchor Then
-        '        SendMessageA cmdAnchor(i).hWnd, BM_SETSTATE, True, 0
-        '    Else
-        '        SendMessageA cmdAnchor(i).hWnd, BM_SETSTATE, False, 0
-        '    End If
-        '    cmdAnchor(i).Refresh
-        'Next i
-
     Else
         For i = 0 To 8
             If arrowLocations(i) = "IMGMEDIUM" Then
@@ -526,7 +512,7 @@ Private Sub updateAnchorButtons()
 
 End Sub
 
-Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub

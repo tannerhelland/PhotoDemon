@@ -35,7 +35,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetActiveWindow Lib "user32" () As Long
 
 Private Type tAccel

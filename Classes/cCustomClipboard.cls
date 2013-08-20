@@ -84,9 +84,6 @@ Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Const GMEM_DDESHARE = &H2000
-Private Const GMEM_FIXED = &H0
-Private Const GMEM_NOT_BANKED = &H1000
-Private Const GMEM_ZEROINIT = &H40
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Sub CopyMemoryStr Lib "kernel32" Alias "RtlMoveMemory" ( _

@@ -42,16 +42,10 @@ Const GMEM_ZEROINIT = &H40
 
 Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As String) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-'Private Declare Function GlobalCompact Lib "kernel32" (ByVal dwMinFree As Long) As Long
-'Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-'Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
-'Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Sub CopyMemoryStr Lib "kernel32" Alias "RtlMoveMemory" ( _
-    lpvDest As Any, ByVal lpvSource As String, ByVal cbCopy As Long)
 
 Private Const MAX_PATH = 4000
 Private Const MAX_FILE = 260
@@ -160,26 +154,6 @@ Private Type TCHOOSEFONT
     nSizeMin As Long            ' Minimum point size allowed
     nSizeMax As Long            ' Maximum point size allowed
 End Type
-'Private Declare Function ChooseFont Lib "COMDLG32" _
-    Alias "ChooseFontA" (chfont As TCHOOSEFONT) As Long
-
-Private Const LF_FACESIZE = 32
-'Private Type LOGFONT
-'    lfHeight As Long
-'    lfWidth As Long
-'    lfEscapement As Long
-'    lfOrientation As Long
-'    lfWeight As Long
-'    lfItalic As Byte
-'    lfUnderline As Byte
-'    lfStrikeOut As Byte
-'    lfCharSet As Byte
-'    lfOutPrecision As Byte
-'    lfClipPrecision As Byte
-'    lfQuality As Byte
-'    lfPitchAndFamily As Byte
-'    lfFaceName(LF_FACESIZE) As Byte
-'End Type
 
 Public Enum EChooseFont
     CF_ScreenFonts = &H1
@@ -248,13 +222,6 @@ Private Type TPRINTDLG
     hSetupTemplate As Long
 End Type
 
-'  DEVMODE collation selections
-'Private Const DMCOLLATE_FALSE = 0
-'Private Const DMCOLLATE_TRUE = 1
-
-'Private Declare Function PrintDlg Lib "COMDLG32.DLL" _
-    Alias "PrintDlgA" (prtdlg As TPRINTDLG) As Integer
-
 Public Enum EPrintDialog
     PD_ALLPAGES = &H0
     PD_SELECTION = &H1
@@ -281,13 +248,6 @@ Public Enum EPrintDialog
     PD_HIDEPRINTTOFILE = &H100000
     PD_NONETWORKBUTTON = &H200000
 End Enum
-
-'Private Type DEVNAMES
-'    wDriverOffset As Integer
-'    wDeviceOffset As Integer
-'    wOutputOffset As Integer
-'    wDefault As Integer
-'End Type
 
 'Required for passing information about the printer to certain API calls
 Private Const CCHDEVICENAME = 32
@@ -496,10 +456,6 @@ Public Enum EPrintRange
 End Enum
 Private m_lApiReturn As Long
 Private m_lExtendedError As Long
-Private m_dvmode As DevMode
-Private m_sDriver As String
-Private m_sDevice As String
-Private m_sOutputPort As String
 Private m_oEventSink As Object
 
 Public Property Get APIReturn() As Long
@@ -631,6 +587,7 @@ With opfile
     End Select
 End With
 End Function
+
 Private Function StrZToStr(s As String) As String
     StrZToStr = Left$(s, lstrlen(s))
 End Function
@@ -842,17 +799,6 @@ Public Property Let CustomColor(i As Integer, iValue As Long)
     End If
 End Property
 
-Private Function COMError(e As Long) As Long
-    COMError = e Or vbObjectError
-End Function
-'
-Private Function IsArrayEmpty(va As Variant) As Boolean
-    Dim v As Variant
-    On Error Resume Next
-    v = va(LBound(va))
-    IsArrayEmpty = (Err <> 0)
-End Function
-
 Public Function VBPageSetupDlg2( _
         Optional Owner As Long, _
         Optional DisableMargins As Boolean, _
@@ -872,8 +818,7 @@ Public Function VBPageSetupDlg2( _
         Optional PrintQuality As EPrintQuality = epqDraft, _
         Optional Units As EPageSetupUnits = epsuinches, _
         Optional Printer As Object, _
-        Optional Flags As Long, _
-        Optional EventSink As cCommonDialog _
+        Optional Flags As Long _
     ) As Boolean
 Dim afFlags As Long, afMask As Long
         

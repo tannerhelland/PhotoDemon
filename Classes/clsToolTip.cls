@@ -36,18 +36,10 @@ Option Explicit
 ' DelayReshow    = 100 (1/10 sec)
 ' MaxTipWidth    = 0
 ' all Margins    = 0
+
 'MODIFICATIONS
 'moved all the support Types and declates into the class
 'makes it much more portable
-Private Type NMHDR
-  hwndFrom                        As Long
-  idFrom                          As Long
-  code                            As Long
-End Type
-Private Type POINTAPI
-  x                               As Long
-  y                               As Long
-End Type
 Private Type RECT
   Left                            As Long
   Top                             As Long
@@ -57,7 +49,7 @@ End Type
 Private Const WM_USER             As Long = &H400
 Private Const TOOLTIPS_CLASS      As String = "tooltips_class32"
 Private Const TTS_ALWAYSTIP       As Long = &H1
-''Private Const TTS_NOPREFIX       As Long = &H2
+
 #Const WIN32_IE = &H400
 Private Type TOOLINFO
   cbSize                          As Long

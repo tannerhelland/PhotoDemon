@@ -176,13 +176,9 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
     
-    'Color and grayscale variables
+    'Color and related variables
     Dim r As Long, g As Long, b As Long, maxVal As Long
-    Dim newR As Long, newG As Long, newB As Long
-    
     Dim amtVal As Double, avgVal As Double
-    
-    Dim sw As Double, ls As Double, ss As Double
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
     Dim grayLookUp(0 To 765) As Byte
