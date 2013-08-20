@@ -24,28 +24,29 @@ Begin VB.Form FormColorBalance
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   10
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -54,7 +55,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
@@ -74,7 +75,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
@@ -94,7 +95,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
@@ -127,7 +128,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3840
       Width           =   675
    End
@@ -147,7 +148,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2880
       Width           =   915
    End
@@ -167,16 +168,9 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6360
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   1920
       Width           =   480
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblBlue 
       Alignment       =   1  'Right Justify
@@ -195,7 +189,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   10215
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3840
       Width           =   450
    End
@@ -216,7 +210,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   10080
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2880
       Width           =   600
    End
@@ -237,7 +231,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   10320
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1920
       Width           =   345
    End
@@ -267,23 +261,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    'Validate all textbox entries
-    If sltRed.IsValid And sltGreen.IsValid And sltBlue.IsValid Then
-        Me.Visible = False
-        Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, True)
-        Unload Me
-    End If
-    
-End Sub
 
 'Apply a new color balance to the image
 ' Input: offset for each of red, green, and blue
@@ -416,6 +393,14 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     
 End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, True)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
@@ -444,5 +429,5 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyColorBalance sltRed, sltGreen, sltBlue, True, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, True, True, fxPreview
 End Sub

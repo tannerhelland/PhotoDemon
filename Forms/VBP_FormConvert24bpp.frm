@@ -24,42 +24,34 @@ Begin VB.Form FormConvert24bpp
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   8880
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10350
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   3
+      Top             =   5790
+      Width           =   11820
+      _extentx        =   20849
+      _extenty        =   1323
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
-      ColorSelection  =   -1  'True
+      _extentx        =   9922
+      _extenty        =   9922
+      colorselection  =   -1
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   735
       Left            =   6240
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2640
       Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   1296
+      _extentx        =   9340
+      _extenty        =   1296
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -77,25 +69,9 @@ Begin VB.Form FormConvert24bpp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   2160
       Width           =   1935
-   End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   0
-      TabIndex        =   2
-      Top             =   5760
-      Width           =   11895
    End
 End
 Attribute VB_Name = "FormConvert24bpp"
@@ -125,16 +101,12 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+Private Sub cmdBar_OKClick()
+    Process "Remove alpha channel", , buildParams(colorPicker.Color)
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-    Me.Visible = False
-    Process "Remove alpha channel", , buildParams(colorPicker.Color)
-    Unload Me
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
 End Sub
 
 Private Sub colorPicker_ColorChanged()
@@ -163,8 +135,10 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, True, fxPreview
-    workingLayer.convertTo24bpp colorPicker.Color
-    finalizeImageData True, fxPreview
+    If cmdBar.previewsAllowed Then
+        Dim tmpSA As SAFEARRAY2D
+        prepImageData tmpSA, True, fxPreview
+        workingLayer.convertTo24bpp colorPicker.Color
+        finalizeImageData True, fxPreview
+    End If
 End Sub
