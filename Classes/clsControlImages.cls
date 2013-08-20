@@ -60,20 +60,18 @@ Private Type BUTTON_IMAGELIST
    uAlign   As IconAlign
 End Type
 
-Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal graphics As Long, ByVal InterpolationMode As Long) As Long
-Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal BITMAP As Long, hbmReturn As Long) As Long
-Private Declare Function GdiplusStartup Lib "gdiplus" (Token As Long, inputbuf As GdiplusStartupInput, Optional ByVal outputbuf As Long = 0) As Long
-Private Declare Function GdipLoadImageFromFile Lib "GdiPlus.dll" (ByVal mFilename As Long, ByRef mImage As Long) As Long
+Private Declare Function GdipSetInterpolationMode Lib "GdiPlus" (ByVal graphics As Long, ByVal InterpolationMode As Long) As Long
+Private Declare Function GdipCreateHICONFromBitmap Lib "GdiPlus" (ByVal BITMAP As Long, hbmReturn As Long) As Long
+Private Declare Function GdiplusStartup Lib "GdiPlus" (Token As Long, inputbuf As GdiplusStartupInput, Optional ByVal outputbuf As Long = 0) As Long
 Private Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal mGraphics As Long) As Long
-Private Declare Function GdipDrawImage Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal mX As Single, ByVal mY As Single) As Long
-Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
-Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal Image As Long, hGraphics As Long) As Long
+Private Declare Function GdipDisposeImage Lib "GdiPlus" (ByVal Image As Long) As Long
+Private Declare Function GdipGetImageGraphicsContext Lib "GdiPlus" (ByVal Image As Long, hGraphics As Long) As Long
 Private Declare Function GdipGetImageBounds Lib "GdiPlus.dll" (ByVal mImage As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
 Private Declare Function GdipDrawImageRect Lib "GdiPlus.dll" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal mX As Single, ByVal mY As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal Format As Long, ByRef Scan0 As Any, ByRef BITMAP As Long) As Long
-Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "GdiPlus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal Format As Long, ByRef Scan0 As Any, ByRef BITMAP As Long) As Long
+Private Declare Function GdipLoadImageFromStream Lib "GdiPlus" (ByVal Stream As Any, ByRef Image As Long) As Long
 Private Declare Function GdipCreateBitmapFromHBITMAP Lib "GdiPlus.dll" (ByVal mHbm As Long, ByVal mhPal As Long, ByRef mBitmap As Long) As Long
-Private Declare Sub GdiplusShutdown Lib "gdiplus" (ByVal Token As Long)
+Private Declare Sub GdiplusShutdown Lib "GdiPlus" (ByVal Token As Long)
 Private Declare Sub CreateStreamOnHGlobal Lib "ole32.dll" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long

@@ -62,7 +62,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     
     'Use the passed parameter string to initialize the selection
     pdImages(CurrentImage).mainSelection.initFromParamString paramString
-    pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+    pdImages(CurrentImage).mainSelection.lockIn
     pdImages(CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
@@ -105,7 +105,7 @@ Public Sub SelectWholeImage()
     pdImages(CurrentImage).mainSelection.selectAll
     
     'Lock in this selection
-    pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+    pdImages(CurrentImage).mainSelection.lockIn
     pdImages(CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
@@ -472,7 +472,7 @@ Public Sub invertCurrentSelection()
     pdImages(CurrentImage).mainSelection.invertSelection
     
     'Lock in this selection
-    pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+    pdImages(CurrentImage).mainSelection.lockIn
     pdImages(CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
@@ -522,7 +522,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         pdImages(CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).mainSelection.lockIn
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
@@ -569,7 +569,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         pdImages(CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).mainSelection.lockIn
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
@@ -622,7 +622,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         pdImages(CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).mainSelection.lockIn
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
@@ -675,7 +675,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         pdImages(CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).mainSelection.lockIn
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
@@ -723,7 +723,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         pdImages(CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).mainSelection.lockIn
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match

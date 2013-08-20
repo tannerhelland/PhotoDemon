@@ -1,6 +1,5 @@
 Attribute VB_Name = "Outside_FreeImageV3"
-'Note: this file has been modified for use within PhotoDemon.
-' (Most changes consist of converting PRIVATE functions to PUBLIC.)
+'Note: this file has been heavily modified for use within PhotoDemon.
 
 'IF YOU WANT TO USE THIS CODE IN YOUR OWN PROJECT, PLEASE DOWNLOAD THE ORIGINAL FROM THIS LINK:
 'http://freeimage.sourceforge.net/download.html
@@ -169,651 +168,7 @@ Option Explicit
 '
 '! now FreeImage version 3.15.4
 '
-'
-'March 19, 2012 - 2.16
-'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL to 3 to match current version 3.15.3
-'
-'! now FreeImage version 3.15.3
-'
-'
-'March 12, 2012 - 2.15
-'+ [Carsten Klein] added function FreeImage_ConvertToUINT16.
-'+ [Carsten Klein] added function FreeImage_ConvertToRGB16.
-'+ [Carsten Klein] added function FreeImage_GetThumbnail.
-'+ [Carsten Klein] added function declaration FreeImage_SetThumbnailInt and a real VB Boolean returning function FreeImage_SetThumbnail.
-'+ [Carsten Klein] added RAW_HALFSIZE load flag as well as the enum constant FILO_RAW_HALFSIZE.
-'+ [Carsten Klein] added wrapper function FreeImage_GetPictureData, which returns a byte array suitable for assigning to an Office image control's PictureData property.
-'+ [Carsten Klein] added wrapper function FreeImage_CreateFromPictureData, which creates a FreeImage bitmap from a PictureData byte array.
-'+ [Carsten Klein] added new save flag JPEG_BASELINE (also added FISO_JPEG_BASELINE to enumeration FREE_IMAGE_SAVE_OPTIONS).
-'+ [Carsten Klein] added a workaround for providing valid BITMAPINFO structures for non 555 16-bpp images to Windows API functions like CreateDIBSection, CreateDIBBitmap, StretchDIBits or SetDIBitsToDevice.
-'! [Carsten Klein] changed constants FREEIMAGE_MINOR_VERSION and FREEIMAGE_RELEASE_SERIAL: set to 15 and 2 respectively to match current version 3.15.2
-'
-'! now FreeImage version 3.15.2
-'
-'March 13, 2011 - 2.14
-'* [Glenn Thorpe] fixed a typo error with the call to FreeImage_HasPixels inside FreeImage_CreateMask.
-'
-'August 11, 2010 - 2.13
-'+ [Carsten Klein] added PSD load flags PSD_CMYK and PSD_LAB as well as the enum constants FILO_PSD_CYMK and FILO_PSD_LAB.
-'+ [Carsten Klein] added TIFF_LOGLUV save flag as well as the enum constant FISO_TIFF_LOGLUV.
-'
-'July 5, 2010 - 2.12
-'+ [Carsten Klein] added support for the new EXIF_RAW metadata model by adding enum constant FIMD_EXIF_RAW.
-'+ [Carsten Klein] added the new FIF_LOAD_NOPIXELS flag as well as the enum constant FILO_LOAD_NOPIXELS.
-'+ [Carsten Klein] added function declaration FreeImage_HasPixelsInt and a real VB Boolean returning function FreeImage_HasPixels.
-'+ [Carsten Klein] added function declaration FreeImage_FIFSupportsNoPixelsInt and a real VB Boolean returning function FreeImage_FIFSupportsNoPixels.
-'
-'! now FreeImage version 3.14.1
-'
-'June 20, 2010 - 2.11
-'+ [Carsten Klein] added new save flag JPEG_OPTIMIZE (also added FISO_JPEG_OPTIMIZE to enumeration FREE_IMAGE_SAVE_OPTIONS).
-'
-'April 20, 2010 - 2.10
-'+ [Carsten Klein] added new save flag TARGA_SAVE_RLE (also added FISO_TARGA_SAVE_RLE to enumeration FREE_IMAGE_SAVE_OPTIONS).
-'! [Carsten Klein] changed constants FREEIMAGE_MINOR_VERSION and FREEIMAGE_RELEASE_SERIAL: set to 14 and 0 respectively to match current version 3.14.0
-'+ [Carsten Klein] added function FreeImage_ConvertToFloat.
-'+ [Carsten Klein] added function FreeImage_SaveMultiBitmapToMemory.
-'+ [Carsten Klein] added wrapper functions FreeImage_SaveMultiBitmapToMemoryEx and FreeImage_SaveMultiBitmapToMemoryEx2.
-'+ [Carsten Klein] added wrapper function FreeImage_OpenMultiBitmapEx, which only opens existing files, but has support for automatic image format detection.
-'+ [Carsten Klein] added wrapper function FreeImage_CreateMultiBitmapEx, which only creates new (empty) multi-page bitmaps with support for automatic image format detection.
-'* [Carsten Klein] fixed a bug in FreeImage_LoadEx: now uses the file specified for format detection rather than the filename extension.
-'+ [Carsten Klein] improved error messages in function FreeImage_LoadEx.
-'* [Carsten Klein] fixed a bug in FreeImage_AcquireMemoryEx: no more crashes when passing an uninitialized array.
-'+ [Carsten Klein] added thin wrapper functions, enabling proper handling of Boolean parameters:
-'+                 added wrapper function FreeImage_OpenMultiBitmap
-'+                 added wrapper function FreeImage_UnlockPage
-'+                 added wrapper function FreeImage_RotateEx
-'+                 added wrapper function FreeImage_MakeThumbnail
-'+                 added wrapper function FreeImage_GetAdjustColorsLookupTable
-'+                 added wrapper function FreeImage_ApplyColorMapping
-'+                 added wrapper function FreeImage_SwapColors
-'+                 added wrapper function FreeImage_SwapColorsByLong
-'+                 added wrapper function FreeImage_ApplyIndexMapping
-'+                 added wrapper function FreeImage_SetTransparent
-'+                 added wrapper function FreeImage_ConvertFromRawBits
-'+                 added wrapper function FreeImage_ConvertToRawBits
-'+                 added wrapper function FreeImage_ConvertToStandardType
-'+                 added wrapper function FreeImage_ConvertToType
-'! [Carsten Klein] changed the parameter names of most functions.
-'! [Carsten Klein] changed signature of functions FreeImage_ConvertFromRawBits and FreeImage_ConvertToRawBits: 'ByRef Bits As Long' is now 'ByVal BitsPtr As Long'.
-'+ [Carsten Klein] added wrapper functions FreeImage_ConvertFromRawBitsEx and FreeImage_ConvertToRawBitsEx.
-'* [Carsten Klein] fixed a bug in declaration of function FreeImage_TmoReinhard05Ex: parameters 'Adaption' and 'ColorCorrection' are now passed by value.
-'- [Carsten Klein] removed half-implemented function FreeImage_SetChannelEx.
-'+ [Carsten Klein] added wrapper function FreeImage_SetChannelIOP.
-'- [Carsten Klein] removed needless default values of optional parameters.
-'- [Carsten Klein] removed function declaration FreeImage_CompositeByLong: replaced by declaration FreeImage_Composite.
-'! [Carsten Klein] changed function declaration FreeImage_Composite: application back color is now passed as ByRef ... As Any and so takes both RGBQUAD and Long valus.
-'+ [Carsten Klein] added wrapper function FreeImage_UnloadEx, which additionally sets the ByRef-passed Bitmap handle to zero after unloading.
-'+ [Carsten Klein] added wrapper functions ConvertColor and ConvertOleColor to convert VB-style BGR colors into RGB color values.
-'
-'! now FreeImage version 3.14.0
-'
-'February 9, 2010 - 2.9.1
-'* [Carsten Klein] fixed a bug in FreeImage_GetBackgroundColorAsLong: parameter 'bkcolor' is now properly passed ByRef.
-'
-'February 9, 2010 - 2.9
-'* [Carsten Klein] fixed a syntax typo
-'
-'February 8, 2010 - 2.8
-'* [Mike Weir] fixed a bug in function FreeImage_ApplyColorMappingEx: now properly includes all specified mapping entries
-'* [Carsten Klein] fixed a bug in function FreeImage_ApplyIndexMappingEx: now properly includes all specified mapping entries
-'* [Mike Weir] fixed a bug in function FreeImage_RescaleEx: now also rescales the image, if either the new width or height matches the image's current size
-'* [WinAnd / Carsten Klein] fixed a bug in function FreeImage_GetTransparencyTableExClone: returns an uninitialized array if there is no transparency table
-'* [WinAnd / Carsten Klein] fixed a bug in function FreeImage_SearchPalette: no longer crashes if there is no transparency table
-'
-'December 21, 2009 - 2.7
-'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL: set to 1 to match current version 3.13.1
-'
-'! now FreeImage version 3.13.1
-'
-'December 18, 2009 - 2.6
-'- [Carsten Klein] removed usage of constants vbPicTypeBitmap and vbPicTypeIcon: these are not available in VBA environments like Excel, Access or Outlook.
-'
-'September 08, 2009 - 2.5
-'! [Carsten Klein] changed constant FREEIMAGE_MINOR_VERSION: set to 13 to match current version 3.13.0
-'+ [Carsten Klein] added load flag constant JPEG_EXIFROTATE and new member FILO_JPEG_EXIFROTATE to enumeration FREE_IMAGE_LOAD_OPTIONS.
-'+ [Carsten Klein] added support for the PFM image format.
-'+ [Carsten Klein] added support for the PICT and RAW image formats.
-'+ [Carsten Klein] added UNICODE functions FreeImage_JPEGTransformU and FreeImage_JPEGCropU.
-'+ [Carsten Klein] added enumeration FREE_IMAGE_COLOR_OPTIONS, which contains options to specify colors, used with FreeImage_FillBackground and FreeImage_EnlargeCanvas.
-'+ [Carsten Klein] added function FreeImage_FillBackground: although this returns BOOL in C/C++, the VB version only returns a Long.
-'+ [Carsten Klein] added wrapper functions FreeImage_FillBackgroundEx and FreeImage_FillBackgroundByLong, taking an RGBQUAD and a Long 'Color' argument respectively and return a true VB Boolean.
-'+ [Carsten Klein] added function FreeImage_EnlargeCanvas.
-'+ [Carsten Klein] added functions FreeImage_AllocateEx and FreeImage_AllocateExT.
-'+ [Carsten Klein] added function FreeImage_TmoReinhard05Ex.
-'+ [Carsten Klein] added function FreeImage_Rotate.
-'+ [Carsten Klein] added wrapper function FreeImage_RotateIOP.
-'
-'! now FreeImage version 3.13.0
-'
-'March 18, 2009 - 2.4.2
-'+ [Carsten Klein] added enumeration FREE_IMAGE_FRAME_DISPOSAL_METHODS, which provides the frame disposal options needed to create animated GIF files.
-'
-'July 29, 2008 - 2.4.1
-'* [Carsten Klein] minor documentation updates
-'! [Carsten Klein] renamed member FICF_PALETTISED_8BPP of enumeration FREE_IMAGE_CONVERSION_FLAGS into FICF_PALLETISED_8BPP.
-'
-'June 30, 2008 - 2.4
-'* [Carsten Klein] fixed some minor issues in FreeImage_PaintTransparent()
-'
-'June 06, 2008 - 2.3
-'+ [Carsten Klein] added new compression flags to the JPEG and PNG plugins
-'! [Carsten Klein] renamed wrapper function FreeImage_CloneMetadata() to FreeImage_CloneMetadataEx(): now, there is a native function called FreeImage_CloneMetadata().
-'+ [Carsten Klein] added private and internal function declaration for FreeImage_CloneMetadata() along with it's public Boolean returning wrapper function.
-'- [Carsten Klein] removed the FreeImage_ColorQuantizeEx() stuff from both functions FreeImage_ConvertColorDepth() and FreeImage_ConvertColorDepthIOP(): removed parameters PaletteSize, ReserveSize and ReservePalette.
-'- [Carsten Klein] changed declaration of FreeImage_ColorQuantizeEx() to be a internal function private to the wrapper with an 'Int' appendix.
-'+ [Carsten Klein] added two more VB-friendly public wrapper functions FreeImage_ColorQuantizeEx() and FreeImage_ColorQuantizeExIOP().
-'+ [Carsten Klein] added wrapper function FreeImage_GetPalettePtr(): gets the pointer to a specified array of RGBQUADs: intended to be used together with any of the ColorQuantizeEx functions.
-'! [Carsten Klein] changed constant FREEIMAGE_MINOR_VERSION: set to 11 to match current version 3.11.0
-'
-'! now FreeImage version 3.11.0
-'
-'December 14, 2007 - 2.2.1
-'+ [Carsten Klein] added constants for member 'biCompression' in BITMAPINFOHEADER struct
-'+ [Carsten Klein] added wrapper function FreeImage_GetInfoHeaderEx(), which returns a fully populated BITMAPINFOHEADER struct for a bitmap.
-'* [Carsten Klein] fixed a bug in FreeImage_GetFileTypeFromMemoryEx(): now calls FreeImage_CloseMemory() releasing the hStream to prevent memory leaks.
-'+ [Carsten Klein] added wrapper function FreeImage_GetColorizedPalette(): returns a colorized greyscale palettte.
-'+ [Carsten Klein] added wrapper function FreeImage_Colorize(): applies a colorized greyscale palettte obtained from FreeImage_GetColorizedPalette() to a bitmap.
-'+ [Carsten Klein] added wrapper function FreeImage_Sepia(): calls FreeImage_Colorize() with proper parameters to apply a so called sepia palette to a bitmap.
-'
-'December 12, 2007 - 2.2
-'* [Carsten Klein] fixed a small bug in FreeImage_PaintTransparent, which now calls function FreeImage_ConvertTo32Bits instead of FreeImage_ConvertTo32Bits2.
-'
-'November 15, 2007 - 2.1
-'* [Carsten Klein] adjusted page numbers of the API documentation in FreeImage function declarations to match FreeImage 3.10.0 API documentation
-'- [Carsten Klein] removed parameter 'UnloadSource' from function FreeImage_GetOlePictureIcon(): an hIcon should not be destroyed if OleCreatePictureIndirect() is called with fOwn = True.
-'! [Carsten Klein] refactored FreeImage_GetOlePicture(): now relies on FreeImage_GetBitmap().
-'
-'November 10, 2007 - 2.0.8
-'! [Carsten Klein] changed declaration of FreeImage_SetOutputMessage(): now points transparently to the __stdcall version of this function in the library.
-'+ [Carsten Klein] added function declaraton for FreeImage_MultigridPoissonSolver().
-'+ [Carsten Klein] added function declaraton for FreeImage_GetTransparentIndex() and FreeImage_SetTransparentIndex().
-'+ [Carsten Klein] added private and internal function declaration for FreeImage_AdjustColors() along with it's public Boolean returning wrapper function.
-'+ [Carsten Klein] added function declaraton for FreeImage_GetAdjustColorsLookupTable().
-'+ [Carsten Klein] added wrapper function FreeImage_GetAdjustColorsLookupTableEx(): this takes a real VB style Byte array ton receive the lookup table created.
-'+ [Carsten Klein] added function declaraton for FreeImage_ApplyColorMapping().
-'+ [Carsten Klein] added wrapper function FreeImage_ApplyColorMappingEx(): this takes a real VB style RGBQUAD array.
-'+ [Carsten Klein] added function declaratons for FreeImage_SwapColors() and FreeImage_SwapColorsByLong().
-'+ [Carsten Klein] added function declaraton for FreeImage_ApplyIndexMapping().
-'+ [Carsten Klein] added wrapper function FreeImage_ApplyIndexMappingEx(): this takes a real VB style Byte array.
-'+ [Carsten Klein] added function declaraton for FreeImage_SwapPaletteIndices().
-'
-'November 05, 2007 - 2.0.7
-'+ [Carsten Klein] added 4 bit color depth to both function pGetNextColorDepth() and pGetPrevousColorDepth()
-'- [Carsten Klein] removed member FICF_PREPARE_RESCALE from enumeration FREE_IMAGE_CONVERSION_FLAGS
-'- [Carsten Klein] removed all references to FICF_PREPARE_RESCALE: Converting color depth before rescaling an image is no longer performed by the wrapper. Since FreeImage now transparently converts color depth on rescaling, doing this in the wrapper is no longer needed.
-'! [Carsten Klein] refactored wrapper function FreeImage_ConvertColorDepth(): removed case FICF_PREPARE_RESCALE; is now more similar to C# wrapper's version of this function.
-'! [Carsten Klein] refactored wrapper function FreeImage_SaveEx(): removed case FICF_PREPARE_RESCALE; is now more similar to C# wrapper's version of this function.
-'
-'September 14, 2007 - 2.0.6
-'+ [Carsten Klein] added function declaration and Boolean wrapper function for FreeImage_PreMultiplyWithAlpha().
-'
-'July 26, 2007 - 2.0.5
-'+ [Carsten Klein] added wrapper function FreeImage_GetBitmap(): returns an HBITMAP created by the CreateDIBSection() function and so has the same color depth as the original DIB.
-'+ [Carsten Klein] added wrapper function FreeImage_GetBitmapForDevice(): returns an HBITMAP created by the CreateDIBitmap() function and so has the same color depth as the specified reference DC or as the desktop, if the 'hDC' parameter was omitted.
-'- [Carsten Klein] removed function declaration for GetWindowDC(): this function is no longer used.
-'* [Carsten Klein] fixed a bug in wrapper function FreeImage_IsExtensionValidForFIF(): string comparison now includes a comma.
-'* [Carsten Klein] fixed a bug in wrapper function FreeImage_IsFilenameValidForFIF(): string comparison now includes a comma.
-'
-'July 25, 2007 - 2.0.4
-'* [Carsten Klein] fixed a bug in function FreeImage_GetPaletteExClone(): now actually returns the palette as RGBQUAD array plus some other minor improvements
-'+ [Carsten Klein] added wrapper function FreeImage_GetPaletteExLongClone(): this function returns a VB style Byte array that is only wrapped around FreeImage's pointer to a DIB's transparency table.
-'+ [Carsten Klein] added wrapper function FreeImage_GetTransparencyTableEx(): this function returns a VB style Byte array that is only wrapped around FreeImage's pointer to a DIB's transparency table.
-'! [Carsten Klein] changed name of wrapper function FreeImage_GetTransparencyTableEx(): this function is now named FreeImage_GetTransparencyTableExClone(), since it actually returns a clone (deep copy) of an image's transparency table (compare with FreeImage_GetPaletteExClone()).
-'+ [Carsten Klein] added wrapper function FreeImage_SetPalette(): sets an image's palette through a VB style RGBQUAD array.
-'+ [Carsten Klein] added wrapper function FreeImage_SetPaletteLong(): sets an image's palette through a VB style Long array.
-'+ [Carsten Klein] added function declaration for CreateDIBsection()
-'+ [Carsten Klein] added function declaration for DeleteDC()
-'* [Carsten Klein] fixed a bug in wrapper function FreeImage_CreateFromScreen(): now the memory DC is deleted with the DeleteDC() function and no longer with the DeleteObject() function.
-'
-'July 05, 2007 - 2.0.3
-'+ [Carsten Klein] added wrapper function FreeImage_GetFileTypeFromMemoryEx(): more VB friendly version of FreeImage_GetFileTypeFromMemory() which may take an array rather than a FIMEMORY stream.
-'
-'May 21, 2007 - 2.0.2
-'! [Carsten Klein] changed constant FREEIMAGE_MINOR_VERSION: set to 10 to match current version 3.10.0
-'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL: set to 0 to match current version 3.10.0
-'+ [Carsten Klein] added image format constants FIF_EXR, FIF_J2K and FIF_JP2 to enumeration FREE_IMAGE_FORMAT.
-'+ [Carsten Klein] added tone mapping operator constant FITMO_FATTAL02 to enumeration FREE_IMAGE_TMO.
-'+ [Carsten Klein] added save option constants J2K_DEFAULT and JP2_DEFAULT for JPEG2000 format.
-'+ [Carsten Klein] added save option constants EXR_DEFAULT, EXR_FLOAT, EXR_NONE, EXR_ZIP, EXR_PIZ, EXR_PXR24, EXR_B44 and EXR_LC for EXR format.
-'+ [Carsten Klein] added save option constants for EXR format to enumeration FREE_IMAGE_SAVE_OPTIONS.
-'+ [Carsten Klein] added declared function FreeImage_TmoFattal02(): adds support for Gradient domain high dynamic range compression (R. Fattal, 2002)
-'
-'! now FreeImage version 3.10.0
-'
-'February 24, 2007 - 2.0.1
-'* [Carsten Klein] fixed a bug in function FreeImage_CreateFromScreen(): now size of image created is according to window to be captured if parameter 'hWnd' <> 0.
-'+ [Carsten Klein] added parameter 'bClientAreaOnly' to function FreeImage_CreateFromScreen().
-'+ [Carsten Klein] added blitting option 'CAPTUREBLT' when calling function BitBlt() in function FreeImage_CreateFromScreen().
-'- [Carsten Klein] removed unused variable 'hDIB' from functions FreeImage_CreateFromScreen() and FreeImage_LoadEx(). Thanks to Bruce Rusk for pointing that out.
-'
-'February 16, 2007 - 2.0
-'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL: set to 3 to match current version 3.9.3
-'! [Carsten Klein] changed JPEG load/save flag option values: changed constants and both enumerations FREE_IMAGE_SAVE_OPTIONS and FREE_IMAGE_SAVE_OPTIONS.
-'+ [Carsten Klein] added ICC Color Profile support:
-'!                 changed signature of declared function FreeImage_GetICCProfile(): is now declared 'Private' and suffixed with '...Int()'.
-'+                 added wrapper function FreeImage_GetICCProfile(): is the public wrapper function for private function FreeImage_GetICCProfileInt(), returing a real FIICCPROFILE structure.
-'+                 added constant FREE_IMAGE_ICC_COLOR_MODEL_MASK.
-'+                 added enumeration FREE_IMAGE_ICC_COLOR_MODEL.
-'+                 added wrapper function FreeImage_GetICCProfileColorModel(): returns the color profile's color model (FIICCPROFILE.flags member).
-'+                 added wrapper function FreeImage_GetICCProfileSize(): returns the color profile data's size in bytes.
-'+                 added wrapper function FreeImage_GetICCProfileDataPointer(): returns the pointer to the color profile data.
-'+                 added wrapper function FreeImage_HasICCProfile(): returns whether a color profile is available for a dib or not.
-'! [Carsten Klein] changed behaviour of wrapper function FreeImage_RescaleEx() and all it's derived functions: no clone is returned if the actual and desired image size are the same.
-'+ [Carsten Klein] added parameter 'bForceCloneCreation' to wrapper function FreeImage_RescaleEx() and all it's derived functions.
-'
-'! now FreeImage version 3.9.3
-'
-'January 09, 2007 - 1.9.4
-'! [Carsten Klein] changed scope of declared function FreeImage_GetFileTypeUInt(): is now private according to all other '...Int' functions wrapped by a VB-friendly function.
-'! [Carsten Klein] changed scope of declared function FreeImage_GetFIFFromFilenameUInt(): is now private according to all other '...Int' functions wrapped by a VB-friendly function.
-'! [Carsten Klein] changed signature of declared functions FreeImage_GetBackgroundColorInt() and FreeImage_SetBackgroundColorInt(): now both have a 'ByRef bkcolor As RGBQUAD' parameter instead of 'ByVal bkcolor As Long'.
-'+ [Carsten Klein] added declared functions FreeImage_GetBackgroundColorAsLongInt(): this has a 'ByRef bkcolor As Long' parameter and provides the background color as a Long value.
-'+ [Carsten Klein] added declared functions FreeImage_SetBackgroundColorAsLongInt(): this has a 'ByRef bkcolor As Long' parameter and takes the background color as a Long value.
-'! [Carsten Klein] changed signature of wrapper functions FreeImage_GetBackgroundColor() and FreeImage_SetBackgroundColor(): now both have a 'ByRef bkcolor As RGBQUAD' parameter instead of 'ByVal bkcolor As Long'.
-'+ [Carsten Klein] added wrapper functions FreeImage_GetBackgroundColorAsLong() and FreeImage_SetBackgroundColorAsLong(): both have a 'ByRef bkcolor As Long' parameter and so offer getting and setting the background color through a Long value.
-'+ [Carsten Klein] added wrapper functions FreeImage_GetBackgroundColorEx() and FreeImage_SetBackgroundColorEx(): both both take 4 ByRef Byte parameters 'Alpha', 'Red', 'Green' and 'Blue', one for each color component.
-'
-'January 05, 2007 - 1.9.3
-'+ [Carsten Klein] added wrapper function FreeImage_GetLockedPageNumbersEx(): this returns a real VB-style array of Longs containing the page numbers of all locked pages.
-'
-'January 02, 2007 - 1.9.2
-'* [Carsten Klein] fixed a bug in inline description of function FreeImage_GetPaletteEx(): now tells to use function FreeImage_DestroyLockedArrayRGBQUAD() to free an array returned by this function.
-'* [Carsten Klein] fixed some minor bugs in inline documentation.
-'* [Carsten Klein] fixed a serious bug in function FreeImage_SaveEx(): parameter 'UnloadSource' is now interpreted correctly under all circumstances.
-'* [Carsten Klein] fixed some minor issues in function FreeImage_SaveEx().
-'
-'December 29, 2006 - 1.9.1
-'+ [Carsten Klein] added enumeration item FID_BAYER16x16: now supports Bayer ordered dispersed dot dithering (order 4 dithering matrix).
-'
-'October 31, 2006 - 1.9
-'* [Carsten Klein] adjusted page numbers of the API documentation in header comments in FreeImage function declarations to match FreeImage 3.9.2 API documentation
-'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL: set to 2 to match current version 3.9.2
-'+ [Carsten Klein] added function declaration for FreeImage_JPEGCrop(): added both declaration and Boolean returning wrapper function.
-'! [Carsten Klein] changed data type of all occurences of parameter 'Flags' from Long to either FREE_IMAGE_LOAD_OPTIONS or FREE_IMAGE_SAVE_OPTIONS enum. This is true for declared functions as well as for wrapper functions.
-'+ [Carsten Klein] added function declaration for FreeImage_LoadMultiBitmapFromMemory().
-'+ [Carsten Klein] added wrapper function FreeImage_LoadMultiBitmapFromMemoryEx(): this is dealing with a VB style array (SAFEARRAY) like FreeImage_LoadFromMemoryEx() does.
-'
-'! now FreeImage version 3.9.2
-'
-'October 30, 2006 - 1.8
-'* [Carsten Klein] fixed a memory leak in wrapper function SavePictureEx(). Thanks to Roogames for reporting that bug.
-'! [Carsten Klein] changed return type of wrapper function SavePictureEx() to Boolean.
-'+ [Carsten Klein] added wrapper function FreeImage_SaveEx() which brings all the features, as there are inline size- and color conversion and format guessing, so far only known from SavePictureEx() for DIBs.
-'! [Carsten Klein] changed wrapper function SavePictureEx(): now this is only a thin wrapper for function FreeImage_SaveEx().
-'+ [Carsten Klein] added enumeration FREE_IMAGE_LOAD_OPTIONS.
-'- [Carsten Klein] refactored enumeration FREE_IMAGE_SAVE_OPTIONS: removed unnecessary items from enumeration.
-'! [Carsten Klein] changed wrapper function LoadPictureEx(): added parameter 'Options' (enum FREE_IMAGE_LOAD_OPTIONS) to specify image loading options (called 'flags' in FreeImage).
-'+ [Carsten Klein] added wrapper function FreeImage_LoadEx() which brings all the features, as there are inline size- and color conversion and format guessing, so far only known from LoadPictureEx() for DIBs.
-'! [Carsten Klein] changed wrapper function LoadPictureEx(): now this is only a thin wrapper for function FreeImage_LoadEx().
-'
-'October 13, 2006 - 1.7.2
-'+ [Carsten Klein] added User32 function GetDesktopWindow()
-'+                 added User32 function GetWindowDC()
-'- [Carsten Klein] removed unused constants DI_MASK, DI_IMAGE and DI_NORMAL
-'+                 added GDI32 function GetDeviceCaps() with constants HORZRES and VERTRES
-'+                 added GDI32 function SelectObject()
-'+                 added GDI32 function DeleteObject()
-'+                 added GDI32 function CreateCompatibleBitmap()
-'+                 added GDI32 function CreateCompatibleDC()
-'+                 added GDI32 function BitBlt()
-'+ [Carsten Klein] added wrapper function FreeImage_CreateFromScreen(): this function lets you capture the whole screen or any certain window
-'
-'October 10, 2006 - 1.7.1
-'! [Carsten Klein] changed parameter name 'Page' into 'hPageDib' in declared function FreeImage_UnlockPage(). 'hPageDib' must be the (dib-)handle obtained from FreeImage_LockPage() and not the page number. Now, the declaration is less confusing. Thanks to Ender Wiggin.
-'
-'August 4, 2006 - 1.7
-'* [Carsten Klein] fixed a bug in pGetTagFromTagPtr(): removed overflow error when converting unsigned short tags (FIDT_SHORT) with values between 32768 and 65535. Thanks to André Hendriks.
-'! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL: set to 1 to match current version 3.9.1
-'
-'! now FreeImage version 3.9.1
-'
-'July 17, 2006 - 1.6
-'+ [Carsten Klein] added more public wrapper functions for tag copying and cloning:
-'+                 added function FreeImage_CopyMetadata()
-'+                 added function FreeImage_CloneMetadata()
-'- [Carsten Klein] removed dead API functions, dead structures and dead variables
-'* [Carsten Klein] fixed a bug in FreeImage_ConvertColorDepth(): now color images are converted to 24 bits when used with FICF_PREPARE_RESCALE, all others to 8 bit
-'
-'July 16, 2006 - 1.5.6
-'+ [Carsten Klein] added more public wrapper functions for VB friendly tag access: these functions deal with a FREE_IMAGE_TAG structure instead of FreeImage's Tag pointer.
-'+                 added function FreeImage_SetMetadataEx()
-'+                 added function FreeImage_CreateTagEx()
-'+                 added function FreeImage_AppendTag()
-'+                 added function FreeImage_RemoveTag()
-'+                 added function FreeImage_RemoveTagEx()
-'+                 added function FreeImage_TagExists()
-'+                 added function FreeImage_TagExistsEx()
-'+                 added function FreeImage_DeleteTagEx()
-'+                 added function FreeImage_CloneTagEx()
-'+                 added function FreeImage_RemoveMetadataModel()
-'+                 added function FreeImage_UpdateMetadata()
-'+                 added function FreeImage_UnsignedLong()
-'+                 added function FreeImage_UnsignedShort()
-'+                 added function FreeImage_CreateRational()
-'+                 added function FreeImage_CreateSignedRational()
-'+                 added function FreeImage_GetImageComment()
-'+                 added function FreeImage_SetImageComment()
-'+ [Carsten Klein] added some private helper functions to leverage tag updating:
-'+                 added helper function pTagToTagPtr()
-'+                 added helper function pGetValueBuffer()
-'+                 added helper function pGetRationalValueBuffer()
-'+                 added helper function pGetVariantAsByteBuffer()
-'+                 added helper function pGetElementSize()
-'
-'July 5, 2006 - 1.5.5
-'! [Carsten Klein] changed function signature of FreeImage_FindNextMetadataEx(): optional parameter 'Model' is now present; see the function's inline documentation
-'
-'June 30, 2006 - 1.5.4
-'* [Carsten Klein] fixed bug in functions creating a FreeImage DIB from a windows hBitmap: workaround for palletized bitmaps is now implemented
-'*                 fixed function FreeImage_CreateFromOLEPicture()
-'*                 fixed function FreeImage_CreateFromDC()
-'
-'June 22, 2006 - 1.5.3
-'! [Carsten Klein] changed function declaration of FreeImage_GetMetadataInt(): parameter 'model' is now 'ByVal' and Tag is a Long pointer
-'! [Carsten Klein] changed function declaration of FreeImage_SetMetadataInt(): parameter 'model' is now 'ByVal' and Tag is a Long pointer
-'! [Carsten Klein] changed function declaration of FreeImage_GetMetadata(): parameter Tag is a Long pointer now
-'! [Carsten Klein] changed function declaration of FreeImage_SetMetadata(): parameter Tag is a Long pointer now
-'+ [Carsten Klein] added function declarations for tag creation and destruction:
-'+                 added declaration for function FreeImage_CreateTag()
-'+                 added declaration for procedure FreeImage_DeleteTag()
-'+                 added declaration for function FreeImage_CloneTag()
-'+ [Carsten Klein] added new items to structure FREE_IMAGE_TAG:
-'+                 added item 'Model As FREE_IMAGE_MDMODEL'
-'+                 added item 'TagPtr As Long'
-'+ [Carsten Klein] added wrapper functions for more VB friendly Tag access: these functions deal with a FREE_IMAGE_TAG structure instead of FreeImage's Tag pointer.
-'+                 added function FreeImage_FindFirstMetadataEx()
-'+                 added function FreeImage_FindNextMetadataEx()
-'+                 added function FreeImage_GetAllMetadataTags()
-'+                 added function FreeImage_GetMetadataEx()
-'* [Carsten Klein] fixed and adjusted page numbers of the API documentation in header comments in FreeImage function declarations
-'- [Carsten Klein] removed workaround for thresholding and dithering non-MINISBLACK 8 bit images in function FreeImage_ConvertColorDepth(): was fixed in FreeImage 3.9.0
-'* [Carsten Klein] fixed all pending issues in function FreeImage_PaintDC(): is now in production state
-'
-'June 14, 2006 - 1.5.2
-'! [Carsten Klein] changed signature of function FreeImage_CreateMask()
-'+ [Carsten Klein] added function FreeImage_CreateMaskImage(): this creates a monochrome mask from a source image
-'+ [Carsten Klein] added function FreeImage_CreateMaskInPlace(): this creates a monochrome mask from a source image
-'+ [Carsten Klein] added enumeration FREE_IMAGE_ICON_TRANSPARENCY_OPTION_FLAGS
-'+ [Carsten Klein] added wrapper function FreeImage_CreateSimpleBWMaskImage(): wrapper for FreeImage_CreateMaskImage() with reduced number of parameters; creates a b/w mask
-'+ [Carsten Klein] added wrapper function FreeImage_CreateSimpleBWMaskInPlace(): wrapper for FreeImage_CreateMaskInPlace() with reduced number of parameters; creates a b/w mask
-'+ [Carsten Klein] added function declaration for FreeImage_MakeThumbnail()
-'+ [Carsten Klein] added function for FreeImage_GetOlePictureThumbnail()
-'+ [Carsten Klein] added function for FreeImage_MakeThumbnailIOP()
-'+ [Carsten Klein] documented function FreeImage_ReadMemoryEx()
-'+ [Carsten Klein] documented function FreeImage_WriteMemoryEx()
-'! [Carsten Klein] divided FreeImage_TagFromPointer into an interface only function with a private helper function pGetTagFromTagPtr():
-'+                 added helper function pGetTagFromTagPtr()
-'! [Carsten Klein] added private helper functions to leverage the FIDT_RATIONAL and FIDT_SRATIONAL data type:
-'+                 added helper function pNormalizeRational()
-'+                 added helper function pNormalizeSRational()
-'+                 added helper function gcd()
-'+                 added helper function floor()
-'! [Carsten Klein] changed name of structure 'FITAG_int' to 'FITAG': is now as in FreeImage library
-'! [Carsten Klein] changed name of structure 'FITAG' to 'FREE_IMAGE_TAG': this new structure plays an important role in the wrapper's new VB friendly tag accessing concept
-'! [Carsten Klein] changed function declaration of FreeImage_GetMetadataCount(): parameter 'model' is now 'ByVal'
-'! [Carsten Klein] changed function declaration of FreeImage_TagToString(): parameter 'model' is now 'ByVal' and function returns a Long
-'! [Carsten Klein] renamed function declaration of FreeImage_TagToString() to FreeImage_TagToStringInt(): function is now Private and wrapped by a VB String returning function
-'+ [Carsten Klein] added wrapper function FreeImage_TagToString() returning a real VB String
-'+ [Carsten Klein] added structure FIRATIONAL: structure to hold an image tag's rational value
-'+ [Carsten Klein] added new items to structure FREE_IMAGE_TAG:
-'+                 added item 'StringValue As String'
-'+                 added item 'Palette() As RGBQUAD'
-'+                 added item 'RationalValue() As FIRATIONAL'
-'
-'June 13, 2006 - 1.5.1
-'! [Carsten Klein] changed version constant 'FREEIMAGE_MINOR_VERSION' to 9 to meet version 3.9.0
-'* [Carsten Klein] fixed and adjusted page numbers of the API documentation in header comments in FreeImage function declarations to match FreeImage 3.9.0 API documentation
-'+ [Carsten Klein] added function declaration for new Memory I/O functions in 3.9.0
-'+                 added declaration FreeImage_ReadMemory()
-'+                 added declaration FreeImage_WriteMemory()
-'! [Carsten Klein] changed/added optional parameter 'element_size' to private function pGetMemoryBlockPtrFromVariant(): caller now can get size in bytes one array element
-'+ [Carsten Klein] added wrapper functions for new Memory I/O functions in 3.9.0
-'+                 added function FreeImage_ReadMemoryEx()
-'+                 added function FreeImage_WriteMemoryEx()
-'+ [Carsten Klein] added constants and updated enumerations for new 3.9.0 file formats 'FAXG3' and 'SGI'
-'+ [Carsten Klein] added Windows GDI icon related declarations:
-'+                 added function declaration for CreateIconIndirect()
-'+                 added function declaration for DestroyIcon()
-'+                 added structure ICONINFO
-'+ [Carsten Klein] added function FreeImage_GetIcon(): returns a hIcon handle
-'+ [Carsten Klein] added function FreeImage_GetOlePictureIcon(): returns a VB Picture object of type vbPicTypeIcon
-'+ [Carsten Klein] added enumeration FREE_IMAGE_MASK_FLAGS
-'+ [Carsten Klein] added function FreeImage_CreateMaskColors(): returns an array filled with items from an argument list; synonym for VB's Array() function
-'+ [Carsten Klein] added enumeration FREE_IMAGE_teMask(): this creates a monochrome mask from a source image
-'+ [Carsten Klein] added function FreeImage_CreaMASK_CREATION_OPTION_FLAGS
-'
-'! now FreeImage version 3.9.0
-'
-'June 12, 2006 - 1.5
-'* [Carsten Klein] fixed bug in wrapper function FreeImage_PaintDCEx(): now handles boolean test correctly: 'If ((hDC <> 0) And (hDIB <> 0)) Then -> Thanks to ender_wiggin for reporting that bug.
-'+ [Carsten Klein] added private function pGetIOlePictureFromContainer(): used to get IPicture from image hosting control (Form, PictureBox) including custom drawings
-'+ [Carsten Klein] added wrapper function FreeImage_CreateFromImageContainer(): used to create FreeImage DIB from image hosting control (Form, PictureBox) including custom drawings
-'+ [Carsten Klein] added wrapper function SaveImageContainerEx(): derivate of wrapper function 'SavePictureEx()': saves content of image hosting control (Form, PictureBox) including custom drawings
-'
-'February 27, 2006 - 1.4.8
-'+ [Carsten Klein] added inline documentation for these wrapper functions:
-'+                 documented function FreeImage_CompareColorsLongLong()
-'+                 documented function FreeImage_CompareColorsRGBTRIPLELong()
-'+                 documented function FreeImage_CompareColorsRGBQUADLong()
-'+                 documented function FreeImage_SearchPalette()
-'! [Carsten Klein] changed and updated general remarks in section "General notes on implementation and design"
-'! [Carsten Klein] changed all function declarations of FreeImage functions that return a BOOL in C/C++: see "Functions returning Booleans" in section "General notes on implementation and design"
-'! [Carsten Klein] changed all function signatures of functions that are derived from or extend FreeImage BOOL functions: see "Functions returning Booleans" in section "General notes on implementation and design"
-'+ [Carsten Klein] added wrapper functions for all FreeImage functions that return a BOOL in C/C++: see "Functions returning Booleans" in section "General notes on implementation and design"
-'+ [Carsten Klein] added wrapper function FreeImage_CreateFromDC(): creates an DIB from a DC. Thanks to Evan (wxforecaster) for this suggestion.
-'+ [Carsten Klein] added declaration of GDI function GetCurrentObject() and constant OBJ_BITMAP
-'+ [Carsten Klein] added wrapper function FreeImage_IsAvailable(): used to test for existence of FreeImage Library (FreeImage.dll)
-'
-'February 9, 2006 - 1.4.7
-'+ [Carsten Klein] added private helper function pGetPreviousColorDepth()
-'+ [Carsten Klein] added private helper function pGetNextColorDepth()
-'! [Carsten Klein] changed/extended signature of wrapper function SavePictureEx(): now includes a parameter 'ColorDepth'
-'+ [Carsten Klein] added enumeration FREE_IMAGE_COLOR_DEPTH
-'+ [Carsten Klein] added error handling capabilities to wrapper function SavePictureEx()
-'+ [Carsten Klein] added/updated inline documentation of wrapper function SavePictureEx()
-'
-'October 31, 2005 - 1.4.6
-'+ [Carsten Klein] added wrapper function FreeImage_SwapColorLong(): this converts from a RGB to a BGR color value stored in a Long and vice versa
-'
-'October 27, 2005 - 1.4.5
-'+ [Carsten Klein] added function FreeImage_IsTransparencyTableTransparent(): checks for transparency directly on the transparency table
-'
-'October 13, 2005 - 1.4.4
-'+ [Carsten Klein] added some functions to compare colors in different formats and with tolerance:
-'+                 added function FreeImage_CompareColorsLongLong()
-'+                 added function FreeImage_CompareColorsRGBTRIPLELong()
-'+                 added function FreeImage_CompareColorsRGBQUADLong()
-'+ [Carsten Klein] added enumeration FREE_IMAGE_COLOR_FORMAT_FLAGS
-'+ [Carsten Klein] added enumeration FREE_IMAGE_TRANSPARENCY_STATE_FLAGS
-'+ [Carsten Klein] added function FreeImage_SearchPalette(): to search the palette index for a given color
-'
-'October 13, 2005 - 1.4.3
-'+ [Carsten Klein] added additional function declaration FreeImage_SetPixelColorByLong(): now color values may be provided in a long value
-'+ [Carsten Klein] added additional function declaration FreeImage_GetPixelColorByLong(): now color values may be received in a long value
-'+ [Carsten Klein] added function FreeImage_SetPixelColorEx(): color values may be provided by four different byte values
-'+ [Carsten Klein] added function FreeImage_GetPixelColorEx(): color values are returned through four different byte values
-'
-'October 11, 2005 - 1.4.2
-'* [Carsten Klein] fixed bug in wrapper function FreeImage_GetBitsExRGBQUAD(): now tests for and works with 32 bit images
-'
-'October 10, 2005 - 1.4.1
-'* [Carsten Klein] fixed serious bug in FreeImage_GetBitsEx...() functions: created custom array descriptor now really has two dimensions
-'*                 fixed wrapper function FreeImage_GetBitsEx()
-'*                 fixed wrapper function FreeImage_GetBitsExRGBTRIPLE()
-'*                 fixed wrapper function FreeImage_GetBitsExRGBQUAD()
-'
-'September 9, 2005 - 1.4
-'! [Carsten Klein] changed wrapper function FreeImage_ConvertColorDepth(): now uses FreeImage_ConvertToGreyscale
-'+ [Carsten Klein] added version numbers to change log
-'+ [Carsten Klein] added comments to IOlePicture aware toolkit and conversion functions
-'* [Carsten Klein] fixed and adjusted page numbers of the API documentation in header comments in FreeImage function declarations
-'
-'! now FreeImage version 3.8.0
-'
-'September 8, 2005 - 1.3.5
-'! [Carsten Klein] changed version constant 'FREEIMAGE_MINOR_VERSION' to 8 to meet version 3.8.0
-'+ [Carsten Klein] added function declarations for UNICODE dealing functions with additional token 'Int' appended:
-'+                 added function FreeImage_LoadUInt()
-'+                 added function FreeImage_SaveUInt()
-'+                 added function FreeImage_GetFileTypeUInt()
-'+                 added function FreeImage_GetFIFFromFilenameUInt()
-'+ [Carsten Klein] added wrapper functions to ease the use of UNICODE dealing functions:
-'+                 added function FreeImage_LoadU()
-'+                 added function FreeImage_SaveU()
-'+                 added function FreeImage_GetFileTypeU()
-'+                 added function FreeImage_GetFIFFromFilenameU()
-'+ [Carsten Klein] added function declaration for FreeImage_ConvertToGreyscale()
-'
-'July 18, 2005 - 1.3.4
-'! [Carsten Klein] changed inline comments in these wrapper functions:
-'!                 changed FreeImage_GetBitsEx(): mixed up width and height in SAFEAARAY creation
-'!                 changed FreeImage_GetBitsExRGBTRIPLE(): mixed up width and height in SAFEAARAY creation
-'!                 changed FreeImage_GetBitsExRGBQUAD(): mixed up width and height in SAFEAARAY creation
-'+ [Carsten Klein] added wrapper function FreeImage_GetScanLinesRGBTRIPLE():
-'
-'June 30, 2005 - 1.3.3
-'+ [Carsten Klein] added Kernel32 function FillMemory()
-'
-'June 24, 2005 - 1.3.2
-'+ [Carsten Klein] added pixel access functions FreeImage_GetBitsExRGBTRIPLE() and FreeImage_GetBitsExRGBQUAD()
-'+ [Carsten Klein] added IOlePicture based wrapper function FreeImage_ConvertColorDepthIOP()
-'+ [Carsten Klein] added IOlePicture based wrapper functions for FreeImage_RescaleIOP():
-'+                 added function FreeImage_FreeImage_RescaleByPixelIOP()
-'+                 added function FreeImage_FreeImage_RescaleByPercentIOP()
-'+                 added function FreeImage_FreeImage_RescaleByFactorIOP()
-'+ [Carsten Klein] added IOlePicture based wrapper function FreeImage_RescaleIOP()
-'* [Carsten Klein] fixed a bug in FreeImage_GetOlePicture(): now OlePictures returned through IPicture may be used directly by other functions accepting IPicture types without any assignment to IPictureDisp
-'
-'June 24, 2005 - 1.3.1
-'! [Carsten Klein] changed improper function declaration of function FreeImage_AdjustCurve(): now parameter 'LUT' is passed ByVal
-'+ [Carsten Klein] added wrapper function FreeImage_AdjustCurveEx()
-'+ [Carsten Klein] added IOlePicture based wrapper functions for FreeImage toolkit functions:
-'+                 added function FreeImage_RotateClassicIOP()
-'+                 added function FreeImage_RotateExIOP()
-'+                 added function FreeImage_FlipHorizontalIOP()
-'+                 added function FreeImage_FlipVerticalIOP()
-'+                 added function FreeImage_AdjustCurveIOP()
-'+                 added function FreeImage_AdjustGammaIOP()
-'+                 added function FreeImage_AdjustBrightnessIOP()
-'+                 added function FreeImage_AdjustContrastIOP()
-'+                 added function FreeImage_InvertIOP()
-'+                 added function FreeImage_GetChannelIOP()
-'+                 added function FreeImage_CopyIOP()
-'+                 added function FreeImage_PasteIOP()
-'
-'June 22, 2005 - 1.3
-'+ [Carsten Klein] added inline comments and documentation for pixel access functions
-'
-'June 18, 2005 - 1.2.9
-'+ [Carsten Klein] added function FreeImage_GetBitsEx()
-'+ [Carsten Klein] added structure SAFEARRAY2D to create 2 dimensional custom arrays
-'+ [Carsten Klein] added function declarations for converting scanlines to 4 bpp:
-'+                 added declaration for FreeImage_ConvertLine1To4()
-'+                 added declaration for FreeImage_ConvertLine8To4()
-'+                 added declaration for FreeImage_ConvertLine16To4_555()
-'+                 added declaration for FreeImage_ConvertLine16To4_565()
-'+                 added declaration for FreeImage_ConvertLine24To4()
-'+                 added declaration for FreeImage_ConvertLine32To4()
-'
-'June 16, 2005 - 1.2.8
-'! [Carsten Klein] changed improper function declaration for all functions FreeImage_ConvertLineXXXX(): now parameters 'target' and 'Source' are passed ByVal
-'
-'June 15, 2005 - 1.2.7
-'+ [Carsten Klein] added function FreeImage_DestroyLockedArrayByPtr() to destroy a locked array by it's pointer (VB can't pass a array of structures through a Variant type)
-'+ [Carsten Klein] added some wrapper functions for FreeImage_DestroyLockedArrayByPtr() for common FreeImage structures:
-'+                 added function FreeImage_DestroyLockedArrayRGBTRIPLE()
-'+                 added function FreeImage_DestroyLockedArrayRGBQUAD()
-'+                 added function FreeImage_DestroyLockedArrayFICOMPLEX()
-'+                 added function FreeImage_DestroyLockedArrayFIRGB16()
-'+                 added function FreeImage_DestroyLockedArrayFIRGBA16()
-'+                 added function FreeImage_DestroyLockedArrayFIRGBF()
-'+                 added function FreeImage_DestroyLockedArrayFIRGBAF()
-'+ [Carsten Klein] added functions to return scanlines as VB style arrays in all supported FreeImage formats:
-'+                 added function FreeImage_GetScanLineBITMAP8()
-'+                 added function FreeImage_GetScanLineBITMAP16()
-'+                 added function FreeImage_GetScanLineBITMAP24()
-'+                 added function FreeImage_GetScanLineBITMAP32()
-'+                 added function FreeImage_GetScanLineINT16()
-'+                 added function FreeImage_GetScanLineINT32()
-'+                 added function FreeImage_GetScanLineFLOAT()
-'+                 added function FreeImage_GetScanLineDOUBLE()
-'+                 added function FreeImage_GetScanLineCOMPLEX()
-'+                 added function FreeImage_GetScanLineRGB16()
-'+                 added function FreeImage_GetScanLineRGBA16()
-'+                 added function FreeImage_GetScanLineRGBF()
-'+                 added function FreeImage_GetScanLineRGBAF()
-'
-'June 14, 2005 - 1.2.6
-'! [Carsten Klein] updated documentation on array-dealing functions using arrays with custom array descriptors
-'+ [Carsten Klein] added function FreeImage_DestroyLockedArray() to destroy a self created array 'FADF_AUTO Or FADF_FIXEDSIZE' array
-'+ [Carsten Klein] added function FreeImage_GetPaletteExLong() to return palette data in an array of type Long
-'+ [Carsten Klein] added parameters 'lPaletteSize', 'vntReservePalette' and 'lReserveSize' to FreeImage_ConvertColorDepth()
-'
-'June 13, 2005 - 1.2.5
-'* [Carsten Klein] fixed a bug in helper function pGetMemoryBlockPtrFromVariant(): now 'size_in_bytes' will never exceed the size of an array provided
-'
-'June 12, 2005 - 1.2.4
-'+ [Carsten Klein] added ZLib compression function wrappers dealing with VB style arrays:
-'+                 added function FreeImage_ZLibCompressVB()
-'+                 added function FreeImage_ZLibUncompressVB()
-'+                 added function FreeImage_ZLibGZipVB()
-'+                 added function FreeImage_ZLibGUnzipVB()
-'
-'June 10, 2005 - 1.2.3
-'+ [Carsten Klein] added ZLib compression function wrappers dealing with VB style arrays:
-'+                 added function FreeImage_ZLibCompressEx()
-'+                 added function FreeImage_ZLibUncompressEx()
-'+                 added function FreeImage_ZLibGZipEx()
-'+                 added function FreeImage_ZLibCRC32Ex()
-'+                 added function FreeImage_ZLibGUnzipEx()
-'+ [Carsten Klein] added more VB friendly ZLib compression function wrappers:
-'+                 added function FreeImage_ZLibCompressVB()
-'+                 added function FreeImage_ZLibUncompressVB()
-'+                 added function FreeImage_ZLibGZipVB()
-'+                 added function FreeImage_ZLibGUnzipVB()
-'! [Carsten Klein] fixed wrong function declaration of functions FreeImage_ZLibGUnzip(): alias was '_FreeImage_ZLibZlibGUnzip@16' (double ZLib)
-'! [Carsten Klein] fixed function pGetArrayPtrFromVariantArray() that now can deal with uninitialized arrays
-'!                 fixed function pGetMemoryBlockPtrFromVariant() that now can deal with uninitialized arrays
-'! [Carsten Klein] fixed wrong function declaration of functions FreeImage_AdjustBrightness(): ...@8 -> ...@12
-'!                 fixed wrong function declaration of functions FreeImage_AdjustContrast(): ...@8 -> ...@12
-'!                 fixed wrong function declaration of functions FreeImage_AdjustGamma(): ...@8 -> ...@12
-'!                 fixed wrong function declaration of functions FreeImage_RotateClassic(): ...@8 -> ...@12
-'!                 fixed wrong function declaration of functions FreeImage_RotateEx(): ...@28 -> ...@48
-'
-'June 9, 2005 - 1.2.2
-'! [Carsten Klein] fixed wrong function declaration of function FreeImage_OpenMultiBitmap(): added parameter 'flags' (...@20 -> ...@24)
-'
-'June 8, 2005 - 1.2.1
-'! [Carsten Klein] refactored function FreeImage_LoadFromMemoryEx(): now using pGetMemoryBlockPtrFromVariant()
-'+ [Carsten Klein] added private function pGetMemoryBlockPtrFromVariant() to get poiner and size of a memory block from a Variant parameter
-'! [Carsten Klein] changed declaration of ZLib related functions: 'target' and 'Source' are now 'ByVal Long'
-'
-'June 7, 2005 - 1.2
-'+ [Carsten Klein] added some more inline comments and documentation
-'+ [Carsten Klein] added optional parameter 'UnloadSource' to function FreeImage_SaveToMemoryEx()
-'+                 added optional parameter 'UnloadSource' to function FreeImage_SaveToMemoryEx2()
-'+ [Carsten Klein] added optional parameter 'InPercent' to function SavePictureEx()
-'!                 implemented the capability to resize the image on saving in function SavePictureEx()
-'+ [Carsten Klein] added parameters 'InPercent' and 'Format' to function LoadPictureEx()
-'* [Carsten Klein] fixed wrong function declaration of function FreeImage_JPEGTransform() (...@12 -> ...@16)
-'
-'June 6, 2005 - 1.1.2
-'+ [Carsten Klein] added some more inline comments and documentation
-'
-'May 30, 2005 - 1.1.1
-'* [Carsten Klein] fixed percent calculating bug in function FreeImage_RescaleEx()
-'!                 changed behaviour of parameter 'bIsPercentValue' -> it now has no effect on integer values
-'+                 added function FreeImage_RescaleByPixel() to avoid confusion with overloading
-'+                 added function FreeImage_RescaleByPercent() to avoid confusion with overloading
-'+                 added function FreeImage_RescaleByFactor() to avoid confusion with overloading
-'! [Carsten Klein] changed name of parameter 'bUnloadDIB' to 'UnloadSource' of function FreeImage_GetOlePicture()
-'+ [Carsten Klein] added some more inline comments and documentation
-'* [Carsten Klein] fixed a potential runtime error in function FreeImage_SetTransparencyTableEx(): 'Count' will no longer exceed 256
-'
-'May 24, 2005 - 1.1
-'+ [Carsten Klein] added a new VB wrapper
-
+' NOTE FROM TANNER: a very detailed changelog follows this line in the original, but it has been removed for brevity's sake
 
 '--------------------------------------------------------------------------------
 ' Win32 API function, struct and constant declarations
@@ -827,7 +182,7 @@ Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
     ByRef Source As Any, _
     ByVal Length As Long)
     
-Private Declare Sub FillMemory Lib "kernel32.dll" Alias "RtlFillMemory" ( _
+'Private Declare Sub FillMemory Lib "kernel32.dll" Alias "RtlFillMemory" ( _
     ByRef Destination As Any, _
     ByVal Length As Long, _
     ByVal Fill As Byte)
@@ -858,7 +213,7 @@ Private Declare Function OleTranslateColor Lib "oleaut32.dll" ( _
     ByVal hPal As Long, _
     ByRef lpcolorref As Long) As Long
     
-Private Const CLR_INVALID As Long = &HFFFF&
+'Private Const CLR_INVALID As Long = &HFFFF&
     
 
 'SAFEARRAY
@@ -1078,7 +433,7 @@ Private Declare Function GetCurrentObject Lib "gdi32.dll" ( _
 Private Const OBJ_BITMAP As Long = 7
     
     
-Private Declare Function DestroyIcon Lib "user32.dll" ( _
+'Private Declare Function DestroyIcon Lib "user32.dll" ( _
     ByVal hIcon As Long) As Long
 
 Private Declare Function CreateIconIndirect Lib "user32.dll" ( _
@@ -1968,10 +1323,10 @@ Private Type BITMAPINFOHEADER
    biClrImportant As Long
 End Type
 
-Private Type BITMAPINFO
-   bmiHeader As BITMAPINFOHEADER
-   bmiColors(0) As RGBQUAD
-End Type
+'Private Type BITMAPINFO
+'   bmiHeader As BITMAPINFOHEADER
+'   bmiColors(0) As RGBQUAD
+'End Type
 
 Public Const BI_RGB As Long = 0
 Public Const BI_RLE8 As Long = 1
@@ -2808,7 +2163,7 @@ Private Declare Function FreeImage_JPEGTransformInt Lib "FreeImage.dll" Alias "_
            ByVal Operation As FREE_IMAGE_JPEG_OPERATION, _
            ByVal Perfect As Long) As Long
 
-Private Declare Function FreeImage_JPEGTransformUInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGTransformU@16" ( _
+'Private Declare Function FreeImage_JPEGTransformUInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGTransformU@16" ( _
            ByVal SourceFile As Long, _
            ByVal DestFile As Long, _
            ByVal Operation As FREE_IMAGE_JPEG_OPERATION, _
@@ -2959,7 +2314,7 @@ Private Declare Function FreeImage_JPEGCropInt Lib "FreeImage.dll" Alias "_FreeI
            ByVal Right As Long, _
            ByVal Bottom As Long) As Long
 
-Private Declare Function FreeImage_JPEGCropUInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGCropU@24" ( _
+'Private Declare Function FreeImage_JPEGCropUInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGCropU@24" ( _
            ByVal SourceFile As Long, _
            ByVal DestFile As Long, _
            ByVal Left As Long, _
@@ -3008,7 +2363,7 @@ Public Declare Function FreeImage_AllocateExT Lib "FreeImage.dll" Alias "_FreeIm
   Optional ByVal BlueMask As Long) As Long
 
 ' miscellaneous algorithms
-Public Declare Function FreeImage_MultigridPoissonSolver Lib "FreeImage.dll" Alias "_FreeImage_MultigridPoissonSolver@8" ( _
+'Public Declare Function FreeImage_MultigridPoissonSolver Lib "FreeImage.dll" Alias "_FreeImage_MultigridPoissonSolver@8" ( _
            ByVal LaplacianBitmap As Long, _
   Optional ByVal Cyles As Long = 3) As Long
 
@@ -3330,17 +2685,6 @@ Public Function FreeImage_GetFIFDescription(ByVal Format As FREE_IMAGE_FORMAT) A
 
 End Function
 
-Public Function FreeImage_GetFIFRegExpr(ByVal Format As FREE_IMAGE_FORMAT) As String
-
-   ' This function returns the result of the 'FreeImage_GetFIFRegExpr' function
-   ' as VB String. Read paragraph 2 of the "General notes on implementation
-   ' and design" section to learn more about that technique.
-   
-   ' The parameter 'Format' works according to the FreeImage 3 API documentation.
-   
-   FreeImage_GetFIFRegExpr = pGetStringFromPointerA(FreeImage_GetFIFRegExprInt(Format))
-
-End Function
 
 Public Function FreeImage_GetFIFMimeType(ByVal Format As FREE_IMAGE_FORMAT) As String
    
@@ -3354,257 +2698,6 @@ Public Function FreeImage_GetFIFMimeType(ByVal Format As FREE_IMAGE_FORMAT) As S
    
 End Function
 
-Public Function FreeImage_TagToString(ByVal Model As Long, _
-                                      ByVal Tag As Long, _
-                             Optional ByVal Make As String) As String
-
-   ' This function returns the result of the 'FreeImage_TagToString' function
-   ' as VB String. Read paragraph 2 of the "General notes on implementation
-   ' and design" section to learn more about that technique.
-   
-   ' All parameters work according to the FreeImage 3 API documentation.
-
-   FreeImage_TagToString = pGetStringFromPointerA(FreeImage_TagToStringInt(Model, Tag, Make))
-
-End Function
-
-
-
-'--------------------------------------------------------------------------------
-' UNICODE dealing functions wrappers
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_LoadU(ByVal Format As FREE_IMAGE_FORMAT, _
-                                ByVal FileName As String, _
-                       Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
-                       
-   ' This function is just a thin wrapper to ease the call to an
-   ' UNICODE function. Since VB's BSTR strings are actually UNICODE
-   ' strings, we just need to pass the pointer to the string data
-   ' returned by the (undocumented) function StrPtr().
-   
-   FreeImage_LoadU = FreeImage_LoadUInt(Format, StrPtr(FileName), Flags)
-
-End Function
-  
-Public Function FreeImage_SaveU(ByVal Format As FREE_IMAGE_FORMAT, _
-                                ByVal BITMAP As Long, _
-                                ByVal FileName As String, _
-                       Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
-
-   ' This function is just a thin wrapper to ease the call to an
-   ' UNICODE function. Since VB's BSTR strings are actually UNICODE
-   ' strings, we just need to pass the pointer to the string data
-   ' returned by the (undocumented) function StrPtr().
-   
-   FreeImage_SaveU = (FreeImage_SaveUInt(Format, BITMAP, StrPtr(FileName), Flags) = 1)
-
-End Function
-
-Public Function FreeImage_GetFileTypeU(ByVal FileName As String, _
-                              Optional ByVal Size As Long = 0) As FREE_IMAGE_FORMAT
-
-   ' This function is just a thin wrapper to ease the call to an
-   ' UNICODE function. Since VB's BSTR strings are actually UNICODE
-   ' strings, we just need to pass the pointer to the string data
-   ' returned by the (undocumented) function StrPtr().
-   
-   FreeImage_GetFileTypeU = FreeImage_GetFileTypeUInt(StrPtr(FileName), Size)
-
-End Function
-
-Public Function FreeImage_GetFIFFromFilenameU(ByVal FileName As String) As FREE_IMAGE_FORMAT
-
-   ' This function is just a thin wrapper to ease the call to an
-   ' UNICODE function. Since VB's BSTR strings are actually UNICODE
-   ' strings, we just need to pass the pointer to the string data
-   ' returned by the (undocumented) function StrPtr().
-
-   FreeImage_GetFIFFromFilenameU = FreeImage_GetFIFFromFilenameUInt(StrPtr(FileName))
-
-End Function
-
-Public Function FreeImage_JPEGTransformU(ByVal SourceFile As String, _
-                                         ByVal DestFile As String, _
-                                         ByVal Operation As FREE_IMAGE_JPEG_OPERATION, _
-                                Optional ByVal Perfect As Boolean) As Boolean
-                               
-Dim lPerfect As Long
-                               
-   ' This function is just a thin wrapper to ease the call to an
-   ' UNICODE function. Since VB's BSTR strings are actually UNICODE
-   ' strings, we just need to pass the pointer to the string data
-   ' returned by the (undocumented) function StrPtr().
-
-   If (Perfect) Then
-      lPerfect = 1
-   End If
-   FreeImage_JPEGTransformU = (FreeImage_JPEGTransformInt(StrPtr(SourceFile), StrPtr(DestFile), _
-         Operation, lPerfect) = 1)
-
-End Function
-
-Public Function FreeImage_JPEGCropU(ByVal SourceFile As String, _
-                                    ByVal DestFile As String, _
-                                    ByVal Left As Long, _
-                                    ByVal Top As Long, _
-                                    ByVal Right As Long, _
-                                    ByVal Bottom As Long) As Boolean
-                                   
-   ' This function is just a thin wrapper to ease the call to an
-   ' UNICODE function. Since VB's BSTR strings are actually UNICODE
-   ' strings, we just need to pass the pointer to the string data
-   ' returned by the (undocumented) function StrPtr().
-   
-   FreeImage_JPEGCropU = (FreeImage_JPEGCropInt(StrPtr(SourceFile), StrPtr(DestFile), Left, Top, _
-         Right, Bottom) = 1)
-                                   
-End Function
-
-
-
-'--------------------------------------------------------------------------------
-' BOOL/Boolean returning functions wrappers
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_HasPixels(ByVal BITMAP As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_HasPixels = (FreeImage_HasPixelsInt(BITMAP) = 1)
-
-End Function
-
-Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
-                               ByVal BITMAP As Long, _
-                               ByVal FileName As String, _
-                      Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_Save = (FreeImage_SaveInt(Format, BITMAP, FileName, Flags) = 1)
-
-End Function
-
-Public Function FreeImage_SaveToHandle(ByVal Format As FREE_IMAGE_FORMAT, _
-                                       ByVal BITMAP As Long, _
-                                       ByVal IO As Long, _
-                                       ByVal Handle As Long, _
-                              Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SaveToHandle = (FreeImage_SaveToHandleInt(Format, BITMAP, IO, Handle, Flags) = 1)
-
-End Function
-
-Public Function FreeImage_IsTransparent(ByVal BITMAP As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_IsTransparent = (FreeImage_IsTransparentInt(BITMAP) = 1)
-
-End Function
-
-Public Sub FreeImage_SetTransparent(ByVal BITMAP As Long, ByVal Value As Boolean)
-
-   If (Value) Then
-      Call FreeImage_SetTransparentInt(BITMAP, 1)
-   Else
-      Call FreeImage_SetTransparentInt(BITMAP, 0)
-   End If
-
-End Sub
-           
-Public Function FreeImage_HasBackgroundColor(ByVal BITMAP As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(BITMAP) = 1)
-
-End Function
-
-Public Function FreeImage_GetBackgroundColor(ByVal BITMAP As Long, _
-                                             ByRef backColor As RGBQUAD) As Boolean
-   
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(BITMAP, backColor) = 1)
-   
-End Function
-
-Public Function FreeImage_GetBackgroundColorAsLong(ByVal BITMAP As Long, _
-                                                   ByRef backColor As Long) As Boolean
-   
-   ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
-   ' provides it's result as a Long value.
-
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(BITMAP, backColor) = 1)
-   
-End Function
-
-Public Function FreeImage_GetBackgroundColorEx(ByVal BITMAP As Long, _
-                                               ByRef Alpha As Byte, _
-                                               ByRef Red As Byte, _
-                                               ByRef Green As Byte, _
-                                               ByRef Blue As Byte) As Boolean
-                                              
-Dim bkcolor As RGBQUAD
-
-   ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
-   ' provides it's result as four different byte values, one for each color component.
-                                              
-   FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(BITMAP, bkcolor) = 1)
-   With bkcolor
-      Alpha = .rgbReserved
-      Red = .rgbRed
-      Green = .rgbGreen
-      Blue = .rgbBlue
-   End With
-
-End Function
-
-Public Function FreeImage_SetBackgroundColor(ByVal BITMAP As Long, _
-                                             ByRef backColor As RGBQUAD) As Boolean
-                                             
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(BITMAP, backColor) = 1)
-                                             
-End Function
-
-Public Function FreeImage_SetBackgroundColorAsLong(ByVal BITMAP As Long, _
-                                                   ByVal backColor As Long) As Boolean
-                                             
-   ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
-   ' the color value to set must be provided as a Long value.
-
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(BITMAP, backColor) = 1)
-                                             
-End Function
-
-Public Function FreeImage_SetBackgroundColorEx(ByVal BITMAP As Long, _
-                                               ByVal Alpha As Byte, _
-                                               ByVal Red As Byte, _
-                                               ByVal Green As Byte, _
-                                               ByVal Blue As Byte) As Boolean
-                                              
-Dim tColor As RGBQUAD
-
-   ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
-   ' the color value to set must be provided four different byte values, one for each
-   ' color component.
-                                             
-   With tColor
-      .rgbReserved = Alpha
-      .rgbRed = Red
-      .rgbGreen = Green
-      .rgbBlue = Blue
-   End With
-   FreeImage_SetBackgroundColorEx = (FreeImage_SetBackgroundColorInt(BITMAP, tColor) = 1)
-
-End Function
-
 Public Function FreeImage_GetPixelIndex(ByVal BITMAP As Long, _
                                         ByVal x As Long, _
                                         ByVal y As Long, _
@@ -3616,835 +2709,6 @@ Public Function FreeImage_GetPixelIndex(ByVal BITMAP As Long, _
 
 End Function
 
-Public Function FreeImage_GetPixelColor(ByVal BITMAP As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
-                                        ByRef Value As RGBQUAD) As Boolean
-                                        
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetPixelColor = (FreeImage_GetPixelColorInt(BITMAP, x, y, Value) = 1)
-
-End Function
-           
-Public Function FreeImage_GetPixelColorByLong(ByVal BITMAP As Long, _
-                                              ByVal x As Long, _
-                                              ByVal y As Long, _
-                                              ByRef Value As Long) As Boolean
-                                              
-   ' This function gets the color at position (x|y) as FreeImage_GetPixelColor() does but
-   ' provides it's result as a Long value.
-                                              
-   FreeImage_GetPixelColorByLong = (FreeImage_GetPixelColorByLongInt(BITMAP, x, y, Value) = 1)
-
-End Function
-
-Public Function FreeImage_GetPixelColorEx(ByVal BITMAP As Long, _
-                                          ByVal x As Long, _
-                                          ByVal y As Long, _
-                                          ByRef Alpha As Byte, _
-                                          ByRef Red As Byte, _
-                                          ByRef Green As Byte, _
-                                          ByRef Blue As Byte) As Boolean
-                                              
-Dim Value As RGBQUAD
-
-   ' This function gets the color at position (x|y) as FreeImage_GetPixelColor() does but
-   ' provides it's result as four different byte values, one for each color component.
-                                              
-   FreeImage_GetPixelColorEx = (FreeImage_GetPixelColorInt(BITMAP, x, y, Value) = 1)
-   With Value
-      Alpha = .rgbReserved
-      Red = .rgbRed
-      Green = .rgbGreen
-      Blue = .rgbBlue
-   End With
-
-End Function
-
-Public Function FreeImage_SetPixelIndex(ByVal BITMAP As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
-                                        ByRef Value As Byte) As Boolean
-                                        
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SetPixelIndex = (FreeImage_SetPixelIndexInt(BITMAP, x, y, Value) = 1)
-
-End Function
-
-Public Function FreeImage_SetPixelColor(ByVal BITMAP As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
-                                        ByRef Value As RGBQUAD) As Boolean
-                                        
-   ' Thin wrapper function returning a real VB Boolean value
-                                        
-   FreeImage_SetPixelColor = (FreeImage_SetPixelColorInt(BITMAP, x, y, Value) = 1)
-
-End Function
-           
-Public Function FreeImage_SetPixelColorByLong(ByVal BITMAP As Long, _
-                                              ByVal x As Long, _
-                                              ByVal y As Long, _
-                                              ByRef Value As Long) As Boolean
-                                              
-   ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
-   ' the color value to set must be provided as a Long value.
-   
-   FreeImage_SetPixelColorByLong = (FreeImage_SetPixelColorByLongInt(BITMAP, x, y, Value) = 1)
-
-End Function
-
-Public Function FreeImage_SetPixelColorEx(ByVal BITMAP As Long, _
-                                          ByVal x As Long, _
-                                          ByVal y As Long, _
-                                          ByVal Alpha As Byte, _
-                                          ByVal Red As Byte, _
-                                          ByVal Green As Byte, _
-                                          ByVal Blue As Byte) As Boolean
-                                              
-Dim Value As RGBQUAD
-
-   ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
-   ' the color value to set must be provided four different byte values, one for each
-   ' color component.
-                                             
-   With Value
-      .rgbReserved = Alpha
-      .rgbRed = Red
-      .rgbGreen = Green
-      .rgbBlue = Blue
-   End With
-   FreeImage_SetPixelColorEx = (FreeImage_SetPixelColorInt(BITMAP, x, y, Value) = 1)
-
-End Function
-
-Public Function FreeImage_FIFSupportsReading(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FIFSupportsReading = (FreeImage_FIFSupportsReadingInt(Format) = 1)
-
-End Function
-
-Public Function FreeImage_FIFSupportsWriting(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FIFSupportsWriting = (FreeImage_FIFSupportsWritingInt(Format) = 1)
-   
-End Function
-
-Public Function FreeImage_FIFSupportsExportType(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                ByVal ImageType As FREE_IMAGE_TYPE) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FIFSupportsExportType = (FreeImage_FIFSupportsExportTypeInt(Format, ImageType) = 1)
-
-End Function
-
-Public Function FreeImage_FIFSupportsExportBPP(ByVal Format As FREE_IMAGE_FORMAT, _
-                                               ByVal BitsPerPixel As Long) As Boolean
-   
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FIFSupportsExportBPP = (FreeImage_FIFSupportsExportBPPInt(Format, BitsPerPixel) = 1)
-                                             
-End Function
-
-Public Function FreeImage_FIFSupportsICCProfiles(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FIFSupportsICCProfiles = (FreeImage_FIFSupportsICCProfilesInt(Format) = 1)
-
-End Function
-
-Public Function FreeImage_FIFSupportsNoPixels(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FIFSupportsNoPixels = (FreeImage_FIFSupportsNoPixelsInt(Format) = 1)
-
-End Function
-
-Public Function FreeImage_CloseMultiBitmap(ByVal BITMAP As Long, _
-                                  Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_CloseMultiBitmap = (FreeImage_CloseMultiBitmapInt(BITMAP, Flags) = 1)
-
-End Function
-
-Public Function FreeImage_MovePage(ByVal BITMAP As Long, _
-                                   ByVal TargetPage As Long, _
-                                   ByVal SourcePage As Long) As Boolean
-                                   
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_MovePage = (FreeImage_MovePageInt(BITMAP, TargetPage, SourcePage) = 1)
-           
-End Function
-
-Public Function FreeImage_GetLockedPageNumbers(ByVal BITMAP As Long, _
-                                               ByRef PagesPtr As Long, _
-                                               ByRef Count As Long) As Boolean
-                                               
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetLockedPageNumbers = (FreeImage_GetLockedPageNumbersInt(BITMAP, PagesPtr, Count) = 1)
-
-End Function
-
-Public Function FreeImage_SaveToMemory(ByVal Format As FREE_IMAGE_FORMAT, _
-                                       ByVal BITMAP As Long, _
-                                       ByVal Stream As Long, _
-                              Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
-                              
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SaveToMemory = (FreeImage_SaveToMemoryInt(Format, BITMAP, Stream, Flags) = 1)
-  
-End Function
-
-Public Function FreeImage_AcquireMemory(ByVal Stream As Long, _
-                                        ByRef DataPtr As Long, _
-                                        ByRef SizeInBytes As Long) As Boolean
-                                        
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_AcquireMemory = (FreeImage_AcquireMemoryInt(Stream, DataPtr, SizeInBytes) = 1)
-           
-End Function
-
-Public Function FreeImage_SeekMemory(ByVal Stream As Long, _
-                                     ByVal Offset As Long, _
-                                     ByVal Origin As Long) As Boolean
-                                     
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SeekMemory = (FreeImage_SeekMemoryInt(Stream, Offset, Origin) = 1)
-
-End Function
-
-Public Function FreeImage_IsLittleEndian() As Boolean
-   
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_IsLittleEndian = (FreeImage_IsLittleEndianInt() = 1)
-
-End Function
-
-Public Function FreeImage_LookupX11Color(ByVal Color As String, _
-                                         ByRef Red As Long, _
-                                         ByRef Green As Long, _
-                                         ByRef Blue As Long) As Boolean
-                                         
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_LookupX11Color = (FreeImage_LookupX11ColorInt(Color, Red, Green, Blue) = 1)
-           
-End Function
-
-Public Function FreeImage_LookupSVGColor(ByVal Color As String, _
-                                         ByRef Red As Long, _
-                                         ByRef Green As Long, _
-                                         ByRef Blue As Long) As Boolean
-                                         
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_LookupSVGColor = (FreeImage_LookupSVGColorInt(Color, Red, Green, Blue) = 1)
-         
-End Function
-
-Public Function FreeImage_FindNextMetadata(ByVal hFind As Long, _
-                                           ByRef Tag As Long) As Boolean
-                                           
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FindNextMetadata = (FreeImage_FindNextMetadataInt(hFind, Tag) = 1)
-                                           
-End Function
-
-Public Function FreeImage_CloneMetadata(ByVal BitmapDst As Long, _
-                                        ByVal BitmapSrc As Long) As Boolean
-                                           
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_CloneMetadata = (FreeImage_CloneMetadataInt(BitmapDst, BitmapSrc) = 1)
-                                           
-End Function
-
-Public Function FreeImage_GetMetadata(ByRef Model As Long, _
-                                      ByVal BITMAP As Long, _
-                                      ByVal Key As String, _
-                                      ByVal Tag As Long) As Boolean
-                                      
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetMetadata = (FreeImage_GetMetadataInt(Model, BITMAP, Key, Tag) = 1)
-                                      
-End Function
-
-Public Function FreeImage_SetMetadata(ByRef Model As Long, _
-                                      ByVal BITMAP As Long, _
-                                      ByVal Key As String, _
-                                      ByVal Tag As Long) As Boolean
-                                      
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SetMetadata = (FreeImage_SetMetadataInt(Model, BITMAP, Key, Tag) = 1)
-                                      
-End Function
-
-Public Function FreeImage_FlipHorizontal(ByVal BITMAP As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FlipHorizontal = (FreeImage_FlipHorizontalInt(BITMAP) = 1)
-
-End Function
-
-Public Function FreeImage_FlipVertical(ByVal BITMAP As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_FlipVertical = (FreeImage_FlipVerticalInt(BITMAP) = 1)
-
-End Function
-           
-Public Function FreeImage_JPEGTransform(ByVal SourceFile As String, _
-                                        ByVal DestFile As String, _
-                                        ByVal Operation As FREE_IMAGE_JPEG_OPERATION, _
-                               Optional ByVal Perfect As Boolean) As Boolean
-                               
-Dim lPerfect As Long
-                               
-   ' Thin wrapper function returning a real VB Boolean value
-
-   If (Perfect) Then
-      lPerfect = 1
-   End If
-   FreeImage_JPEGTransform = (FreeImage_JPEGTransformInt(SourceFile, DestFile, Operation, lPerfect) = 1)
-
-End Function
-
-Public Function FreeImage_AdjustCurve(ByVal BITMAP As Long, _
-                                      ByVal LookupTablePtr As Long, _
-                                      ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_AdjustCurve = (FreeImage_AdjustCurveInt(BITMAP, LookupTablePtr, Channel) = 1)
-
-End Function
-
-Public Function FreeImage_AdjustGamma(ByVal BITMAP As Long, _
-                                      ByVal Gamma As Double) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_AdjustGamma = (FreeImage_AdjustGammaInt(BITMAP, Gamma) = 1)
-
-End Function
-
-Public Function FreeImage_AdjustBrightness(ByVal BITMAP As Long, _
-                                           ByVal Percentage As Double) As Boolean
-           
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_AdjustBrightness = (FreeImage_AdjustBrightnessInt(BITMAP, Percentage) = 1)
-           
-End Function
-
-Public Function FreeImage_AdjustContrast(ByVal BITMAP As Long, _
-                                         ByVal Percentage As Double) As Boolean
-           
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_AdjustContrast = (FreeImage_AdjustContrastInt(BITMAP, Percentage) = 1)
-           
-End Function
-
-Public Function FreeImage_Invert(ByVal BITMAP As Long) As Boolean
-           
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_Invert = (FreeImage_InvertInt(BITMAP) = 1)
-           
-End Function
-
-Public Function FreeImage_GetHistogram(ByVal BITMAP As Long, _
-                                       ByRef HistogramPtr As Long, _
-                              Optional ByVal Channel As FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetHistogram = (FreeImage_GetHistogramInt(BITMAP, HistogramPtr, Channel) = 1)
-   
-End Function
-
-Public Function FreeImage_AdjustColors(ByVal BITMAP As Long, _
-                              Optional ByVal Brightness As Double, _
-                              Optional ByVal Contrast As Double, _
-                              Optional ByVal Gamma As Double = 1, _
-                              Optional ByVal Invert As Boolean) As Boolean
-                              
-Dim lInvert As Long
-                              
-   ' Thin wrapper function returning a real VB Boolean value
-   If (Invert) Then
-      lInvert = 1
-   End If
-   FreeImage_AdjustColors = (FreeImage_AdjustColorsInt(BITMAP, Brightness, Contrast, Gamma, lInvert) = 1)
-   
-End Function
-
-Public Function FreeImage_SetChannel(ByVal BitmapDst As Long, _
-                                     ByVal BitmapSrc As Long, _
-                                     ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Boolean
-                                     
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_SetChannel = (FreeImage_SetChannelInt(BitmapDst, BitmapSrc, Channel) = 1)
-           
-End Function
-
-Public Function FreeImage_SetComplexChannel(ByVal BitmapDst As Long, _
-                                            ByVal BitmapSrc As Long, _
-                                            ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Boolean
-                                            
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_SetComplexChannel = (FreeImage_SetComplexChannelInt(BitmapDst, BitmapSrc, Channel) = 1)
-           
-End Function
-
-Public Function FreeImage_Paste(ByVal BitmapDst As Long, _
-                                ByVal BitmapSrc As Long, _
-                                ByVal Left As Long, _
-                                ByVal Top As Long, _
-                                ByVal Alpha As Long) As Boolean
-   
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_Paste = (FreeImage_PasteInt(BitmapDst, BitmapSrc, Left, Top, Alpha) = 1)
-
-End Function
-
-Public Function FreeImage_PreMultiplyWithAlpha(ByVal BITMAP As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_PreMultiplyWithAlpha = (FreeImage_PreMultiplyWithAlphaInt(BITMAP) = 1)
-
-End Function
-
-Public Function FreeImage_JPEGCrop(ByVal SourceFile As String, _
-                                   ByVal DestFile As String, _
-                                   ByVal Left As Long, _
-                                   ByVal Top As Long, _
-                                   ByVal Right As Long, _
-                                   ByVal Bottom As Long) As Boolean
-                                   
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_JPEGCrop = (FreeImage_JPEGCropInt(SourceFile, DestFile, Left, Top, Right, Bottom) = 1)
-                                   
-End Function
-
-Public Function FreeImage_FillBackgroundEx(ByVal BITMAP As Long, _
-                                           ByRef Color As RGBQUAD, _
-                                  Optional ByVal Options As FREE_IMAGE_COLOR_OPTIONS) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_FillBackgroundEx = (FreeImage_FillBackground(BITMAP, Color, Options) = 1)
-
-End Function
-                                
-Public Function FreeImage_FillBackgroundByLong(ByVal BITMAP As Long, _
-                                               ByRef Color As Long, _
-                                      Optional ByVal Options As FREE_IMAGE_COLOR_OPTIONS) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_FillBackgroundByLong = (FreeImage_FillBackground(BITMAP, Color, Options) = 1)
-
-End Function
-
-Public Function FreeImage_SetThumbnail(ByVal BITMAP As Long, ByVal Thumbnail As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-   
-   FreeImage_SetThumbnail = (FreeImage_SetThumbnailInt(BITMAP, Thumbnail) = 1)
-
-End Function
-
-
-Public Function FreeImage_OpenMultiBitmap(ByVal Format As FREE_IMAGE_FORMAT, _
-                                          ByVal FileName As String, _
-                                 Optional ByVal CreateNew As Boolean, _
-                                 Optional ByVal ReadOnly As Boolean, _
-                                 Optional ByVal KeepCacheInMemory As Boolean, _
-                                 Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
-
-   FreeImage_OpenMultiBitmap = FreeImage_OpenMultiBitmapInt(Format, FileName, IIf(CreateNew, 1, 0), _
-         IIf(ReadOnly And Not CreateNew, 1, 0), IIf(KeepCacheInMemory, 1, 0), Flags)
-
-End Function
-
-Public Sub FreeImage_UnlockPage(ByVal BITMAP As Long, ByVal PageBitmap As Long, ByVal ApplyChanges As Boolean)
-
-Dim lApplyChanges As Long
-
-   If (ApplyChanges) Then
-      lApplyChanges = 1
-   End If
-   Call FreeImage_UnlockPageInt(BITMAP, PageBitmap, lApplyChanges)
-
-End Sub
-
-Public Function FreeImage_RotateEx(ByVal BITMAP As Long, _
-                                   ByVal Angle As Double, _
-                          Optional ByVal ShiftX As Double, _
-                          Optional ByVal ShiftY As Double, _
-                          Optional ByVal OriginX As Double, _
-                          Optional ByVal OriginY As Double, _
-                          Optional ByVal UseMask As Boolean) As Long
-
-    Dim lUseMask As Long
-
-    If UseMask Then lUseMask = 1 Else lUseMask = 0
-    FreeImage_RotateEx = FreeImage_RotateExInt(BITMAP, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
-
-End Function
-
-Public Function FreeImage_MakeThumbnail(ByVal BITMAP As Long, _
-                                        ByVal MaxPixelSize As Long, _
-                               Optional ByVal Convert As Boolean) As Long
-
-Dim lConvert As Long
-
-   If (Convert) Then
-      lConvert = 1
-   End If
-   FreeImage_MakeThumbnail = FreeImage_MakeThumbnailInt(BITMAP, MaxPixelSize, lConvert)
-
-End Function
-
-Public Function FreeImage_GetAdjustColorsLookupTable(ByVal LookupTablePtr As Long, _
-                                            Optional ByVal Brightness As Double, _
-                                            Optional ByVal Contrast As Double, _
-                                            Optional ByVal Gamma As Double, _
-                                            Optional ByVal Invert As Boolean) As Long
-
-Dim lInvert As Long
-
-   If (Invert) Then
-      lInvert = 1
-   End If
-   FreeImage_GetAdjustColorsLookupTable = FreeImage_GetAdjustColorsLookupTableInt(LookupTablePtr, _
-         Brightness, Contrast, Gamma, lInvert)
-
-End Function
-
-Public Function FreeImage_ApplyColorMapping(ByVal BITMAP As Long, _
-                                            ByVal SourceColorsPtr As Long, _
-                                            ByVal DestinationColorsPtr As Long, _
-                                            ByVal Count As Long, _
-                                   Optional ByVal IgnoreAlpha As Boolean = True, _
-                                   Optional ByVal Swap As Boolean) As Long
-
-Dim lIgnoreAlpha As Long
-Dim lSwap As Long
-
-   If (IgnoreAlpha) Then
-      lIgnoreAlpha = 1
-   End If
-   If (Swap) Then
-      lSwap = 1
-   End If
-   FreeImage_ApplyColorMapping = FreeImage_ApplyColorMappingInt(BITMAP, SourceColorsPtr, _
-         DestinationColorsPtr, Count, lIgnoreAlpha, lSwap)
-
-End Function
-
-Public Function FreeImage_SwapColors(ByVal BITMAP As Long, _
-                                     ByRef ColorA As RGBQUAD, _
-                                     ByRef ColorB As RGBQUAD, _
-                            Optional ByVal IgnoreAlpha As Boolean = True) As Long
-                         
-Dim lIgnoreAlpha As Long
-
-   If (IgnoreAlpha) Then
-      lIgnoreAlpha = 1
-   End If
-   FreeImage_SwapColors = FreeImage_SwapColorsInt(BITMAP, ColorA, ColorB, lIgnoreAlpha)
-                         
-End Function
-
-Public Function FreeImage_SwapColorsByLong(ByVal BITMAP As Long, _
-                                           ByRef ColorA As Long, _
-                                           ByRef ColorB As Long, _
-                                  Optional ByVal IgnoreAlpha As Boolean = True) As Long
-                         
-Dim lIgnoreAlpha As Long
-
-   If (IgnoreAlpha) Then
-      lIgnoreAlpha = 1
-   End If
-   FreeImage_SwapColorsByLong = FreeImage_SwapColorsByLongInt(BITMAP, ColorA, ColorB, _
-         lIgnoreAlpha)
-                         
-End Function
-
-Public Function FreeImage_ApplyIndexMapping(ByVal BITMAP As Long, _
-                                            ByVal SourceIndicesPtr As Long, _
-                                            ByVal DestinationIndicesPtr As Long, _
-                                            ByVal Count As Long, _
-                                   Optional ByVal Swap As Boolean) As Long
-
-Dim lSwap As Long
-
-   If (Swap) Then
-      lSwap = 1
-   End If
-   FreeImage_ApplyIndexMapping = FreeImage_ApplyIndexMappingInt(BITMAP, SourceIndicesPtr, _
-         DestinationIndicesPtr, Count, lSwap)
-
-End Function
-
-Public Function FreeImage_ConvertFromRawBits(ByVal BitsPtr As Long, _
-                                             ByVal Width As Long, _
-                                             ByVal Height As Long, _
-                                             ByVal Pitch As Long, _
-                                             ByVal BitsPerPixel As Long, _
-                                    Optional ByVal RedMask As Long, _
-                                    Optional ByVal GreenMask As Long, _
-                                    Optional ByVal BlueMask As Long, _
-                                    Optional ByVal TopDown As Boolean) As Long
-
-Dim lTopDown As Long
-
-   If (TopDown) Then
-      lTopDown = 1
-   End If
-   FreeImage_ConvertFromRawBits = FreeImage_ConvertFromRawBitsInt(BitsPtr, Width, Height, Pitch, _
-         BitsPerPixel, RedMask, GreenMask, BlueMask, lTopDown)
-
-End Function
-
-Public Sub FreeImage_ConvertToRawBits(ByVal BitsPtr As Long, _
-                                      ByVal BITMAP As Long, _
-                                      ByVal Pitch As Long, _
-                                      ByVal BitsPerPixel As Long, _
-                             Optional ByVal RedMask As Long, _
-                             Optional ByVal GreenMask As Long, _
-                             Optional ByVal BlueMask As Long, _
-                             Optional ByVal TopDown As Boolean)
-
-Dim lTopDown As Long
-
-   If (TopDown) Then
-      lTopDown = 1
-   End If
-   Call FreeImage_ConvertToRawBitsInt(BitsPtr, BITMAP, Pitch, _
-         BitsPerPixel, RedMask, GreenMask, BlueMask, lTopDown)
-
-End Sub
-
-Public Function FreeImage_ConvertToStandardType(ByVal BITMAP As Long, _
-                                       Optional ByVal ScaleLinear As Boolean = True) As Long
-                                       
-   If (ScaleLinear) Then
-      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(BITMAP, 1)
-   Else
-      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(BITMAP, 0)
-   End If
-   
-End Function
-
-Public Function FreeImage_ConvertToType(ByVal BITMAP As Long, _
-                                        ByVal DestinationType As FREE_IMAGE_TYPE, _
-                               Optional ByVal ScaleLinear As Boolean = True) As Long
-                                       
-   If (ScaleLinear) Then
-      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(BITMAP, DestinationType, 1)
-   Else
-      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(BITMAP, DestinationType, 0)
-   End If
-   
-End Function
-
-
-
-'--------------------------------------------------------------------------------
-' Color conversion helper functions
-'--------------------------------------------------------------------------------
-
-Public Function ConvertColor(ByVal Color As Long) As Long
-
-   ' This helper function converts a VB-style color value (like vbRed), which
-   ' uses the ABGR format into a RGBQUAD compatible color value, using the ARGB
-   ' format, needed by FreeImage and vice versa.
-
-   ConvertColor = ((Color And &HFF000000) Or _
-                   ((Color And &HFF&) * &H10000) Or _
-                   ((Color And &HFF00&)) Or _
-                   ((Color And &HFF0000) \ &H10000))
-
-End Function
-
-Public Function ConvertOleColor(ByVal Color As OLE_COLOR) As Long
-
-   ' This helper function converts an OLE_COLOR value (like vbButtonFace), which
-   ' uses the BGR format into a RGBQUAD compatible color value, using the ARGB
-   ' format, needed by FreeImage.
-   
-   ' This function generally ingnores the specified color's alpha value but, in
-   ' contrast to ConvertColor, also has support for system colors, which have the
-   ' format &H80bbggrr.
-   
-   ' You should not use this function to convert any color provided by FreeImage
-   ' in ARGB format into a VB-style ABGR color value. Use function ConvertColor
-   ' instead.
-
-Dim lColorRef As Long
-
-   If (OleTranslateColor(Color, 0, lColorRef) = 0) Then
-      ConvertOleColor = ConvertColor(lColorRef)
-   End If
-
-End Function
-
-
-
-'--------------------------------------------------------------------------------
-' Extended functions derived from FreeImage 3 functions usually dealing
-' with arrays
-'--------------------------------------------------------------------------------
-
-Public Sub FreeImage_UnloadEx(ByRef BITMAP As Long)
-
-   ' Extended version of FreeImage_Unload, which additionally sets the
-   ' passed Bitmap handle to zero after unloading.
-
-   If (BITMAP <> 0) Then
-      Call FreeImage_Unload(BITMAP)
-      BITMAP = 0
-   End If
-
-End Sub
-
-Public Function FreeImage_GetPaletteEx(ByVal BITMAP As Long) As RGBQUAD()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-
-   ' This function returns a VB style array of type RGBQUAD, containing
-   ' the palette data of the Bitmap. This array provides read and write access
-   ' to the actual palette data provided by FreeImage. This is done by
-   ' creating a VB array with an own SAFEARRAY descriptor making the
-   ' array point to the palette pointer returned by FreeImage_GetPalette().
-   
-   ' This makes you use code like you would in C/C++:
-   
-   ' // this code assumes there is a bitmap loaded and
-   ' // present in a variable called ‘dib’
-   ' if(FreeImage_GetBPP(Bitmap) == 8) {
-   '   // Build a greyscale palette
-   '   RGBQUAD *pal = FreeImage_GetPalette(Bitmap);
-   '   for (int i = 0; i < 256; i++) {
-   '     pal[i].rgbRed = i;
-   '     pal[i].rgbGreen = i;
-   '     pal[i].rgbBlue = i;
-   '   }
-   
-   ' As in C/C++ the array is only valid while the DIB is loaded and the
-   ' palette data remains where the pointer returned by FreeImage_GetPalette
-   ' has pointed to when this function was called. So, a good thing would
-   ' be, not to keep the returned array in scope over the lifetime of the
-   ' Bitmap. Best practise is, to use this function within another routine and
-   ' assign the return value (the array) to a local variable only. As soon
-   ' as this local variable goes out of scope (when the calling function
-   ' returns to it's caller), the array and the descriptor is automatically
-   ' cleaned up by VB.
-   
-   ' This function does not make a deep copy of the palette data, but only
-   ' wraps a VB array around the FreeImage palette data. So, it can be called
-   ' frequently "on demand" or somewhat "in place" without a significant
-   ' performance loss.
-   
-   ' To learn more about this technique I recommend reading chapter 2 (Leveraging
-   ' Arrays) of Matthew Curland's book "Advanced Visual Basic 6"
-   
-   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
-   
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the FreeImage_DestroyLockedArrayRGBQUAD() function.
-   
-   
-   If (BITMAP) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 4                              ' size in bytes of RGBQUAD structure
-         .cDims = 1                                   ' the array has only 1 dimension
-         .cElements = FreeImage_GetColorsUsed(BITMAP) ' the number of elements in the array is
-                                                      ' the number of used colors in the Bitmap
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE     ' need AUTO and FIXEDSIZE for safety issues,
-                                                      ' so the array can not be modified in size
-                                                      ' or erased; according to Matthew Curland never
-                                                      ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetPalette(BITMAP)       ' let the array point to the memory block, the
-                                                      ' FreeImage palette pointer points to
-      End With
-      
-      ' allocate memory for an array descriptor
-      ' we cannot use the memory block used by tSA, since it is
-      ' released when tSA goes out of scope, leaving us with an
-      ' array with zeroed descriptor
-      ' we use nearly the same method that VB uses, so VB is able
-      ' to cleanup the array variable and it's descriptor; the
-      ' array data is not touched when cleaning up, since both AUTO
-      ' and FIXEDSIZE flags are set
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      
-      ' copy our own array descriptor over the descriptor allocated
-      ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
-      ' location
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      
-      ' the implicit variable named as the function is an array variable in VB
-      ' make it point to the allocated array descriptor
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetPaletteEx), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetPaletteExClone(ByVal BITMAP As Long) As RGBQUAD()
-
-Dim lColors As Long
-Dim atPal() As RGBQUAD
-
-   ' This function returns a redundant clone of a Bitmap's palette as a
-   ' VB style array of type RGBQUAD.
-   
-   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
-
-   lColors = FreeImage_GetColorsUsed(BITMAP)
-   If (lColors > 0) Then
-      ReDim atPal(lColors - 1)
-      Call CopyMemory(atPal(0), ByVal FreeImage_GetPalette(BITMAP), lColors * 4)
-      Call pSwap(ByVal VarPtrArray(atPal), ByVal VarPtrArray(FreeImage_GetPaletteExClone))
-   End If
-
-End Function
 
 Public Function FreeImage_GetPaletteExLong(ByVal BITMAP As Long) As Long()
 
@@ -4540,472 +2804,409 @@ Dim lpSA As Long
 
 End Function
 
-Public Function FreeImage_GetPaletteExLongClone(ByVal BITMAP As Long) As Long()
+'--------------------------------------------------------------------------------
+' BOOL/Boolean returning functions wrappers
+'--------------------------------------------------------------------------------
 
-Dim lColors As Long
-Dim alPal() As Long
+Public Function FreeImage_HasPixels(ByVal BITMAP As Long) As Boolean
 
-   ' This function returns a redundant clone of a Bitmap's palette as a
-   ' VB style array of type Long.
-   
-   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
+   ' Thin wrapper function returning a real VB Boolean value
 
-   lColors = FreeImage_GetColorsUsed(BITMAP)
-   If (lColors > 0) Then
-      ReDim alPal(lColors - 1)
-      Call CopyMemory(alPal(0), ByVal FreeImage_GetPalette(BITMAP), lColors * 4)
-      Call pSwap(ByVal VarPtrArray(alPal), ByVal VarPtrArray(FreeImage_GetPaletteExLongClone))
-   End If
+   FreeImage_HasPixels = (FreeImage_HasPixelsInt(BITMAP) = 1)
 
 End Function
 
-Public Function FreeImage_SetPalette(ByVal BITMAP As Long, ByRef Palette() As RGBQUAD) As Long
+Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
+                               ByVal BITMAP As Long, _
+                               ByVal FileName As String, _
+                      Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
-   ' This function sets the palette of a palletised bitmap using a RGBQUAD array. Does
-   ' nothing on high color bitmaps.
-   
-   ' This operation makes a deep copy of the provided palette data so, after this function
-   ' has returned, changes to the RGBQUAD array are no longer reflected by the bitmap's
-   ' palette.
+   ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetPalette = FreeImage_GetColorsUsed(BITMAP)
-   If (FreeImage_SetPalette > 0) Then
-      Call CopyMemory(ByVal FreeImage_GetPalette(BITMAP), Palette(0), FreeImage_SetPalette * 4)
-   End If
+   FreeImage_Save = (FreeImage_SaveInt(Format, BITMAP, FileName, Flags) = 1)
 
 End Function
 
-Public Function FreeImage_SetPaletteLong(ByVal BITMAP As Long, ByRef Palette() As Long) As Long
-   
-   ' This function sets the palette of a palletised bitmap using a RGBQUAD array. Does
-   ' nothing on high color bitmaps.
-   
-   ' This operation makes a deep copy of the provided palette data so, after this function
-   ' has returned, changes to the Long array are no longer reflected by the bitmap's
-   ' palette.
+Public Function FreeImage_SaveToHandle(ByVal Format As FREE_IMAGE_FORMAT, _
+                                       ByVal BITMAP As Long, _
+                                       ByVal IO As Long, _
+                                       ByVal Handle As Long, _
+                              Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
-   FreeImage_SetPaletteLong = FreeImage_GetColorsUsed(BITMAP)
-   If (FreeImage_SetPaletteLong > 0) Then
-      Call CopyMemory(ByVal FreeImage_GetPalette(BITMAP), Palette(0), FreeImage_SetPaletteLong * 4)
-   End If
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_SaveToHandle = (FreeImage_SaveToHandleInt(Format, BITMAP, IO, Handle, Flags) = 1)
 
 End Function
 
-Public Function FreeImage_GetTransparencyTableEx(ByVal BITMAP As Long) As Byte()
+Public Function FreeImage_IsTransparent(ByVal BITMAP As Long) As Boolean
 
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
+   ' Thin wrapper function returning a real VB Boolean value
 
-   ' This function returns a VB style Byte array, containing the transparency
-   ' table of the Bitmap. This array provides read and write access to the actual
-   ' transparency table provided by FreeImage. This is done by creating a VB array
-   ' with an own SAFEARRAY descriptor making the array point to the transparency
-   ' table pointer returned by FreeImage_GetTransparencyTable().
-   
-   ' This makes you use code like you would in C/C++:
-   
-   ' // this code assumes there is a bitmap loaded and
-   ' // present in a variable called ‘dib’
-   ' if(FreeImage_GetBPP(Bitmap) == 8) {
-   '   // Remove transparency information
-   '   byte *transt = FreeImage_GetTransparencyTable(Bitmap);
-   '   for (int i = 0; i < 256; i++) {
-   '     transt[i].rgbRed = 255;
-   '   }
-   
-   ' As in C/C++ the array is only valid while the DIB is loaded and the transparency
-   ' table remains where the pointer returned by FreeImage_GetTransparencyTable() has
-   ' pointed to when this function was called. So, a good thing would be, not to keep
-   ' the returned array in scope over the lifetime of the DIB. Best practise is, to use
-   ' this function within another routine and assign the return value (the array) to a
-   ' local variable only. As soon as this local variable goes out of scope (when the
-   ' calling function returns to it's caller), the array and the descriptor is
-   ' automatically cleaned up by VB.
-   
-   ' This function does not make a deep copy of the transparency table, but only
-   ' wraps a VB array around the FreeImage transparency table. So, it can be called
-   ' frequently "on demand" or somewhat "in place" without a significant
-   ' performance loss.
-   
-   ' To learn more about this technique I recommend reading chapter 2 (Leveraging
-   ' Arrays) of Matthew Curland's book "Advanced Visual Basic 6"
-   
-   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
-   
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the FreeImage_DestroyLockedArray() function.
-   
-   
-   If (BITMAP) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 1                                     ' size in bytes of a byte element
-         .cDims = 1                                          ' the array has only 1 dimension
-         .cElements = FreeImage_GetTransparencyCount(BITMAP) ' the number of elements in the array is
-                                                             ' equal to the number transparency table entries
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE            ' need AUTO and FIXEDSIZE for safety issues,
-                                                             ' so the array can not be modified in size
-                                                             ' or erased; according to Matthew Curland never
-                                                             ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetTransparencyTable(BITMAP)    ' let the array point to the memory block, the
-                                                             ' FreeImage transparency table pointer points to
-      End With
-      
-      ' allocate memory for an array descriptor
-      ' we cannot use the memory block used by tSA, since it is
-      ' released when tSA goes out of scope, leaving us with an
-      ' array with zeroed descriptor
-      ' we use nearly the same method that VB uses, so VB is able
-      ' to cleanup the array variable and it's descriptor; the
-      ' array data is not touched when cleaning up, since both AUTO
-      ' and FIXEDSIZE flags are set
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      
-      ' copy our own array descriptor over the descriptor allocated
-      ' by SafeArrayAllocDescriptor(); lpSA is a pointer to that memory
-      ' location
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      
-      ' the implicit variable named as the function is an array variable in VB
-      ' make it point to the allocated array descriptor
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetTransparencyTableEx), lpSA, 4)
-   End If
+   FreeImage_IsTransparent = (FreeImage_IsTransparentInt(BITMAP) = 1)
+
+End Function
+           
+Public Function FreeImage_HasBackgroundColor(ByVal BITMAP As Long) As Boolean
+
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(BITMAP) = 1)
 
 End Function
 
-Public Function FreeImage_GetTransparencyTableExClone(ByVal BITMAP As Long) As Byte()
-
-Dim abBuffer() As Byte
-Dim lpTransparencyTable As Long
-Dim lEntries As Long
-
-   ' This function returns a copy of a DIB's transparency table as VB style
-   ' array of type Byte. So, the array provides read access only from the DIB's
-   ' point of view.
+Public Function FreeImage_GetBackgroundColor(ByVal BITMAP As Long, _
+                                             ByRef backColor As RGBQUAD) As Boolean
    
-   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
+   ' Thin wrapper function returning a real VB Boolean value
 
-   lpTransparencyTable = FreeImage_GetTransparencyTable(BITMAP)
-   If (lpTransparencyTable) Then
-      lEntries = FreeImage_GetTransparencyCount(BITMAP)
-      If (lEntries > 0) Then
-         ReDim abBuffer(lEntries - 1)
-         Call CopyMemory(abBuffer(0), ByVal lpTransparencyTable, lEntries)
-         Call pSwap(ByVal VarPtrArray(abBuffer), ByVal VarPtrArray( _
-               FreeImage_GetTransparencyTableExClone))
-      End If
-   End If
-
+   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(BITMAP, backColor) = 1)
+   
 End Function
 
-Public Sub FreeImage_SetTransparencyTableEx(ByVal BITMAP As Long, _
-                                            ByRef Table() As Byte, _
-                                   Optional ByRef Count As Long = -1)
-
-   ' This function sets a DIB's transparency table to the contents of the
-   ' parameter table(). When the optional parameter Count is omitted, the
-   ' number of entries used is taken from the number of elements stored in
-   ' the array, but will never be never greater than 256.
+Public Function FreeImage_GetBackgroundColorAsLong(ByVal BITMAP As Long, _
+                                                   ByRef backColor As Long) As Boolean
    
-   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
+   ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
+   ' provides it's result as a Long value.
+
+   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(BITMAP, backColor) = 1)
    
-   If ((Count > UBound(Table) + 1) Or _
-       (Count < 0)) Then
-      Count = UBound(Table) + 1
-   End If
-   
-   If (Count > 256) Then
-      Count = 256
-   End If
-
-   Call FreeImage_SetTransparencyTable(BITMAP, VarPtr(Table(0)), Count)
-
-End Sub
-
-Public Function FreeImage_IsTransparencyTableTransparent(ByVal BITMAP As Long) As Boolean
-
-Dim abTransTable() As Byte
-Dim i As Long
-
-   ' This function checks whether a Bitmap's transparency table contains any transparent
-   ' colors or not.
-   
-   ' When an image has a transparency table and is transparent, what can be tested
-   ' with 'FreeImage_IsTransparent()', the image still may display opaque when there
-   ' are no transparent colors defined in the image's transparency table. This
-   ' function reads the Bitmap's transparency table directly to determine whether
-   ' there are transparent colors defined or not.
-   
-   ' The return value of this function does not relay on the image's transparency
-   ' setting but only on the image's transparency table
-   
-   If (BITMAP) Then
-      abTransTable = FreeImage_GetTransparencyTableEx(BITMAP)
-      For i = 0 To UBound(abTransTable)
-         FreeImage_IsTransparencyTableTransparent = (abTransTable(i) < 255)
-         If (FreeImage_IsTransparencyTableTransparent) Then
-            Exit For
-         End If
-      Next i
-   End If
-
 End Function
 
-Public Function FreeImage_GetAdjustColorsLookupTableEx(ByRef LookupTable() As Byte, _
-                                              Optional ByVal Brightness As Double, _
-                                              Optional ByVal Contrast As Double, _
-                                              Optional ByVal Gamma As Double = 1, _
-                                              Optional ByVal Invert As Boolean) As Long
+Public Function FreeImage_GetBackgroundColorEx(ByVal BITMAP As Long, _
+                                               ByRef Alpha As Byte, _
+                                               ByRef Red As Byte, _
+                                               ByRef Green As Byte, _
+                                               ByRef Blue As Byte) As Boolean
                                               
-   ' This function is an extended wrapper for FreeImage_GetAdjustColorsLookupTable(), which
-   ' takes a real VB style Byte array LUT() to receive the created lookup table. The LUT()
-   ' parameter must not be fixed sized or locked, since it is (re-)dimensioned in this
-   ' function to contain 256 entries.
+Dim bkcolor As RGBQUAD
+
+   ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
+   ' provides it's result as four different byte values, one for each color component.
                                               
-   ' All parameters work according to the FreeImage 3 API documentation.
-
-   ReDim LookupTable(255)
-   FreeImage_GetAdjustColorsLookupTableEx = _
-         FreeImage_GetAdjustColorsLookupTable(VarPtr(LookupTable(0)), Brightness, Contrast, _
-               Gamma, Invert)
-
-End Function
-
-Public Function FreeImage_ApplyColorMappingEx(ByVal BITMAP As Long, _
-                                              ByRef SourceColors() As RGBQUAD, _
-                                              ByRef DestinationColors() As RGBQUAD, _
-                                     Optional ByRef Count As Long = -1, _
-                                     Optional ByVal IgnoreAlpha As Boolean = True, _
-                                     Optional ByVal Swap As Boolean) As Long
-                                     
-Dim nsrc As Long
-Dim ndst As Long
-
-   ' This function is an extended wrapper for FreeImage_ApplyColorMapping(), which takes
-   ' real VB style RGBQUAD arrays for source and destination colors along with an optional
-   ' ByRef Count parameter.
-   
-   ' If 'Count' is omitted upon entry, the number of entries of the smaller of both arrays
-   ' is used for 'Count' and also passed back to the caller, due to this parameter's ByRef
-   ' nature.
-   
-   ' All other parameters work according to the FreeImage 3 API documentation.
-   
-   If (BITMAP) Then
-   
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to map colors on a 'header-only' bitmap.")
-      End If
-   
-      nsrc = UBound(SourceColors) + 1
-      ndst = UBound(DestinationColors) + 1
-      If (Count = -1) Then
-         If (nsrc < ndst) Then
-            Count = nsrc
-         Else
-            Count = ndst
-         End If
-      Else
-         If (Count < nsrc) Then
-            Count = nsrc
-         End If
-         If (Count < ndst) Then
-            Count = ndst
-         End If
-      End If
-      
-      FreeImage_ApplyColorMappingEx = FreeImage_ApplyColorMapping(BITMAP, _
-            VarPtr(SourceColors(0)), VarPtr(DestinationColors(0)), Count, IgnoreAlpha, Swap)
-   End If
+   FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(BITMAP, bkcolor) = 1)
+   With bkcolor
+      Alpha = .rgbReserved
+      Red = .rgbRed
+      Green = .rgbGreen
+      Blue = .rgbBlue
+   End With
 
 End Function
 
-Public Function FreeImage_ApplyIndexMappingEx(ByVal BITMAP As Long, _
-                                              ByRef SourceIndices() As Byte, _
-                                              ByRef DestinationIndices() As Byte, _
-                                     Optional ByRef Count As Long = -1, _
-                                     Optional ByVal Swap As Boolean) As Long
-                                     
-Dim nsrc As Long
-Dim ndst As Long
+Public Function FreeImage_SetBackgroundColor(ByVal BITMAP As Long, _
+                                             ByRef backColor As RGBQUAD) As Boolean
+                                             
+   ' Thin wrapper function returning a real VB Boolean value
 
-   ' This function is an extended wrapper for FreeImage_ApplyIndexMapping(), which takes
-   ' real VB style Byte arrays for source and destination indices along with an optional
-   ' ByRef count parameter.
-   
-   ' If 'Count' is omitted upon entry, the number of entries of the smaller of both arrays
-   ' is used for 'Count' and also passed back to the caller, due to this parameter's ByRef
-   ' nature.
-   
-   ' All other parameters work according to the FreeImage 3 API documentation.
-   
-   
-   nsrc = UBound(SourceIndices) + 1
-   ndst = UBound(DestinationIndices) + 1
-   If (Count = -1) Then
-      If (nsrc < ndst) Then
-         Count = nsrc
-      Else
-         Count = ndst
-      End If
-   Else
-      If (Count < nsrc) Then
-         Count = nsrc
-      End If
-      If (Count < ndst) Then
-         Count = ndst
-      End If
-   End If
-   
-   FreeImage_ApplyIndexMappingEx = FreeImage_ApplyIndexMapping(BITMAP, _
-         VarPtr(SourceIndices(0)), VarPtr(DestinationIndices(0)), Count, Swap)
+   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(BITMAP, backColor) = 1)
+                                             
+End Function
+
+Public Function FreeImage_SetBackgroundColorAsLong(ByVal BITMAP As Long, _
+                                                   ByVal backColor As Long) As Boolean
+                                             
+   ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
+   ' the color value to set must be provided as a Long value.
+
+   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(BITMAP, backColor) = 1)
+                                             
+End Function
+
+Public Function FreeImage_SetBackgroundColorEx(ByVal BITMAP As Long, _
+                                               ByVal Alpha As Byte, _
+                                               ByVal Red As Byte, _
+                                               ByVal Green As Byte, _
+                                               ByVal Blue As Byte) As Boolean
+                                              
+Dim tColor As RGBQUAD
+
+   ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
+   ' the color value to set must be provided four different byte values, one for each
+   ' color component.
+                                             
+   With tColor
+      .rgbReserved = Alpha
+      .rgbRed = Red
+      .rgbGreen = Green
+      .rgbBlue = Blue
+   End With
+   FreeImage_SetBackgroundColorEx = (FreeImage_SetBackgroundColorInt(BITMAP, tColor) = 1)
 
 End Function
 
-Public Function FreeImage_ConvertFromRawBitsEx(ByRef Bits() As Byte, _
-                                               ByVal Width As Long, _
-                                               ByVal Height As Long, _
-                                               ByVal Pitch As Long, _
-                                               ByVal BitsPerPixel As Long, _
-                                      Optional ByVal RedMask As Long, _
-                                      Optional ByVal GreenMask As Long, _
-                                      Optional ByVal BlueMask As Long, _
-                                      Optional ByVal TopDown As Boolean) As Long
+Public Function FreeImage_FIFSupportsReading(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
 
-   FreeImage_ConvertFromRawBitsEx = FreeImage_ConvertFromRawBits(VarPtr(Bits(0)), Width, Height, Pitch, _
-         BitsPerPixel, RedMask, GreenMask, BlueMask, TopDown)
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_FIFSupportsReading = (FreeImage_FIFSupportsReadingInt(Format) = 1)
 
 End Function
 
-Public Sub FreeImage_ConvertToRawBitsEx(ByRef Bits() As Byte, _
-                                        ByVal BITMAP As Long, _
-                                        ByVal Pitch As Long, _
-                                        ByVal BitsPerPixel As Long, _
-                               Optional ByVal RedMask As Long, _
-                               Optional ByVal GreenMask As Long, _
-                               Optional ByVal BlueMask As Long, _
-                               Optional ByVal TopDown As Boolean)
+Public Function FreeImage_FIFSupportsWriting(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
 
-Dim lHeight As Long
+   ' Thin wrapper function returning a real VB Boolean value
 
-   If (BITMAP) Then
+   FreeImage_FIFSupportsWriting = (FreeImage_FIFSupportsWritingInt(Format) = 1)
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to convert a 'header-only' bitmap.")
-      End If
-   
-      If (Pitch > 0) Then
-         lHeight = FreeImage_GetHeight(BITMAP)
-         ReDim Bits((Pitch * lHeight) - 1)
-         Call FreeImage_ConvertToRawBits(VarPtr(Bits(0)), BITMAP, Pitch, _
-               BitsPerPixel, RedMask, GreenMask, BlueMask, TopDown)
-      End If
-   End If
+End Function
 
-End Sub
+Public Function FreeImage_FIFSupportsExportType(ByVal Format As FREE_IMAGE_FORMAT, _
+                                                ByVal ImageType As FREE_IMAGE_TYPE) As Boolean
 
-Public Function FreeImage_GetHistogramEx(ByVal BITMAP As Long, _
-                                Optional ByVal Channel As FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK, _
-                                Optional ByRef Success As Boolean) As Long()
-                                
-Dim alResult() As Long
+   ' Thin wrapper function returning a real VB Boolean value
 
-   ' This function returns a DIB's histogram data as VB style array of
-   ' type Long. Since histogram data is never modified directly, it seems
-   ' enough to return a clone of the data and no read/write accessible
-   ' array wrapped around the actual pointer.
-   
-   ' All parameters work according to the FreeImage 3 API documentation.
-   
-
-   If (BITMAP) Then
-   
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to get histogram of a 'header-only' bitmap.")
-      End If
-
-      ReDim alResult(255)
-      Success = (FreeImage_GetHistogramInt(BITMAP, alResult(0), Channel) = 1)
-      If (Success) Then
-         Call pSwap(VarPtrArray(FreeImage_GetHistogramEx), VarPtrArray(alResult))
-      End If
-   End If
+   FreeImage_FIFSupportsExportType = (FreeImage_FIFSupportsExportTypeInt(Format, ImageType) = 1)
 
 End Function
 
-Public Function FreeImage_AdjustCurveEx(ByVal BITMAP As Long, _
-                                        ByRef LookupTable As Variant, _
-                               Optional ByVal Channel As FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) As Boolean
-                               
-Dim lpData As Long
-Dim lSizeInBytes As Long
+Public Function FreeImage_FIFSupportsExportBPP(ByVal Format As FREE_IMAGE_FORMAT, _
+                                               ByVal BitsPerPixel As Long) As Boolean
+   
+   ' Thin wrapper function returning a real VB Boolean value
 
-   ' This function extends the FreeImage function 'FreeImage_AdjustCurve'
-   ' to a more VB suitable function. The parameter 'LookupTable' may
-   ' either be an array of type Byte or may contain the pointer to a memory
-   ' block, what in VB is always the address of the memory block, since VB
-   ' actually doesn's support native pointers.
-   
-   ' In case of providing the memory block as an array, make sure, that the
-   ' array contains exactly 256 items. In case of providing an address of a
-   ' memory block, the size of the memory block is assumed to be 256 bytes
-   ' and it is up to the caller to ensure that it is large enough.
-   
-   
-   If (BITMAP) Then
-   
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to adjust a 'header-only' bitmap.")
-      End If
+   FreeImage_FIFSupportsExportBPP = (FreeImage_FIFSupportsExportBPPInt(Format, BitsPerPixel) = 1)
+                                             
+End Function
 
-      If (IsArray(LookupTable)) Then
-         lpData = pGetMemoryBlockPtrFromVariant(LookupTable, lSizeInBytes)
-      
-      ElseIf (IsNumeric(LookupTable)) Then
-         lSizeInBytes = 256
-         lpData = CLng(LookupTable)
-      
-      End If
-      
-      If ((lpData <> 0) And (lSizeInBytes = 256)) Then
-         FreeImage_AdjustCurveEx = (FreeImage_AdjustCurveInt(BITMAP, lpData, Channel) = 1)
-      End If
-   End If
+Public Function FreeImage_FIFSupportsICCProfiles(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
+
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_FIFSupportsICCProfiles = (FreeImage_FIFSupportsICCProfilesInt(Format) = 1)
 
 End Function
 
-Public Function FreeImage_GetLockedPageNumbersEx(ByVal BITMAP As Long, _
-                                        Optional ByRef Count As Long) As Long()
+Public Function FreeImage_FIFSupportsNoPixels(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
+
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_FIFSupportsNoPixels = (FreeImage_FIFSupportsNoPixelsInt(Format) = 1)
+
+End Function
+
+Public Function FreeImage_CloseMultiBitmap(ByVal BITMAP As Long, _
+                                  Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
+
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_CloseMultiBitmap = (FreeImage_CloseMultiBitmapInt(BITMAP, Flags) = 1)
+
+End Function
+
+Public Function FreeImage_SaveToMemory(ByVal Format As FREE_IMAGE_FORMAT, _
+                                       ByVal BITMAP As Long, _
+                                       ByVal Stream As Long, _
+                              Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
+                              
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_SaveToMemory = (FreeImage_SaveToMemoryInt(Format, BITMAP, Stream, Flags) = 1)
+  
+End Function
+
+Public Function FreeImage_AcquireMemory(ByVal Stream As Long, _
+                                        ByRef DataPtr As Long, _
+                                        ByRef SizeInBytes As Long) As Boolean
                                         
-Dim lpPages As Long
-Dim alResult() As Long
+   ' Thin wrapper function returning a real VB Boolean value
 
-   ' This function extends the FreeImage function FreeImage_GetLockedPageNumbers()
-   ' to a more VB suitable function. The original FreeImage parameter 'pages', which
-   ' is a pointer to an array of Long, containing all locked page numbers, was turned
-   ' into a return value, which is a real VB-style array of type Long. The original
-   ' Boolean return value, indicating if there are any locked pages, was dropped from
-   ' this function. The caller has to check the 'Count' parameter, which works according
-   ' to the FreeImage API documentation.
-   
-   ' This function returns an array of Longs, dimensioned from 0 to (Count - 1), that
-   ' contains the page numbers of all currently locked pages of 'BITMAP', if 'Count' is
-   ' greater than 0 after the function returns. If 'Count' is 0, there are no pages
-   ' locked and the function returns an uninitialized array.
+   FreeImage_AcquireMemory = (FreeImage_AcquireMemoryInt(Stream, DataPtr, SizeInBytes) = 1)
+           
+End Function
 
+Public Function FreeImage_SeekMemory(ByVal Stream As Long, _
+                                     ByVal Offset As Long, _
+                                     ByVal Origin As Long) As Boolean
+                                     
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_SeekMemory = (FreeImage_SeekMemoryInt(Stream, Offset, Origin) = 1)
+
+End Function
+
+Public Function FreeImage_IsLittleEndian() As Boolean
    
-   If (FreeImage_GetLockedPageNumbersInt(BITMAP, lpPages, Count) = 1) Then
-      ReDim alResult(Count - 1)
-      Call CopyMemory(alResult(0), ByVal lpPages, Count * 4)
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_IsLittleEndian = (FreeImage_IsLittleEndianInt() = 1)
+
+End Function
+
+Public Function FreeImage_LookupX11Color(ByVal Color As String, _
+                                         ByRef Red As Long, _
+                                         ByRef Green As Long, _
+                                         ByRef Blue As Long) As Boolean
+                                         
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_LookupX11Color = (FreeImage_LookupX11ColorInt(Color, Red, Green, Blue) = 1)
+           
+End Function
+
+Public Function FreeImage_LookupSVGColor(ByVal Color As String, _
+                                         ByRef Red As Long, _
+                                         ByRef Green As Long, _
+                                         ByRef Blue As Long) As Boolean
+                                         
+   ' Thin wrapper function returning a real VB Boolean value
+
+   FreeImage_LookupSVGColor = (FreeImage_LookupSVGColorInt(Color, Red, Green, Blue) = 1)
+         
+End Function
+
+Public Function FreeImage_PreMultiplyWithAlpha(ByVal BITMAP As Long) As Boolean
+
+   ' Thin wrapper function returning a real VB Boolean value
+   
+   FreeImage_PreMultiplyWithAlpha = (FreeImage_PreMultiplyWithAlphaInt(BITMAP) = 1)
+
+End Function
+
+Public Function FreeImage_SetThumbnail(ByVal BITMAP As Long, ByVal Thumbnail As Long) As Boolean
+
+   ' Thin wrapper function returning a real VB Boolean value
+   
+   FreeImage_SetThumbnail = (FreeImage_SetThumbnailInt(BITMAP, Thumbnail) = 1)
+
+End Function
+
+
+Public Function FreeImage_OpenMultiBitmap(ByVal Format As FREE_IMAGE_FORMAT, _
+                                          ByVal FileName As String, _
+                                 Optional ByVal CreateNew As Boolean, _
+                                 Optional ByVal ReadOnly As Boolean, _
+                                 Optional ByVal KeepCacheInMemory As Boolean, _
+                                 Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
+
+   FreeImage_OpenMultiBitmap = FreeImage_OpenMultiBitmapInt(Format, FileName, IIf(CreateNew, 1, 0), _
+         IIf(ReadOnly And Not CreateNew, 1, 0), IIf(KeepCacheInMemory, 1, 0), Flags)
+
+End Function
+
+Public Sub FreeImage_UnlockPage(ByVal BITMAP As Long, ByVal PageBitmap As Long, ByVal ApplyChanges As Boolean)
+
+Dim lApplyChanges As Long
+
+   If (ApplyChanges) Then
+      lApplyChanges = 1
+   End If
+   Call FreeImage_UnlockPageInt(BITMAP, PageBitmap, lApplyChanges)
+
+End Sub
+
+Public Function FreeImage_RotateEx(ByVal BITMAP As Long, _
+                                   ByVal Angle As Double, _
+                          Optional ByVal ShiftX As Double, _
+                          Optional ByVal ShiftY As Double, _
+                          Optional ByVal OriginX As Double, _
+                          Optional ByVal OriginY As Double, _
+                          Optional ByVal UseMask As Boolean) As Long
+
+    Dim lUseMask As Long
+
+    If UseMask Then lUseMask = 1 Else lUseMask = 0
+    FreeImage_RotateEx = FreeImage_RotateExInt(BITMAP, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
+
+End Function
+
+Public Function FreeImage_MakeThumbnail(ByVal BITMAP As Long, _
+                                        ByVal MaxPixelSize As Long, _
+                               Optional ByVal Convert As Boolean) As Long
+
+Dim lConvert As Long
+
+   If (Convert) Then
+      lConvert = 1
+   End If
+   FreeImage_MakeThumbnail = FreeImage_MakeThumbnailInt(BITMAP, MaxPixelSize, lConvert)
+
+End Function
+
+Public Function FreeImage_ConvertToStandardType(ByVal BITMAP As Long, _
+                                       Optional ByVal ScaleLinear As Boolean = True) As Long
+                                       
+   If (ScaleLinear) Then
+      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(BITMAP, 1)
+   Else
+      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(BITMAP, 0)
+   End If
+   
+End Function
+
+Public Function FreeImage_ConvertToType(ByVal BITMAP As Long, _
+                                        ByVal DestinationType As FREE_IMAGE_TYPE, _
+                               Optional ByVal ScaleLinear As Boolean = True) As Long
+                                       
+   If (ScaleLinear) Then
+      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(BITMAP, DestinationType, 1)
+   Else
+      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(BITMAP, DestinationType, 0)
+   End If
+   
+End Function
+
+
+
+'--------------------------------------------------------------------------------
+' Color conversion helper functions
+'--------------------------------------------------------------------------------
+
+Public Function ConvertColor(ByVal Color As Long) As Long
+
+   ' This helper function converts a VB-style color value (like vbRed), which
+   ' uses the ABGR format into a RGBQUAD compatible color value, using the ARGB
+   ' format, needed by FreeImage and vice versa.
+
+   ConvertColor = ((Color And &HFF000000) Or _
+                   ((Color And &HFF&) * &H10000) Or _
+                   ((Color And &HFF00&)) Or _
+                   ((Color And &HFF0000) \ &H10000))
+
+End Function
+
+Public Function ConvertOleColor(ByVal Color As OLE_COLOR) As Long
+
+   ' This helper function converts an OLE_COLOR value (like vbButtonFace), which
+   ' uses the BGR format into a RGBQUAD compatible color value, using the ARGB
+   ' format, needed by FreeImage.
+   
+   ' This function generally ingnores the specified color's alpha value but, in
+   ' contrast to ConvertColor, also has support for system colors, which have the
+   ' format &H80bbggrr.
+   
+   ' You should not use this function to convert any color provided by FreeImage
+   ' in ARGB format into a VB-style ABGR color value. Use function ConvertColor
+   ' instead.
+
+Dim lColorRef As Long
+
+   If (OleTranslateColor(Color, 0, lColorRef) = 0) Then
+      ConvertOleColor = ConvertColor(lColorRef)
    End If
 
 End Function
+
+
+
+'--------------------------------------------------------------------------------
+' Extended functions derived from FreeImage 3 functions usually dealing
+' with arrays
+'--------------------------------------------------------------------------------
+
+Public Sub FreeImage_UnloadEx(ByRef BITMAP As Long)
+
+   ' Extended version of FreeImage_Unload, which additionally sets the
+   ' passed Bitmap handle to zero after unloading.
+
+   If (BITMAP <> 0) Then
+      Call FreeImage_Unload(BITMAP)
+      BITMAP = 0
+   End If
+
+End Sub
+
 
 ' Memory and Stream functions
 
@@ -5473,796 +3674,6 @@ Dim lCount As Long
 
 End Function
 
-Public Function FreeImage_LoadMultiBitmapFromMemoryEx(ByRef Data As Variant, _
-                                             Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
-                                             Optional ByRef SizeInBytes As Long, _
-                                             Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
-
-Dim hStream As Long
-Dim lDataPtr As Long
-
-   ' This function extends the FreeImage function FreeImage_LoadMultiBitmapFromMemoryEx()
-   ' to a more VB suitable function. The parameter data of type Variant my
-   ' me either an array of type Byte, Integer or Long or may contain the pointer
-   ' to a memory block, what in VB is always the address of the memory block,
-   ' since VB actually doesn's support native pointers.
-   
-   ' The parameter 'Flags' works according to the FreeImage API documentation.
-   
-   ' In case of providing the memory block as an array, the SizeInBytes may
-   ' be omitted, zero or less than zero. Then, the size of the memory block
-   ' is calculated correctly. When SizeInBytes is given, it is up to the caller
-   ' to ensure, it is correct.
-   
-   ' In case of providing an address of a memory block, SizeInBytes must not
-   ' be omitted.
-   
-   ' The parameter fif is an OUT parameter, that will contain the image type
-   ' detected. Any values set by the caller will never be used within this
-   ' function.
-
-
-   ' get both pointer and size in bytes of the memory block provided
-   ' through the Variant parameter 'Data'.
-   lDataPtr = pGetMemoryBlockPtrFromVariant(Data, SizeInBytes)
-   
-   ' open the memory stream
-   hStream = FreeImage_OpenMemoryByPtr(lDataPtr, SizeInBytes)
-   If (hStream) Then
-      ' on success, detect image type
-      Format = FreeImage_GetFileTypeFromMemory(hStream)
-      If (Format <> FIF_UNKNOWN) Then
-         ' load the image from memory stream only, if known image type
-         FreeImage_LoadMultiBitmapFromMemoryEx = FreeImage_LoadMultiBitmapFromMemory(Format, hStream, Flags)
-      End If
-      ' close the memory stream when open
-      Call FreeImage_CloseMemory(hStream)
-   End If
-
-End Function
-
-Public Function FreeImage_SaveMultiBitmapToMemoryEx(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                    ByVal BITMAP As Long, _
-                                                    ByRef Data() As Byte, _
-                                           Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS, _
-                                           Optional ByVal UnloadSource As Boolean) As Boolean
-
-Dim hStream As Long
-Dim lpData As Long
-Dim lSizeInBytes As Long
-
-   ' This function saves a FreeImage multi-page bitmap into memory by using
-   ' the VB Byte array Data(). It makes a deep copy of the image data and closes the
-   ' memory stream opened, before it returns to the caller.
-   
-   ' The Byte array 'Data()' must not be a fixed sized array and will be
-   ' redimensioned according to the size needed to hold all the data.
-   
-   ' The parameters 'Format', 'Bitmap' and 'Flags' work according to the FreeImage 3
-   ' API documentation.
-   
-   ' The optional 'UnloadSource' parameter is for unloading the original image
-   ' after it has been saved to memory. If True, there is no need to close the
-   ' multi-page bitmap at the caller's site.
-   
-   ' The function returns True on success and False otherwise.
-   
-   
-   If (BITMAP) Then
-   
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to save a 'header-only' bitmap.")
-      End If
-   
-      hStream = FreeImage_OpenMemory()
-      If (hStream) Then
-         FreeImage_SaveMultiBitmapToMemoryEx = FreeImage_SaveMultiBitmapToMemory(Format, BITMAP, hStream, Flags)
-         If (FreeImage_SaveMultiBitmapToMemoryEx) Then
-            If (FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes)) Then
-               On Error Resume Next
-               ReDim Data(lSizeInBytes - 1)
-               If (Err.Number = ERROR_SUCCESS) Then
-                  On Error GoTo 0
-                  Call CopyMemory(Data(0), ByVal lpData, lSizeInBytes)
-               Else
-                  On Error GoTo 0
-                  FreeImage_SaveMultiBitmapToMemoryEx = False
-               End If
-            Else
-               FreeImage_SaveMultiBitmapToMemoryEx = False
-            End If
-         End If
-         Call FreeImage_CloseMemory(hStream)
-      Else
-         FreeImage_SaveMultiBitmapToMemoryEx = False
-      End If
-      
-      If (UnloadSource) Then
-         Call FreeImage_CloseMultiBitmapInt(BITMAP)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_SaveMultiBitmapToMemoryEx2(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                     ByVal BITMAP As Long, _
-                                                     ByRef Data() As Byte, _
-                                                     ByRef Stream As Long, _
-                                            Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS, _
-                                            Optional ByVal UnloadSource As Boolean) As Boolean
-
-   ' This function saves a FreeImage multi-page bitmap into memory by using
-   ' the VB Byte array Data(). It does not makes a deep copy of the image data, but uses
-   ' the function 'FreeImage_AcquireMemoryEx' to wrap the array 'Data()'
-   ' around the memory block pointed to by the result of the
-   ' 'FreeImage_AcquireMemory' function.
-   
-   ' The Byte array 'Data()' must not be a fixed sized array and will be
-   ' redimensioned according to the size needed to hold all the data.
-   
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-   
-   ' The parameter 'Stream' is an IN/OUT parameter, tracking the memory
-   ' stream, the VB array 'Data()' is based on. This parameter may contain
-   ' an already opened FreeImage memory stream when the function is called and
-   ' contains a valid memory stream when the function returns in each case.
-   ' After all, it is up to the caller to close that memory stream correctly.
-   ' The array 'Data()' will no longer be valid and accessable after the stream
-   ' has been closed, so it should only be closed after the passed byte array
-   ' variable either goes out of the caller's scope or is redimensioned.
-   
-   ' The parameters 'Format', 'Bitmap' and 'Flags' work according to the FreeImage 3
-   ' API documentation.
-   
-   ' The optional 'UnloadSource' parameter is for unloading the original image
-   ' after it has been saved to memory. If True, there is no need to close the
-   ' multi-page bitmap at the caller's site.
-   
-   ' The function returns True on success and False otherwise.
-
-   
-   If (BITMAP) Then
-   
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to save a 'header-only' bitmap.")
-      End If
-   
-      If (Stream = 0) Then
-         Stream = FreeImage_OpenMemory()
-      End If
-      If (Stream) Then
-         FreeImage_SaveMultiBitmapToMemoryEx2 = _
-               FreeImage_SaveMultiBitmapToMemory(Format, BITMAP, Stream, Flags)
-         If (FreeImage_SaveMultiBitmapToMemoryEx2) Then
-            FreeImage_SaveMultiBitmapToMemoryEx2 = FreeImage_AcquireMemoryEx(Stream, Data)
-         End If
-         
-         ' do not close the memory stream, since the returned array 'Data()'
-         ' points to the stream's data
-         ' the caller must close the stream after he is done
-         ' with the array
-      Else
-         FreeImage_SaveMultiBitmapToMemoryEx2 = False
-      End If
-      
-      If (UnloadSource) Then
-         Call FreeImage_CloseMultiBitmapInt(BITMAP)
-      End If
-   End If
-
-End Function
-
-                             
-Public Function FreeImage_CreateTagExRational(ByVal Model As FREE_IMAGE_MDMODEL, _
-                             ByVal Key As String, _
-                             ByVal TagType As FREE_IMAGE_MDTYPE, _
-                             ByRef srcRationalValue() As FIRATIONAL, _
-                             Optional ByRef Count As Long, _
-                             Optional ByVal Id As Long) As FREE_IMAGE_TAG
-
-   With FreeImage_CreateTagExRational
-      .TagPtr = FreeImage_CreateTag()
-      If (.TagPtr <> 0) Then
-         .Model = Model
-         If (LenB(Key) > 0) Then
-            .Key = Key
-         End If
-         .Type = TagType
-         .Count = Count
-         .Id = Id
-         .RationalValue() = srcRationalValue()
-         Call pTagToTagPtr(FreeImage_CreateTagExRational)
-         FreeImage_CreateTagExRational = pGetTagFromTagPtr(Model, .TagPtr)
-      End If
-   End With
-
-End Function
-                             
-                             
-'--------------------------------------------------------------------------------
-' Tag accessing VB friendly helper functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_CreateTagEx(ByVal Model As FREE_IMAGE_MDMODEL, _
-                             Optional ByVal Key As String, _
-                             Optional ByVal TagType As FREE_IMAGE_MDTYPE = FIDT_NOTYPE, _
-                             Optional ByRef Value As Variant, _
-                             Optional ByRef Count As Long, _
-                             Optional ByVal Id As Long) As FREE_IMAGE_TAG
-                             
-   ' This function is a wrapper for FreeImage_CreateTag() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. So, the return value is
-   ' not a pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' In contrast to FreeImage's original FreeImage_CreateTag() function, the
-   ' parameter 'Model' must be specified, the parameters 'Key', 'TagType',
-   ' 'Value', 'Count' and 'Id' my be specified.
-   
-   ' The 'Model' is needed, since each FREE_IMAGE_TAG structure needs a
-   ' valid 'Model' member.
-   
-   ' All other parameters are optional and enable the caller to specify the tag's
-   ' values upon tag creation. Any parameter specified, is set to it's corresponding
-   ' member in the FREE_IMAGE_TAG structure.
-   
-   ' The caller should check the returned FREE_IMAGE_TAG structure's 'TagPtr' member.
-   ' If this function succeeded, the 'TagPtr' member is non zero. A value of zero
-   ' indicates an error condition sourced from FreeImage_CreateTag().
-   
-   With FreeImage_CreateTagEx
-      .TagPtr = FreeImage_CreateTag()
-      If (.TagPtr <> 0) Then
-         .Model = Model
-         If (LenB(Key) > 0) Then
-            .Key = Key
-         End If
-         .Type = TagType
-         .Count = Count
-         .Id = Id
-         If (Not IsMissing(Value)) Then
-            .Value = Value
-         End If
-         Call pTagToTagPtr(FreeImage_CreateTagEx)
-         FreeImage_CreateTagEx = pGetTagFromTagPtr(Model, .TagPtr)
-      End If
-   End With
-
-End Function
-
-Public Function FreeImage_AppendTag(ByVal BITMAP As Long, _
-                                    ByVal Model As FREE_IMAGE_MDMODEL, _
-                           Optional ByVal Key As String, _
-                           Optional ByVal TagType As FREE_IMAGE_MDTYPE = FIDT_NOTYPE, _
-                           Optional ByRef Value As Variant, _
-                           Optional ByRef Count As Long, _
-                           Optional ByVal Id As Long, _
-                           Optional ByVal OverwriteExisting As Boolean = True) As FREE_IMAGE_TAG
-                           
-Dim lpTag As Long
-
-   ' This function is a shortcut wrapper for FreeImage_CreateTagEx() and
-   ' FreeImage_SetMetadataEx(). It creates a new tag as FreeImage_CreateTagEx() does
-   ' and appends it to the image's metadata model.
-   
-   ' The parameter 'Bitmap' specifies the image, the new tag should be appended to,
-   ' parameters 'Model', 'Key', 'TagType', 'Value', 'Count' and 'Id' are these,
-   ' FreeImage_CreateTagEx() has and are just forwarded unchanged.
-   
-   ' The boolean parameter 'OverwriteExisting' determines, whether to overwrite or
-   ' replace an already existing tag with the newly created. If the tag specified
-   ' by it's model and key already exists and 'OverwriteExisting' is False, an
-   ' empty FREE_IMAGE_TAG structure is returned.
-   
-   ' So, as with FreeImage_CreateTagEx(), the caller should check the returned
-   ' FREE_IMAGE_TAG structure's 'TagPtr' member. If this function succeeded, the
-   ' 'TagPtr' member is non zero. A value of zero indicates an error condition
-   ' sourced from either the FreeImage_CreateTag() function or may result from
-   ' an already existing tag that should not be overwritten.
-                           
-   If ((FreeImage_GetMetadataInt(Model, BITMAP, Key, lpTag) = 0) Or _
-       (OverwriteExisting)) Then
-      
-      FreeImage_AppendTag = FreeImage_CreateTagEx(Model, Key, TagType, Value, Count, Id)
-      If (FreeImage_AppendTag.TagPtr <> 0) Then
-         Call FreeImage_SetMetadataEx(BITMAP, FreeImage_AppendTag, Key, Model, True)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_RemoveTag(ByVal BITMAP As Long, _
-                                    ByVal Model As FREE_IMAGE_MDMODEL, _
-                                    ByVal Key As String) As Boolean
-                                    
-   ' This function is a wrapper function, that removes a tag, that is actually
-   ' part of an image's metadata model. The tag named 'key' of the metadata
-   ' model specified in parameter 'Model' of the image 'Bitmap' will be removed.
-   
-   ' Removing a tag is actually done by calling FreeImage_SetMetadata() with
-   ' a NULL pointer for 'FITAG *tag' as described in the API documentation.
-   
-   ' The function returns the boolean value returned from FreeImage_SetMetadata(),
-   ' which is always TRUE when removing a tag in this fashion. So, this function's
-   ' caller has no feedback telling if the tag was really present and removed
-   ' successfully.
-   
-   ' Up to version 3.9.1 of FreeImage, there seems to be a bug in removing an
-   ' tag from an image's metadata model. Although the removed tag is not accessible
-   ' through FreeImage_GetMetadata() any more, iterations with
-   ' Freeimage_FindFirst/NextMetadata() will still return this tag an a NULL
-   ' pointer.
-   
-   ' This bug was reported on the Developers Forum. You can revisit the posting at:
-   ' http://sourceforge.net/forum/forum.php?thread_id=1536883&forum_id=36111
-                               
-   FreeImage_RemoveTag = (FreeImage_SetMetadataInt(Model, BITMAP, Key, 0) <> 0)
-
-End Function
-
-Public Function FreeImage_RemoveTagEx(ByVal BITMAP As Long, _
-                                      ByRef Tag As FREE_IMAGE_TAG) As Boolean
-                                      
-   ' This function is a FREE_IMAGE_TAG based wrapper for FreeImage_RemoveTag()
-
-   With Tag
-      FreeImage_RemoveTagEx = FreeImage_RemoveTag(BITMAP, .Model, .Key)
-   End With
-
-End Function
-
-Public Function FreeImage_TagExists(ByVal BITMAP As Long, _
-                                    ByVal Model As FREE_IMAGE_MDMODEL, _
-                           Optional ByVal Key As String) As Boolean
-
-Dim lpTag As Long
-
-   ' This function is a small helper function, returning a boolean value
-   ' that determines, whether a certain tag specified by metadata model
-   ' and key exists for an image specified by 'Bitmap'.
-
-   FreeImage_TagExists = (FreeImage_GetMetadataInt(Model, BITMAP, Key, lpTag) <> 0)
-
-End Function
-
-Public Function FreeImage_TagExistsEx(ByVal BITMAP As Long, _
-                                      ByRef Tag As FREE_IMAGE_TAG) As Boolean
-
-   ' This function is a FREE_IMAGE_TAG based wrapper for FreeImage_TagExists()
-   
-   With Tag
-      FreeImage_TagExistsEx = FreeImage_TagExists(BITMAP, .Model, .Key)
-   End With
-
-End Function
-
-Public Sub FreeImage_DeleteTagEx(ByRef Tag As FREE_IMAGE_TAG)
-
-   ' This function is a wrapper for FreeImage_DeleteTag() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. So, the parameter 'Tag'
-   ' is not a pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' This function deletes the underlaying FreeImage FITAG structure,
-   ' specified the the member 'TagPtr' of the FREE_IMAGE_TAG structure
-   ' and also sets all other members of Tag to a null value.
-   
-   ' Do not get confused with the wrapper functions FreeImage_RemoveTag()
-   ' and FreeImage_RemoveTagEx(). These functions remove a tag from an
-   ' image's metadata model. This function only deletes of frees (a better
-   ' name would be 'FreeImage_FreeTag') a tag created with
-   ' FreeImage_CreateTagEx(). Do not delete any tags obtained from any other
-   ' function.
-
-   With Tag
-      If (.TagPtr <> 0) Then
-         Call FreeImage_DeleteTag(.TagPtr)
-      End If
-      .TagPtr = 0
-      .Count = 0
-      .Description = vbNullString
-      .Id = 0
-      .Key = vbNullString
-      .Length = 0
-      .Model = FIMD_NODATA
-      Erase .Palette
-      Erase .RationalValue
-      .StringValue = vbNullString
-      .Type = FIDT_NOTYPE
-      .Value = Empty
-   End With
-
-End Sub
-
-Public Function FreeImage_CloneTagEx(ByRef Tag As FREE_IMAGE_TAG, _
-                            Optional ByVal Model As FREE_IMAGE_MDMODEL = FIMD_NODATA) As FREE_IMAGE_TAG
-                            
-   ' This function is a thin wrapper for FreeImage_CloneTag() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. The parameter 'Tag' works
-   ' according to the FreeImage API documentation expect that Tag is not a
-   ' pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' The additional optional paremeter 'Model' is needed, since the
-   ' transformation from a FreeImage FITAG structure to the VB friendly
-   ' FREE_IMAGE_TAG structure always need the model to be specified.
-   ' When 'Model' is missing (equal to FREE_IMAGE_TAG), the model to be
-   ' used is taken from the Tag's member 'Model' itself.
-   
-   ' See function FreeImage_FindNextMetadataEx() to learn more about the
-   ' optional parameter 'Model'
-   
-   ' Tags obtained from FreeImage_CloneTagEx() must be deleted with
-   ' FreeImage_DeleteTagEx() as long as they are not used with
-   ' FreeImage_SetMetadataEx() with the parameter 'RefreshTag' set to True.
-   
-   If (Tag.TagPtr <> 0) Then
-      If (Model = FIMD_NODATA) Then
-         Model = Tag.Model
-      End If
-      FreeImage_CloneTagEx = pGetTagFromTagPtr(Model, FreeImage_CloneTag(Tag.TagPtr))
-   End If
-
-End Function
-
-Public Function FreeImage_RemoveMetadataModel(ByVal BITMAP As Long, _
-                                              ByVal Model As FREE_IMAGE_MDMODEL) As Boolean
-
-   ' This function removes a complete metadata model 'Model' from an image specified
-   ' by 'Bitmap'.
-
-   If (Model <> FIMD_NODATA) Then
-      FreeImage_RemoveMetadataModel = (FreeImage_SetMetadataInt(Model, BITMAP, vbNullString, 0) <> 0)
-   End If
-
-End Function
-
-Public Function FreeImage_FindFirstMetadataEx(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                              ByVal BITMAP As Long, _
-                                              ByRef Tag As FREE_IMAGE_TAG) As Long
-                                              
-   ' This function is a wrapper for FreeImage_FindFirstMetadata() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. All parameters 'Bitmap', 'Tag',
-   ' and 'Model' as the function's return value work according to the
-   ' FreeImage API documentation expect that Tag is not a pointer to a FITAG
-   ' structure but a FREE_IMAGE_TAG structure.
-   
-   ' Tags obtained from FreeImage_GetMetadataEx() must not be deleted with
-   ' FreeImage_DeleteTagEx().
-                                              
-   With Tag
-      FreeImage_FindFirstMetadataEx = FreeImage_FindFirstMetadata(Model, BITMAP, .TagPtr)
-      If (FreeImage_FindFirstMetadataEx <> 0) Then
-         Tag = pGetTagFromTagPtr(Model, .TagPtr)
-      End If
-   End With
-
-End Function
-
-Public Function FreeImage_FindNextMetadataEx(ByVal hFind As Long, _
-                                             ByRef Tag As FREE_IMAGE_TAG, _
-                                    Optional ByVal Model As FREE_IMAGE_MDMODEL = FIMD_NODATA) As Boolean
-                                    
-   ' This function is a wrapper for FreeImage_FindNextMetadataEx() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. All parameters 'hFind' and 'Tag'
-   ' as the function's return value work according to the FreeImage API
-   ' documentation expect that Tag is not a pointer to a FITAG structure but a
-   ' FREE_IMAGE_TAG structure.
-   
-   ' The additional optional paremeter 'Model' is needed, since the VB friendly
-   ' FREE_IMAGE_TAG structure also contains the member 'StringValue'. This member
-   ' is filled with the result of FreeImage_TagToString() which always needs
-   ' the model to be specified. Since there should be no static oder global
-   ' variables id the FreeImage VB wrapper, the model must be known each time
-   ' a FreeImage FITAG structure is converted to a FREE_IMAGE_TAG structure.
-   ' (A global VB collection could be used to map the hFind to the model,
-   ' but we don't want any globals here)
-   
-   ' So, when 'Model' is missing (equal to FREE_IMAGE_TAG), the model to be used
-   ' is taken from the Tag's member 'Model' itself. This is useful when using this
-   ' function in a loop iterating all tags per model (what else would you do
-   ' with that function?). The Tag's member 'Model' is populated by
-   ' FreeImage_FindFirstMetadataEx() and remains valid during the whole loop, ready
-   ' to be used in this function.
-   
-   ' Tags obtained from FreeImage_GetMetadataEx() must not be deleted with
-   ' FreeImage_DeleteTagEx().
-                                              
-   With Tag
-      FreeImage_FindNextMetadataEx = (FreeImage_FindNextMetadataInt(hFind, .TagPtr) <> 0)
-      If (FreeImage_FindNextMetadataEx) Then
-         If (Model = FIMD_NODATA) Then
-            Model = .Model
-         End If
-         Tag = pGetTagFromTagPtr(Model, .TagPtr)
-      End If
-   End With
-                                              
-End Function
-
-Public Function FreeImage_GetAllMetadataTags(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                             ByVal BITMAP As Long, _
-                                             ByRef Tag() As FREE_IMAGE_TAG) As Long
-
-Dim hMD As Long
-Dim lpTag As Long
-Dim i As Long
-
-   ' This function is a helper function returning (through a ByRef parameter)
-   ' an array of FREE_IMAGE_TAG structures containing all the image's tags of
-   ' the metadata model specified by the 'Model' parameter.
-   
-   ' The parameter 'Tag()' must be an redimensionable array of FREE_IMAGE_TAG
-   ' and is redimensioned accordingly. The function returns the number of
-   ' tags stored in 'Tag()'.
-   
-   ' All tags obtained from FreeImage_GetAllMetadataTags() must not be deleted
-   ' with FreeImage_DeleteTagEx().
-
-   i = FreeImage_GetMetadataCount(Model, BITMAP)
-   If (i > 0) Then
-      ReDim Tag(i - 1)
-      FreeImage_GetAllMetadataTags = i
-      i = 0
-      hMD = FreeImage_FindFirstMetadata(Model, BITMAP, lpTag)
-      If (hMD <> 0) Then
-         Do
-            Tag(i) = pGetTagFromTagPtr(Model, lpTag)
-            i = i + 1
-         Loop While (FreeImage_FindNextMetadataInt(hMD, lpTag) <> 0)
-         Call FreeImage_FindCloseMetadata(hMD)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_GetMetadataEx(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                        ByVal BITMAP As Long, _
-                                        ByVal Key As String, _
-                                        ByRef Tag As FREE_IMAGE_TAG) As Boolean
-   
-   ' This function is a wrapper for FreeImage_GetMetadata() working with
-   ' the VB friendly FREE_IMAGE_TAG structure. All parameters 'Bitmap', 'Tag',
-   ' 'Key' and 'Model' as well as the function's return value work according
-   ' to the FreeImage API documentation expect that Tag is not a pointer to
-   ' a FITAG structure but to a FREE_IMAGE_TAG structure.
-   
-   ' Tags obtained from FreeImage_GetMetadataEx() must not be deleted with
-   ' FreeImage_DeleteTagEx().
-
-   With Tag
-      If (FreeImage_GetMetadataInt(Model, BITMAP, Key, .TagPtr) <> 0) Then
-         Tag = pGetTagFromTagPtr(Model, .TagPtr)
-         FreeImage_GetMetadataEx = True
-      End If
-   End With
-
-End Function
-
-Public Function FreeImage_SetMetadataEx(ByVal BITMAP As Long, _
-                                        ByRef Tag As FREE_IMAGE_TAG, _
-                               Optional ByVal Key As String, _
-                               Optional ByVal Model As FREE_IMAGE_MDMODEL = FIMD_NODATA, _
-                               Optional ByVal RefreshTag As Boolean) As Boolean
-                               
-   ' This function is a wrapper for FreeImage_SetMetadata() using the wrapper's
-   ' VB friendly FREE_IMAGE_TAG structure as an replacement for the original
-   ' function's pointer to a FITAG structure.
-   
-   ' All parameters 'Bitmap', 'Tag', 'Key' and 'Model' as the function's return value
-   ' work according to the FreeImage API documentation expect that Tag is not a
-   ' pointer to a FITAG structure but a FREE_IMAGE_TAG structure.
-   
-   ' As with FreeImage_SetMetadata(), this function sould only be called with
-   ' new tags, created with FreeImage_CreateTagEx(), a wrapper function for
-   ' FreeImage_CreateTag() working with the VB friendly FREE_IMAGE_TAG structure.
-   
-   ' Normally, after a newly created tag must be deleted/freed with a call to
-   ' FreeImage_DeleteTagEx(), a wrapper function for FreeImage_DeleteTag() working
-   ' with the VB friendly FREE_IMAGE_TAG structure (bored already?), after
-   ' the tag was appended to an image's metadata model with
-   ' FreeImage_SetMetadataEx(). But...
-   
-   ' There is a wrapper specific additional boolean parameter 'RefreshTag', that
-   ' is similar to the parameter 'UnloadSource' found in many wrapper functions.
-   ' When 'RefreshTag' is True upon entry, the tag specified in the 'Tag'
-   ' parameter is deleted (the underlaying FITAG structure is deleted with
-   ' FreeImage_DeteleTag() and all other members of the FREE_IMAGE_TAG structure
-   ' are set to null values) and is reassigned with the tag, that is now part
-   ' of the image's metadata model. The tag now referenced in the 'Tag'
-   ' parameter must NOT be deleted any more by the caller of this function, since
-   ' this tag refers to the actual tag data stored with the image. This is like
-   ' a FREE_IMAGE_TAG structure obtained from FreeImage_GetMetadata() or
-   ' FreeImage_FindFirst/NextMetadata(). Any changes made to this FREE_IMAGE_TAG
-   ' structure may be applied to the image with a later call to
-   ' FreeImage_UpdateMetadata().
-   
-   
-   With Tag
-      If (Model = FIMD_NODATA) Then
-         Model = .Model
-      End If
-      If (LenB(Key) = 0) Then
-         Key = .Key
-      End If
-      If (FreeImage_SetMetadataInt(Model, BITMAP, Key, .TagPtr) <> 0) Then
-         FreeImage_SetMetadataEx = True
-      End If
-      If (RefreshTag) Then
-         Call FreeImage_DeleteTagEx(Tag)
-         Call FreeImage_GetMetadataEx(Model, BITMAP, Key, Tag)
-      End If
-   End With
-
-End Function
-
-Public Function FreeImage_GetImageComment(ByVal BITMAP As Long) As String
-
-Dim tTag As FREE_IMAGE_TAG
-
-   ' This function is a small wrapper around FreeImage_GetMetadata() that
-   ' returns the comment of a JPEG, PNG of GIF image.
-
-   If (FreeImage_GetMetadataEx(FIMD_COMMENTS, BITMAP, "Comment", tTag)) Then
-      FreeImage_GetImageComment = tTag.Value
-   End If
-
-End Function
-
-Public Function FreeImage_SetImageComment(ByVal BITMAP As Long, _
-                                 Optional ByVal Comment As String) As Boolean
-
-Dim tTag As FREE_IMAGE_TAG
-
-   ' This function is a small wrapper around FreeImage_SetMetadata() that
-   ' sets the comment of a JPEG, PNG of GIF image.
-
-   If (LenB(Comment) > 0) Then
-      tTag = FreeImage_AppendTag(BITMAP, FIMD_COMMENTS, "Comment", FIDT_ASCII, Comment)
-      FreeImage_SetImageComment = (tTag.TagPtr <> 0)
-   Else
-      Call FreeImage_RemoveMetadataModel(BITMAP, FIMD_COMMENTS)
-      FreeImage_SetImageComment = True
-   End If
-
-End Function
-
-Public Function FreeImage_CopyMetadata(ByVal BitmapSrc As Long, _
-                                       ByVal BitmapDst As Long, _
-                              Optional ByVal ReplaceExisting As Boolean = True, _
-                              Optional ByVal Model As FREE_IMAGE_MDMODEL = FIMD_NODATA) As Long
-
-Dim hMDFind As Long
-Dim lpTag As Long
-Dim strKey As String
-Dim bSetTag As Boolean
-
-   ' This derived helper function copies several metadata tags from one
-   ' image to another. This is useful when cloning images explicitly with
-   ' FreeImage_Clone() or implicitly with FreeImage_ConvertColorDepth() or
-   ' with any of the FreeImage_RescaleXXX() functions. Whenever the "same"
-   ' image is represented by a new 'Bitmap' pointer, the image was internally
-   ' recreated. All of the data, associated with the image, like metadata,
-   ' DPI settings or ICC profiles are no more available in the new version of
-   ' the image.
-   
-   ' Setting the DPI for X and Y direction is quite easy with the wrapper
-   ' functions FreeImage_Get/SetResolutionX/Y(). This function makes it even
-   ' easier to keep track of all associated metadata tags for a cloned image!
-   
-   ' Both parameters 'BitmapSrc' and 'BitmapDst' specify the source and destination
-   ' image. Metadata is copied from 'BitmapSrc' to 'BitmapDst'.
-   
-   ' The optional parameter 'ReplaceExisting' determines whether existing tags
-   ' should be replaced or not. If there are no tags in 'BitmapDst' it is recommended,
-   ' to set 'ReplaceExisting' to True (or to omit it, since True is it's default
-   ' value) for better performance; when set to True, no tests for tag existence
-   ' in the destination image will be run.
-   
-   ' The optional parameter 'Model' may specify a certain metadata model to be
-   ' copied. If this parameter is omitted or set to any value not defined in the
-   ' FREE_IMAGE_MDMODEL enumeration, all metadata models will be copied
-   ' sequentially.
-   
-   ' This function returns the number of tags copied or zero when there are no tags
-   ' in the source image or an error occured.
-   
-   ' For the standard use case described above (keeping track of all metadata after
-   ' an image was cloned) the calling this function boils down to a very short form:
-   
-   ' lTagsCopied = FreeImage_CopyMetadata(hDibSrc, hDibDst)
-
-   If ((BitmapSrc <> 0) And (BitmapDst <> 0)) Then
-      If ((Model >= FIMD_COMMENTS) And (Model <= FIMD_CUSTOM)) Then
-         hMDFind = FreeImage_FindFirstMetadata(Model, BitmapSrc, lpTag)
-         If (hMDFind) Then
-            Do
-               strKey = pGetStringFromPointerA(deref(deref(lpTag)))
-               bSetTag = ReplaceExisting
-               If (Not bSetTag) Then
-                  bSetTag = (Not FreeImage_TagExists(BitmapDst, Model, strKey))
-               End If
-               If (bSetTag) Then
-                  If (FreeImage_SetMetadataInt(Model, BitmapDst, strKey, lpTag) <> 0) Then
-                     FreeImage_CopyMetadata = FreeImage_CopyMetadata + 1
-                  End If
-               End If
-            Loop While (FreeImage_FindNextMetadata(hMDFind, lpTag))
-            Call FreeImage_FindCloseMetadata(hMDFind)
-         End If
-      Else
-         For Model = FIMD_COMMENTS To FIMD_CUSTOM
-            FreeImage_CopyMetadata = FreeImage_CopyMetadata _
-                                   + FreeImage_CopyMetadata(BitmapSrc, BitmapDst, _
-                                                            ReplaceExisting, Model)
-         Next Model
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_CloneMetadataEx(ByVal BitmapSrc As Long, _
-                                          ByVal BitmapDst As Long, _
-                                 Optional ByVal Model As FREE_IMAGE_MDMODEL = FIMD_NODATA) As Long
-                               
-   ' This derived helper function copies several metadata tags from one
-   ' image to another. It is very similar to FreeImage_CopyMetadata().
-   
-   ' The main difference is, that this function aims to create exactly the same
-   ' metadata layout in the destination image. In contrast to
-   ' FreeImage_CopyMetadata(), this function removes all metadata tags in the
-   ' desination image that are not part of the metadata set in the source image.
-   ' So, this function is particularly useful for destination images that may
-   ' have already some tags associated and you want to make shure, that it will
-   ' get exactly the same metadata set as the source image.
-   
-   ' This function will most likely be used in a end user application and should
-   ' be invoked through a menu command called: "Set/Apply Metadata From Source Image..."
-   
-   ' This function returns the number of tags copied or zero if there are no tags
-   ' in the source image or an error occured.
-                                            
-   If ((BitmapSrc <> 0) And (BitmapDst <> 0)) Then
-      If ((Model >= FIMD_COMMENTS) And (Model <= FIMD_CUSTOM)) Then
-         If (FreeImage_RemoveMetadataModel(BitmapDst, Model)) Then
-            FreeImage_CloneMetadataEx = FreeImage_CopyMetadata(BitmapSrc, BitmapDst, _
-                                                               True, Model)
-         End If
-      Else
-         For Model = FIMD_COMMENTS To FIMD_CUSTOM
-            FreeImage_CloneMetadataEx = FreeImage_CloneMetadataEx _
-                                      + FreeImage_CloneMetadataEx(BitmapSrc, BitmapDst, _
-                                                                  Model)
-         Next Model
-      End If
-   End If
-                                  
-End Function
-
-Public Function FreeImage_TagFromPointer(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                         ByVal Tag As Long) As FREE_IMAGE_TAG
-                                         
-   ' This is a generic function that returns a VB wrapper Tag
-   ' structure (FREE_IMAGE_TAG) from a FreeImage FITAG *tag pointer.
-   
-   ' This function is still public due to legacy reasons. Since there are
-   ' functions like 'FreeImage_GetMetadataEx()', 'FreeImage_GetAllMetadataTags()'
-   ' or 'FreeImage_FindFirst/NextMetadataEx()', this function won't be needed
-   ' any more in most cases.
-
-   FreeImage_TagFromPointer = pGetTagFromTagPtr(Model, Tag)
-
-End Function
-
-Public Function FreeImage_UpdateMetadata(ByRef Tag As FREE_IMAGE_TAG) As Boolean
-
-   ' This function updates any changes made in a FREE_IMAGE_TAG
-   ' structure.
-
-   FreeImage_UpdateMetadata = pTagToTagPtr(Tag)
-
-End Function
 
 Public Function FreeImage_UnsignedLong(ByVal Value As Long) As Variant
 
@@ -6310,78 +3721,6 @@ Public Function FreeImage_UnsignedShort(ByVal Value As Integer) As Variant
       FreeImage_UnsignedShort = lTemp
    Else
       FreeImage_UnsignedShort = Value
-   End If
-
-End Function
-
-Public Function FreeImage_CreateRational(ByRef Numerator As Variant, _
-                                         ByRef Denominator As Variant, _
-                                Optional ByVal NormalizeValue As Boolean = True) As FIRATIONAL
-                                
-   ' This function creates an unsigned rational (FIDT_RATIONAL) value to be used with
-   ' FreeImage's metadata models. In the VB wrapper, any rational value is stored in a
-   ' structure (FIRATIONAL), containing both 'Numerator' and 'Denominator' members. The
-   ' rational's value is then defined as the fraction Numerator/Denominator.
-   
-   ' Both values 'Numerator' and 'Denominator' are actually ULONGs (unsigned longs), a
-   ' data type not supported by VB (a VB Long variable is always signed). Therefore,
-   ' 'Numerator' and 'Denominator' are typed as Variant. Whenever the range of a signed
-   ' long is sufficient to store the value (all values between 0 and 0x7FFFFFFF
-   ' (2147483647 decimal)), the Variant gets a Long subtype. If not, a Currency subtype is
-   ' used just to give you the mathematical correct value of the unsigned long.
-   
-   ' The optional parameter 'NormalizeValue' controls, whether the resulting fraction
-   ' should be normalized (cancelled down) or not.
-   
-   ' When calling this function, you can use hexadecimal constants for passing unsinged
-   ' longs via the parameters 'Numerator' and 'Denominator'.
-   
-   '                                                                     2147483647
-   ' Example: tRational = FreeImage_CreateRational(&HFFFFFFFF, 12345) -> ----------
-   '                                                                       12345
-                                
-   With FreeImage_CreateRational
-      .Numerator = FreeImage_UnsignedLong(Numerator)
-      .Denominator = FreeImage_UnsignedLong(Denominator)
-   End With
-   
-   If (NormalizeValue) Then
-      Call pNormalizeRational(FreeImage_CreateRational)
-   End If
-
-End Function
-
-Public Function FreeImage_CreateSignedRational(ByRef Numerator As Variant, _
-                                               ByRef Denominator As Variant, _
-                                      Optional ByVal NormalizeValue As Boolean = True) As FIRATIONAL
-                                      
-   ' This function creates a signed rational (FIDT_RATIONAL) value to be used with
-   ' FreeImage's metadata models. In the VB wrapper, any rational value is stored in a
-   ' structure (FIRATIONAL), containing both 'Numerator' and 'Denominator' members. The
-   ' rational's value is then defined as the fraction Numerator/Denominator.
-   
-   ' Both values 'Numerator' and 'Denominator' are actually LONGs (signed longs), the
-   ' same data type as a VB Long. Since, 'Numerator' and 'Denominator' are typed as
-   ' Variant, all possible values between -2,147,483,648 and + 2,147,483,647 are stored
-   ' in a Variant with subtype Long (cp. 'FreeImage_CreateRational()').
-   
-   ' The optional parameter 'NormalizeValue' controls, whether the resulting fraction
-   ' should be normalized (cancelled down) or not.
-   
-   ' When calling this function, you can use hexadecimal constants for passing unsinged
-   ' longs via the parameters 'Numerator' and 'Denominator'.
-   
-   '                                                                            -1         1
-   ' Example: tRational = FreeImage_CreateSignedRational(&HFFFFFFFF, 12345) -> ----- = - -----
-   '                                                                           12345     12345
-                                
-   With FreeImage_CreateSignedRational
-      .Numerator = CLng(Numerator)
-      .Denominator = CLng(Denominator)
-   End With
-   
-   If (NormalizeValue) Then
-      Call pNormalizeSRational(FreeImage_CreateSignedRational)
    End If
 
 End Function
@@ -6449,48 +3788,6 @@ Dim i As Long
    Else
       FreeImage_GetPrimaryExtensionFromFIF = strExtensionList
    End If
-
-End Function
-
-Public Function FreeImage_IsGreyscaleImage(ByVal BITMAP As Long) As Boolean
-
-Dim atRGB() As RGBQUAD
-Dim i As Long
-
-   ' This function returns a boolean value that is true, if the DIB is actually
-   ' a greyscale image. Here, the only test condition is, that each palette
-   ' entry must be a grey value, what means that each color component has the
-   ' same value (red = green = blue).
-   
-   ' The FreeImage libraray doesn't offer a function to determine if a DIB is
-   ' greyscale. The only thing you can do is to use the 'FreeImage_GetColorType'
-   ' function, that returns either FIC_MINISWHITE or FIC_MINISBLACK for
-   ' greyscale images. However, a DIB needs to have a ordered greyscale palette
-   ' (linear ramp or inverse linear ramp) to be judged as FIC_MINISWHITE or
-   ' FIC_MINISBLACK. DIB's with an unordered palette that are actually (visually)
-   ' greyscale, are said to be (color-)palletized. That's also true for any 4 bpp
-   ' image, since it will never have a palette that satifies the tests done
-   ' in the 'FreeImage_GetColorType' function.
-   
-   ' So, there is a chance to omit some color depth conversions, when displaying
-   ' an image in greyscale fashion. Maybe the problem will be solved in the
-   ' FreeImage library one day.
-
-   Select Case FreeImage_GetBPP(BITMAP)
-   
-   Case 1, 4, 8
-      atRGB = FreeImage_GetPaletteEx(BITMAP)
-      FreeImage_IsGreyscaleImage = True
-      For i = 0 To UBound(atRGB)
-         With atRGB(i)
-            If ((.rgbRed <> .rgbGreen) Or (.rgbRed <> .rgbBlue)) Then
-               FreeImage_IsGreyscaleImage = False
-               Exit For
-            End If
-         End With
-      Next i
-   
-   End Select
 
 End Function
 
@@ -6606,23 +3903,136 @@ Public Function FreeImage_HasICCProfile(ByVal BITMAP As Long) As Boolean
 
 End Function
 
-' Bitmap Info functions
+' Image color depth conversion wrapper
 
-Public Function FreeImage_GetInfoHeaderEx(ByVal BITMAP As Long) As BITMAPINFOHEADER
+Public Function FreeImage_GetPaletteEx(ByVal BITMAP As Long) As RGBQUAD()
 
-Dim lpInfoHeader As Long
+Dim tSA As SAVEARRAY1D
+Dim lpSA As Long
 
-   ' This function is a wrapper around FreeImage_GetInfoHeader() and returns a fully
-   ' populated BITMAPINFOHEADER structure for a given bitmap.
-
-   lpInfoHeader = FreeImage_GetInfoHeader(BITMAP)
-   If (lpInfoHeader) Then
-      Call CopyMemory(FreeImage_GetInfoHeaderEx, ByVal lpInfoHeader, LenB(FreeImage_GetInfoHeaderEx))
+   ' This function returns a VB style array of type RGBQUAD, containing
+   ' the palette data of the Bitmap. This array provides read and write access
+   ' to the actual palette data provided by FreeImage. This is done by
+   ' creating a VB array with an own SAFEARRAY descriptor making the
+   ' array point to the palette pointer returned by FreeImage_GetPalette().
+   
+   ' This makes you use code like you would in C/C++:
+   
+   ' // this code assumes there is a bitmap loaded and
+   ' // present in a variable called ‘dib’
+   ' if(FreeImage_GetBPP(Bitmap) == 8) {
+   '   // Build a greyscale palette
+   '   RGBQUAD *pal = FreeImage_GetPalette(Bitmap);
+   '   for (int i = 0; i < 256; i++) {
+   '     pal[i].rgbRed = i;
+   '     pal[i].rgbGreen = i;
+   '     pal[i].rgbBlue = i;
+   '   }
+   
+   ' As in C/C++ the array is only valid while the DIB is loaded and the
+   ' palette data remains where the pointer returned by FreeImage_GetPalette
+   ' has pointed to when this function was called. So, a good thing would
+   ' be, not to keep the returned array in scope over the lifetime of the
+   ' Bitmap. Best practise is, to use this function within another routine and
+   ' assign the return value (the array) to a local variable only. As soon
+   ' as this local variable goes out of scope (when the calling function
+   ' returns to it's caller), the array and the descriptor is automatically
+   ' cleaned up by VB.
+   
+   ' This function does not make a deep copy of the palette data, but only
+   ' wraps a VB array around the FreeImage palette data. So, it can be called
+   ' frequently "on demand" or somewhat "in place" without a significant
+   ' performance loss.
+   
+   ' To learn more about this technique I recommend reading chapter 2 (Leveraging
+   ' Arrays) of Matthew Curland's book "Advanced Visual Basic 6"
+   
+   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
+   
+   ' To reuse the caller's array variable, this function's result was assigned to,
+   ' before it goes out of scope, the caller's array variable must be destroyed with
+   ' the FreeImage_DestroyLockedArrayRGBQUAD() function.
+   
+   
+   If (BITMAP) Then
+      
+      ' create a proper SAVEARRAY descriptor
+      With tSA
+         .cbElements = 4                              ' size in bytes of RGBQUAD structure
+         .cDims = 1                                   ' the array has only 1 dimension
+         .cElements = FreeImage_GetColorsUsed(BITMAP) ' the number of elements in the array is
+                                                      ' the number of used colors in the Bitmap
+         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE     ' need AUTO and FIXEDSIZE for safety issues,
+                                                      ' so the array can not be modified in size
+                                                      ' or erased; according to Matthew Curland never
+                                                      ' use FIXEDSIZE alone
+         .pvData = FreeImage_GetPalette(BITMAP)       ' let the array point to the memory block, the
+                                                      ' FreeImage palette pointer points to
+      End With
+      
+      ' allocate memory for an array descriptor
+      ' we cannot use the memory block used by tSA, since it is
+      ' released when tSA goes out of scope, leaving us with an
+      ' array with zeroed descriptor
+      ' we use nearly the same method that VB uses, so VB is able
+      ' to cleanup the array variable and it's descriptor; the
+      ' array data is not touched when cleaning up, since both AUTO
+      ' and FIXEDSIZE flags are set
+      Call SafeArrayAllocDescriptor(1, lpSA)
+      
+      ' copy our own array descriptor over the descriptor allocated
+      ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
+      ' location
+      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
+      
+      ' the implicit variable named as the function is an array variable in VB
+      ' make it point to the allocated array descriptor
+      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetPaletteEx), lpSA, 4)
    End If
 
 End Function
 
-' Image color depth conversion wrapper
+Public Function FreeImage_IsGreyscaleImage(ByVal BITMAP As Long) As Boolean
+
+Dim atRGB() As RGBQUAD
+Dim i As Long
+
+   ' This function returns a boolean value that is true, if the DIB is actually
+   ' a greyscale image. Here, the only test condition is, that each palette
+   ' entry must be a grey value, what means that each color component has the
+   ' same value (red = green = blue).
+   
+   ' The FreeImage libraray doesn't offer a function to determine if a DIB is
+   ' greyscale. The only thing you can do is to use the 'FreeImage_GetColorType'
+   ' function, that returns either FIC_MINISWHITE or FIC_MINISBLACK for
+   ' greyscale images. However, a DIB needs to have a ordered greyscale palette
+   ' (linear ramp or inverse linear ramp) to be judged as FIC_MINISWHITE or
+   ' FIC_MINISBLACK. DIB's with an unordered palette that are actually (visually)
+   ' greyscale, are said to be (color-)palletized. That's also true for any 4 bpp
+   ' image, since it will never have a palette that satifies the tests done
+   ' in the 'FreeImage_GetColorType' function.
+   
+   ' So, there is a chance to omit some color depth conversions, when displaying
+   ' an image in greyscale fashion. Maybe the problem will be solved in the
+   ' FreeImage library one day.
+
+   Select Case FreeImage_GetBPP(BITMAP)
+   
+   Case 1, 4, 8
+      atRGB = FreeImage_GetPaletteEx(BITMAP)
+      FreeImage_IsGreyscaleImage = True
+      For i = 0 To UBound(atRGB)
+         With atRGB(i)
+            If ((.rgbRed <> .rgbGreen) Or (.rgbRed <> .rgbBlue)) Then
+               FreeImage_IsGreyscaleImage = False
+               Exit For
+            End If
+         End With
+      Next i
+   
+   End Select
+
+End Function
 
 Public Function FreeImage_ConvertColorDepth(ByVal BITMAP As Long, _
                                             ByVal Conversion As FREE_IMAGE_CONVERSION_FLAGS, _
@@ -6830,16 +4240,6 @@ Dim lElementSize As Long
 
 End Function
 
-Public Function FreeImage_GetPalettePtr(ByRef Palette() As RGBQUAD) As Long
-
-   ' Returns a pointer to an array of RGBQUAD. This is sometimes referred to as
-   ' a palette.
-
-   FreeImage_GetPalettePtr = VarPtr(Palette(0))
-
-End Function
-
-
 ' Image Rescale wrapper functions
 
 Public Function FreeImage_RescaleEx(ByVal BITMAP As Long, _
@@ -6995,37 +4395,6 @@ Public Function FreeImage_RescaleByPixel(ByVal BITMAP As Long, _
 
 End Function
 
-Public Function FreeImage_RescaleByPercent(ByVal BITMAP As Long, _
-                                  Optional ByVal WidthPercentage As Double, _
-                                  Optional ByVal HeightPercentage As Double, _
-                                  Optional ByVal UnloadSource As Boolean, _
-                                  Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                                  Optional ByVal ForceCloneCreation As Boolean) As Long
-
-   ' Thin wrapper for function 'FreeImage_RescaleEx' for removing method
-   ' overload fake. This function rescales the image by a percent value
-   ' based on the image's original size.
-
-   FreeImage_RescaleByPercent = FreeImage_RescaleEx(BITMAP, WidthPercentage, HeightPercentage, True, _
-         UnloadSource, Filter, ForceCloneCreation)
-
-End Function
-
-Public Function FreeImage_RescaleByFactor(ByVal BITMAP As Long, _
-                                 Optional ByVal WidthFactor As Double, _
-                                 Optional ByVal HeightFactor As Double, _
-                                 Optional ByVal UnloadSource As Boolean, _
-                                 Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                                 Optional ByVal ForceCloneCreation As Boolean) As Long
-
-   ' Thin wrapper for function 'FreeImage_RescaleEx' for removing method
-   ' overload fake. This function rescales the image by a factor
-   ' based on the image's original size.
-
-   FreeImage_RescaleByFactor = FreeImage_RescaleEx(BITMAP, WidthFactor, HeightFactor, False, _
-         UnloadSource, Filter, ForceCloneCreation)
-
-End Function
 
 ' Painting functions
 
@@ -7132,6 +4501,91 @@ Dim eLastStretchMode As STRETCH_MODE
       
       ' restore last mode
       Call SetStretchBltMode(hDC, eLastStretchMode)
+   End If
+
+End Function
+
+
+Public Function FreeImage_GetTransparencyTableEx(ByVal BITMAP As Long) As Byte()
+
+Dim tSA As SAVEARRAY1D
+Dim lpSA As Long
+
+   ' This function returns a VB style Byte array, containing the transparency
+   ' table of the Bitmap. This array provides read and write access to the actual
+   ' transparency table provided by FreeImage. This is done by creating a VB array
+   ' with an own SAFEARRAY descriptor making the array point to the transparency
+   ' table pointer returned by FreeImage_GetTransparencyTable().
+   
+   ' This makes you use code like you would in C/C++:
+   
+   ' // this code assumes there is a bitmap loaded and
+   ' // present in a variable called ‘dib’
+   ' if(FreeImage_GetBPP(Bitmap) == 8) {
+   '   // Remove transparency information
+   '   byte *transt = FreeImage_GetTransparencyTable(Bitmap);
+   '   for (int i = 0; i < 256; i++) {
+   '     transt[i].rgbRed = 255;
+   '   }
+   
+   ' As in C/C++ the array is only valid while the DIB is loaded and the transparency
+   ' table remains where the pointer returned by FreeImage_GetTransparencyTable() has
+   ' pointed to when this function was called. So, a good thing would be, not to keep
+   ' the returned array in scope over the lifetime of the DIB. Best practise is, to use
+   ' this function within another routine and assign the return value (the array) to a
+   ' local variable only. As soon as this local variable goes out of scope (when the
+   ' calling function returns to it's caller), the array and the descriptor is
+   ' automatically cleaned up by VB.
+   
+   ' This function does not make a deep copy of the transparency table, but only
+   ' wraps a VB array around the FreeImage transparency table. So, it can be called
+   ' frequently "on demand" or somewhat "in place" without a significant
+   ' performance loss.
+   
+   ' To learn more about this technique I recommend reading chapter 2 (Leveraging
+   ' Arrays) of Matthew Curland's book "Advanced Visual Basic 6"
+   
+   ' The parameter 'Bitmap' works according to the FreeImage 3 API documentation.
+   
+   ' To reuse the caller's array variable, this function's result was assigned to,
+   ' before it goes out of scope, the caller's array variable must be destroyed with
+   ' the FreeImage_DestroyLockedArray() function.
+   
+   
+   If (BITMAP) Then
+      
+      ' create a proper SAVEARRAY descriptor
+      With tSA
+         .cbElements = 1                                     ' size in bytes of a byte element
+         .cDims = 1                                          ' the array has only 1 dimension
+         .cElements = FreeImage_GetTransparencyCount(BITMAP) ' the number of elements in the array is
+                                                             ' equal to the number transparency table entries
+         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE            ' need AUTO and FIXEDSIZE for safety issues,
+                                                             ' so the array can not be modified in size
+                                                             ' or erased; according to Matthew Curland never
+                                                             ' use FIXEDSIZE alone
+         .pvData = FreeImage_GetTransparencyTable(BITMAP)    ' let the array point to the memory block, the
+                                                             ' FreeImage transparency table pointer points to
+      End With
+      
+      ' allocate memory for an array descriptor
+      ' we cannot use the memory block used by tSA, since it is
+      ' released when tSA goes out of scope, leaving us with an
+      ' array with zeroed descriptor
+      ' we use nearly the same method that VB uses, so VB is able
+      ' to cleanup the array variable and it's descriptor; the
+      ' array data is not touched when cleaning up, since both AUTO
+      ' and FIXEDSIZE flags are set
+      Call SafeArrayAllocDescriptor(1, lpSA)
+      
+      ' copy our own array descriptor over the descriptor allocated
+      ' by SafeArrayAllocDescriptor(); lpSA is a pointer to that memory
+      ' location
+      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
+      
+      ' the implicit variable named as the function is an array variable in VB
+      ' make it point to the allocated array descriptor
+      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetTransparencyTableEx), lpSA, 4)
    End If
 
 End Function
@@ -7335,892 +4789,6 @@ Dim bIsTransparent As Boolean
 End Function
 
 
-'--------------------------------------------------------------------------------
-' Pixel access functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_GetBitsEx(ByVal BITMAP As Long) As Byte()
-
-Dim tSA As SAVEARRAY2D
-Dim lpSA As Long
-
-   ' This function returns a two dimensional Byte array containing a DIB's
-   ' data-bits. This is done by wrapping a true VB array around the memory
-   ' block the returned pointer of FreeImage_GetBits() is pointing to. So, the
-   ' array returned provides full read and write acces to the image's data.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the FreeImage_DestroyLockedArray() function.
-
-   If (BITMAP) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 1                           ' size in bytes per array element
-         .cDims = 2                                ' the array has 2 dimensions
-         .cElements1 = FreeImage_GetHeight(BITMAP) ' the number of elements in y direction (height of Bitmap)
-         .cElements2 = FreeImage_GetPitch(BITMAP)  ' the number of elements in x direction (byte width of Bitmap)
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetBits(BITMAP)       ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' allocate memory for an array descriptor
-      ' we cannot use the memory block used by tSA, since it is
-      ' released when tSA goes out of scope, leaving us with an
-      ' array with zeroed descriptor
-      ' we use nearly the same method that VB uses, so VB is able
-      ' to cleanup the array variable and it's descriptor; the
-      ' array data is not touched when cleaning up, since both AUTO
-      ' and FIXEDSIZE flags are set
-      Call SafeArrayAllocDescriptor(2, lpSA)
-      
-      ' copy our own array descriptor over the descriptor allocated
-      ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
-      ' location
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      
-      ' the implicit variable named like the function is an array
-      ' variable in VB
-      ' make it point to the allocated array descriptor
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetBitsEx), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetBitsExRGBTRIPLE(ByVal BITMAP As Long) As RGBTRIPLE()
-
-Dim tSA As SAVEARRAY2D
-Dim lpSA As Long
-
-   ' This function returns a two dimensional RGBTRIPLE array containing a DIB's
-   ' data-bits. This is done by wrapping a true VB array around the memory
-   ' block the returned pointer of 'FreeImage_GetBits' is pointing to. So, the
-   ' array returned provides full read and write acces to the image's data.
-   
-   ' This function only works with 24 bpp images and, since each FreeImage scanline
-   ' is aligned to a 32-bit boundary, only if the image's width in pixels multiplied
-   ' by three modulo four is zero. That means, that the image layout in memory must
-   ' "naturally" be aligned to a 32-bit boundary, since arrays do not support padding.
-   
-   ' So, the function only returns an initialized array, if this equotion is true:
-   ' (((ImageWidthPixels * 3) Mod 4) = 0)
-   
-   ' In other words, this is true for all images with no padding.
-   
-   ' For instance, only images with these widths will be suitable for this function:
-   ' 100, 104, 108, 112, 116, 120, 124, ...
-   
-   ' Have a look at the wrapper function 'FreeImage_GetScanlinesRGBTRIPLE()' to have
-   ' a way to work around that limitation.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   If (BITMAP) Then
-      
-      If (FreeImage_GetBPP(BITMAP) = 24) Then
-         If (((FreeImage_GetWidth(BITMAP) * 3) Mod 4) = 0) Then
-         
-            ' create a proper SAVEARRAY descriptor
-            With tSA
-               .cbElements = 3                           ' size in bytes per array element
-               .cDims = 2                                ' the array has 2 dimensions
-               .cElements1 = FreeImage_GetHeight(BITMAP) ' the number of elements in y direction (height of Bitmap)
-               .cElements2 = FreeImage_GetWidth(BITMAP)  ' the number of elements in x direction (byte width of Bitmap)
-               .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                         ' so the array can not be modified in size
-                                                         ' or erased; according to Matthew Curland never
-                                                         ' use FIXEDSIZE alone
-               .pvData = FreeImage_GetBits(BITMAP)       ' let the array point to the memory block, the
-                                                         ' FreeImage scanline data pointer points to
-            End With
-            
-            ' allocate memory for an array descriptor
-            ' we cannot use the memory block used by tSA, since it is
-            ' released when tSA goes out of scope, leaving us with an
-            ' array with zeroed descriptor
-            ' we use nearly the same method that VB uses, so VB is able
-            ' to cleanup the array variable and it's descriptor; the
-            ' array data is not touched when cleaning up, since both AUTO
-            ' and FIXEDSIZE flags are set
-            Call SafeArrayAllocDescriptor(2, lpSA)
-            
-            ' copy our own array descriptor over the descriptor allocated
-            ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
-            ' location
-            Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-            
-            ' the implicit variable named like the function is an array
-            ' variable in VB
-            ' make it point to the allocated array descriptor
-            Call CopyMemory(ByVal VarPtrArray(FreeImage_GetBitsExRGBTRIPLE), lpSA, 4)
-         Else
-         
-            ' we could throw an error here
-         End If
-      Else
-      
-         ' we could throw an error here
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_GetBitsExRGBQUAD(ByVal BITMAP As Long) As RGBQUAD()
-
-Dim tSA As SAVEARRAY2D
-Dim lpSA As Long
-
-   ' This function returns a two dimensional RGBQUAD array containing a DIB's
-   ' data-bits. This is done by wrapping a true VB array around the memory
-   ' block the returned pointer of 'FreeImage_GetBits' is pointing to. So, the
-   ' array returned provides full read and write acces to the image's data.
-   
-   ' This function only works with 32 bpp images. Since each scanline must
-   ' "naturally" start at a 32-bit boundary if each pixel uses 32 bits, there
-   ' are no padding problems like these known with 'FreeImage_GetBitsExRGBTRIPLE',
-   ' so, this function is suitable for all 32 bpp images of any size.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   If (BITMAP) Then
-   
-      If (FreeImage_GetBPP(BITMAP) = 32) Then
-      
-         ' create a proper SAVEARRAY descriptor
-         With tSA
-            .cbElements = 4                           ' size in bytes per array element
-            .cDims = 2                                ' the array has 2 dimensions
-            .cElements1 = FreeImage_GetHeight(BITMAP) ' the number of elements in y direction (height of Bitmap)
-            .cElements2 = FreeImage_GetWidth(BITMAP)  ' the number of elements in x direction (byte width of Bitmap)
-            .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                      ' so the array can not be modified in size
-                                                      ' or erased; according to Matthew Curland never
-                                                      ' use FIXEDSIZE alone
-            .pvData = FreeImage_GetBits(BITMAP)       ' let the array point to the memory block, the
-                                                      ' FreeImage scanline data pointer points to
-         End With
-         
-         ' allocate memory for an array descriptor
-         ' we cannot use the memory block used by tSA, since it is
-         ' released when tSA goes out of scope, leaving us with an
-         ' array with zeroed descriptor
-         ' we use nearly the same method that VB uses, so VB is able
-         ' to cleanup the array variable and it's descriptor; the
-         ' array data is not touched when cleaning up, since both AUTO
-         ' and FIXEDSIZE flags are set
-         Call SafeArrayAllocDescriptor(2, lpSA)
-         
-         ' copy our own array descriptor over the descriptor allocated
-         ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
-         ' location
-         Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-         
-         ' the implicit variable named like the function is an array
-         ' variable in VB
-         ' make it point to the allocated array descriptor
-         Call CopyMemory(ByVal VarPtrArray(FreeImage_GetBitsExRGBQUAD), lpSA, 4)
-      Else
-      
-         ' we could throw an error here
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLinesRGBTRIPLE(ByVal BITMAP As Long, _
-                                                ByRef Scanlines As ScanLinesRGBTRIBLE, _
-                                       Optional ByVal Reverse As Boolean) As Long
-Dim lHeight As Long
-Dim i As Long
-
-   ' still undocumented
-   ' for now, have a look at function FreeImage_GetBitsExRGBTRIPLE()
-
-   If (BITMAP) Then
-      If (FreeImage_GetImageType(BITMAP) = FIT_BITMAP) Then
-         If (FreeImage_GetBPP(BITMAP) = 24) Then
-
-            lHeight = FreeImage_GetHeight(BITMAP)
-            ReDim Scanlines.Scanline(lHeight - 1)
-            For i = 0 To lHeight - 1
-               If (Not Reverse) Then
-                  Scanlines.Scanline(i).Data = FreeImage_GetScanLineBITMAP24(BITMAP, i)
-               Else
-                  Scanlines.Scanline(i).Data = FreeImage_GetScanLineBITMAP24(BITMAP, lHeight - i - 1)
-               End If
-            Next i
-         End If
-      End If
-   End If
-   
-   FreeImage_GetScanLinesRGBTRIPLE = lHeight
-
-End Function
-
-Public Function FreeImage_GetScanLineEx(ByVal BITMAP As Long, _
-                                        ByVal Scanline As Long) As Byte()
-                                        
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-
-   ' This function returns a one dimensional Byte array containing a whole
-   ' scanline's data-bits. This is done by wrapping a true VB array around
-   ' the memory block the returned pointer of 'FreeImage_GetScanline' is
-   ' pointing to. So, the array returned provides full read and write acces
-   ' to the image's data.
-   
-   ' This is the most generic function of a complete function set dealing with
-   ' scanline data, since this function returns an array of type Byte. It is
-   ' up to the caller of the function to interpret these bytes correctly,
-   ' according to the results of FreeImage_GetBPP and FreeImage_GetImageType.
-   
-   ' You may consider using any of the non-generic functions named
-   ' 'FreeImage_GetScanLineXXX', that return an array of proper type, according
-   ' to the images bit depth and type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-   
-   If (BITMAP) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 1                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetLine(BITMAP)    ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' allocate memory for an array descriptor
-      ' we cannot use the memory block used by tSA, since it is
-      ' released when tSA goes out of scope, leaving us with an
-      ' array with zeroed descriptor
-      ' we use nearly the same method that VB uses, so VB is able
-      ' to cleanup the array variable and it's descriptor; the
-      ' array data is not touched when cleaning up, since both AUTO
-      ' and FIXEDSIZE flags are set
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      
-      ' copy our own array descriptor over the descriptor allocated
-      ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
-      ' location
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      
-      ' the implicit variable named like the function is an array
-      ' variable in VB
-      ' make it point to the allocated array descriptor
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineEx), lpSA, 4)
-   End If
-                                        
-End Function
-
-Public Function FreeImage_GetScanLineBITMAP8(ByVal BITMAP As Long, _
-                                             ByVal Scanline As Long) As Byte()
-                                             
-   ' This function returns a one dimensional Byte array containing a whole
-   ' scanline's data-bits of a 8 bit bitmap image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned provides
-   ' full read and write acces to the image's data.
-   
-   ' This function is just a thin wrapper for 'FreeImage_GetScanLineEx' but
-   ' includes checking of the image's bit depth and type, as all of the
-   ' non-generic scanline functions do.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   If (FreeImage_GetImageType(BITMAP) = FIT_BITMAP) Then
-      Select Case FreeImage_GetBPP(BITMAP)
-      
-      Case 1, 4, 8
-         FreeImage_GetScanLineBITMAP8 = FreeImage_GetScanLineEx(BITMAP, Scanline)
-         
-      End Select
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineBITMAP16(ByVal BITMAP As Long, _
-                                              ByVal Scanline As Long) As Integer()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-
-   ' This function returns a one dimensional Integer array containing a whole
-   ' scanline's data-bits of a 16 bit bitmap image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   If (FreeImage_GetImageType(BITMAP) = FIT_BITMAP) Then
-      If (FreeImage_GetBPP(BITMAP) = 16) Then
-      
-         ' create a proper SAVEARRAY descriptor
-         With tSA
-            .cbElements = 2                           ' size in bytes per array element
-            .cDims = 1                                ' the array has only 1 dimension
-            .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-            .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                      ' so the array can not be modified in size
-                                                      ' or erased; according to Matthew Curland never
-                                                      ' use FIXEDSIZE alone
-            .pvData = FreeImage_GetScanline(BITMAP, _
-                                            Scanline) ' let the array point to the memory block, the
-                                                      ' FreeImage scanline data pointer points to
-         End With
-         
-         ' For a complete source code documentation have a
-         ' look at the function 'FreeImage_GetScanLineEx'
-         Call SafeArrayAllocDescriptor(1, lpSA)
-         Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-         Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineBITMAP16), lpSA, 4)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineBITMAP24(ByVal BITMAP As Long, _
-                                              ByVal Scanline As Long) As RGBTRIPLE()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-
-   ' This function returns a one dimensional RGBTRIPLE array containing a whole
-   ' scanline's data-bits of a 24 bit bitmap image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-   
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayRGBTRIPLE' function.
-
-   If (FreeImage_GetImageType(BITMAP) = FIT_BITMAP) Then
-      If (FreeImage_GetBPP(BITMAP) = 24) Then
-      
-         ' create a proper SAVEARRAY descriptor
-         With tSA
-            .cbElements = 3                           ' size in bytes per array element
-            .cDims = 1                                ' the array has only 1 dimension
-            .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-            .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                      ' so the array can not be modified in size
-                                                      ' or erased; according to Matthew Curland never
-                                                      ' use FIXEDSIZE alone
-            .pvData = FreeImage_GetScanline(BITMAP, _
-                                            Scanline) ' let the array point to the memory block, the
-                                                      ' FreeImage scanline data pointer points to
-         End With
-         
-         ' For a complete source code documentation have a
-         ' look at the function 'FreeImage_GetScanLineEx'
-         Call SafeArrayAllocDescriptor(1, lpSA)
-         Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-         Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineBITMAP24), lpSA, 4)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineBITMAP32(ByVal BITMAP As Long, _
-                                              ByVal Scanline As Long) As RGBQUAD()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-
-   ' This function returns a one dimensional RGBQUAD array containing a whole
-   ' scanline's data-bits of a 32 bit bitmap image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayRGBQUAD' function.
-
-   If (FreeImage_GetImageType(BITMAP) = FIT_BITMAP) Then
-      If (FreeImage_GetBPP(BITMAP) = 32) Then
-      
-         ' create a proper SAVEARRAY descriptor
-         With tSA
-            .cbElements = 4                           ' size in bytes per array element
-            .cDims = 1                                ' the array has only 1 dimension
-            .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-            .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                      ' so the array can not be modified in size
-                                                      ' or erased; according to Matthew Curland never
-                                                      ' use FIXEDSIZE alone
-            .pvData = FreeImage_GetScanline(BITMAP, _
-                                            Scanline) ' let the array point to the memory block, the
-                                                      ' FreeImage scanline data pointer points to
-         End With
-         
-         ' For a complete source code documentation have a
-         ' look at the function 'FreeImage_GetScanLineEx'
-         Call SafeArrayAllocDescriptor(1, lpSA)
-         Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-         Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineBITMAP32), lpSA, 4)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineINT16(ByVal BITMAP As Long, _
-                                           ByVal Scanline As Long) As Integer()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional Integer array containing a whole
-   ' scanline's data-bits of a FIT_INT16 or FIT_UINT16 image. This is done
-   ' by wrapping a true VB array around the memory block the returned pointer
-   ' of 'FreeImage_GetScanline' is pointing to. So, the array returned
-   ' provides full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-   
-   ' Since VB does not distinguish between signed and unsigned data types, both
-   ' image types FIT_INT16 and FIT_UINT16 are handled with this function. If 'Bitmap'
-   ' specifies an image of type FIT_UINT16, it is up to the caller to treat the
-   ' array's Integers as unsigned, although VB knows signed Integers only.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If ((eImageType = FIT_INT16) Or _
-       (eImageType = FIT_UINT16)) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 2                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineINT16), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineINT32(ByVal BITMAP As Long, _
-                                           ByVal Scanline As Long) As Long()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional Long array containing a whole
-   ' scanline's data-bits of a FIT_INT32 or FIT_UINT32 image. This is done
-   ' by wrapping a true VB array around the memory block the returned pointer
-   ' of 'FreeImage_GetScanline' is pointing to. So, the array returned
-   ' provides full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-   
-   ' Since VB does not distinguish between signed and unsigned data types, both
-   ' image types FIT_INT32 and FIT_UINT32 are handled with this function. If 'Bitmap'
-   ' specifies an image of type FIT_UINT32, it is up to the caller to treat the
-   ' array's Longs as unsigned, although VB knows signed Longs only.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If ((eImageType = FIT_INT32) Or _
-       (eImageType = FIT_UINT32)) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 4                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineINT32), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineFLOAT(ByVal BITMAP As Long, _
-                                           ByVal Scanline As Long) As Single()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional Single array containing a whole
-   ' scanline's data-bits of a FIT_FLOAT image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-   
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_FLOAT) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 4                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineFLOAT), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineDOUBLE(ByVal BITMAP As Long, _
-                                            ByVal Scanline As Long) As Double()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional Double array containing a whole
-   ' scanline's data-bits of a FIT_DOUBLE image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-   
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArray' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_DOUBLE) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 8                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineDOUBLE), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineCOMPLEX(ByVal BITMAP As Long, _
-                                             ByVal Scanline As Long) As FICOMPLEX()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional FICOMPLEX array containing a whole
-   ' scanline's data-bits of a FIT_COMPLEX image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayFICOMPLEX' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_COMPLEX) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 16                          ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineCOMPLEX), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineRGB16(ByVal BITMAP As Long, _
-                                           ByVal Scanline As Long) As FIRGB16()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional FIRGB16 array containing a whole
-   ' scanline's data-bits of a FIT_RGB16 image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayFIRGB16' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_RGB16) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 6                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineRGB16), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineRGBA16(ByVal BITMAP As Long, _
-                                            ByVal Scanline As Long) As FIRGBA16()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional FIRGBA16 array containing a whole
-   ' scanline's data-bits of a FIT_RGBA16 image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayFIRGBA16' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_RGBA16) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 8                           ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineRGBA16), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineRGBF(ByVal BITMAP As Long, _
-                                          ByVal Scanline As Long) As FIRGBF()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional FIRGBF array containing a whole
-   ' scanline's data-bits of a FIT_RGBF image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayFIRGBF' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_RGBF) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 12                          ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineRGBF), lpSA, 4)
-   End If
-
-End Function
-
-Public Function FreeImage_GetScanLineRGBAF(ByVal BITMAP As Long, _
-                                           ByVal Scanline As Long) As FIRGBAF()
-
-Dim tSA As SAVEARRAY1D
-Dim lpSA As Long
-Dim eImageType As FREE_IMAGE_TYPE
-
-   ' This function returns a one dimensional FIRGBAF array containing a whole
-   ' scanline's data-bits of a FIT_RGBAF image. This is done by wrapping
-   ' a true VB array around the memory block the returned pointer of
-   ' 'FreeImage_GetScanline' is pointing to. So, the array returned  provides
-   ' full read and write acces to the image's data.
-   
-   ' The function includes checking of the image's bit depth and type and
-   ' returns a non-initialized array if 'Bitmap' is an image of improper type.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the 'FreeImage_DestroyLockedArrayFIRGBAF' function.
-
-   eImageType = FreeImage_GetImageType(BITMAP)
-   If (eImageType = FIT_RGBAF) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 12                          ' size in bytes per array element
-         .cDims = 1                                ' the array has only 1 dimension
-         .cElements = FreeImage_GetWidth(BITMAP)   ' the number of elements in the array
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetScanline(BITMAP, _
-                                         Scanline) ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' For a complete source code documentation have a
-      ' look at the function 'FreeImage_GetScanLineEx'
-      Call SafeArrayAllocDescriptor(1, lpSA)
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetScanLineRGBAF), lpSA, 4)
-   End If
-
-End Function
 
 '--------------------------------------------------------------------------------
 ' HBITMAP conversion functions
@@ -8266,6 +4834,7 @@ Dim ppvBits As Long
    End If
 
 End Function
+
 
 Public Function FreeImage_GetBitmapForDevice(ByVal BITMAP As Long, _
                                     Optional ByVal hDC As Long, _
@@ -8366,75 +4935,7 @@ Dim cPictureDisp As IPictureDisp
 
 End Function
 
-Public Function FreeImage_GetOlePictureIcon(ByVal hIcon As Long) As IPicture
 
-Dim tPicDesc As PictDesc
-Dim tGuid As Guid
-Dim cPictureDisp As IPictureDisp
-
-   ' This function creates a VB Picture object (OlePicture) of type picTypeIcon
-   ' from FreeImage hIcon handle. The hIcon handle need not remain valid nor loaded
-   ' after the VB Picture object has been created.
-   
-   ' The optional 'UnloadSource' parameter is for destroying the hIcon image
-   ' after the OlePicture has been created, so you can easiely "switch" from a
-   ' hIcon handle to a VB Picture object. There is no need to unload the hIcon
-   ' at the caller's site if this argument is True.
-   
-   If (hIcon) Then
-      ' fill tPictDesc structure with necessary parts
-      With tPicDesc
-         .cbSizeofStruct = 12
-         ' the vbPicTypeIcon constant is not available in VBA environemnts
-         .picType = 3  'vbPicTypeIcon
-         .hImage = hIcon
-      End With
-
-      ' fill in IDispatch Interface ID
-      With tGuid
-         .Data1 = &H20400
-         .Data4(0) = &HC0
-         .Data4(7) = &H46
-      End With
-   
-      ' create a picture object
-      Call OleCreatePictureIndirect(tPicDesc, tGuid, True, cPictureDisp)
-      Set FreeImage_GetOlePictureIcon = cPictureDisp
-   End If
-
-End Function
-
-Public Function FreeImage_GetOlePictureThumbnail(ByVal BITMAP As Long, _
-                                                 ByVal MaxPixelSize As Long, _
-                                        Optional ByVal hDC As Long, _
-                                        Optional ByVal UnloadSource As Boolean) As IPicture
-
-Dim hDIBThumbnail As Long
-
-   ' This function is a IOlePicture aware wrapper for FreeImage_MakeThumbnail(). It
-   ' returns a VB Picture object instead of a FreeImage DIB.
-   
-   ' The optional 'UnloadSource' parameter is for unloading the original image
-   ' after the OlePicture has been created, so you can easiely "switch" from a
-   ' FreeImage DIB to a VB Picture object. There is no need to clean up the DIB
-   ' at the caller's site.
-
-   If (BITMAP) Then
-      
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create a thumbnail picture from a 'header-only' bitmap.")
-      End If
-      
-      hDIBThumbnail = FreeImage_MakeThumbnail(BITMAP, MaxPixelSize)
-      Set FreeImage_GetOlePictureThumbnail = FreeImage_GetOlePicture(hDIBThumbnail, hDC, True)
-      
-      If (UnloadSource) Then
-         Call FreeImage_Unload(BITMAP)
-      End If
-   End If
-                                                                 
-End Function
 
 Public Function FreeImage_CreateFromOlePicture(ByRef Picture As IPicture) As Long
 
@@ -8562,1461 +5063,7 @@ Dim lpInfo As Long
 
 End Function
 
-Public Function FreeImage_CreateFromImageContainer(ByRef Container As Object, _
-                                          Optional ByVal IncludeDrawings As Boolean) As Long
 
-   ' Creates a FreeImage DIB from a VB container control that has at least a
-   ' 'Picture' property. This function returns a pointer to the DIB as, for
-   ' instance, 'FreeImage_Load()' does. So, this could be a real replacement for
-   ' FreeImage_Load() or 'FreeImage_CreateFromOlePicture()' when working with
-   ' image hosting controls like Forms or PictureBoxes.
-   
-   ' The 'IncludeDrawings' parameter controls whether drawings, drawn with VB
-   ' methods like 'Container.Print()', 'Container.Line(x1, y1)-(x2, y2)' or
-   ' 'Container.Circle(x, y), radius' as the controls 'BackColor' should be included
-   ' into the newly created DIB. However, this only works, with control's that
-   ' have their 'AutoRedraw' property set to 'True'.
-   
-   ' To get the control's picture as well as it's BackColor and custom drawings,
-   ' this function uses the control's 'Image' property instead of the 'Picture'
-   ' property.
-   
-   ' This function treats Forms and PictureBox controls explicitly, since the
-   ' property sets and behaviours of these controls are publicly known. For any
-   ' other control, the function checks for the existence of an 'Image' and
-   ' 'AutoRedraw' property. If these are present and 'IncludeDrawings' is 'True',
-   ' the function uses the control's 'Image' property instead of the 'Picture'
-   ' property. This my be the case for UserControls. In any other case, the function
-   ' uses the control's 'Picture' property if present. If none of these properties
-   ' is present, a runtime error (5) is generated.
-   
-   ' Most of this function is actually implemented in the wrapper's private helper
-   ' function 'pGetIOlePictureFromContainer'.
-
-   If (Not Container Is Nothing) Then
-      FreeImage_CreateFromImageContainer = FreeImage_CreateFromOlePicture( _
-                            pGetIOlePictureFromContainer(Container, _
-                                                         IncludeDrawings))
-   End If
-
-End Function
-
-Public Function FreeImage_CreateFromScreen(Optional ByVal hWnd As Long, _
-                                           Optional ByVal ClientAreaOnly As Boolean) As Long
-
-Dim hDC As Long
-Dim lWidth As Long
-Dim lHeight As Long
-Dim hMemDC As Long
-Dim hMemBMP As Long
-Dim hMemOldBMP As Long
-Dim TR As RECT
-
-   ' Creates a FreeImage DIB from the screen which may either be the whole
-   ' desktop/screen or a certain window. A certain window may be specified
-   ' by it's window handle through the 'hWnd' parameter. By omitting this
-   ' parameter, the whole screen/desktop window will be captured.
-
-   If (hWnd = 0) Then
-      hWnd = GetDesktopWindow()
-      hDC = GetDCEx(hWnd, 0, 0)
-      ' get desktop's width and height
-      lWidth = GetDeviceCaps(hDC, HORZRES)
-      lHeight = GetDeviceCaps(hDC, VERTRES)
-   
-   ElseIf (ClientAreaOnly) Then
-      ' get window's client area DC
-      hDC = GetDCEx(hWnd, 0, 0)
-      Call GetClientRect(hWnd, TR)
-      lWidth = TR.Right
-      lHeight = TR.Bottom
-      
-   Else
-      ' get window DC
-      hDC = GetDCEx(hWnd, 0, DCX_WINDOW)
-      Call GetWindowRect(hWnd, TR)
-      lWidth = TR.Right - TR.Left
-      lHeight = TR.Bottom - TR.Top
-
-   End If
-   
-   ' create compatible memory DC and bitmap
-   hMemDC = CreateCompatibleDC(hDC)
-   hMemBMP = CreateCompatibleBitmap(hDC, lWidth, lHeight)
-   ' select compatible bitmap
-   hMemOldBMP = SelectObject(hMemDC, hMemBMP)
-   ' blit bits
-   Call BitBlt(hMemDC, 0, 0, lWidth, lHeight, hDC, 0, 0, SRCCOPY Or CAPTUREBLT)
-   
-   ' create FreeImage Bitmap from memory DC
-   FreeImage_CreateFromScreen = FreeImage_CreateFromDC(hMemDC, hMemBMP)
-   
-   ' clean up
-   Call SelectObject(hMemDC, hMemOldBMP)
-   Call DeleteObject(hMemBMP)
-   Call DeleteDC(hMemDC)
-   Call ReleaseDC(hWnd, hDC)
-
-End Function
-
-'--------------------------------------------------------------------------------
-' Microsoft Office / VBA PictureData supporting functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_GetPictureData(ByVal BITMAP As Long, _
-                                Optional ByVal UnloadSource As Boolean) As Byte()
-
-Dim abResult() As Byte
-Dim lImageSize As Long
-Dim lPaletteSize As Long
-Dim lOffset As Long
-
-   ' This function creates an Office PictureData Byte array from a FreeImage DIB.
-   ' The original image must not remain valid nor loaded after the PictureData
-   ' array has been created.
-   
-   ' The optional 'UnloadSource' parameter is for unloading the original image
-   ' after the PictureData Byte array has been created, so you can easily "switch"
-   ' from a FreeImage DIB to an Office PictureData Byte array. There is no need to
-   ' unload the DIB at the caller's site if this argument is True.
-   
-   If (BITMAP) Then
-   
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create a PictureData array from a 'header-only' bitmap.")
-      End If
-      
-      lImageSize = FreeImage_GetHeight(BITMAP) * FreeImage_GetPitch(BITMAP)
-      lPaletteSize = FreeImage_GetColorsUsed(BITMAP) * 4
-      
-      ' Copy the BITMAPINFOHEADER into the result array.
-'''      lpInfo = FreeImage_GetInfoEx(Bitmap, abInfoBuffer, bBufferUsed)
-'''      If (bBufferUsed) Then
-'''         ReDim abResult(39 + 12 + lPaletteSize + lImageSize)
-'''         Call CopyMemory(abResult(0), ByVal lpInfo, 40 + 12)
-'''         lOffset = 40 + 12
-'''      Else
-'''         ReDim abResult(39 + lPaletteSize + lImageSize)
-'''         Call CopyMemory(abResult(0), ByVal lpInfo, 40)
-'''         lOffset = 40
-
-'''      End If
-      
-      If (lPaletteSize > 0) Then
-         ' Copy the image's palette (if any) into the result array.
-         Call CopyMemory(abResult(lOffset), ByVal FreeImage_GetPalette(BITMAP), lPaletteSize)
-         lOffset = lOffset + lPaletteSize
-      End If
-      
-      ' Copy the image's bits into the result array.
-      Call CopyMemory(abResult(lOffset), ByVal FreeImage_GetBits(BITMAP), lImageSize)
-      
-      Call pSwap(ByVal VarPtrArray(abResult), ByVal VarPtrArray(FreeImage_GetPictureData))
-      
-      If (UnloadSource) Then
-         Call FreeImage_Unload(BITMAP)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_CreateFromPictureData(ByRef PictureData() As Byte) As Long
-
-Dim tBMIH As BITMAPINFOHEADER
-Dim lLength As Long
-Dim hDIB As Long
-Dim lPaletteSize As Long
-Dim lOffset As Long
-Dim alMasks() As Long
-
-   ' Creates a FreeImage DIB from an Office PictureData Byte array. This function
-   ' returns a pointer to the DIB as, for instance, the FreeImage function
-   ' 'FreeImage_Load' does. So, this could be a real replacement for 'FreeImage_Load'
-   ' when working with PictureData arrays.
-
-   lLength = UBound(PictureData) + 1
-   If (lLength > Len(tBMIH)) Then
-      Call CopyMemory(tBMIH, PictureData(0), Len(tBMIH))
-      With tBMIH
-         If (.biSize = 40) Then
-            lOffset = 40
-            Select Case .biBitCount
-            
-            Case 0
-            
-            Case 1, 4, 8
-               If (.biClrUsed = 0) Then
-                  lPaletteSize = 2 ^ .biBitCount * 4
-               Else
-                  lPaletteSize = .biClrUsed * 4
-               End If
-               hDIB = FreeImage_Allocate(.biWidth, .biHeight, .biBitCount)
-               Call CopyMemory(ByVal FreeImage_GetPalette(hDIB), _
-                        PictureData(lOffset), lPaletteSize)
-               lOffset = lOffset + lPaletteSize
-            
-            Case 16
-               If (.biCompression = BI_BITFIELDS) Then
-                  ReDim alMasks(2)
-                  Call CopyMemory(alMasks(0), PictureData(lOffset), 12)
-                  lOffset = lOffset + 12
-                  hDIB = FreeImage_Allocate(.biWidth, .biHeight, .biBitCount, _
-                        alMasks(0), alMasks(1), alMasks(2))
-               Else
-                  hDIB = FreeImage_Allocate(.biWidth, .biHeight, .biBitCount, _
-                        FI16_555_RED_MASK, FI16_555_GREEN_MASK, FI16_555_BLUE_MASK)
-               End If
-            
-            Case 24, 32
-               hDIB = FreeImage_Allocate(.biWidth, .biHeight, .biBitCount)
-               
-            End Select
-            
-            If (hDIB) Then
-               Call CopyMemory(ByVal FreeImage_GetBits(hDIB), _
-                     PictureData(lOffset), lLength - lOffset)
-               FreeImage_CreateFromPictureData = hDIB
-            End If
-         Else
-            ' ERROR: invalid or unsupported PictureData array
-         End If
-      End With
-   Else
-      ' ERROR: invalid or unsupported PictureData array
-   End If
-
-End Function
-
-Public Function FreeImage_CreateMask(ByVal hDIB As Long, _
-                            Optional ByVal eMaskCreationOptions As FREE_IMAGE_MASK_CREATION_OPTION_FLAGS = MCOF_CREATE_MASK_IMAGE, _
-                            Optional ByVal lBitDepth As Long = 1, _
-                            Optional ByVal eMaskOptions As FREE_IMAGE_MASK_FLAGS = FIMF_MASK_FULL_TRANSPARENCY, _
-                            Optional ByVal vntMaskColors As Variant, _
-                            Optional ByVal eMaskColorsFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                            Optional ByVal lColorTolerance As Long, _
-                            Optional ByVal lciMaskColorDst As Long = vbWhite, _
-                            Optional ByVal eMaskColorDstFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                            Optional ByVal lciUnmaskColorDst As Long = vbBlack, _
-                            Optional ByVal eUnmaskColorDstFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                            Optional ByVal vlciMaskColorSrc As Variant, _
-                            Optional ByVal eMaskColorSrcFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                            Optional ByVal vlciUnmaskColorSrc As Variant, _
-                            Optional ByVal eUnmaskColorSrcFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB) As Long
-                         
-Dim hDIBResult As Long
-Dim lBitDepthSrc As Long
-Dim lWidth As Long
-Dim lHeight As Long
-
-Dim bMaskColors As Boolean
-Dim bMaskTransparency As Boolean
-Dim bMaskFullTransparency As Boolean
-Dim bMaskAlphaTransparency As Boolean
-Dim bInvertMask As Boolean
-Dim bHaveMaskColorSrc As Boolean
-Dim bHaveUnmaskColorSrc As Boolean
-Dim bCreateMaskImage As Boolean
-Dim bModifySourceImage As Boolean
-Dim alcMaskColors() As Long
-Dim lMaskColorsMaxIndex As Long
-
-Dim lciMaskColorSrc As Long
-Dim lciUnmaskColorSrc As Long
-
-Dim alPaletteSrc() As Long
-Dim abTransparencyTableSrc() As Byte
-Dim abBitsBSrc() As Byte
-Dim atBitsTSrc As ScanLinesRGBTRIBLE
-Dim atBitsQSrc() As RGBQUAD
-Dim abBitValues(7) As Byte
-Dim abBitMasks(7) As Byte
-Dim abBitShifts(7) As Byte
-
-Dim atPaletteDst() As RGBQUAD
-Dim abBitsBDst() As Byte
-Dim atBitsTDst As ScanLinesRGBTRIBLE
-Dim atBitsQDst() As RGBQUAD
-
-Dim bMaskPixel As Boolean
-Dim x As Long
-Dim x2 As Long
-Dim lPixelIndex As Long
-Dim y As Long
-Dim i As Long
-
-   'TODO: comment this function
-   
-   ' check for a proper bit depth of the destination (mask) image
-   If ((hDIB) And ((lBitDepth = 1) Or _
-                   (lBitDepth = 4) Or _
-                   (lBitDepth = 8) Or _
-                   (lBitDepth = 24) Or _
-                   (lBitDepth = 32))) Then
-                   
-      If (Not FreeImage_HasPixels(hDIB)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create a mask image from a 'header-only' bitmap.")
-      End If
-                   
-      ' check for a proper bit depth of the source image
-      lBitDepthSrc = FreeImage_GetBPP(hDIB)
-      If ((lBitDepthSrc = 4) Or _
-          (lBitDepthSrc = 8) Or _
-          (lBitDepthSrc = 24) Or _
-          (lBitDepthSrc = 32)) Then
-          
-         
-         ' get some information from eMaskCreationOptions
-         bCreateMaskImage = (eMaskCreationOptions And MCOF_CREATE_MASK_IMAGE)
-         bModifySourceImage = (eMaskCreationOptions And MCOF_MODIFY_SOURCE_IMAGE)
-         
-         
-         If (bCreateMaskImage) Then
-            
-            ' check mask color format
-            If (eMaskColorDstFormat And FICFF_COLOR_BGR) Then
-               ' if mask color is in BGR format, convert to RGB format
-               lciMaskColorDst = FreeImage_SwapColorLong(lciMaskColorDst)
-            
-            ElseIf (eMaskColorDstFormat And FICFF_COLOR_PALETTE_INDEX) Then
-               ' if mask color is specified as palette index, check, whether the
-               ' source image is a palletized image
-               Select Case lBitDepthSrc
-               
-               Case 1
-                  lciMaskColorDst = FreeImage_GetPaletteExLong(hDIB)(lciMaskColorDst And &H1)
-               
-               Case 4
-                  lciMaskColorDst = FreeImage_GetPaletteExLong(hDIB)(lciMaskColorDst And &HF)
-               
-               Case 8
-                  lciMaskColorDst = FreeImage_GetPaletteExLong(hDIB)(lciMaskColorDst And &HFF)
-
-               End Select
-            End If
-            
-            ' check unmask color format
-            If (eUnmaskColorDstFormat And FICFF_COLOR_BGR) Then
-               ' if unmask color is in BGR format, convert to RGB format
-               lciUnmaskColorDst = FreeImage_SwapColorLong(lciUnmaskColorDst)
-            
-            ElseIf (eUnmaskColorDstFormat And FICFF_COLOR_PALETTE_INDEX) Then
-               ' if unmask color is specified as palette index, check, whether the
-               ' source image is a palletized image
-               Select Case lBitDepthSrc
-               
-               Case 1
-                  lciUnmaskColorDst = FreeImage_GetPaletteExLong(hDIB)(lciUnmaskColorDst And &H1)
-               
-               Case 4
-                  lciUnmaskColorDst = FreeImage_GetPaletteExLong(hDIB)(lciUnmaskColorDst And &HF)
-               
-               Case 8
-                  lciUnmaskColorDst = FreeImage_GetPaletteExLong(hDIB)(lciUnmaskColorDst And &HFF)
-
-               End Select
-            End If
-         End If
-         
-         
-         If (bModifySourceImage) Then
-            
-            ' check, whether source image can be modified
-            bHaveMaskColorSrc = (Not IsMissing(vlciMaskColorSrc))
-            bHaveUnmaskColorSrc = (Not IsMissing(vlciUnmaskColorSrc))
-            
-            Select Case lBitDepthSrc
-      
-            Case 4, 8
-               If (bHaveMaskColorSrc) Then
-                  
-                  ' get mask color as Long
-                  lciMaskColorSrc = vlciMaskColorSrc
-                   
-                  If (eMaskColorSrcFormat And FICFF_COLOR_PALETTE_INDEX) Then
-                     If (lBitDepthSrc = 4) Then
-                        lciMaskColorSrc = (lciMaskColorSrc And &HF)
-                     Else
-                        lciMaskColorSrc = (lciMaskColorSrc And &HFF)
-                     End If
-                  Else
-                     If (eMaskColorSrcFormat And FICFF_COLOR_BGR) Then
-                        lciMaskColorSrc = FreeImage_SwapColorLong(lciMaskColorSrc, True)
-                     End If
-                     lciMaskColorSrc = FreeImage_SearchPalette(hDIB, lciMaskColorSrc)
-                     bHaveMaskColorSrc = (lciMaskColorSrc <> -1)
-                  End If
-               End If
-               
-               If (bHaveUnmaskColorSrc) Then
-               
-                  ' get unmask color as Long
-                  lciUnmaskColorSrc = vlciUnmaskColorSrc
-               
-                  If (eUnmaskColorSrcFormat And FICFF_COLOR_PALETTE_INDEX) Then
-                     If (lBitDepthSrc = 4) Then
-                        lciUnmaskColorSrc = (lciUnmaskColorSrc And &HF)
-                     Else
-                        lciUnmaskColorSrc = (lciUnmaskColorSrc And &HFF)
-                     End If
-                  Else
-                     If (eUnmaskColorSrcFormat And FICFF_COLOR_BGR) Then
-                        lciUnmaskColorSrc = FreeImage_SwapColorLong(lciUnmaskColorSrc, True)
-                     End If
-                     lciUnmaskColorSrc = FreeImage_SearchPalette(hDIB, lciUnmaskColorSrc)
-                     bHaveUnmaskColorSrc = (lciUnmaskColorSrc <> -1)
-                  End If
-               End If
-                  
-               ' check, if source image still can be modified in any way
-               bModifySourceImage = (bHaveMaskColorSrc Or bHaveUnmaskColorSrc)
-               
-            Case 24, 32
-               If (bHaveMaskColorSrc) Then
-                  
-                  ' get mask color as Long
-                  lciMaskColorSrc = vlciMaskColorSrc
-                  
-                  If (eMaskColorSrcFormat And FICFF_COLOR_BGR) Then
-                     lciMaskColorSrc = FreeImage_SwapColorLong(lciMaskColorSrc, (lBitDepthSrc = 24))
-                  End If
-               End If
-               
-               If (bHaveUnmaskColorSrc) Then
-                  
-                  ' get unmask color as Long
-                  lciUnmaskColorSrc = vlciUnmaskColorSrc
-                  
-                  If (eUnmaskColorSrcFormat And FICFF_COLOR_BGR) Then
-                     lciUnmaskColorSrc = FreeImage_SwapColorLong(lciUnmaskColorSrc, (lBitDepthSrc = 24))
-                  End If
-               End If
-               
-            End Select
-            
-         End If
-         
-          
-         If ((bModifySourceImage) Or (bCreateMaskImage)) Then
-         
-            ' get some information from eMaskOptions
-            
-            ' check for inverse mask
-            bInvertMask = (eMaskOptions And FIMF_MASK_INVERSE_MASK)
-            
-            ' check for mask colors
-            bMaskColors = (eMaskOptions And FIMF_MASK_COLOR_TRANSPARENCY)
-            bMaskColors = bMaskColors And (Not IsMissing(vntMaskColors))
-            If (bMaskColors) Then
-               ' validate specified mask colors; all mask colors are transferred to
-               ' an internal array of type Long
-               If (Not IsArray(vntMaskColors)) Then
-                  ' color masking is only done when the single mask color is
-                  ' a numeric (color) value
-                  bMaskColors = IsNumeric(vntMaskColors)
-                  If (bMaskColors) Then
-                     ' this is not an array of mask colors but only a single
-                     ' color; this is also transferred into an internal array
-                     lMaskColorsMaxIndex = 0
-                     ReDim alcMaskColors(lMaskColorsMaxIndex)
-                     alcMaskColors(lMaskColorsMaxIndex) = vntMaskColors
-                  End If
-               Else
-                  ' transfer all valid color values (numeric) into an internal
-                  ' array
-                  ReDim alcMaskColors(UBound(vntMaskColors))
-                  For i = LBound(vntMaskColors) To UBound(vntMaskColors)
-                     bMaskColors = (IsNumeric(vntMaskColors(i)))
-                     If (Not bMaskColors) Then
-                        Exit For
-                     Else
-                        alcMaskColors(lMaskColorsMaxIndex) = vntMaskColors(i)
-                        lMaskColorsMaxIndex = lMaskColorsMaxIndex + 1
-                     End If
-                  Next i
-                  If (bMaskColors) Then
-                     lMaskColorsMaxIndex = lMaskColorsMaxIndex - 1
-                  End If
-               End If
-            End If
-            
-            ' check for transparency options
-            If ((FreeImage_IsTransparent(hDIB)) Or _
-                ((eMaskOptions And FIMF_MASK_FORCE_TRANSPARENCY) > 0)) Then
-               bMaskFullTransparency = (eMaskOptions And FIMF_MASK_FULL_TRANSPARENCY)
-               bMaskAlphaTransparency = (eMaskOptions And FIMF_MASK_ALPHA_TRANSPARENCY)
-               bMaskTransparency = (bMaskFullTransparency Or bMaskAlphaTransparency)
-            End If
-            
-            ' get image dimension
-            lWidth = FreeImage_GetWidth(hDIB)
-            lHeight = FreeImage_GetHeight(hDIB)
-            
-            ' create proper accessors for the source image
-            Select Case lBitDepthSrc
-            
-            Case 4, 8
-               ' images with a bit depth of 4 or 8 bits will both be
-               ' read through a byte array
-               abBitsBSrc = FreeImage_GetBitsEx(hDIB)
-               ' depending on where to get the transparency information from,
-               ' a palette or a transpareny table will be needed
-               If (bMaskColors) Then
-                  alPaletteSrc = FreeImage_GetPaletteExLong(hDIB)
-               End If
-               If (bMaskTransparency) Then
-                  abTransparencyTableSrc = FreeImage_GetTransparencyTableExClone(hDIB)
-               End If
-               
-               ' for 4 bit source images
-               If (lBitDepthSrc = 4) Then
-                  ' two additional arrays need to be filled with values
-                  ' to mask and shift nibbles to bytes
-                  ' index 0 stands for the high nibble of the byte
-                  abBitMasks(0) = &HF0
-                  abBitShifts(0) = &H10 ' a shift to right is implemented
-                                        ' as division in VB
-                  ' index 1 stands for the low nibble of the byte
-                  abBitMasks(1) = &HF
-                  abBitShifts(1) = &H1 ' no shift needed for low nibble
-               End If
-               
-            Case 24
-               ' images with a depth of 24 bits could not be used
-               ' through a two dimensional array in most cases, so get
-               ' an array of individual scanlines (see remarks concerning
-               ' pitch at function 'FreeImage_GetBitsExRGBTriple()')
-               Call FreeImage_GetScanLinesRGBTRIPLE(hDIB, atBitsTSrc)
-            
-            Case 32
-               atBitsQSrc = FreeImage_GetBitsExRGBQUAD(hDIB)
-            
-            End Select
-      
-      
-            ' create mask image if needed
-            If (bCreateMaskImage) Then
-               
-               ' create mask image
-               hDIBResult = FreeImage_Allocate(lWidth, lHeight, lBitDepth)
-               ' if destination bit depth is 8 or below, a proper palette will
-               ' be needed, so create a palette where the unmask color is at
-               ' index 0 and the mask color is at index 1
-               If (lBitDepth <= 8) Then
-                  atPaletteDst = FreeImage_GetPaletteEx(hDIBResult)
-                  Call CopyMemory(atPaletteDst(0), lciUnmaskColorDst, 4)
-                  Call CopyMemory(atPaletteDst(1), lciMaskColorDst, 4)
-               End If
-               
-               ' create proper accessors for the new mask image
-               Select Case lBitDepth
-               
-               Case 1
-                  abBitsBDst = FreeImage_GetBitsEx(hDIBResult)
-                  x = 1
-                  For i = 7 To 0 Step -1
-                     abBitValues(i) = x
-                     x = x * 2
-                  Next i
-               
-               Case 4
-                  abBitsBDst = FreeImage_GetBitsEx(hDIBResult)
-                  abBitValues(0) = &H10
-                  abBitValues(1) = &H1
-                  
-               Case 8
-                  abBitsBDst = FreeImage_GetBitsEx(hDIBResult)
-                  
-               Case 24
-                  ' images with a depth of 24 bits could not be used
-                  ' through a two dimensional array in most cases, so get
-                  ' an array of individual scanlines (see remarks concerning
-                  ' pitch at function 'FreeImage_GetBitsExRGBTriple()')
-                  Call FreeImage_GetScanLinesRGBTRIPLE(hDIBResult, atBitsTDst)
-               
-               Case 32
-                  atBitsQDst = FreeImage_GetBitsExRGBQUAD(hDIBResult)
-               
-               End Select
-            End If
-        
-            ' walk the hole image
-            For y = 0 To lHeight - 1
-               For x = 0 To lWidth - 1
-                  
-                  ' should transparency information be considered to create
-                  ' the mask?
-                  If (bMaskTransparency) Then
-                     
-                     Select Case lBitDepthSrc
-                     
-                     Case 4
-                        x2 = x \ 2
-                        lPixelIndex = (abBitsBSrc(x2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
-                        bMaskPixel = (abTransparencyTableSrc(lPixelIndex) = 0)
-                        If (Not bMaskPixel) Then
-                           bMaskPixel = ((abTransparencyTableSrc(lPixelIndex) < 255) And _
-                                         (bMaskAlphaTransparency))
-                        End If
-                     
-                     Case 8
-                        bMaskPixel = (abTransparencyTableSrc(abBitsBSrc(x, y)) = 0)
-                        If (Not bMaskPixel) Then
-                           bMaskPixel = ((abTransparencyTableSrc(abBitsBSrc(x, y)) < 255) And _
-                                         (bMaskAlphaTransparency))
-                        End If
-                        
-                     Case 24
-                        ' no transparency information in 24 bit images
-                        ' reset bMaskPixel
-                        bMaskPixel = False
-                     
-                     Case 32
-                        bMaskPixel = (atBitsQSrc(x, y).rgbReserved = 0)
-                        If (Not bMaskPixel) Then
-                           bMaskPixel = ((atBitsQSrc(x, y).rgbReserved < 255) And _
-                                         (bMaskAlphaTransparency))
-                        End If
-                        
-                     End Select
-                  Else
-                     ' clear 'bMaskPixel' if no transparency information was checked
-                     ' since the flag might be still True from the last loop
-                     bMaskPixel = False
-                  End If
-                  
-                  ' should color information be considered to create the mask?
-                  ' do this only if the current pixel is not yet part of the mask
-                  If ((bMaskColors) And (Not bMaskPixel)) Then
-                  
-                     Select Case lBitDepthSrc
-                     
-                     Case 4
-                        x2 = x \ 2
-                        lPixelIndex = (abBitsBSrc(x2, y) And abBitMasks(x Mod 2)) \ abBitShifts(x Mod 2)
-                        If (eMaskColorsFormat And FICFF_COLOR_PALETTE_INDEX) Then
-                           For i = 0 To lMaskColorsMaxIndex
-                              If (lColorTolerance = 0) Then
-                                 bMaskPixel = (lPixelIndex = alcMaskColors(i))
-                              Else
-                                 bMaskPixel = (FreeImage_CompareColorsLongLong( _
-                                                   alPaletteSrc(lPixelIndex), _
-                                                   alPaletteSrc(alcMaskColors(i)), _
-                                                   lColorTolerance, _
-                                                   FICFF_COLOR_RGB, FICFF_COLOR_RGB) = 0)
-                              End If
-                              If (bMaskPixel) Then
-                                 Exit For
-                              End If
-                           Next i
-                        Else
-                           For i = 0 To lMaskColorsMaxIndex
-                              bMaskPixel = (FreeImage_CompareColorsLongLong( _
-                                                alPaletteSrc(lPixelIndex), _
-                                                alcMaskColors(i), lColorTolerance, _
-                                                FICFF_COLOR_RGB, _
-                                                (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
-                              If (bMaskPixel) Then
-                                 Exit For
-                              End If
-                           Next i
-                        End If
-                     
-                     Case 8
-                        If (eMaskColorsFormat And FICFF_COLOR_PALETTE_INDEX) Then
-                           For i = 0 To lMaskColorsMaxIndex
-                              If (lColorTolerance = 0) Then
-                                 bMaskPixel = (abBitsBSrc(x, y) = alcMaskColors(i))
-                              Else
-                                 bMaskPixel = (FreeImage_CompareColorsLongLong( _
-                                                   alPaletteSrc(abBitsBSrc(x, y)), _
-                                                   alPaletteSrc(alcMaskColors(i)), _
-                                                   lColorTolerance, _
-                                                   FICFF_COLOR_RGB, FICFF_COLOR_RGB) = 0)
-                              End If
-                              If (bMaskPixel) Then
-                                 Exit For
-                              End If
-                           Next i
-                        Else
-                           For i = 0 To lMaskColorsMaxIndex
-                              bMaskPixel = (FreeImage_CompareColorsLongLong( _
-                                                alPaletteSrc(abBitsBSrc(x, y)), _
-                                                alcMaskColors(i), lColorTolerance, _
-                                                FICFF_COLOR_RGB, _
-                                                (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
-                              If (bMaskPixel) Then
-                                 Exit For
-                              End If
-                           Next i
-                        End If
-                        
-                     Case 24
-                        For i = 0 To lMaskColorsMaxIndex
-                           bMaskPixel = (FreeImage_CompareColorsRGBTRIPLELong( _
-                                             atBitsTSrc.Scanline(y).Data(x), _
-                                             alcMaskColors(i), lColorTolerance, _
-                                             (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
-                           If (bMaskPixel) Then
-                              Exit For
-                           End If
-                        Next i
-                     
-                     Case 32
-                        For i = 0 To lMaskColorsMaxIndex
-                           bMaskPixel = (FreeImage_CompareColorsRGBQUADLong( _
-                                             atBitsQSrc(x, y), _
-                                             alcMaskColors(i), lColorTolerance, _
-                                             (eMaskColorsFormat And FICFF_COLOR_FORMAT_ORDER_MASK)) = 0)
-                           If (bMaskPixel) Then
-                              Exit For
-                           End If
-                        Next i
-                        
-                     End Select
-                  
-                  End If
-                  
-                  ' check whether a mask image needs to be created
-                  If (bCreateMaskImage) Then
-                     
-                     ' write current pixel to destination (mask) image
-                     Select Case lBitDepth
-                     
-                     Case 1
-                        x2 = x \ 8
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(x2, y) = abBitsBDst(x2, y) Or abBitValues(x Mod 8)
-                        End If
-                        
-                     Case 4
-                        x2 = x \ 2
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(x2, y) = abBitsBDst(x2, y) Or abBitValues(x Mod 2)
-                        End If
-                        
-                     Case 8
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           abBitsBDst(x, y) = 1
-                        End If
-                        
-                     Case 24
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           Call CopyMemory(atBitsTDst.Scanline(y).Data(x), lciMaskColorDst, 3)
-                        Else
-                           Call CopyMemory(atBitsTDst.Scanline(y).Data(x), lciUnmaskColorDst, 3)
-                        End If
-                        
-                     Case 32
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           Call CopyMemory(atBitsQDst(x, y), lciMaskColorDst, 4)
-                        Else
-                           Call CopyMemory(atBitsQDst(x, y), lciUnmaskColorDst, 4)
-                        End If
-                     
-                     End Select
-                  End If
-                  
-                  ' check whether a source image needs to be modified
-                  If (bModifySourceImage) Then
-                     
-                     Select Case lBitDepthSrc
-                     
-                     Case 4
-                        x2 = x \ 2
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           If (bHaveMaskColorSrc) Then
-                              abBitsBSrc(x2, y) = _
-                                  (abBitsBSrc(x2, y) And (Not abBitMasks(x Mod 2))) Or _
-                                            (lciMaskColorSrc * abBitShifts(x Mod 2))
-                            End If
-                        ElseIf (bHaveUnmaskColorSrc) Then
-                           abBitsBSrc(x2, y) = _
-                               (abBitsBSrc(x2, y) And (Not abBitMasks(x Mod 2))) Or _
-                                         (lciUnmaskColorSrc * abBitShifts(x Mod 2))
-                        End If
-                     
-                     Case 8
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           If (bHaveMaskColorSrc) Then
-                              abBitsBSrc(x, y) = lciMaskColorSrc
-                           End If
-                        ElseIf (bHaveUnmaskColorSrc) Then
-                           abBitsBSrc(x, y) = lciUnmaskColorSrc
-                        End If
-                        
-                     Case 24
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           If (bHaveMaskColorSrc) Then
-                              Call CopyMemory(atBitsTSrc.Scanline(y).Data(x), lciMaskColorSrc, 3)
-                           End If
-                        ElseIf (bHaveUnmaskColorSrc) Then
-                           Call CopyMemory(atBitsTSrc.Scanline(y).Data(x), lciUnmaskColorSrc, 3)
-                        End If
-                     
-                     Case 32
-                        If ((bMaskPixel) Xor (bInvertMask)) Then
-                           If (bHaveMaskColorSrc) Then
-                              Call CopyMemory(atBitsQSrc(x, y), lciMaskColorSrc, 4)
-                           End If
-                        ElseIf (bHaveUnmaskColorSrc) Then
-                           Call CopyMemory(atBitsQSrc(x, y), lciUnmaskColorSrc, 4)
-                        End If
-                        
-                     End Select
-                  End If
-                  
-               Next x
-            Next y
-         End If
-      End If
-   End If
-   
-   FreeImage_CreateMask = hDIBResult
-
-End Function
-
-Public Function FreeImage_CreateMaskImage(ByVal hDIB As Long, _
-                                 Optional ByVal lBitDepth As Long = 1, _
-                                 Optional ByVal eMaskOptions As FREE_IMAGE_MASK_FLAGS = FIMF_MASK_FULL_TRANSPARENCY, _
-                                 Optional ByVal vntMaskColors As Variant, _
-                                 Optional ByVal eMaskColorsFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                                 Optional ByVal lColorTolerance As Long, _
-                                 Optional ByVal lciMaskColor As Long = vbWhite, _
-                                 Optional ByVal eMaskColorFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                                 Optional ByVal lciUnmaskColor As Long = vbBlack, _
-                                 Optional ByVal eUnmaskColorFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB) As Long
-
-   'TODO: comment this function
-                                 
-   FreeImage_CreateMaskImage = FreeImage_CreateMask(hDIB, MCOF_CREATE_MASK_IMAGE, _
-                                                    lBitDepth, eMaskOptions, _
-                                                    vntMaskColors, eMaskColorsFormat, _
-                                                    lColorTolerance, _
-                                                    lciMaskColor, eMaskColorFormat, _
-                                                    lciUnmaskColor, eUnmaskColorFormat)
-
-End Function
-
-Public Function FreeImage_CreateSimpleBWMaskImage(ByVal hDIB As Long, _
-                                         Optional ByVal lBitDepth As Long = 1, _
-                                         Optional ByVal eMaskOptions As FREE_IMAGE_MASK_FLAGS = FIMF_MASK_FULL_TRANSPARENCY, _
-                                         Optional ByVal vntMaskColors As Variant, _
-                                         Optional ByVal eMaskColorsFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                                         Optional ByVal lColorTolerance As Long) As Long
-
-   'TODO: comment this function
-   
-   FreeImage_CreateSimpleBWMaskImage = FreeImage_CreateMask(hDIB, MCOF_CREATE_MASK_IMAGE, _
-                                                            lBitDepth, eMaskOptions, _
-                                                            vntMaskColors, eMaskColorsFormat, _
-                                                            lColorTolerance, _
-                                                            vbWhite, FICFF_COLOR_RGB, _
-                                                            vbBlack, FICFF_COLOR_RGB)
-
-End Function
-
-Public Function FreeImage_CreateMaskInPlace(ByVal hDIB As Long, _
-                                   Optional ByVal lBitDepth As Long = 1, _
-                                   Optional ByVal eMaskOptions As FREE_IMAGE_MASK_FLAGS = FIMF_MASK_FULL_TRANSPARENCY, _
-                                   Optional ByVal vntMaskColors As Variant, _
-                                   Optional ByVal eMaskColorsFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                                   Optional ByVal lColorTolerance As Long, _
-                                   Optional ByVal vlciMaskColor As Variant, _
-                                   Optional ByVal eMaskColorFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                                   Optional ByVal vlciUnmaskColor As Variant, _
-                                   Optional ByVal eUnmaskColorFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB) As Long
-
-   'TODO: comment this function
-                                 
-   FreeImage_CreateMaskInPlace = FreeImage_CreateMask(hDIB, MCOF_MODIFY_SOURCE_IMAGE, _
-                                                      lBitDepth, eMaskOptions, _
-                                                      vntMaskColors, eMaskColorsFormat, _
-                                                      lColorTolerance, _
-                                                      , , , , _
-                                                      vlciMaskColor, eMaskColorFormat, _
-                                                      vlciUnmaskColor, eUnmaskColorFormat)
-
-End Function
-
-Public Function FreeImage_CreateSimpleBWMaskInPlace(ByVal hDIB As Long, _
-                                           Optional ByVal lBitDepth As Long = 1, _
-                                           Optional ByVal eMaskOptions As FREE_IMAGE_MASK_FLAGS = FIMF_MASK_FULL_TRANSPARENCY, _
-                                           Optional ByVal vntMaskColors As Variant, _
-                                           Optional ByVal eMaskColorsFormat As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                                           Optional ByVal lColorTolerance As Long) As Long
-
-   'TODO: comment this function
-   
-   FreeImage_CreateSimpleBWMaskInPlace = FreeImage_CreateMask(hDIB, MCOF_MODIFY_SOURCE_IMAGE, _
-                                                              lBitDepth, eMaskOptions, _
-                                                              vntMaskColors, eMaskColorsFormat, _
-                                                              lColorTolerance, _
-                                                              , , , , _
-                                                              vbWhite, FICFF_COLOR_RGB, _
-                                                              vbBlack, FICFF_COLOR_RGB)
-
-End Function
-
-Public Function FreeImage_CreateMaskColors(ParamArray MaskColors() As Variant) As Variant
-
-   ' this is just a FreeImage signed function that emulates VB's
-   ' builtin Array() function, that makes a variant array from
-   ' a ParamArray; so, a caller of the FreeImage_CreateMask() function
-   ' can specify all mask colors inline in the call statement
-   
-   ' hDibMask = FreeImage_CreateMask(hDib, 1, FIMF_MASK_COLOR_TRANSPARENCY, _
-   '                                 FreeImage_CreateMaskColors(vbRed, vbGreen, vbBlack), _
-   '                                 FICFF_COLOR_BGR, .... )
-   
-   ' keep in mind, that VB colors (vbRed, vbBlue, etc.) are OLE colors that have
-   ' BRG format
-   
-   FreeImage_CreateMaskColors = MaskColors
-
-End Function
-
-Public Function FreeImage_SwapColorLong(ByVal Color As Long, _
-                               Optional ByVal IgnoreAlpha As Boolean) As Long
-
-   ' This function swaps both color components Red (R) and Blue (B) in either
-   ' and RGB or BGR format color value stored in a Long value. This function is
-   ' used to convert from a RGB to a BGR color value and vice versa.
-
-   If (Not IgnoreAlpha) Then
-      FreeImage_SwapColorLong = ((Color And &HFF000000) Or _
-                                 ((Color And &HFF&) * &H10000) Or _
-                                 (Color And &HFF00&) Or _
-                                 ((Color And &HFF0000) \ &H10000))
-   Else
-      FreeImage_SwapColorLong = (((Color And &HFF&) * &H10000) Or _
-                                 (Color And &HFF00&) Or _
-                                 ((Color And &HFF0000) \ &H10000))
-   End If
-
-End Function
-
-Public Function FreeImage_CompareColorsLongLong(ByVal ColorA As Long, _
-                                                ByVal ColorB As Long, _
-                                       Optional ByVal Tolerance As Long, _
-                                       Optional ByVal ColorTypeA As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_ARGB, _
-                                       Optional ByVal ColorTypeB As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_ARGB) As Long
-                                   
-Dim bFormatEqual As Boolean
-Dim bAlphaEqual As Boolean
-
-   ' This function compares two colors that both are specified as a 32 bit Long
-   ' value.
-   
-   ' Use both parameters 'ColorTypeA' and 'ColorTypeB' to specify each color's
-   ' format and 'Tolerance' to specify the matching tolerance.
-   
-   ' The function returns the result of the mathematical substraction
-   ' ColorA - ColorB, so if both colors are equal, the function returns NULL (0)
-   ' and any other value if both colors are different. Alpha transparency is taken into
-   ' account only if both colors are said to have an alpha transparency component by
-   ' both parameters 'ColorTypeA' and 'ColorTypeB'. If at least one of both colors
-   ' has no alpha transparency component, the comparison only includes the bits for
-   ' the red, green and blue component.
-   
-   ' The matching tolerance is applied to each color component (red, green, blue and
-   ' alpha) separately. So, when 'Tolerance' contains a value greater than zero, the
-   ' function returns NULL (0) when either both colors are exactly the same or the
-   ' differences of each corresponding color components are smaller or equal than
-   ' the given tolerance value.
-   
-   
-   If (((ColorTypeA And FICFF_COLOR_PALETTE_INDEX) Or _
-        (ColorTypeB And FICFF_COLOR_PALETTE_INDEX)) = 0) Then
-
-      bFormatEqual = ((ColorTypeA And FICFF_COLOR_FORMAT_ORDER_MASK) = _
-                                    (ColorTypeB And FICFF_COLOR_FORMAT_ORDER_MASK))
-                                    
-      bAlphaEqual = ((ColorTypeA And FICFF_COLOR_HAS_ALPHA) And _
-                     (ColorTypeB And FICFF_COLOR_HAS_ALPHA))
-      
-      If (bFormatEqual) Then
-         If (bAlphaEqual) Then
-            FreeImage_CompareColorsLongLong = ColorA - ColorB
-         Else
-            FreeImage_CompareColorsLongLong = (ColorA And &HFFFFFF) - (ColorB And &HFFFFFF)
-         End If
-      Else
-         If (bAlphaEqual) Then
-            FreeImage_CompareColorsLongLong = ColorA - ((ColorB And &HFF000000) Or _
-                                                          ((ColorB And &HFF&) * &H10000) Or _
-                                                           (ColorB And &HFF00&) Or _
-                                                          ((ColorB And &HFF0000) \ &H10000))
-         Else
-            FreeImage_CompareColorsLongLong = (ColorA And &HFFFFFF) - _
-                                                         (((ColorB And &HFF&) * &H10000) Or _
-                                                           (ColorB And &HFF00&) Or _
-                                                          ((ColorB And &HFF0000) \ &H10000))
-         End If
-      End If
-      
-      If ((Tolerance > 0) And (FreeImage_CompareColorsLongLong <> 0)) Then
-         If (bFormatEqual) Then
-            If (Abs(((ColorA \ &H10000) And &HFF) - ((ColorB \ &H10000) And &HFF)) <= Tolerance) Then
-               If (Abs(((ColorA \ &H100) And &HFF) - ((ColorB \ &H100) And &HFF)) <= Tolerance) Then
-                  If (Abs((ColorA And &HFF) - (ColorB And &HFF)) <= Tolerance) Then
-                     If (bAlphaEqual) Then
-                        If (Abs(((ColorA \ &H1000000) And &HFF) - _
-                                        ((ColorB \ &H1000000) And &HFF)) <= Tolerance) Then
-                           FreeImage_CompareColorsLongLong = 0
-                        End If
-                     Else
-                        FreeImage_CompareColorsLongLong = 0
-                     End If
-                  End If
-               End If
-            End If
-         Else
-            If (Abs(((ColorA \ &H10000) And &HFF) - (ColorB And &HFF)) <= Tolerance) Then
-               If (Abs(((ColorA \ &H100) And &HFF) - ((ColorB \ &H100) And &HFF)) <= Tolerance) Then
-                  If (Abs((ColorA And &HFF) - ((ColorB \ &H10000) And &HFF)) <= Tolerance) Then
-                     If (bAlphaEqual) Then
-                        If (Abs(((ColorA \ &H1000000) And &HFF) - _
-                                        ((ColorB \ &H1000000) And &HFF)) <= Tolerance) Then
-                           FreeImage_CompareColorsLongLong = 0
-                        End If
-                     Else
-                        FreeImage_CompareColorsLongLong = 0
-                     End If
-                  End If
-               End If
-            End If
-         End If
-      End If
-   End If
-                                   
-End Function
-
-Public Function FreeImage_CompareColorsRGBTRIPLELong(ByRef ColorA As RGBTRIPLE, _
-                                                     ByVal ColorB As Long, _
-                                            Optional ByVal Tolerance As Long, _
-                                            Optional ByVal ColorTypeB As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB) As Long
-                                   
-Dim lcColorA As Long
-
-   ' This is a function derived from 'FreeImage_CompareColorsLongLong()' to make color
-   ' comparisons between two colors whereby one color is provided as RGBTRIPLE and the
-   ' other color is provided as Long value.
-   
-   ' Have a look at the documentation of 'FreeImage_CompareColorsLongLong()' to learn
-   ' more about color comparisons.
-
-   Call CopyMemory(lcColorA, ColorA, 3)
-   FreeImage_CompareColorsRGBTRIPLELong = FreeImage_CompareColorsLongLong(lcColorA, ColorB, _
-         Tolerance, FICFF_COLOR_RGB, ColorTypeB)
-
-End Function
-
-Public Function FreeImage_CompareColorsRGBQUADLong(ByRef ColorA As RGBQUAD, _
-                                                   ByVal ColorB As Long, _
-                                          Optional ByVal Tolerance As Long, _
-                                          Optional ByVal ColorTypeB As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_ARGB) As Long
-                                   
-Dim lcColorA As Long
-
-   ' This is a function derived from 'FreeImage_CompareColorsLongLong()' to make color
-   ' comparisons between two colors whereby one color is provided as RGBQUAD and the
-   ' other color is provided as Long value.
-   
-   ' Have a look at the documentation of 'FreeImage_CompareColorsLongLong()' to learn
-   ' more about color comparisons.
-   
-   Call CopyMemory(lcColorA, ColorA, 4)
-   FreeImage_CompareColorsRGBQUADLong = FreeImage_CompareColorsLongLong(lcColorA, ColorB, _
-         Tolerance, FICFF_COLOR_ARGB, ColorTypeB)
-
-End Function
-
-Public Function FreeImage_SearchPalette(ByVal BITMAP As Long, _
-                                        ByVal Color As Long, _
-                               Optional ByVal Tolerance As Long, _
-                               Optional ByVal ColorType As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                               Optional ByVal TransparencyState As FREE_IMAGE_TRANSPARENCY_STATE_FLAGS = FITSF_IGNORE_TRANSPARENCY) As Long
-
-Dim abTransparencyTable() As Byte
-Dim alPalette() As Long
-Dim i As Long
-
-   ' This function searches an image's color palette for a certain color specified as a
-   ' 32 bit Long value in either RGB or BGR format.
-   
-   ' A search tolerance may be specified in the 'Tolerance' parameter.
-   
-   ' If no transparency tabe was found for the specified image, transparency information will
-   ' be ignored during the search. Then, the function behaves as if FITSF_IGNORE_TRANSPARENCY
-   ' was specified for parameter TransparencyState.
-   
-   ' Use the 'TransparencyState' parameter to control, how the transparency state of
-   ' the found palette entry affects the result. These values may be used:
-   
-   ' FITSF_IGNORE_TRANSPARENCY:        Returns the index of the first palette entry which
-   '                                   matches the red, green and blue components.
-   '
-   ' FITSF_NONTRANSPARENT:             Returns the index of the first palette entry which
-   '                                   matches the red, green and blue components and is
-   '                                   nontransparent (fully opaque).
-   '
-   ' FITSF_TRANSPARENT:                Returns the index of the first palette entry which
-   '                                   matches the red, green and blue components and is
-   '                                   fully transparent.
-   '
-   ' FITSF_INCLUDE_ALPHA_TRANSPARENCY: Returns the index of the first palette entry which
-   '                                   matches the red, green and blue components as well
-   '                                   as the alpha transparency.
-   
-   ' When alpha transparency should be included in the palette search ('FITSF_INCLUDE_ALPHA_TRANSPARENCY'),
-   ' the alpha transparency of the color searched is taken from the left most byte of 'Color'
-   ' (Color is either in format ARGB or ABGR). The the alpha transparency of the palette entry
-   ' actually comes from the image's transparency table rather than from the palette, since palettes
-   ' do not contain transparency information.
-
-   If (FreeImage_GetImageType(BITMAP) = FIT_BITMAP) Then
-      Select Case FreeImage_GetColorType(BITMAP)
-      
-      Case FIC_PALETTE, FIC_MINISBLACK, FIC_MINISWHITE
-         FreeImage_SearchPalette = -1
-         alPalette = FreeImage_GetPaletteExLong(BITMAP)
-         If (FreeImage_GetTransparencyCount(BITMAP) > UBound(alPalette)) Then
-            abTransparencyTable = FreeImage_GetTransparencyTableExClone(BITMAP)
-         Else
-            TransparencyState = FITSF_IGNORE_TRANSPARENCY
-         End If
-         For i = 0 To UBound(alPalette)
-            If (FreeImage_CompareColorsLongLong(Color, alPalette(i), _
-                                                Tolerance, _
-                                                ColorType, FICFF_COLOR_RGB) = 0) Then
-               Select Case TransparencyState
-               
-               Case FITSF_IGNORE_TRANSPARENCY
-                  FreeImage_SearchPalette = i
-                  Exit For
-                  
-               Case FITSF_NONTRANSPARENT
-                  If (abTransparencyTable(i) = 255) Then
-                     FreeImage_SearchPalette = i
-                     Exit For
-                  End If
-               
-               Case FITSF_TRANSPARENT
-                  If (abTransparencyTable(i) = 0) Then
-                     FreeImage_SearchPalette = i
-                     Exit For
-                  End If
-                  
-               Case FITSF_INCLUDE_ALPHA_TRANSPARENCY
-                  If (abTransparencyTable(i) = ((Color And &HFF000000) \ 1000000)) Then
-                     FreeImage_SearchPalette = i
-                     Exit For
-                  End If
-                  
-               End Select
-            End If
-         Next i
-      
-      Case Else
-         FreeImage_SearchPalette = -1
-      
-      End Select
-   Else
-      FreeImage_SearchPalette = -1
-   End If
-
-End Function
-
-Public Function FreeImage_GetIcon(ByVal hDIB As Long, _
-                         Optional ByVal eTransparencyOptions As FREE_IMAGE_ICON_TRANSPARENCY_OPTION_FLAGS = ITOF_USE_DEFAULT_TRANSPARENCY, _
-                         Optional ByVal lciTransparentColor As Long, _
-                         Optional ByVal eTransparentColorType As FREE_IMAGE_COLOR_FORMAT_FLAGS = FICFF_COLOR_RGB, _
-                         Optional ByVal hDC As Long, _
-                         Optional ByVal UnloadSource As Boolean) As Long
-
-Dim tICONINFO As ICONINFO
-Dim bReleaseDC As Boolean
-Dim bModifySourceImage As Boolean
-Dim eMaskFlags As FREE_IMAGE_MASK_FLAGS
-Dim lBitDepth As Long
-Dim bPixelIndex As Byte
-Dim hDIBSrc As Long
-Dim hDIBMask As Long
-Dim hBMPMask As Long
-Dim hBmp As Long
-   
-   ' The optional 'UnloadSource' parameter is for unloading the original image
-   ' after the OlePicture has been created, so you can easiely "switch" from a
-   ' FreeImage DIB to a VB Picture object. There is no need to clean up the DIB
-   ' at the caller's site.
-   
-   If (hDIB) Then
-   
-      If (Not FreeImage_HasPixels(hDIB)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create an icon from a 'header-only' bitmap.")
-      End If
-   
-      lBitDepth = FreeImage_GetBPP(hDIB)
-   
-      ' check whether the image supports transparency
-      Select Case lBitDepth
-      
-      Case 4, 8
-         If (eTransparencyOptions And ITOF_USE_TRANSPARENCY_INFO) Then
-            If (FreeImage_IsTransparent(hDIB)) Then
-               eMaskFlags = FIMF_MASK_FULL_TRANSPARENCY
-            ElseIf (eTransparencyOptions And ITOF_FORCE_TRANSPARENCY_INFO) Then
-               If (FreeImage_IsTransparencyTableTransparent(hDIB)) Then
-                  eMaskFlags = (FIMF_MASK_FULL_TRANSPARENCY And _
-                                FIMF_MASK_FORCE_TRANSPARENCY)
-               End If
-            End If
-         End If
-         If ((eMaskFlags = FIMF_MASK_NONE) And _
-             (eTransparencyOptions And ITOF_USE_COLOR_TRANSPARENCY)) Then
-            
-            eMaskFlags = FIMF_MASK_COLOR_TRANSPARENCY
-            
-            Select Case (eTransparencyOptions And ITOF_USE_COLOR_BITMASK)
-            
-            Case ITOF_USE_COLOR_TOP_LEFT_PIXEL
-               Call FreeImage_GetPixelIndex(hDIB, _
-                                            0, FreeImage_GetHeight(hDIB) - 1, _
-                                            bPixelIndex)
-               lciTransparentColor = bPixelIndex
-               eTransparentColorType = FICFF_COLOR_PALETTE_INDEX
-            
-            Case ITOF_USE_COLOR_TOP_RIGHT_PIXEL
-               Call FreeImage_GetPixelIndex(hDIB, _
-                                            FreeImage_GetWidth(hDIB) - 1, FreeImage_GetHeight(hDIB) - 1, _
-                                            bPixelIndex)
-               lciTransparentColor = bPixelIndex
-               eTransparentColorType = FICFF_COLOR_PALETTE_INDEX
-            
-            Case ITOF_USE_COLOR_BOTTOM_LEFT_PIXEL
-               Call FreeImage_GetPixelIndex(hDIB, _
-                                            0, 0, _
-                                            bPixelIndex)
-               lciTransparentColor = bPixelIndex
-               eTransparentColorType = FICFF_COLOR_PALETTE_INDEX
-            
-            Case ITOF_USE_COLOR_BOTTOM_RIGHT_PIXEL
-               Call FreeImage_GetPixelIndex(hDIB, _
-                                            FreeImage_GetWidth(hDIB) - 1, 0, _
-                                            bPixelIndex)
-               lciTransparentColor = bPixelIndex
-               eTransparentColorType = FICFF_COLOR_PALETTE_INDEX
-            
-            End Select
-         End If
-         
-         bModifySourceImage = True
-         
-      Case 24, 32
-         If ((lBitDepth = 32) And _
-             (eTransparencyOptions And ITOF_USE_TRANSPARENCY_INFO)) Then
-            If (FreeImage_IsTransparent(hDIB)) Then
-               eMaskFlags = FIMF_MASK_FULL_TRANSPARENCY
-            End If
-         End If
-         If ((eMaskFlags = FIMF_MASK_NONE) And _
-             (eTransparencyOptions And ITOF_USE_COLOR_TRANSPARENCY)) Then
-            
-            eMaskFlags = FIMF_MASK_COLOR_TRANSPARENCY
-            
-            Select Case (eTransparencyOptions And ITOF_USE_COLOR_BITMASK)
-            
-            Case ITOF_USE_COLOR_TOP_LEFT_PIXEL
-               Call FreeImage_GetPixelColorByLong(hDIB, _
-                                                  FreeImage_GetHeight(hDIB) - 1, 0, _
-                                                  lciTransparentColor)
-               eTransparentColorType = FICFF_COLOR_RGB
-            
-            Case ITOF_USE_COLOR_TOP_RIGHT_PIXEL
-               Call FreeImage_GetPixelColorByLong(hDIB, _
-                                                  FreeImage_GetHeight(hDIB) - 1, FreeImage_GetWidth(hDIB) - 1, _
-                                                  lciTransparentColor)
-               eTransparentColorType = FICFF_COLOR_RGB
-            
-            Case ITOF_USE_COLOR_BOTTOM_LEFT_PIXEL
-               Call FreeImage_GetPixelColorByLong(hDIB, _
-                                                  0, 0, _
-                                                  lciTransparentColor)
-               eTransparentColorType = FICFF_COLOR_RGB
-            
-            Case ITOF_USE_COLOR_BOTTOM_RIGHT_PIXEL
-               Call FreeImage_GetPixelColorByLong(hDIB, _
-                                                  0, FreeImage_GetWidth(hDIB) - 1, _
-                                                  lciTransparentColor)
-               eTransparentColorType = FICFF_COLOR_RGB
-            
-            End Select
-         End If
-      
-         bModifySourceImage = (lBitDepth = 24)
-      
-      End Select
-      
-      
-      If (bModifySourceImage) Then
-         hDIBSrc = FreeImage_Clone(hDIB)
-         hDIBMask = FreeImage_CreateMask(hDIBSrc, MCOF_CREATE_AND_MODIFY, _
-                                         1, eMaskFlags, _
-                                         lciTransparentColor, eTransparentColorType, _
-                                         , , , , , _
-                                         FreeImage_SearchPalette(hDIBSrc, 0, , , _
-                                                                 FITSF_NONTRANSPARENT), _
-                                         FICFF_COLOR_PALETTE_INDEX)
-      Else
-         hDIBSrc = hDIB
-         hDIBMask = FreeImage_CreateMaskImage(hDIB, 1, FIMF_MASK_FULL_TRANSPARENCY)
-      End If
-     
-      If (hDC = 0) Then
-         hDC = GetDC(0)
-         bReleaseDC = True
-      End If
-
-      hBmp = CreateDIBitmap(hDC, _
-                            FreeImage_GetInfoHeader(hDIBSrc), _
-                            CBM_INIT, _
-                            FreeImage_GetBits(hDIBSrc), _
-                            FreeImage_GetInfo(hDIBSrc), _
-                            DIB_RGB_COLORS)
-   
-      
-      hBMPMask = CreateDIBitmap(hDC, _
-                                FreeImage_GetInfoHeader(hDIBMask), _
-                                CBM_INIT, _
-                                FreeImage_GetBits(hDIBMask), _
-                                FreeImage_GetInfo(hDIBMask), _
-                                DIB_RGB_COLORS)
-                                
-      If (bModifySourceImage) Then
-         Call FreeImage_Unload(hDIBSrc)
-      End If
-      
-      If (UnloadSource) Then
-         Call FreeImage_Unload(hDIB)
-      End If
-      
-      
-      If ((hBmp <> 0) And (hBMPMask <> 0)) Then
-         
-         With tICONINFO
-            .fIcon = True
-            .hbmMask = hBMPMask
-            .hbmColor = hBmp
-         End With
-         
-         FreeImage_GetIcon = CreateIconIndirect(tICONINFO)
-      End If
-      
-      If (bReleaseDC) Then
-         Call ReleaseDC(0, hDC)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_AdjustPictureBox(ByRef Control As Object, _
-                                  Optional ByVal Mode As FREE_IMAGE_ADJUST_MODE = AM_DEFAULT, _
-                                  Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC) As IPicture
-
-Dim TR As RECT
-Dim hDIB As Long
-Dim hDIBTemp As Long
-Dim lNewWidth As Long
-Dim lNewHeight As Long
-
-Const vbObjectOrWithBlockVariableNotSet As Long = 91
-
-   ' This function adjusts an already loaded picture in a VB PictureBox
-   ' control in size. This is done by converting the picture to a Bitmap
-   ' by FreeImage_CreateFromOlePicture. After resizing the Bitmap it is
-   ' converted back to a Ole Picture object and re-assigned to the
-   ' PictureBox control.
-   
-   ' The Control paramater is actually of type Object so any object or control
-   ' providing Picture, hWnd, Width and Height properties can be used instead
-   ' of a PictureBox control
-   
-   ' This may be useful when using compile time provided images in VB like
-   ' logos or backgrounds that need to be resized during runtime. Using
-   ' FreeImage's sophisticated rescaling methods is a much better aproach
-   ' than using VB's stretchable Image control.
-   
-   ' One reason for resizing a usually fixed size logo or background image
-   ' may be the following scenario:
-   
-   ' When running on a Windows machine using smaller or bigger fonts (what can
-   ' be configured in the control panel by using different dpi fonts), the
-   ' operation system automatically adjusts the sizes of Forms, Labels,
-   ' TextBoxes, Frames and even PictureBoxes. So, the hole VB application is
-   ' perfectly adapted to these font metrics with the exception of compile time
-   ' provided images. Although the PictureBox control is resized, the containing
-   ' image remains untouched. This problem could be solved with this function.
-   
-   ' This function is also wrapped by the function 'AdjustPicture', giving you
-   ' a more VB common function name.
-   
-
-   If (Not Control Is Nothing) Then
-      Call GetClientRect(Control.hWnd, TR)
-      If ((TR.Right <> Control.Picture.Width) Or _
-          (TR.Bottom <> Control.Picture.Height)) Then
-         hDIB = FreeImage_CreateFromOlePicture(Control.Picture)
-         If (hDIB) Then
-            If (Mode = AM_ADJUST_OPTIMAL_SIZE) Then
-               If (Control.Picture.Width >= Control.Picture.Height) Then
-                  Mode = AM_ADJUST_WIDTH
-               Else
-                  Mode = AM_ADJUST_HEIGHT
-               End If
-            End If
-            
-            Select Case Mode
-            
-            Case AM_STRECH
-               lNewWidth = TR.Right
-               lNewHeight = TR.Bottom
-               
-            Case AM_ADJUST_WIDTH
-               lNewWidth = TR.Right
-               lNewHeight = lNewWidth / (Control.Picture.Width / Control.Picture.Height)
-               
-            Case AM_ADJUST_HEIGHT
-               lNewHeight = TR.Bottom
-               lNewWidth = lNewHeight * (Control.Picture.Width / Control.Picture.Height)
-            
-            End Select
-            
-            hDIBTemp = hDIB
-            hDIB = FreeImage_Rescale(hDIB, lNewWidth, lNewHeight, Filter)
-            Call FreeImage_Unload(hDIBTemp)
-            Set Control.Picture = FreeImage_GetOlePicture(hDIB, , True)
-            Set FreeImage_AdjustPictureBox = Control.Picture
-         End If
-      End If
-   Else
-      Call Err.Raise(vbObjectOrWithBlockVariableNotSet)
-   End If
-
-End Function
-
-Public Function AdjustPicture(ByRef Control As Object, _
-                     Optional ByRef Mode As FREE_IMAGE_ADJUST_MODE = AM_DEFAULT, _
-                     Optional ByRef Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC) As IPicture
-                     
-   ' This function is a more VB friendly signed wrapper for
-   ' the FreeImage_AdjustPictureBox function.
-   
-   Set AdjustPicture = FreeImage_AdjustPictureBox(Control, Mode, Filter)
-
-End Function
 
 Public Function FreeImage_LoadEx(ByVal FileName As String, _
                         Optional ByVal Options As FREE_IMAGE_LOAD_OPTIONS, _
@@ -10392,156 +5439,8 @@ Public Function FreeImage_CreateMultiBitmapEx(ByVal FileName As String, _
 
 End Function
 
-
-
-'--------------------------------------------------------------------------------
-' OlePicture aware toolkit, rescale and conversion functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_RescaleIOP(ByRef Picture As IPicture, _
-                            Optional ByVal Width As Variant, _
-                            Optional ByVal Height As Variant, _
-                            Optional ByVal IsPercentValue As Boolean, _
-                            Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                            Optional ByVal ForceCloneCreation As Boolean) As IPicture
-                            
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for wrapper function FreeImage_RescaleEx()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      hDIB = FreeImage_RescaleEx(hDIB, Width, Height, IsPercentValue, _
-            True, Filter, ForceCloneCreation)
-      Set FreeImage_RescaleIOP = FreeImage_GetOlePicture(hDIB, , True)
-   End If
-
-End Function
-
-Public Function FreeImage_RescaleByPixelIOP(ByRef Picture As IPicture, _
-                                   Optional ByVal WidthInPixels As Long, _
-                                   Optional ByVal HeightInPixels As Long, _
-                                   Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                                   Optional ByVal ForceCloneCreation As Boolean) As IPicture
-                                
-   ' Thin wrapper for function 'FreeImage_RescaleExIOP' for removing method
-   ' overload fake. This function rescales the image directly to the size
-   ' specified by the 'WidthInPixels' and 'HeightInPixels' parameters.
-
-   Set FreeImage_RescaleByPixelIOP = FreeImage_RescaleIOP(Picture, WidthInPixels, HeightInPixels, _
-         False, Filter, ForceCloneCreation)
-
-End Function
-
-Public Function FreeImage_RescaleByPercentIOP(ByRef Picture As IPicture, _
-                                     Optional ByVal WidthPercentage As Double, _
-                                     Optional ByVal HeightPercentage As Double, _
-                                     Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                                     Optional ByVal ForceCloneCreation As Boolean) As IPicture
-
-   ' Thin wrapper for function 'FreeImage_RescaleExIOP' for removing method
-   ' overload fake. This function rescales the image by a percent value
-   ' based on the image's original size.
-
-   Set FreeImage_RescaleByPercentIOP = FreeImage_RescaleIOP(Picture, WidthPercentage, HeightPercentage, _
-         True, Filter, ForceCloneCreation)
-
-End Function
-
-Public Function FreeImage_RescaleByFactorIOP(ByRef Picture As IPicture, _
-                                    Optional ByVal WidthFactor As Double, _
-                                    Optional ByVal HeightFactor As Double, _
-                                    Optional ByVal Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC, _
-                                    Optional ByVal ForceCloneCreation As Boolean) As IPicture
-
-   ' Thin wrapper for function 'FreeImage_RescaleExIOP' for removing method
-   ' overload fake. This function rescales the image by a factor
-   ' based on the image's original size.
-
-   Set FreeImage_RescaleByFactorIOP = FreeImage_RescaleIOP(Picture, WidthFactor, HeightFactor, _
-         False, Filter, ForceCloneCreation)
-
-End Function
-
-Public Function FreeImage_MakeThumbnailIOP(ByRef Picture As IPicture, _
-                                           ByVal MaxPixelSize As Long, _
-                                  Optional ByVal Convert As Boolean) As IPicture
-
-Dim hDIB As Long
-Dim hDIBThumbnail As Long
-
-   ' IOlePicture based wrapper for wrapper function FreeImage_MakeThumbnail()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      hDIBThumbnail = FreeImage_MakeThumbnail(hDIB, MaxPixelSize, Convert)
-      If (hDIBThumbnail) Then
-         Set FreeImage_MakeThumbnailIOP = FreeImage_GetOlePicture(hDIBThumbnail, , True)
-      End If
-      Call FreeImage_Unload(hDIB)
-   End If
-                                                                 
-End Function
-
-Public Function FreeImage_ConvertColorDepthIOP(ByRef Picture As IPicture, _
-                                               ByVal Conversion As FREE_IMAGE_CONVERSION_FLAGS, _
-                                      Optional ByVal Threshold As Byte = 128, _
-                                      Optional ByVal DitherMethod As FREE_IMAGE_DITHER = FID_FS, _
-                                      Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As IPicture
-
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for wrapper function FreeImage_ConvertColorDepth()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      hDIB = FreeImage_ConvertColorDepth(hDIB, Conversion, True, Threshold, _
-            DitherMethod, QuantizeMethod)
-      Set FreeImage_ConvertColorDepthIOP = FreeImage_GetOlePicture(hDIB, , True)
-   End If
-
-End Function
-
-Public Function FreeImage_ColorQuantizeExIOP(ByRef Picture As IPicture, _
-                                    Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, _
-                                    Optional ByVal PaletteSize As Long = 256, _
-                                    Optional ByVal ReserveSize As Long, _
-                                    Optional ByRef ReservePalette As Variant = Null) As IPicture
-                                 
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for wrapper function FreeImage_ColorQuantizeEx()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      hDIB = FreeImage_ColorQuantizeEx(hDIB, QuantizeMethod, True, PaletteSize, _
-            ReserveSize, ReservePalette)
-      Set FreeImage_ColorQuantizeExIOP = FreeImage_GetOlePicture(hDIB, , True)
-   End If
-
-End Function
-
-Public Function FreeImage_RotateClassicIOP(ByRef Picture As IPicture, _
-                                           ByVal Angle As Double) As IPicture
-
-Dim hDIB As Long
-Dim hDIBNew As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_RotateClassic()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 1, 8, 24, 32
-         hDIBNew = FreeImage_RotateClassic(hDIB, Angle)
-         Set FreeImage_RotateClassicIOP = FreeImage_GetOlePicture(hDIBNew, , True)
-         
-      End Select
-      Call FreeImage_Unload(hDIB)
-   End If
-
-End Function
+'NOTE FROM TANNER: the original .bas file contained many more OLE picture wrappers,
+' but I have removed them from PhotoDemon's copy for brevity's sake
 
 Public Function FreeImage_RotateIOP(ByRef Picture As IPicture, _
                                     ByVal Angle As Double, _
@@ -10577,369 +5476,6 @@ Dim hDIBNew As Long
    End If
 
 End Function
-
-Public Function FreeImage_RotateExIOP(ByRef Picture As IPicture, _
-                                      ByVal Angle As Double, _
-                             Optional ByVal ShiftX As Double, _
-                             Optional ByVal ShiftY As Double, _
-                             Optional ByVal OriginX As Double, _
-                             Optional ByVal OriginY As Double, _
-                             Optional ByVal UseMask As Boolean) As IPicture
-
-Dim hDIB As Long
-Dim hDIBNew As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_RotateEx()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 8, 24, 32
-         hDIBNew = FreeImage_RotateEx(hDIB, Angle, ShiftX, ShiftY, OriginX, OriginY, UseMask)
-         Set FreeImage_RotateExIOP = FreeImage_GetOlePicture(hDIBNew, , True)
-         
-      End Select
-      Call FreeImage_Unload(hDIB)
-   End If
-
-End Function
-
-Public Function FreeImage_FlipHorizontalIOP(ByRef Picture As IPicture) As IPicture
-
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_FlipHorizontal()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Call FreeImage_FlipHorizontalInt(hDIB)
-      Set FreeImage_FlipHorizontalIOP = FreeImage_GetOlePicture(hDIB, , True)
-   End If
-
-End Function
-
-Public Function FreeImage_FlipVerticalIOP(ByRef Picture As IPicture) As IPicture
-
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_FlipVertical()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Call FreeImage_FlipVerticalInt(hDIB)
-      Set FreeImage_FlipVerticalIOP = FreeImage_GetOlePicture(hDIB, , True)
-   End If
-
-End Function
-
-Public Function FreeImage_AdjustCurveIOP(ByRef Picture As IPicture, _
-                                         ByRef LookupTable As Variant, _
-                                Optional ByVal Channel As FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) As IPicture
-
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_AdjustCurve()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 8, 24, 32
-         Call FreeImage_AdjustCurveEx(hDIB, LookupTable, Channel)
-         Set FreeImage_AdjustCurveIOP = FreeImage_GetOlePicture(hDIB, , True)
-         
-      End Select
-   End If
-   
-End Function
-
-Public Function FreeImage_AdjustGammaIOP(ByRef Picture As IPicture, _
-                                         ByVal Gamma As Double) As IPicture
-
-Dim hDIB As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_AdjustGamma()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 8, 24, 32
-         Call FreeImage_AdjustGammaInt(hDIB, Gamma)
-         Set FreeImage_AdjustGammaIOP = FreeImage_GetOlePicture(hDIB, , True)
-         
-      End Select
-   End If
-   
-End Function
-
-Public Function FreeImage_AdjustBrightnessIOP(ByRef Picture As IPicture, _
-                                              ByVal Percentage As Double) As IPicture
-
-Dim hDIB As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_AdjustBrightness()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 8, 24, 32
-         Call FreeImage_AdjustBrightnessInt(hDIB, Percentage)
-         Set FreeImage_AdjustBrightnessIOP = FreeImage_GetOlePicture(hDIB, , True)
-         
-      End Select
-   End If
-   
-End Function
-
-Public Function FreeImage_AdjustContrastIOP(ByRef Picture As IPicture, _
-                                            ByVal Percentage As Double) As IPicture
-
-Dim hDIB As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_AdjustContrast()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 8, 24, 32
-         Call FreeImage_AdjustContrastInt(hDIB, Percentage)
-         Set FreeImage_AdjustContrastIOP = FreeImage_GetOlePicture(hDIB, , True)
-         
-      End Select
-   End If
-   
-End Function
-
-Public Function FreeImage_InvertIOP(ByRef Picture As IPicture) As IPicture
-
-Dim hDIB As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_Invert()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Call FreeImage_InvertInt(hDIB)
-      Set FreeImage_InvertIOP = FreeImage_GetOlePicture(hDIB, , True)
-   End If
-   
-End Function
-
-Public Function FreeImage_GetChannelIOP(ByRef Picture As IPicture, _
-                                        ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As IPicture
-
-Dim hDIB As Long
-Dim hDIBNew As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_GetChannel()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 24, 32
-         hDIBNew = FreeImage_GetChannel(hDIB, Channel)
-         Set FreeImage_GetChannelIOP = FreeImage_GetOlePicture(hDIBNew, , True)
-         
-      End Select
-      Call FreeImage_Unload(hDIB)
-   End If
-
-End Function
-
-Public Function FreeImage_SetChannelIOP(ByRef Picture As IPicture, _
-                                        ByVal BitmapSrc As Long, _
-                                        ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As IPicture
-
-Dim hDIB As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_SetChannel()
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-
-      Case 24, 32
-         If (FreeImage_SetChannel(hDIB, BitmapSrc, Channel)) Then
-            Set FreeImage_SetChannelIOP = FreeImage_GetOlePicture(hDIB, , True)
-         End If
-
-      End Select
-      Call FreeImage_Unload(hDIB)
-   End If
-
-End Function
-
-Public Function FreeImage_CopyIOP(ByRef Picture As IPicture, _
-                                  ByVal Left As Long, _
-                                  ByVal Top As Long, _
-                                  ByVal Right As Long, _
-                                  ByVal Bottom As Long) As IPicture
-
-Dim hDIB As Long
-Dim hDIBNew As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_Copy()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      hDIBNew = FreeImage_Copy(hDIB, Left, Top, Right, Bottom)
-      Call FreeImage_Unload(hDIB)
-      Set FreeImage_CopyIOP = FreeImage_GetOlePicture(hDIBNew, , True)
-   End If
-
-End Function
-
-Public Function FreeImage_PasteIOP(ByRef PictureDst As IPicture, _
-                                   ByRef PictureSrc As IPicture, _
-                                   ByVal Left As Long, _
-                                   ByVal Top As Long, _
-                                   ByVal Alpha As Long, _
-                          Optional ByVal KeepOriginalDestImage As Boolean) As IPicture
-
-Dim hDIBDst As Long
-Dim hDIBSrc As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_Paste()
-   
-   hDIBDst = FreeImage_CreateFromOlePicture(PictureDst)
-   If (hDIBDst) Then
-      hDIBSrc = FreeImage_CreateFromOlePicture(PictureSrc)
-      If (hDIBSrc) Then
-         If FreeImage_Paste(hDIBDst, hDIBSrc, Left, Top, Alpha) Then
-            Set FreeImage_PasteIOP = FreeImage_GetOlePicture(hDIBDst, , True)
-            If (Not KeepOriginalDestImage) Then
-               Set PictureDst = FreeImage_PasteIOP
-            End If
-         End If
-         Call FreeImage_Unload(hDIBSrc)
-      End If
-   End If
-
-End Function
-
-Public Function FreeImage_CompositeIOP(ByRef Picture As IPicture, _
-                              Optional ByVal UseFileBackColor As Boolean, _
-                              Optional ByVal AppBackColor As OLE_COLOR, _
-                              Optional ByRef BackgroundPicture As IPicture) As IPicture
-
-Dim hDIB As Long
-Dim hDIBbg As Long
-Dim hDIBResult As Long
-Dim lUseFileBackColor As Long
-   
-   ' IOlePicture based wrapper for FreeImage function FreeImage_Composite()
-   
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-   
-      If (UseFileBackColor) Then
-         lUseFileBackColor = 1
-      End If
-    
-      hDIBbg = FreeImage_CreateFromOlePicture(BackgroundPicture)
-      
-      hDIBResult = FreeImage_Composite(hDIB, lUseFileBackColor, ConvertColor(AppBackColor), hDIBbg)
-      If (hDIBResult) Then
-         Set FreeImage_CompositeIOP = FreeImage_GetOlePicture(hDIBResult, , True)
-      End If
-      
-      Call FreeImage_Unload(hDIB)
-      If (hDIBbg) Then
-         Call FreeImage_Unload(hDIBbg)
-      End If
-   End If
-   
-End Function
-
-
-'--------------------------------------------------------------------------------
-' VB-coded Toolkit functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_GetColorizedPalette(ByVal Color As OLE_COLOR, _
-                                     Optional ByVal SplitValue As Variant = 0.5) As RGBQUAD()
-
-Dim atPalette(255) As RGBQUAD
-Dim lSplitIndex As Long
-Dim lSplitIndexInv As Long
-Dim lRed As Long
-Dim lGreen As Long
-Dim lBlue As Long
-Dim i As Long
-
-   ' compute the split index
-   Select Case VarType(SplitValue)
-   
-   Case vbByte, vbInteger, vbLong
-      lSplitIndex = SplitValue
-      
-   Case vbDouble, vbSingle, vbDecimal
-      lSplitIndex = 256 * SplitValue
-   
-   Case Else
-      lSplitIndex = 128
-   
-   End Select
-   
-   ' check ranges of split index
-   If (lSplitIndex < 0) Then
-      lSplitIndex = 0
-   ElseIf (lSplitIndex > 255) Then
-      lSplitIndex = 255
-   End If
-   lSplitIndexInv = 256 - lSplitIndex
-
-   ' extract color components red, green and blue
-   lRed = (Color And &HFF)
-   lGreen = ((Color \ &H100&) And &HFF)
-   lBlue = ((Color \ &H10000) And &HFF)
-
-   For i = 0 To lSplitIndex - 1
-      With atPalette(i)
-         .rgbRed = (lRed / lSplitIndex) * i
-         .rgbGreen = (lGreen / lSplitIndex) * i
-         .rgbBlue = (lBlue / lSplitIndex) * i
-      End With
-   Next i
-   For i = lSplitIndex To 255
-      With atPalette(i)
-         .rgbRed = lRed + ((255 - lRed) / lSplitIndexInv) * (i - lSplitIndex)
-         .rgbGreen = lGreen + ((255 - lGreen) / lSplitIndexInv) * (i - lSplitIndex)
-         .rgbBlue = lBlue + ((255 - lBlue) / lSplitIndexInv) * (i - lSplitIndex)
-      End With
-   Next i
-   
-   FreeImage_GetColorizedPalette = atPalette
-
-End Function
-
-Public Function FreeImage_Colorize(ByVal BITMAP As Long, _
-                                   ByVal Color As OLE_COLOR, _
-                          Optional ByVal SplitValue As Variant = 0.5) As Long
-                          
-   If (BITMAP) Then
-      If (Not FreeImage_HasPixels(BITMAP)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to colorize a 'header-only' bitmap.")
-      End If
-      FreeImage_Colorize = FreeImage_ConvertToGreyscale(BITMAP)
-      Call FreeImage_SetPalette(FreeImage_Colorize, _
-            FreeImage_GetColorizedPalette(Color, SplitValue))
-   End If
-
-End Function
-
-Public Function FreeImage_Sepia(ByVal BITMAP As Long, _
-                       Optional ByVal SplitValue As Variant = 0.5) As Long
-
-   FreeImage_Sepia = FreeImage_Colorize(BITMAP, &H658AA2, SplitValue)  ' RGB(162, 138, 101)
-
-End Function
-
 
 '--------------------------------------------------------------------------------
 ' Compression functions wrappers
@@ -11786,281 +6322,6 @@ End Function
 ' Private metadata helper functions
 '--------------------------------------------------------------------------------
 
-Public Function pGetTagFromTagPtr(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                   ByVal TagPtr As Long) As FREE_IMAGE_TAG
-
-Dim tTag As FITAG
-Dim lTemp As Long
-Dim i As Long
-
-   ' This function converts data stored in a real FreeImage tag
-   ' pointer (FITAG **tag) into a VB friendly structure FREE_IMAGE_TAG.
-   
-   If (TagPtr <> 0) Then
-   
-      ' this is like (only like!) tTag tag = (FITAG) TagPtr; in C/C++
-      ' we copy Len(tTag) bytes from the address in TagPtr in to a
-      ' private FITAG structure tTag so we have easy access to all
-      ' FITAG members
-      Call CopyMemory(tTag, ByVal deref(TagPtr), Len(tTag))
-      
-      With pGetTagFromTagPtr
-      
-         ' first fill all members expect 'Value' in our
-         ' VB friendly FREE_IMAGE_TAG structure
-         
-         ' since we use this VB friendly FREE_IMAGE_TAG structure
-         ' for later tag modification too, we also need to store the
-         ' tag model and the pointer to the actual FreeImage FITAG
-         ' structure
-         .Model = Model
-         .TagPtr = TagPtr
-         
-         ' although FITAG's 'count' and 'length' members are
-         ' unsigned longs, we do not expect values greater
-         ' than 2,147,483,647, so we store them in normal VB
-         ' signed longs
-         .Count = tTag.Count
-         .Length = tTag.Length
-         
-         ' strings are stored as pointers to the actual string
-         ' data in FITAG
-         .Description = pGetStringFromPointerA(tTag.Description)
-         .Key = pGetStringFromPointerA(tTag.Key)
-         
-         ' FITAG's 'id' and 'type' members are unsigned shorts;
-         ' first of all 'id' may exceed the range of a signed
-         ' short (Integer data type in VB), so we store them in
-         ' signed longs and use CopyMemory for to keep the
-         ' unsigned bit layout
-         Call CopyMemory(.Id, tTag.Id, 2)
-         Call CopyMemory(.Type, tTag.Type, 2)
-         
-         ' StringValue is the result of FreeImage_TagToString(); we
-         ' also store this tag representation in our structure
-         .StringValue = FreeImage_TagToString(Model, TagPtr)
-         
-         
-         ' now comes the hard part, getting the tag's value
-         
-         Select Case .Type
-         
-         Case FIDT_BYTE, _
-              FIDT_UNDEFINED
-            If (.Count > 1) Then
-               Dim abBytes() As Byte
-               ' for a byte array, just redim a VB Byte array and
-               ' copy Count bytes from the pointer
-               ReDim abBytes(.Count - 1)
-               Call CopyMemory(abBytes(0), ByVal tTag.Value, .Count)
-               .Value = abBytes
-            Else
-               ' copy a single byte into a Long and assign
-               ' with CByte()
-               Call CopyMemory(lTemp, ByVal tTag.Value, 1)
-               .Value = CByte(lTemp)
-            End If
-         
-         Case FIDT_ASCII
-            ' for an ASCII string, 'value' is just a pointer to the
-            ' string's actual data
-            .Value = pGetStringFromPointerA(tTag.Value)
-            
-         Case FIDT_SHORT
-            Dim iTemp As Integer
-            If (.Count > 1) Then
-               ' for a unsigned long array, first redim Value to
-               ' proper size
-               ReDim .Value(.Count - 1)
-               ' iterate over all items
-               For i = 0 To .Count - 1
-                  ' copy each value into a Long and
-                  ' assign with FreeImage_UnsignedShort() to the
-                  ' corresponding item in the (Variant) Value array
-                  Call CopyMemory(iTemp, ByVal tTag.Value + i * 2, 2)
-                  .Value(i) = FreeImage_UnsignedShort(iTemp)
-               Next i
-            Else
-               ' copy a single byte into a Long and assign
-               ' with FreeImgage_UnsignedShort()
-               Call CopyMemory(iTemp, ByVal tTag.Value, 2)
-               ' this works although FreeImage_UnsignedShort() takes
-               ' an Integer parameter since lTemp was 0 before and
-               ' we copied only 2 bytes so, VB's implicit conversion
-               ' to Integer will never produce an overflow
-               .Value = FreeImage_UnsignedShort(iTemp)
-            End If
-            
-         Case FIDT_LONG, _
-              FIDT_IFD
-            If (.Count > 1) Then
-               ' for a unsigned long array, first redim Value to
-               ' proper size
-               ReDim .Value(.Count - 1)
-               ' iterate over all items
-               For i = 0 To .Count - 1
-                  ' copy each value into a (signed) Long and
-                  ' assign with FreeImage_UnsignedLong() to the
-                  ' corresponding item in the (Variant) Value array
-                  Call CopyMemory(lTemp, ByVal tTag.Value + i * 4, 4)
-                  .Value(i) = FreeImage_UnsignedLong(lTemp)
-               Next i
-            Else
-               ' copy a single unsigned long into a (signed) Long and
-               ' assign with FreeImage_UnsignedLong()
-               Call CopyMemory(lTemp, ByVal tTag.Value, 2)
-               .Value = FreeImage_UnsignedLong(lTemp)
-            End If
-            
-         Case FIDT_RATIONAL, _
-              FIDT_SRATIONAL
-            ' rational values are always stored in the FREE_IMAGE_TAG
-            ' structure's FIRATIONAL array 'RationalValue' so, allocate
-            ' enough space in both the 'Value' and 'RationalValue'
-            ' members to hold 'Count' items
-            ReDim .Value(.Count - 1)
-            ReDim .RationalValue(.Count - 1)
-            For i = 0 To .Count - 1
-               ' iterate over all items
-               With .RationalValue(i)
-                  ' for each item, copy both numerator and denominator
-                  ' into a (signed) Long and assign it to the corresponding
-                  ' member of the FIRATIONAL structure so, we first assume
-                  ' havinge a signed rational (FIDT_SRATIONAL) here
-                  Call CopyMemory(lTemp, ByVal tTag.Value + i * 8, 4)
-                  .Numerator = lTemp
-                  Call CopyMemory(lTemp, ByVal tTag.Value + i * 8 + 4, 4)
-                  .Denominator = lTemp
-               End With
-               ' if we have an unsigned rational (FIDT_RATIONAL), convert
-               ' numerator and denominator
-               If (.Type = FIDT_RATIONAL) Then
-                  ' convert with FreeImage_UnsignedLong()
-                  With .RationalValue(i)
-                     .Numerator = FreeImage_UnsignedLong(.Numerator)
-                     .Denominator = FreeImage_UnsignedLong(.Denominator)
-                  End With
-                  ' normalze the unsigned rational value
-                  Call pNormalizeRational(.RationalValue(i))
-               Else
-                  ' normalze the signed rational value
-                  Call pNormalizeSRational(.RationalValue(i))
-               End If
-               ' store the current fraction's (maybe only approximated) value in
-               ' the 'Value' member of the FREE_IMAGE_TAG structure
-               .Value(i) = .RationalValue(i).Numerator / .RationalValue(i).Denominator
-            Next i
-            
-         Case FIDT_SBYTE
-            If (.Count > 1) Then
-               ' for a signed byte array, first redim Value to
-               ' proper size
-               ReDim .Value(.Count - 1)
-               ' iterate over all items
-               For i = 0 To .Count - 1
-                  ' copy each signed byte value into a Long and
-                  ' check, whether it is negative (bit 7 set)
-                  Call CopyMemory(lTemp, ByVal tTag.Value, 1)
-                  If (lTemp And 128) Then
-                     ' if negative, calculate the negative value
-                     ' and store it in an Integer
-                     .Value(i) = CInt(-256 - (Not (lTemp - 1)))
-                  Else
-                     ' if positive, assign to Value as byte
-                     .Value(i) = CByte(lTemp)
-                  End If
-               Next i
-            Else
-               ' copy a single signed byte into a Long and
-               ' check, whether it is negative (bit 7 set)
-               Call CopyMemory(lTemp, ByVal tTag.Value, 1)
-               If (lTemp And 128) Then
-                  ' if negative, calculate the negative value
-                  ' and store it in an Integer
-                  .Value = CInt(-256 - (Not (lTemp - 1)))
-               Else
-                  ' if positive, assign to Value as byte
-                  .Value = CByte(lTemp)
-               End If
-            End If
-            
-         Case FIDT_SSHORT
-            If (.Count > 1) Then
-               Dim aiSShorts() As Integer
-               ' for a signed short array, just redim a VB Integer array and
-               ' copy Count bytes from the pointer
-               ReDim aiSShorts(.Count - 1)
-               Call CopyMemory(aiSShorts(0), ByVal tTag.Value, .Count * 2)
-               .Value = aiSShorts
-            Else
-               ' copy a single signed short into a Long and assign
-               ' with CInt()
-               Call CopyMemory(lTemp, ByVal tTag.Value, 2)
-               .Value = CInt(lTemp)
-            End If
-            
-         Case FIDT_SLONG
-            If (.Count > 1) Then
-               Dim alSLongs() As Long
-               ' for a signed long array, just redim a VB Long array and
-               ' copy Count bytes from the pointer
-               ReDim alSLongs(.Count - 1)
-               Call CopyMemory(alSLongs(0), ByVal tTag.Value, .Count * 4)
-               .Value = alSLongs
-            Else
-               ' copy a single signed long into a Long and assign
-               ' directly
-               Call CopyMemory(lTemp, ByVal tTag.Value, 4)
-               .Value = lTemp
-            End If
-            
-         Case FIDT_FLOAT
-            If (.Count > 1) Then
-               Dim asngFloats() As Single
-               ' for a float array, just redim a VB Single array and
-               ' copy Count bytes from the pointer
-               ReDim asngFloats(.Count - 1)
-               Call CopyMemory(asngFloats(0), ByVal tTag.Value, .Count * 4)
-               .Value = asngFloats
-            Else
-               Dim sngFloat As Single
-               ' copy a single float into a Single and assign
-               ' directly
-               Call CopyMemory(sngFloat, ByVal tTag.Value, 4)
-               .Value = sngFloat
-            End If
-            
-         Case FIDT_DOUBLE
-            If (.Count > 1) Then
-               Dim adblDoubles() As Double
-               ' for a double array, just redim a VB Double array and
-               ' copy Count bytes from the pointer
-               ReDim adblDoubles(.Count - 1)
-               Call CopyMemory(adblDoubles(0), ByVal tTag.Value, .Count * 8)
-               .Value = adblDoubles
-            Else
-               Dim dblDouble As Double
-               ' copy a single double into a Double and assign
-               ' directly
-               Call CopyMemory(dblDouble, ByVal tTag.Value, 8)
-               .Value = dblDouble
-            End If
-            
-         Case FIDT_PALETTE
-            ' copy 'Count' palette entries (RGBQUAD) form the value
-            ' pointer into the proper dimensioned array of RGBQUAD
-            ReDim .Palette(.Count - 1)
-            For i = 0 To .Count - 1
-               Call CopyMemory(.Palette(i), ByVal tTag.Value + i * 4, 4)
-            Next i
-         
-         End Select
-      
-      End With
-   End If
-
-End Function
-
 Private Sub pNormalizeRational(ByRef Value As FIRATIONAL)
 
 Dim vntCommon As Long
@@ -12151,317 +6412,6 @@ Private Function floor(ByRef a As Variant) As Variant
    End If
 
 End Function
-
-Public Function pTagToTagPtr(ByRef Tag As FREE_IMAGE_TAG) As Boolean
-
-Dim tTagSave As FITAG
-Dim lpTag As Long
-Dim abValueBuffer() As Byte
-Dim lLength As Long
-Dim lCount As Long
-
-   ' This function converts tag data stored in a VB friendly structure
-   ' FREE_IMAGE_TAG into a real FreeImage tag pointer (FITAG **tag).
-   
-   ' This function is called, whenever tag data should be updated for an
-   ' image, since the FreeImage's tag pointer remains valid during the
-   ' whole lifetime of a DIB. So, changes written to that pointer (or
-   ' even better, the FITAG structure at the address, the pointer points
-   ' to), are real updates to the image's tag.
-
-   With Tag
-   
-      lpTag = deref(.TagPtr)
-      
-      ' save current (FITAG) tag for an optional 'undo' operation
-      ' invoked on failure
-      Call CopyMemory(tTagSave, ByVal lpTag, Len(tTagSave))
-      
-      ' set tag id
-      Call CopyMemory(ByVal lpTag + 8, .Id, 2)
-      ' set tag type
-      Call CopyMemory(ByVal lpTag + 10, .Type, 2)
-      ' set tag key (use native FreeImage function to handle
-      ' memory allocation)
-      Call FreeImage_SetTagKey(.TagPtr, .Key)
-      
-      ' here, we update the tag's value
-      ' generally, we create a plain byte buffer containing all the
-      ' value's data and use FreeImage_SetTagValue() with the
-      ' const void *value pointer set to the byte buffer's address.
-      
-      ' the variable abValueBuffer is our byte buffer that is,
-      ' depending on the FreeImage tag data type, allocated and filled
-      ' accordingly
-      ' The variables 'lLength' and 'lCount' are set up correctly for
-      ' each data type and will be filled into the FITAG structure
-      ' before calling FreeImage_SetTagValue(); after all, the VB
-      ' Tag structure's (FREE_IMAGE_TAG) 'Count' and 'Length' members
-      ' are updated with 'lLength' and 'lCount'.
-      
-      Select Case .Type
-      
-      Case FIDT_ASCII
-         ' use StrConv() to get an ASCII byte array from a VB String (BSTR)
-         abValueBuffer = StrConv(.Value, vbFromUnicode)
-         ' according to FreeImage's source code, both 'count' and 'length'
-         ' must be the length of the string
-         lCount = Len(.Value)
-         lLength = lCount
-         
-      Case FIDT_PALETTE
-         ' ensure, that there are at least 'Count' entries in the
-         ' palette array
-         lCount = .Count
-         If (UBound(.Palette) + 1 < lCount) Then
-            ' if not, adjust Count
-            lCount = UBound(.Palette) + 1
-         End If
-         ' 4 bytes per element
-         lLength = lCount * 4
-         ' allocate buffer and copy data from Palatte array
-         ReDim abValueBuffer(lLength - 1)
-         Call CopyMemory(abValueBuffer(0), .Palette(LBound(.Palette)), lLength)
-         
-      Case FIDT_RATIONAL, _
-           FIDT_SRATIONAL
-         ' we use a helper function to get a byte buffer for any type of
-         ' rational value
-         lCount = pGetRationalValueBuffer(.RationalValue, abValueBuffer)
-         If (lCount > .Count) Then
-            lCount = .Count
-         End If
-         ' eight bytes per element (2 longs)
-         lLength = lCount * 8
-         
-      Case Else
-         ' we use a helper function to get a byte buffer for any other type
-         lCount = pGetValueBuffer(.Value, .Type, lLength, abValueBuffer)
-         If (lCount > .Count) Then
-            lCount = .Count
-         End If
-         ' lLength was used as an OUT parameter when calling pGetValueBuffer
-         ' it now contains the size of one element in bytes so, multiply with
-         ' lCount to get the total length
-         lLength = lLength * lCount
-      
-      End Select
-      
-      ' set tag length
-      Call CopyMemory(ByVal lpTag + 16, lLength, 4)
-      ' set tag count
-      Call CopyMemory(ByVal lpTag + 12, lCount, 4)
-       
-      If (FreeImage_SetTagValue(.TagPtr, VarPtr(abValueBuffer(0))) <> 0) Then
-         
-         ' update Tag's members
-         ' update Count
-         .Count = lCount
-         ' update Length
-         .Length = lLength
-         ' update StringValue
-         .StringValue = FreeImage_TagToString(.Model, .TagPtr)
-         pTagToTagPtr = True
-      Else
-      
-         ' restore saved (FITAG) tag values on failure
-         Call CopyMemory(ByVal lpTag, tTagSave, Len(tTagSave))
-      End If
-   
-   End With
-
-End Function
-
-Private Function pGetValueBuffer(ByRef Value As Variant, _
-                                 ByVal MetaDataVarType As FREE_IMAGE_MDTYPE, _
-                                 ByRef ElementSize As Long, _
-                                 ByRef Buffer() As Byte) As Long
-                            
-Dim lElementCount As Long
-Dim bIsArray As Boolean
-Dim abValueBuffer(7) As Byte
-Dim cBytes As Long
-Dim i As Long
-
-   ' This function copies any value provided in the Variant 'Value'
-   ' parameter into the byte array Buffer. 'Value' may contain an
-   ' array as well. The values in the byte buffer are aligned to fit
-   ' the FreeImage data type for tag values specified in
-   ' 'MetaDataVarType'. For integer values, it does not matter, in
-   ' which VB data type the values are provided. For example, it is
-   ' possible to transform a provided byte array into a unsigned long
-   ' array.
-   
-   ' The parameter 'ElementSize' is an OUT value, providing the actual
-   ' size per element in the byte buffer in bytes to the caller.
-   
-   ' This function works for the types FIDT_BYTE, FIDT_SHORT, FIDT_LONG,
-   ' FIDT_SBYTE , FIDT_SSHORT, FIDT_SLONG, FIDT_FLOAT, FIDT_DOUBLE
-   ' and FIDT_IFD
-                            
-   ElementSize = pGetElementSize(MetaDataVarType)
-   If (Not IsArray(Value)) Then
-      lElementCount = 1
-   Else
-      On Error Resume Next
-      lElementCount = UBound(Value) - LBound(Value) + 1
-      On Error GoTo 0
-      bIsArray = True
-   End If
-   
-   If (lElementCount > 0) Then
-      ReDim Buffer((lElementCount * ElementSize) - 1)
-      
-      If (Not bIsArray) Then
-         cBytes = pGetVariantAsByteBuffer(Value, abValueBuffer)
-         If (cBytes > ElementSize) Then
-            cBytes = ElementSize
-         End If
-         Call CopyMemory(Buffer(0), abValueBuffer(0), cBytes)
-      Else
-         For i = LBound(Value) To UBound(Value)
-            cBytes = pGetVariantAsByteBuffer(Value(i), abValueBuffer)
-            If (cBytes > ElementSize) Then
-               cBytes = ElementSize
-            End If
-            Call CopyMemory(Buffer(0 + (i * ElementSize)), abValueBuffer(0), cBytes)
-         Next i
-      End If
-      
-      pGetValueBuffer = lElementCount
-   End If
-
-End Function
-
-Private Function pGetRationalValueBuffer(ByRef RationalValues() As FIRATIONAL, _
-                                         ByRef Buffer() As Byte) As Long
-                                         
-Dim lElementCount As Long
-Dim abValueBuffer(7) As Byte
-Dim cBytes As Long
-Dim i As Long
-
-   ' This function copies a number of elements from the FIRATIONAL array
-   ' 'RationalValues' into the byte buffer 'Buffer'.
-   
-   ' From the caller's point of view, this function is the same as
-   ' 'pGetValueBuffer', except, it only works for arrays of FIRATIONAL.
-   
-   ' This function works for the types FIDT_RATIONAL and FIDT_SRATIONAL.
-   
-   lElementCount = UBound(RationalValues) - LBound(RationalValues) + 1
-   ReDim Buffer(lElementCount * 8 + 1)
-   
-   For i = LBound(RationalValues) To UBound(RationalValues)
-      cBytes = pGetVariantAsByteBuffer(RationalValues(i).Numerator, abValueBuffer)
-      If (cBytes > 4) Then
-         cBytes = 4
-      End If
-      Call CopyMemory(Buffer(0 + (i * 8)), abValueBuffer(0), cBytes)
-      
-      cBytes = pGetVariantAsByteBuffer(RationalValues(i).Denominator, abValueBuffer)
-      If (cBytes > 4) Then
-         cBytes = 4
-      End If
-      Call CopyMemory(Buffer(4 + (i * 8)), abValueBuffer(0), cBytes)
-   Next i
-   
-   pGetRationalValueBuffer = lElementCount
-                                         
-End Function
-
-Private Function pGetVariantAsByteBuffer(ByRef Value As Variant, _
-                                         ByRef Buffer() As Byte) As Long
-
-Dim lLength As Long
-
-   ' This function fills a byte buffer 'Buffer' with data taken
-   ' from a Variant parameter. Depending on the Variant's type and,
-   ' width, it copies N (lLength) bytes into the buffer starting
-   ' at the buffer's first byte at Buffer(0). The function returns
-   ' the number of bytes copied.
-   
-   ' It is much easier to assign the Variant to a variable of
-   ' the proper native type first, since gathering a Variant's
-   ' actual value is a hard job to implement for each subtype.
-   
-   Select Case VarType(Value)
-   
-   Case vbByte
-      Buffer(0) = Value
-      lLength = 1
-   
-   Case vbInteger
-      Dim iInteger As Integer
-      iInteger = Value
-      lLength = 2
-      Call CopyMemory(Buffer(0), iInteger, lLength)
-   
-   Case vbLong
-      Dim lLong As Long
-      lLong = Value
-      lLength = 4
-      Call CopyMemory(Buffer(0), lLong, lLength)
-   
-   Case vbCurrency
-      Dim cCurrency As Currency
-      ' since the Currency data type is a so called scaled
-      ' integer, we have to divide by 10.000 first to get the
-      ' proper bit layout.
-      cCurrency = Value / 10000
-      lLength = 8
-      Call CopyMemory(Buffer(0), cCurrency, lLength)
-   
-   Case vbSingle
-      Dim sSingle As Double
-      sSingle = Value
-      lLength = 4
-      Call CopyMemory(Buffer(0), sSingle, lLength)
-   
-   Case vbDouble
-      Dim dblDouble As Double
-      dblDouble = Value
-      lLength = 8
-      Call CopyMemory(Buffer(0), dblDouble, lLength)
-   
-   End Select
-   
-   pGetVariantAsByteBuffer = lLength
-                                         
-End Function
-
-Private Function pGetElementSize(ByVal vt As FREE_IMAGE_MDTYPE) As Long
-
-   ' This function returns the width in bytes for any of the
-   ' FreeImage metadata tag data types.
-
-   Select Case vt
-   
-   Case FIDT_BYTE, _
-        FIDT_SBYTE, _
-        FIDT_UNDEFINED, _
-        FIDT_ASCII
-      pGetElementSize = 1
-   
-   Case FIDT_SHORT, _
-        FIDT_SSHORT
-      pGetElementSize = 2
-
-   Case FIDT_LONG, _
-        FIDT_SLONG, _
-        FIDT_FLOAT, _
-        FIDT_PALETTE, _
-        FIDT_IFD
-      pGetElementSize = 4
-
-   Case Else
-      pGetElementSize = 8
-      
-   End Select
-
-End Function
-
-
 
 '--------------------------------------------------------------------------------
 ' Private pointer manipulation helper functions

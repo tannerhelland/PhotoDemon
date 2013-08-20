@@ -33,67 +33,65 @@ Option Explicit
 
 'Tanner's addition 20 September '12:
 ' We must check if theming is enabled. On Vista/7, use of the "Classic Theme" disables theming and screws up menu icon placement.
-Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
-Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
+Private Declare Function OpenThemeData Lib "uxtheme" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As Long
 
 ' ------------
-Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function GetModuleHandle Lib "kernel32.dll" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
-Private Declare Function GetProcAddress Lib "kernel32.dll" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function VirtualAlloc Lib "kernel32.dll" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
-Private Declare Function VirtualFree Lib "kernel32.dll" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
-Private Declare Function GetDC Lib "user32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32.dll" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
+'Private Declare Function VirtualFree Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal dwImageType As Long, ByVal dwDesiredWidth As Long, ByVal dwDesiredHeight As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
-Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
-Private Declare Sub CreateStreamOnHGlobal Lib "ole32.dll" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
-Private Declare Function GetObjectType Lib "gdi32.dll" (ByVal hgdiobj As Long) As Long
+Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
+Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
 Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
-Private Declare Function GetMenuItemInfo Lib "user32.dll" Alias "GetMenuItemInfoA" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
+Private Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoA" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
-Private Declare Function GetMenuInfo Lib "user32.dll" (ByVal hMenu As Long, ByRef LPMENUINFO As MENUINFO) As Long
-Private Declare Function SetMenuInfo Lib "user32.dll" (ByVal hMenu As Long, ByRef LPCMENUINFO As MENUINFO) As Long
+Private Declare Function GetMenuInfo Lib "user32" (ByVal hMenu As Long, ByRef LPMENUINFO As MENUINFO) As Long
+Private Declare Function SetMenuInfo Lib "user32" (ByVal hMenu As Long, ByRef LPCMENUINFO As MENUINFO) As Long
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetMenuItemID Lib "user32.dll" (ByVal hMenu As Long, ByVal nPos As Long) As Long
-Private Declare Function CreateIconFromResourceEx Lib "user32.dll" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
+'Private Declare Function GetMenuItemID Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
+Private Declare Function CreateIconFromResourceEx Lib "user32" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function Rectangle Lib "gdi32.dll" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Private Declare Function CreatePen Lib "gdi32.dll" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function GetStockObject Lib "gdi32.dll" (ByVal nIndex As Long) As Long
-Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
+Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
+Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
+Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
-Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
-Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
-Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
-Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
-Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, BITMAP As Long) As Long
-Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal Image As Long, ByVal rfType As Long) As Long
-Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus.dll" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
-Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal Image As Long, ByRef graphics As Long) As Long
-Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef BITMAP As Long) As Long
-Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
-Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
-Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal imageattr As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
+Private Declare Function GdipCreateFromHDC Lib "GdiPlus" (ByVal hDC As Long, ByRef graphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "GdiPlus" (ByVal graphics As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "GdiPlus" (ByVal FileName As Long, ByRef Image As Long) As Long
+Private Declare Function GdiplusStartup Lib "GdiPlus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
+Private Declare Function GdiplusShutdown Lib "GdiPlus" (ByVal Token As Long) As Long
+Private Declare Function GdipDisposeImage Lib "GdiPlus" (ByVal Image As Long) As Long
+Private Declare Function GdipGetImageDimension Lib "GdiPlus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "GdiPlus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, BITMAP As Long) As Long
+Private Declare Function GdipImageRotateFlip Lib "GdiPlus" (ByVal Image As Long, ByVal rfType As Long) As Long
+Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
+Private Declare Function GdipGetImagePixelFormat Lib "GdiPlus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
+Private Declare Function GdipBitmapLockBits Lib "GdiPlus" (ByVal BITMAP As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipBitmapUnlockBits Lib "GdiPlus" (ByVal BITMAP As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipCreateBitmapFromHBITMAP Lib "GdiPlus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef BITMAP As Long) As Long
+Private Declare Function GdipLoadImageFromStream Lib "GdiPlus" (ByVal Stream As Any, ByRef Image As Long) As Long
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "GdiPlus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
+Private Declare Function GdipCreateImageAttributes Lib "GdiPlus" (ByRef imageattr As Long) As Long
+Private Declare Function GdipDisposeImageAttributes Lib "GdiPlus" (ByVal imageattr As Long) As Long
 
 Private Type RECT
     Left As Long
@@ -263,19 +261,12 @@ Private Const PixelFormat32bppRGB As Long = &H22009
 Private Const GdiplusVersion As Long = 1&
 Private Const IconVersion As Long = &H30000
     
-Private Const BI_RGB As Long = 0&
 Private Const DIB_RGB_COLORS As Long = 0&
 
 Private Const LR_LOADFROMFILE As Long = &H10
-Private Const LR_LOADMAP3DCOLORS As Long = &H1000
-Private Const LR_SHARED As Long = &H8000&
 Private Const IMAGE_ICON As Long = 1
 
-Private Const MIIM_STATE As Long = &H1
 Private Const MIIM_ID As Long = &H2
-Private Const MIIM_SUBMENU As Long = &H4
-Private Const MIIM_CHECKMARKS As Long = &H8
-Private Const MIIM_TYPE As Long = &H10
 Private Const MIIM_DATA As Long = &H20
 Private Const MIIM_BITMAP As Long = &H80
     
@@ -300,26 +291,10 @@ Private Const WM_MEASUREITEM As Long = &H2C
 Private Const WM_DRAWITEM As Long = &H2B
 Private Const WM_MENUSELECT As Long = &H11F
 Private Const WM_ENTERIDLE As Long = &H121
-Private Const WM_CONTEXTMENU As Long = &H7B
-Private Const WM_ENTERMENULOOP As Long = &H211
-Private Const WM_EXITMENULOOP As Long = &H212
-Private Const WM_INITMENU As Long = &H116
-Private Const WM_INITMENUPOPUP As Long = &H117
-Private Const WM_MDIREFRESHMENU As Long = &H234
-Private Const WM_MDISETMENU As Long = &H230
-Private Const WM_MENUCHAR As Long = &H120
-Private Const WM_MENUCOMMAND As Long = &H126
-Private Const WM_MENUDRAG As Long = &H123
-Private Const WM_MENUGETOBJECT As Long = &H124
-Private Const WM_MENURBUTTONUP As Long = &H122
-Private Const WM_NEXTMENU As Long = &H213
-Private Const WM_UNINITMENUPOPUP As Long = &H125
 
 Private Const GWL_WNDPROC As Long = -4
 Private Const MEM_COMMIT As Long = &H1000
 Private Const PAGE_EXECUTE_READWRITE As Long = &H40
-Private Const MEM_RELEASE As Long = &H8000&
-
 
 Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 

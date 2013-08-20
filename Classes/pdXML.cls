@@ -588,8 +588,6 @@ Public Function getLocationOfTagPlusAttribute(ByVal tagName As String, ByVal tag
 
     Dim searchLocation As Long
     searchLocation = InStr(1, xmlContents, "<" & tagName & " ", vbTextCompare)
-
-    Dim tagStart As Long, tagEnd As Long
     
     'Run a loop, finding matching tag entries as we go.
     Do While searchLocation > 0
@@ -674,7 +672,6 @@ Public Function getXMLSafeTagName(ByVal srcText As String) As String
     
     'Loop through the text box contents and remove any invalid characters
     Dim i As Long
-    Dim invLoc As Long
     
     For i = 1 To Len(goodString)
         

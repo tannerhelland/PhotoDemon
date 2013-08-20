@@ -132,10 +132,8 @@ Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any
 'DIB API functions
 ' (Note that these are currently declared in FastDrawing as well)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
-'Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As BITMAPINFO, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -161,14 +159,8 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function EmptyClipboard Lib "user32" () As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function CloseClipboard Lib "user32" () As Long
-Private Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
-Private Declare Function RegisterClipboardFormat Lib "user32" Alias "RegisterClipboardFormatA" (ByVal lpString As String) As Long
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
-Private Const CLIPBOARD_FORMAT_DIB As Long = 8
 
 'AlphaBlend API call
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
@@ -1647,7 +1639,7 @@ End Sub
 
 'Check to see if a 32bpp image is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
 ' 255 or all values are set to 0, remove the alpha channel and rebuild this layer in 24bpp mode.)
-Public Function verifyAlphaChannel(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1) As Boolean
+Public Function verifyAlphaChannel() As Boolean
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then

@@ -40,7 +40,6 @@ Private Type POINTAPI
    y As Long
 End Type
 Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT, ByVal bErase As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function SelectClipRgn Lib "gdi32" (ByVal hDC As Long, ByVal hRgn As Long) As Long
@@ -74,9 +73,7 @@ Private Const BF_FLAT = &H4000    ' For flat rather than 3D borders
 Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Const DT_SINGLELINE = &H20
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
-Private Const OPAQUE = 2
 Private Const TRANSPARENT = 1
 Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, pccolorref As Long) As Long
 Private Const CLR_INVALID = -1
@@ -98,20 +95,6 @@ Private Declare Function DrawThemeText Lib "uxtheme.dll" _
     ByVal iStateId As Long, ByVal pszText As Long, _
     ByVal iCharCount As Long, ByVal dwTextFlag As Long, _
     ByVal dwTextFlags2 As Long, pRect As RECT) As Long
-Private Declare Function DrawThemeIcon Lib "uxtheme.dll" _
-   (ByVal hTheme As Long, ByVal hDC As Long, ByVal iPartId As Long, _
-    ByVal iStateId As Long, pRect As RECT, _
-    ByVal himl As Long, ByVal iImageIndex As Long) As Long
-Private Declare Function DrawThemeEdge Lib "uxtheme.dll" _
-   (ByVal hTheme As Long, ByVal hDC As Long, ByVal iPartId As Long, _
-   ByVal iStateId As Long, pDestRect As RECT, _
-   ByVal uEdge As Long, ByVal uFlags As Long, _
-   pContentRect As RECT) As Long
-Private Enum THEMESIZE
-    TS_MIN = 0             '// minimum size
-    TS_TRUE = 1            '// size without stretching
-    TS_DRAW = 2             ' // size that theme mgr will use to draw part
-End Enum
 Private Declare Function GetThemeInt Lib "uxtheme.dll" _
    (ByVal hTheme As Long, ByVal iPartId As Long, _
     ByVal iStateId As Long, ByVal iPropId As Long, _

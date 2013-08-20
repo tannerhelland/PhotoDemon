@@ -30,8 +30,6 @@ Attribute VB_Exposed = False
 ' particular quirks with the types of file dialogs it requires.  If you copy this blindly into your own project,
 ' it is unlikely to work - so use the stock version and save yourself a lot of trouble.
 
-'Tanner's last edit: don't zero out the filter index on dialog box cancellation
-
 Option Explicit
 
 
@@ -44,11 +42,11 @@ Const GMEM_ZEROINIT = &H40
 
 Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As String) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalCompact Lib "kernel32" (ByVal dwMinFree As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
+'Private Declare Function GlobalCompact Lib "kernel32" (ByVal dwMinFree As Long) As Long
+'Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+'Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
+'Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
@@ -162,26 +160,26 @@ Private Type TCHOOSEFONT
     nSizeMin As Long            ' Minimum point size allowed
     nSizeMax As Long            ' Maximum point size allowed
 End Type
-Private Declare Function ChooseFont Lib "COMDLG32" _
+'Private Declare Function ChooseFont Lib "COMDLG32" _
     Alias "ChooseFontA" (chfont As TCHOOSEFONT) As Long
 
 Private Const LF_FACESIZE = 32
-Private Type LOGFONT
-    lfHeight As Long
-    lfWidth As Long
-    lfEscapement As Long
-    lfOrientation As Long
-    lfWeight As Long
-    lfItalic As Byte
-    lfUnderline As Byte
-    lfStrikeOut As Byte
-    lfCharSet As Byte
-    lfOutPrecision As Byte
-    lfClipPrecision As Byte
-    lfQuality As Byte
-    lfPitchAndFamily As Byte
-    lfFaceName(LF_FACESIZE) As Byte
-End Type
+'Private Type LOGFONT
+'    lfHeight As Long
+'    lfWidth As Long
+'    lfEscapement As Long
+'    lfOrientation As Long
+'    lfWeight As Long
+'    lfItalic As Byte
+'    lfUnderline As Byte
+'    lfStrikeOut As Byte
+'    lfCharSet As Byte
+'    lfOutPrecision As Byte
+'    lfClipPrecision As Byte
+'    lfQuality As Byte
+'    lfPitchAndFamily As Byte
+'    lfFaceName(LF_FACESIZE) As Byte
+'End Type
 
 Public Enum EChooseFont
     CF_ScreenFonts = &H1
@@ -251,10 +249,10 @@ Private Type TPRINTDLG
 End Type
 
 '  DEVMODE collation selections
-Private Const DMCOLLATE_FALSE = 0
-Private Const DMCOLLATE_TRUE = 1
+'Private Const DMCOLLATE_FALSE = 0
+'Private Const DMCOLLATE_TRUE = 1
 
-Private Declare Function PrintDlg Lib "COMDLG32.DLL" _
+'Private Declare Function PrintDlg Lib "COMDLG32.DLL" _
     Alias "PrintDlgA" (prtdlg As TPRINTDLG) As Integer
 
 Public Enum EPrintDialog
@@ -284,12 +282,12 @@ Public Enum EPrintDialog
     PD_NONETWORKBUTTON = &H200000
 End Enum
 
-Private Type DEVNAMES
-    wDriverOffset As Integer
-    wDeviceOffset As Integer
-    wOutputOffset As Integer
-    wDefault As Integer
-End Type
+'Private Type DEVNAMES
+'    wDriverOffset As Integer
+'    wDeviceOffset As Integer
+'    wOutputOffset As Integer
+'    wDefault As Integer
+'End Type
 
 'Required for passing information about the printer to certain API calls
 Private Const CCHDEVICENAME = 32
@@ -768,8 +766,7 @@ Function VBChooseColor(Color As Long, _
                        Optional AnyColor As Boolean = True, _
                        Optional FullOpen As Boolean = False, _
                        Optional DisableFullOpen As Boolean = False, _
-                       Optional Owner As Long = -1, _
-                       Optional Flags As Long) As Boolean
+                       Optional Owner As Long = -1) As Boolean
 
     Dim chclr As TCHOOSECOLOR
     chclr.lStructSize = Len(chclr)
@@ -844,59 +841,6 @@ Public Property Let CustomColor(i As Integer, iValue As Long)
         alCustom(i) = iValue
     End If
 End Property
-
-Private Property Get DeviceMode() As DevMode
-    DeviceMode = m_dvmode
-End Property
-
-Friend Property Get Driver() As String
-   Driver = m_sDriver
-End Property
-Friend Property Get Device() As String
-   Device = m_sDevice
-End Property
-Friend Property Get OutputPort() As String
-   OutputPort = m_sOutputPort
-End Property
-
-#If fComponent = 0 Then
-Private Sub ErrRaise(e As Long)
-    Dim sText As String, sSource As String
-    If e > 1000 Then
-        sSource = App.EXEName & ".CommonDialog"
-        Err.Raise COMError(e), sSource, sText
-    Else
-        ' Raise standard Visual Basic error
-        sSource = App.EXEName & ".VBError"
-        Err.Raise e, sSource
-    End If
-End Sub
-#End If
-
-
-Private Sub StrToBytes(ab() As Byte, s As String)
-    If IsArrayEmpty(ab) Then
-        ' Assign to empty array
-        ab = StrConv(s, vbFromUnicode)
-    Else
-        Dim cab As Long
-        ' Copy to existing array, padding or truncating if necessary
-        cab = UBound(ab) - LBound(ab) + 1
-        If Len(s) < cab Then s = s & String$(cab - Len(s), 0)
-        'If UnicodeTypeLib Then
-        '    Dim st As String
-        '    st = StrConv(s, vbFromUnicode)
-        '    CopyMemoryStr ab(LBound(ab)), st, cab
-        'Else
-            CopyMemoryStr ab(LBound(ab)), s, cab
-        'End If
-    End If
-End Sub
-
-
-Private Function BytesToStr(ab() As Byte) As String
-    BytesToStr = StrConv(ab, vbUnicode)
-End Function
 
 Private Function COMError(e As Long) As Long
     COMError = e Or vbObjectError
@@ -1023,67 +967,5 @@ Dim afFlags As Long, afMask As Long
     End If
     Set m_oEventSink = Nothing
     
-End Function
-
-' PageSetupDlg wrapper
-Function VBPageSetupDlg(Optional Owner As Long, _
-                        Optional DisableMargins As Boolean, _
-                        Optional DisableOrientation As Boolean, _
-                        Optional DisablePaper As Boolean, _
-                        Optional DisablePrinter As Boolean, _
-                        Optional LeftMargin As Long, _
-                        Optional MinLeftMargin As Long, _
-                        Optional RightMargin As Long, _
-                        Optional MinRightMargin As Long, _
-                        Optional TopMargin As Long, _
-                        Optional MinTopMargin As Long, _
-                        Optional BottomMargin As Long, _
-                        Optional MinBottomMargin As Long, _
-                        Optional PaperSize As EPaperSize = epsLetter, _
-                        Optional Orientation As EOrientation = eoPortrait, _
-                        Optional PrintQuality As EPrintQuality = epqDraft, _
-                        Optional Units As EPageSetupUnits = epsuinches, _
-                        Optional Printer As Object, _
-                        Optional Flags As Long, _
-                        Optional EventSink As cCommonDialog _
-                    ) As Boolean
-Dim fLeftMargin As Single
-Dim fMinLeftMargin As Single
-Dim fRightMargin As Single
-Dim fMinRightMargin As Single
-Dim fTopMargin As Single
-Dim fMinTopMargin As Single
-Dim fBottomMargin As Single
-Dim fMinBottomMargin As Single
-
-    VBPageSetupDlg2 _
-        Owner, _
-        DisableMargins, _
-        DisableOrientation, _
-        DisablePaper, _
-        DisablePrinter, _
-        fLeftMargin, _
-        fMinLeftMargin, _
-        fRightMargin, _
-        fMinRightMargin, _
-        fTopMargin, _
-        fMinTopMargin, _
-        fBottomMargin, _
-        fMinBottomMargin, _
-        PaperSize, _
-        Orientation, _
-        PrintQuality, _
-        Units, _
-        Printer, _
-        Flags, _
-        EventSink
-    LeftMargin = fLeftMargin
-    MinLeftMargin = fMinLeftMargin
-    RightMargin = fRightMargin
-    MinRightMargin = fMinRightMargin
-    TopMargin = fTopMargin
-    MinTopMargin = fMinTopMargin
-    BottomMargin = fBottomMargin
-    MinBottomMargin = fMinBottomMargin
 End Function
 
