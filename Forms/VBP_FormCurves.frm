@@ -450,7 +450,7 @@ End Sub
 Private Sub cmdBar_ReadCustomPresetData()
     
     'Retrieve the number of nodes in this preset
-    Dim tmpString As String, tmpStringArray() As String
+    Dim tmpString As String
     tmpString = cmdBar.retrievePresetData("NodeCount")
     numOfNodes = CLng(tmpString)
     

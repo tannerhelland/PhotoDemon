@@ -219,7 +219,6 @@ Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As REC
 Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Specialized type for holding photographic filter information
 Private Type wrattenFilter
@@ -266,7 +265,7 @@ Private Sub CmdOK_Click()
     'The scroll bar max and min values are used to check the temperature input for validity
     If sltDensity.IsValid Then
         Me.Visible = False
-        Process "Photo filter", , buildParams(PicColor.backColor, sltDensity.Value, True)
+        Process "Photo filter", , buildParams(picColor.backColor, sltDensity.Value, True)
         Unload Me
     End If
     
@@ -533,7 +532,7 @@ End Sub
 Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     curFilter = getFilterAtPosition(x, y)
-    PicColor.backColor = fArray(curFilter).RGBColor
+    picColor.backColor = fArray(curFilter).RGBColor
     redrawFilterList
     updatePreview
     
@@ -565,7 +564,7 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    ApplyPhotoFilter PicColor.backColor, sltDensity.Value, True, True, fxPreview
+    ApplyPhotoFilter picColor.backColor, sltDensity.Value, True, True, fxPreview
 End Sub
 
 'Cast an image with a new temperature value

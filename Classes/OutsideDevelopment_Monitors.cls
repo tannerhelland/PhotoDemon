@@ -128,7 +128,7 @@ GetMonitorFromWindow_Err:
     End If
 End Function
 
-Public Function GetMonitorFromRect(ByVal wLeft As Long, ByVal wRight As Long, ByVal wTop As Long, ByVal wBottom As Long, dwFlags As Long) As Long
+Public Function GetMonitorFromRect(ByVal wLeft As Long, ByVal wRight As Long, ByVal wTop As Long, ByVal wBottom As Long) As Long
     '=====================================================
     'Returns a monitor handle that the Window (hwnd) is in
     '=====================================================
@@ -171,7 +171,7 @@ Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm
         If IsMissing(wLeft) Then
             lMonitor = GetMonitorFromXYPoint(1, 1, MONITOR_DEFAULTTONEAREST)
         Else
-            lMonitor = GetMonitorFromRect(wLeft, wRight, wTop, wBottom, MONITOR_DEFAULTTONEAREST)
+            lMonitor = GetMonitorFromRect(wLeft, wRight, wTop, wBottom)
         End If
     Else
         lMonitor = GetMonitorFromWindow(ReferenceForm.hWnd, MONITOR_DEFAULTTONEAREST)

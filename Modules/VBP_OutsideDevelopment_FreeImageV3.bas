@@ -181,11 +181,6 @@ Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
     ByRef Destination As Any, _
     ByRef Source As Any, _
     ByVal Length As Long)
-    
-'Private Declare Sub FillMemory Lib "kernel32.dll" Alias "RtlFillMemory" ( _
-    ByRef Destination As Any, _
-    ByVal Length As Long, _
-    ByVal Fill As Byte)
 
 Private Declare Function lstrlen Lib "kernel32.dll" Alias "lstrlenA" ( _
     ByVal lpString As Long) As Long
@@ -230,18 +225,6 @@ Private Type SAVEARRAY1D
    lLbound As Long
 End Type
 
-Private Type SAVEARRAY2D
-   cDims As Integer
-   fFeatures As Integer
-   cbElements As Long
-   cLocks As Long
-   pvData As Long
-   cElements1 As Long
-   lLbound1 As Long
-   cElements2 As Long
-   lLbound2 As Long
-End Type
-
 
 'MSVBVM60
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" ( _
@@ -255,24 +238,6 @@ Private Declare Function ReleaseDC Lib "user32.dll" ( _
 
 Private Declare Function GetDC Lib "user32.dll" ( _
     ByVal hWnd As Long) As Long
-    
-Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
-    
-Private Declare Function GetDCEx Lib "user32.dll" ( _
-    ByVal hWnd As Long, _
-    ByVal hrgnclip As Long, _
-    ByVal fdwOptions As Long) As Long
-
-Private Const DCX_WINDOW As Long = &H1&
-   
-Private Declare Function GetWindowRect Lib "user32.dll" ( _
-    ByVal hWnd As Long, _
-    ByRef lpRect As RECT) As Long
-
-Private Declare Function GetClientRect Lib "user32.dll" ( _
-    ByVal hWnd As Long, _
-    ByRef lpRect As RECT) As Long
-
 
 Private Type RECT
    Left As Long
@@ -322,12 +287,6 @@ Private Type BLENDFUNCTION
 End Type
     
 'GDI32
-Private Declare Function GetDeviceCaps Lib "gdi32.dll" ( _
-    ByVal hDC As Long, _
-    ByVal nIndex As Long) As Long
-    
-Private Const HORZRES As Long = 8
-Private Const VERTRES As Long = 10
 
 Private Declare Function GetStretchBltMode Lib "gdi32.dll" ( _
     ByVal hDC As Long) As Long
@@ -382,28 +341,12 @@ Private Declare Function CreateDIBSection Lib "gdi32.dll" ( _
     ByVal dwOffset As Long) As Long
 
 Private Const CBM_INIT As Long = &H4
-    
-Private Declare Function CreateCompatibleBitmap Lib "gdi32.dll" ( _
-    ByVal hDC As Long, _
-    ByVal nWidth As Long, _
-    ByVal nHeight As Long) As Long
 
 Private Declare Function CreateCompatibleDC Lib "gdi32.dll" ( _
     ByVal hDC As Long) As Long
     
 Private Declare Function DeleteDC Lib "gdi32.dll" ( _
     ByVal hDC As Long) As Long
-    
-Private Declare Function BitBlt Lib "gdi32.dll" ( _
-    ByVal hDestDC As Long, _
-    ByVal x As Long, _
-    ByVal y As Long, _
-    ByVal nWidth As Long, _
-    ByVal nHeight As Long, _
-    ByVal hSrcDC As Long, _
-    ByVal xSrc As Long, _
-    ByVal ySrc As Long, _
-    ByVal dwRop As Long) As Long
     
 Private Declare Function GetDIBits Lib "gdi32.dll" ( _
     ByVal aHDC As Long, _
@@ -432,15 +375,6 @@ Private Declare Function GetCurrentObject Lib "gdi32.dll" ( _
 
 Private Const OBJ_BITMAP As Long = 7
     
-    
-'Private Declare Function DestroyIcon Lib "user32.dll" ( _
-    ByVal hIcon As Long) As Long
-
-Private Declare Function CreateIconIndirect Lib "user32.dll" ( _
-    ByRef piconinfo As ICONINFO) As Long
-
-Private Const BLACKONWHITE As Long = 1
-Private Const WHITEONBLACK As Long = 2
 Private Const COLORONCOLOR As Long = 3
 
 'MSIMG32
@@ -462,14 +396,14 @@ Private Const AC_SRC_ALPHA = &H1
 
 
 Public Enum STRETCH_MODE
-   SM_BLACKONWHITE = BLACKONWHITE
-   SM_WHITEONBLACK = WHITEONBLACK
-   SM_COLORONCOLOR = COLORONCOLOR
+   SM_BLACKONWHITE = 1
+   SM_WHITEONBLACK = 2
+   SM_COLORONCOLOR = 3
 End Enum
 #If False Then
-   Const SM_BLACKONWHITE = BLACKONWHITE
-   Const SM_WHITEONBLACK = WHITEONBLACK
-   Const SM_COLORONCOLOR = COLORONCOLOR
+   Const SM_BLACKONWHITE = 1
+   Const SM_WHITEONBLACK = 2
+   Const SM_COLORONCOLOR = 3
 #End If
 
 
@@ -478,7 +412,6 @@ Private Const SRCCOPY As Long = &HCC0020
 Private Const SRCERASE As Long = &H440328
 Private Const SRCINVERT As Long = &H660046
 Private Const SRCPAINT As Long = &HEE0086
-Private Const CAPTUREBLT As Long = &H40000000
 
 Public Enum RASTER_OPERATOR
    ROP_SRCAND = SRCAND
@@ -495,7 +428,6 @@ End Enum
    Const ROP_SRCPAINT = SRCPAINT
 #End If
 
-Private Const DIB_PAL_COLORS As Long = 1
 Private Const DIB_RGB_COLORS As Long = 0
 
 Public Enum DRAW_MODE
@@ -1309,25 +1241,6 @@ End Type
 '   rgbtRed As Byte
 'End Type
 
-Private Type BITMAPINFOHEADER
-   biSize As Long
-   biWidth As Long
-   biHeight As Long
-   biPlanes As Integer
-   biBitCount As Integer
-   biCompression As Long
-   biSizeImage As Long
-   biXPelsPerMeter As Long
-   biYPelsPerMeter As Long
-   biClrUsed As Long
-   biClrImportant As Long
-End Type
-
-'Private Type BITMAPINFO
-'   bmiHeader As BITMAPINFOHEADER
-'   bmiColors(0) As RGBQUAD
-'End Type
-
 Public Const BI_RGB As Long = 0
 Public Const BI_RLE8 As Long = 1
 Public Const BI_RLE4 As Long = 2
@@ -1494,11 +1407,6 @@ Public Declare Function FreeImage_Load Lib "FreeImage.dll" Alias "_FreeImage_Loa
            ByVal Format As FREE_IMAGE_FORMAT, _
            ByVal FileName As String, _
   Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
-  
-Private Declare Function FreeImage_LoadUInt Lib "FreeImage.dll" Alias "_FreeImage_LoadU@12" ( _
-           ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal FileName As Long, _
-  Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
 Public Declare Function FreeImage_LoadFromHandle Lib "FreeImage.dll" Alias "_FreeImage_LoadFromHandle@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
@@ -1510,12 +1418,6 @@ Private Declare Function FreeImage_SaveInt Lib "FreeImage.dll" Alias "_FreeImage
            ByVal Format As FREE_IMAGE_FORMAT, _
            ByVal BITMAP As Long, _
            ByVal FileName As String, _
-  Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
-  
-Private Declare Function FreeImage_SaveUInt Lib "FreeImage.dll" Alias "_FreeImage_SaveU@16" ( _
-           ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal BITMAP As Long, _
-           ByVal FileName As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveToHandleInt Lib "FreeImage.dll" Alias "_FreeImage_SaveToHandle@20" ( _
@@ -1603,10 +1505,6 @@ Public Declare Sub FreeImage_SetTransparencyTable Lib "FreeImage.dll" Alias "_Fr
            ByVal TransTablePtr As Long, _
            ByVal Count As Long)
 
-Private Declare Sub FreeImage_SetTransparentInt Lib "FreeImage.dll" Alias "_FreeImage_SetTransparent@8" ( _
-           ByVal BITMAP As Long, _
-           ByVal Value As Long)
-
 Private Declare Function FreeImage_IsTransparentInt Lib "FreeImage.dll" Alias "_FreeImage_IsTransparent@4" ( _
            ByVal BITMAP As Long) As Long
            
@@ -1647,10 +1545,6 @@ Private Declare Function FreeImage_SetThumbnailInt Lib "FreeImage.dll" Alias "_F
 Public Declare Function FreeImage_GetFileType Lib "FreeImage.dll" Alias "_FreeImage_GetFileType@8" ( _
            ByVal FileName As String, _
   Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
-  
-Private Declare Function FreeImage_GetFileTypeUInt Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeU@8" ( _
-           ByVal FileName As Long, _
-  Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
 
 Public Declare Function FreeImage_GetFileTypeFromHandle Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeFromHandle@12" ( _
            ByVal IO As Long, _
@@ -1675,39 +1569,8 @@ Private Declare Function FreeImage_GetPixelIndexInt Lib "FreeImage.dll" Alias "_
            ByVal x As Long, _
            ByVal y As Long, _
            ByRef Value As Byte) As Long
-
-Private Declare Function FreeImage_GetPixelColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelColor@16" ( _
-           ByVal BITMAP As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
-           ByRef Value As RGBQUAD) As Long
-           
-Private Declare Function FreeImage_GetPixelColorByLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelColor@16" ( _
-           ByVal BITMAP As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
-           ByRef Value As Long) As Long
-
-Private Declare Function FreeImage_SetPixelIndexInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelIndex@16" ( _
-           ByVal BITMAP As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
-           ByRef Value As Byte) As Long
-
-Private Declare Function FreeImage_SetPixelColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelColor@16" ( _
-           ByVal BITMAP As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
-           ByRef Value As RGBQUAD) As Long
-           
-Private Declare Function FreeImage_SetPixelColorByLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetPixelColor@16" ( _
-           ByVal BITMAP As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
-           ByRef Value As Long) As Long
-           
-
-
+        
+        
 ' Conversion functions
 Public Declare Function FreeImage_ConvertTo4Bits Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo4Bits@4" ( _
            ByVal BITMAP As Long) As Long
@@ -1748,27 +1611,6 @@ Public Declare Function FreeImage_Threshold Lib "FreeImage.dll" Alias "_FreeImag
 Public Declare Function FreeImage_Dither Lib "FreeImage.dll" Alias "_FreeImage_Dither@8" ( _
            ByVal BITMAP As Long, _
            ByVal DitherMethod As FREE_IMAGE_DITHER) As Long
-
-Private Declare Function FreeImage_ConvertFromRawBitsInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertFromRawBits@36" ( _
-           ByVal BitsPtr As Long, _
-           ByVal Width As Long, _
-           ByVal Height As Long, _
-           ByVal Pitch As Long, _
-           ByVal BitsPerPixel As Long, _
-           ByVal RedMask As Long, _
-           ByVal GreenMask As Long, _
-           ByVal BlueMask As Long, _
-           ByVal TopDown As Long) As Long
-
-Private Declare Sub FreeImage_ConvertToRawBitsInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRawBits@32" ( _
-           ByVal BitsPtr As Long, _
-           ByVal BITMAP As Long, _
-           ByVal Pitch As Long, _
-           ByVal BitsPerPixel As Long, _
-           ByVal RedMask As Long, _
-           ByVal GreenMask As Long, _
-           ByVal BlueMask As Long, _
-           ByVal TopDown As Long)
 
 Private Declare Function FreeImage_ConvertToStandardTypeInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertToStandardType@8" ( _
            ByVal BITMAP As Long, _
@@ -1862,15 +1704,9 @@ Private Declare Function FreeImage_GetFIFExtensionListInt Lib "FreeImage.dll" Al
 Private Declare Function FreeImage_GetFIFDescriptionInt Lib "FreeImage.dll" Alias "_FreeImage_GetFIFDescription@4" ( _
            ByVal Format As FREE_IMAGE_FORMAT) As Long
 
-Private Declare Function FreeImage_GetFIFRegExprInt Lib "FreeImage.dll" Alias "_FreeImage_GetFIFRegExpr@4" ( _
-           ByVal Format As FREE_IMAGE_FORMAT) As Long
-
 Public Declare Function FreeImage_GetFIFFromFilename Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilename@4" ( _
            ByVal FileName As String) As FREE_IMAGE_FORMAT
            
-Private Declare Function FreeImage_GetFIFFromFilenameUInt Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilenameU@4" ( _
-           ByVal FileName As Long) As FREE_IMAGE_FORMAT
-
 Private Declare Function FreeImage_FIFSupportsReadingInt Lib "FreeImage.dll" Alias "_FreeImage_FIFSupportsReading@4" ( _
            ByVal Format As FREE_IMAGE_FORMAT) As Long
 
@@ -1943,17 +1779,6 @@ Private Declare Sub FreeImage_UnlockPageInt Lib "FreeImage.dll" Alias "_FreeImag
            ByVal BITMAP As Long, _
            ByVal PageBitmap As Long, _
            ByVal ApplyChanges As Long)
-
-Private Declare Function FreeImage_MovePageInt Lib "FreeImage.dll" Alias "_FreeImage_MovePage@12" ( _
-           ByVal BITMAP As Long, _
-           ByVal TargetPage As Long, _
-           ByVal SourcePage As Long) As Long
-
-Private Declare Function FreeImage_GetLockedPageNumbersInt Lib "FreeImage.dll" Alias "_FreeImage_GetLockedPageNumbers@12" ( _
-           ByVal BITMAP As Long, _
-           ByRef PagesPtr As Long, _
-           ByRef Count As Long) As Long
-
 
 ' Memory I/O streams
 Public Declare Function FreeImage_OpenMemory Lib "FreeImage.dll" Alias "_FreeImage_OpenMemory@8" ( _
@@ -2066,25 +1891,6 @@ Private Declare Function FreeImage_LookupSVGColorInt Lib "FreeImage.dll" Alias "
 ' Metadata functions
 '--------------------------------------------------------------------------------
 
-' Tag creation and destruction
-Private Declare Function FreeImage_CreateTag Lib "FreeImage.dll" Alias "_FreeImage_CreateTag@0" () As Long
-
-Private Declare Sub FreeImage_DeleteTag Lib "FreeImage.dll" Alias "_FreeImage_DeleteTag@4" ( _
-           ByVal Tag As Long)
-
-Private Declare Function FreeImage_CloneTag Lib "FreeImage.dll" Alias "_FreeImage_CloneTag@4" ( _
-           ByVal Tag As Long) As Long
-
-
-' Tag accessors (only those needed by wrapper functions)
-Private Declare Function FreeImage_SetTagKey Lib "FreeImage.dll" Alias "_FreeImage_SetTagKey@8" ( _
-           ByVal Tag As Long, _
-           ByVal Key As String) As Long
-
-Private Declare Function FreeImage_SetTagValue Lib "FreeImage.dll" Alias "_FreeImage_SetTagValue@8" ( _
-           ByVal Tag As Long, _
-           ByVal ValuePtr As Long) As Long
-
 ' Metadata iterator
 Public Declare Function FreeImage_FindFirstMetadata Lib "FreeImage.dll" Alias "_FreeImage_FindFirstMetadata@12" ( _
            ByVal Model As FREE_IMAGE_MDMODEL, _
@@ -2102,30 +1908,10 @@ Public Declare Function FreeImage_CloneMetadataInt Lib "FreeImage.dll" Alias "_F
            ByVal BitmapDst As Long, _
            ByVal BitmapSrc As Long) As Long
 
-
-' Metadata accessors
-Private Declare Function FreeImage_SetMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_SetMetadata@16" ( _
-           ByVal Model As Long, _
-           ByVal BITMAP As Long, _
-           ByVal Key As String, _
-           ByVal Tag As Long) As Long
-
-Private Declare Function FreeImage_GetMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_GetMetadata@16" ( _
-           ByVal Model As Long, _
-           ByVal BITMAP As Long, _
-           ByVal Key As String, _
-           ByRef Tag As Long) As Long
-
-
 ' Metadata helper functions
 Public Declare Function FreeImage_GetMetadataCount Lib "FreeImage.dll" Alias "_FreeImage_GetMetadataCount@8" ( _
            ByVal Model As Long, _
            ByVal BITMAP As Long) As Long
-
-Private Declare Function FreeImage_TagToStringInt Lib "FreeImage.dll" Alias "_FreeImage_TagToString@12" ( _
-           ByVal Model As Long, _
-           ByVal Tag As Long, _
-  Optional ByVal Make As String = vbNullString) As Long
 
 
 '--------------------------------------------------------------------------------
@@ -2151,24 +1937,6 @@ Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeI
            ByVal OriginY As Double, _
            ByVal UseMask As Long) As Long
 
-Private Declare Function FreeImage_FlipHorizontalInt Lib "FreeImage.dll" Alias "_FreeImage_FlipHorizontal@4" ( _
-           ByVal BITMAP As Long) As Long
-
-Private Declare Function FreeImage_FlipVerticalInt Lib "FreeImage.dll" Alias "_FreeImage_FlipVertical@4" ( _
-           ByVal BITMAP As Long) As Long
-           
-Private Declare Function FreeImage_JPEGTransformInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGTransform@16" ( _
-           ByVal SourceFile As String, _
-           ByVal DestFile As String, _
-           ByVal Operation As FREE_IMAGE_JPEG_OPERATION, _
-           ByVal Perfect As Long) As Long
-
-'Private Declare Function FreeImage_JPEGTransformUInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGTransformU@16" ( _
-           ByVal SourceFile As Long, _
-           ByVal DestFile As Long, _
-           ByVal Operation As FREE_IMAGE_JPEG_OPERATION, _
-           ByVal Perfect As Long) As Long
-
 
 ' Upsampling and downsampling
 Public Declare Function FreeImage_Rescale Lib "FreeImage.dll" Alias "_FreeImage_Rescale@16" ( _
@@ -2192,74 +1960,6 @@ Private Declare Function FreeImage_MakeThumbnailInt Lib "FreeImage.dll" Alias "_
            ByVal MaxPixelSize As Long, _
   Optional ByVal Convert As Long) As Long
 
-
-' Color manipulation
-Private Declare Function FreeImage_AdjustCurveInt Lib "FreeImage.dll" Alias "_FreeImage_AdjustCurve@12" ( _
-           ByVal BITMAP As Long, _
-           ByVal LookupTablePtr As Long, _
-           ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
-
-Private Declare Function FreeImage_AdjustGammaInt Lib "FreeImage.dll" Alias "_FreeImage_AdjustGamma@12" ( _
-           ByVal BITMAP As Long, _
-           ByVal Gamma As Double) As Long
-
-Private Declare Function FreeImage_AdjustBrightnessInt Lib "FreeImage.dll" Alias "_FreeImage_AdjustBrightness@12" ( _
-           ByVal BITMAP As Long, _
-           ByVal Percentage As Double) As Long
-
-Private Declare Function FreeImage_AdjustContrastInt Lib "FreeImage.dll" Alias "_FreeImage_AdjustContrast@12" ( _
-           ByVal BITMAP As Long, _
-           ByVal Percentage As Double) As Long
-
-Private Declare Function FreeImage_InvertInt Lib "FreeImage.dll" Alias "_FreeImage_Invert@4" ( _
-           ByVal BITMAP As Long) As Long
-
-Private Declare Function FreeImage_GetHistogramInt Lib "FreeImage.dll" Alias "_FreeImage_GetHistogram@12" ( _
-           ByVal BITMAP As Long, _
-           ByRef HistogramPtr As Long, _
-  Optional ByVal Channel As FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) As Long
-  
-Private Declare Function FreeImage_GetAdjustColorsLookupTableInt Lib "FreeImage.dll" Alias "_FreeImage_GetAdjustColorsLookupTable@32" ( _
-           ByVal LookupTablePtr As Long, _
-           ByVal Brightness As Double, _
-           ByVal Contrast As Double, _
-           ByVal Gamma As Double, _
-           ByVal Invert As Long) As Long
-
-Private Declare Function FreeImage_AdjustColorsInt Lib "FreeImage.dll" Alias "_FreeImage_AdjustColors@32" ( _
-           ByVal BITMAP As Long, _
-           ByVal Brightness As Double, _
-           ByVal Contrast As Double, _
-           ByVal Gamma As Double, _
-           ByVal Invert As Long) As Long
-  
-Private Declare Function FreeImage_ApplyColorMappingInt Lib "FreeImage.dll" Alias "_FreeImage_ApplyColorMapping@24" ( _
-           ByVal BITMAP As Long, _
-           ByVal SourceColorsPtr As Long, _
-           ByVal DestinationColorsPtr As Long, _
-           ByVal Count As Long, _
-           ByVal IgnoreAlpha As Long, _
-           ByVal Swap As Long) As Long
-  
-Private Declare Function FreeImage_SwapColorsInt Lib "FreeImage.dll" Alias "_FreeImage_SwapColors@16" ( _
-           ByVal BITMAP As Long, _
-           ByRef ColorA As RGBQUAD, _
-           ByRef ColorB As RGBQUAD, _
-           ByVal IgnoreAlpha As Long) As Long
-  
-Private Declare Function FreeImage_SwapColorsByLongInt Lib "FreeImage.dll" Alias "_FreeImage_SwapColors@16" ( _
-           ByVal BITMAP As Long, _
-           ByRef ColorA As Long, _
-           ByRef ColorB As Long, _
-           ByVal IgnoreAlpha As Long) As Long
-
-Private Declare Function FreeImage_ApplyIndexMappingInt Lib "FreeImage.dll" Alias "_FreeImage_ApplyIndexMapping@20" ( _
-           ByVal BITMAP As Long, _
-           ByVal SourceIndicesPtr As Long, _
-           ByVal DestinationIndicesPtr As Long, _
-           ByVal Count As Long, _
-           ByVal Swap As Long) As Long
-
 Public Declare Function FreeImage_SwapPaletteIndices Lib "FreeImage.dll" Alias "_FreeImage_SwapPaletteIndices@12" ( _
            ByVal BITMAP As Long, _
            ByRef IndexA As Byte, _
@@ -2270,20 +1970,9 @@ Public Declare Function FreeImage_GetChannel Lib "FreeImage.dll" Alias "_FreeIma
            ByVal BITMAP As Long, _
            ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
 
-Private Declare Function FreeImage_SetChannelInt Lib "FreeImage.dll" Alias "_FreeImage_SetChannel@12" ( _
-           ByVal BitmapDst As Long, _
-           ByVal BitmapSrc As Long, _
-           ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
-
 Public Declare Function FreeImage_GetComplexChannel Lib "FreeImage.dll" Alias "_FreeImage_GetComplexChannel@8" ( _
            ByVal BITMAP As Long, _
            ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
-
-Private Declare Function FreeImage_SetComplexChannelInt Lib "FreeImage.dll" Alias "_FreeImage_SetComplexChannel@12" ( _
-           ByVal BitmapDst As Long, _
-           ByVal BitmapSrc As Long, _
-           ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
-
 
 ' Copy / Paste / Composite routines
 Public Declare Function FreeImage_Copy Lib "FreeImage.dll" Alias "_FreeImage_Copy@20" ( _
@@ -2293,34 +1982,11 @@ Public Declare Function FreeImage_Copy Lib "FreeImage.dll" Alias "_FreeImage_Cop
            ByVal Right As Long, _
            ByVal Bottom As Long) As Long
 
-Private Declare Function FreeImage_PasteInt Lib "FreeImage.dll" Alias "_FreeImage_Paste@20" ( _
-           ByVal BitmapDst As Long, _
-           ByVal BitmapSrc As Long, _
-           ByVal Left As Long, _
-           ByVal Top As Long, _
-           ByVal Alpha As Long) As Long
-
 Public Declare Function FreeImage_Composite Lib "FreeImage.dll" Alias "_FreeImage_Composite@16" ( _
            ByVal BITMAP As Long, _
   Optional ByVal UseFileBackColor As Long, _
   Optional ByRef AppBackColor As Any, _
   Optional ByVal BackgroundBitmap As Long) As Long
-  
-Private Declare Function FreeImage_JPEGCropInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGCrop@24" ( _
-           ByVal SourceFile As String, _
-           ByVal DestFile As String, _
-           ByVal Left As Long, _
-           ByVal Top As Long, _
-           ByVal Right As Long, _
-           ByVal Bottom As Long) As Long
-
-'Private Declare Function FreeImage_JPEGCropUInt Lib "FreeImage.dll" Alias "_FreeImage_JPEGCropU@24" ( _
-           ByVal SourceFile As Long, _
-           ByVal DestFile As Long, _
-           ByVal Left As Long, _
-           ByVal Top As Long, _
-           ByVal Right As Long, _
-           ByVal Bottom As Long) As Long
 
 Private Declare Function FreeImage_PreMultiplyWithAlphaInt Lib "FreeImage.dll" Alias "_FreeImage_PreMultiplyWithAlpha@4" ( _
            ByVal BITMAP As Long) As Long
@@ -6314,103 +5980,6 @@ Private Function pGetNextColorDepth(ByVal Bpp As Long) As Long
       
    End Select
    
-End Function
-
-
-
-'--------------------------------------------------------------------------------
-' Private metadata helper functions
-'--------------------------------------------------------------------------------
-
-Private Sub pNormalizeRational(ByRef Value As FIRATIONAL)
-
-Dim vntCommon As Long
-
-   ' This function normalizes an unsigned fraction stored in a FIRATIONAL
-   ' structure by cancelling down the fraction. This is commonly done
-   ' by dividing both numerator and denominator by their greates
-   ' common divisor (gcd).
-   ' Does nothing if any of numerator and denominator is 1 or 0.
-
-   With Value
-      If ((.Numerator <> 1) And (.Denominator <> 1) And _
-          (.Numerator <> 0) And (.Denominator <> 0)) Then
-         vntCommon = gcd(.Numerator, .Denominator)
-         If (vntCommon <> 1) Then
-            ' convert values back to an unsigned long (may
-            ' result in a subtype Currency if the range of the
-            ' VB Long is insufficient for storing the value!)
-            .Numerator = FreeImage_UnsignedLong(.Numerator / vntCommon)
-            .Denominator = FreeImage_UnsignedLong(.Denominator / vntCommon)
-         End If
-      End If
-   End With
-
-End Sub
-
-Private Sub pNormalizeSRational(ByRef Value As FIRATIONAL)
-
-Dim lCommon As Long
-
-   ' This function normalizes a signed fraction stored in a FIRATIONAL
-   ' structure by cancelling down the fraction. This is commonly done
-   ' by dividing both numerator and denominator by their greates
-   ' common divisor (gcd).
-   ' Does nothing if any of numerator and denominator is 1 or 0.
-   
-   With Value
-      If ((.Numerator <> 1) And (.Denominator <> 1) And _
-          (.Numerator <> 0) And (.Denominator <> 0)) Then
-         lCommon = gcd(.Numerator, .Denominator)
-         If (lCommon <> 1) Then
-            ' using the CLng() function for not to get
-            ' a subtype Double here
-            .Numerator = CLng(.Numerator / lCommon)
-            .Denominator = CLng(.Denominator / lCommon)
-         End If
-      End If
-      
-      ' adjust the position of the negative sign if one is present:
-      ' it should preceed the numerator, not the denominator
-      If (.Denominator < 0) Then
-         .Denominator = -.Denominator
-         .Numerator = -.Numerator
-      End If
-   End With
-
-End Sub
-
-Private Function gcd(ByVal a As Variant, ByVal b As Variant) As Variant
-
-Dim vntTemp As Variant
-
-   ' calculate greatest common divisor
-
-   Do While (b)
-      vntTemp = b
-      ' calculate b = a % b (modulo)
-      ' this could be just:
-      ' b = a Mod b
-      ' but VB's Mod operator fails for unsigned
-      ' long values stored in currency variables
-      ' so, we use the mathematical definition of
-      ' the modulo operator taken from WikipediA.
-      b = a - floor(a / b) * b
-      a = vntTemp
-   Loop
-   gcd = a
-
-End Function
-
-Private Function floor(ByRef a As Variant) As Variant
-
-   ' this is a VB version of the floor() function
-   If (a < 0) Then
-      floor = VBA.Int(a)
-   Else
-      floor = -VBA.Fix(-a)
-   End If
-
 End Function
 
 '--------------------------------------------------------------------------------

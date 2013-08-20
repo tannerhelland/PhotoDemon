@@ -296,7 +296,7 @@ Private Sub updatePreview()
     
     Dim prevX As Double, prevY As Double
     Dim curX As Double, curY As Double
-    Dim x As Long, y As Long
+    Dim x As Long
     
     Dim xWidth As Long, yHeight As Long
     xWidth = picChart.ScaleWidth
