@@ -6,18 +6,20 @@
 
 It provides a comprehensive selection of photo editing tools - including a full-featured macro recorder and batch processor - in a tiny 6 MB download.  It runs on any Windows machine (XP through Win 8) and it *does not* require installation.  It can easily be run from a portable USB drive or memory card.  English, Dutch, French, German, and Italian translations are included.
 
-PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its speed and interface will surprise you!)  Outside contributions from both coders and translators are always welcome.
+PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its performance will surprise you!)  Outside contributions from both coders and translators are always welcome.
 
-For information on the forthcoming 6.0 release, please visit http://www.tannerhelland.com/4996/photodemon-60-preview/
+For information on the forthcoming 6.0 release, please visit:
+http://www.tannerhelland.com/4996/photodemon-60-preview/
 
-Finally, note that this GitHub repository *does not contain a compiled EXE.*  If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and plugins), updated nightly, from www.tannerhelland.com/photodemon_files/nightly/PhotoDemon_nightly.zip.
+Finally, note that this GitHub repository *does not contain a compiled EXE.*  If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and plugins), updated nightly, from:
+www.tannerhelland.com/photodemon_files/nightly/PhotoDemon_nightly.zip.
 
 ***
 
 ## What makes PhotoDemon unique?
 
 ### It is lightweight and completely portable
-PhotoDemon is designed to be run as a standalone .exe. No installer is provided or required. PhotoDemon does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.
+PhotoDemon is designed to be run as a standalone .exe. No installer is provided or required. It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.
 
 ### It integrates macro recording and batch processing
 PhotoDemon provides full macro support. Simply click “Record Macro”, then perform as many actions as you’d like. When finished, save that macro to the hard drive (in human-readable XML format) so you can repeat it at any point in the future. Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
@@ -26,17 +28,18 @@ PhotoDemon provides full macro support. Simply click “Record Macro”, then perfor
 Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built with input from professional designers – not just software engineers – and small touches like unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and forward-back button support, and descriptive menu icons make PhotoDemon useful to novices and professionals alike.
 
 ### It provides a comprehensive selection of editing tools
+* Support for every image format known to mankind, including all major RAW formats (via LibRaw).
 * Powerful selection tools, with full support for antialiasing, feathering, and on-canvas sizing/moving.
-* 2D transformations: image resize, crop, autocrop, rotate, shear, isometric conversion.
-* Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram (including equalization and stretching), green screen, Wratten filters, and many more.
-* Filters and effects: context-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, sphere wrapping, film grain, and many more.
+* 2D transformations: resize, crop, autocrop, rotate, shear, tiling.
+* Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram, green screen, Wratten filters, and many more.
+* Filters and effects: context-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, film grain, and many more.
 * 100+ tools are provided in the current build, plus a custom filter tool that allows you to construct your own convolution filters.
 
 ### What doesn't PhotoDemon do?
 
-* PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but they did not make the cut for this version.
-* PhotoDemon does not provide advanced color management (ICC profiles). More specifically, it ignores embedded ICC profiles. Even MORE specifically, PhotoDemon relies on DIB sections via the Windows GDI, which default to the sRGB space - see http://technet.microsoft.com/en-us/query/ms536845
-* PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later. However, should you choose to go down this route, you are effectively on your own.
+* PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but they have not been added... yet.
+* PhotoDemon does not provide advanced color management (ICC profiles). More specifically, it ignores embedded ICC profiles. Even MORE specifically, it relies on DIB sections via the Windows GDI, which default to the sRGB space - see http://technet.microsoft.com/en-us/query/ms536845
+* PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later.
 
 ### How can I get involved? 
 PhotoDemon is written and maintained by a single individual with a family to support.  The program is provided free-of-charge under an extremely permissive open-source license, and no fees or money will ever be charged for its use.
