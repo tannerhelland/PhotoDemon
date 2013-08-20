@@ -44,7 +44,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'API for determining certain system folders
-Private Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
 Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
 
 'API for determining specific system-related folders
@@ -56,14 +55,10 @@ Public Enum CSIDLs
     CSIDL_MYPICTURES = &H27
 End Enum
 
-Private Const CSIDL_FLAG_CREATE As Long = 32768 '&H8000 'combine with CSIDL_ value to force create on SHGetSpecialFolderLocation()
-Private Const CSIDL_FLAG_DONT_VERIFY = &H4000 'combine with CSIDL_ value to force create on SHGetSpecialFolderLocation()
-Private Const CSIDL_FLAG_MASK = &HFF00 'mask for all possible flag Values
 Private Const SHGFP_TYPE_CURRENT = &H0 'current value for user, verify it exists
-Private Const SHGFP_TYPE_DEFAULT = &H1
 Private Const MAX_LENGTH = 260
 Private Const S_OK = 0
-Private Const S_FALSE = 1
+
 '***
 
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:

@@ -79,7 +79,7 @@ Option Explicit
     Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
     Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
     Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
-    Private Declare Function IsWindowUnicode Lib "user32.dll" (ByVal hWnd As Long) As Long
+    Private Declare Function IsWindowUnicode Lib "user32" (ByVal hWnd As Long) As Long
     Private Declare Function SetWindowLongA Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
     Private Declare Function SetWindowLongW Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 '-------------------------------------------------------------------------------------------------
@@ -101,8 +101,7 @@ Option Explicit
     Private Declare Function SetWindowsHookExA Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadId As Long) As Long
     Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadId As Long) As Long
     Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
-    Private Declare Function CallNextHookEx Lib "user32.dll" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
-    Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
+        Private Declare Function GetDesktopWindow Lib "user32" () As Long
     
     Public Enum eHookType  ' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
       WH_MSGFILTER = -1
@@ -397,13 +396,13 @@ Public Sub ssc_DelMsg(ByVal lng_hWnd As Long, ByVal When As eMsgWhen, ParamArray
 End Sub
 
 'Let the subclasser lParamUser callback parameter
-Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal NewValue As Long)
+Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal newValue As Long)
     ' can be removed if you never will retrieve or replace the user-defined parameter
     If vType <> CallbackThunk Then
         Dim z_ScMem       As Long         'Thunk base address
         z_ScMem = zMap_VFunction(hWnd_Hook_ID, vType)
         If z_ScMem Then                 'Ensure that the thunk hasn't already released its memory
-          zData(IDX_PARM_USER, z_ScMem) = NewValue                                         'Set the lParamUser callback parameter
+          zData(IDX_PARM_USER, z_ScMem) = newValue                                         'Set the lParamUser callback parameter
         End If
     End If
 End Sub

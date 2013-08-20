@@ -71,6 +71,7 @@ Private Type TOOLINFO
   lParam                          As Long
 #End If
 End Type
+
 Public Enum TT_Flags
   TTF_IDIShWnd = &H1
   TTF_CENTERTIP = &H2
@@ -87,6 +88,7 @@ End Enum
 Private TTF_IDIShWnd, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT
 Private TTF_DI_SETITEM
 #End If
+
 Public Enum TT_DelayTime
   TTDT_AUTOMATIC = 0
   TTDT_RESHOW = 1
@@ -96,6 +98,7 @@ End Enum
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private TTDT_AUTOMATIC, TTDT_RESHOW, TTDT_AUTOPOP, TTDT_INITIAL
 #End If
+
 Public Enum ttDelayTimeConstants
   ttDelayDefault = TTDT_AUTOMATIC '= 0
   ttDelayInitial = TTDT_INITIAL '= 3
@@ -106,6 +109,7 @@ End Enum
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private ttDelayDefault, ttDelayInitial, ttDelayShow, ttDelayReshow, ttDelayMask
 #End If
+
 Public Enum ttMarginConstants
   ttMarginLeft = 0
   ttMarginTop = 1
@@ -115,11 +119,7 @@ End Enum
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private ttMarginLeft, ttMarginTop, ttMarginRight, ttMarginBottom
 #End If
-Private Type TTHITTESTINFO
-  hWnd                            As Long
-  pt                              As POINTAPI
-  ti                              As TOOLINFO
-End Type
+
 Public Enum TT_Msgs
   TTM_ACTIVATE = (WM_USER + 1)
   TTM_SETDELAYTIME = (WM_USER + 3)
@@ -189,20 +189,6 @@ End Enum
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private TTN_FIRST, TTN_LAST, TTN_NEEDTEXT, TTN_SHOW, TTN_POP
 #End If
-Private Type NMTTDISPINFO
-  hdr                             As NMHDR
-  lpszText                        As Long
-#If UNICODE Then
-  szText                          As String * 160
-#Else
-  szText                          As String * 80
-#End If
-  hInst                           As Long
-  uFlags                          As Long
-#If (WIN32_IE >= &H300) Then
-  lParam                          As Long
-#End If
-End Type
 '
 ' Exported by Comctl32.dll >= v4.00.950
 ' Ensures that the common control dynamic
@@ -213,7 +199,6 @@ Private mnlgHwndTT                As Long
 Private mnlgMaxTip                As Long
 Private m_TTHeader                As String
 Private m_ShowHeader              As Boolean
-Private Declare Sub InitCommonControls Lib "comctl32.dll" ()
 Private Declare Function SendMessageT Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, _
                                                                          ByVal wMsg As Long, _
                                                                          ByVal wParam As Long, _

@@ -70,7 +70,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).selectionActive Then
     
         'If it is, composite the selection against the temporary buffer
-        pdImages(formToBuffer.Tag).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, g_selectionRenderPreference
+        pdImages(formToBuffer.Tag).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, g_SelectionRenderPreference
     
     End If
         
@@ -144,7 +144,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).selectionActive And pdImages(formToBuffer.Tag).mainSelection.isTransformable Then
     
         'If it is, composite the selection against the temporary buffer
-        pdImages(formToBuffer.Tag).mainSelection.renderTransformNodes formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight
+        pdImages(formToBuffer.Tag).mainSelection.renderTransformNodes formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop
     
     End If
     

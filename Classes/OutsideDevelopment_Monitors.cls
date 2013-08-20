@@ -39,13 +39,9 @@ Const SM_CXVIRTUALSCREEN = 78   'Virtual Width
 Const SM_CYVIRTUALSCREEN = 79   'Virtual Height
 
 Const SM_CMONITORS = 80         'Get number of monitors
-Const SM_SAMEDISPLAYFORMAT = 81
 
 'Constants for the return value when finding a monitor
-Const MONITOR_DEFAULTTONULL = &H0       'If the monitor is not found, return 0
-Const MONITOR_DEFAULTTOPRIMARY = &H1    'If the monitor is not found, return the primary monitor
 Const MONITOR_DEFAULTTONEAREST = &H2    'If the monitor is not found, return the nearest monitor
-Const MONITORINFOF_PRIMARY = 1
 
 'Rectangle structure, for determining
 'monitors at a given position
@@ -77,10 +73,6 @@ Private Declare Function GetMonitorInfo Lib "user32" _
         Alias "GetMonitorInfoA" ( _
         ByVal hMonitor As Long, _
         MonInfo As tagMONITORINFO) As Long
-
-Private Declare Function MonitorFromWindow Lib "user32" ( _
-        ByVal hWnd As Long, _
-        dwFlags As Long) As Long
 
 Private Declare Function MonitorFromRect Lib "user32" ( _
         rc As RECT, _
@@ -298,29 +290,6 @@ Refresh_Err:
     'just ignore it and look for the next one
     If Err.Number = 457 Then Resume Next
 End Sub
-
-Public Function ShowMonitorDialog(Prompt As String, Caption As String, Optional OwnerForm As Variant) As Long
-    '===========================================
-    'Shows the Monitor Selection Dialog,
-    'returns a selected monitor or 0 if canceled
-    '===========================================
-    'Load frmMonitor
-    'With frmMonitor
-    '    Set .cMonitorClass = Me
-    '    If IsMissing(OwnerForm) Then
-    '        'The form will be centered on the default (primary) monitor
-    '    Else
-    '        'The form will be centered on the monitor that Ownerform is on
-    '        .Owner = OwnerForm
-    '    End If
-    '    .DialogCaption = Caption
-    '    .Prompt = Prompt
-    '    .ShowDialog
-    '    ShowMonitorDialog = .DialogResult
-    'End With
-    'Unload frmMonitor
-    'Set frmMonitor = Nothing
-End Function
 
 '==================================================================================================
 'Private Members

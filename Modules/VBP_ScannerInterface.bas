@@ -26,8 +26,8 @@ Option Explicit
 Private Declare Function TWAIN_AcquireToFilename Lib "eztw32.dll" (ByVal hWndApp As Long, ByVal sFile As String) As Long
 Private Declare Function TWAIN_SelectImageSource Lib "eztw32.dll" (ByVal hWndApp As Long) As Long
 Private Declare Function TWAIN_IsAvailable Lib "eztw32.dll" () As Long
-Private Declare Function TWAIN_CloseSourceManager Lib "eztw32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function TWAIN_UnloadSourceManager Lib "eztw32.dll" () As Long
+'Private Declare Function TWAIN_CloseSourceManager Lib "eztw32.dll" (ByVal hWnd As Long) As Long
+'Private Declare Function TWAIN_UnloadSourceManager Lib "eztw32.dll" () As Long
 Private Declare Function TWAIN_EasyVersion Lib "eztw32.dll" () As Long
 
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)

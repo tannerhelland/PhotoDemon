@@ -68,8 +68,6 @@ Private Declare Function SetClipboardData Lib "user32" _
     (ByVal wFormat As Long, ByVal hMem As Long) As Long
 Private Declare Function GetClipboardFormatName Lib "user32" Alias "GetClipboardFormatNameA" _
     (ByVal wFormat As Long, ByVal lpString As String, ByVal nMaxCount As Long) As Long
-Private Declare Function GetClipboardOwner Lib "user32" _
-    () As Long
 Private Declare Function EmptyClipboard Lib "user32" _
     () As Long
 Private Declare Function RegisterClipboardFormat Lib "user32" Alias "RegisterClipboardFormatA" _
@@ -82,34 +80,17 @@ Private Declare Function CountClipboardFormats Lib "user32" () As Long
 
 ' Memory functions:
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Long, ByVal dwBytes As Long, ByVal wFlags As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Const GMEM_DDESHARE = &H2000
-Private Const GMEM_DISCARDABLE = &H100
-Private Const GMEM_DISCARDED = &H4000
 Private Const GMEM_FIXED = &H0
-Private Const GMEM_INVALID_HANDLE = &H8000
-Private Const GMEM_LOCKCOUNT = &HFF
-Private Const GMEM_MODIFY = &H80
-Private Const GMEM_MOVEABLE = &H2
-Private Const GMEM_NOCOMPACT = &H10
-Private Const GMEM_NODISCARD = &H20
 Private Const GMEM_NOT_BANKED = &H1000
-Private Const GMEM_NOTIFY = &H4000
-Private Const GMEM_SHARE = &H2000
-Private Const GMEM_VALID_FLAGS = &H7F72
 Private Const GMEM_ZEROINIT = &H40
-Private Const GPTR = (GMEM_FIXED Or GMEM_ZEROINIT)
-Private Const GMEM_LOWER = GMEM_NOT_BANKED
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Sub CopyMemoryStr Lib "kernel32" Alias "RtlMoveMemory" ( _
     lpvDest As Any, ByVal lpvSource As String, ByVal cbCopy As Long)
-Private Declare Sub CopyMemoryToStr Lib "kernel32" Alias "RtlMoveMemory" ( _
-    ByVal lpvDest As String, pvSource As Any, ByVal cbCopy As Long)
 
 ' Members:
 Private m_lId() As Long
@@ -160,14 +141,14 @@ Public Enum EPredefinedClipboardFormatConstants
 End Enum
 
 ' New shell-oriented clipboard formats
-Private Const CFSTR_SHELLIDLIST As String = "Shell IDList Array"
-Private Const CFSTR_SHELLIDLISTOFFSET As String = "Shell Object Offsets"
-Private Const CFSTR_NETRESOURCES As String = "Net Resource"
-Private Const CFSTR_FILEDESCRIPTOR As String = "FileGroupDescriptor"
-Private Const CFSTR_FILECONTENTS As String = "FileContents"
-Private Const CFSTR_FILENAME As String = "FileName"
-Private Const CFSTR_PRINTERGROUP As String = "PrinterFriendlyName"
-Private Const CFSTR_FILENAMEMAP As String = "FileNameMap"
+'Private Const CFSTR_SHELLIDLIST As String = "Shell IDList Array"
+'Private Const CFSTR_SHELLIDLISTOFFSET As String = "Shell Object Offsets"
+'Private Const CFSTR_NETRESOURCES As String = "Net Resource"
+'Private Const CFSTR_FILEDESCRIPTOR As String = "FileGroupDescriptor"
+'Private Const CFSTR_FILECONTENTS As String = "FileContents"
+'Private Const CFSTR_FILENAME As String = "FileName"
+'Private Const CFSTR_PRINTERGROUP As String = "PrinterFriendlyName"
+'Private Const CFSTR_FILENAMEMAP As String = "FileNameMap"
 
 Public Enum ECustomClipboardErrorConstant
     eccErrorBase = vbObjectError + 1048 + 521
@@ -175,31 +156,15 @@ Public Enum ECustomClipboardErrorConstant
     eccCantOpenClipboard
 End Enum
 
-Private Declare Function CopyMetaFile Lib "gdi32" Alias "CopyMetaFileA" (ByVal hMF As Long, ByVal lpFileName As String) As Long
-Private Declare Function CopyEnhMetaFile Lib "gdi32" Alias "CopyEnhMetaFileA" (ByVal hemfSrc As Long, ByVal lpszFile As String) As Long
-Private Type METAFILEPICT
-    mm As Long
-    xExt As Long
-    yExt As Long
-    hMF As Long
-End Type
-Private Type METAHEADER
-    mtType As Integer       ' 2
-    mtHeaderSize As Integer ' 4
-    mtVersion As Integer    ' 6
-    mtSize As Long          ' 10
-    mtNoObjects As Integer  ' 12
-    mtMaxRecord As Long     ' 16
-    mtNoParameters As Integer ' 18
-End Type
 Private Declare Function DragQueryFile Lib "shell32.dll" Alias "DragQueryFileA" (ByVal hDrop As Long, ByVal UINT As Long, ByVal lpStr As String, ByVal Ch As Long) As Long
+
 Private Type POINTAPI
    x As Long
    y As Long
 End Type
 Private Type DROPFILES
    pFiles As Long
-   pt As POINTAPI
+   Pt As POINTAPI
    fNC As Long
    fWide As Long
 End Type

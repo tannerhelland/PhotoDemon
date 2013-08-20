@@ -279,8 +279,7 @@ Public Sub MenuCropToSelection()
         pdImages(CurrentImage).mainSelection.selTop = 0
         pdImages(CurrentImage).mainSelection.selWidth = pdImages(CurrentImage).Width
         pdImages(CurrentImage).mainSelection.selHeight = pdImages(CurrentImage).Height
-        'pdImages(CurrentImage).mainSelection.refreshTextBoxes
-        pdImages(CurrentImage).mainSelection.lockIn pdImages(CurrentImage).containingForm
+        pdImages(CurrentImage).mainSelection.lockIn
         g_SelectionRenderPreference = sHighlightRed
         Dim i As Long
         For i = 0 To FormMain.cmbSelRender.Count - 1

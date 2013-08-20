@@ -64,10 +64,6 @@ End Type
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
-'DC API functions
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-
 'Object API functions
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
@@ -96,9 +92,9 @@ Private Type RECT
     Right As Long
     Bottom As Long
 End Type
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
+'Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+'Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 
@@ -855,7 +851,7 @@ Public Sub updateViaTextBox()
 End Sub
 
 '"Lock-in" a selection. Typically this is prompted by a _MouseUp event
-Public Sub lockIn(ByRef targetForm As Form)
+Public Sub lockIn()
     
     'Mark this selection as locked-in
     lockedIn = True
@@ -1275,7 +1271,7 @@ Private Sub createSelectionMask()
 
 End Sub
 
-Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long)
+Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If rejectRefreshRequests Then Exit Sub
@@ -1731,7 +1727,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     'If this selection was locked in at the time of its save, lock this selection in as well
     If Not ignoreLockStatus Then
         If lockedIn Then
-            lockIn containingPDImage.containingForm
+            lockIn
             containingPDImage.selectionActive = True
         Else
             lockRelease
@@ -1815,8 +1811,6 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     Set tmpParser = New pdParamString
     tmpParser.setParamString paramString
     
-    Dim tmpLong As Long, tmpDouble As Double
-
     'Convert absolute values to relative values (typically used when WRITING a selection file)
     If toRelativeFormat Then
     
@@ -2160,9 +2154,9 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
         Dim blendVal As Double
         
         'More color variables - in this case, sums for each color component
-        Dim r As Long, g As Long, b As Long, a As Long
-        Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
-        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim r As Long, g As Long, b As Long
+        Dim r2 As Long, g2 As Long, b2 As Long
+        Dim newR As Long, newG As Long, newB As Long
         Dim tLumDelta As Long
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
@@ -2240,9 +2234,6 @@ Public Sub borderSelection(ByVal borderRadius As Long)
     Dim shrinkLayer As pdLayer
     Set shrinkLayer = New pdLayer
     shrinkLayer.createFromExistingLayer selMask
-            
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long
     
     'Unsharp masking requires a gaussian blur layer to operate.  Create one now.
     CreateMedianLayer borderRadius, 1, selMask, shrinkLayer, False, selMask.getLayerWidth * 2
