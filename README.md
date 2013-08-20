@@ -1,5 +1,7 @@
 # PhotoDemon (currently v6.0 alpha)
 
+![PhotoDemon Screenshot] (http://tannerhelland.com/wp-content/uploads/PhotoDemon_curves.jpg)
+
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
 It provides a comprehensive selection of photo editing tools - including a full-featured macro recorder and batch processor - in a tiny 6 MB download.  It runs on any Windows machine (XP through Win 8) and it *does not* require installation.  It can easily be run from a portable USB drive or memory card.  English, Dutch, French, German, and Italian translations are included.
