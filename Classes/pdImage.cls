@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2013 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 24/June/13
-'Last update: rewrote all Undo functions to also operate on selection data
+'Last updated: 21/August/13
+'Last update: added the ability to roll back the Undo data for a canceled operation
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -239,7 +239,7 @@ Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long, ByVal
     
         'Pixel data
         'Case 1
-            mainLayer.writeToFile GenerateUndoFile(UndoNum)
+            mainLayer.writeToFile GenerateUndoFile(UndoNum), False
             
         'Selection data
         'Case 2
@@ -295,7 +295,7 @@ Public Sub Undo()
         
             'Pixel undo data
             'Case 1
-                mainLayer.writeToFile GenerateUndoFile(UndoNum)
+                mainLayer.writeToFile GenerateUndoFile(UndoNum), False
             
             'Selection undo data
             'Case 2
@@ -330,6 +330,47 @@ Public Sub Undo()
     ' some other source), note that the image has now BEEN SAVED (because it has not been changed at all). If the image
     ' was imported from somewhere, it has NOT BEEN SAVED just because the user Undo'd all the way back to its
     ' original state.
+    If UndoNum = UndoNumAtLastSave Then
+    
+        'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
+        If LocationOnDisk = "" Then HasBeenSaved = False Else HasBeenSaved = True
+        metaToggle tSave, Not HasBeenSaved
+    Else
+        HasBeenSaved = False
+        metaToggle tSave, Not HasBeenSaved
+    End If
+    
+End Sub
+
+'When the user cancels an action, it is necessary to rollback the previous Undo.  This is slightly different from
+' a normal Undo action, so it requires its own function.
+Public Sub rollBackUndo()
+
+    'Kill the Undo file created by the terminated action
+    If FileExist(GenerateUndoFile(UndoMax)) Then Kill GenerateUndoFile(UndoMax)
+    
+    'Roll back the undo counter
+    UndoNum = UndoNum - 1
+    UndoMax = UndoMax - 1
+
+    Debug.Print "Undo rolled back. No Redo information saved."
+        
+    'Rebuild the Undo array (not technically necessary, but it doesn't hurt)
+    ReDim Preserve Undos(0 To UndoNum) As undoEntry
+    
+    'If Undos exist before this point, allow them
+    If UndoNum > 0 Then UndoState = True
+    
+    'If we're now at the end of our Undo chain, disable further undo-ing
+    If UndoNum = 0 Then UndoState = False
+    
+    'Regardless of Undo status, DO NOT ALLOW REDOING.  The Redo copy has been erased (because the action was terminated)
+    RedoState = False
+    
+    'Similar to regular Undo, if this image initially existed on the user's hard drive (e.g. it was not imported from
+    ' the clipboard or some other source), note that the image has now BEEN SAVED (because it has not been changed).
+    ' If the image was imported from somewhere, it has still NOT BEEN SAVED, because the file doesn't exist on the
+    ' hard drive (that PD knows of, anyway).
     If UndoNum = UndoNumAtLastSave Then
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
