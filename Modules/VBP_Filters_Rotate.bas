@@ -23,7 +23,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     'The image will be cropped in four steps.  Each edge will be cropped separately, starting with the top.
@@ -271,7 +271,7 @@ Public Sub MenuCropToSelection()
     If g_UserPreferences.GetPref_Boolean("Tool Preferences", "ClearSelectionAfterCrop", True) Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
         Message "Crop complete.  (Note: the selected area was automatically unselected.)"
     Else
         pdImages(CurrentImage).mainSelection.lockRelease
@@ -300,7 +300,7 @@ Public Sub MenuFlip()
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
     
     Message "Flipping image..."
@@ -318,7 +318,7 @@ Public Sub MenuMirror()
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     Message "Mirroring image..."
@@ -337,7 +337,7 @@ Public Sub MenuRotate90Clockwise()
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     Message "Rotating image clockwise..."
@@ -429,7 +429,7 @@ Public Sub MenuRotate180()
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
@@ -451,7 +451,7 @@ Public Sub MenuRotate270Clockwise()
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     Message "Rotating image counter-clockwise..."

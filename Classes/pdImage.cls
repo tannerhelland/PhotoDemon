@@ -224,7 +224,7 @@ Public Sub UpdateSaveState(ByVal newSaveState As Boolean)
         HasBeenSaved = False
     End If
 
-    tInit tSave, Not HasBeenSaved
+    metaToggle tSave, Not HasBeenSaved
 
 End Sub
     
@@ -277,7 +277,7 @@ Public Sub BuildUndo(ByVal processID As String, ByVal processType As Long, ByVal
     ' from its saved version)
     If processType = 1 Then
         HasBeenSaved = False
-        tInit tSave, True
+        metaToggle tSave, True
     End If
 
     Debug.Print "Undo created successfully."
@@ -334,10 +334,10 @@ Public Sub Undo()
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
         If LocationOnDisk = "" Then HasBeenSaved = False Else HasBeenSaved = True
-        tInit tSave, Not HasBeenSaved
+        metaToggle tSave, Not HasBeenSaved
     Else
         HasBeenSaved = False
-        tInit tSave, Not HasBeenSaved
+        metaToggle tSave, Not HasBeenSaved
     End If
     
 End Sub
@@ -353,10 +353,10 @@ Public Sub Redo()
         'Allow saving
         If UndoNum = UndoNumAtLastSave Then
             HasBeenSaved = True
-            tInit tSave, False
+            metaToggle tSave, False
         Else
             HasBeenSaved = False
-            tInit tSave, True
+            metaToggle tSave, True
         End If
         
     End If

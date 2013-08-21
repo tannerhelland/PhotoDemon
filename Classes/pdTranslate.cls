@@ -298,10 +298,10 @@ Public Sub ApplyLanguage()
         ApplyAllMenuIcons
         
         'Because the Undo and Redo captions are dynamic, they must be recreated in the current language
-        tInit tUndo, FormMain.MnuUndo.Enabled
-        tInit tRedo, FormMain.MnuRedo.Enabled
+        metaToggle tUndo, FormMain.MnuUndo.Enabled
+        metaToggle tRedo, FormMain.MnuRedo.Enabled
         
-        'Normally we would want to reset menu icons manually, but the tInit calls above call ResetMenuIcons for us.
+        'Normally we would want to reset menu icons manually, but the metaToggle calls above call ResetMenuIcons for us.
         'ResetMenuIcons
         
         'If an image is loaded, we need to redraw the "size" caption on the left

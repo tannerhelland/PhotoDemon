@@ -32,11 +32,19 @@ Begin VB.Form FormRotate
       TabIndex        =   6
       Top             =   3330
       Width           =   3390
-      _extentx        =   5980
-      _extenty        =   635
-      caption         =   "adjust size to fit rotated image"
-      value           =   -1  'True
-      font            =   "VBP_FormRotate.frx":0000
+      _ExtentX        =   5980
+      _ExtentY        =   635
+      Caption         =   "adjust size to fit rotated image"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -62,8 +70,8 @@ Begin VB.Form FormRotate
       TabIndex        =   5
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton optRotate 
       Height          =   360
@@ -72,10 +80,18 @@ Begin VB.Form FormRotate
       TabIndex        =   7
       Top             =   3720
       Width           =   3315
-      _extentx        =   5847
-      _extenty        =   635
-      caption         =   "keep image at its present size"
-      font            =   "VBP_FormRotate.frx":0028
+      _ExtentX        =   5847
+      _ExtentY        =   635
+      Caption         =   "keep image at its present size"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
@@ -83,12 +99,20 @@ Begin VB.Form FormRotate
       TabIndex        =   8
       Top             =   2280
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      min             =   -360
-      max             =   360
-      sigdigits       =   1
-      font            =   "VBP_FormRotate.frx":0050
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -360
+      Max             =   360
+      SigDigits       =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -208,7 +232,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
@@ -223,7 +247,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         If pdImages(CurrentImage).selectionActive Then
             pdImages(CurrentImage).selectionActive = False
             pdImages(CurrentImage).mainSelection.lockRelease
-            tInit tSelection, False
+            metaToggle tSelection, False
         End If
         
         If isPreview = False Then Message "Rotating image (this may take a few seconds)..."

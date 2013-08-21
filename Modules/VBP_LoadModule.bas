@@ -550,13 +550,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             FormMain.ActiveForm.VScroll.Value = 0
         
             'Prepare the user interface for a new image
-            tInit tSaveAs, True
-            tInit tCopy, True
-            tInit tPaste, True
-            tInit tUndo, False
-            tInit tRedo, False
-            tInit tImageOps, True
-            tInit tFilter, True
+            metaToggle tSaveAs, True
+            metaToggle tCopy, True
+            metaToggle tPaste, True
+            metaToggle tUndo, False
+            metaToggle tRedo, False
+            metaToggle tImageOps, True
+            metaToggle tFilter, True
             
         End If
             
@@ -822,8 +822,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
             
             'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-            tInit tMetadata, targetImage.imgMetadata.hasMetadata
-            tInit tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
+            metaToggle tMetadata, targetImage.imgMetadata.hasMetadata
+            metaToggle tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
         End If
         
         
@@ -857,7 +857,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
-            If targetImage.mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+            If targetImage.mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
             
             'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
             g_FixScrolling = False
@@ -1087,7 +1087,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
     
     'Display the new size on screen, and activate any selection controls as necessary
     DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
-    tInit tSelection, pdImages(CurrentImage).selectionActive
+    metaToggle tSelection, pdImages(CurrentImage).selectionActive
         
     'Render the image to the screen
     PrepareViewport FormMain.ActiveForm, "LoadUndo"
@@ -1456,13 +1456,13 @@ Public Sub DuplicateCurrentImage()
     FormMain.ActiveForm.VScroll.Value = 0
         
     'Prepare the user interface for a new image
-    tInit tSaveAs, True
-    tInit tCopy, True
-    tInit tPaste, True
-    tInit tUndo, False
-    tInit tRedo, False
-    tInit tImageOps, True
-    tInit tFilter, True
+    metaToggle tSaveAs, True
+    metaToggle tCopy, True
+    metaToggle tPaste, True
+    metaToggle tUndo, False
+    metaToggle tRedo, False
+    metaToggle tImageOps, True
+    metaToggle tFilter, True
         
     'Copy the picture from the previous form to this new one
     pdImages(CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer

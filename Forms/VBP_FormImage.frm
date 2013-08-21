@@ -150,29 +150,29 @@ Public Sub ActivateWorkaround()
     End If
     
     'Determine whether Undo, Redo, Fade-last are available
-    tInit tUndo, pdImages(CurrentImage).UndoState
-    tInit tRedo, pdImages(CurrentImage).RedoState
+    metaToggle tUndo, pdImages(CurrentImage).UndoState
+    metaToggle tRedo, pdImages(CurrentImage).RedoState
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
     
     'Determine whether save is enabled
-    tInit tSave, Not pdImages(CurrentImage).HasBeenSaved
+    metaToggle tSave, Not pdImages(CurrentImage).HasBeenSaved
     
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    tInit tMetadata, pdImages(CurrentImage).imgMetadata.hasMetadata
-    tInit tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+    metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasMetadata
+    metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
     
     'Check the image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If pdImages(CurrentImage).Width <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
     
     'If a selection is active on this image, update the text boxes to match
     If pdImages(CurrentImage).selectionActive Then
-        tInit tSelection, True
+        metaToggle tSelection, True
         'pdImages(CurrentImage).mainSelection.refreshTextBoxes
     Else
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
     
     'Finally, if the histogram window is open, redraw it
@@ -885,7 +885,7 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     pdImages(Me.Tag).mainSelection.requestNewMask
         
     'Make the selection tools visible
-    tInit tSelection, True
+    metaToggle tSelection, True
                         
 End Sub
 

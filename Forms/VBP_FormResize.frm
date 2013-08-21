@@ -815,7 +815,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     'Because most resize methods require a temporary layer, create one here

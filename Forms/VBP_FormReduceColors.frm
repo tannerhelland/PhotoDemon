@@ -525,7 +525,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
 
     'If this is a preview, we want to perform the color reduction on a temporary image

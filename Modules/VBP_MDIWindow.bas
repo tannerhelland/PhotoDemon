@@ -407,17 +407,17 @@ Public Sub UpdateMDIStatus()
 
     'If every window has been closed, disable all toolbar and menu options that are no longer applicable
     If NumOfWindows < 1 Then
-        tInit tFilter, False
-        tInit tSave, False
-        tInit tSaveAs, False
-        tInit tCopy, False
-        tInit tUndo, False
-        tInit tRedo, False
-        tInit tImageOps, False
-        tInit tFilter, False
-        tInit tMacro, False
-        tInit tRepeatLast, False
-        tInit tSelection, False
+        metaToggle tFilter, False
+        metaToggle tSave, False
+        metaToggle tSaveAs, False
+        metaToggle tCopy, False
+        metaToggle tUndo, False
+        metaToggle tRedo, False
+        metaToggle tImageOps, False
+        metaToggle tFilter, False
+        metaToggle tMacro, False
+        metaToggle tRepeatLast, False
+        metaToggle tSelection, False
         FormMain.MnuClose.Enabled = False
         FormMain.MnuCloseAll.Enabled = False
         FormMain.cmdClose.Enabled = False
@@ -475,16 +475,16 @@ Public Sub UpdateMDIStatus()
                 
     'Otherwise, enable all of 'em
     Else
-        tInit tFilter, True
-        tInit tSave, True
-        tInit tSaveAs, True
-        tInit tCopy, True
-        tInit tUndo, pdImages(CurrentImage).UndoState
-        tInit tRedo, pdImages(CurrentImage).RedoState
-        tInit tImageOps, True
-        tInit tFilter, True
-        tInit tMacro, True
-        tInit tRepeatLast, pdImages(CurrentImage).RedoState
+        metaToggle tFilter, True
+        metaToggle tSave, True
+        metaToggle tSaveAs, True
+        metaToggle tCopy, True
+        metaToggle tUndo, pdImages(CurrentImage).UndoState
+        metaToggle tRedo, pdImages(CurrentImage).RedoState
+        metaToggle tImageOps, True
+        metaToggle tFilter, True
+        metaToggle tMacro, True
+        metaToggle tRepeatLast, pdImages(CurrentImage).RedoState
         FormMain.MnuClose.Enabled = True
         FormMain.cmdClose.Enabled = True
         FormMain.MnuCloseAll.Enabled = True
