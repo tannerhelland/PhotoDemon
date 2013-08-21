@@ -249,15 +249,13 @@ End Sub
 ' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
 Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
 
-    'If the user has canceled the current action, disregard the working layer and exit immediately
-    If cancelCurrentAction Then
-        SetProgBarVal 0
-        Message "Action canceled."
+    'If the user has canceled the current action, disregard the working layer and exit immediately.  The central processor
+    ' will take care of additional clean-up.
+    If (Not isPreview) And cancelCurrentAction Then
         
         workingLayer.eraseLayer
         Set workingLayer = Nothing
-                
-        cancelCurrentAction = False
+        
         Exit Sub
     End If
 
