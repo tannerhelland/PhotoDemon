@@ -32,8 +32,8 @@ Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As 
     pdImages(CurrentImage).BuildUndo processID, undoType, relevantTool
     
     'Since an undo exists, enable the Undo button and disable the Redo button
-    tInit tUndo, pdImages(CurrentImage).UndoState
-    tInit tRedo, pdImages(CurrentImage).RedoState
+    metaToggle tUndo, pdImages(CurrentImage).UndoState
+    metaToggle tRedo, pdImages(CurrentImage).RedoState
     
     '"Fade last effect" is reserved for filters and effects only
     If (undoType = 0) Or (undoType = 1) Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
@@ -55,15 +55,15 @@ Public Sub RestoreUndoData()
     End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
-    tInit tUndo, pdImages(CurrentImage).UndoState
-    tInit tRedo, pdImages(CurrentImage).RedoState
+    metaToggle tUndo, pdImages(CurrentImage).UndoState
+    metaToggle tRedo, pdImages(CurrentImage).RedoState
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
         
     'Launch the undo bitmap loading routine
     LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType
     
     'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     g_UndoRedoActive = False
     
@@ -97,7 +97,7 @@ Public Sub ClearUndo(ByVal imageID As Long)
     
     'If the active form is requesting the clear, adjust the Undo button/menu to match
     If imageID = CurrentImage Then
-        tInit tUndo, pdImages(CurrentImage).UndoState
+        metaToggle tUndo, pdImages(CurrentImage).UndoState
     
         'Also, disable fading any previous effects on this image (since there is no longer an image to use for the function)
         FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
@@ -120,15 +120,15 @@ Public Sub RestoreRedoData()
     End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
-    tInit tUndo, pdImages(CurrentImage).UndoState
-    tInit tRedo, pdImages(CurrentImage).RedoState
+    metaToggle tUndo, pdImages(CurrentImage).UndoState
+    metaToggle tRedo, pdImages(CurrentImage).RedoState
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
         
     'Load the Redo bitmap file
     LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType
     
     'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then tInit tImgMode32bpp, True Else tInit tImgMode32bpp, False
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     g_UndoRedoActive = False
     

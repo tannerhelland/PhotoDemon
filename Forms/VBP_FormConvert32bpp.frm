@@ -560,7 +560,7 @@ Public Sub advancedConvert32bpp(ByVal convertType As Long, Optional ByVal conver
     finalizeImageData toPreview, dstPic
     
     'Enable/disable the remove/add alpha channel menus to match
-    If Not toPreview Then tInit tImgMode32bpp, True
+    If Not toPreview Then metaToggle tImgMode32bpp, True
 
 End Sub
 

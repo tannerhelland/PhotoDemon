@@ -69,7 +69,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     syncTextToCurrentSelection CurrentImage
     
     'Change the selection-related menu items to match
-    tInit tSelection, True
+    metaToggle tSelection, True
     
     'Draw the new selection to the screen
     RenderViewport pdImages(CurrentImage).containingForm
@@ -87,7 +87,7 @@ Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
     syncTextToCurrentSelection CurrentImage
     
     'Change the selection-related menu items to match
-    tInit tSelection, False
+    metaToggle tSelection, False
     
     'Redraw the image (with selection removed)
     RenderViewport pdImages(CurrentImage).containingForm
@@ -112,7 +112,7 @@ Public Sub SelectWholeImage()
     syncTextToCurrentSelection CurrentImage
     
     'Change the selection-related menu items to match
-    tInit tSelection, True
+    metaToggle tSelection, True
     
     'Draw the new selection to the screen
     RenderViewport pdImages(CurrentImage).containingForm
@@ -172,8 +172,8 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         syncTextToCurrentSelection CurrentImage
         
         'Change the selection-related menu items to match
-        tInit tSelection, True
-        tInit tSelectionTransform, pdImages(CurrentImage).mainSelection.isTransformable
+        metaToggle tSelection, True
+        metaToggle tSelectionTransform, pdImages(CurrentImage).mainSelection.isTransformable
         
         'Draw the new selection to the screen
         RenderViewport pdImages(CurrentImage).containingForm
@@ -227,7 +227,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
         If pdImages(formID).mainSelection.isTransformable Then
         
-            tInit tSelectionTransform, True
+            metaToggle tSelectionTransform, True
             
             'Different types of selections will display size and position differently
             Select Case pdImages(formID).mainSelection.getSelectionShape
@@ -250,7 +250,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
         Else
         
-            tInit tSelectionTransform, False
+            metaToggle tSelectionTransform, False
             For i = 0 To FormMain.tudSel.Count - 1
                 If FormMain.tudSel(i).Value <> 0 Then FormMain.tudSel(i).Value = 0
             Next i
@@ -280,8 +280,8 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
     Else
         
-        tInit tSelection, False
-        tInit tSelectionTransform, False
+        metaToggle tSelection, False
+        metaToggle tSelectionTransform, False
         For i = 0 To FormMain.tudSel.Count - 1
             If FormMain.tudSel(i).Value <> 0 Then FormMain.tudSel(i).Value = 0
         Next i
@@ -479,10 +479,10 @@ Public Sub invertCurrentSelection()
     'syncTextToCurrentSelection CurrentImage
     
     'Change the selection-related menu items to match
-    tInit tSelection, True
+    metaToggle tSelection, True
     
     'Disable all transformable selection items
-    tInit tSelectionTransform, False
+    metaToggle tSelectionTransform, False
     
     'Draw the new selection to the screen
     RenderViewport pdImages(CurrentImage).containingForm
@@ -526,10 +526,10 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
-        tInit tSelection, True
+        metaToggle tSelection, True
         
         'Disable all transformable selection items
-        tInit tSelectionTransform, False
+        metaToggle tSelectionTransform, False
         
         SetProgBarVal 0
         
@@ -573,10 +573,10 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
-        tInit tSelection, True
+        metaToggle tSelection, True
         
         'Disable all transformable selection items
-        tInit tSelectionTransform, False
+        metaToggle tSelectionTransform, False
         
         SetProgBarVal 0
         
@@ -626,10 +626,10 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
-        tInit tSelection, True
+        metaToggle tSelection, True
         
         'Disable all transformable selection items
-        tInit tSelectionTransform, False
+        metaToggle tSelectionTransform, False
         
         SetProgBarVal 0
         
@@ -679,10 +679,10 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
-        tInit tSelection, True
+        metaToggle tSelection, True
         
         'Disable all transformable selection items
-        tInit tSelectionTransform, False
+        metaToggle tSelectionTransform, False
         
         SetProgBarVal 0
         
@@ -727,10 +727,10 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         pdImages(CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
-        tInit tSelection, True
+        metaToggle tSelection, True
         
         'Disable all transformable selection items
-        tInit tSelectionTransform, False
+        metaToggle tSelectionTransform, False
         
         SetProgBarVal 0
         

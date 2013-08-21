@@ -144,7 +144,7 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
         pdImages(CurrentImage).mainLayer.convertTo24bpp newBackColor
     
         'Change the menu entries to match
-        tInit tImgMode32bpp, False
+        metaToggle tImgMode32bpp, False
         
     Else
     
@@ -152,7 +152,7 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
         pdImages(CurrentImage).mainLayer.convertTo32bpp
     
         'Change the menu entries to match
-        tInit tImgMode32bpp, True
+        metaToggle tImgMode32bpp, True
     
     End If
     

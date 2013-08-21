@@ -429,7 +429,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If pdImages(CurrentImage).selectionActive Then
         pdImages(CurrentImage).selectionActive = False
         pdImages(CurrentImage).mainSelection.lockRelease
-        tInit tSelection, False
+        metaToggle tSelection, False
     End If
     
     If isPreview = False Then Message "Rendering tiled image..."

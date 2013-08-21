@@ -3,8 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 08/May/13
-'Last update: Moved all cursor handling to the icon module, where it made much more sense
+'Last updated: 21/August/13
+'Last update: Merged the old toolbar module into this one, and renamed it to better fit the program's current state.
 '
 'Miscellaneous routines related to rendering PhotoDemon interface elements.
 '
@@ -46,10 +46,32 @@ Private Const SPI_GETFONTSMOOTHING As Long = &H4A
 Private Const SPI_SETFONTSMOOTHING As Long = &H4B
 Private Const SPI_GETFONTSMOOTHINGTYPE As Long = &H200A
 Private Const SPI_SETFONTSMOOTHINGTYPE As Long = &H200B
-'Private Const SPIF_SENDCHANGE As Long = &H2
 Private Const SmoothingClearType As Long = &H2
 Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
+
+'Constants that define single meta-level actions that require certain controls to be en/disabled.  These are passed to tInit, below.
+'(Note: these constants should eventually be converted to an Enum)
+Public Enum metaInitializer
+     tOpen = 0
+     tSave = 1
+     tSaveAs = 2
+     tCopy = 3
+     tPaste = 4
+     tUndo = 5
+     tImageOps = 6
+     tFilter = 7
+     tRedo = 8
+     'tHistogram = 9
+     tMacro = 10
+     tEdit = 11
+     tRepeatLast = 12
+     tSelection = 13
+     tSelectionTransform = 14
+     tImgMode32bpp = 15
+     tMetadata = 16
+     tGPSMetadata = 17
+End Enum
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
 ' can contain the following values:
@@ -57,6 +79,178 @@ Private Const SmoothingNone As Long = &H0
 ' 1: had to change smoothing type from Standard to ClearType
 ' 2: had to turn on smoothing, as it was originally turned off
 Private hadToChangeSmoothing As Long
+
+
+'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
+' and toolbox buttons)
+Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
+    
+    Dim i As Long
+    
+    Select Case metaItem
+        
+        'Open (left-hand panel button AND menu item)
+        Case tOpen
+            If FormMain.MnuOpen.Enabled <> newState Then
+                FormMain.cmdOpen.Enabled = newState
+                FormMain.MnuOpen.Enabled = newState
+            End If
+            
+        'Save (left-hand panel button AND menu item)
+        Case tSave
+            If FormMain.MnuSave.Enabled <> newState Then
+                FormMain.cmdSave.Enabled = newState
+                FormMain.MnuSave.Enabled = newState
+            End If
+            
+        'Save As (menu item only)
+        Case tSaveAs
+            If FormMain.MnuSaveAs.Enabled <> newState Then
+                FormMain.cmdSaveAs.Enabled = newState
+                FormMain.MnuSaveAs.Enabled = newState
+            End If
+        
+        'Copy (menu item only)
+        Case tCopy
+            If FormMain.MnuCopy.Enabled <> newState Then FormMain.MnuCopy.Enabled = newState
+        
+        'Paste (menu item only)
+        Case tPaste
+            If FormMain.MnuPaste.Enabled <> newState Then FormMain.MnuPaste.Enabled = newState
+        
+        'Undo (left-hand panel button AND menu item)
+        Case tUndo
+            If FormMain.MnuUndo.Enabled <> newState Then
+                FormMain.cmdUndo.Enabled = newState
+                FormMain.MnuUndo.Enabled = newState
+            End If
+            'If Undo is being enabled, change the text to match the relevant action that created this Undo file
+            If newState Then
+                FormMain.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID
+                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID
+                ResetMenuIcons
+            Else
+                FormMain.cmdUndo.ToolTip = ""
+                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo")
+                ResetMenuIcons
+            End If
+            
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Select, Color, View (most items), and Print menus
+        Case tImageOps
+            If FormMain.MnuImageTop.Enabled <> newState Then
+                FormMain.MnuImageTop.Enabled = newState
+                'Use this same command to disable other menus
+                FormMain.MnuPrint.Enabled = newState
+                FormMain.MnuFitOnScreen.Enabled = newState
+                FormMain.MnuFitWindowToImage.Enabled = newState
+                FormMain.MnuZoomIn.Enabled = newState
+                FormMain.MnuZoomOut.Enabled = newState
+                FormMain.MnuSelectTop.Enabled = newState
+                FormMain.MnuColorTop.Enabled = newState
+                FormMain.MnuWindowTop.Enabled = newState
+                
+                For i = 0 To FormMain.MnuSpecificZoom.Count - 1
+                    FormMain.MnuSpecificZoom(i).Enabled = newState
+                Next i
+                
+            End If
+        
+        'Filter (top-level menu)
+        Case tFilter
+            If FormMain.MnuFilter.Enabled <> newState Then FormMain.MnuFilter.Enabled = newState
+        
+        'Redo (left-hand panel button AND menu item)
+        Case tRedo
+            If FormMain.MnuRedo.Enabled <> newState Then
+                FormMain.cmdRedo.Enabled = newState
+                FormMain.MnuRedo.Enabled = newState
+            End If
+            
+            'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
+            If newState = True Then
+                FormMain.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID)
+                FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) '& vbTab & "Ctrl+Alt+Z"
+                ResetMenuIcons
+            Else
+                FormMain.cmdRedo.ToolTip = ""
+                FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo")
+                ResetMenuIcons
+            End If
+            
+        'Macro (top-level menu)
+        Case tMacro
+            If FormMain.mnuTool(2).Enabled <> newState Then FormMain.mnuTool(2).Enabled = newState
+        
+        'Edit (top-level menu)
+        Case tEdit
+            If FormMain.MnuEdit.Enabled <> newState Then FormMain.MnuEdit.Enabled = newState
+        
+        'Repeat last action (menu item only)
+        Case tRepeatLast
+            If FormMain.MnuRepeatLast.Enabled <> newState Then FormMain.MnuRepeatLast.Enabled = newState
+            
+        'Selections in general
+        Case tSelection
+            
+            'If selections are not active, clear all the selection value textboxes
+            If Not newState Then
+                For i = 0 To FormMain.tudSel.Count - 1
+                    FormMain.tudSel(i).Value = 0
+                Next i
+            End If
+            
+            'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
+            ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
+            ' actually draw a selection, it already has the attributes they want.
+            For i = 0 To FormMain.tudSel.Count - 1
+                FormMain.tudSel(i).Enabled = newState
+            Next i
+                                    
+            'En/disable all selection menu items that rely on an existing selection to operate
+            If FormMain.MnuSelect(2).Enabled <> newState Then
+                
+                'Select none, invert selection
+                FormMain.MnuSelect(1).Enabled = newState
+                FormMain.MnuSelect(2).Enabled = newState
+                
+                'Grow/shrink/border/feather/sharpen selection
+                For i = 4 To 8
+                    FormMain.MnuSelect(i).Enabled = newState
+                Next i
+                
+                'Save selection
+                FormMain.MnuSelect(11).Enabled = newState
+                
+            End If
+                                    
+            'Selection enabling/disabling also affects the Crop to Selection command
+            If FormMain.MnuImage(7).Enabled <> newState Then FormMain.MnuImage(7).Enabled = newState
+        
+        'Transformable selection controls specifically
+        Case tSelectionTransform
+        
+            'Under certain circumstances, it is desirable to disable only the selection location boxes
+            For i = 0 To FormMain.tudSel.Count - 1
+                FormMain.tudSel(i).Enabled = newState
+            Next i
+        
+        '32bpp color mode (e.g. add/remove alpha channel)
+        Case tImgMode32bpp
+            
+            FormMain.MnuTransparency(0).Enabled = Not newState
+            FormMain.MnuTransparency(1).Enabled = newState
+            
+        Case tMetadata
+        
+            If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
+        
+        Case tGPSMetadata
+        
+            If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
+            
+    End Select
+    
+End Sub
 
 'Request mouse tracking of a particular hWnd.  (NOTE: Windows requires you to re-request tracking after a tracking message is posted.)
 Public Sub requestMouseTracking(ByVal srcHwnd As Long, Optional ByVal stopTracking As Boolean = False)
@@ -231,7 +425,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
 End Sub
 
 
-'Use to enable font smoothing if currently disabled.
+'Used to enable font smoothing if currently disabled.
 Public Sub handleClearType(ByVal startingProgram As Boolean)
     
     'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
