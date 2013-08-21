@@ -3,8 +3,8 @@ Attribute VB_Name = "Undo_Handler"
 'Undo/Redo Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 21/June/13
-'Last update: different Undo types are now allowed.  This was a key blocker for selections being added to the undo/redo chain!
+'Last updated: 21/August/13
+'Last update: new function to roll back the last created Undo.  This is necessary when the user cancels an action mid-processing.
 '
 'Handles all "Undo"/"Redo" operations.  I currently have it programmed to use the hard
 ' drive for all backups in order to free up RAM; this could be changed with in-memory images,
@@ -67,6 +67,27 @@ Public Sub RestoreUndoData()
     
     g_UndoRedoActive = False
     
+End Sub
+
+'When an action is canceled, we must rollback the undo data that was created (and is no longer needed)
+Public Sub rollBackLastUndo()
+
+    g_UndoRedoActive = True
+    
+    'Let the internal pdImage Undo handler take care of any changes
+    Message "Removing unneeded undo data..."
+    pdImages(CurrentImage).rollBackUndo
+    
+    'Set the undo, redo, Fade last effect buttons to their proper state
+    metaToggle tUndo, pdImages(CurrentImage).UndoState
+    metaToggle tRedo, pdImages(CurrentImage).RedoState
+    FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+    
+    'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+    
+    g_UndoRedoActive = False
+
 End Sub
 
 'Erase every undo file for every open image

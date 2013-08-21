@@ -3,9 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 03/August/13
-'Last update: added additional code for forcing selection parameter recording during macros.  This is necessary to avoid loss of selection
-'             data due to our "lazy" tracking system for selection parameter changes.
+'Last updated: 21/August/13
+'Last update: correctly roll back Undo data when an action is canceled mid-processing
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -77,13 +76,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Main error handler for the entire program is initialized by this line
     On Error GoTo MainErrHandler
     
-    'If desired, this line can be used to artificially raise errors (to test the error handler)
-    'Err.Raise 339
-    
     'Mark the software processor as busy
     Processing = True
         
-    'Disable the main form to prevent the user from clicking additional menus or tools while this one is processing
+    'Disable the main form to prevent the user from clicking additional menus or tools while this action is processing
     FormMain.Enabled = False
     
     'If we need to display an additional dialog, restore the default mouse cursor.  Otherwise, set the cursor to busy.
@@ -1033,7 +1029,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
     ' in some way, as determined by the createUndo param)
     If createUndo > 0 Then
-        If DISPLAY_TIMINGS Then Message "Time taken: " & Format$(Timer - m_ProcessingTime, "#0.####") & " seconds"
+        If DISPLAY_TIMINGS Then
+            Dim timingString As String
+            timingString = g_Language.TranslateMessage("Time taken")
+            timingString = timingString & ": " & Format$(Timer - m_ProcessingTime, "#0.####") & " "
+            timingString = timingString & g_Language.TranslateMessage("seconds")
+            Message timingString
+        End If
     End If
     
     'Restore the mouse pointer to its default value.
@@ -1057,16 +1059,15 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Unlock the main form
     FormMain.Enabled = True
     
-    'TODO
-    'If the user canceled the requested action before it completed, we need to roll back the initial undo file we created
+    'If the user canceled the requested action before it completed, we need to roll back the undo data we created
     If cancelCurrentAction Then
         
+        'Ask the Undo manager to roll back to a previous state
+        rollBackLastUndo
+    
         'Reset any interface elements that may still be in "processing" mode.
         SetProgBarVal 0
         Message "Action canceled."
-        
-        'Insert rollback code here
-        
     
         'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
         cancelCurrentAction = False
