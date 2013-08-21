@@ -261,12 +261,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         'Alpha channel addition/removal
         Case "Add alpha channel"
+            
             If showDialog Then
-                FormConvert32bpp.Show vbModal, FormMain
+                'Only allow a dialog if the current image is < 32bpp.  If a dialog has not been requested, allow the
+                ' function to continue regardless of color depth.  This is to prevent issues on batch processes that
+                ' involve a collection of mixed 24 and 32bpp images.  (Note that it *should* be impossible to trigger
+                ' this dialog on a 24bpp image, as the menu will be disabled, but better safe than sorry.)
+                If pdImages(CurrentImage).mainLayer.getLayerColorDepth < 32 Then FormConvert32bpp.Show vbModal, FormMain
             Else
                 FormConvert32bpp.advancedConvert32bpp cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
             End If
-        
+            
         Case "Remove alpha channel"
             If showDialog Then
                 FormConvert24bpp.Show vbModal, FormMain
@@ -1032,7 +1037,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Restore the mouse pointer to its default value.
     ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
     If MacroStatus <> MacroBATCH Then Screen.MousePointer = vbDefault
-    
+        
     'If the histogram form is visible and images are loaded, redraw the histogram
     If FormHistogram.Visible Then
         If NumOfWindows > 0 Then
@@ -1049,6 +1054,22 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'Unlock the main form
     FormMain.Enabled = True
+    
+    'TODO
+    'If the user canceled the requested action before it completed, we need to roll back the initial undo file we created
+    If cancelCurrentAction Then
+        
+        'Reset any interface elements that may still be in "processing" mode.
+        SetProgBarVal 0
+        Message "Action canceled."
+        
+        'Insert rollback code here
+        
+    
+        'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
+        cancelCurrentAction = False
+        
+    End If
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo > 0) Then
