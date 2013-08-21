@@ -261,15 +261,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         'Alpha channel addition/removal
         Case "Add alpha channel"
-            
             If showDialog Then
-                'Only allow a dialog if the current image is < 32bpp.  If a dialog has not been requested, allow the
-                ' function to continue regardless of color depth.  This is to prevent issues on batch processes that
-                ' involve a collection of mixed 24 and 32bpp images.  (Note that it *should* be impossible to trigger
-                ' this dialog on a 24bpp image, as the menu will be disabled, but better safe than sorry.)
-                If pdImages(CurrentImage).mainLayer.getLayerColorDepth < 32 Then FormConvert32bpp.Show vbModal, FormMain
+                FormTransparency_Basic.Show vbModal, FormMain
             Else
-                FormConvert32bpp.advancedConvert32bpp cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
+                FormTransparency_Basic.simpleConvert32bpp cParams.GetLong(1)
+            End If
+            
+        Case "Color to alpha"
+            If showDialog Then
+                FormTransparency_FromColor.Show vbModal, FormMain
+            Else
+                FormTransparency_FromColor.colorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Remove alpha channel"

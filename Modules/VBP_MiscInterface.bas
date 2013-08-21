@@ -167,7 +167,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
-            If newState = True Then
+            If newState Then
                 FormMain.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID)
                 FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) '& vbTab & "Ctrl+Alt+Z"
                 ResetMenuIcons
@@ -234,11 +234,14 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.tudSel(i).Enabled = newState
             Next i
         
-        '32bpp color mode (e.g. add/remove alpha channel)
+        '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
+        ' 32bpp, but I've since changed my mind.  It may be useful to take a 32bpp image and apply a *new* alpha channel, so those options are
+        ' now enabled regardless of color depth.  "Remove transparency", however, is still disabled for 24bpp images.
         Case tImgMode32bpp
             
-            FormMain.MnuTransparency(0).Enabled = Not newState
-            FormMain.MnuTransparency(1).Enabled = newState
+            'FormMain.MnuTransparency(0).Enabled = Not newState
+            'FormMain.MnuTransparency(1).Enabled = Not newState
+            FormMain.MnuTransparency(3).Enabled = newState
             
         Case tMetadata
         
