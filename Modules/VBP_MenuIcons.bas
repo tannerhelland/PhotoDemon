@@ -49,12 +49,12 @@ Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVa
 
 'API needed for converting PNG data to icon or cursor format
 Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
-Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
-Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
-Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
-Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
-Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiBitmap As Long) As Long
-Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
+Private Declare Function GdipLoadImageFromStream Lib "GdiPlus" (ByVal Stream As Any, ByRef mImage As Long) As Long
+Private Declare Function GdipCreateHICONFromBitmap Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
+Private Declare Function GdipCreateHBITMAPFromBitmap Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
+Private Declare Function GdipGetImageBounds Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
+Private Declare Function GdipDisposeImage Lib "GdiPlus" (ByVal gdiBitmap As Long) As Long
+Private Declare Function GdipGetImagePixelFormat Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
 
 'Used to check GDI+ images for alpha channels
 Private Const PixelFormatAlpha = &H40000             ' Has an alpha component
@@ -221,7 +221,8 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "TRANSPARENCY", 3, 2   'Transparency
         '--> Image Mode sub-menu
         AddMenuIcon "ADDTRANS", 3, 2, 0      'Add alpha channel
-        AddMenuIcon "REMOVETRANS", 3, 2, 1   'Remove alpha channel
+        AddMenuIcon "GREENSCREEN", 3, 2, 1      'Color to alpha
+        AddMenuIcon "REMOVETRANS", 3, 2, 3   'Remove alpha channel
     AddMenuIcon "RESIZE", 3, 4         'Resize
     AddMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
     AddMenuIcon "CROPSEL", 3, 7        'Crop to Selection

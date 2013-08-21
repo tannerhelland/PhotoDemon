@@ -53,6 +53,7 @@ MAPPHOTO     CUSTOM  MOVEABLE        LOADONCALL      map_pin.png
 TRANSPARENCY CUSTOM  MOVEABLE        LOADONCALL      layer_transparent.png
 //--> Transparency sub-menu
 ADDTRANS     CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_plus.png
+GREENSCREEN  CUSTOM  MOVEABLE        LOADONCALL      user_black_female_green.png
 REMOVETRANS  CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_cross.png
 //
 CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
