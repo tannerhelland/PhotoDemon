@@ -26,21 +26,25 @@ Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
 Public Const CUSTOM_FILTER_VERSION_2013 As String = "8.2013"
 
 'The omnipotent DoFilter routine - it takes whatever is in g_FM() - the "filter matrix" and applies it to the image
-Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByVal InvertResult As Boolean = False, Optional ByVal srcFilterFile As String = "", Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    'If requested, load the custom filter data from a file
-    If srcFilterFile <> "" Then
-        If Not toPreview Then Message "Loading custom filter information..."
-        Dim FilterReturn As Boolean
-        FilterReturn = LoadCustomFilterData(srcFilterFile)
-        If FilterReturn = False Then
-            Err.Raise 1024, PROGRAMNAME, "Invalid custom filter file"
-            Exit Sub
-        End If
-    End If
-    
+'REWRITING AUGUST 2013:
+' DoFilter will now use a param string, like everything else.  Custom save/load code is also disappearing in favor of
+' the standard save/load preset manager.
+' ParamString format is as follows:
+'    Name: String.  Can't be blank, but can be a single space
+'    Invert: boolean
+'    Divisor: Double
+'    Offset: Long
+'    25 Double-type values, which correspond to entries in a 5x5 convolution matrix
+
+Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+        
+    'Prepare a param parser
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString fullParamString
+        
     'Note that the only purpose of the FilterType string is to display this message
-    If toPreview = False Then Message "Applying %1 filter...", FilterType
+    If Not toPreview Then Message "Applying %1 filter...", cParams.GetString(1)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -75,23 +79,21 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
     
-    'CalcVar determines the size of each sub-loop (so that we don't waste time running a 5x5 matrix on 3x3 filters)
-    Dim CalcVar As Long
-    CalcVar = (g_FilterSize \ 2)
-        
-    'iFM() will hold the contents of g_FM() - the filter matrix; we don't use FM directly in case other events want to access it
-    Dim iFM() As Double
+    'We can now parse out the relevant filter values from the param string
+    Dim invertResult As Boolean
+    invertResult = cParams.GetBool(2)
     
-    'Resize iFM according to the size of the filter matrix, then copy over the contents of g_FM()
-    If g_FilterSize = 3 Then ReDim iFM(-1 To 1, -1 To 1) As Double Else ReDim iFM(-2 To 2, -2 To 2) As Double
-    iFM = g_FM
-    
-    'FilterWeightA and FilterBiasA are copies of the global g_FilterWeight and g_FilterBias variables; again, we don't use the originals in case other events
-    ' want to access them
     Dim FilterWeightA As Double, FilterBiasA As Double
-    FilterWeightA = g_FilterWeight
-    FilterBiasA = g_FilterBias
+    FilterWeightA = cParams.GetDouble(3)
+    FilterBiasA = cParams.GetDouble(4)
     
+    Dim iFM(-2 To 2, -2 To 2) As Double
+    For x = -2 To 2
+    For y = -2 To 2
+        iFM(x, y) = cParams.GetDouble((x + 2) + (y + 2) * 5 + 5)
+    Next y
+    Next x
+        
     'FilterWeightTemp will be reset for every pixel, and decremented appropriately when attempting to calculate the value for pixels
     ' outside the image perimeter
     Dim FilterWeightTemp As Double
@@ -126,9 +128,9 @@ Public Sub DoFilter(Optional ByVal FilterType As String = "custom", Optional ByV
         FilterWeightTemp = FilterWeightA
         
         'Run a sub-loop around the current pixel
-        For x2 = x - CalcVar To x + CalcVar
+        For x2 = x - 2 To x + 2
             QuickValInner = x2 * qvDepth
-        For y2 = y - CalcVar To y + CalcVar
+        For y2 = y - 2 To y + 2
         
             CalcX = x2 - x
             CalcY = y2 - y
@@ -191,7 +193,7 @@ NextCustomFilterPixel:  Next y2
         End If
         
         'If inversion is specified, apply it now
-        If InvertResult Then
+        If invertResult Then
             r = 255 - r
             g = 255 - g
             b = 255 - b
@@ -226,70 +228,6 @@ NextCustomFilterPixel:  Next y2
     finalizeImageData toPreview, dstPic
     
 End Sub
-
-'This subroutine will load the data from a custom filter file straight into the g_FM() array
-Public Function LoadCustomFilterData(ByRef srcFilterPath As String) As Boolean
-    
-    'Create a pdXML class, which will help us load and parse the source file
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    'Load the XML file into memory
-    xmlEngine.loadXMLFile srcFilterPath
-    
-    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon filter file
-    If xmlEngine.isPDDataType("Convolution filter") And xmlEngine.validateLoadedXMLData("pdFilterVersion") Then
-    
-        'Next, check the filter's version number, and make sure it's still supported
-        Dim verCheck As String
-        verCheck = xmlEngine.getUniqueTag_String("pdFilterVersion")
-        
-        Select Case verCheck
-        
-            'The current filter version (e.g. the first draft of the new XML format)
-            Case CUSTOM_FILTER_VERSION_2013
-            
-                'Load the divisor and offset values
-                g_FilterWeight = xmlEngine.getUniqueTag_Double("filterDivisor")
-                g_FilterBias = xmlEngine.getUniqueTag_Double("filterOffset")
-                
-                'This temporary array will hold the matrix data loaded from file
-                Dim tFilterArray(0 To 24) As Double
-        
-                'Load the individual text box values
-                Dim i As Long
-                For i = 0 To 24
-                    tFilterArray(i) = xmlEngine.getUniqueTag_Double("filterEntry_" & i)
-                Next i
-                
-                'Convert the 1D temporary array into the 2D array required by the filter function
-                g_FilterSize = 5
-                ReDim g_FM(-2 To 2, -2 To 2) As Double
-                
-                Dim x As Long, y As Long
-                For x = -2 To 2
-                For y = -2 To 2
-                    g_FM(x, y) = tFilterArray((x + 2) + (y + 2) * 5)
-                Next y
-                Next x
-            
-            Case Else
-                Message "Incompatible filter version found.  Filter load abandoned."
-                LoadCustomFilterData = False
-                Exit Function
-        
-        End Select
-        
-        'Mark the load as successful and exit
-        LoadCustomFilterData = True
-        Exit Function
-        
-    Else
-        LoadCustomFilterData = False
-        Exit Function
-    End If
-    
-End Function
 
 'Apply a grid blur to an image; basically, blur every vertical line, then every horizontal line, then average the results
 Public Sub FilterGridBlur()

@@ -18,54 +18,77 @@ Option Explicit
 'Redraw the image using a pencil sketch effect.
 Public Sub FilterPencil()
     
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
+    Dim tmpString As String
     
-    g_FM(-1, -1) = -1
-    g_FM(-1, 0) = -1
-    g_FM(-1, 1) = -1
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("pencil sketch") & "|"
     
-    g_FM(0, -1) = -1
-    g_FM(0, 0) = 8
-    g_FM(0, 1) = -1
+    'Next comes an invert parameter
+    tmpString = tmpString & "1|"
     
-    g_FM(1, -1) = -1
-    g_FM(1, 0) = -1
-    g_FM(1, 1) = -1
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
     
-    g_FilterWeight = 1
-    g_FilterBias = 0
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-1|-1|0|0|"
+    tmpString = tmpString & "0|-1|6|-1|0|"
+    tmpString = tmpString & "0|0|-1|-1|0|"
+    tmpString = tmpString & "0|0|0|0|0"
     
-    DoFilter g_Language.TranslateMessage("pencil sketch"), True
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString
 
 End Sub
 
 'A typical relief filter, that makes the image seem pseudo-3D.
 Public Sub FilterRelief()
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = 2
-    g_FM(-1, 0) = 1
-    g_FM(0, 1) = 1
-    g_FM(0, 0) = 1
-    g_FM(0, -1) = -1
-    g_FM(1, 0) = -1
-    g_FM(1, 1) = -2
-    g_FilterWeight = 3
-    g_FilterBias = 75
-    DoFilter g_Language.TranslateMessage("Relief")
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("relief") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & "0|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "2|40|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|2|-1|0|0|"
+    tmpString = tmpString & "0|1|1|-1|0|"
+    tmpString = tmpString & "0|0|1|-2|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString
+
 End Sub
 
 'A lighter version of a traditional sharpen filter; it's designed to bring out edge detail without the blowout typical of sharpening
 Public Sub FilterEdgeEnhance()
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, 0) = -1
-    g_FM(1, 0) = -1
-    g_FM(0, -1) = -1
-    g_FM(0, 1) = -1
-    g_FM(0, 0) = 8
-    g_FilterWeight = 4
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Edge Enhance")
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("edge enhance") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & "0|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "4|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|0|-1|0|0|"
+    tmpString = tmpString & "0|-1|8|-1|0|"
+    tmpString = tmpString & "0|0|-1|0|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString
+
 End Sub

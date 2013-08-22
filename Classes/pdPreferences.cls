@@ -324,10 +324,7 @@ Public Sub loadUserSettings()
     
     'Set the number of open image windows to 0
     NumOfWindows = 0
-    
-    'Set a default emboss/engrave color
-    g_EmbossEngraveColor = &HFF8080
-    
+        
 End Sub
 
 'Save and load tool settings - note that this must be done after the various tool controls have been initialized

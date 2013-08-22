@@ -155,8 +155,8 @@ Attribute VB_Exposed = False
 'Edge Detection Interface
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 1/11/02
-'Last updated: 09/September/12
-'Last update: added previewing!  Also, rewrote all functions against new layer code.
+'Last updated: 22/August/13
+'Last update: rewrote all DoFilter calls with paramStrings
 '
 'All known edge-detection routines are handled from this form.  Most are simply convolution kernels that are passed off
 ' to the "DoFilter" function, but at least one (Artistic Contour) resides here.
@@ -235,112 +235,203 @@ Private Sub Form_Activate()
 End Sub
 
 Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = -4
-    g_FM(-1, 0) = -2
-    g_FM(0, -1) = -2
-    g_FM(1, -1) = -1
-    g_FM(-1, 1) = -1
-    g_FM(0, 0) = 10
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Hilite edge detection"), Not blackBackground, , toPreview, dstPic
+    
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("Hilite edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-4|-2|-1|0|"
+    tmpString = tmpString & "0|-2|10|0|0|"
+    tmpString = tmpString & "0|-1|0|0|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 5
-    ReDim g_FM(-2 To 2, -2 To 2) As Double
-    g_FM(-1, -2) = 1
-    g_FM(-2, 1) = 1
-    g_FM(1, 2) = 1
-    g_FM(2, -1) = 1
-    g_FM(0, 0) = -4
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("PhotoDemon cubic edge detection"), Not blackBackground, , toPreview, dstPic
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("PhotoDemon cubic edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|1|0|0|0|"
+    tmpString = tmpString & "0|0|0|0|1|"
+    tmpString = tmpString & "0|0|-4|0|0|"
+    tmpString = tmpString & "1|0|0|0|0|"
+    tmpString = tmpString & "0|0|0|1|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = -1
-    g_FM(-1, 1) = -1
-    g_FM(1, -1) = -1
-    g_FM(1, 1) = -1
-    g_FM(0, 0) = 4
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("PhotoDemon linear edge detection"), Not blackBackground, , toPreview, dstPic
+    
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("PhotoDemon linear edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-1|0|-1|0|"
+    tmpString = tmpString & "0|0|4|0|0|"
+    tmpString = tmpString & "0|-1|0|-1|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = -1
-    g_FM(-1, 0) = -1
-    g_FM(-1, 1) = -1
-    g_FM(1, -1) = 1
-    g_FM(1, 0) = 1
-    g_FM(1, 1) = 1
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Prewitt horizontal edge detection"), Not blackBackground, , toPreview, dstPic
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("Prewitt horizontal edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-1|0|1|0|"
+    tmpString = tmpString & "0|-1|0|1|0|"
+    tmpString = tmpString & "0|-1|0|1|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = 1
-    g_FM(0, -1) = 1
-    g_FM(1, -1) = 1
-    g_FM(-1, 1) = -1
-    g_FM(0, 1) = -1
-    g_FM(1, 1) = -1
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Prewitt vertical edge detection"), Not blackBackground, , toPreview, dstPic
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("Prewitt vertical edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|1|1|1|0|"
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-1|-1|-1|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = -1
-    g_FM(-1, 0) = -2
-    g_FM(-1, 1) = -1
-    g_FM(1, -1) = 1
-    g_FM(1, 0) = 2
-    g_FM(1, 1) = 1
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Sobel horizontal edge detection"), Not blackBackground, , toPreview, dstPic
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("Sobel horizontal edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-1|0|1|0|"
+    tmpString = tmpString & "0|-2|0|2|0|"
+    tmpString = tmpString & "0|-1|0|1|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, -1) = 1
-    g_FM(0, -1) = 2
-    g_FM(1, -1) = 1
-    g_FM(-1, 1) = -1
-    g_FM(0, 1) = -2
-    g_FM(1, 1) = -1
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Sobel vertical edge detection"), Not blackBackground, , toPreview, dstPic
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("Sobel vertical edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|1|2|1|0|"
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|-1|-2|-1|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, 0) = -1
-    g_FM(0, -1) = -1
-    g_FM(0, 1) = -1
-    g_FM(1, 0) = -1
-    g_FM(0, 0) = 4
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Laplacian edge detection"), Not blackBackground, , toPreview, dstPic
+    
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("Laplacian edge detection") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|0|-1|0|0|"
+    tmpString = tmpString & "0|-1|4|-1|0|"
+    tmpString = tmpString & "0|0|-1|0|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+    
 End Sub
 
 'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original

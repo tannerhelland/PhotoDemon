@@ -18,9 +18,6 @@ Public g_Language As pdTranslate
 'Progress bar class
 Public g_ProgBar As cProgressBar
 
-'Color variables
-Public g_EmbossEngraveColor As Long 'last used emboss/engrave color
-
 'Currently selected tool, previous tool
 Public g_CurrentTool As PDTools
 Public g_PreviousTool As PDTools
@@ -37,16 +34,6 @@ End Enum
     Const SELECT_CIRC = 1
     Const SELECT_LINE = 2
 #End If
-
-'Filter variables
-'The array containing the filter data
-Public g_FM() As Double
-'The size (1x1, 3x3, 5x5, etc) of the filter array
-Public g_FilterSize As Long
-'The weight (i.e. / by)
-Public g_FilterWeight As Double
-'The bias (i.e. +/-)
-Public g_FilterBias As Double
 
 'Selection variables
 

@@ -110,8 +110,8 @@ Attribute VB_Exposed = False
 'Sharpen Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
-'Last updated: 09/August/13
-'Last update: first build of this dialog, which allows for variable-strength sharpening
+'Last updated: 22/August/13
+'Last update: rewrote the DoFilter call against the new paramString implementation
 '
 'Basic sharpening tool.  A 3x3 convolution kernel is used to apply the sharpening, so the results will
 ' be inferior to Unsharp Masking - but the tool is much simpler, and for light sharpening, the results are
@@ -155,17 +155,27 @@ End Sub
 Public Sub ApplySharpenFilter(ByVal sStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     'Sharpening uses a basic 3x3 convolution filter, which we generate dynamically based on the requested strength
-    g_FilterSize = 3
-    ReDim g_FM(-1 To 1, -1 To 1) As Double
-    g_FM(-1, 0) = -sStrength
-    g_FM(0, 1) = -sStrength
-    g_FM(0, -1) = -sStrength
-    g_FM(1, 0) = -sStrength
-    g_FM(0, 0) = sStrength * 4 + 1
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Sharpen"), , , toPreview, dstPic
-            
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("sharpen") & "|"
+    
+    'Next comes an invert parameter (not used for sharpening)
+    tmpString = tmpString & "0|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "0|0|0|0|0|"
+    tmpString = tmpString & "0|0|" & CStr(-sStrength) & "|0|0|"
+    tmpString = tmpString & "0|" & CStr(-sStrength) & "|" & CStr(sStrength * 4 + 1) & "|" & CStr(-sStrength) & "|0|"
+    tmpString = tmpString & "0|0|" & CStr(-sStrength) & "|0|0|"
+    tmpString = tmpString & "0|0|0|0|0"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString, toPreview, dstPic
+                
 End Sub
 
 Private Sub Form_Activate()
