@@ -24,10 +24,29 @@ Begin VB.Form FormDiffuse
    ScaleWidth      =   814
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5790
+      Width           =   12210
+      _ExtentX        =   21537
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.sliderTextCombo sltX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   2160
       Width           =   6015
       _ExtentX        =   10610
@@ -46,7 +65,7 @@ Begin VB.Form FormDiffuse
    Begin PhotoDemon.smartCheckBox chkWrap 
       Height          =   480
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   3600
       Width           =   1890
       _ExtentX        =   3334
@@ -62,28 +81,10 @@ Begin VB.Form FormDiffuse
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9240
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10710
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -92,7 +93,7 @@ Begin VB.Form FormDiffuse
    Begin PhotoDemon.sliderTextCombo sltY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3000
       Width           =   6015
       _ExtentX        =   10610
@@ -107,13 +108,6 @@ Begin VB.Form FormDiffuse
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12255
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
@@ -131,7 +125,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2640
       Width           =   1785
    End
@@ -151,7 +145,7 @@ Begin VB.Form FormDiffuse
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1800
       Width           =   2085
    End
@@ -165,8 +159,8 @@ Attribute VB_Exposed = False
 'Diffuse Filter Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 8/14/01
-'Last updated: 25/April/13
-'Last update: simplified code by using new slider/text custom control
+'Last updated: 22/August/13
+'Last update: add command bar user control
 '
 'Module for handling "diffuse"-style filters (also called "displace", e.g. in GIMP).
 '
@@ -188,24 +182,31 @@ Private Sub ChkWrap_Click()
     updatePreview
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Diffuse", , buildParams(sltX.Value, sltY.Value, CBool(chkWrap.Value))
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-    
-    'Validate all text entries before proceeding with the diffuse
-    If sltX.IsValid And sltY.IsValid Then
-        FormDiffuse.Visible = False
-        Process "Diffuse", , buildParams(sltX.Value, sltY.Value, CBool(chkWrap.Value))
-        Unload Me
-    End If
-    
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
+    
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Re-enable previews and request an initial render
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+
+    'Disable previews until everything is loaded
+    cmdBar.markPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
@@ -221,13 +222,6 @@ Private Sub Form_Activate()
     sltY.Max = iHeight - 1
     sltX.Value = Int(sltX.Max \ 2)
     sltY.Value = Int(sltY.Max \ 2)
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
-    'Render a preview of the effect
-    updatePreview
     
 End Sub
 
@@ -354,7 +348,7 @@ Private Sub sltX_Change()
 End Sub
 
 Private Sub updatePreview()
-    DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, fxPreview
 End Sub
 
 Private Sub sltY_Change()

@@ -24,6 +24,25 @@ Begin VB.Form FormExposure
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   5
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.PictureBox picChart 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -34,14 +53,14 @@ Begin VB.Form FormExposure
       ScaleHeight     =   159
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   480
       Width           =   3495
    End
    Begin PhotoDemon.sliderTextCombo sltExposure 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   3840
       Width           =   5895
       _ExtentX        =   10398
@@ -60,28 +79,10 @@ Begin VB.Form FormExposure
       EndProperty
       ForeColor       =   0
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -103,17 +104,10 @@ Begin VB.Form FormExposure
       Height          =   1005
       Index           =   2
       Left            =   5880
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   1530
       Width           =   2280
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -131,7 +125,7 @@ Begin VB.Form FormExposure
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   3480
       Width           =   3405
    End
@@ -172,22 +166,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    If sltExposure.IsValid Then
-        Me.Visible = False
-        Process "Exposure", , buildParams(sltExposure)
-        Unload Me
-    End If
-    
-End Sub
 
 'Adjust an image's exposure.
 ' PRIMARY INPUT: exposureAdjust represents the number of stops to correct the image.  Each stop corresponds to a power-of-2
@@ -271,14 +249,22 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
 
 End Sub
 
-Private Sub Form_Activate()
+Private Sub cmdBar_OKClick()
+    Process "Exposure", , buildParams(sltExposure)
+End Sub
 
-    'Draw a preview of the effect
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    updatePreview
     
 End Sub
 
@@ -288,51 +274,55 @@ End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltExposure_Change()
-    If sltExposure.IsValid Then updatePreview
+    updatePreview
 End Sub
 
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
 Private Sub updatePreview()
     
-    Dim prevX As Double, prevY As Double
-    Dim curX As Double, curY As Double
-    Dim x As Long
+    If cmdBar.previewsAllowed And sltExposure.IsValid Then
     
-    Dim xWidth As Long, yHeight As Long
-    xWidth = picChart.ScaleWidth
-    yHeight = picChart.ScaleHeight
+        Dim prevX As Double, prevY As Double
+        Dim curX As Double, curY As Double
+        Dim x As Long
         
-    'Clear out the old chart and draw a gray line across the diagonal for reference
-    picChart.Picture = LoadPicture("")
-    picChart.ForeColor = RGB(127, 127, 127)
-    GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+        Dim xWidth As Long, yHeight As Long
+        xWidth = picChart.ScaleWidth
+        yHeight = picChart.ScaleHeight
+            
+        'Clear out the old chart and draw a gray line across the diagonal for reference
+        picChart.Picture = LoadPicture("")
+        picChart.ForeColor = RGB(127, 127, 127)
+        GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+        
+        'Draw the corresponding exposure curve (line, actually) for this EV
+        Dim expVal As Double, tmpVal As Double
+        expVal = sltExposure
+        
+        picChart.ForeColor = RGB(0, 0, 255)
+        
+        prevX = 0
+        prevY = yHeight
+        curX = 0
+        curY = yHeight
+        
+        For x = 0 To xWidth
+            tmpVal = x / xWidth
+            tmpVal = tmpVal * 2 ^ (expVal)
+            tmpVal = yHeight - (tmpVal * yHeight)
+            curY = tmpVal
+            curX = x
+            GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+            prevX = curX
+            prevY = curY
+        Next x
+        
+        picChart.Picture = picChart.Image
+        picChart.Refresh
     
-    'Draw the corresponding exposure curve (line, actually) for this EV
-    Dim expVal As Double, tmpVal As Double
-    expVal = sltExposure
-    
-    picChart.ForeColor = RGB(0, 0, 255)
-    
-    prevX = 0
-    prevY = yHeight
-    curX = 0
-    curY = yHeight
-    
-    For x = 0 To xWidth
-        tmpVal = x / xWidth
-        tmpVal = tmpVal * 2 ^ (expVal)
-        tmpVal = yHeight - (tmpVal * yHeight)
-        curY = tmpVal
-        curX = x
-        GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
-        prevX = curX
-        prevY = curY
-    Next x
-    
-    picChart.Picture = picChart.Image
-    picChart.Refresh
-
-    'Finally, apply the exposure correction to the preview image
-    Exposure sltExposure, True, fxPreview
+        'Finally, apply the exposure correction to the preview image
+        Exposure sltExposure, True, fxPreview
+        
+    End If
     
 End Sub

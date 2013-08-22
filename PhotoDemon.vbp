@@ -53,7 +53,6 @@ Class=pdImage; Classes\pdImage.cls
 Form=Forms\VBP_FormImageLevels.frm
 Form=Forms\VBP_FormColorize.frm
 Module=Public_API; Modules\VBP_PublicAPI.bas
-Form=Forms\VBP_FormDespeckle.frm
 Module=Outside_FreeImageV3; Modules\VBP_OutsideDevelopment_FreeImageV3.bas
 Form=Forms\VBP_FormInternetImport.frm
 Form=Forms\VBP_FormPluginDownloader.frm
@@ -179,7 +178,7 @@ Description="PhotoDemon"
 CompatibleMode="0"
 MajorVer=5
 MinorVer=9
-RevisionVer=660
+RevisionVer=663
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="©2000-2013 Tanner Helland -  www.tannerhelland.com"
@@ -218,5 +217,3 @@ ReplaceIcon=0
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
-
-
