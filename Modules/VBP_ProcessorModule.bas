@@ -942,7 +942,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormCustomFilter.Show vbModal, FormMain
             Else
-                DoFilter , , cParams.getParamString
+                DoFilter cParams.getParamString
             End If
             
         Case "Burn"

@@ -898,20 +898,28 @@ End Sub
 
 'Makes the picture appear like it has been shaken
 Public Sub MenuVibrate()
-    g_FilterSize = 5
-    ReDim g_FM(-2 To 2, -2 To 2) As Double
-    g_FM(-2, -2) = 1
-    g_FM(-1, -1) = -1
-    g_FM(0, 0) = 1
-    g_FM(1, 1) = -1
-    g_FM(2, 2) = 1
-    g_FM(-1, 1) = 1
-    g_FM(-2, 2) = -1
-    g_FM(1, -1) = 1
-    g_FM(2, -2) = -1
-    g_FilterWeight = 1
-    g_FilterBias = 0
-    DoFilter g_Language.TranslateMessage("Vibrate")
+
+    Dim tmpString As String
+    
+    'Start with a filter name
+    tmpString = g_Language.TranslateMessage("vibrate") & "|"
+    
+    'Next comes an invert parameter
+    tmpString = tmpString & "0|"
+    
+    'Next is the divisor and offset
+    tmpString = tmpString & "1|0|"
+    
+    'And finally, the convolution array itself
+    tmpString = tmpString & "1|0|0|0|-1|"
+    tmpString = tmpString & "0|-1|0|1|0|"
+    tmpString = tmpString & "0|0|1|0|0|"
+    tmpString = tmpString & "0|1|0|-1|0|"
+    tmpString = tmpString & "-1|0|0|0|1"
+    
+    'Pass our new parameter string to the main convolution filter function
+    DoFilter tmpString
+
 End Sub
 
 'Another filter found by trial-and-error.  "Dream" effect.
