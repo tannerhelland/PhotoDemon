@@ -25,28 +25,29 @@ Begin VB.Form FormKaleidoscope
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   12
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -56,7 +57,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4560
       Width           =   1005
       _ExtentX        =   1773
@@ -77,7 +78,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   4560
       Width           =   975
       _ExtentX        =   1720
@@ -96,7 +97,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltMirrors 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   1170
       Width           =   5895
       _ExtentX        =   10398
@@ -117,7 +118,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   2010
       Width           =   5895
       _ExtentX        =   10398
@@ -137,7 +138,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltAngle2 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   2850
       Width           =   5895
       _ExtentX        =   10398
@@ -157,7 +158,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   3690
       Width           =   5895
       _ExtentX        =   10398
@@ -194,16 +195,9 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2535
       Width           =   1800
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   6
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -222,7 +216,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   840
       Width           =   2055
    End
@@ -243,7 +237,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3390
       Width           =   2145
    End
@@ -266,7 +260,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4170
       Width           =   1845
    End
@@ -289,7 +283,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1680
       Width           =   1560
    End
@@ -325,29 +319,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Use this to prevent the text box and scroll bar from updating each other in an endless loop
-Dim userChange As Boolean
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltMirrors.IsValid And sltAngle.IsValid And sltAngle2.IsValid And sltRadius.IsValid Then
-        Me.Visible = False
-        'Based on the user's selection, submit the proper processor request
-        Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
-End Sub
 
 'Apply a "kaleidoscope" effect to an image
 Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -479,15 +452,26 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
         
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltMirrors.Value = 3
+    sltRadius.Value = 100
+End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    'Mark scroll bar changes as coming from the user
-    userChange = True
-    
+        
     'Create the preview
     updatePreview
     
@@ -519,7 +503,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 'Return a repeating triangle shape in the range [0, 1] with wavelength 1

@@ -25,28 +25,29 @@ Begin VB.Form FormLens
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -56,7 +57,7 @@ Begin VB.Form FormLens
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3885
       Width           =   1005
       _ExtentX        =   1773
@@ -77,7 +78,7 @@ Begin VB.Form FormLens
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3885
       Width           =   975
       _ExtentX        =   1720
@@ -96,7 +97,7 @@ Begin VB.Form FormLens
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   2970
       Width           =   5895
       _ExtentX        =   10398
@@ -117,7 +118,7 @@ Begin VB.Form FormLens
    Begin PhotoDemon.sliderTextCombo sltIndex 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   2130
       Width           =   5895
       _ExtentX        =   10398
@@ -136,13 +137,6 @@ Begin VB.Form FormLens
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12135
-   End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -159,7 +153,7 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2640
       Width           =   2145
    End
@@ -181,7 +175,7 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   3480
       Width           =   1845
    End
@@ -203,7 +197,7 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1800
       Width           =   3330
    End
@@ -241,23 +235,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltIndex.IsValid And sltRadius.IsValid Then
-        Me.Visible = False
-        Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
-End Sub
 
 'Apply a new lens distortion to an image
 Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -405,14 +382,27 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
         
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Draw a preview of the effect
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
-        
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltRadius.Value = 50
+End Sub
+
+Private Sub Form_Activate()
+            
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    updatePreview
             
 End Sub
 
@@ -434,5 +424,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyLensDistortion sltIndex, sltRadius, OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyLensDistortion sltIndex, sltRadius, OptInterpolate(0).Value, True, fxPreview
 End Sub

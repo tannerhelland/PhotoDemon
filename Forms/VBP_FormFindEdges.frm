@@ -25,10 +25,29 @@ Begin VB.Form FormFindEdges
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   5
+      Top             =   5775
+      Width           =   12195
+      _ExtentX        =   21511
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkInvert 
       Height          =   480
       Left            =   9120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3360
       Width           =   2220
       _ExtentX        =   3916
@@ -44,24 +63,6 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9240
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10710
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -75,34 +76,18 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1320
       Width           =   2895
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   15
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12255
    End
    Begin VB.Label Label1 
       BackStyle       =   0  'Transparent
@@ -119,7 +104,7 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   9120
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   1320
       Width           =   2055
    End
@@ -140,7 +125,7 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00404040&
       Height          =   1575
       Left            =   9120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1800
       Width           =   2895
       WordWrap        =   -1  'True
@@ -175,16 +160,9 @@ Private Sub chkInvert_Click()
     UpdateDescriptions
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdBar_OKClick()
 
-    Me.Visible = False
-    
     Select Case LstEdgeOptions.ListIndex
         Case 0
             Process "Find edges (Prewitt horizontal)", , CStr(CBool(chkInvert.Value))
@@ -206,30 +184,24 @@ Private Sub CmdOK_Click()
             Process "Find edges (PhotoDemon cubic)", , CStr(CBool(chkInvert.Value))
     End Select
     
-    Unload Me
+End Sub
 
+Private Sub cmdBar_RequestPreviewUpdate()
+    UpdateDescriptions
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    LstEdgeOptions.ListIndex = 5
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Generate a list box with all the various edge detection algorithms
-    LstEdgeOptions.AddItem "Prewitt Horizontal"
-    LstEdgeOptions.AddItem "Prewitt Vertical"
-    LstEdgeOptions.AddItem "Sobel Horizontal"
-    LstEdgeOptions.AddItem "Sobel Vertical"
-    LstEdgeOptions.AddItem "Laplacian"
-    LstEdgeOptions.AddItem "Artistic Contour"
-    LstEdgeOptions.AddItem "Hilite"
-    LstEdgeOptions.AddItem "PhotoDemon Linear"
-    LstEdgeOptions.AddItem "PhotoDemon Cubic"
-    
-    LstEdgeOptions.ListIndex = 5
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
+    cmdBar.markPreviewStatus True
     UpdateDescriptions
     
 End Sub
@@ -460,6 +432,24 @@ Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False
     
 End Sub
 
+Private Sub Form_Load()
+    
+    'Suspend previews until the list box has been populated
+    cmdBar.markPreviewStatus False
+    
+    'Generate a list box with all the currently implemented edge detection algorithms
+    LstEdgeOptions.AddItem "Prewitt Horizontal"
+    LstEdgeOptions.AddItem "Prewitt Vertical"
+    LstEdgeOptions.AddItem "Sobel Horizontal"
+    LstEdgeOptions.AddItem "Sobel Vertical"
+    LstEdgeOptions.AddItem "Laplacian"
+    LstEdgeOptions.AddItem "Artistic Contour"
+    LstEdgeOptions.AddItem "Hilite"
+    LstEdgeOptions.AddItem "PhotoDemon Linear"
+    LstEdgeOptions.AddItem "PhotoDemon Cubic"
+    
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
@@ -473,37 +463,41 @@ End Sub
 ' This sub also handles redrawing the edge detection preview.
 Private Sub UpdateDescriptions()
     
-    Select Case LstEdgeOptions.ListIndex
+    If cmdBar.previewsAllowed Then
     
-        Case 0
-            LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
-            FilterPrewittHorizontal CBool(chkInvert.Value), True, fxPreview
-        Case 1
-            LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
-            FilterPrewittVertical CBool(chkInvert.Value), True, fxPreview
-        Case 2
-            LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
-            FilterSobelHorizontal CBool(chkInvert.Value), True, fxPreview
-        Case 3
-            LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
-            FilterSobelVertical CBool(chkInvert.Value), True, fxPreview
-        Case 4
-            LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
-            FilterLaplacian CBool(chkInvert.Value), True, fxPreview
-        Case 5
-            LblDesc = g_Language.TranslateMessage("Algorithm designed to present a clean, artistic prediction of image edges.")
-            FilterSmoothContour CBool(chkInvert.Value), True, fxPreview
-        Case 6
-            LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
-            FilterHilite CBool(chkInvert.Value), True, fxPreview
-        Case 7
-            LblDesc = g_Language.TranslateMessage("Simple mathematical routine based on linear relationships between diagonal pixels.")
-            PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, fxPreview
-        Case 8
-            LblDesc = g_Language.TranslateMessage("Advanced mathematical routine based on cubic relationships between diagonal pixels.")
-            PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, fxPreview
-    
-    End Select
+        Select Case LstEdgeOptions.ListIndex
+        
+            Case 0
+                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
+                FilterPrewittHorizontal CBool(chkInvert.Value), True, fxPreview
+            Case 1
+                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
+                FilterPrewittVertical CBool(chkInvert.Value), True, fxPreview
+            Case 2
+                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
+                FilterSobelHorizontal CBool(chkInvert.Value), True, fxPreview
+            Case 3
+                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
+                FilterSobelVertical CBool(chkInvert.Value), True, fxPreview
+            Case 4
+                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
+                FilterLaplacian CBool(chkInvert.Value), True, fxPreview
+            Case 5
+                LblDesc = g_Language.TranslateMessage("Algorithm designed to present a clean, artistic prediction of image edges.")
+                FilterSmoothContour CBool(chkInvert.Value), True, fxPreview
+            Case 6
+                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
+                FilterHilite CBool(chkInvert.Value), True, fxPreview
+            Case 7
+                LblDesc = g_Language.TranslateMessage("Simple mathematical routine based on linear relationships between diagonal pixels.")
+                PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, fxPreview
+            Case 8
+                LblDesc = g_Language.TranslateMessage("Advanced mathematical routine based on cubic relationships between diagonal pixels.")
+                PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, fxPreview
+        
+        End Select
+        
+    End If
     
 End Sub
 

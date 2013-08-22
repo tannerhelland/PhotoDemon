@@ -24,10 +24,29 @@ Begin VB.Form FormGamma
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   10
+      Top             =   5790
+      Width           =   12060
+      _ExtentX        =   21273
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   5160
       Width           =   2250
       _ExtentX        =   3969
@@ -53,32 +72,14 @@ Begin VB.Form FormGamma
       ScaleHeight     =   159
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   3495
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -88,7 +89,7 @@ Begin VB.Form FormGamma
       Height          =   495
       Index           =   0
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -112,7 +113,7 @@ Begin VB.Form FormGamma
       Height          =   495
       Index           =   1
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   3840
       Width           =   5895
       _ExtentX        =   10398
@@ -136,7 +137,7 @@ Begin VB.Form FormGamma
       Height          =   495
       Index           =   2
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   4680
       Width           =   5895
       _ExtentX        =   10398
@@ -173,7 +174,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4320
       Width           =   540
    End
@@ -194,7 +195,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3480
       Width           =   690
    End
@@ -214,26 +215,10 @@ Begin VB.Form FormGamma
       Height          =   1005
       Index           =   2
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   1170
       Width           =   2040
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -252,7 +237,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2640
       Width           =   435
    End
@@ -302,21 +287,24 @@ Private Sub chkUnison_Click()
     
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Gamma", , buildParams(sltGamma(0), sltGamma(1), sltGamma(2))
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
+'When randomizing, do not check the "unison" box
+Private Sub cmdBar_RandomizeClick()
+    chkUnison.Value = vbUnchecked
+End Sub
 
-    'If all gamma values are valid, perform a full gamma correction on the current image (or selection)
-    If sltGamma(0).IsValid And sltGamma(1).IsValid And sltGamma(2).IsValid Then
-        Me.Visible = False
-        Process "Gamma", , buildParams(sltGamma(0), sltGamma(1), sltGamma(2))
-        Unload Me
-    End If
-    
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltGamma(0).Value = 1
+    sltGamma(1).Value = 1
+    sltGamma(2).Value = 1
 End Sub
 
 Private Sub Form_Activate()
@@ -433,72 +421,76 @@ End Sub
 
 'Redraw the preview effect and the gamma chart
 Private Sub updatePreview()
-    
-    Dim prevX As Double, prevY As Double
-    Dim curX As Double, curY As Double
-    Dim x As Long, y As Long
-    
-    Dim xWidth As Long, yHeight As Long
-    xWidth = picChart.ScaleWidth
-    yHeight = picChart.ScaleHeight
-        
-    'Clear out the old chart and draw a gray line across the diagonal for reference
-    picChart.Picture = LoadPicture("")
-    picChart.ForeColor = RGB(127, 127, 127)
-    GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
-    
-    Dim gamVal As Double, tmpVal As Double
-    
-    'Draw each of the current gamma curves for the user's reference
-    For y = 0 To 2
-        
-        'If all channels are in sync, draw only blue; otherwise, color each channel individually
-        gamVal = sltGamma(y)
-        If (sltGamma(0) = sltGamma(1)) And (sltGamma(1) = sltGamma(2)) Then
-            picChart.ForeColor = RGB(0, 0, 255)
-        Else
-        
-            Select Case y
-                Case 0
-                    picChart.ForeColor = RGB(255, 0, 0)
-                Case 1
-                    picChart.ForeColor = RGB(0, 192, 0)
-                Case 2
-                    picChart.ForeColor = RGB(0, 0, 255)
-            End Select
-            
-        End If
-        
-        prevX = 0
-        prevY = yHeight
-        curX = 0
-        curY = yHeight
-    
-        'Draw the next channel (with antialiasing!)
-        For x = 0 To xWidth
-            tmpVal = x / xWidth
-            tmpVal = tmpVal ^ (1 / gamVal)
-            tmpVal = yHeight - (tmpVal * yHeight)
-            curY = tmpVal
-            curX = x
-            GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
-            prevX = curX
-            prevY = curY
-        Next x
-        
-    Next y
-    
-    picChart.Picture = picChart.Image
-    picChart.Refresh
 
-    'Once the chart is done, redraw the gamma preview as well
-    GammaCorrect sltGamma(0), sltGamma(1), sltGamma(2), True, fxPreview
+    If cmdBar.previewsAllowed Then
+    
+        Dim prevX As Double, prevY As Double
+        Dim curX As Double, curY As Double
+        Dim x As Long, y As Long
+        
+        Dim xWidth As Long, yHeight As Long
+        xWidth = picChart.ScaleWidth
+        yHeight = picChart.ScaleHeight
+            
+        'Clear out the old chart and draw a gray line across the diagonal for reference
+        picChart.Picture = LoadPicture("")
+        picChart.ForeColor = RGB(127, 127, 127)
+        GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+        
+        Dim gamVal As Double, tmpVal As Double
+        
+        'Draw each of the current gamma curves for the user's reference
+        For y = 0 To 2
+            
+            'If all channels are in sync, draw only blue; otherwise, color each channel individually
+            gamVal = sltGamma(y)
+            If (sltGamma(0) = sltGamma(1)) And (sltGamma(1) = sltGamma(2)) Then
+                picChart.ForeColor = RGB(0, 0, 255)
+            Else
+            
+                Select Case y
+                    Case 0
+                        picChart.ForeColor = RGB(255, 0, 0)
+                    Case 1
+                        picChart.ForeColor = RGB(0, 192, 0)
+                    Case 2
+                        picChart.ForeColor = RGB(0, 0, 255)
+                End Select
+                
+            End If
+            
+            prevX = 0
+            prevY = yHeight
+            curX = 0
+            curY = yHeight
+        
+            'Draw the next channel (with antialiasing!)
+            For x = 0 To xWidth
+                tmpVal = x / xWidth
+                tmpVal = tmpVal ^ (1 / gamVal)
+                tmpVal = yHeight - (tmpVal * yHeight)
+                curY = tmpVal
+                curX = x
+                GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+                prevX = curX
+                prevY = curY
+            Next x
+            
+        Next y
+        
+        picChart.Picture = picChart.Image
+        picChart.Refresh
+    
+        'Once the chart is done, redraw the gamma preview as well
+        GammaCorrect sltGamma(0), sltGamma(1), sltGamma(2), True, fxPreview
+        
+    End If
     
 End Sub
 
 Private Sub sltGamma_Change(Index As Integer)
 
-    If userChange Then
+    If userChange And cmdBar.previewsAllowed Then
         userChange = False
         
         If CBool(chkUnison) Then

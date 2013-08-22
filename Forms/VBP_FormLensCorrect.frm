@@ -25,6 +25,25 @@ Begin VB.Form FormLensCorrect
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   12
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,32 +59,14 @@ Begin VB.Form FormLensCorrect
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3765
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +76,7 @@ Begin VB.Form FormLensCorrect
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   4680
       Width           =   1005
       _ExtentX        =   1773
@@ -96,7 +97,7 @@ Begin VB.Form FormLensCorrect
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   4680
       Width           =   975
       _ExtentX        =   1720
@@ -115,7 +116,7 @@ Begin VB.Form FormLensCorrect
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   1170
       Width           =   5895
       _ExtentX        =   10398
@@ -136,7 +137,7 @@ Begin VB.Form FormLensCorrect
    Begin PhotoDemon.sliderTextCombo sltZoom 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   2010
       Width           =   5895
       _ExtentX        =   10398
@@ -158,7 +159,7 @@ Begin VB.Form FormLensCorrect
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   2850
       Width           =   5895
       _ExtentX        =   10398
@@ -193,7 +194,7 @@ Begin VB.Form FormLensCorrect
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3360
       Width           =   4170
    End
@@ -215,16 +216,9 @@ Begin VB.Form FormLensCorrect
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   1680
       Width           =   1800
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
@@ -242,7 +236,7 @@ Begin VB.Form FormLensCorrect
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2520
       Width           =   2145
    End
@@ -264,7 +258,7 @@ Begin VB.Form FormLensCorrect
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4290
       Width           =   1845
    End
@@ -286,7 +280,7 @@ Begin VB.Form FormLensCorrect
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   840
       Width           =   2085
    End
@@ -325,23 +319,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltStrength.IsValid And sltZoom.IsValid And sltRadius.IsValid Then
-        Me.Visible = False
-        Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
 End Sub
 
 'Correct lens distortion in an image
@@ -473,19 +450,42 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
         
 End Sub
 
-Private Sub Form_Activate()
-    
-    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
-    ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_ERASE
-    
-    'Draw a preview of the effect
+Private Sub cmdBar_OKClick()
+    Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
-        
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltStrength.Value = 3
+    sltZoom.Value = 1.5
+    sltRadius.Value = 100
+    cmbEdges.ListIndex = EDGE_ERASE
+End Sub
+
+Private Sub Form_Activate()
+           
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    cmdBar.markPreviewStatus True
+    updatePreview
             
+End Sub
+
+Private Sub Form_Load()
+
+    'Disable previews until all controls have been initialized
+    cmdBar.markPreviewStatus False
+
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_ERASE
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -510,5 +510,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
