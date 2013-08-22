@@ -362,9 +362,7 @@ Public Sub ApplyAllMenuIcons()
         '--> Noise sub-menu
         AddMenuIcon "FILMGRAIN", 6, 8, 0      'Film grain
         AddMenuIcon "ADDNOISE", 6, 8, 1       'Add Noise
-        AddMenuIcon "DESPECKLE", 6, 8, 3      'Despeckle
-        AddMenuIcon "MEDIAN", 6, 8, 4         'Median
-        AddMenuIcon "REMOVEORPHAN", 6, 8, 5   'Remove Orphan
+        AddMenuIcon "MEDIAN", 6, 8, 3         'Median
     AddMenuIcon "SHARPEN", 6, 9         'Sharpen
         '--> Sharpen sub-menu
         AddMenuIcon "SHARPEN", 6, 9, 0       'Sharpen

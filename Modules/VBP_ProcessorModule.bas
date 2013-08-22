@@ -959,17 +959,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Vibrate"
             MenuVibrate
-            
-        Case "Despeckle"
-            FormDespeckle.QuickDespeckle
-            
-        Case "Custom despeckle"
-            If showDialog Then
-                FormDespeckle.Show vbModal, FormMain
-            Else
-                FormDespeckle.Despeckle cParams.GetLong(1)
-            End If
-            
+        
         Case "Thermograph (heat map)"
             MenuHeatMap
             
