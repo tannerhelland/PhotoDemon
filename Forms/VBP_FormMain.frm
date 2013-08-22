@@ -1528,16 +1528,8 @@ Begin VB.MDIForm FormMain
             Index           =   2
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Despeckle..."
-            Index           =   3
-         End
-         Begin VB.Menu MnuNoise 
             Caption         =   "Median..."
-            Index           =   4
-         End
-         Begin VB.Menu MnuNoise 
-            Caption         =   "Remove orphan pixels"
-            Index           =   5
+            Index           =   3
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3083,18 +3075,10 @@ Private Sub MnuNoise_Click(Index As Integer)
             
         'Separator
         Case 2
-            
-        'Despeckle
-        Case 3
-            Process "Custom despeckle", True
         
         'Median
-        Case 4
+        Case 3
             Process "Median", True
-            
-        'Remove orphan pixels
-        Case 5
-            Process "Despeckle"
             
     End Select
         
