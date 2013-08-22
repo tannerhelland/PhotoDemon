@@ -3,8 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 21/August/13
-'Last update: correctly roll back Undo data when an action is canceled mid-processing
+'Last updated: 22/August/13
+'Last update: finish organizing processor calls by category.  They now match their menu order, and I will try to keep it that way.
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -637,172 +637,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         
         
-        'AREA filters
-        Case "Sharpen"
-            If showDialog Then
-                FormSharpen.Show vbModal, FormMain
-            Else
-                FormSharpen.ApplySharpenFilter cParams.GetDouble(1)
-            End If
-            
-        Case "Unsharp mask"
-            If showDialog Then
-                FormUnsharpMask.Show vbModal, FormMain
-            Else
-                FormUnsharpMask.UnsharpMask cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
-            End If
-            
-        Case "Diffuse"
-            If showDialog Then
-                FormDiffuse.Show vbModal, FormMain
-            Else
-                FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
-            End If
-            
-        Case "Pixelate"
-            If showDialog Then
-                FormPixelate.Show vbModal, FormMain
-            Else
-                FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
-            End If
-            
-        Case "Dilate (maximum rank)"
-            If showDialog Then
-                FormMedian.showMedianDialog 100
-            Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
-            End If
-            
-        Case "Erode (minimum rank)"
-            If showDialog Then
-                FormMedian.showMedianDialog 1
-            Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
-            End If
-            
-        Case "Grid blur"
-            FilterGridBlur
-            
-        Case "Gaussian blur"
-            If showDialog Then
-                FormGaussianBlur.Show vbModal, FormMain
-            Else
-                FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1)
-            End If
-            
-        Case "Smart blur"
-            If showDialog Then
-                FormSmartBlur.Show vbModal, FormMain
-            Else
-                FormSmartBlur.SmartBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
-            End If
-            
-        Case "Box blur"
-            If showDialog Then
-                FormBoxBlur.Show vbModal, FormMain
-            Else
-                FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
-            End If
-        
-        'EDGE filters
-        Case "Emboss or engrave"
-            FormEmbossEngrave.Show vbModal, FormMain
-            
-        Case "Emboss"
-            FormEmbossEngrave.FilterEmbossColor cParams.GetLong(1)
-            
-        Case "Engrave"
-            FormEmbossEngrave.FilterEngraveColor cParams.GetLong(1)
-            
-        Case "Pencil drawing"
-            FilterPencil
-            
-        Case "Relief"
-            FilterRelief
-            
-        Case "Artistic contour"
-            FormFindEdges.FilterSmoothContour cParams.GetBool(1)
-            
-        Case "Find edges (Prewitt horizontal)"
-            FormFindEdges.FilterPrewittHorizontal cParams.GetBool(1)
-            
-        Case "Find edges (Prewitt vertical)"
-            FormFindEdges.FilterPrewittVertical cParams.GetBool(1)
-            
-        Case "Find edges (Sobel horizontal)"
-            FormFindEdges.FilterSobelHorizontal cParams.GetBool(1)
-            
-        Case "Find edges (Sobel vertical)"
-            FormFindEdges.FilterSobelVertical cParams.GetBool(1)
-            
-        Case "Find edges"
-            FormFindEdges.Show vbModal, FormMain
-            
-        Case "Find edges (Laplacian)"
-            FormFindEdges.FilterLaplacian cParams.GetBool(1)
-            
-        Case "Find edges (Hilite)"
-            FormFindEdges.FilterHilite cParams.GetBool(1)
-            
-        Case "Find edges (PhotoDemon linear)"
-            FormFindEdges.PhotoDemonLinearEdgeDetection cParams.GetBool(1)
-            
-        Case "Find edges (PhotoDemon cubic)"
-            FormFindEdges.PhotoDemonCubicEdgeDetection cParams.GetBool(1)
-            
-        Case "Edge enhance"
-            FilterEdgeEnhance
-            
-        Case "Trace contour"
-            If showDialog Then
-                FormContour.Show vbModal, FormMain
-            Else
-                FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
-            End If
+        'EFFECT FUNCTIONS
+        'Sometimes fun, sometimes practical, no real unifying factor to these.
         
         
-        'Distort filters
-        Case "Swirl"
-            If showDialog Then
-                FormSwirl.Show vbModal, FormMain
-            Else
-                FormSwirl.SwirlImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
-            End If
-            
-        Case "Apply lens distortion"
-            If showDialog Then
-                FormLens.Show vbModal, FormMain
-            Else
-                FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetBool(3)
-            End If
-            
-        Case "Correct lens distortion"
-            If showDialog Then
-                FormLensCorrect.Show vbModal, FormMain
-            Else
-                FormLensCorrect.ApplyLensCorrection cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
-            End If
-            
-        Case "Ripple"
-            If showDialog Then
-                FormRipple.Show vbModal, FormMain
-            Else
-                FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
-            End If
-            
-        Case "Pinch and whirl"
-            If showDialog Then
-                FormPinch.Show vbModal, FormMain
-            Else
-                FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
-            End If
-            
-        Case "Waves"
-            If showDialog Then
-                FormWaves.Show vbModal, FormMain
-            Else
-                FormWaves.WaveImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
-            End If
+        'Artistic
+        Case "Comic book"
+            MenuComicBook
             
         Case "Figured glass"
             If showDialog Then
@@ -810,184 +651,15 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormFiguredGlass.FiguredGlassFX cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
+        
+        Case "Film noir"
+            MenuFilmNoir
             
         Case "Kaleidoscope"
             If showDialog Then
                 FormKaleidoscope.Show vbModal, FormMain
             Else
                 FormKaleidoscope.KaleidoscopeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetBool(5)
-            End If
-            
-        Case "Polar conversion"
-            If showDialog Then
-                FormPolar.Show vbModal, FormMain
-            Else
-                FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
-            End If
-            
-        Case "Shear"
-            If showDialog Then
-                FormShear.Show vbModal, FormMain
-            Else
-                FormShear.ShearImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
-            End If
-            
-        Case "Squish"
-            If showDialog Then
-                FormSquish.Show vbModal, FormMain
-            Else
-                FormSquish.SquishImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
-            End If
-            
-        Case "Perspective"
-            If showDialog Then
-                FormPerspective.Show vbModal, FormMain
-            Else
-                FormPerspective.PerspectiveImage cParams.getParamString
-            End If
-            
-        Case "Pan and zoom"
-            If showDialog Then
-                FormPanAndZoom.Show vbModal, FormMain
-            Else
-                FormPanAndZoom.PanAndZoomFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
-            End If
-            
-        Case "Poke"
-            If showDialog Then
-                FormPoke.Show vbModal, FormMain
-            Else
-                FormPoke.ApplyPokeDistort cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
-            End If
-            
-        Case "Spherize"
-            If showDialog Then
-                FormSpherize.Show vbModal, FormMain
-            Else
-                FormSpherize.SpherizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetBool(6)
-            End If
-        
-        Case "Miscellaneous distort"
-            If showDialog Then
-                FormMiscDistorts.Show vbModal, FormMain
-            Else
-                FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
-            End If
-        
-            
-        'MISCELLANEOUS filters
-        Case "Antique"
-            MenuAntique
-            
-        Case "Atmosphere"
-            MenuAtmospheric
-            
-        Case "Black light"
-            If showDialog Then
-                FormBlackLight.Show vbModal, FormMain
-            Else
-                FormBlackLight.fxBlackLight cParams.GetLong(1)
-            End If
-            
-        Case "Dream"
-            MenuDream
-            
-        Case "Posterize"
-            If showDialog Then
-                FormPosterize.Show vbModal, FormMain
-            Else
-                FormPosterize.PosterizeImage cParams.GetByte(1)
-            End If
-            
-        Case "Radioactive"
-            MenuRadioactive
-            
-        Case "Solarize"
-            If showDialog Then
-                FormSolarize.Show vbModal, FormMain
-            Else
-                FormSolarize.SolarizeImage cParams.GetByte(1)
-            End If
-            
-        Case "Generate twins"
-            If showDialog Then
-                FormTwins.Show vbModal, FormMain
-            Else
-                FormTwins.GenerateTwins cParams.GetByte(1)
-            End If
-            
-        Case "Alien"
-            MenuAlien
-            
-        Case "Synthesize"
-            MenuSynthesize
-            
-        Case "Water"
-            MenuWater
-            
-        Case "Add RGB noise"
-            If showDialog Then
-                FormNoise.Show vbModal, FormMain
-            Else
-                FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
-            End If
-            
-        Case "Freeze"
-            MenuFrozen
-            
-        Case "Lava"
-            MenuLava
-            
-        Case "Custom filter"
-            If showDialog Then
-                FormCustomFilter.Show vbModal, FormMain
-            Else
-                DoFilter cParams.getParamString
-            End If
-            
-        Case "Burn"
-            MenuBurn
-            
-        Case "Steel"
-            MenuSteel
-            
-        Case "Fog"
-            MenuFogEffect
-            
-        Case "Rainbow"
-            MenuRainbow
-            
-        Case "Vibrate"
-            MenuVibrate
-        
-        Case "Thermograph (heat map)"
-            MenuHeatMap
-            
-        Case "Comic book"
-            MenuComicBook
-            
-        Case "Add film grain"
-            If showDialog Then
-                FormFilmGrain.Show vbModal, FormMain
-            Else
-                FormFilmGrain.AddFilmGrain cParams.GetDouble(1), cParams.GetLong(2)
-            End If
-            
-        Case "Film noir"
-            MenuFilmNoir
-            
-        Case "Vignetting"
-            If showDialog Then
-                FormVignette.Show vbModal, FormMain
-            Else
-                FormVignette.ApplyVignette cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5)
-            End If
-            
-        Case "Median"
-            If showDialog Then
-                FormMedian.showMedianDialog 50
-            Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
             End If
             
         Case "Modern art"
@@ -1003,6 +675,367 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormOilPainting.ApplyOilPaintingEffect cParams.GetLong(1), cParams.GetDouble(2)
             End If
+            
+        Case "Posterize"
+            If showDialog Then
+                FormPosterize.Show vbModal, FormMain
+            Else
+                FormPosterize.PosterizeImage cParams.GetByte(1)
+            End If
+            
+        Case "Pencil drawing"
+            FilterPencil
+            
+        Case "Relief"
+            FilterRelief
+            
+            
+        'Blur
+        
+        Case "Box blur"
+            If showDialog Then
+                FormBoxBlur.Show vbModal, FormMain
+            Else
+                FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
+            End If
+        
+        Case "Gaussian blur"
+            If showDialog Then
+                FormGaussianBlur.Show vbModal, FormMain
+            Else
+                FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1)
+            End If
+        
+        Case "Grid blur"
+            FilterGridBlur
+            
+        Case "Pixelate"
+            If showDialog Then
+                FormPixelate.Show vbModal, FormMain
+            Else
+                FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
+            End If
+            
+        Case "Smart blur"
+            If showDialog Then
+                FormSmartBlur.Show vbModal, FormMain
+            Else
+                FormSmartBlur.SmartBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
+            End If
+            
+        
+        'Distort filters
+        
+        Case "Apply lens distortion"
+            If showDialog Then
+                FormLens.Show vbModal, FormMain
+            Else
+                FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetBool(3)
+            End If
+            
+        Case "Correct lens distortion"
+            If showDialog Then
+                FormLensCorrect.Show vbModal, FormMain
+            Else
+                FormLensCorrect.ApplyLensCorrection cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
+            End If
+        
+        Case "Miscellaneous distort"
+            If showDialog Then
+                FormMiscDistorts.Show vbModal, FormMain
+            Else
+                FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
+            End If
+            
+        Case "Pan and zoom"
+            If showDialog Then
+                FormPanAndZoom.Show vbModal, FormMain
+            Else
+                FormPanAndZoom.PanAndZoomFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
+            End If
+        
+        Case "Perspective"
+            If showDialog Then
+                FormPerspective.Show vbModal, FormMain
+            Else
+                FormPerspective.PerspectiveImage cParams.getParamString
+            End If
+            
+        Case "Pinch and whirl"
+            If showDialog Then
+                FormPinch.Show vbModal, FormMain
+            Else
+                FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
+            End If
+            
+        Case "Poke"
+            If showDialog Then
+                FormPoke.Show vbModal, FormMain
+            Else
+                FormPoke.ApplyPokeDistort cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
+            End If
+            
+        Case "Polar conversion"
+            If showDialog Then
+                FormPolar.Show vbModal, FormMain
+            Else
+                FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
+            End If
+            
+        Case "Ripple"
+            If showDialog Then
+                FormRipple.Show vbModal, FormMain
+            Else
+                FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
+            End If
+            
+        Case "Rotate"
+            If showDialog Then
+                FormRotateDistort.Show vbModal, FormMain
+            Else
+                FormRotateDistort.RotateFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
+            End If
+            
+        Case "Shear"
+            If showDialog Then
+                FormShear.Show vbModal, FormMain
+            Else
+                FormShear.ShearImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
+            End If
+            
+        Case "Spherize"
+            If showDialog Then
+                FormSpherize.Show vbModal, FormMain
+            Else
+                FormSpherize.SpherizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetBool(6)
+            End If
+        
+        Case "Squish"
+            If showDialog Then
+                FormSquish.Show vbModal, FormMain
+            Else
+                FormSquish.SquishImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
+            End If
+            
+        Case "Swirl"
+            If showDialog Then
+                FormSwirl.Show vbModal, FormMain
+            Else
+                FormSwirl.SwirlImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
+            End If
+            
+        Case "Waves"
+            If showDialog Then
+                FormWaves.Show vbModal, FormMain
+            Else
+                FormWaves.WaveImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
+            End If
+            
+        
+        'Edge filters
+        Case "Emboss or engrave"
+            FormEmbossEngrave.Show vbModal, FormMain
+            
+            Case "Emboss"
+                FormEmbossEngrave.FilterEmbossColor cParams.GetLong(1)
+                
+            Case "Engrave"
+                FormEmbossEngrave.FilterEngraveColor cParams.GetLong(1)
+            
+        Case "Edge enhance"
+            FilterEdgeEnhance
+            
+        Case "Find edges"
+            FormFindEdges.Show vbModal, FormMain
+            
+            Case "Artistic contour"
+                FormFindEdges.FilterSmoothContour cParams.GetBool(1)
+                
+            Case "Find edges (Prewitt horizontal)"
+                FormFindEdges.FilterPrewittHorizontal cParams.GetBool(1)
+                
+            Case "Find edges (Prewitt vertical)"
+                FormFindEdges.FilterPrewittVertical cParams.GetBool(1)
+                
+            Case "Find edges (Sobel horizontal)"
+                FormFindEdges.FilterSobelHorizontal cParams.GetBool(1)
+                
+            Case "Find edges (Sobel vertical)"
+                FormFindEdges.FilterSobelVertical cParams.GetBool(1)
+                
+            Case "Find edges (Laplacian)"
+                FormFindEdges.FilterLaplacian cParams.GetBool(1)
+                
+            Case "Find edges (Hilite)"
+                FormFindEdges.FilterHilite cParams.GetBool(1)
+                
+            Case "Find edges (PhotoDemon linear)"
+                FormFindEdges.PhotoDemonLinearEdgeDetection cParams.GetBool(1)
+                
+            Case "Find edges (PhotoDemon cubic)"
+                FormFindEdges.PhotoDemonCubicEdgeDetection cParams.GetBool(1)
+            
+        Case "Trace contour"
+            If showDialog Then
+                FormContour.Show vbModal, FormMain
+            Else
+                FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
+            End If
+            
+        
+        'Experimental
+        
+        Case "Alien"
+            MenuAlien
+            
+        Case "Black light"
+            If showDialog Then
+                FormBlackLight.Show vbModal, FormMain
+            Else
+                FormBlackLight.fxBlackLight cParams.GetLong(1)
+            End If
+            
+        Case "Dream"
+            MenuDream
+            
+        Case "Radioactive"
+            MenuRadioactive
+            
+        Case "Synthesize"
+            MenuSynthesize
+        
+        Case "Thermograph (heat map)"
+            MenuHeatMap
+        
+        Case "Vibrate"
+            MenuVibrate
+        
+        
+        'Natural
+        
+        Case "Atmosphere"
+            MenuAtmospheric
+            
+        Case "Burn"
+            MenuBurn
+            
+        Case "Fog"
+            MenuFogEffect
+        
+        Case "Freeze"
+            MenuFrozen
+            
+        Case "Lava"
+            MenuLava
+            
+        Case "Rainbow"
+            MenuRainbow
+        
+        Case "Steel"
+            MenuSteel
+            
+        Case "Water"
+            MenuWater
+            
+        
+        'Noise
+        
+        Case "Add film grain"
+            If showDialog Then
+                FormFilmGrain.Show vbModal, FormMain
+            Else
+                FormFilmGrain.AddFilmGrain cParams.GetDouble(1), cParams.GetLong(2)
+            End If
+        
+        Case "Add RGB noise"
+            If showDialog Then
+                FormNoise.Show vbModal, FormMain
+            Else
+                FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
+            End If
+            
+        Case "Median"
+            If showDialog Then
+                FormMedian.showMedianDialog 50
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+            
+        'Sharpen
+        
+        Case "Sharpen"
+            If showDialog Then
+                FormSharpen.Show vbModal, FormMain
+            Else
+                FormSharpen.ApplySharpenFilter cParams.GetDouble(1)
+            End If
+            
+        Case "Unsharp mask"
+            If showDialog Then
+                FormUnsharpMask.Show vbModal, FormMain
+            Else
+                FormUnsharpMask.UnsharpMask cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
+            End If
+            
+            
+        'Stylize
+            
+        Case "Antique"
+            MenuAntique
+        
+        Case "Diffuse"
+            If showDialog Then
+                FormDiffuse.Show vbModal, FormMain
+            Else
+                FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
+            End If
+            
+        Case "Dilate (maximum rank)"
+            If showDialog Then
+                FormMedian.showMedianDialog 100
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+        Case "Erode (minimum rank)"
+            If showDialog Then
+                FormMedian.showMedianDialog 1
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+        
+        Case "Solarize"
+            If showDialog Then
+                FormSolarize.Show vbModal, FormMain
+            Else
+                FormSolarize.SolarizeImage cParams.GetByte(1)
+            End If
+            
+        Case "Twins"
+            If showDialog Then
+                FormTwins.Show vbModal, FormMain
+            Else
+                FormTwins.GenerateTwins cParams.GetByte(1)
+            End If
+            
+        Case "Vignetting"
+            If showDialog Then
+                FormVignette.Show vbModal, FormMain
+            Else
+                FormVignette.ApplyVignette cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5)
+            End If
+            
+        
+        'Custom filters
+        
+        Case "Custom filter"
+            If showDialog Then
+                FormCustomFilter.Show vbModal, FormMain
+            Else
+                DoFilter cParams.getParamString
+            End If
+        
         
         'SPECIAL OPERATIONS
         Case "Fade last effect"
