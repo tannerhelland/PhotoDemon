@@ -108,8 +108,8 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 22/August/13
-'Last update: improved randomization (option buttons can no longer all be set to FALSE, floating-point randomizing is
-'             available for text up/downs and slider/text combos)
+'Last update: changed the order in which validation occurs to address some weirdness with the grayscale dialog blindly
+'             validating off-screen controls, which may not have valid values but aren't relevant to the current action.
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -452,7 +452,7 @@ Public Property Let backColor(ByVal newColor As OLE_COLOR)
 End Property
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -469,7 +469,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Automatically validate all relevant controls on the parent object.  This is a huge perk, because it saves us
     ' from having to write validation code individually.
@@ -496,15 +496,13 @@ Private Sub CmdOK_Click()
             
         End If
     Next eControl
-    
-    'If validation failed, do not proceed further
-    If Not validateCheck Then Exit Sub
-    
+        
     'Raise an extra validation process, which the parent form can use if necessary to check additional controls.
+    ' (We do this now because the parent may have a customized way to respond to invalid data - see the Grayscale dialog, for example.)
     RaiseEvent ExtraValidations
     
-    'Make sure any extra user validations succeeded
-    If userValidationFailed Then
+    'If any validations failed (ours or the client's), terminate further processing
+    If userValidationFailed Or (Not validateCheck) Then
         userValidationFailed = False
         Exit Sub
     End If
