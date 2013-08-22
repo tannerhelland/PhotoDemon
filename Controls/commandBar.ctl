@@ -107,9 +107,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 17/August/13
-'Last update: fixed preset saving/loading to properly detect controls that are part of a control array (and thus share the
-'             same name as other controls
+'Last updated: 22/August/13
+'Last update: improved randomization (option buttons can no longer all be set to FALSE, floating-point randomizing is
+'             available for text up/downs and slider/text combos)
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -306,7 +306,16 @@ Private Sub cmdRandomize_Click()
         
             'Custom PD numeric controls have exposed .Min, .Max, and .Value properties; use them to randomize properly
             Case "sliderTextCombo", "textUpDown"
-                eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
+                
+                Select Case eControl.SigDigits
+                
+                    Case 0
+                        eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
+                        
+                    Case 1, 2
+                        eControl.Value = eControl.Min + (Rnd * (eControl.Max - eControl.Min))
+                                            
+                End Select
             
             Case "colorSelector"
                 eControl.Color = Rnd * 16777216
@@ -321,12 +330,8 @@ Private Sub cmdRandomize_Click()
             
             'Option buttons have a 1 in (num of option buttons) chance of being set to TRUE
             Case "smartOptionButton"
-                If Int(Rnd * numOfOptionButtons) = 0 Then
-                    eControl.Value = True
-                Else
-                    eControl.Value = False
-                End If
-            
+                If Int(Rnd * numOfOptionButtons) = 0 Then eControl.Value = True
+                
             'Scroll bars use the same rule as other numeric controls
             Case "HScrollBar"
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
@@ -428,8 +433,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -614,8 +619,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -691,8 +696,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
-    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
+    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
+    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
 
 End Sub
 
@@ -709,8 +714,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -943,7 +948,19 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
             Select Case controlType
             
                 'Our custom controls all have a .Value property
-                Case "sliderTextCombo", "smartCheckBox", "textUpDown"
+                Case "sliderTextCombo", "textUpDown"
+                    
+                    Select Case eControl.SigDigits
+                
+                        Case 0
+                            eControl.Value = CLng(controlValue)
+                            
+                        Case 1, 2
+                            eControl.Value = CDbl(controlValue)
+                                            
+                    End Select
+                    
+                Case "smartCheckBox"
                     eControl.Value = CLng(controlValue)
                 
                 Case "smartOptionButton"
