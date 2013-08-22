@@ -225,7 +225,8 @@ Public Sub markPreviewStatus(ByVal newPreviewSetting As Boolean)
     
     'If the client is setting this value to true, it means their work is done - which in turn means we should
     ' request a new preview.
-    If userAllowsPreviews Then RaiseEvent RequestPreviewUpdate
+    'DISABLED because it causes endless re-preview loops.  Need to check existing implementations to make sure disabling is okay.
+    'If userAllowsPreviews Then RaiseEvent RequestPreviewUpdate
     
 End Sub
 
