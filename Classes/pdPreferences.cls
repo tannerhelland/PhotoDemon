@@ -70,7 +70,6 @@ Private DataPath As String
 
 'Within the /App and /Data folders are additional subfolders, whose purposes should be obvious from their titles
 Private MacroPath As String
-Private FilterPath As String
 Private PreferencesPath As String
 Private TempPath As String
 Private IconPath As String
@@ -152,19 +151,6 @@ Public Sub setMacroPath(ByVal newMacroPath As String)
     SetPref_String "Program Paths", "Macro", MacroPath
 End Sub
 
-'Return the current filter directory
-Public Function getFilterPath() As String
-    getFilterPath = FilterPath
-End Function
-
-'Set the current filter directory
-Public Sub setFilterPath(ByVal newFilterPath As String)
-    StripDirectory newFilterPath
-    newFilterPath = FixPath(newFilterPath)
-    FilterPath = newFilterPath
-    SetPref_String "Program Paths", "Filter", FilterPath
-End Sub
-
 'Return the current MRU icon directory
 Public Function getIconPath() As String
     getIconPath = IconPath
@@ -197,10 +183,7 @@ Public Sub initializePaths()
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     MacroPath = DataPath & "Macros\"
     If Not DirectoryExist(MacroPath) Then MkDir MacroPath
-    
-    FilterPath = DataPath & "Filters\"
-    If Not DirectoryExist(FilterPath) Then MkDir FilterPath
-        
+            
     SelectionPath = DataPath & "Selections\"
     If Not DirectoryExist(SelectionPath) Then MkDir SelectionPath
     
@@ -276,7 +259,6 @@ Public Sub loadUserSettings()
     
     'Pull all other stored paths
     MacroPath = GetPref_String("Program Paths", "Macro", MacroPath)
-    FilterPath = GetPref_String("Program Paths", "CustomFilter", FilterPath)
     SelectionPath = GetPref_String("Program Paths", "Selections", SelectionPath)
     
     'Get the canvas background color
@@ -379,7 +361,6 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "TempFiles", GetTemporaryPath
         xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
         xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "CustomFilter", FilterPath
         xmlEngine.writeTag "Macro", MacroPath
         xmlEngine.writeTag "Selections", SelectionPath
     xmlEngine.closeTag "ProgramPaths"
