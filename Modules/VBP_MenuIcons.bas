@@ -301,12 +301,14 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "ARTISTIC", 6, 2        'Artistic
         '--> Artistic sub-menu
         AddMenuIcon "COMICBOOK", 6, 2, 0      'Comic book
-        AddMenuIcon "FILMNOIR", 6, 2, 1       'Film Noir
-        AddMenuIcon "MODERNART", 6, 2, 2      'Modern Art
-        AddMenuIcon "OILPAINTING", 6, 2, 3    'Oil painting
-        AddMenuIcon "PENCIL", 6, 2, 4         'Pencil
-        AddMenuIcon "POSTERIZE", 6, 2, 5      'Posterize
-        AddMenuIcon "RELIEF", 6, 2, 6         'Relief
+        AddMenuIcon "FIGGLASS", 6, 2, 1       'Figured glass
+        AddMenuIcon "FILMNOIR", 6, 2, 2       'Film Noir
+        AddMenuIcon "KALEIDOSCOPE", 6, 2, 3   'Kaleidoscope
+        AddMenuIcon "MODERNART", 6, 2, 4      'Modern Art
+        AddMenuIcon "OILPAINTING", 6, 2, 5    'Oil painting
+        AddMenuIcon "PENCIL", 6, 2, 6         'Pencil
+        AddMenuIcon "POSTERIZE", 6, 2, 7      'Posterize
+        AddMenuIcon "RELIEF", 6, 2, 8         'Relief
     AddMenuIcon "BLUR", 6, 3            'Blur
         '--> Blur sub-menu
         AddMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur
@@ -318,20 +320,19 @@ Public Sub ApplyAllMenuIcons()
         '--> Distort sub-menu
         AddMenuIcon "LENSDISTORT", 6, 4, 0    'Apply lens distortion
         AddMenuIcon "FIXLENS", 6, 4, 1        'Remove or correct existing lens distortion
-        AddMenuIcon "FIGGLASS", 6, 4, 2       'Figured glass
-        AddMenuIcon "KALEIDOSCOPE", 6, 4, 3   'Kaleidoscope
-        AddMenuIcon "MISCDISTORT", 6, 4, 4    'Miscellaneous distort functions
-        AddMenuIcon "PANANDZOOM", 6, 4, 5     'Pan and zoom
-        AddMenuIcon "PERSPECTIVE", 6, 4, 6    'Perspective (free)
-        AddMenuIcon "PINCHWHIRL", 6, 4, 7     'Pinch and whirl
-        AddMenuIcon "POKE", 6, 4, 8           'Poke
-        AddMenuIcon "POLAR", 6, 4, 9          'Polar conversion
-        AddMenuIcon "RIPPLE", 6, 4, 10        'Ripple
-        AddMenuIcon "SHEAR", 6, 4, 11         'Shear
-        AddMenuIcon "SPHERIZE", 6, 4, 12      'Spherize
-        AddMenuIcon "SQUISH", 6, 4, 13        'Squish (formerly Fixed Perspective)
-        AddMenuIcon "SWIRL", 6, 4, 14         'Swirl
-        AddMenuIcon "WAVES", 6, 4, 15         'Waves
+        AddMenuIcon "MISCDISTORT", 6, 4, 2    'Miscellaneous distort functions
+        AddMenuIcon "PANANDZOOM", 6, 4, 3     'Pan and zoom
+        AddMenuIcon "PERSPECTIVE", 6, 4, 4    'Perspective (free)
+        AddMenuIcon "PINCHWHIRL", 6, 4, 5     'Pinch and whirl
+        AddMenuIcon "POKE", 6, 4, 6           'Poke
+        AddMenuIcon "POLAR", 6, 4, 7          'Polar conversion
+        AddMenuIcon "RIPPLE", 6, 4, 8         'Ripple
+        AddMenuIcon "ROTATECW", 6, 4, 9       'Rotate
+        AddMenuIcon "SHEAR", 6, 4, 10         'Shear
+        AddMenuIcon "SPHERIZE", 6, 4, 11      'Spherize
+        AddMenuIcon "SQUISH", 6, 4, 12        'Squish (formerly Fixed Perspective)
+        AddMenuIcon "SWIRL", 6, 4, 13         'Swirl
+        AddMenuIcon "WAVES", 6, 4, 14         'Waves
         
     AddMenuIcon "EDGES", 6, 5           'Edges
         '--> Edges sub-menu
