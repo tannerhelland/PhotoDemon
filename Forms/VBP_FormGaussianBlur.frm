@@ -24,10 +24,29 @@ Begin VB.Form FormGaussianBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   4
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
@@ -46,28 +65,10 @@ Begin VB.Form FormGaussianBlur
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -87,18 +88,11 @@ Begin VB.Form FormGaussianBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -116,7 +110,7 @@ Begin VB.Form FormGaussianBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2400
       Width           =   1230
    End
@@ -158,22 +152,6 @@ Dim iWidth As Long, iHeight As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    If sltRadius.IsValid Then
-        Me.Visible = False
-        Process "Gaussian blur", , CStr(sltRadius)
-        Unload Me
-    End If
-    
-End Sub
-
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -210,19 +188,20 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview 
             
 End Sub
 
-Private Sub Form_Activate()
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Gaussian blur", , CStr(sltRadius)
+End Sub
 
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
-
-    'Draw a preview of the effect
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltRadius.Value = 1
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -238,6 +217,22 @@ Private Sub Form_Activate()
         If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
     End If
     
+    'Draw a preview of the effect
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -245,7 +240,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    GaussianBlurFilter sltRadius.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, True, fxPreview
 End Sub
 
 Private Sub sltRadius_Change()

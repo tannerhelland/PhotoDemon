@@ -25,10 +25,29 @@ Begin VB.Form FormGrayscale
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   12
+      Top             =   5790
+      Width           =   11895
+      _ExtentX        =   20981
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.sliderTextCombo sltShades 
       Height          =   495
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   3120
       Width           =   5655
       _ExtentX        =   9975
@@ -49,29 +68,11 @@ Begin VB.Form FormGrayscale
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   8910
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10380
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin VB.ComboBox cboMethod 
       Appearance      =   0  'Flat
@@ -88,7 +89,7 @@ Begin VB.Form FormGrayscale
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2040
       Width           =   5535
    End
@@ -101,14 +102,14 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       ScaleHeight     =   855
       ScaleWidth      =   4935
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   3240
       Width           =   4935
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   8
          Top             =   0
          Width           =   705
          _ExtentX        =   1244
@@ -129,7 +130,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   1
          Left            =   1560
-         TabIndex        =   12
+         TabIndex        =   9
          Top             =   0
          Width           =   945
          _ExtentX        =   1667
@@ -149,7 +150,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   2
          Left            =   3240
-         TabIndex        =   13
+         TabIndex        =   10
          Top             =   0
          Width           =   780
          _ExtentX        =   1376
@@ -175,14 +176,14 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       ScaleHeight     =   735
       ScaleWidth      =   4815
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   3240
       Width           =   4815
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   6
          Top             =   0
          Width           =   1275
          _ExtentX        =   2249
@@ -203,7 +204,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   1
          Left            =   2160
-         TabIndex        =   10
+         TabIndex        =   7
          Top             =   0
          Width           =   1365
          _ExtentX        =   2408
@@ -236,7 +237,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2760
       Width           =   1980
    End
@@ -256,16 +257,9 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1605
       Width           =   1950
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   7
-      Top             =   5760
-      Width           =   13455
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -277,8 +271,8 @@ Attribute VB_Exposed = False
 'Grayscale Conversion Handler
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 1/12/02
-'Last updated: 25/April/13
-'Last update: reduce LOC by implementing new slider/text custom control
+'Last updated: 22/August/13
+'Last update: add new command bar user control
 '
 'Updated version of the grayscale handler; utilizes five different methods
 '(average, ISU, desaturate, X # of shades, X # of shades dithered).
@@ -296,22 +290,26 @@ Dim m_ToolTip As clsToolTip
 'This routine is used to call the appropriate grayscale routine with the preview flag set
 Private Sub drawGrayscalePreview()
 
-    'Error checking (but only for functions that rely on the text box control)
-    If sltShades.IsValid(False) Or ((cboMethod.ListIndex <> 5) And (cboMethod.ListIndex <> 6)) Then
+    If cmdBar.previewsAllowed Then
         
         Select Case cboMethod.ListIndex
+        
             Case 0
                 MenuGrayscaleAverage True, fxPreview
+                
             Case 1
                 MenuGrayscale True, fxPreview
+                
             Case 2
                 MenuDesaturate True, fxPreview
+                
             Case 3
                 If optDecompose(0).Value Then
                     MenuDecompose 0, True, fxPreview
                 Else
                     MenuDecompose 1, True, fxPreview
                 End If
+                
             Case 4
                 If optChannel(0).Value Then
                     MenuGrayscaleSingleChannel 0, True, fxPreview
@@ -320,22 +318,20 @@ Private Sub drawGrayscalePreview()
                 Else
                     MenuGrayscaleSingleChannel 2, True, fxPreview
                 End If
+                
             Case 5
                 fGrayscaleCustom sltShades, True, fxPreview
+                
             Case 6
                 fGrayscaleCustomDither sltShades, True, fxPreview
+                
         End Select
-    
+            
     End If
 
 End Sub
 
 Private Sub cboMethod_Click()
-    UpdateVisibleControls
-    drawGrayscalePreview
-End Sub
-
-Private Sub cboMethod_KeyDown(KeyCode As Integer, Shift As Integer)
     UpdateVisibleControls
     drawGrayscalePreview
 End Sub
@@ -377,71 +373,62 @@ Private Sub UpdateVisibleControls()
     
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+'When validating the slider/text combos, if an invalid entry is found, automatically switch to that panel
+Private Sub cmdBar_ExtraValidations()
+    If Not sltShades.IsValid(False) And ((cboMethod.ListIndex <> 5) And (cboMethod.ListIndex <> 6)) Then cboMethod.ListIndex = 5
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
-    
-    Dim invalidTextPrompt As Boolean
-    If ((cboMethod.ListIndex = 5) Or (cboMethod.ListIndex = 6)) Then invalidTextPrompt = True Else invalidTextPrompt = False
-    
-    'Error checking
-    If sltShades.IsValid(invalidTextPrompt) Or ((cboMethod.ListIndex <> 5) And (cboMethod.ListIndex <> 6)) Then
-        
-        Me.Visible = False
-        
-        Select Case cboMethod.ListIndex
-            Case 0
-                Process "Grayscale (average)"
-            Case 1
-                Process "Grayscale (ITU standard)"
-            Case 2
-                Process "Desaturate"
-            Case 3
-                If optDecompose(0).Value Then
-                    Process "Grayscale (decomposition)", , "0"
-                Else
-                    Process "Grayscale (decomposition)", , "1"
-                End If
-            Case 4
-                If optChannel(0).Value Then
-                    Process "Grayscale (single channel)", , "0"
-                ElseIf optChannel(1).Value Then
-                    Process "Grayscale (single channel)", , "1"
-                Else
-                    Process "Grayscale (single channel)", , "2"
-                End If
-            Case 5
-                Process "Grayscale (custom # of colors)", , CStr(sltShades.Value)
-            Case 6
-                Process "Grayscale (custom dither)", , CStr(sltShades.Value)
-        End Select
-        
-        Unload Me
-    
-    End If
+Private Sub cmdBar_OKClick()
 
+    Select Case cboMethod.ListIndex
+    
+        Case 0
+            Process "Grayscale (average)"
+            
+        Case 1
+            Process "Grayscale (ITU standard)"
+            
+        Case 2
+            Process "Desaturate"
+            
+        Case 3
+            If optDecompose(0).Value Then
+                Process "Grayscale (decomposition)", , "0"
+            Else
+                Process "Grayscale (decomposition)", , "1"
+            End If
+            
+        Case 4
+            If optChannel(0).Value Then
+                Process "Grayscale (single channel)", , "0"
+            ElseIf optChannel(1).Value Then
+                Process "Grayscale (single channel)", , "1"
+            Else
+                Process "Grayscale (single channel)", , "2"
+            End If
+            
+        Case 5
+            Process "Grayscale (custom # of colors)", , CStr(sltShades.Value)
+            
+        Case 6
+            Process "Grayscale (custom dither)", , CStr(sltShades.Value)
+            
+    End Select
+       
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    UpdateVisibleControls
+    drawGrayscalePreview
+End Sub
+
+'Recommend ITU grayscale correction by default
+Private Sub cmdBar_ResetClick()
+    cboMethod.ListIndex = 1
 End Sub
 
 Private Sub Form_Activate()
-        
-    'Set up the grayscale options combo box
-    cboMethod.AddItem "Fastest Calculation (average value)", 0
-    cboMethod.AddItem "Highest Quality (ITU Standard)", 1
-    cboMethod.AddItem "Desaturate", 2
-    cboMethod.AddItem "Decompose", 3
-    cboMethod.AddItem "Single color channel", 4
-    cboMethod.AddItem "Specific # of shades", 5
-    cboMethod.AddItem "Specific # of shades (dithered)", 6
-    cboMethod.ListIndex = 1
-    
-    UpdateVisibleControls
-    
-    'Populate the explanation label
-    'lblExplanation = "This tool removes color data from an image.  The new image contains only shades of gray." & vbCrLf & vbCrLf & "Sometimes this tool is called a ""black and white"" tool, but that name is misleading because the processed image contains many more shades than just ""black"" and ""white"".  A separate ""Black and White"" tool (found in the ""Color"" menu) exists if you want an image with just black and just white." & vbCrLf & vbCrLf & "While there are many ways to remove color from an image, most users stick with the ""Highest Quality (ITU Standard)"" method, which produces the best grayscale image.  Other options are provided for artistic effect." & vbCrLf & vbCrLf & "To learn more about the various grayscale conversion options, please visit this link:"
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -450,6 +437,7 @@ Private Sub Form_Activate()
     setArrowCursorToObject picDecompose
     
     'Draw the initial preview
+    cmdBar.markPreviewStatus True
     drawGrayscalePreview
     
 End Sub
@@ -1015,6 +1003,24 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
         
+End Sub
+
+Private Sub Form_Load()
+    
+    'Suspend previews while we get the form set up
+    cmdBar.markPreviewStatus False
+    
+    'Set up the grayscale options combo box
+    cboMethod.AddItem "Fastest Calculation (average value)", 0
+    cboMethod.AddItem "Highest Quality (ITU Standard)", 1
+    cboMethod.AddItem "Desaturate", 2
+    cboMethod.AddItem "Decompose", 3
+    cboMethod.AddItem "Single color channel", 4
+    cboMethod.AddItem "Specific # of shades", 5
+    cboMethod.AddItem "Specific # of shades (dithered)", 6
+    
+    UpdateVisibleControls
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
