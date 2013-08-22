@@ -24,25 +24,15 @@ Begin VB.Form FormEmbossEngrave
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.colorSelector colorPicker 
-      Height          =   615
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   3480
-      Width           =   5535
-      _ExtentX        =   9763
-      _ExtentY        =   1085
-      curColor        =   16744576
-   End
-   Begin PhotoDemon.smartCheckBox chkToColor 
-      Height          =   480
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   2880
-      Width           =   5580
-      _ExtentX        =   9843
-      _ExtentY        =   847
-      Caption         =   "use custom background color (click colored box to change)..."
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   4
+      Top             =   5790
+      Width           =   11820
+      _ExtentX        =   20849
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -53,11 +43,21 @@ Begin VB.Form FormEmbossEngrave
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.colorSelector colorPicker 
+      Height          =   615
+      Left            =   6240
+      TabIndex        =   3
+      Top             =   3360
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1085
+      curColor        =   16744576
+   End
    Begin PhotoDemon.smartOptionButton optEmboss 
       Height          =   345
       Left            =   6240
-      TabIndex        =   2
-      Top             =   1740
+      TabIndex        =   0
+      Top             =   1920
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   661
@@ -73,28 +73,10 @@ Begin VB.Form FormEmbossEngrave
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   8880
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10350
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -104,8 +86,8 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.smartOptionButton optEngrave 
       Height          =   345
       Left            =   6240
-      TabIndex        =   3
-      Top             =   2160
+      TabIndex        =   1
+      Top             =   2370
       Width           =   1230
       _ExtentX        =   2170
       _ExtentY        =   661
@@ -120,21 +102,47 @@ Begin VB.Form FormEmbossEngrave
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblBackground 
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "base color:"
       BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
+         Name            =   "Tahoma"
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   11895
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   2880
+      Width           =   1170
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "style:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   1560
+      Width           =   570
    End
 End
 Attribute VB_Name = "FormEmbossEngrave"
@@ -146,8 +154,8 @@ Attribute VB_Exposed = False
 'Emboss/Engrave Filter Interface
 'Copyright ©2003-2013 by Tanner Helland
 'Created: 3/6/03
-'Last updated: 09/September/12
-'Last update: rewrite emboss/engrave against new layer class
+'Last updated: 22/August/13
+'Last update: added command bar and simplified form layout and code
 '
 'Module for handling all emboss and engrave filters.  It's basically just an
 'interfacing layer to the 4 main filters: Emboss/EmbossToColor and Engrave/EngraveToColor
@@ -162,50 +170,34 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-Private Sub ChkToColor_Click()
+'OK button
+Private Sub cmdBar_OKClick()
+
+    If optEmboss.Value Then
+        Process "Emboss", , CStr(colorPicker.Color)
+    Else
+        Process "Engrave", , CStr(colorPicker.Color)
+    End If
+    
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    'Used to remember the last color used for embossing
-    g_EmbossEngraveColor = colorPicker.Color
-    Me.Visible = False
-    
-    Dim newColor As Long
-    If CBool(chkToColor.Value) Then newColor = colorPicker.Color Else newColor = RGB(127, 127, 127)
-    
-    'Dependent: filter to grey OR to a background color
-    If optEmboss.Value Then
-        Process "Emboss", , CStr(newColor)
-    Else
-        Process "Engrave", , CStr(newColor)
-    End If
-    
-    Unload Me
-    
+Private Sub cmdBar_ResetClick()
+    colorPicker.Color = RGB(127, 127, 127)
 End Sub
 
 Private Sub colorPicker_ColorChanged()
-    chkToColor.Value = vbChecked
     updatePreview
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Remember the last emboss/engrave color selection
-    colorPicker.Color = g_EmbossEngraveColor
-        
+            
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setArrowCursor Me
     
     'Render a preview of the emboss/engrave effect
     updatePreview
@@ -218,8 +210,6 @@ End Sub
 
 Private Sub fxPreview_ColorSelected()
     colorPicker.Color = fxPreview.SelectedColor
-    chkToColor.Value = vbChecked
-    updatePreview
 End Sub
 
 'When the emboss/engrave options are clicked, redraw the preview
@@ -235,7 +225,7 @@ End Sub
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
 Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Embossing image..."
+    If Not toPreview Then Message "Embossing image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -274,10 +264,10 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim TR As Long, tB As Long, tG As Long
+    Dim tR As Long, tB As Long, tG As Long
 
     'Extract the red, green, and blue values from the color we've been passed
-    TR = ExtractR(cColor)
+    tR = ExtractR(cColor)
     tG = ExtractG(cColor)
     tB = ExtractB(cColor)
         
@@ -288,7 +278,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
+        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
         g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
         
@@ -346,7 +336,7 @@ End Sub
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
 Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Engraving image..."
+    If Not toPreview Then Message "Engraving image..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -385,10 +375,10 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim TR As Long, tB As Long, tG As Long
+    Dim tR As Long, tB As Long, tG As Long
     
     'Extract the red, green, and blue values from the color we've been passed
-    TR = ExtractR(cColor)
+    tR = ExtractR(cColor)
     tG = ExtractG(cColor)
     tB = ExtractB(cColor)
         
@@ -399,7 +389,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + TR)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
         g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
         
@@ -455,9 +445,11 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    If optEmboss.Value Then
-        If CBool(chkToColor.Value) Then FilterEmbossColor colorPicker.Color, True, fxPreview Else FilterEmbossColor RGB(127, 127, 127), True, fxPreview
-    Else
-        If CBool(chkToColor.Value) Then FilterEngraveColor colorPicker.Color, True, fxPreview Else FilterEngraveColor RGB(127, 127, 127), True, fxPreview
+    If cmdBar.previewsAllowed Then
+        If optEmboss.Value Then
+            FilterEmbossColor colorPicker.Color, True, fxPreview
+        Else
+            FilterEngraveColor colorPicker.Color, True, fxPreview
+        End If
     End If
 End Sub

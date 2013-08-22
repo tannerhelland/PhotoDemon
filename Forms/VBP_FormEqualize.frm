@@ -24,10 +24,29 @@ Begin VB.Form FormEqualize
    ScaleWidth      =   677
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5805
+      Width           =   10155
+      _ExtentX        =   17912
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkRed 
       Height          =   570
       Left            =   6240
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2040
       Width           =   720
       _ExtentX        =   1270
@@ -43,28 +62,10 @@ Begin VB.Form FormEqualize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   7200
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   8670
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -73,7 +74,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkGreen 
       Height          =   570
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2520
       Width           =   975
       _ExtentX        =   1720
@@ -92,7 +93,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkBlue 
       Height          =   570
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3000
       Width           =   825
       _ExtentX        =   1455
@@ -111,7 +112,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   570
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3480
       Width           =   1455
       _ExtentX        =   2566
@@ -126,13 +127,6 @@ Begin VB.Form FormEqualize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   15
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblEqualize 
       AutoSize        =   -1  'True
@@ -150,7 +144,7 @@ Begin VB.Form FormEqualize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1620
       Width           =   945
    End
@@ -162,12 +156,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Equalization Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/September/12
-'Last updated: 19/September/12
-'Last update: initial build.  Originally, the equalize functions were handled from menu entries on the main form, but this
-'             was stupid - especially if you wanted to equalize multiple channels simultaneously.  The new form allows
-'             more freedom.  Also, all Equalize routines are now condensed into one.
+'Last updated: 22/August/13
+'Last update: add command bar user control
 '
 'Module for handling histogram equalization.  Any combination of red, green, blue, and luminance can be equalized, but if
 ' luminance is selected it will get precedent (e.g. it will be equalized first).
@@ -184,43 +176,37 @@ Dim m_ToolTip As clsToolTip
 
 'Whenever a check box is changed, redraw the preview
 Private Sub chkBlue_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
+    updatePreview
 End Sub
 
 Private Sub chkGreen_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
+    updatePreview
 End Sub
 
 Private Sub chkLuminance_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
+    updatePreview
 End Sub
 
 Private Sub chkRed_Click()
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
+    updatePreview
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-    
-    Me.Visible = False
+Private Sub cmdBar_OKClick()
     Process "Equalize", , buildParams(CBool(chkRed), CBool(chkGreen), CBool(chkBlue), CBool(chkLuminance))
-    Unload Me
-    
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Render a preview
-    EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
-    
+        
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Request a preview
+    updatePreview
     
 End Sub
 
@@ -228,7 +214,7 @@ End Sub
 ' (Technically Luminance isn't a channel, but you know what I mean.)
 Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean, ByVal HandleB As Boolean, ByVal HandleL As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Analyzing image histogram..."
+    If Not toPreview Then Message "Analyzing image histogram..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -299,7 +285,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     scaleFactor = 255 / (curLayerValues.Width * curLayerValues.Height)
     
     'Compute red if requested
-    If HandleR = True Then
+    If HandleR Then
         rData(0) = rDataInt(0) * scaleFactor
         For x = 1 To 255
             rData(x) = rData(x - 1) + (scaleFactor * rDataInt(x))
@@ -307,7 +293,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     End If
     
     'Compute green if requested
-    If HandleG = True Then
+    If HandleG Then
         gData(0) = gDataInt(0) * scaleFactor
         For x = 1 To 255
             gData(x) = gData(x - 1) + (scaleFactor * gDataInt(x))
@@ -315,7 +301,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     End If
     
     'Compute blue if requested
-    If HandleB = True Then
+    If HandleB Then
         bData(0) = bDataInt(0) * scaleFactor
         For x = 1 To 255
             bData(x) = bData(x - 1) + (scaleFactor * bDataInt(x))
@@ -323,7 +309,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     End If
     
     'Compute luminance if requested
-    If HandleL = True Then
+    If HandleL Then
         lData(0) = lDataInt(0) * scaleFactor
         For x = 1 To 255
             lData(x) = lData(x - 1) + (scaleFactor * lDataInt(x))
@@ -360,7 +346,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     Next x
     
     'Apply the equalized values
-    If toPreview = False Then Message "Equalizing image..."
+    If Not toPreview Then Message "Equalizing image..."
     
     For x = initX To finalX
         QuickVal = x * qvDepth
@@ -407,4 +393,8 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub updatePreview()
+    If cmdBar.previewsAllowed Then EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
 End Sub
