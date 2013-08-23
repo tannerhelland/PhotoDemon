@@ -58,7 +58,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   0
       Left            =   6120
       TabIndex        =   6
-      Top             =   4560
+      Top             =   4605
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -79,7 +79,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   1
       Left            =   7920
       TabIndex        =   7
-      Top             =   4560
+      Top             =   4605
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -159,7 +159,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   495
       Left            =   6000
       TabIndex        =   11
-      Top             =   3690
+      Top             =   3705
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -261,7 +261,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   2
       Left            =   6000
       TabIndex        =   1
-      Top             =   4170
+      Top             =   4200
       Width           =   1845
    End
    Begin VB.Label lblTitle 

@@ -377,12 +377,12 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     'Before rendering anything, check to make sure the text boxes have valid input
     If sltAngle.IsValid And sltOffsetX.IsValid And sltOffsetY.IsValid Then
@@ -398,7 +398,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
 
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     ' Also, convert it to radians.
-    sphereAngle = -sphereAngle * (PI / 180)
+    sphereAngle = sphereAngle * (PI / 180)
 
     If toPreview = False Then Message "Wrapping image around sphere..."
     

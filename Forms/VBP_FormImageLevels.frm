@@ -25,19 +25,29 @@ Begin VB.Form FormLevels
    ScaleWidth      =   812
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9240
-      TabIndex        =   14
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   13
+      Top             =   5775
+      Width           =   12180
+      _ExtentX        =   21484
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltOutL 
       Height          =   495
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4050
       Width           =   5775
       _ExtentX        =   10186
@@ -53,28 +63,10 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10710
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdReset 
-      Appearance      =   0  'Flat
-      Caption         =   "&Reset levels"
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   5880
-      Width           =   1455
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -83,7 +75,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltOutR 
       Height          =   495
       Left            =   6240
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4890
       Width           =   5775
       _ExtentX        =   10186
@@ -103,7 +95,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltInL 
       Height          =   495
       Left            =   6240
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   930
       Width           =   5775
       _ExtentX        =   10186
@@ -122,7 +114,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltInR 
       Height          =   495
       Left            =   6240
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   2610
       Width           =   5775
       _ExtentX        =   10186
@@ -143,7 +135,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltInM 
       Height          =   495
       Left            =   6240
-      TabIndex        =   16
+      TabIndex        =   12
       Top             =   1770
       Width           =   5775
       _ExtentX        =   10186
@@ -178,7 +170,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   4
       Left            =   6240
-      TabIndex        =   15
+      TabIndex        =   11
       Top             =   1440
       Width           =   2340
    End
@@ -199,7 +191,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   3
       Left            =   6240
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   2280
       Width           =   2055
    End
@@ -220,7 +212,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   2
       Left            =   6240
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   600
       Width           =   1755
    End
@@ -241,7 +233,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   1
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   4560
       Width           =   1275
    End
@@ -262,16 +254,9 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   0
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   3720
       Width           =   1245
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12255
    End
    Begin VB.Label lblOutput 
       AutoSize        =   -1  'True
@@ -289,7 +274,7 @@ Begin VB.Form FormLevels
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   3240
       Width           =   1350
    End
@@ -309,7 +294,7 @@ Begin VB.Form FormLevels
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   120
       Width           =   1200
    End
@@ -349,33 +334,16 @@ Private Const ROOT10 As Double = 3.16227766
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
 'OK button
-Private Sub CmdOK_Click()
-    
-    Me.Visible = False
+Private Sub cmdBar_OKClick()
     Process "Levels", , buildParams(sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value)
-    Unload Me
-    
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
-    'Draw a preview image
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
-
 End Sub
 
-'This will reset the scrollbars to default levels
-Private Sub cmdReset_Click()
+Private Sub cmdBar_ResetClick()
     
     'Set the output levels to (0-255)
     sltOutL.Value = 0
@@ -389,6 +357,17 @@ Private Sub cmdReset_Click()
     'Set the midtone level to default (0.5)
     sltInM.Value = 0.5
     
+End Sub
+
+Private Sub Form_Activate()
+    
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview image
+    updatePreview
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -573,5 +552,5 @@ Private Sub sltOutR_Change()
 End Sub
 
 Private Sub updatePreview()
-    MapImageLevels sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then MapImageLevels sltInL.Value, sltInM.Value, sltInR.Value, sltOutL.Value, sltOutR.Value, True, fxPreview
 End Sub

@@ -24,10 +24,29 @@ Begin VB.Form FormNoise
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   4
+      Top             =   5790
+      Width           =   12120
+      _ExtentX        =   21378
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkM 
       Height          =   480
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   3360
       Width           =   2610
       _ExtentX        =   4604
@@ -43,28 +62,10 @@ Begin VB.Form FormNoise
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9135
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10605
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -73,7 +74,7 @@ Begin VB.Form FormNoise
    Begin PhotoDemon.sliderTextCombo sltNoise 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2760
       Width           =   5895
       _ExtentX        =   10186
@@ -91,13 +92,6 @@ Begin VB.Form FormNoise
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -120
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12375
-   End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -114,7 +108,7 @@ Begin VB.Form FormNoise
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2400
       Width           =   1530
    End
@@ -128,8 +122,9 @@ Attribute VB_Exposed = False
 'Image Noise Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 3/15/01
-'Last updated: 27/April/13
-'Last update: convert interface to new slider/text custom control
+'Last updated: 23/August/13
+'Last update: add command bar
+'TODO: add separate sliders for each of R/G/B
 '
 'Form for adding noise to an image.
 '
@@ -145,20 +140,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub ChkM_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    If sltNoise.IsValid Then
-        FormNoise.Visible = False
-        Process "Add RGB noise", , buildParams(sltNoise.Value, CBool(chkM.Value))
-        Unload Me
-    End If
 End Sub
 
 'Subroutine for adding noise to an image
@@ -261,6 +242,15 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Add RGB noise", , buildParams(sltNoise.Value, CBool(chkM.Value))
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
@@ -281,5 +271,5 @@ Private Sub sltNoise_Change()
 End Sub
 
 Private Sub updatePreview()
-    AddNoise sltNoise.Value, CBool(chkM.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(chkM.Value), True, fxPreview
 End Sub

@@ -24,28 +24,29 @@ Begin VB.Form FormMedian
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -54,7 +55,7 @@ Begin VB.Form FormMedian
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10186
@@ -75,7 +76,7 @@ Begin VB.Form FormMedian
    Begin PhotoDemon.sliderTextCombo sltPercent 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3240
       Width           =   5895
       _ExtentX        =   10186
@@ -109,7 +110,7 @@ Begin VB.Form FormMedian
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2880
       Width           =   1110
    End
@@ -129,7 +130,7 @@ Begin VB.Form FormMedian
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   1920
       Width           =   735
    End
@@ -147,18 +148,11 @@ Begin VB.Form FormMedian
       ForeColor       =   &H000000FF&
       Height          =   1095
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   2
-      Top             =   5760
-      Width           =   12135
    End
 End
 Attribute VB_Name = "FormMedian"
@@ -170,8 +164,8 @@ Attribute VB_Exposed = False
 'Median Filter Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/Feb/13
-'Last updated: 26/April/13
-'Last update: simplified code by rebuilding interface around new slider/text custom control
+'Last updated: 23/August/13
+'Last update: added a mode-tracking variable to help with the new command bar addition
 '
 'This is a heavily optimized median filter function.  An "accumulation" technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -194,27 +188,17 @@ Option Explicit
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
-Dim allowPreview As Boolean
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Validate text box entries
-    If sltRadius.IsValid And sltPercent.IsValid Then
-        Me.Visible = False
-        Process "Median", , buildParams(sltRadius.Value, sltPercent.Value)
-        Unload Me
-    End If
-    
-End Sub
+'Because this tool can be used for multiple actions (median, dilate, erode), we need to track which mode is currently active.
+' When the reset or randomize buttons are pressed, we will automatically adjust our behavior to match.
+Private Enum MedianToolMode
+    MEDIAN_DEFAULT = 0
+    MEDIAN_DILATE = 1
+    MEDIAN_ERODE = 2
+End Enum
+Private curMode As MedianToolMode
 
 'Apply a median filter to the image (heavily optimized accumulation implementation!)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
@@ -256,21 +240,49 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
 
 End Sub
 
-Private Sub Form_Activate()
+Private Sub cmdBar_OKClick()
+    Process "Median", , buildParams(sltRadius.Value, sltPercent.Value)
+End Sub
 
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
+'Because this dialog can be used for multiple tools, we need to clarify some behavior when resetting and randomizing
+Private Sub cmdBar_RandomizeClick()
 
-    allowPreview = True
+    Select Case curMode
+    
+        Case MEDIAN_DEFAULT
+            
+        Case MEDIAN_DILATE
+            sltPercent.Value = 100
+        
+        Case MEDIAN_ERODE
+            sltPercent.Value = 1
+    
+    End Select
 
-    'Draw a preview of the effect
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+
+    Select Case curMode
+    
+        Case MEDIAN_DEFAULT
+            sltPercent.Value = 50
+            
+        Case MEDIAN_DILATE
+            sltPercent.Value = 100
+        
+        Case MEDIAN_ERODE
+            sltPercent.Value = 1
+    
+    End Select
+    
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -282,10 +294,26 @@ Private Sub Form_Activate()
         lblIDEWarning.Visible = True
     End If
     
+    'Draw a preview of the effect
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
 End Sub
 
 Private Sub Form_Load()
-    allowPreview = False
+    
+    'Disable previews while we get everything initialized
+    cmdBar.markPreviewStatus False
+    
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
+    End If
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -300,16 +328,21 @@ Public Sub showMedianDialog(ByVal initPercentage As Long)
         sltPercent.Value = 1
         sltPercent.Visible = False
         lblPercentile.Visible = False
+        cmdBar.setToolName "Erode"
+        curMode = MEDIAN_ERODE
     ElseIf initPercentage = 100 Then
         Me.Caption = g_Language.TranslateMessage("Dilate (Maximum rank filter)")
         sltPercent.Value = 100
         sltPercent.Visible = False
         lblPercentile.Visible = False
+        cmdBar.setToolName "Dilate"
+        curMode = MEDIAN_DILATE
     Else
         Me.Caption = g_Language.TranslateMessage("Median filter")
         sltPercent.Value = initPercentage
         sltPercent.Visible = True
         lblPercentile.Visible = True
+        curMode = MEDIAN_DEFAULT
     End If
     
     Me.Show vbModal, FormMain
@@ -325,5 +358,5 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub updatePreview()
-    If allowPreview Then ApplyMedianFilter sltRadius.Value, sltPercent.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMedianFilter sltRadius.Value, sltPercent.Value, True, fxPreview
 End Sub

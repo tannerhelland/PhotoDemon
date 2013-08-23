@@ -25,6 +25,25 @@ Begin VB.Form FormPanAndZoom
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   12
+      Top             =   5760
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,32 +59,14 @@ Begin VB.Form FormPanAndZoom
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3855
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5880
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5880
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -74,7 +75,7 @@ Begin VB.Form FormPanAndZoom
    Begin PhotoDemon.sliderTextCombo sltHorizontal 
       Height          =   495
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   930
       Width           =   5895
       _ExtentX        =   10186
@@ -95,7 +96,7 @@ Begin VB.Form FormPanAndZoom
    Begin PhotoDemon.sliderTextCombo sltVertical 
       Height          =   495
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1890
       Width           =   5895
       _ExtentX        =   10186
@@ -116,7 +117,7 @@ Begin VB.Form FormPanAndZoom
    Begin PhotoDemon.sliderTextCombo sltZoom 
       Height          =   495
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2850
       Width           =   5895
       _ExtentX        =   10186
@@ -137,7 +138,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   4800
       Width           =   1005
       _ExtentX        =   1773
@@ -158,7 +159,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   4800
       Width           =   975
       _ExtentX        =   1720
@@ -193,7 +194,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   4410
       Width           =   1845
    End
@@ -214,7 +215,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   3480
       Width           =   3315
    End
@@ -235,16 +236,9 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   2520
       Width           =   675
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   7
-      Top             =   5730
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -263,7 +257,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   600
       Width           =   1605
    End
@@ -284,7 +278,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   1560
       Width           =   1305
    End
@@ -298,8 +292,8 @@ Attribute VB_Exposed = False
 'Pan and Zoom Effect Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 28/May/13
-'Last updated: 28/May/13
-'Last update: initial build
+'Last updated: 22/August/13
+'Last update: add command bar user control
 '
 'Dialog for handling a Ken Burns transform (http://en.wikipedia.org/wiki/Ken_burns_effect).
 '
@@ -319,22 +313,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    If sltHorizontal.IsValid And sltVertical.IsValid And sltZoom.IsValid Then
-        Me.Visible = False
-        Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
 End Sub
 
 'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
@@ -456,7 +434,34 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     
 End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    cmbEdges.ListIndex = EDGE_WRAP
+End Sub
+
 Private Sub Form_Activate()
+
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Request a preview
+    cmdBar.markPreviewStatus True
+    updatePreview
+        
+End Sub
+
+Private Sub Form_Load()
+
+    'Suspend previews while we initialize all the controls
+    cmdBar.markPreviewStatus False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
@@ -476,12 +481,6 @@ Private Sub Form_Activate()
     ' them immediately available to all distort functions.
     popDistortEdgeBox cmbEdges, EDGE_WRAP
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
-    updatePreview
-        
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -490,7 +489,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 Private Sub OptInterpolate_Click(Index As Integer)

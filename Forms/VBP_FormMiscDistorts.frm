@@ -25,6 +25,25 @@ Begin VB.Form FormMiscDistorts
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ListBox lstDistorts 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -38,7 +57,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   960
       Width           =   5655
    End
@@ -57,32 +76,14 @@ Begin VB.Form FormMiscDistorts
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   4005
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -92,7 +93,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4920
       Width           =   1005
       _ExtentX        =   1773
@@ -113,7 +114,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4920
       Width           =   975
       _ExtentX        =   1720
@@ -146,16 +147,9 @@ Begin VB.Form FormMiscDistorts
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3600
       Width           =   4170
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblInterpolation 
       Appearance      =   0  'Flat
@@ -175,7 +169,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4530
       Width           =   1845
    End
@@ -197,7 +191,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   570
       Width           =   1200
    End
@@ -233,20 +227,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    Me.Visible = False
-    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-    Unload Me
-    
-End Sub
 
 'Correct lens distortion in an image
 Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -292,8 +272,6 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
-    'Lens distort correction requires a number of specialized variables
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -316,19 +294,32 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     tWidth = curLayerValues.Width
     tHeight = curLayerValues.Height
     
-    'To avoid divide-by-zero errors, fix the input value to a non-zero value as necessary
-    'If pokeStrength = 0 Then pokeStrength = 0.00000001
+    'Because coordinates will be mapped identically for each x-coord and y-coord, we can calculate them in advance
+    ' and store them in lookup tables to improve performance.
+    Dim xCoords() As Double, yCoords() As Double
+    ReDim xCoords(initX To finalX) As Double
+    ReDim yCoords(initY To finalY) As Double
+    
+    'Basically, we want to remap coordinates around a center point of (0, 0), and normalize them to (-1, 1).
+    ' This makes distort strength uniform regardless of image size.
+    For x = initX To finalX
+        xCoords(x) = (2 * x) / tWidth - 1
+    Next x
+    
+    For y = initY To finalY
+        yCoords(y) = (2 * y) / tHeight - 1
+    Next y
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
                             
-        'Remap the coordinates around a center point of (0, 0), and normalize them to (-1, 1)
-        nX = (2 * x) / tWidth - 1
-        nY = (2 * y) / tHeight - 1
+        'Pull coordinates from the lookup table
+        nX = xCoords(x)
+        nY = yCoords(y)
         
-        'Next, map them to polar coordinates and apply the stretch
+        'Next, map them to polar coordinates
         r = Sqr(nX * nX + nY * nY)
         theta = Atan2(nY, nX)
         
@@ -417,7 +408,34 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
         
 End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    cmbEdges.ListIndex = EDGE_WRAP
+End Sub
+
 Private Sub Form_Activate()
+        
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    cmdBar.markPreviewStatus True
+    updatePreview
+            
+End Sub
+
+Private Sub Form_Load()
+    
+    'Disable previews while we populate various dialog controls
+    cmdBar.markPreviewStatus False
     
     'Populate a list of available distort operations
     lstDistorts.Clear
@@ -434,13 +452,6 @@ Private Sub Form_Activate()
     ' them immediately available to all distort functions.
     popDistortEdgeBox cmbEdges, EDGE_WRAP
     
-    'Draw a preview of the effect
-    updatePreview
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-            
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -457,5 +468,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
