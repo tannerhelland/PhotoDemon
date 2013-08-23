@@ -25,6 +25,25 @@ Begin VB.Form FormPoke
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,32 +59,14 @@ Begin VB.Form FormPoke
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   3045
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +76,7 @@ Begin VB.Form FormPoke
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3960
       Width           =   1005
       _ExtentX        =   1773
@@ -96,7 +97,7 @@ Begin VB.Form FormPoke
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3960
       Width           =   975
       _ExtentX        =   1720
@@ -115,7 +116,7 @@ Begin VB.Form FormPoke
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   2010
       Width           =   5895
       _ExtentX        =   10398
@@ -151,16 +152,9 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   2640
       Width           =   4170
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblInterpolation 
       Appearance      =   0  'Flat
@@ -180,7 +174,7 @@ Begin VB.Form FormPoke
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   3570
       Width           =   1845
    End
@@ -202,7 +196,7 @@ Begin VB.Form FormPoke
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1680
       Width           =   960
    End
@@ -216,8 +210,8 @@ Attribute VB_Exposed = False
 'Poke Distort Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 05/June/13
-'Last updated: 05/June/13
-'Last update: initial build
+'Last updated: 23/August/13
+'Last update: added command bar
 '
 'I'm not sold on the "poke" moniker for this tool, but I couldn't come up with a better visualization for how
 ' the tool works.  When I use it, I envision an imaginary finger poking through the screen.  :)
@@ -245,23 +239,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltStrength.IsValid Then
-        Me.Visible = False
-        Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
 End Sub
 
 'Correct lens distortion in an image
@@ -309,7 +286,7 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
           
-    'Lens distort correction requires a number of specialized variables
+    'Poking requires a number of specialized variables
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -380,19 +357,41 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
         
 End Sub
 
-Private Sub Form_Activate()
-    
-    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
-    ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_ERASE
-    
-    'Draw a preview of the effect
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    cmbEdges.ListIndex = EDGE_CLAMP
+    sltStrength.Value = 1
+End Sub
+
+Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    cmdBar.markPreviewStatus True
+    updatePreview
             
+End Sub
+
+Private Sub Form_Load()
+    
+    'Suspend previews until the dialog is fully initialized
+    cmdBar.markPreviewStatus False
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_CLAMP
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -409,5 +408,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
