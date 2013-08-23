@@ -24,20 +24,24 @@ Begin VB.Form FormPhotoFilters
    ScaleWidth      =   983
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox picColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FF8080&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   360
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   103
-      TabIndex        =   9
-      Top             =   5880
-      Visible         =   0   'False
-      Width           =   1575
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5790
+      Width           =   14745
+      _ExtentX        =   26009
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -51,7 +55,7 @@ Begin VB.Form FormPhotoFilters
       ScaleHeight     =   281
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   551
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   480
       Width           =   8295
    End
@@ -59,32 +63,14 @@ Begin VB.Form FormPhotoFilters
       Height          =   4185
       LargeChange     =   32
       Left            =   14280
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   480
       Width           =   330
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   11760
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   13230
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -93,7 +79,7 @@ Begin VB.Form FormPhotoFilters
    Begin PhotoDemon.sliderTextCombo sltDensity 
       Height          =   495
       Left            =   7800
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   5040
       Width           =   5895
       _ExtentX        =   10398
@@ -128,16 +114,9 @@ Begin VB.Form FormPhotoFilters
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   1665
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   14775
    End
    Begin VB.Label lblTitle 
       Alignment       =   1  'Right Justify
@@ -157,7 +136,7 @@ Begin VB.Form FormPhotoFilters
       Height          =   285
       Index           =   0
       Left            =   6810
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   5130
       Width           =   840
    End
@@ -171,27 +150,27 @@ Attribute VB_Exposed = False
 'Photo Filter Application Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 06/June/13
-'Last updated: 07/June/13
-'Last update: completed initial build
+'Last updated: 23/August/13
+'Last update: added command bar, converted to bluMouseEvents, fixed some poor implementation decisions
 '
-'Traditioanl photo filter simulation tool.  A full discussion of photographic filters and how they work are available
+'Traditional photo filter simulation tool.  A full discussion of photographic filters and how they work are available
 ' at this Wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
 '
 'This code is very similar to PhotoDemon's "Temperature" algorithm.  The main difference is the way the user
-' selects a filter to apply.  The available list of filters is flexible, and I have simply based it off Photoshop's
-' photo filter list.
+' selects a filter to apply.  The available list of filters is flexible, and I have gone to great lengths to find and
+' implement a rough correlation for every traditional Wratten (Tiffen) photo filter.
 '
-'I hope it is abundantly clear that these conversions are all very loose estimations.  Filters work by blocking
-' specific wavelengths of light at the moment of photography, so it's impossible to perfectly replicate their behavior
-' via code.  All we can do is approximate, so do not expect to get identical results between actual filters and
-' post-production tools like PhotoDemon.
+'That said, I hope it is abundantly clear that these conversions are all very loose estimations.  Filters work by
+' blocking specific wavelengths of light at the moment of photography, so it's impossible to perfectly replicate their
+' behavior via code.  All we can do is approximate, so do not expect to get identical results between actual filters
+' and post-production tools like PhotoDemon.
 '
 'Luminosity preservation is assumed.  I could provide a toggle for it, but I see no real benefit to unpreserved use
 ' of these tools.
 '
 'The list-box-style interface was custom built for this tool, and I derived it from similar code in the Metadata Browser
 ' and About dialog.  Please compile for best results; things like mousewheel support and mouseleave tracking require
-' subclassing, so they are not enabled in the IDE.
+' subclassing, so they may not behave as expected in the IDE.
 '
 'I used many resources while attempting to create a list of Wratten filters and their RGB equivalents.  In no particular
 ' order, thank you to:
@@ -235,8 +214,9 @@ Dim numOfFilters As Long
 'Height of each filter content block
 Private Const BLOCKHEIGHT As Long = 53
 
-'Subclass the window to enable mousewheel support for scrolling the filter view (compiled EXE only)
-Dim m_Subclass As cSelfSubHookCallback
+'An outside class provides access to mousewheel events for scrolling the filter view
+Private WithEvents cMouseEvents As bluMouseEvents
+Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -253,23 +233,6 @@ Dim primaryColor As Long, secondaryColor As Long
 
 'The currently selected and currently hovered filter entry
 Dim curFilter As Long, curFilterHover As Long
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    
-    'The scroll bar max and min values are used to check the temperature input for validity
-    If sltDensity.IsValid Then
-        Me.Visible = False
-        Process "Photo filter", , buildParams(picColor.backColor, sltDensity.Value, True)
-        Unload Me
-    End If
-    
-End Sub
 
 'Redraw the current list of filters
 Private Sub redrawFilterList()
@@ -362,8 +325,113 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
 
 End Sub
 
+Private Sub cmdBar_AddCustomPresetData()
+    cmdBar.addPresetData "CurrentFilter", CStr(curFilter)
+End Sub
+
+Private Sub cmdBar_OKClick()
+    Process "Photo filter", , buildParams(fArray(curFilter).RGBColor, sltDensity.Value, True)
+End Sub
+
+Private Sub cmdBar_RandomizeClick()
+
+    'This is sloppy, but effective.  The vertical scroll bar will be randomly set; we can thus fake a click
+    ' somewhere inside the picture box to simulate selecting a random photo filter.
+    picBuffer_MouseDown vbLeftButton, 0, Rnd * picBuffer.ScaleWidth, Rnd * picBuffer.ScaleHeight
+
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+    curFilter = CLng(cmdBar.retrievePresetData("CurrentFilter"))
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    redrawFilterList
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    
+    'No filters are currently selected or hovered
+    curFilter = 0
+    curFilterHover = -1
+    
+    'Density is 30 by default
+    sltDensity.Value = 30
+    
+    'Remove any active effect
+    redrawFilterList
+    
+End Sub
+
+'When the mouse leaves the filter box, remove any hovered entries and redraw
+Private Sub cMouseEvents_MouseOut()
+    curFilterHover = -1
+    redrawFilterList
+End Sub
+
 'When the form is activated (e.g. made visible and receives focus),
 Private Sub Form_Activate()
+    
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Display the previewed effect in the neighboring window, then render the list of available filters
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+'Adding new filters is as simple as passing additional values through this sub
+Private Sub addWratten(ByVal wrattenID As String, ByVal filterColor As String, ByVal filterDescription As String, ByVal filterRGB As Long)
+    
+    With fArray(numOfFilters)
+        .Id = wrattenID
+        .Name = filterColor
+        .Description = filterDescription
+        .RGBColor = filterRGB
+    End With
+    numOfFilters = numOfFilters + 1
+    ReDim Preserve fArray(0 To numOfFilters) As wrattenFilter
+    
+End Sub
+
+Private Sub Form_Load()
+
+    'Disable previews while we initialize everything
+    cmdBar.markPreviewStatus False
+
+    'Enable mousewheel scrolling for the filter box
+    Set cMouseEvents = New bluMouseEvents
+    cMouseEvents.Attach picBuffer.hWnd, Me.hWnd
+    cMouseEvents.MousePointer = IDC_HAND
+    
+    'Create a background buffer the same size as the buffer picture box
+    Set bufferLayer = New pdLayer
+    bufferLayer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    
+    'Initialize a few other variables now (for performance reasons)
+    m_BufferWidth = picBuffer.ScaleWidth
+    m_BufferHeight = picBuffer.ScaleHeight
+    
+    'Initialize a custom font objects for names
+    primaryColor = RGB(64, 64, 64)
+    Set firstFont = New pdFont
+    firstFont.setFontColor primaryColor
+    firstFont.setFontBold True
+    firstFont.setFontSize 12
+    firstFont.createFontObject
+    firstFont.setTextAlignment vbLeftJustify
+    
+    '...and a second custom font object for descriptions
+    secondaryColor = RGB(92, 92, 92)
+    Set secondFont = New pdFont
+    secondFont.setFontColor secondaryColor
+    secondFont.setFontBold False
+    secondFont.setFontSize 10
+    secondFont.createFontObject
+    secondFont.setTextAlignment vbLeftJustify
     
     numOfFilters = 0
     ReDim fArray(0) As wrattenFilter
@@ -421,11 +489,6 @@ Private Sub Form_Activate()
     addWratten "90", g_Language.TranslateMessage("dark gray amber"), g_Language.TranslateMessage("remove color before photographing; rarely used for actual photos"), RGB(100, 85, 20)
     addWratten "96", g_Language.TranslateMessage("neutral gray"), g_Language.TranslateMessage("neutral density filter; equally blocks all light frequencies"), RGB(100, 100, 100)
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    setHandCursorToHwnd picBuffer.hWnd
-    
     'Determine if the vertical scrollbar needs to be visible or not
     Dim maxMDSize As Long
     maxMDSize = BLOCKHEIGHT * numOfFilters - 1
@@ -440,91 +503,12 @@ Private Sub Form_Activate()
     
     vsFilter.Height = picBuffer.Height
     
-    'No filters are currently selected or hovered
-    curFilter = -1
-    curFilterHover = -1
-    
-    'Display the previewed effect in the neighboring window, then render the list of available filters
-    ApplyPhotoFilter RGB(127, 127, 127), 0, True, True, fxPreview
-    redrawFilterList
-    
-End Sub
-
-'Adding new filters is as simple as passing additional values through this sub
-Private Sub addWratten(ByVal wrattenID As String, ByVal filterColor As String, ByVal filterDescription As String, ByVal filterRGB As Long)
-    
-    With fArray(numOfFilters)
-        .Id = wrattenID
-        .Name = filterColor
-        .Description = filterDescription
-        .RGBColor = filterRGB
-    End With
-    numOfFilters = numOfFilters + 1
-    ReDim Preserve fArray(0 To numOfFilters) As wrattenFilter
-    
-End Sub
-
-Private Sub Form_Load()
-
-    'If the program is compiled, enable mousewheel scrolling for the filter box
-    If g_IsProgramCompiled Then
-    
-        'Request mouse tracking for the buffer picture box
-        requestMouseTracking picBuffer.hWnd
-        
-        'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
-        Set m_Subclass = New cSelfSubHookCallback
-        
-        'Add mousewheel messages to the subclassing handler (compiled only)
-        If m_Subclass.ssc_Subclass(Me.hWnd, , 1, Me) Then m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-        If m_Subclass.ssc_Subclass(picBuffer.hWnd, picBuffer.hWnd, 1, Me) Then
-            m_Subclass.ssc_AddMsg picBuffer.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-            m_Subclass.ssc_AddMsg picBuffer.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear the actively hovered block)
-        End If
-        
-    End If
-    
-    'Create a background buffer the same size as the buffer picture box
-    Set bufferLayer = New pdLayer
-    bufferLayer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
-    
-    'Initialize a few other variables for speed reasons
-    m_BufferWidth = picBuffer.ScaleWidth
-    m_BufferHeight = picBuffer.ScaleHeight
-    
-    'Initialize a custom font objects for names
-    primaryColor = RGB(64, 64, 64)
-    Set firstFont = New pdFont
-    firstFont.setFontColor primaryColor
-    firstFont.setFontBold True
-    firstFont.setFontSize 12
-    firstFont.createFontObject
-    firstFont.setTextAlignment vbLeftJustify
-    
-    '...and a second custom font object for URLs
-    secondaryColor = RGB(92, 92, 92)
-    Set secondFont = New pdFont
-    secondFont.setFontColor secondaryColor
-    secondFont.setFontBold False
-    secondFont.setFontSize 10
-    secondFont.createFontObject
-    secondFont.setTextAlignment vbLeftJustify
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
       
-    If g_IsProgramCompiled Then
-    
-        'Release the subclassing object responsible for mouse wheel support
-        m_Subclass.ssc_Terminate
-        Set m_Subclass = Nothing
-        
-        'Stop requesting mouse tracking
-        requestMouseTracking picBuffer.hWnd, True
-        
-    End If
-    
+    'Unload the mouse tracker
+    Set cMouseEvents = Nothing
     ReleaseFormTheming Me
         
 End Sub
@@ -532,16 +516,12 @@ End Sub
 Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     curFilter = getFilterAtPosition(x, y)
-    picColor.backColor = fArray(curFilter).RGBColor
     redrawFilterList
     updatePreview
     
 End Sub
 
 Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Ask Windows to track the mouse relative to this picture box
-    If g_IsProgramCompiled Then requestMouseTracking picBuffer.hWnd
     
     curFilterHover = getFilterAtPosition(x, y)
     redrawFilterList
@@ -564,14 +544,14 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    ApplyPhotoFilter picColor.backColor, sltDensity.Value, True, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPhotoFilter fArray(curFilter).RGBColor, sltDensity.Value, True, True, fxPreview
 End Sub
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
 Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Double, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Applying photo filter..."
+    If Not toPreview Then Message "Applying photo filter..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -667,13 +647,13 @@ Private Sub vsFilter_Scroll()
     redrawFilterList
 End Sub
 
-'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events for this form.
-Private Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xPos As Long, ByVal yPos As Long)
+'This custom routine, combined with careful subclassing, allows us to handle mousewheel events for this form.
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsFilter.Visible Then
   
-        If mRotation < 0 Then
+        If LinesScrolled < 0 Then
             
             If vsFilter.Value + vsFilter.LargeChange > vsFilter.Max Then
                 vsFilter.Value = vsFilter.Max
@@ -681,9 +661,10 @@ Private Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal x
                 vsFilter.Value = vsFilter.Value + vsFilter.LargeChange
             End If
             
+            curFilterHover = getFilterAtPosition(x, y)
             redrawFilterList
         
-        ElseIf mRotation > 0 Then
+        ElseIf LinesScrolled > 0 Then
             
             If vsFilter.Value - vsFilter.LargeChange < vsFilter.Min Then
                 vsFilter.Value = vsFilter.Min
@@ -691,41 +672,12 @@ Private Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal x
                 vsFilter.Value = vsFilter.Value - vsFilter.LargeChange
             End If
             
+            curFilterHover = getFilterAtPosition(x, y)
             redrawFilterList
             
         End If
         
     End If
-    
+
 End Sub
 
-'This routine MUST BE KEPT as the final routine for this form. Its ordinal position determines its ability to subclass properly.
-' Subclassing is required to enable mousewheel support and other mouse events (e.g. the mouse leaving the window).
-Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
-        
-    Dim MouseKeys As Long
-    Dim mRotation As Long
-    Dim xPos As Long
-    Dim yPos As Long
-    
-    'Only handle scroll events if the message relates to this form
-    Select Case uMsg
-  
-        Case WM_MOUSEWHEEL
-    
-            MouseKeys = wParam And 65535
-            mRotation = wParam / 65536
-            xPos = lParam And 65535
-            yPos = lParam / 65536
-            
-            MouseWheel MouseKeys, mRotation, xPos, yPos
-            
-    End Select
-    
-    'If the mouse leaves the filter box, remove any hovered entry
-    If (lParamUser = picBuffer.hWnd) And (uMsg = WM_MOUSELEAVE) Then
-        curFilterHover = -1
-        redrawFilterList
-    End If
-    
-End Sub

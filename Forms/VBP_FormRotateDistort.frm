@@ -231,7 +231,7 @@ Private Sub cmbEdges_Click()
     updatePreview
 End Sub
 
-'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
+'Apply a basic rotation to the image or selected area
 Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Rotating area..."

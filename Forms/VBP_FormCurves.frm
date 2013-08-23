@@ -406,7 +406,7 @@ Private Sub cmdBar_AddCustomPresetData()
     Dim i As Long
     For i = 1 To numOfNodes
         nodeString = nodeString & CStr(cNodes(i).pX) & "," & CStr(cNodes(i).pY)
-        If i < numOfNodes Then nodeString = nodeString & ","
+        If i < numOfNodes Then nodeString = nodeString & "|"
     Next i
     
     cmdBar.addPresetData "NodeData", nodeString

@@ -155,14 +155,14 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Me.Visible = False
-    If optTwins(0).Value Then Process "Generate twins", , "0" Else Process "Generate twins", , "1"
+    If optTwins(0).Value Then Process "Twins", , "0" Else Process "Twins", , "1"
     Unload Me
 End Sub
 

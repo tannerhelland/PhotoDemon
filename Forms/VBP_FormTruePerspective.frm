@@ -25,13 +25,24 @@ Begin VB.Form FormPerspective
    ScaleWidth      =   1009
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton cmdReset 
-      Caption         =   "Reset perspective"
-      Height          =   615
-      Left            =   240
-      TabIndex        =   10
-      Top             =   8160
-      Width           =   5520
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   7
+      Top             =   8865
+      Width           =   15135
+      _ExtentX        =   26696
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
@@ -43,7 +54,7 @@ Begin VB.Form FormPerspective
       ScaleHeight     =   574
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   598
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   120
       Width           =   9000
    End
@@ -62,32 +73,14 @@ Begin VB.Form FormPerspective
       Height          =   360
       Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   6255
+      TabIndex        =   2
+      Top             =   6735
       Width           =   5550
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   12120
-      TabIndex        =   0
-      Top             =   9030
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   13590
-      TabIndex        =   1
-      Top             =   9030
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -97,8 +90,8 @@ Begin VB.Form FormPerspective
       Height          =   330
       Index           =   0
       Left            =   240
-      TabIndex        =   7
-      Top             =   7200
+      TabIndex        =   4
+      Top             =   7680
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -118,8 +111,8 @@ Begin VB.Form FormPerspective
       Height          =   330
       Index           =   1
       Left            =   2040
-      TabIndex        =   8
-      Top             =   7200
+      TabIndex        =   5
+      Top             =   7680
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -133,29 +126,6 @@ Begin VB.Form FormPerspective
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "other options:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   120
-      TabIndex        =   11
-      Top             =   7680
-      Width           =   1500
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -174,16 +144,9 @@ Begin VB.Form FormPerspective
       Height          =   285
       Index           =   5
       Left            =   120
-      TabIndex        =   6
-      Top             =   5880
-      Width           =   3315
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -360
       TabIndex        =   3
-      Top             =   8880
-      Width           =   16095
+      Top             =   6360
+      Width           =   3315
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -204,8 +167,8 @@ Begin VB.Form FormPerspective
       Height          =   285
       Index           =   2
       Left            =   120
-      TabIndex        =   2
-      Top             =   6810
+      TabIndex        =   0
+      Top             =   7290
       Width           =   1845
    End
 End
@@ -218,8 +181,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 24/July/13
-'Last update: modified the interactive area UI to better align with the style of other interactive UIs in the program
+'Last updated: 23/August/13
+'Last update: added command bar, including custom code for saving/reading the nodes as part of presets
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -281,54 +244,12 @@ Private Sub cmbEdges_Scroll()
     updatePreview
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    Me.Visible = False
-    
-    Dim paramString As String
-    paramString = ""
-
-    'Top-left
-    paramString = (m_nPoints(0).pX - m_oPoints(0).pX) * (iWidth / m_previewWidth)
-    paramString = paramString & "|" & (m_nPoints(0).pY - m_oPoints(0).pY) * (iHeight / m_previewHeight)
-    
-    'Top-right
-    paramString = paramString & "|" & (iWidth + ((m_nPoints(1).pX - m_oPoints(1).pX) * (iWidth / m_previewWidth)))
-    paramString = paramString & "|" & (m_nPoints(1).pY - m_oPoints(1).pY) * (iHeight / m_previewHeight)
-    
-    'Bottom-right
-    paramString = paramString & "|" & (iWidth + ((m_nPoints(2).pX - m_oPoints(2).pX) * (iWidth / m_previewWidth)))
-    paramString = paramString & "|" & (iHeight + (m_nPoints(2).pY - m_oPoints(2).pY) * (iHeight / m_previewHeight))
-    
-    'Bottom-left
-    paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
-    paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
-    
-    'Edge handling
-    paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
-    
-    'Resampling
-    paramString = paramString & "|" & OptInterpolate(0).Value
-    
-    'Based on the user's selection, submit the proper processor request
-    Process "Perspective", , paramString
-    
-    Unload Me
-    
-End Sub
-
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: xRatio, a value from -100 to 100 that specifies the horizontal perspective
 '        yRatio, same as xRatio but for vertical perspective
 Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Applying new perspective..."
+    If Not toPreview Then Message "Applying new perspective..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -406,9 +327,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     y2 = cParams.GetDouble(6)
     x3 = cParams.GetDouble(7)
     y3 = cParams.GetDouble(8)
-    
-    'Message x0 & "," & y0 & " | " & x1 & "," & y1 & " | " & x2 & "," & y2 & " | " & x3 & "," & y3
-    
+        
     If toPreview Then
         x0 = x0 * wModifier
         y0 = y0 * hModifier
@@ -440,7 +359,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     dy3 = y0 - y1 + y2 - y3
     
     'Technically, these are points in a matrix - and they could be defined as an array.  But VB accesses
-    ' individual data types more quickly than an array, so we declare them each separately.
+    ' individual data types more quickly than an array, so we declare them separately.
     Dim h11 As Double, h21 As Double, h31 As Double
     Dim h12 As Double, h22 As Double, h32 As Double
     Dim h13 As Double, h23 As Double, h33 As Double
@@ -463,7 +382,9 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     
     'Next, we need to calculate the key set of transformation parameters, using the reverse-map data we just generated.
     ' Again, these are technically just matrix entries, but we get better performance by declaring them individually.
-    Dim hA As Double, hB As Double, hC As Double, hD As Double, hE As Double, hF As Double, hG As Double, hH As Double, hI As Double
+    Dim hA As Double, hB As Double, hC As Double
+    Dim hD As Double, hE As Double, hF As Double
+    Dim hG As Double, hH As Double, hI As Double
     
     hA = h22 * h33 - h32 * h23
     hB = h31 * h23 - h21 * h33
@@ -474,8 +395,6 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     hG = h12 * h23 - h22 * h13
     hH = h21 * h13 - h11 * h23
     hI = h11 * h22 - h21 * h12
-        
-    'Message vA & "," & vB & "," & vC & "," & vD & "," & vE & "," & vF & "," & VG & "," & vH & "," & vI
         
     'Scale those values to match the size of the transformed image
     hA = hA * invWidth
@@ -526,22 +445,105 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
         
 End Sub
 
-Private Sub cmdReset_Click()
+Private Sub cmdBar_AddCustomPresetData()
+    
+    'Place all node data into a single string, then write that string out to file
+    Dim nodeString As String
+    nodeString = ""
+    
+    Dim i As Long
+    For i = 0 To 3
+        nodeString = nodeString & CStr(m_nPoints(i).pX) & "," & CStr(m_nPoints(i).pY)
+        If i < 3 Then nodeString = nodeString & "|"
+    Next i
+    
+    cmdBar.addPresetData "NodeLocations", nodeString
+    
+End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Perspective", , getPerspectiveParamString
+End Sub
+
+Private Sub cmdBar_RandomizeClick()
+
+    Randomize Timer
+    
+    'Set the points in the current area to random values - not much to see here!
+    Dim i As Long
+    For i = 0 To 3
+        m_nPoints(i).pX = Rnd * picDraw.ScaleWidth
+        m_nPoints(i).pY = Rnd * picDraw.ScaleHeight
+    Next i
+    
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+    
+    'Retrieve the string that contains the node coordinates
+    Dim tmpString As String
+    tmpString = cmdBar.retrievePresetData("NodeLocations")
+    
+    'With the help of a paramString class, parse out individual coordinates into the cNodes array
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString Replace(tmpString, ",", "|")
+    
+    Dim i As Long
+    For i = 0 To 3
+        
+        'Retrieve this node's x and y values
+        m_nPoints(i).pX = cParams.GetLong(i * 2 + 1)
+        m_nPoints(i).pY = cParams.GetLong(i * 2 + 2)
+        
+    Next i
+    
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    redrawPreviewBox
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+        
+    'Set edge handling to match the default specified in Form_Load
+    cmbEdges.ListIndex = EDGE_ERASE
+    
     'Copy the original values into the "current values" point array and redraw everything
     Dim i As Long
     For i = 0 To 3
         m_nPoints(i).pX = m_oPoints(i).pX
         m_nPoints(i).pY = m_oPoints(i).pY
     Next i
-    
+        
     redrawPreviewBox
     updatePreview
-
+    
 End Sub
 
 Private Sub Form_Activate()
         
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+        
+    'Create the preview
+    cmdBar.markPreviewStatus True
+    redrawPreviewBox
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+
+    'Disable all previews while we initialize the dialog
+    cmdBar.markPreviewStatus False
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_ERASE
+    
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
         iWidth = pdImages(CurrentImage).mainSelection.boundWidth
@@ -576,20 +578,7 @@ Private Sub Form_Activate()
         
     'Mark the mouse as not being down
     m_isMouseDown = False
-    
-    redrawPreviewBox
         
-    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
-    ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_ERASE
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-        
-    'Create the preview
-    updatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -602,34 +591,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-
-    Dim paramString As String
-    paramString = ""
-
-    'Top-left
-    paramString = (m_nPoints(0).pX - m_oPoints(0).pX) * (iWidth / m_previewWidth)
-    paramString = paramString & "|" & (m_nPoints(0).pY - m_oPoints(0).pY) * (iHeight / m_previewHeight)
-    
-    'Top-right
-    paramString = paramString & "|" & (iWidth + ((m_nPoints(1).pX - m_oPoints(1).pX) * (iWidth / m_previewWidth)))
-    paramString = paramString & "|" & (m_nPoints(1).pY - m_oPoints(1).pY) * (iHeight / m_previewHeight)
-    
-    'Bottom-right
-    paramString = paramString & "|" & (iWidth + ((m_nPoints(2).pX - m_oPoints(2).pX) * (iWidth / m_previewWidth)))
-    paramString = paramString & "|" & (iHeight + (m_nPoints(2).pY - m_oPoints(2).pY) * (iHeight / m_previewHeight))
-    
-    'Bottom-left
-    paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
-    paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
-    
-    'Edge handling
-    paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
-    
-    'Resampling
-    paramString = paramString & "|" & OptInterpolate(0).Value
-    
-    PerspectiveImage paramString, True, fxPreview
-    
+    If cmdBar.previewsAllowed Then PerspectiveImage getPerspectiveParamString, True, fxPreview
 End Sub
 
 Private Sub redrawPreviewBox()
@@ -749,4 +711,36 @@ End Function
 'Simple distance formula here - we use this to calculate if the user has clicked on (or near) a point
 Private Function pDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Double
     pDistance = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+End Function
+
+'Take the current tool settings and merge them into a parameter string
+Private Function getPerspectiveParamString() As String
+
+    Dim paramString As String
+    paramString = ""
+
+    'Top-left
+    paramString = (m_nPoints(0).pX - m_oPoints(0).pX) * (iWidth / m_previewWidth)
+    paramString = paramString & "|" & (m_nPoints(0).pY - m_oPoints(0).pY) * (iHeight / m_previewHeight)
+    
+    'Top-right
+    paramString = paramString & "|" & (iWidth + ((m_nPoints(1).pX - m_oPoints(1).pX) * (iWidth / m_previewWidth)))
+    paramString = paramString & "|" & (m_nPoints(1).pY - m_oPoints(1).pY) * (iHeight / m_previewHeight)
+    
+    'Bottom-right
+    paramString = paramString & "|" & (iWidth + ((m_nPoints(2).pX - m_oPoints(2).pX) * (iWidth / m_previewWidth)))
+    paramString = paramString & "|" & (iHeight + (m_nPoints(2).pY - m_oPoints(2).pY) * (iHeight / m_previewHeight))
+    
+    'Bottom-left
+    paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
+    paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
+    
+    'Edge handling
+    paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
+    
+    'Resampling
+    paramString = paramString & "|" & OptInterpolate(0).Value
+    
+    getPerspectiveParamString = paramString
+
 End Function
