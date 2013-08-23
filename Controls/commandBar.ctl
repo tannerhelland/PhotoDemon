@@ -107,9 +107,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 22/August/13
-'Last update: changed the order in which validation occurs to address some weirdness with the grayscale dialog blindly
-'             validating off-screen controls, which may not have valid values but aren't relevant to the current action.
+'Last updated: 23/August/13
+'Last update: added support for vertical scrollbars (I forgot that these are still used in some custom dialogs, e.g. Photo Filters)
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -147,22 +146,23 @@ Option Explicit
 Public Event OKClick()
 Public Event CancelClick()
 
-'Clicking the RESET event raises the corresponding event.  The rules PD uses for resetting controls are explained
+'Clicking the RESET button raises the corresponding event.  The rules PD uses for resetting controls are explained
 ' in the cmdReset_Click() sub below.  Additionally, if no preset values are found, this event will be automatically
 ' triggered.
 Public Event ResetClick()
 
-'Clicking the RANDOMIZE event raises the corresponding event.  Most dialogs won't need to use this, as this
-' control is capable of randomizing all stock controls.  But custom controls like the Curves dialog will
-' need to do some of their own work.
+'Clicking the RANDOMIZE button raises the corresponding event.  Most dialogs won't need to use this event, as this
+' control is capable of randomizing all stock controls.  But custom controls like the Curves dialog will need to
+' perform their own randomization.
 Public Event RandomizeClick()
 
 'All custom PD controls are auto-validated when OK is pressed.  If other custom items need validation, the OK
-' function will trigger this event, which the parent can use as necessary.
+' button will trigger this event, which the parent can use to perform additional validation as necessary.
 Public Event ExtraValidations()
 
-'After this control has modified other controls on the page, it may need to request a preview.  When that
-' occurs, this event will be raised; the parent form simply needs to add an "updatePreview" call inside.
+'After this control has modified other controls on the page (e.g. when Randomize is pressed), it needs to request
+' an updated preview from the parent.  This event is used for that; the parent form simply needs to add an
+' "updatePreview" call inside.
 Public Event RequestPreviewUpdate()
 
 'Certain dialogs (like Curves) use custom user controls whose information cannot automatically be read/written as
@@ -170,6 +170,13 @@ Public Event RequestPreviewUpdate()
 ' given preset.
 Public Event AddCustomPresetData()
 Public Event ReadCustomPresetData()
+
+'Sometimes, for brevity and clarity's sake I use a single dialog for multiple tools (e.g. median/dilate/erode).
+' Such forms create a problem when reading/writing presets, because the command bar has no idea that multiple
+' tools exist on the same form.  In the _Load statement of the parent, the setToolName function can be called to
+' append a unique tool name to the default one (generated from the Form title); this will keep the presets for
+' separate for each tool on that form.
+Private userSuppliedToolName As String
 
 'Used to render images onto the command buttons
 Private cImgCtl As clsControlImage
@@ -210,6 +217,12 @@ Private numUserPresetEntries As Long
 Private userPresetNames() As String
 Private userPresetData() As String
 Private curPresetEntry As String
+
+'If multiple tools exist on the same form, the parent can use this in its _Load statement to identify which tool
+' is currently active.  The command bar will then limit its preset actions to that tool name alone.
+Public Sub setToolName(ByVal customName As String)
+    userSuppliedToolName = customName
+End Sub
 
 'Because this user control will change the values of dialog controls at run-time, it is necessary to suspend previewing
 ' while changing values (so that each value change doesn't prompt a preview redraw, and thus slow down the process.)
@@ -333,7 +346,7 @@ Private Sub cmdRandomize_Click()
                 If Int(Rnd * numOfOptionButtons) = 0 Then eControl.Value = True
                 
             'Scroll bars use the same rule as other numeric controls
-            Case "HScrollBar"
+            Case "HScrollBar", "VScrollBar"
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
             
             'List boxes and combo boxes are assigned a random ListIndex
@@ -433,8 +446,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set cmdOK.Font = mFont
-    Set cmdCancel.Font = mFont
+    Set CmdOK.Font = mFont
+    Set CmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -577,7 +590,7 @@ Private Sub cmdReset_Click()
                 End If
             
             'Scroll bars obey the same rules as other numeric controls
-            Case "HScrollBar"
+            Case "HScrollBar", "VScrollBar"
                 If eControl.Min <= 0 Then eControl.Value = 0 Else eControl.Value = eControl.Min
                 
             'List boxes and combo boxes are set to their first entry
@@ -617,8 +630,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd cmdOK.hWnd
-    setHandCursorToHwnd cmdCancel.hWnd
+    setHandCursorToHwnd CmdOK.hWnd
+    setHandCursorToHwnd CmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -659,6 +672,9 @@ Private Sub UserControl_Initialize()
     'Parent forms will be unloaded by default when pressing Cancel
     dontShutdownYet = False
     
+    'By default, the user hasn't appended a special name for this instance
+    userSuppliedToolName = ""
+    
     'We don't enable previews yet - that happens after the Show event fires
     
 End Sub
@@ -694,8 +710,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
-    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
+    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
+    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
 
 End Sub
 
@@ -712,8 +728,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -724,6 +740,10 @@ Private Sub UserControl_Show()
         'If our parent tool has an XML settings file, load it now, and if it doesn't have one, create a blank one
         Set xmlEngine = New pdXML
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
+        
+        'If the user has supplied a custom name for this tool, append it to the default name
+        If Len(userSuppliedToolName) > 0 Then parentToolName = parentToolName & "_" & userSuppliedToolName
+        
         parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
     
         If FileExist(parentToolPath) Then
@@ -833,7 +853,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 controlValue = CStr(eControl.Color)
             
             'Intrinsic VB controls may have different names for their value properties
-            Case "HScrollBar"
+            Case "HScrollBar", "VScrollBar"
                 controlValue = CStr(eControl.Value)
                 
             Case "ListBox", "ComboBox"
@@ -969,7 +989,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.Color = CLng(controlValue)
                 
                 'Intrinsic VB controls may have different names for their value properties
-                Case "HScrollBar"
+                Case "HScrollBar", "VScrollBar"
                     eControl.Value = CLng(controlValue)
                     
                 Case "ListBox", "ComboBox"
