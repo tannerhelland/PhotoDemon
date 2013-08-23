@@ -152,6 +152,7 @@ BOXBLUR      CUSTOM  MOVEABLE        LOADONCALL      box.png
 GAUSSBLUR    CUSTOM  MOVEABLE        LOADONCALL      image_blur.png
 GRIDBLUR     CUSTOM  MOVEABLE        LOADONCALL      image_empty.png
 PIXELATE     CUSTOM  MOVEABLE        LOADONCALL      grid.png
+RADIALBLUR   CUSTOM  MOVEABLE        LOADONCALL      wheel.png
 SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      brain.png
 //
 DISTORT      CUSTOM  MOVEABLE        LOADONCALL      mizuhiki_paper_cord.png

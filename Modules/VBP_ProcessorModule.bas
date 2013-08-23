@@ -716,6 +716,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
             
+        Case "Radial blur"
+            If showDialog Then
+                FormRadialBlur.Show vbModal, FormMain
+            Else
+                FormRadialBlur.RadialBlurFilter cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
+            End If
+            
         Case "Smart blur"
             If showDialog Then
                 FormSmartBlur.Show vbModal, FormMain
