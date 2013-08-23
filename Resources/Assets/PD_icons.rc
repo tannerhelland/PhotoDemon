@@ -136,9 +136,10 @@ STRETCH      CUSTOM  MOVEABLE        LOADONCALL      ui_splitter_horizontal.png
 FADELAST     CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png
 ARTISTIC     CUSTOM  MOVEABLE        LOADONCALL      paintbrush.png
 //--> Artistic sub-menu
-ANTIQUE      CUSTOM  MOVEABLE        LOADONCALL      radio_old.png
 COMICBOOK    CUSTOM  MOVEABLE        LOADONCALL      book_open_text_image.png
+FIGGLASS     CUSTOM  MOVEABLE        LOADONCALL      jar_empty.png
 FILMNOIR     CUSTOM  MOVEABLE        LOADONCALL      user_detective_gray.png
+KALEIDOSCOPE CUSTOM  MOVEABLE        LOADONCALL      flower_modified.png
 MODERNART    CUSTOM  MOVEABLE        LOADONCALL      stickman_smiley.png
 OILPAINTING  CUSTOM  MOVEABLE        LOADONCALL      palette_paintbrush.png
 PENCIL       CUSTOM  MOVEABLE        LOADONCALL      pencil.png
@@ -155,8 +156,6 @@ SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      brain.png
 //
 DISTORT      CUSTOM  MOVEABLE        LOADONCALL      mizuhiki_paper_cord.png
 //--> Distort sub-menu
-FIGGLASS     CUSTOM  MOVEABLE        LOADONCALL      jar_empty.png
-KALEIDOSCOPE CUSTOM  MOVEABLE        LOADONCALL      flower_modified.png
 LENSDISTORT  CUSTOM  MOVEABLE        LOADONCALL      camera_lens_plus.png
 FIXLENS      CUSTOM  MOVEABLE        LOADONCALL      camera_lens_minus.png
 MISCDISTORT  CUSTOM  MOVEABLE        LOADONCALL      shopping_basket.png
@@ -193,9 +192,7 @@ NOISE        CUSTOM  MOVEABLE        LOADONCALL      speaker.png
 //--> Noise sub-menu
 FILMGRAIN    CUSTOM  MOVEABLE        LOADONCALL      film.png
 ADDNOISE     CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_up.png
-DESPECKLE    CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_mute.png
 MEDIAN       CUSTOM  MOVEABLE        LOADONCALL      balance.png
-REMOVEORPHAN CUSTOM  MOVEABLE        LOADONCALL      broom.png
 //
 OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
 //--> Other sub-menu
@@ -213,6 +210,7 @@ UNSHARP      CUSTOM  MOVEABLE        LOADONCALL      spectacle_sunglass.png
 //
 STYLIZE      CUSTOM  MOVEABLE        LOADONCALL      tie.png
 //--> Stylize sub-menu
+ANTIQUE      CUSTOM  MOVEABLE        LOADONCALL      radio_old.png
 DIFFUSE      CUSTOM  MOVEABLE        LOADONCALL      bomb.png
 DILATE       CUSTOM  MOVEABLE        LOADONCALL      dilate.png
 ERODE        CUSTOM  MOVEABLE        LOADONCALL      erode.png
