@@ -507,8 +507,12 @@ Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     
     If Not suppressIndentation Then applyIndentation fileContents
     
-    'If the file already exists, remove it
-    If FileExist(dstFile) Then Kill dstFile
+    'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
+    ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
+    If FileExist(dstFile) Then
+        Kill dstFile
+        DoEvents
+    End If
     
     'Open the specified file
     Dim fileNum As Integer
