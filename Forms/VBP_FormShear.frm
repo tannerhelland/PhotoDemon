@@ -25,6 +25,25 @@ Begin VB.Form FormShear
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   10
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,32 +59,14 @@ Begin VB.Form FormShear
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   3540
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +76,7 @@ Begin VB.Form FormShear
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4440
       Width           =   1005
       _ExtentX        =   1773
@@ -96,7 +97,7 @@ Begin VB.Form FormShear
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4440
       Width           =   975
       _ExtentX        =   1720
@@ -115,7 +116,7 @@ Begin VB.Form FormShear
    Begin PhotoDemon.sliderTextCombo sltAngleX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   1770
       Width           =   5895
       _ExtentX        =   10398
@@ -136,7 +137,7 @@ Begin VB.Form FormShear
    Begin PhotoDemon.sliderTextCombo sltAngleY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
@@ -173,7 +174,7 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   2280
       Width           =   1485
    End
@@ -194,16 +195,9 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3165
       Width           =   3315
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -224,7 +218,7 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4050
       Width           =   1845
    End
@@ -247,7 +241,7 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1440
       Width           =   1785
    End
@@ -282,23 +276,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltAngleX.IsValid And sltAngleY.IsValid Then
-        Me.Visible = False
-        Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
 End Sub
 
 'Shear an image in one or two directions
@@ -390,18 +367,39 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
         
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    cmbEdges.ListIndex = EDGE_WRAP
+End Sub
+
 Private Sub Form_Activate()
-        
-    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
-    ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_WRAP
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
         
     'Create the preview
+    cmdBar.markPreviewStatus True
     updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Disable previews until the dialog is fully ready
+    cmdBar.markPreviewStatus False
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_WRAP
     
 End Sub
 
@@ -423,5 +421,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ShearImage sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub

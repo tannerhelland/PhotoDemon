@@ -25,6 +25,25 @@ Begin VB.Form FormRipple
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   14
+      Top             =   5790
+      Width           =   12105
+      _ExtentX        =   21352
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,32 +59,14 @@ Begin VB.Form FormRipple
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   3975
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +76,7 @@ Begin VB.Form FormRipple
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   4920
       Width           =   1005
       _ExtentX        =   1773
@@ -96,7 +97,7 @@ Begin VB.Form FormRipple
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   4920
       Width           =   975
       _ExtentX        =   1720
@@ -115,7 +116,7 @@ Begin VB.Form FormRipple
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   3090
       Width           =   5895
       _ExtentX        =   10398
@@ -136,7 +137,7 @@ Begin VB.Form FormRipple
    Begin PhotoDemon.sliderTextCombo sltPhase 
       Height          =   495
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   2250
       Width           =   5895
       _ExtentX        =   10398
@@ -155,7 +156,7 @@ Begin VB.Form FormRipple
    Begin PhotoDemon.sliderTextCombo sltAmplitude 
       Height          =   495
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   12
       Top             =   1410
       Width           =   5895
       _ExtentX        =   10398
@@ -175,7 +176,7 @@ Begin VB.Form FormRipple
    Begin PhotoDemon.sliderTextCombo sltWavelength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   16
+      TabIndex        =   13
       Top             =   570
       Width           =   5895
       _ExtentX        =   10398
@@ -210,16 +211,9 @@ Begin VB.Form FormRipple
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3600
       Width           =   3315
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   7
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -238,7 +232,7 @@ Begin VB.Form FormRipple
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   1920
       Width           =   1425
    End
@@ -259,7 +253,7 @@ Begin VB.Form FormRipple
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   1080
       Width           =   3120
    End
@@ -280,7 +274,7 @@ Begin VB.Form FormRipple
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   240
       Width           =   3270
    End
@@ -301,7 +295,7 @@ Begin VB.Form FormRipple
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2760
       Width           =   2145
    End
@@ -324,7 +318,7 @@ Begin VB.Form FormRipple
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   4530
       Width           =   1845
    End
@@ -338,8 +332,8 @@ Attribute VB_Exposed = False
 'Image "Ripple" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 06/January/13
-'Last updated: 15/January/13
-'Last update: added support for custom edge handling
+'Last updated: 24/August/13
+'Last update: added command bar
 '
 'This tool allows the user to apply a "water ripple" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -367,23 +361,6 @@ Dim m_ToolTip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltWavelength.IsValid And sltAmplitude.IsValid And sltPhase.IsValid And sltRadius.IsValid Then
-        Me.Visible = False
-        Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
 End Sub
 
 'Apply a "water ripple" effect to an image
@@ -519,18 +496,42 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
         
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltWavelength.Value = 40
+    sltAmplitude.Value = 80
+    sltRadius.Value = 100
+    cmbEdges.ListIndex = EDGE_REFLECT
+End Sub
+
 Private Sub Form_Activate()
-    
-    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
-    ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_REFLECT
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
         
     'Create the preview
+    cmdBar.markPreviewStatus True
     updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Disable previewing until the form has been fully initialized
+    cmdBar.markPreviewStatus False
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_REFLECT
     
 End Sub
 
@@ -560,5 +561,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub

@@ -24,10 +24,29 @@ Begin VB.Form FormSharpen
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   3
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
@@ -45,39 +64,14 @@ Begin VB.Form FormSharpen
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -96,7 +90,7 @@ Begin VB.Form FormSharpen
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2400
       Width           =   960
    End
@@ -134,22 +128,6 @@ Dim iWidth As Long, iHeight As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    If sltStrength.IsValid Then
-        Me.Visible = False
-        Process "Sharpen", , CStr(sltStrength)
-        Unload Me
-    End If
-    
-End Sub
-
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub ApplySharpenFilter(ByVal sStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -178,8 +156,32 @@ Public Sub ApplySharpenFilter(ByVal sStrength As Double, Optional ByVal toPrevie
                 
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Sharpen", , CStr(sltStrength)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
 
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Disable previews until the dialog is completely ready
+    cmdBar.markPreviewStatus False
+    
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
         iWidth = pdImages(CurrentImage).mainSelection.boundWidth
@@ -188,13 +190,6 @@ Private Sub Form_Activate()
         iWidth = pdImages(CurrentImage).Width
         iHeight = pdImages(CurrentImage).Height
     End If
-
-    'Draw a preview of the effect
-    updatePreview
-    
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
     
 End Sub
 
@@ -203,7 +198,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    ApplySharpenFilter sltStrength.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplySharpenFilter sltStrength.Value, True, fxPreview
 End Sub
 
 Private Sub sltStrength_Change()

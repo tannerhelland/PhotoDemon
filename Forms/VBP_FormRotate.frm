@@ -25,11 +25,30 @@ Begin VB.Form FormRotate
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   6
+      Top             =   5790
+      Width           =   12105
+      _ExtentX        =   21352
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton optRotate 
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   3330
       Width           =   3390
       _ExtentX        =   5980
@@ -46,28 +65,10 @@ Begin VB.Form FormRotate
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -77,7 +78,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3720
       Width           =   3315
       _ExtentX        =   5847
@@ -96,7 +97,7 @@ Begin VB.Form FormRotate
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
@@ -113,13 +114,6 @@ Begin VB.Form FormRotate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblRotatedCanvas 
       Appearance      =   0  'Flat
@@ -139,7 +133,7 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2880
       Width           =   2025
    End
@@ -161,7 +155,7 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1920
       Width           =   1560
    End
@@ -175,8 +169,8 @@ Attribute VB_Exposed = False
 'Image Rotation Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 12/November/12
-'Last updated: 28/April/13
-'Last update: simplify code by relying on new slider/text custom control
+'Last updated: 24/August/13
+'Last update: add command bar
 '
 'This tool allows the user to rotate an image at an arbitrary angle in 1/10 degree increments.  FreeImage is required
 ' for the tool to work, as this relies upon FreeImage to perform the rotation in a fast, efficient manner.  The
@@ -199,32 +193,6 @@ Dim smallLayer As pdLayer
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltAngle.IsValid Then
-        
-        Me.Visible = False
-        
-        'Based on the user's selection, submit the proper processor request
-        If optRotate(0) Then
-            Process "Arbitrary rotation", , buildParams(0, sltAngle)
-        Else
-            Process "Arbitrary rotation", , buildParams(1, sltAngle)
-        End If
-        
-        Unload Me
-        
-    End If
-    
-End Sub
 
 Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal isPreview As Boolean = False)
 
@@ -359,7 +327,35 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    If optRotate(0) Then
+        Process "Arbitrary rotation", , buildParams(0, sltAngle)
+    Else
+        Process "Arbitrary rotation", , buildParams(1, sltAngle)
+    End If
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
+            
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+        
+    'Render a preview
+    cmdBar.markPreviewStatus True
+    updatePreview
+        
+End Sub
+
+Private Sub Form_Load()
+
+    'Disable previewing until the dialog is fully initialized
+    cmdBar.markPreviewStatus False
     
     'During the preview stage, we want to rotate a smaller version of the image.  This increases the speed of
     ' previewing immensely (especially for large images, like 10+ megapixel photos)
@@ -378,14 +374,7 @@ Private Sub Form_Activate()
         
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallLayer
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-        
-    'Render a preview
-    updatePreview
-        
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -398,11 +387,13 @@ End Sub
 
 'Redraw the on-screen preview of the rotated image
 Private Sub updatePreview()
-
-    If optRotate(0).Value Then
-        RotateArbitrary 0, sltAngle, True
-    Else
-        RotateArbitrary 1, sltAngle, True
+    
+    If cmdBar.previewsAllowed Then
+        If optRotate(0).Value Then
+            RotateArbitrary 0, sltAngle, True
+        Else
+            RotateArbitrary 1, sltAngle, True
+        End If
     End If
 
 End Sub

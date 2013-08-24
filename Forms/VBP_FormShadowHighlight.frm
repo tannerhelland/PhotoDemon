@@ -24,28 +24,29 @@ Begin VB.Form FormShadowHighlight
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9180
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10650
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   8
+      Top             =   5760
+      Width           =   12120
+      _ExtentX        =   21378
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -55,7 +56,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3240
       Width           =   3690
       _ExtentX        =   6509
@@ -74,7 +75,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.sliderTextCombo sltShadow 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
@@ -95,7 +96,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.sliderTextCombo sltHighlight 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4170
       Width           =   5895
       _ExtentX        =   10398
@@ -116,7 +117,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   2640
       Width           =   5655
       _ExtentX        =   9975
@@ -141,7 +142,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2280
       Width           =   4530
    End
@@ -163,16 +164,9 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   3840
       Width           =   1125
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -120
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12495
    End
    Begin VB.Label lblShadow 
       Appearance      =   0  'Flat
@@ -192,7 +186,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1320
       Width           =   1005
    End
@@ -206,8 +200,8 @@ Attribute VB_Exposed = False
 'Shadow / Midtone / Highlight Adjustment Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 17/February/13
-'Last updated: 28/April/13
-'Last update: greatly simplify code by relying on new slider/text custom control
+'Last updated: 24/August/13
+'Last update: add command bar
 '
 'Shadow / Midtone / Highlight recovery and correction tool.
 '
@@ -223,7 +217,7 @@ Attribute VB_Exposed = False
 '
 'The automatic midtone detection algorithm works by finding the actual midpoint of the original image's histogram, and
 ' centering the new histogram using that midpoint as (127, 127, 127). This results in a theoretically "perfect"
-' exposure, but as with most "theoretically perfect" color algorithms(e.g. histogram equalization), it is unlikely to
+' exposure, but as with most "theoretically perfect" color algorithms (e.g. histogram equalization), it is unlikely to
 ' offer ideal results.  Rather, think of it as a starting point from which you can more easily find your ideal midtone
 ' point.
 '
@@ -246,21 +240,22 @@ Private Sub chkAutoThreshold_Click()
     updatePreview
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(colorPicker.Color))
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdBar_RandomizeClick()
+    chkAutoThreshold.Value = vbUnchecked
+End Sub
 
-    'The scroll bar max and min values are used to check the gamma input for validity
-    If sltShadow.IsValid And sltHighlight.IsValid Then
-        Me.Visible = False
-        Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(colorPicker.Color))
-        Unload Me
-    End If
-    
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    chkAutoThreshold.Value = vbUnchecked
+    colorPicker.Color = RGB(127, 127, 127)
 End Sub
 
 Private Sub colorPicker_ColorChanged()
@@ -402,6 +397,6 @@ Private Sub sltShadow_Change()
 End Sub
 
 Private Sub updatePreview()
-    ApplyShadowHighlight sltShadow, sltHighlight, CLng(colorPicker.Color), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyShadowHighlight sltShadow, sltHighlight, CLng(colorPicker.Color), True, fxPreview
 End Sub
 
