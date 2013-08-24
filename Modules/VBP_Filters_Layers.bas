@@ -1479,9 +1479,9 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
                             r = nX
                         End If
                     End If
-                    
-                    srcX = (finalX) - (finalX / PI_DOUBLE * theta)
-                    srcY = (finalY + 1) * r / sRadius
+                                        
+                    srcX = finalX - (finalX / PI_DOUBLE * theta)
+                    srcY = finalY * (r / sRadius)
                     
                 Else
                 
@@ -1502,7 +1502,7 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
             
                 If sDistance <= sRadius2 Then
                 
-                    theta = x / (finalX + 1) * PI_DOUBLE
+                    theta = (x / finalX) * PI_DOUBLE
                     
                     If theta >= (PI * 1.5) Then
                         t = PI_DOUBLE - theta
@@ -1514,7 +1514,7 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
                         t = theta
                     End If
                     
-                    r = sRadius * (y / (finalY + 1))
+                    r = sRadius * (y / finalY)
                     
                     nX = -r * Sin(t)
                     nY = r * Cos(t)
@@ -1553,8 +1553,8 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
                 If sDistance <> 0 Then
                     srcX = midX + midX * midX * (nX / sDistance) * polarRadius
                     srcY = midY + midY * midY * (nY / sDistance) * polarRadius
-                    srcX = Modulo(srcX, (finalX + 1))
-                    srcY = Modulo(srcY, (finalY + 1))
+                    srcX = Modulo(srcX, finalX)
+                    srcY = Modulo(srcY, finalY)
                 Else
                     srcX = x
                     srcY = y
