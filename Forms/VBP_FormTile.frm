@@ -25,83 +25,24 @@ Begin VB.Form FormTile
    ScaleWidth      =   773
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   8640
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10110
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.TextBox TxtWidth 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6720
-      TabIndex        =   7
-      Text            =   "N/A"
-      Top             =   2940
-      Width           =   855
-   End
-   Begin VB.TextBox TxtHeight 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   9600
-      TabIndex        =   6
-      Text            =   "N/A"
-      Top             =   2940
-      Width           =   855
-   End
-   Begin VB.VScrollBar VSWidth 
-      Height          =   420
-      Left            =   7590
-      Max             =   32766
-      Min             =   1
-      TabIndex        =   5
-      TabStop         =   0   'False
-      Top             =   2880
-      Value           =   15000
-      Width           =   270
-   End
-   Begin VB.VScrollBar VSHeight 
-      Height          =   420
-      Left            =   10470
-      Max             =   32766
-      Min             =   1
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
       TabIndex        =   4
-      TabStop         =   0   'False
-      Top             =   2880
-      Value           =   15000
-      Width           =   270
+      Top             =   5775
+      Width           =   11595
+      _ExtentX        =   20452
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.ComboBox cboTarget 
       BackColor       =   &H00FFFFFF&
@@ -118,43 +59,159 @@ Begin VB.Form FormTile
       Height          =   360
       Left            =   6240
       Style           =   2  'Dropdown List
-      TabIndex        =   3
-      Top             =   2280
+      TabIndex        =   1
+      Top             =   1680
       Width           =   5175
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   14
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
+   Begin PhotoDemon.textUpDown tudWidth 
+      Height          =   405
+      Left            =   8040
+      TabIndex        =   5
+      Top             =   2400
+      Width           =   1200
+      _ExtentX        =   2117
+      _ExtentY        =   714
+      Min             =   1
+      Max             =   32767
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   855
-      Left            =   0
-      TabIndex        =   13
-      Top             =   5760
-      Width           =   11655
+   End
+   Begin PhotoDemon.textUpDown tudHeight 
+      Height          =   405
+      Left            =   8040
+      TabIndex        =   6
+      Top             =   3030
+      Width           =   1200
+      _ExtentX        =   2117
+      _ExtentY        =   714
+      Min             =   1
+      Max             =   32767
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblWidth 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "width:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   7200
+      TabIndex        =   10
+      Top             =   2430
+      Width           =   675
+   End
+   Begin VB.Label lblHeight 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "height:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   7200
+      TabIndex        =   9
+      Top             =   3060
+      Width           =   750
+   End
+   Begin VB.Label lblWidthUnit 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "pixels"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00808080&
+      Height          =   285
+      Left            =   9330
+      TabIndex        =   8
+      Top             =   2430
+      Width           =   600
+   End
+   Begin VB.Label lblHeightUnit 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "pixels"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00808080&
+      Height          =   285
+      Left            =   9330
+      TabIndex        =   7
+      Top             =   3060
+      Width           =   600
    End
    Begin VB.Label lblDescription 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "The final image will be %1 %3 wide by %2 %3 tall."
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -164,92 +221,10 @@ Begin VB.Form FormTile
       ForeColor       =   &H00404040&
       Height          =   1155
       Left            =   6000
-      TabIndex        =   12
-      Top             =   3720
+      TabIndex        =   2
+      Top             =   3960
       Width           =   5355
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblWidth 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "width:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   6120
-      TabIndex        =   11
-      Top             =   2985
-      Width           =   525
-   End
-   Begin VB.Label lblHeight 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "height:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   8880
-      TabIndex        =   10
-      Top             =   2985
-      Width           =   585
-   End
-   Begin VB.Label lblWidthType 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   8010
-      TabIndex        =   9
-      Top             =   2985
-      Width           =   435
-   End
-   Begin VB.Label lblHeightType 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
-      Height          =   210
-      Left            =   10890
-      TabIndex        =   8
-      Top             =   2985
-      Width           =   435
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -269,8 +244,8 @@ Begin VB.Form FormTile
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   2
-      Top             =   1920
+      TabIndex        =   0
+      Top             =   1320
       Width           =   2670
    End
 End
@@ -281,15 +256,17 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tile Rendering Interface
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/August/12
-'Last updated: 09/September/12
-'Last update: rewrote against new layer class.  The tile generation is now much MUCH faster, especially for egregiously large
-'              tile sizes.
+'Last updated: 24/August/13
+'Last update: clean up and modernize all code; install new text up/down user controls, add command bar
 '
-'Render tiled images.  Options are provided for rendering to current wallpaper size, or to a custom size.
-' The interface for custom sizes is derived from the Image Size form; ideally, any changes to that
-' should be mirrored here.
+'Render tiled images.  Options are provided for rendering to current wallpaper size, or to a custom size in either
+' pixels or tiles.
+'
+'It should be noted that when previewing, a full-size copy of the tiled image is created.  This may cause issues when
+' very large images are tiled at even bigger sizes, but so far I have been unable to crash my PC despite testing any
+' number of outrageous sizes... :)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -298,14 +275,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to prevent the scroll bars from getting stuck in update loops
-Dim updateWidthBar As Boolean, updateHeightBar As Boolean
-
 'Track the last type of option used; we use this to convert the text box values intelligently
 Dim lastTargetMode As Long
-
-'We only want the preview redrawn at certain times; this is used to limit it
-Dim redrawPreview As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -314,13 +285,14 @@ Dim m_ToolTip As clsToolTip
 Private Sub cboTarget_Click()
 
     'Suppress previewing while all the variables get set to their proper values
-    redrawPreview = False
+    cmdBar.markPreviewStatus False
 
     Dim iWidth As Long, iHeight As Long
     iWidth = pdImages(CurrentImage).Width
     iHeight = pdImages(CurrentImage).Height
 
     Select Case cboTarget.ListIndex
+    
         'Wallpaper size
         Case 0
             
@@ -330,91 +302,56 @@ Private Sub cboTarget_Click()
             cScreenHeight = Screen.Height / Screen.TwipsPerPixelY
             
             'Add one to the displayed width and height, since we store them -1 for loops
-            TxtWidth.Text = cScreenWidth
-            TxtHeight.Text = cScreenHeight
+            tudWidth.Value = cScreenWidth
+            tudHeight.Value = cScreenHeight
             
-            TxtWidth.Enabled = False
-            TxtHeight.Enabled = False
-            VSWidth.Enabled = False
-            VSHeight.Enabled = False
-            lblWidthType = "pixels"
-            lblHeightType = "pixels"
+            tudWidth.Enabled = False
+            tudHeight.Enabled = False
+            lblWidthUnit = g_Language.TranslateMessage("pixels")
+            lblHeightUnit = g_Language.TranslateMessage("pixels")
         
         'Custom size (in pixels)
         Case 1
-            TxtWidth.Enabled = True
-            TxtHeight.Enabled = True
-            VSWidth.Enabled = True
-            VSHeight.Enabled = True
-            lblWidthType = "pixels"
-            lblHeightType = "pixels"
+            tudWidth.Enabled = True
+            tudHeight.Enabled = True
+            lblWidthUnit = g_Language.TranslateMessage("pixels")
+            lblHeightUnit = g_Language.TranslateMessage("pixels")
             
             'If the user was previously measuring in tiles, convert that value to pixels
-            If (lastTargetMode = 2) And (NumberValid(TxtWidth)) And (NumberValid(TxtHeight)) Then
-                TxtWidth = CLng(TxtWidth) * iWidth
-                TxtHeight = CLng(TxtHeight) * iHeight
+            If (lastTargetMode = 2) And tudWidth.IsValid And tudHeight.IsValid Then
+                tudWidth = CLng(tudWidth) * iWidth
+                tudHeight = CLng(tudHeight) * iHeight
             End If
             
         'Custom size (as number of tiles)
         Case 2
-            TxtWidth.Enabled = True
-            TxtHeight.Enabled = True
-            VSWidth.Enabled = True
-            VSHeight.Enabled = True
-            lblWidthType = "tiles"
-            lblHeightType = "tiles"
+            tudWidth.Enabled = True
+            tudHeight.Enabled = True
+            lblWidthUnit = g_Language.TranslateMessage("tiles")
+            lblHeightUnit = g_Language.TranslateMessage("tiles")
             
             'Since the user will have previously been measuring in pixels, convert that value to tiles
-            If NumberValid(TxtWidth) And NumberValid(TxtHeight) Then
+            If tudWidth.IsValid And tudHeight.IsValid Then
                 Dim xTiles As Long, yTiles As Long
-                xTiles = CLng(CSng(TxtWidth) / CSng(iWidth))
-                yTiles = CLng(CSng(TxtHeight) / CSng(iHeight))
+                xTiles = CLng(CSng(tudWidth) / CSng(iWidth))
+                yTiles = CLng(CSng(tudHeight) / CSng(iHeight))
                 If xTiles < 1 Then xTiles = 1
                 If yTiles < 1 Then yTiles = 1
-                TxtWidth = xTiles
-                TxtHeight = yTiles
+                tudWidth = xTiles
+                tudHeight = yTiles
             End If
+            
     End Select
     
     'Remember this value for future conversions
     lastTargetMode = cboTarget.ListIndex
 
     'Re-enable previewing
-    redrawPreview = True
+    cmdBar.markPreviewStatus True
 
     'Finally, draw a preview
-    If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) Then
-        updateDescription
-        GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
-    End If
+    updatePreview
 
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If Not EntryValid(TxtWidth, 1, 32767, True, True) Then
-        AutoSelectText TxtWidth
-        Exit Sub
-    End If
-    If Not EntryValid(TxtHeight, 1, 32767, True, True) Then
-        AutoSelectText TxtHeight
-        Exit Sub
-    End If
-
-    Me.Visible = False
-    
-    'Based on the user's selection, submit the proper processor request
-    Process "Tile", , buildParams(cboTarget.ListIndex, TxtWidth, TxtHeight)
-    
-    Unload Me
-    
 End Sub
 
 'This routine renders the current image to a new, tiled image (larger than the present image)
@@ -523,82 +460,49 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
 
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Populate the combo box
-    cboTarget.AddItem "Current screen size", 0
-    cboTarget.AddItem "Custom image size (in pixels)", 1
-    cboTarget.AddItem "Specific number of tiles", 2
+Private Sub cmdBar_OKClick()
+    Process "Tile", , buildParams(cboTarget.ListIndex, tudWidth, tudHeight)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
     cboTarget.ListIndex = 0
-    'DoEvents
-    
-    'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage pdImages(CurrentImage).mainLayer
-    
-    'Render a preview
-    redrawPreview = True
-    GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
-    
-    'Allow updating via scroll bars (which are masquerading as up/down controls)
-    updateWidthBar = True
-    updateHeightBar = True
+    cboTarget_Click
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
+    'Render a preview
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+
+    'Suspend previews until the dialog is fully initialized
+    cmdBar.markPreviewStatus False
+    
+    'Give the preview object a copy of this image data so it can show it to the user if requested
+    fxPreview.setOriginalImage pdImages(CurrentImage).mainLayer
+    
+    'Populate the combo box
+    cboTarget.AddItem " current screen size", 0
+    cboTarget.AddItem " custom image size (in pixels)", 1
+    cboTarget.AddItem " specific number of tiles", 2
+    cboTarget.ListIndex = 0
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-'When the text boxes are changed, keep the scroll bar values in sync
-Private Sub TxtHeight_Change()
-    textValidate TxtHeight
-    If EntryValid(TxtHeight, 1, 32767, False, True) Then
-        updateHeightBar = False
-        VSHeight.Value = Abs(32767 - CInt(TxtHeight))
-        updateHeightBar = True
-        If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) And redrawPreview Then
-            updateDescription
-            GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
-        End If
-    Else
-        AutoSelectText TxtHeight
-    End If
-End Sub
-
-Private Sub txtHeight_GotFocus()
-    AutoSelectText TxtHeight
-End Sub
-
-Private Sub txtWidth_Change()
-    textValidate TxtWidth
-    If EntryValid(TxtWidth, 1, 32767, False, True) Then
-        updateWidthBar = False
-        VSWidth.Value = Abs(32767 - CInt(TxtWidth))
-        updateWidthBar = True
-        If EntryValid(TxtWidth, 1, 32767, False, False) And EntryValid(TxtHeight, 1, 32767, False, False) And redrawPreview Then
-            updateDescription
-            GenerateTile cboTarget.ListIndex, TxtWidth, TxtHeight, True
-        End If
-    Else
-        AutoSelectText TxtWidth
-    End If
-End Sub
-
-Private Sub txtWidth_GotFocus()
-    AutoSelectText TxtWidth
-End Sub
-
-'When the scroll bars are changed, keep the text box values in sync
-Private Sub VSHeight_Change()
-    If updateHeightBar = True Then TxtHeight = Abs(32767 - CStr(VSHeight.Value))
-End Sub
-
-Private Sub VSWidth_Change()
-    If updateWidthBar = True Then TxtWidth = Abs(32767 - CStr(VSWidth.Value))
 End Sub
 
 'Show the user a description of how large the new, tiled image will be
@@ -619,30 +523,45 @@ Private Sub updateDescription()
         
         'Wallpaper size
         Case 0
-            xVal = TxtWidth / iWidth
-            yVal = TxtHeight / iHeight
-            xText = Format(xVal, "#####.0")
-            yText = Format(yVal, "#####.0")
+            xVal = tudWidth / iWidth
+            yVal = tudHeight / iHeight
+            xText = Format(xVal, "####0.0#")
+            yText = Format(yVal, "####0.0#")
             metricText = g_Language.TranslateMessage("tiles")
             
         'Custom size (in pixels)
         Case 1
-            xVal = TxtWidth / iWidth
-            yVal = TxtHeight / iHeight
-            xText = Format(xVal, "#####.0")
-            yText = Format(yVal, "#####.0")
+            xVal = tudWidth / iWidth
+            yVal = tudHeight / iHeight
+            xText = Format(xVal, "####0.0#")
+            yText = Format(yVal, "####0.0#")
             metricText = g_Language.TranslateMessage("tiles")
             
         'Custom size (in tiles)
         Case 2
-            xVal = TxtWidth * iWidth
-            yVal = TxtHeight * iHeight
+            xVal = tudWidth * iWidth
+            yVal = tudHeight * iHeight
             xText = Format(xVal, "#####")
             yText = Format(yVal, "#####")
             metricText = g_Language.TranslateMessage("pixels")
             
     End Select
     
-    lblDescription = g_Language.TranslateMessage("The final image will be %1 %3 wide by %2 %3 tall.", xText, yText, metricText)
+    lblDescription = g_Language.TranslateMessage("the new image will be %1 %3 wide by %2 %3 tall", xText, yText, metricText)
 
+End Sub
+
+Private Sub tudHeight_Change()
+    updatePreview
+End Sub
+
+Private Sub tudWidth_Change()
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    If cmdBar.previewsAllowed Then
+        updateDescription
+        GenerateTile cboTarget.ListIndex, tudWidth, tudHeight, True
+    End If
 End Sub
