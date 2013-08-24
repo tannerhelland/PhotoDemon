@@ -25,11 +25,30 @@ Begin VB.Form FormRechannel
    ScaleWidth      =   630
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   14
+      Top             =   5790
+      Width           =   9450
+      _ExtentX        =   16669
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
       Index           =   0
       Left            =   6840
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   480
       Width           =   735
       _ExtentX        =   1296
@@ -46,28 +65,10 @@ Begin VB.Form FormRechannel
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   6480
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   7950
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -77,7 +78,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   1
       Left            =   6840
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   840
       Width           =   990
       _ExtentX        =   1746
@@ -97,7 +98,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   2
       Left            =   6840
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   1200
       Width           =   840
       _ExtentX        =   1482
@@ -117,7 +118,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   3
       Left            =   6840
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   2160
       Width           =   870
       _ExtentX        =   1535
@@ -137,7 +138,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   4
       Left            =   6840
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   2520
       Width           =   1305
       _ExtentX        =   2302
@@ -157,7 +158,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   5
       Left            =   6840
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   2880
       Width           =   1065
       _ExtentX        =   1879
@@ -177,7 +178,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   6
       Left            =   6840
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   3840
       Width           =   870
       _ExtentX        =   1535
@@ -197,7 +198,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   7
       Left            =   6840
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   4200
       Width           =   1305
       _ExtentX        =   2302
@@ -217,7 +218,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   8
       Left            =   6840
-      TabIndex        =   15
+      TabIndex        =   12
       Top             =   4560
       Width           =   1065
       _ExtentX        =   1879
@@ -237,7 +238,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   9
       Left            =   6840
-      TabIndex        =   16
+      TabIndex        =   13
       Top             =   4920
       Width           =   1545
       _ExtentX        =   2725
@@ -252,13 +253,6 @@ Begin VB.Form FormRechannel
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12015
    End
    Begin VB.Label lblCMYK 
       Appearance      =   0  'Flat
@@ -278,7 +272,7 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3480
       Width           =   1695
    End
@@ -300,7 +294,7 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   1800
       Width           =   1560
    End
@@ -322,7 +316,7 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   120
       Width           =   1530
    End
@@ -336,11 +330,11 @@ Attribute VB_Exposed = False
 'Rechannel Interface
 'Copyright ©2000-2013 by Tanner Helland
 'Created: original rechannel algorithm - sometimes 2001, this form 28/September/12
-'Last updated: 28/September/12
-'Last update: built a dedicated form for rechanneling, added CMY options
+'Last updated: 24/August/13
+'Last update: added command bar
 '
 'Rechannel (or "channel isolation") tool.  This allows the user to isolate a single color channel from
-' the RGB and CMY color spaces.
+' the RGB and CMY/CMYK color spaces.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -352,31 +346,17 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+Private Sub cmdBar_OKClick()
+    
+    Dim i As Long
+    For i = 0 To optChannel.Count - 1
+        If optChannel(i) Then Process "Rechannel", , CStr(i)
+    Next i
+    
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-    Me.Visible = False
-    
-    Dim rechannelMethod As Long
-    
-    If optChannel(0).Value Then rechannelMethod = 0
-    If optChannel(1).Value Then rechannelMethod = 1
-    If optChannel(2).Value Then rechannelMethod = 2
-    If optChannel(3).Value Then rechannelMethod = 3
-    If optChannel(4).Value Then rechannelMethod = 4
-    If optChannel(5).Value Then rechannelMethod = 5
-    If optChannel(6).Value Then rechannelMethod = 6
-    If optChannel(7).Value Then rechannelMethod = 7
-    If optChannel(8).Value Then rechannelMethod = 8
-    If optChannel(9).Value Then rechannelMethod = 9
-    
-    Process "Rechannel", , CStr(rechannelMethod)
-    
-    Unload Me
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -386,7 +366,7 @@ Private Sub Form_Activate()
     makeFormPretty Me, m_ToolTip
     
     'Render a preview
-    RechannelImage 0, True, fxPreview
+    updatePreview
     
 End Sub
 
@@ -543,5 +523,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub optChannel_Click(Index As Integer)
-    RechannelImage Index, True, fxPreview
+    updatePreview
+End Sub
+
+Private Sub updatePreview()
+    
+    If cmdBar.previewsAllowed Then
+    
+        Dim i As Long
+        For i = 0 To optChannel.Count - 1
+            If optChannel(i) Then RechannelImage i, True, fxPreview
+        Next i
+        
+    End If
+    
 End Sub
