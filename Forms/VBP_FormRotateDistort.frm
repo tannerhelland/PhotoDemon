@@ -60,7 +60,7 @@ Begin VB.Form FormRotateDistort
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   1
-      Top             =   3135
+      Top             =   2535
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -77,7 +77,7 @@ Begin VB.Form FormRotateDistort
       Index           =   0
       Left            =   6120
       TabIndex        =   2
-      Top             =   4080
+      Top             =   3480
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -98,7 +98,7 @@ Begin VB.Form FormRotateDistort
       Index           =   1
       Left            =   7920
       TabIndex        =   3
-      Top             =   4080
+      Top             =   3480
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -117,7 +117,7 @@ Begin VB.Form FormRotateDistort
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   2040
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -133,6 +133,27 @@ Begin VB.Form FormRotateDistort
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Label lblExplanation 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   1125
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   4560
+      Width           =   5925
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -153,7 +174,7 @@ Begin VB.Form FormRotateDistort
       Height          =   285
       Left            =   6000
       TabIndex        =   8
-      Top             =   1680
+      Top             =   1080
       Width           =   660
    End
    Begin VB.Label lblTitle 
@@ -176,7 +197,7 @@ Begin VB.Form FormRotateDistort
       Index           =   3
       Left            =   6000
       TabIndex        =   5
-      Top             =   3690
+      Top             =   3090
       Width           =   1845
    End
    Begin VB.Label lblTitle 
@@ -197,7 +218,7 @@ Begin VB.Form FormRotateDistort
       Index           =   5
       Left            =   6000
       TabIndex        =   4
-      Top             =   2760
+      Top             =   2160
       Width           =   3315
    End
 End
@@ -365,6 +386,9 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Provide an explanation on why this tool doesn't enlarge the canvas to match
+    lblExplanation.Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")
     
     'Request a preview
     cmdBar.markPreviewStatus True

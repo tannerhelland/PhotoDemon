@@ -24,28 +24,29 @@ Begin VB.Form FormWhiteBalance
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9180
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10650
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   3
+      Top             =   5760
+      Width           =   12120
+      _ExtentX        =   21378
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -54,7 +55,7 @@ Begin VB.Form FormWhiteBalance
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2850
       Width           =   5925
       _ExtentX        =   10451
@@ -72,13 +73,6 @@ Begin VB.Form FormWhiteBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -120
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12495
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -98,7 +92,7 @@ Begin VB.Form FormWhiteBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2520
       Width           =   960
    End
@@ -112,8 +106,8 @@ Attribute VB_Exposed = False
 'White Balance Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/July/12
-'Last updated: 29/April/13
-'Last update: simplify code by relying on new slider/text custom control
+'Last updated: 24/August/13
+'Last update: added command bar
 '
 'White balance handler.  Unlike other programs, which shove this under the Levels dialog as an "auto levels"
 ' function, I consider it worthy of its own interface.  The reason is - white balance is an important function.
@@ -121,7 +115,8 @@ Attribute VB_Exposed = False
 ' calculates levels according to a reliable, often-accurate algorithm.  Rather than forcing the user through the
 ' Levels dialog (because really, how many people know that Auto Levels is actually White Balance in photography
 ' parlance?), PhotoDemon provides a full implementation of custom white balance handling.
-' The value box on the form is the percentage of pixels ignored at the top and bottom of the histogram.
+'
+'The value box on the form is the percentage of pixels ignored at the top and bottom of the histogram.
 ' 0.05 is the recommended default.  I've specified 5.0 as the maximum, but there's no reason it couldn't be set
 ' higher... just be forewarned that higher values (obviously) blow out the picture with increasing strength.
 '
@@ -135,20 +130,17 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "White balance", , CStr(sltStrength)
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-    
-    If sltStrength.IsValid Then
-        Me.Visible = False
-        Process "White balance", , CStr(sltStrength)
-        Unload Me
-    End If
-    
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltStrength.Value = 0.05
 End Sub
 
 Private Sub Form_Activate()
@@ -187,5 +179,5 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Sub updatePreview()
-    AutoWhiteBalance sltStrength, True, fxPreview
+    If cmdBar.previewsAllowed Then AutoWhiteBalance sltStrength, True, fxPreview
 End Sub
