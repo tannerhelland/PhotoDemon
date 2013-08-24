@@ -237,6 +237,7 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "FLIP", 3, 12          'Flip
     AddMenuIcon "ISOMETRIC", 3, 13     'Isometric
     AddMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
+    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(15).Enabled = True Else FormMain.MnuImage(15).Enabled = False
     AddMenuIcon "TILE", 3, 16          'Tile
     AddMenuIcon "METADATA", 3, 18      'Metadata (top-level)
         '--> Metadata sub-menu

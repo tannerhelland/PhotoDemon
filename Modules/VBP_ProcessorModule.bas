@@ -342,20 +342,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormReduceColors.Show vbModal, FormMain
             Else
-                Select Case cParams.GetLong(1)
-                
-                    Case REDUCECOLORS_AUTO
-                        FormReduceColors.ReduceImageColors_Auto cParams.GetLong(2)
-                
-                    Case REDUCECOLORS_MANUAL
-                        FormReduceColors.ReduceImageColors_BitRGB cParams.GetByte(2), cParams.GetByte(3), cParams.GetByte(4), cParams.GetBool(5)
-                
-                    Case REDUCECOLORS_MANUAL_ERRORDIFFUSION
-                        FormReduceColors.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(2), cParams.GetByte(3), cParams.GetByte(4), cParams.GetBool(5)
-                
-                    Case Else
-                        pdMsgBox "Unsupported color reduction method.", vbCritical + vbOKOnly + vbApplicationModal, "Color reduction error"
-                End Select
+                FormReduceColors.ReduceImageColors_Auto cParams.GetLong(2)
             End If
         
         
@@ -680,8 +667,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormPosterize.Show vbModal, FormMain
             Else
-                FormPosterize.PosterizeImage cParams.GetByte(1)
+                FormPosterize.ReduceImageColors_BitRGB cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
             End If
+            
+        Case "Posterize (dithered)"
+            FormPosterize.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
             
         Case "Pencil drawing"
             FilterPencil
