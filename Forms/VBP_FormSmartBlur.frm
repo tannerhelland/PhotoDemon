@@ -24,11 +24,30 @@ Begin VB.Form FormSmartBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   9
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton optEdges 
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   1800
       Width           =   1740
       _ExtentX        =   3069
@@ -45,28 +64,10 @@ Begin VB.Form FormSmartBlur
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +77,7 @@ Begin VB.Form FormSmartBlur
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   2160
       Width           =   975
       _ExtentX        =   1720
@@ -95,7 +96,7 @@ Begin VB.Form FormSmartBlur
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -117,7 +118,7 @@ Begin VB.Form FormSmartBlur
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   3960
       Width           =   5925
       _ExtentX        =   10451
@@ -153,7 +154,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   1440
       Width           =   1440
    End
@@ -174,7 +175,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   3600
       Width           =   1080
    End
@@ -192,18 +193,11 @@ Begin VB.Form FormSmartBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -222,7 +216,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2640
       Width           =   735
    End
@@ -236,8 +230,8 @@ Attribute VB_Exposed = False
 '"Smart" Blur Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 17/January/13
-'Last updated: 28/April/13
-'Last update: simplify code by utilizing new slider/text custom control
+'Last updated: 24/August/13
+'Last update: add command bar
 '
 'To my knowledge, this tool is the first of its kind in VB6 - an intelligent blur tool that selectively blurs
 ' edges differently from smooth areas of an image.  The user can specify the threshold to use, as well as whether
@@ -261,23 +255,6 @@ Dim iWidth As Long, iHeight As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Validate all text box entries
-    If sltRadius.IsValid And sltThreshold.IsValid Then
-        Me.Visible = False
-        Process "Smart blur", , buildParams(sltRadius, sltThreshold, optEdges(1))
-        Unload Me
-    End If
-    
-End Sub
 
 'Convolve an image using a selective gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
@@ -425,19 +402,19 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
     
 End Sub
 
-Private Sub Form_Activate()
+Private Sub cmdBar_OKClick()
+    Process "Smart blur", , buildParams(sltRadius, sltThreshold, optEdges(1))
+End Sub
 
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
-
-    'Draw a preview of the effect
+Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltThreshold.Value = 50
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -447,6 +424,26 @@ Private Sub Form_Activate()
     If Not g_IsProgramCompiled Then
         lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
+    End If
+    
+    'Draw a preview of the effect
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Disable previews until the dialog is fully loaded
+    cmdBar.markPreviewStatus False
+    
+    'Note the current image's width and height, which will be needed to adjust the preview effect
+    If pdImages(CurrentImage).selectionActive Then
+        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    Else
+        iWidth = pdImages(CurrentImage).Width
+        iHeight = pdImages(CurrentImage).Height
     End If
     
 End Sub
@@ -469,5 +466,5 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    SmartBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
+    If cmdBar.previewsAllowed Then SmartBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
 End Sub

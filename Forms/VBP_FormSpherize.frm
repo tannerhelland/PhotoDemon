@@ -25,6 +25,25 @@ Begin VB.Form FormSpherize
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   14
+      Top             =   5790
+      Width           =   12105
+      _ExtentX        =   21352
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,32 +59,14 @@ Begin VB.Form FormSpherize
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3345
       Width           =   5700
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +76,7 @@ Begin VB.Form FormSpherize
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4200
       Width           =   1005
       _ExtentX        =   1773
@@ -96,7 +97,7 @@ Begin VB.Form FormSpherize
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   4200
       Width           =   975
       _ExtentX        =   1720
@@ -115,7 +116,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   450
       Width           =   5895
       _ExtentX        =   10398
@@ -136,7 +137,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.sliderTextCombo sltOffsetY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   2370
       Width           =   5895
       _ExtentX        =   10398
@@ -157,7 +158,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.sliderTextCombo sltOffsetX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   1410
       Width           =   5895
       _ExtentX        =   10398
@@ -178,7 +179,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.smartCheckBox chkRays 
       Height          =   540
       Left            =   6120
-      TabIndex        =   15
+      TabIndex        =   12
       Top             =   5040
       Width           =   3705
       _ExtentX        =   5980
@@ -213,7 +214,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   16
+      TabIndex        =   13
       Top             =   4680
       Width           =   1500
    End
@@ -234,7 +235,7 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   1080
       Width           =   1800
    End
@@ -255,16 +256,9 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2970
       Width           =   3315
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblOffset 
       AutoSize        =   -1  'True
@@ -283,7 +277,7 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2040
       Width           =   1500
    End
@@ -305,7 +299,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   3840
       Width           =   1845
    End
@@ -327,7 +321,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   120
       Width           =   660
    End
@@ -374,23 +368,6 @@ End Sub
 
 Private Sub cmbEdges_Click()
     updatePreview
-End Sub
-
-'CANCEL button
-Private Sub cmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub cmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltAngle.IsValid And sltOffsetX.IsValid And sltOffsetY.IsValid Then
-        Me.Visible = False
-        Process "Spherize", , buildParams(sltAngle, sltOffsetX, sltOffsetY, CBool(chkRays.Value), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
-        Unload Me
-    End If
-    
 End Sub
 
 'Apply a "swirl" effect to an image
@@ -523,7 +500,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
         
         'Apply optional rotation
         theta = theta - sphereAngle
-        
+                
         'Convert them back to the Cartesian plane
         nX = r * Cos(theta) + 1
         srcX = halfMinDimension * nX + xOffset
@@ -562,18 +539,35 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
         
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Spherize", , buildParams(sltAngle, sltOffsetX, sltOffsetY, CBool(chkRays.Value), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
 Private Sub Form_Activate()
-    
-    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
-    ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_WRAP
-    
+        
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
         
     'Create the preview
+    cmdBar.markPreviewStatus True
     updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Don't attempt to preview the image until the dialog is fully initialized
+    cmdBar.markPreviewStatus False
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_WRAP
     
 End Sub
 
@@ -591,7 +585,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    SpherizeImage sltAngle, sltOffsetX, sltOffsetY, CBool(chkRays.Value), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, CBool(chkRays.Value), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 Private Sub sltOffsetX_Change()
