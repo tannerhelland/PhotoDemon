@@ -25,11 +25,30 @@ Begin VB.Form FormVignette
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   12
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartOptionButton optShape 
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4440
       Width           =   1500
       _ExtentX        =   2646
@@ -46,28 +65,10 @@ Begin VB.Form FormVignette
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -78,7 +79,7 @@ Begin VB.Form FormVignette
       Height          =   360
       Index           =   1
       Left            =   8880
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   4440
       Width           =   1050
       _ExtentX        =   1852
@@ -97,7 +98,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   810
       Width           =   5895
       _ExtentX        =   10398
@@ -118,7 +119,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.sliderTextCombo sltFeathering 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   1650
       Width           =   5895
       _ExtentX        =   10398
@@ -139,7 +140,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.sliderTextCombo sltTransparency 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   2490
       Width           =   5895
       _ExtentX        =   10398
@@ -160,7 +161,7 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
       Left            =   6120
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   3480
       Width           =   5655
       _ExtentX        =   9975
@@ -183,7 +184,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4080
       Width           =   705
    End
@@ -203,7 +204,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3000
       Width           =   4020
    End
@@ -223,7 +224,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   1320
       Width           =   945
    End
@@ -243,16 +244,9 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2160
       Width           =   960
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblRadius 
       AutoSize        =   -1  'True
@@ -270,7 +264,7 @@ Begin VB.Form FormVignette
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   480
       Width           =   2145
    End
@@ -284,8 +278,8 @@ Attribute VB_Exposed = False
 'Image Vignette tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 27/April/13
-'Last update: simplify code by relying on new slider/text custom control
+'Last updated: 24/August/13
+'Last update: added command bar
 '
 'This tool allows the user to apply vignetting to an image.
 '
@@ -298,23 +292,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    'Before rendering anything, check to make sure the text boxes have valid input
-    If sltRadius.IsValid And sltFeathering.IsValid And sltTransparency.IsValid Then
-        Me.Visible = False
-        Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color)
-        Unload Me
-    End If
-    
-End Sub
 
 'Apply vignetting to an image
 Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double, ByVal vTransparency As Double, ByVal vMode As Boolean, ByVal newColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -481,18 +458,33 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
 End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltRadius.Value = 60
+    sltFeathering.Value = 30
+    sltTransparency.Value = 80
+    colorPicker.Color = RGB(0, 0, 0)
+End Sub
+
 Private Sub colorPicker_ColorChanged()
     updatePreview
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Draw a preview of the effect
-    updatePreview
         
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    updatePreview
     
 End Sub
 
@@ -523,5 +515,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, True, fxPreview
 End Sub

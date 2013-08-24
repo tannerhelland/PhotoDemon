@@ -1013,7 +1013,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormTwins.Show vbModal, FormMain
             Else
-                FormTwins.GenerateTwins cParams.GetByte(1)
+                FormTwins.GenerateTwins cParams.GetLong(1)
             End If
             
         Case "Vignetting"

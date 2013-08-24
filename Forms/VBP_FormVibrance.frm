@@ -24,10 +24,29 @@ Begin VB.Form FormVibrance
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   3
+      Top             =   5790
+      Width           =   12030
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.sliderTextCombo sltVibrance 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
@@ -45,39 +64,14 @@ Begin VB.Form FormVibrance
       EndProperty
       ForeColor       =   0
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9030
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -95,7 +89,7 @@ Begin VB.Form FormVibrance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2400
       Width           =   975
    End
@@ -109,8 +103,8 @@ Attribute VB_Exposed = False
 'Vibrance Adjustment Tool
 'Copyright ©2012-2013 by audioglider and Tanner Helland
 'Created: 26/June/13
-'Last updated: 10/July/13
-'Last update: final adjustments to fully merge the dialog into PD
+'Last updated: 24/August/13
+'Last update: added command bar
 '
 'Many thanks to talented contributer audioglider for creating this tool.
 '
@@ -128,22 +122,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-
-    If sltVibrance.IsValid Then
-        Me.Visible = False
-        Process "Vibrance", , buildParams(sltVibrance)
-        Unload Me
-    End If
-    
-End Sub
 
 Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
@@ -243,14 +221,22 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
 
 End Sub
 
-Private Sub Form_Activate()
+Private Sub cmdBar_OKClick()
+    Process "Vibrance", , buildParams(sltVibrance)
+End Sub
 
-    'Draw a preview of the effect
-    Vibrance sltVibrance, True, fxPreview
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Draw a preview of the effect
+    updatePreview
     
 End Sub
 
@@ -264,5 +250,5 @@ Private Sub sltVibrance_Change()
 End Sub
 
 Private Sub updatePreview()
-    Vibrance sltVibrance, True, fxPreview
+    If cmdBar.previewsAllowed Then Vibrance sltVibrance, True, fxPreview
 End Sub

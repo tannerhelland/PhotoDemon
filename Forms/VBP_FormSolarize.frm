@@ -24,28 +24,29 @@ Begin VB.Form FormSolarize
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   9120
-      TabIndex        =   0
-      Top             =   5910
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   10590
-      TabIndex        =   1
-      Top             =   5910
-      Width           =   1365
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   3
+      Top             =   5775
+      Width           =   12075
+      _ExtentX        =   21299
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -54,7 +55,7 @@ Begin VB.Form FormSolarize
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2520
       Width           =   5925
       _ExtentX        =   10451
@@ -71,13 +72,6 @@ Begin VB.Form FormSolarize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   12135
    End
    Begin VB.Label lblThreshold 
       Appearance      =   0  'Flat
@@ -97,7 +91,7 @@ Begin VB.Form FormSolarize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2160
       Width           =   1950
    End
@@ -111,8 +105,8 @@ Attribute VB_Exposed = False
 'Solarizing Effect Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/14/01
-'Last updated: 10/September/12
-'Last update: rewrote against new layer class; also, optimized with look-up tables
+'Last updated: 24/August/13
+'Last update: added command bar
 '
 'Updated solarizing interface; it has been optimized for speed and ease-of-implementation.
 '
@@ -125,20 +119,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    If sltThreshold.IsValid Then
-        Me.Visible = False
-        Process "Solarize", , CStr(sltThreshold.Value)
-        Unload Me
-    End If
-End Sub
 
 'Subroutine for "solarizing" an image
 ' Inputs: solarize threshold [0,255], optional previewing information
@@ -204,6 +184,19 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
     
 End Sub
 
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Solarize", , CStr(sltThreshold.Value)
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltThreshold.Value = 127
+End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
@@ -224,5 +217,5 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub updatePreview()
-    SolarizeImage sltThreshold.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SolarizeImage sltThreshold.Value, True, fxPreview
 End Sub
