@@ -107,8 +107,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 23/August/13
-'Last update: added support for vertical scrollbars (I forgot that these are still used in some custom dialogs, e.g. Photo Filters)
+'Last updated: 24/August/13
+'Last update: finally implement proper randomizing of option button controls
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -288,6 +288,8 @@ Private Sub cmdRandomize_Click()
     'Disable previews
     allowPreviews = False
     
+    Randomize Timer
+    
     'By default, controls are randomized according to the following pattern:
     ' 1) If a control is numeric, it will be set to a random value between its Min and Max properties.
     ' 2) Color pickers will be assigned a random color.
@@ -306,10 +308,14 @@ Private Sub cmdRandomize_Click()
         If (TypeOf eControl Is smartOptionButton) Then numOfOptionButtons = numOfOptionButtons + 1
     Next eControl
     
-    Dim controlType As String
-    Randomize Timer
+    'Now, pick a random option button to be set as TRUE
+    Dim selectedOptionButton As Long
+    If numOfOptionButtons > 0 Then selectedOptionButton = Int(Rnd * numOfOptionButtons)
+    numOfOptionButtons = 0
     
     'Iterate through each control on the form.  Check its type, then write out its relevant "value" property.
+    Dim controlType As String
+    
     For Each eControl In Parent.Controls
         
         controlType = TypeName(eControl)
@@ -341,9 +347,10 @@ Private Sub cmdRandomize_Click()
                     eControl.Value = vbChecked
                 End If
             
-            'Option buttons have a 1 in (num of option buttons) chance of being set to TRUE
+            'Option buttons have a 1 in (num of option buttons) chance of being set to TRUE; see code above
             Case "smartOptionButton"
-                If Int(Rnd * numOfOptionButtons) = 0 Then eControl.Value = True
+                If numOfOptionButtons = selectedOptionButton Then eControl.Value = True
+                numOfOptionButtons = numOfOptionButtons + 1
                 
             'Scroll bars use the same rule as other numeric controls
             Case "HScrollBar", "VScrollBar"
@@ -446,8 +453,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -630,8 +637,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -710,8 +717,8 @@ Private Sub updateControlLayout()
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - 8
-    CmdOK.Left = CmdCancel.Left - CmdOK.Width - 8
+    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
+    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
 
 End Sub
 
@@ -728,8 +735,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
