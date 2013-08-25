@@ -3,10 +3,10 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   8205
+   ClientHeight    =   8460
    ClientLeft      =   45
    ClientTop       =   225
-   ClientWidth     =   7020
+   ClientWidth     =   9705
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,16 +19,36 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   547
+   ScaleHeight     =   564
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   468
+   ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   7710
+      Width           =   9705
+      _ExtentX        =   17119
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      AutoloadLastPreset=   -1  'True
+   End
    Begin PhotoDemon.smartOptionButton optFit 
       Height          =   375
       Index           =   0
-      Left            =   600
-      TabIndex        =   16
+      Left            =   2040
+      TabIndex        =   14
       Top             =   4680
       Width           =   1425
       _ExtentX        =   2514
@@ -47,8 +67,8 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   480
-      Left            =   600
-      TabIndex        =   12
+      Left            =   2040
+      TabIndex        =   10
       Top             =   3480
       Width           =   2265
       _ExtentX        =   3995
@@ -64,24 +84,6 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   4080
-      TabIndex        =   0
-      Top             =   7590
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   5520
-      TabIndex        =   1
-      Top             =   7590
-      Width           =   1365
-   End
    Begin VB.ComboBox cboResample 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -94,17 +96,17 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   600
+      Left            =   2040
       Style           =   2  'Dropdown List
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3000
       Width           =   5895
    End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
-      Left            =   4200
-      TabIndex        =   4
-      Top             =   975
+      Left            =   6120
+      TabIndex        =   3
+      Top             =   960
       Width           =   1770
       _ExtentX        =   3122
       _ExtentY        =   847
@@ -122,8 +124,8 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
-      Left            =   1440
-      TabIndex        =   2
+      Left            =   2880
+      TabIndex        =   1
       Top             =   705
       Width           =   1200
       _ExtentX        =   2117
@@ -143,8 +145,8 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
-      Left            =   1440
-      TabIndex        =   3
+      Left            =   2880
+      TabIndex        =   2
       Top             =   1335
       Width           =   1200
       _ExtentX        =   2117
@@ -165,8 +167,8 @@ Begin VB.Form FormResize
    Begin PhotoDemon.smartOptionButton optFit 
       Height          =   375
       Index           =   1
-      Left            =   600
-      TabIndex        =   17
+      Left            =   2040
+      TabIndex        =   15
       Top             =   5400
       Width           =   1755
       _ExtentX        =   3096
@@ -185,8 +187,8 @@ Begin VB.Form FormResize
    Begin PhotoDemon.smartOptionButton optFit 
       Height          =   375
       Index           =   2
-      Left            =   600
-      TabIndex        =   18
+      Left            =   2040
+      TabIndex        =   16
       Top             =   6720
       Width           =   1800
       _ExtentX        =   3175
@@ -204,8 +206,8 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
-      Left            =   1080
-      TabIndex        =   22
+      Left            =   2520
+      TabIndex        =   20
       Top             =   6120
       Width           =   5415
       _ExtentX        =   9551
@@ -229,8 +231,8 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   240
       Index           =   0
-      Left            =   1080
-      TabIndex        =   21
+      Left            =   2520
+      TabIndex        =   19
       Top             =   5070
       Width           =   2910
    End
@@ -252,8 +254,8 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   240
       Index           =   2
-      Left            =   1080
-      TabIndex        =   20
+      Left            =   2520
+      TabIndex        =   18
       Top             =   7110
       Width           =   4110
    End
@@ -275,8 +277,8 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   240
       Index           =   1
-      Left            =   1080
-      TabIndex        =   19
+      Left            =   2520
+      TabIndex        =   17
       Top             =   5790
       Width           =   4020
    End
@@ -297,8 +299,8 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   15
+      Left            =   1680
+      TabIndex        =   13
       Top             =   4200
       Width           =   2610
    End
@@ -320,8 +322,8 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
-      TabIndex        =   14
+      Left            =   1680
+      TabIndex        =   12
       Top             =   240
       Width           =   990
    End
@@ -342,38 +344,31 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   615
-      TabIndex        =   13
+      Left            =   2055
+      TabIndex        =   11
       Top             =   1950
       Width           =   2490
    End
    Begin VB.Line Line4 
       BorderColor     =   &H00808080&
-      X1              =   272
-      X2              =   272
-      Y1              =   57
-      Y2              =   106
+      X1              =   392
+      X2              =   392
+      Y1              =   59
+      Y2              =   105
    End
    Begin VB.Line Line3 
       BorderColor     =   &H00808080&
-      X1              =   272
-      X2              =   232
-      Y1              =   56
-      Y2              =   56
+      X1              =   328
+      X2              =   392
+      Y1              =   58
+      Y2              =   58
    End
    Begin VB.Line Line2 
       BorderColor     =   &H00808080&
-      X1              =   232
-      X2              =   272
+      X1              =   328
+      X2              =   392
       Y1              =   105
       Y2              =   105
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -2280
-      TabIndex        =   11
-      Top             =   7440
-      Width           =   9975
    End
    Begin VB.Label lblHeightUnit 
       Appearance      =   0  'Flat
@@ -391,8 +386,8 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   375
-      Left            =   2730
-      TabIndex        =   10
+      Left            =   4170
+      TabIndex        =   9
       Top             =   1365
       Width           =   855
    End
@@ -412,8 +407,8 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   480
-      Left            =   2730
-      TabIndex        =   9
+      Left            =   4170
+      TabIndex        =   8
       Top             =   735
       Width           =   855
    End
@@ -435,8 +430,8 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   600
-      TabIndex        =   8
+      Left            =   2040
+      TabIndex        =   7
       Top             =   1365
       Width           =   750
    End
@@ -458,8 +453,8 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   600
-      TabIndex        =   7
+      Left            =   2040
+      TabIndex        =   6
       Top             =   735
       Width           =   675
    End
@@ -480,8 +475,8 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   6
+      Left            =   1680
+      TabIndex        =   5
       Top             =   2520
       Width           =   1470
    End
@@ -495,8 +490,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 13/June/13
-'Last update: redesigned the form to incorporate features originally meant for "Smart Resize"
+'Last updated: 25/August/13
+'Last update: added command bar, and redesigned the dialog to accommodate its large width
 '
 'Handles all image-size related functions.  Currently supports nearest-neighbor and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it manually), bilinear resampling via pure VB, and
@@ -656,64 +651,62 @@ Private Sub ChkRatio_Click()
     End If
 End Sub
 
-'Perform a resize operation
-Private Sub CmdOK_Click()
-    
-    'Before resizing anything, check to make sure the textboxes have valid input
-    If tudWidth.IsValid And tudHeight.IsValid Then
+'OK button
+Private Sub cmdBar_OKClick()
+
+    'Find the user's requested "how to fit" method; we pass this along to the master Resize function, even if it's
+    ' not being used.
+    Dim fitMethod As Long
+    Dim i As Long
+    For i = 0 To optFit.Count - 1
+        If optFit(i).Value Then fitMethod = i
+    Next i
         
-        Me.Visible = False
-        
-        Dim fitMethod As Long
-        Dim i As Long
-        For i = 0 To optFit.Count - 1
-            If optFit(i).Value Then fitMethod = i
-        Next i
-            
-        Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID, fitMethod, colorPicker.Color)
-        Unload Me
-        
-    End If
-    
+    Process "Resize", , buildParams(tudWidth, tudHeight, resampleTypes(cboResample.ListIndex).ProgramID, fitMethod, colorPicker.Color)
+
 End Sub
 
-Private Sub CmdCancel_Click()
-    Unload Me
+'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
+' present, simply randomize the width/height to +/- the current image's width/height divided by two.
+Private Sub cmdBar_RandomizeClick()
+
+    tudWidth = (pdImages(CurrentImage).Width / 2) + (Rnd * pdImages(CurrentImage).Width)
+    tudHeight = (pdImages(CurrentImage).Height / 2) + (Rnd * pdImages(CurrentImage).Height)
+
 End Sub
 
-'Upon form activation, determine the ratio between the width and height of the image
-Private Sub Form_Activate()
-    
-    'To prevent aspect ratio changes to one box resulting in recursion-type changes to the other, we only
-    ' allow one box at a time to be updated.
-    allowedToUpdateWidth = True
-    allowedToUpdateHeight = True
-    
-    'Establish ratios
-    wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
-    hRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
-
-    'Populate the number of available resampling algorithms
-    refillResampleBox True
+Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     tudWidth.Value = pdImages(CurrentImage).Width
     tudHeight.Value = pdImages(CurrentImage).Height
     
-    'If the source image is 32bpp, change the text of the "fit inclusive" subheading to match
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
-        lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be transparent")
-    Else
-        lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be filled with:")
-    End If
+    'Make borders fill with black by default
+    colorPicker.Color = RGB(0, 0, 0)
+    
+    'Stretch to new aspect ratio by default
+    optFit(0).Value = True
+    
+    'Use friendly resample names by default
+    chkNames.Value = vbUnchecked
+    cboResample.ListIndex = 0
+    
+End Sub
+
+Private Sub colorPicker_ColorChanged()
+    optFit(1).Value = True
+End Sub
+
+'Upon form activation, determine the ratio between the width and height of the image
+Private Sub Form_Activate()
+    
+    'If the user unchecks the "lock aspect ratio" button, we will recenter the dialog once (as it's quite large)
+    dialogNeedsCentering = True
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-        
-    'If the user unchecks the "lock aspect ratio" button, we will recenter the dialog once (as it's quite tall)
-    dialogNeedsCentering = True
-        
+            
 End Sub
 
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
@@ -732,6 +725,26 @@ Private Sub Form_Load()
         
     End If
     
+    'To prevent aspect ratio changes to one box resulting in recursion-type changes to the other, we only
+    ' allow one box at a time to be updated.
+    allowedToUpdateWidth = True
+    allowedToUpdateHeight = True
+    
+    'Establish ratios
+    wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
+    hRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
+
+    'Populate the number of available resampling algorithms
+    refillResampleBox True
+    
+    'If the source image is 32bpp, change the text of the "fit inclusive" subheading to match
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+        lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be transparent")
+    Else
+        lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be filled with:")
+    End If
+    
+    'Redraw the form once to make sure everything is properly aligned.
     updateFormLayout
     
 End Sub
@@ -1077,14 +1090,9 @@ Private Sub updateFormLayout()
         Next i
         
         colorPicker.Visible = False
-        
-        'Move the command bar into place
-        lblBackground.Top = chkNames.Top + chkNames.Height + 16
-        CmdOK.Top = lblBackground.Top + 10
-        CmdCancel.Top = CmdOK.Top
-        
+                
         'Resize the form to match
-        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (chkNames.Top + chkNames.Height + cmdBar.Height + 24) * Screen.TwipsPerPixelY
     
     Else
     
@@ -1103,13 +1111,8 @@ Private Sub updateFormLayout()
         ' be filled by transparency, not color.)
         If pdImages(CurrentImage).mainLayer.getLayerColorDepth <> 32 Then colorPicker.Visible = True
         
-        'Move the command bar into place
-        lblBackground.Top = lblSubtext(2).Top + lblSubtext(2).Height + 16
-        CmdOK.Top = lblBackground.Top + 10
-        CmdCancel.Top = CmdOK.Top
-        
         'Resize the form to match
-        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (lblSubtext(2).Top + lblSubtext(2).Height + cmdBar.Height + 24) * Screen.TwipsPerPixelY
     
     End If
 
