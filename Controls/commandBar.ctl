@@ -147,13 +147,14 @@ Public Event OKClick()
 Public Event CancelClick()
 
 'Clicking the RESET button raises the corresponding event.  The rules PD uses for resetting controls are explained
-' in the cmdReset_Click() sub below.  Additionally, if no preset values are found, this event will be automatically
-' triggered.
+' in the cmdReset_Click() sub below.  Additionally, if no last-used settings are found in the Data/Presets folder,
+' this event will be automatically triggered when the parent dialog is loaded.
 Public Event ResetClick()
 
 'Clicking the RANDOMIZE button raises the corresponding event.  Most dialogs won't need to use this event, as this
-' control is capable of randomizing all stock controls.  But custom controls like the Curves dialog will need to
-' perform their own randomization.
+' control is capable of randomizing all stock PD controls.  But for tool dialogs like Curves, where a completely
+' custom interface exists, this event can be used by the parent to perform their own randomizing on non-stock
+' controls.
 Public Event RandomizeClick()
 
 'All custom PD controls are auto-validated when OK is pressed.  If other custom items need validation, the OK
@@ -162,23 +163,26 @@ Public Event ExtraValidations()
 
 'After this control has modified other controls on the page (e.g. when Randomize is pressed), it needs to request
 ' an updated preview from the parent.  This event is used for that; the parent form simply needs to add an
-' "updatePreview" call inside.
+' "updatePreview" call inside.  (I could automate this, but some dialogs - like Resize - do not offer previews,
+' so I thought it better to leave the implementation of this event up to the client.)
 Public Event RequestPreviewUpdate()
 
-'Certain dialogs (like Curves) use custom user controls whose information cannot automatically be read/written as
+'Certain dialogs (like Curves) use custom user controls whose settings cannot automatically be read/written as
 ' part of preset data.  For that reason, two events exist that allow the user to add their own information to a
-' given preset.
+' given preset.  These events are raised whenever a preset needs to be saved or loaded from file (either the
+' last-used settings, or some user-saved preset).
 Public Event AddCustomPresetData()
 Public Event ReadCustomPresetData()
 
 'Sometimes, for brevity and clarity's sake I use a single dialog for multiple tools (e.g. median/dilate/erode).
-' Such forms create a problem when reading/writing presets, because the command bar has no idea that multiple
-' tools exist on the same form.  In the _Load statement of the parent, the setToolName function can be called to
-' append a unique tool name to the default one (generated from the Form title); this will keep the presets for
-' separate for each tool on that form.
+' Such forms create a problem when reading/writing presets, because the command bar has no idea which tool is
+' currently active, or even that multiple tools exist on the same form.  In the _Load statement of the parent,
+' the setToolName function can be called to append a unique tool name to the default one (which is generated from
+' the Form title by default).  This separates the presets for each tool on that form.  For example, on the Median
+' dialog, I append the name of the current tool to the default name (Median_<name>, e.g. Median_Dilate).
 Private userSuppliedToolName As String
 
-'Used to render images onto the command buttons
+'Used to render images onto the command buttons at run-time (doesn't work in the IDE, as a manifest is required)
 Private cImgCtl As clsControlImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -194,10 +198,12 @@ Attribute mFont.VB_VarHelpID = -1
 'Results of extra user validations will be stored here
 Private userValidationFailed As Boolean
 
-'If the user wants us to postpone a Cancel-initiated unload, this will let us know
+'If the user wants us to postpone a Cancel-initiated unload, for example if they displayed a custom confirmation
+' window, this will let us know to suspend the unload for now.
 Private dontShutdownYet As Boolean
 
-'Each instance of this control will live on a unique tool dialog.  That dialog's name is stored here.
+'Each instance of this control lives on a unique tool dialog.  That dialog's name is stored here (automatically
+' generated at initialization time).
 Private parentToolName As String, parentToolPath As String
 
 'While the control is loading, this will be set to FALSE.  When the control is ready for interactions, this will be
@@ -217,6 +223,22 @@ Private numUserPresetEntries As Long
 Private userPresetNames() As String
 Private userPresetData() As String
 Private curPresetEntry As String
+
+'If a parent dialog wants to suspend auto-load of last-used settings (e.g. the Resize dialog, because last-used
+' settings will be some other image's dimensions), this bool will be set to TRUE
+Private suspendLastUsedAutoLoad As Boolean
+
+'Some dialogs (e.g. Resize) may not want us to automatically load their last-used settings, because they need to
+' populate the dialog with values unique to the current image.  If this property is set, last-used settings will
+' still be saved and made available as a preset, but they WILL NOT be auto-loaded when the parent dialog loads.
+Public Property Get dontAutoLoadLastPreset() As Boolean
+    dontAutoLoadLastPreset = suspendLastUsedAutoLoad
+End Property
+
+Public Property Let dontAutoLoadLastPreset(ByVal newValue As Boolean)
+    suspendLastUsedAutoLoad = newValue
+    PropertyChanged "dontAutoLoadLastPreset"
+End Property
 
 'If multiple tools exist on the same form, the parent can use this in its _Load statement to identify which tool
 ' is currently active.  The command bar will then limit its preset actions to that tool name alone.
@@ -691,6 +713,7 @@ Private Sub UserControl_InitProperties()
     Set mFont = UserControl.Font
     mFont_FontChanged ("")
     backColor = &HEEEEEE
+    dontAutoLoadLastPreset = False
     
 End Sub
 
@@ -699,6 +722,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Set Font = .ReadProperty("Font", Ambient.Font)
         backColor = .ReadProperty("BackColor", &HEEEEEE)
+        dontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
     End With
     
 End Sub
@@ -769,14 +793,26 @@ Private Sub UserControl_Show()
         findAllXMLPresets
         
         'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
-        If Not readXMLSettings() Then
+        ' (Update 25 Aug 2013 - check to see if the parent dialog has disabled this behavior.)
+        If Not suspendLastUsedAutoLoad Then
         
-            'If no last-used settings were found, fire the Reset event, which will supply proper default values
-            cmdReset_Click
+            'Attempt to load last-used settings.  If none were found, fire the Reset event, which will supply proper
+            ' default values.
+            If Not readXMLSettings() Then
             
-            'The ResetClick event will enable previews again, so forcibly disable them
-            allowPreviews = False
+                cmdReset_Click
+                
+                'Note that the ResetClick event will re-enable previews, so we must forcibly disable them until the
+                ' end of this function.
+                allowPreviews = False
         
+            End If
+        
+        'If the parent dialog doesn't want us to auto-load last-used settings, we still want to request a RESET event to
+        ' populate all dialog controls with usable values.
+        Else
+            cmdReset_Click
+            allowPreviews = False
         End If
         
     End If
@@ -811,6 +847,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "BackColor", backColor, &HEEEEEE
+        .WriteProperty "AutoloadLastPreset", suspendLastUsedAutoLoad, False
     End With
     
 End Sub
