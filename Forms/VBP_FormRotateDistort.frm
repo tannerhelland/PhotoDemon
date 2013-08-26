@@ -231,8 +231,8 @@ Attribute VB_Exposed = False
 'Rotate Distort Effect Interface (separate from image rotation for a reason - see below)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 22/August/13
-'Last updated: 22/August/13
-'Last update: initial build
+'Last updated: 26/August/13
+'Last update: convert area rotation to an external function, and make this just a thin wrapper
 '
 'Dialog for handling rotation via PhotoDemon's distort filter engine.  This is kept separate from full-image rotation,
 ' because I needed a rotate that could be applied to selections.  Also, full-image rotation allows you to resize the
@@ -258,110 +258,20 @@ Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long,
     If Not toPreview Then Message "Rotating area..."
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent moved pixels from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
+    ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
     
-    prepSafeArray srcSA, srcLayer
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
-                
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    'Use the external function to create a rotated layer
+    CreateRotatedLayer rotateAngle, edgeHandling, useBilinear, srcLayer, workingLayer, toPreview
     
-    'Create a filter support class, which will aid with edge handling and interpolation
-    Dim fSupport As pdFilterSupport
-    Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'Calculate the center of the image
-    Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
-    midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
-    midY = midY + initY
-    
-    'Convert the rotation angle to radians
-    rotateAngle = rotateAngle * (PI / 180)
-    
-    'Find the cos and sin of this angle and store the values
-    Dim cosTheta As Double, sinTheta As Double
-    cosTheta = Cos(rotateAngle)
-    sinTheta = Sin(rotateAngle)
-    
-    'Using those values, build 4 lookup tables, one each for x/y times sin/cos
-    Dim xSin() As Double, xCos() As Double
-    ReDim xSin(initX To finalX) As Double
-    ReDim xCos(initX To finalX) As Double
-    
-    For x = initX To finalX
-        xSin(x) = (x - midX) * sinTheta
-        xCos(x) = (x - midX) * cosTheta
-    Next
-    
-    Dim ySin() As Double, yCos() As Double
-    ReDim ySin(initY To finalY) As Double
-    ReDim yCos(initY To finalY) As Double
-    For y = initY To finalY
-        ySin(y) = (y - midY) * sinTheta
-        yCos(y) = (y - midY) * cosTheta
-    Next y
-    
-    'X and Y values, remapped around a center point of (0, 0)
-    Dim nX As Double, nY As Double
-    
-    'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
-    Dim srcX As Double, srcY As Double
-    
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-                            
-        srcX = midX + xCos(x) - ySin(y)
-        srcY = midY + yCos(y) + xSin(x)
-        
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
-                
-    Next y
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x
-            End If
-        End If
-    Next x
-    
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
