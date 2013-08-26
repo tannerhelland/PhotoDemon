@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Layers"
 'Layer Filters Module
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/February/13
-'Last updated: 23/August/13
-'Last update: added box blur and polar conversion to the list of compatible on-demand filters
+'Last updated: 26/August/13
+'Last update: added a dedicated horizontal blur and rotation to the collection
 '
 'Some filters in PhotoDemon are capable of operating "on-demand" on any supplied layers.  In a perfect world, *all*
 ' filters would work this way - but alas I did not design the program very well up front.  Going forward I will be
@@ -1883,12 +1883,6 @@ Public Function CreateBoxBlurLayer(ByVal hRadius As Long, ByVal vRadius As Long,
     
 End Function
 
-'This is a modified module function; it handles negative values specially to ensure they work with ceratin distort functions
-Private Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
-    Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
-    If Modulo < 0 Then Modulo = Modulo + Divisor
-End Function
-
 'Given two layers, fill one with a horizontally blur version of the other.  A highly-optimized modified accumulation algorithm
 ' is used to improve performance.
 'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
@@ -2048,5 +2042,160 @@ Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius A
     Erase dstImageData
     
     If cancelCurrentAction Then CreateHorizontalBlurLayer = 0 Else CreateHorizontalBlurLayer = 1
+    
+End Function
+
+'Given two layers, fill one with a rotated version of the other.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function CreateRotatedLayer(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcLayer.getLayerWidth - 1
+    finalY = srcLayer.getLayerHeight - 1
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    qvDepth = srcLayer.getLayerColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalX
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
+    progBarCheck = findBestProgBarValue()
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, finalX, finalY
+    
+    'Calculate the center of the image
+    Dim midX As Double, midY As Double
+    midX = CDbl(finalX - initX) / 2
+    midX = midX + initX
+    midY = CDbl(finalY - initY) / 2
+    midY = midY + initY
+    
+    'Convert the rotation angle to radians
+    rotateAngle = rotateAngle * (PI / 180)
+    
+    'Find the cos and sin of this angle and store the values
+    Dim cosTheta As Double, sinTheta As Double
+    cosTheta = Cos(rotateAngle)
+    sinTheta = Sin(rotateAngle)
+    
+    'Using those values, build 4 lookup tables, one each for x/y times sin/cos
+    Dim xSin() As Double, xCos() As Double
+    ReDim xSin(initX To finalX) As Double
+    ReDim xCos(initX To finalX) As Double
+    
+    For x = initX To finalX
+        xSin(x) = (x - midX) * sinTheta + midY
+        xCos(x) = (x - midX) * cosTheta + midX
+    Next
+    
+    Dim ySin() As Double, yCos() As Double
+    ReDim ySin(initY To finalY) As Double
+    ReDim yCos(initY To finalY) As Double
+    For y = initY To finalY
+        ySin(y) = (y - midY) * sinTheta
+        yCos(y) = (y - midY) * cosTheta
+    Next y
+    
+    'X and Y values, remapped around a center point of (0, 0)
+    Dim nX As Double, nY As Double
+    
+    'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
+    Dim srcX As Double, srcY As Double
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+                            
+        srcX = xCos(x) - ySin(y)
+        srcY = yCos(y) + xSin(x)
+        
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    If cancelCurrentAction Then CreateRotatedLayer = 0 Else CreateRotatedLayer = 1
+
+End Function
+
+'Given two layers, fill one with an enlarged and edge-extended version of the other.  (This is often useful when something
+' needs to be done to an image and edge output is tough to handle.  By extending image borders and clamping the extended
+' area to the nearest valid pixels, the function can be run without specialized edge handling.)
+'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function CreateExtendedLayer(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer) As Long
+
+    'Start by resizing the destination layer
+    dstLayer.createBlank srcLayer.getLayerWidth + hExtend * 2, srcLayer.getLayerHeight + vExtend * 2, srcLayer.getLayerColorDepth
+    
+    'Copy the valid part of the source image into the center of the destination image
+    BitBlt dstLayer.getLayerDC, hExtend, vExtend, srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerDC, 0, 0, vbSrcCopy
+    
+    'We now need to fill the blank areas (borders) of the destination canvas with clamped values from the source image.  We do this
+    ' by extending the nearest valid pixels across the empty area.
+    
+    'Start with the four edges, and use COLORONCOLOR as we don't want to waste time with interpolation
+    SetStretchBltMode dstLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
+    
+    'Top, bottom
+    StretchBlt dstLayer.getLayerDC, hExtend, 0, srcLayer.getLayerWidth, vExtend, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, 1, vbSrcCopy
+    StretchBlt dstLayer.getLayerDC, hExtend, vExtend + srcLayer.getLayerHeight, srcLayer.getLayerWidth, vExtend, srcLayer.getLayerDC, 0, srcLayer.getLayerHeight - 1, srcLayer.getLayerWidth, 1, vbSrcCopy
+    
+    'Left, right
+    StretchBlt dstLayer.getLayerDC, 0, vExtend, hExtend, srcLayer.getLayerHeight, srcLayer.getLayerDC, 0, 0, 1, srcLayer.getLayerHeight, vbSrcCopy
+    StretchBlt dstLayer.getLayerDC, srcLayer.getLayerWidth + hExtend, vExtend, hExtend, srcLayer.getLayerHeight, srcLayer.getLayerDC, srcLayer.getLayerWidth - 1, 0, 1, srcLayer.getLayerHeight, vbSrcCopy
+    
+    'Next, the four corners
+    
+    'Top-left, top-right
+    StretchBlt dstLayer.getLayerDC, 0, 0, hExtend, vExtend, srcLayer.getLayerDC, 0, 0, 1, 1, vbSrcCopy
+    StretchBlt dstLayer.getLayerDC, srcLayer.getLayerWidth + hExtend, 0, hExtend, vExtend, srcLayer.getLayerDC, srcLayer.getLayerWidth - 1, 0, 1, 1, vbSrcCopy
+    
+    'Bottom-left, bottom-right
+    StretchBlt dstLayer.getLayerDC, 0, srcLayer.getLayerHeight + vExtend, hExtend, vExtend, srcLayer.getLayerDC, 0, srcLayer.getLayerHeight - 1, 1, 1, vbSrcCopy
+    StretchBlt dstLayer.getLayerDC, srcLayer.getLayerWidth + hExtend, srcLayer.getLayerHeight + vExtend, hExtend, vExtend, srcLayer.getLayerDC, srcLayer.getLayerWidth - 1, srcLayer.getLayerHeight - 1, 1, 1, vbSrcCopy
+    
+    'The destination layer now contains a fully clamped, extended copy of the original image
+    CreateExtendedLayer = 1
     
 End Function
