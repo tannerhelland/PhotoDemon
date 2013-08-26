@@ -210,8 +210,6 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
     
-        'If a selection is active, remove it.  (This is not the most elegant solution, but it isn't fixable until masked
-        ' selections are implemented.)
         If pdImages(CurrentImage).selectionActive Then
             pdImages(CurrentImage).selectionActive = False
             pdImages(CurrentImage).mainSelection.lockRelease
@@ -233,7 +231,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
         End If
         
-        'Use that handle to request an image resize
+        'Use that handle to request an image rotation
         If fi_DIB <> 0 Then
         
             Dim returnDIB As Long
@@ -318,7 +316,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             FreeLibrary hLib
         End If
         
-        If isPreview = False Then Message "Rotation complete."
+        If Not isPreview Then Message "Rotation complete."
         
     Else
         Message "Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled."

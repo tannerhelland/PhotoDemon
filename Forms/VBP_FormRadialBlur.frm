@@ -24,31 +24,11 @@ Begin VB.Form FormRadialBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.smartCheckBox chkSpin 
-      Height          =   540
-      Left            =   6120
-      TabIndex        =   9
-      Top             =   1800
-      Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   953
-      Caption         =   "spin"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -75,13 +55,13 @@ Begin VB.Form FormRadialBlur
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2880
+      TabIndex        =   3
+      Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   1
-      Max             =   200
+      Max             =   360
       Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -97,8 +77,8 @@ Begin VB.Form FormRadialBlur
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
-      Top             =   3990
+      TabIndex        =   5
+      Top             =   3510
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -118,31 +98,12 @@ Begin VB.Form FormRadialBlur
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   7
-      Top             =   3990
+      TabIndex        =   6
+      Top             =   3510
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartCheckBox chkZoom 
-      Height          =   540
-      Left            =   7920
-      TabIndex        =   10
-      Top             =   1800
-      Width           =   915
-      _ExtentX        =   1614
-      _ExtentY        =   953
-      Caption         =   "zoom"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -172,32 +133,9 @@ Begin VB.Form FormRadialBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   8
-      Top             =   3600
+      TabIndex        =   7
+      Top             =   3120
       Width           =   1845
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "style:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   1440
-      Width           =   570
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -222,7 +160,7 @@ Begin VB.Form FormRadialBlur
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
+      Caption         =   "angle:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -237,8 +175,8 @@ Begin VB.Form FormRadialBlur
       Index           =   0
       Left            =   6000
       TabIndex        =   0
-      Top             =   2520
-      Width           =   735
+      Top             =   2040
+      Width           =   660
    End
 End
 Attribute VB_Name = "FormRadialBlur"
@@ -250,24 +188,27 @@ Attribute VB_Exposed = False
 'Radial Blur Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/August/13
-'Last updated: 23/August/13
-'Last update: initial build
+'Last updated: 26/August/13
+'Last update: remove zoom blur, which is going to get a custom implementation.  Also, fix the top-center line
+'             of the image not being blurred properly.  This requires some convoluted blurring to assure proper
+'             wrapping, but that is far easier (and more performance-friendly) than changing the box blur code
+'             to wrap image edges.
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a radial blur tool that supports variable radii,
-' as well as both zoom and spin modes (or both, if you'd like).  This function is mostly just a wrapper to PD's
-' box blur and polar coordinate conversion functions; they do all the heavy lifting.
+' and capable of operating in real-time. This function is mostly just a wrapper to PD's box blur and polar
+' coordinate conversion functions; they do all the heavy lifting, as you can see from the code below.
 '
-'Performance is pretty good, all things considered, but be careful in the IDE.  I STRONGLY recommend compiling
+'Performance is pretty good, all things considered, but be careful in the IDE. I STRONGLY recommend compiling
 ' the project before applying any actions at a large radius.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
+' projects IF you provide attribution. For more information, please visit http://www.tannerhelland.com/photodemon/#license
 '
 '***************************************************************************
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
+'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
@@ -276,7 +217,7 @@ Dim m_ToolTip As clsToolTip
 
 'Apply a radial blur an image
 'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
-Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useSpinStyle As Boolean, ByVal useZoomStyle As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying radial blur..."
     
@@ -284,7 +225,7 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useSpinStyle As Boolean
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcLayer As pdLayer
     Set srcLayer = New pdLayer
@@ -307,20 +248,61 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useSpinStyle As Boolean
     'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
     If CreatePolarCoordLayer(1, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, finalX * 3) Then
     
-        'Next, apply the box blur to that layer, using the radius supplied by the user
-        Dim hRadius As Long, vRadius As Long
-        hRadius = 1
-        vRadius = 1
+        'We now need to do something a little unconventional.  When converting to polar coordinates, the line running from
+        ' the top-center of the image to the center point ends up being separated onto the full left and right sides of the
+        ' polar coordinate image.  Because PD's box blur does not wrap around image edges (for performance reasons), this line
+        ' doesn't get blurred properly, and when we convert back to rectangular coordinates, it forms a visible abberation
+        ' running from the top-center of the image to the center point.  To prevent this, we must create a temporary copy of
+        ' the image that is larger (by the width of the blur radius) on both sides.  We then place the polar coord image in the
+        ' center of this larger image, then copy the relevant edge pixels onto either side of it.  When the blur is complete,
+        ' we copy back just this center portion before converting from polar to rect coords for the final time.  This results
+        ' in a proper blur.  (Hope you caught all that!  :p)
         
-        If useZoomStyle Then vRadius = bRadius
-        If useSpinStyle Then hRadius = bRadius
+        'Start by calculating the temporary image's size and offset
+        Dim srcWidth As Long, srcHeight As Long
+        srcWidth = workingLayer.getLayerWidth
+        srcHeight = workingLayer.getLayerHeight
         
-        If CreateBoxBlurLayer(hRadius, vRadius, workingLayer, srcLayer, toPreview, finalX * 3, finalX) Then
+        Dim dstWidth As Long
+        dstWidth = srcWidth + bRadius * 2
         
+        Dim dstX As Long
+        dstX = (dstWidth - srcWidth) \ 2
+        
+        'Create a temporary layer to hold the blurred image
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createBlank dstWidth, srcHeight, workingLayer.getLayerColorDepth
+        
+        'Bitblt the original image onto the center of the temporary canvas
+        BitBlt tmpLayer.getLayerDC, dstX, 0, srcWidth, srcHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+        'Apply two more blts - each of these will mirror an edge section of the source image
+        BitBlt tmpLayer.getLayerDC, 0, 0, dstX, srcHeight, workingLayer.getLayerDC, srcWidth - dstX, 0, vbSrcCopy
+        BitBlt tmpLayer.getLayerDC, dstX + srcWidth, 0, dstX, srcHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        
+        'Change the srcLayer to be the same size as this working layer, so it can receive the fully blurred image
+        srcLayer.createBlank tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, workingLayer.getLayerColorDepth
+    
+        'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
+        If CreateBoxBlurLayer(bRadius, 1, tmpLayer, srcLayer, toPreview, finalX * 3, finalX) Then
+        
+            'Copy the blurred results of the source layer back into the temporary layer
+            tmpLayer.createFromExistingLayer srcLayer
+            
+            'Resize the source layer to match the original image
+            srcLayer.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight, workingLayer.getLayerColorDepth
+            
+            'Copy the correct chunk of the temporary layer into the source layer
+            BitBlt srcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, tmpLayer.getLayerDC, dstX, 0, vbSrcCopy
+            tmpLayer.eraseLayer
+            
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
             CreatePolarCoordLayer 0, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, finalX * 3, finalX * 2
             
         End If
+        
+        Set tmpLayer = Nothing
         
     End If
     
@@ -332,52 +314,12 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useSpinStyle As Boolean
     
 End Sub
 
-Private Sub chkSpin_Click()
-    
-    'Always force one checkbox to be active
-    If (Not CBool(chkSpin)) And (Not CBool(chkZoom)) Then
-        cmdBar.markPreviewStatus False
-        chkZoom.Value = vbChecked
-        cmdBar.markPreviewStatus True
-    End If
-    
-    updatePreview
-    
-End Sub
-
-Private Sub chkZoom_Click()
-
-    'Always force one checkbox to be active
-    If (Not CBool(chkZoom)) And (Not CBool(chkSpin)) Then
-        cmdBar.markPreviewStatus False
-        chkSpin.Value = vbChecked
-        cmdBar.markPreviewStatus True
-    End If
-    
-    updatePreview
-    
-End Sub
-
 Private Sub cmdBar_OKClick()
-    Process "Radial blur", , buildParams(sltRadius, CBool(chkSpin), CBool(chkZoom), OptInterpolate(0))
-End Sub
-
-Private Sub cmdBar_RandomizeClick()
-
-    'When randomizing, require at least one check box to be active
-    If (Not CBool(chkZoom)) And (Not CBool(chkSpin)) Then
-        If Int(Rnd * 2) = 0 Then chkSpin.Value = vbChecked Else chkZoom.Value = vbChecked
-    End If
-
+    Process "Radial blur", , buildParams(sltRadius, OptInterpolate(0))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    chkSpin.Value = vbChecked
-    chkZoom.Value = vbUnchecked
 End Sub
 
 Private Sub Form_Activate()
@@ -388,7 +330,7 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
+        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE. Please compile before applying or previewing any radius larger than 20.")
         lblIDEWarning.Visible = True
     End If
     
@@ -422,15 +364,11 @@ Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
-Private Sub OptStyle_Click(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub sltRadius_Change()
     updatePreview
 End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSpin), CBool(chkZoom), OptInterpolate(0), True, fxPreview
+    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, OptInterpolate(0), True, fxPreview
 End Sub
