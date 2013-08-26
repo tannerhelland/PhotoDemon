@@ -142,8 +142,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 29/May/13
-'Last update: minor fixes
+'Last updated: 25/August/13
+'Last update: converted mousewheel code to bluMouseEvents
 '
 'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -180,8 +180,9 @@ Dim curTagCount() As Long
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 64
 
-'Subclass the window to enable mousewheel support for scrolling the metadata view (compiled EXE only)
-Dim m_Subclass As cSelfSubHookCallback
+'An outside class provides access to mousewheel events for scrolling the filter view
+Private WithEvents cMouseEvents As bluMouseEvents
+Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -195,12 +196,43 @@ Private Sub chkFriendlyValues_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Unload Me
+End Sub
+
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+    
+    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
+    If vsMetadata.Visible Then
+  
+        If LinesScrolled < 0 Then
+            
+            If vsMetadata.Value + vsMetadata.LargeChange > vsMetadata.Max Then
+                vsMetadata.Value = vsMetadata.Max
+            Else
+                vsMetadata.Value = vsMetadata.Value + vsMetadata.LargeChange
+            End If
+            
+            redrawMetadataList
+        
+        ElseIf LinesScrolled > 0 Then
+            
+            If vsMetadata.Value - vsMetadata.LargeChange < vsMetadata.Min Then
+                vsMetadata.Value = vsMetadata.Min
+            Else
+                vsMetadata.Value = vsMetadata.Value - vsMetadata.LargeChange
+            End If
+            
+            redrawMetadataList
+            
+        End If
+        
+    End If
+    
 End Sub
 
 Private Sub Form_Activate()
@@ -219,16 +251,9 @@ Private Sub Form_Load()
 
     'Note that this form will be interacting heavily with the current image's metadata container.
     
-    If g_IsProgramCompiled Then
-    
-        'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
-        Set m_Subclass = New cSelfSubHookCallback
-        
-        'Add mousewheel messages to the subclassing handler (compiled only)
-        If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-        If m_Subclass.ssc_Subclass(lstMetadata.hWnd, , 1, Me) Then m_Subclass.ssc_AddMsg lstMetadata.hWnd, MSG_BEFORE, WM_MOUSEWHEEL
-        
-    End If
+    'Enable mousewheel scrolling for the metadata box
+    Set cMouseEvents = New bluMouseEvents
+    cMouseEvents.Attach picBuffer.hWnd, Me.hWnd
         
     'Make the invisible buffer's font match the rest of PD
     picBuffer.FontName = g_InterfaceFont
@@ -315,14 +340,8 @@ End Sub
 'UNLOAD form
 Private Sub Form_Unload(Cancel As Integer)
     
-    If g_IsProgramCompiled Then
-    
-        'Release the subclassing object responsible for mouse wheel support
-        m_Subclass.ssc_Terminate
-        Set m_Subclass = Nothing
-        
-    End If
-    
+    'Unload the mouse tracker
+    Set cMouseEvents = Nothing
     ReleaseFormTheming Me
 
 End Sub
@@ -434,61 +453,3 @@ End Sub
 Private Sub vsMetadata_Scroll()
     redrawMetadataList
 End Sub
-
-'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events for this form.
-Private Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xPos As Long, ByVal yPos As Long)
-    
-    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If vsMetadata.Visible Then
-  
-        If mRotation < 0 Then
-            
-            If vsMetadata.Value + vsMetadata.LargeChange > vsMetadata.Max Then
-                vsMetadata.Value = vsMetadata.Max
-            Else
-                vsMetadata.Value = vsMetadata.Value + vsMetadata.LargeChange
-            End If
-            
-            redrawMetadataList
-        
-        ElseIf mRotation > 0 Then
-            
-            If vsMetadata.Value - vsMetadata.LargeChange < vsMetadata.Min Then
-                vsMetadata.Value = vsMetadata.Min
-            Else
-                vsMetadata.Value = vsMetadata.Value - vsMetadata.LargeChange
-            End If
-            
-            redrawMetadataList
-            
-        End If
-        
-    End If
-    
-End Sub
-
-'This routine MUST BE KEPT as the final routine for this form. Its ordinal position determines its ability to subclass properly.
-' Subclassing is required to enable mousewheel support and other mouse events (e.g. the mouse leaving the window).
-Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
-        
-    Dim MouseKeys As Long
-    Dim mRotation As Long
-    Dim xPos As Long
-    Dim yPos As Long
-    
-    'Only handle scroll events if the message relates to this form
-    Select Case uMsg
-  
-        Case WM_MOUSEWHEEL
-    
-            MouseKeys = wParam And 65535
-            mRotation = wParam / 65536
-            xPos = lParam And 65535
-            yPos = lParam / 65536
-            
-            MouseWheel MouseKeys, mRotation, xPos, yPos
-            
-    End Select
-                      
-End Sub
-
