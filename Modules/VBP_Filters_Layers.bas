@@ -1888,3 +1888,165 @@ Private Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Do
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
     If Modulo < 0 Then Modulo = Modulo + Divisor
 End Function
+
+'Given two layers, fill one with a horizontally blur version of the other.  A highly-optimized modified accumulation algorithm
+' is used to improve performance.
+'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
+Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcLayer.getLayerWidth - 1
+    finalY = srcLayer.getLayerHeight - 1
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    qvDepth = srcLayer.getLayerColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalX
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
+    progBarCheck = findBestProgBarValue()
+    
+    Dim xRadius As Long
+    xRadius = finalX - initX
+    
+    'Limit the left and right offsets to the width of the image
+    If lRadius > xRadius Then lRadius = xRadius
+    If rRadius > xRadius Then rRadius = xRadius
+        
+    'The number of pixels in the current horizontal line are tracked dynamically.
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
+            
+    'Blurring takes a lot of variables
+    Dim lbX As Long, ubX As Long
+    Dim obuX As Boolean
+    
+    NumOfPixels = 0
+    
+    'This horizontal blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
+    ' we will store the accumulated blur total for each horizontal line, and only update it when we move one column to the right.
+    Dim rTotals() As Long, gTotals() As Long, bTotals() As Long, aTotals() As Long
+    ReDim rTotals(initY To finalY) As Long
+    ReDim gTotals(initY To finalY) As Long
+    ReDim bTotals(initY To finalY) As Long
+    ReDim aTotals(initY To finalY) As Long
+    
+    'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
+    ' pixels left of that!)
+    For x = initX To initX + rRadius - 1
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        rTotals(y) = rTotals(y) + srcImageData(QuickVal + 2, y)
+        gTotals(y) = gTotals(y) + srcImageData(QuickVal + 1, y)
+        bTotals(y) = bTotals(y) + srcImageData(QuickVal, y)
+        If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(QuickVal + 3, y)
+        
+    Next y
+        'Increase the pixel tally
+        NumOfPixels = NumOfPixels + 1
+    Next x
+                
+    'Loop through each column in the image, tallying blur values as we go
+    For x = initX To finalX
+            
+        QuickVal = x * qvDepth
+        
+        'Determine the loop bounds of the current blur box in the X direction
+        lbX = x - lRadius
+        If lbX < 0 Then lbX = 0
+        ubX = x + rRadius
+        
+        If ubX > finalX Then
+            obuX = True
+            ubX = finalX
+        Else
+            obuX = False
+        End If
+                
+        'Remove trailing values from the blur collection if they lie outside the processing radius
+        If lbX > 0 Then
+        
+            QuickValInner = (lbX - 1) * qvDepth
+        
+            For y = initY To finalY
+                rTotals(y) = rTotals(y) - srcImageData(QuickValInner + 2, y)
+                gTotals(y) = gTotals(y) - srcImageData(QuickValInner + 1, y)
+                bTotals(y) = bTotals(y) - srcImageData(QuickValInner, y)
+                If qvDepth = 4 Then aTotals(y) = aTotals(y) - srcImageData(QuickValInner + 3, y)
+            Next y
+            
+            NumOfPixels = NumOfPixels - 1
+        
+        End If
+        
+        'Add leading values to the blur box if they lie inside the processing radius
+        If Not obuX Then
+        
+            QuickValInner = ubX * qvDepth
+            
+            For y = initY To finalY
+                rTotals(y) = rTotals(y) + srcImageData(QuickValInner + 2, y)
+                gTotals(y) = gTotals(y) + srcImageData(QuickValInner + 1, y)
+                bTotals(y) = bTotals(y) + srcImageData(QuickValInner, y)
+                If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(QuickValInner + 3, y)
+            Next y
+            
+            NumOfPixels = NumOfPixels + 1
+            
+        End If
+            
+        'Process the current column.  This simply involves calculating blur values, and applying them to the destination image
+        For y = initY To finalY
+                
+            'With the blur box successfully calculated, we can finally apply the results to the image.
+            dstImageData(QuickVal + 2, y) = rTotals(y) \ NumOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(y) \ NumOfPixels
+            dstImageData(QuickVal, y) = bTotals(y) \ NumOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ NumOfPixels
+    
+        Next y
+        
+        'Halt for external events, like ESC-to-cancel and progress bar updates
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+        
+    Next x
+        
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    If cancelCurrentAction Then CreateHorizontalBlurLayer = 0 Else CreateHorizontalBlurLayer = 1
+    
+End Function
