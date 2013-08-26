@@ -56,7 +56,7 @@ Begin VB.Form FormRadialBlur
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   2400
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -78,7 +78,7 @@ Begin VB.Form FormRadialBlur
       Index           =   0
       Left            =   6120
       TabIndex        =   5
-      Top             =   3510
+      Top             =   3750
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -99,7 +99,7 @@ Begin VB.Form FormRadialBlur
       Index           =   1
       Left            =   7920
       TabIndex        =   6
-      Top             =   3510
+      Top             =   3750
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -107,6 +107,26 @@ Begin VB.Form FormRadialBlur
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkSymmetry 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   8
+      Top             =   2760
+      Width           =   1935
+      _ExtentX        =   3413
+      _ExtentY        =   847
+      Caption         =   "blur symmetrically"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -134,7 +154,7 @@ Begin VB.Form FormRadialBlur
       Index           =   1
       Left            =   6000
       TabIndex        =   7
-      Top             =   3120
+      Top             =   3360
       Width           =   1845
    End
    Begin VB.Label lblIDEWarning 
@@ -175,7 +195,7 @@ Begin VB.Form FormRadialBlur
       Index           =   0
       Left            =   6000
       TabIndex        =   0
-      Top             =   2040
+      Top             =   1800
       Width           =   660
    End
 End
@@ -191,8 +211,8 @@ Attribute VB_Exposed = False
 'Last updated: 26/August/13
 'Last update: remove zoom blur, which is going to get a custom implementation.  Also, fix the top-center line
 '             of the image not being blurred properly.  This requires some convoluted blurring to assure proper
-'             wrapping, but that is far easier (and more performance-friendly) than changing the box blur code
-'             to wrap image edges.
+'             wrapping, but that is far easier (and more performance-friendly) than changing the horizontal blur
+'             code to wrap image edges.
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a radial blur tool that supports variable radii,
 ' and capable of operating in real-time. This function is mostly just a wrapper to PD's box blur and polar
@@ -217,7 +237,7 @@ Dim m_ToolTip As clsToolTip
 
 'Apply a radial blur an image
 'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
-Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying radial blur..."
     
@@ -285,7 +305,10 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useBilinear As Boolean,
         srcLayer.createBlank tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, workingLayer.getLayerColorDepth
     
         'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
-        If CreateBoxBlurLayer(bRadius, 1, tmpLayer, srcLayer, toPreview, finalX * 3, finalX) Then
+        Dim leftRadius As Long
+        If blurSymmetrically Then leftRadius = bRadius Else leftRadius = 0
+        
+        If CreateHorizontalBlurLayer(leftRadius, bRadius, tmpLayer, srcLayer, toPreview, finalX * 3, finalX) Then
         
             'Copy the blurred results of the source layer back into the temporary layer
             tmpLayer.createFromExistingLayer srcLayer
@@ -314,8 +337,12 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal useBilinear As Boolean,
     
 End Sub
 
+Private Sub chkSymmetry_Click()
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Radial blur", , buildParams(sltRadius, OptInterpolate(0))
+    Process "Radial blur", , buildParams(sltRadius, CBool(chkSymmetry), OptInterpolate(0))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -370,5 +397,5 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, OptInterpolate(0), True, fxPreview
+    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), OptInterpolate(0), True, fxPreview
 End Sub
