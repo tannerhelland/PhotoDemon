@@ -255,35 +255,6 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
     
 End Sub
 
-'Request mouse tracking of a particular hWnd.  (NOTE: Windows requires you to re-request tracking after a tracking message is posted.)
-Public Sub requestMouseTracking(ByVal srcHwnd As Long, Optional ByVal stopTracking As Boolean = False)
-
-    Dim tracker As tagTRACKMOUSEEVENT
-
-    If stopTracking Then
-        
-        'Prepare a mouse tracking object, which will be sent to Windows so we can track mouse events for this form
-        With tracker
-            .cbSize = 16
-            .dwFlags = TME_LEAVE Or TME_CANCEL
-            .dwHoverTime = 0
-            .hWndTrack = srcHwnd
-        End With
-        TRACKMOUSEEVENT tracker
-    Else
-    
-        With tracker
-            .cbSize = 16
-            .dwFlags = TME_LEAVE
-            .dwHoverTime = 0
-            .hWndTrack = srcHwnd
-        End With
-        TRACKMOUSEEVENT tracker
-    
-    End If
-
-End Sub
-
 'Given a wordwrap label with a set size, attempt to fit the label's text inside it
 Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
 
