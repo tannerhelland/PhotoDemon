@@ -710,7 +710,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormRadialBlur.Show vbModal, FormMain
             Else
-                FormRadialBlur.RadialBlurFilter cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
+                FormRadialBlur.RadialBlurFilter cParams.GetDouble(1), cParams.GetBool(2)
             End If
             
         Case "Smart blur"
