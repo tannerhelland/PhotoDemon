@@ -255,3 +255,9 @@ Public Function Min3Int(rR As Long, rG As Long, rB As Long) As Long
       End If
    End If
 End Function
+
+'This is a modified module function; it handles negative values specially to ensure they work with certain distort functions
+Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
+    Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
+    If Modulo < 0 Then Modulo = Modulo + Divisor
+End Function

@@ -191,12 +191,6 @@ Public Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
 
 End Function
 
-'This is a modified modulo function; it handles negative values specially to ensure they work with our transforms
-Private Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
-    Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
-    If Modulo < 0 Then Modulo = Modulo + Divisor
-End Function
-
 'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
 ' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
 Private Function pInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long) As Byte
