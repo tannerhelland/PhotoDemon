@@ -42,6 +42,7 @@ Public Const JP2_ENABLED As Boolean = True
 Public Const PI As Double = 3.14159265358979
 Public Const PI_HALF As Double = 1.5707963267949
 Public Const PI_DOUBLE As Double = 6.28318530717958
+Public Const PI_DIV_180 As Double = 0.017453292519943
 Public Const EULER As Double = 2.71828182845905
 
 'Edge-handling methods for distort-style filters

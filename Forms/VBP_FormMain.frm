@@ -1363,16 +1363,20 @@ Begin VB.MDIForm FormMain
             Index           =   2
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Pixelate..."
+            Caption         =   "Motion blur..."
             Index           =   3
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Radial blur..."
+            Caption         =   "Pixelate..."
             Index           =   4
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Smart blur..."
+            Caption         =   "Radial blur..."
             Index           =   5
+         End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Smart blur..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2413,16 +2417,20 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         Case 2
             Process "Grid blur"
             
-        'Pixelate (mosaic)
+        'Motion blur
         Case 3
+            Process "Motion blur", True
+            
+        'Pixelate (mosaic)
+        Case 4
             Process "Pixelate", True
         
         'Radial blur
-        Case 4
+        Case 5
             Process "Radial blur", True
             
         'Smart Blur
-        Case 5
+        Case 6
             Process "Smart blur", True
         
     End Select
