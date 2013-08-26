@@ -207,16 +207,16 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Radial Blur Tool
 'Copyright ©2012-2013 by Tanner Helland
-'Created: 23/August/13
+'Created: 26/August/13
 'Last updated: 26/August/13
-'Last update: remove zoom blur, which is going to get a custom implementation.  Also, fix the top-center line
-'             of the image not being blurred properly.  This requires some convoluted blurring to assure proper
-'             wrapping, but that is far easier (and more performance-friendly) than changing the horizontal blur
-'             code to wrap image edges.
+'Last update: remove zoom blur, which is going to get a custom implementation. Also, fix the top-center line
+'              of the image not being blurred properly. This requires some convoluted image manipulation to assure
+'              proper wrapping, but that proved far easier (and more performance-friendly) than changing the
+'              horizontal blur code to wrap image edges.
 '
-'To my knowledge, this tool is the first of its kind in VB6 - a radial blur tool that supports variable radii,
-' and capable of operating in real-time. This function is mostly just a wrapper to PD's box blur and polar
-' coordinate conversion functions; they do all the heavy lifting, as you can see from the code below.
+'To my knowledge, this tool is the first of its kind in VB6 - a radial blur tool that supports variable angles,
+' and capable of operating in real-time.  This function is mostly just a wrapper to PD's horizontal blur and
+' polar coordinate conversion functions; they do all the heavy lifting, as you can see from the code below.
 '
 'Performance is pretty good, all things considered, but be careful in the IDE. I STRONGLY recommend compiling
 ' the project before applying any actions at a large radius.
@@ -235,8 +235,8 @@ Dim iWidth As Long, iHeight As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Apply a radial blur an image
-'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
+'Apply radial blur to an image
+'Inputs: angle of the blur, and whether it should be symmetrical (e.g. equal in +/- angle amounts)
 Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying radial blur..."
