@@ -359,14 +359,14 @@ Begin VB.Form FormResize
    Begin VB.Line Line3 
       BorderColor     =   &H00808080&
       X1              =   328
-      X2              =   392
+      X2              =   393
       Y1              =   58
       Y2              =   58
    End
    Begin VB.Line Line2 
       BorderColor     =   &H00808080&
       X1              =   328
-      X2              =   392
+      X2              =   393
       Y1              =   105
       Y2              =   105
    End
