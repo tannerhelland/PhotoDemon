@@ -3,10 +3,10 @@ Begin VB.Form FormCanvasSize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Canvas"
-   ClientHeight    =   6780
+   ClientHeight    =   6915
    ClientLeft      =   45
    ClientTop       =   225
-   ClientWidth     =   6285
+   ClientWidth     =   9705
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,105 +19,107 @@ Begin VB.Form FormCanvasSize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   452
+   ScaleHeight     =   461
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   419
+   ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   21
+      Top             =   6165
+      Width           =   9705
+      _ExtentX        =   17119
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      AutoloadLastPreset=   -1  'True
+   End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   8
-      Left            =   1800
-      TabIndex        =   22
+      Left            =   3240
+      TabIndex        =   19
       Top             =   4080
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   7
-      Left            =   1200
-      TabIndex        =   21
+      Left            =   2640
+      TabIndex        =   18
       Top             =   4080
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   6
-      Left            =   600
-      TabIndex        =   20
+      Left            =   2040
+      TabIndex        =   17
       Top             =   4080
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   5
-      Left            =   1800
-      TabIndex        =   19
+      Left            =   3240
+      TabIndex        =   16
       Top             =   3480
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   4
-      Left            =   1200
-      TabIndex        =   18
+      Left            =   2640
+      TabIndex        =   15
       Top             =   3480
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   3
-      Left            =   600
-      TabIndex        =   17
+      Left            =   2040
+      TabIndex        =   14
       Top             =   3480
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   2
-      Left            =   1800
-      TabIndex        =   16
+      Left            =   3240
+      TabIndex        =   13
       Top             =   2880
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   1
-      Left            =   1200
-      TabIndex        =   15
+      Left            =   2640
+      TabIndex        =   12
       Top             =   2880
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   0
-      Left            =   600
-      TabIndex        =   14
+      Left            =   2040
+      TabIndex        =   11
       Top             =   2880
       Width           =   570
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3360
-      TabIndex        =   0
-      Top             =   6150
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   4800
-      TabIndex        =   1
-      Top             =   6150
-      Width           =   1365
-   End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
-      Left            =   4005
-      TabIndex        =   4
+      Left            =   6120
+      TabIndex        =   2
       Top             =   975
       Width           =   1770
       _ExtentX        =   3122
@@ -136,8 +138,8 @@ Begin VB.Form FormCanvasSize
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
-      Left            =   1440
-      TabIndex        =   2
+      Left            =   2880
+      TabIndex        =   0
       Top             =   705
       Width           =   1200
       _ExtentX        =   2117
@@ -155,8 +157,8 @@ Begin VB.Form FormCanvasSize
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
-      Left            =   1440
-      TabIndex        =   3
+      Left            =   2880
+      TabIndex        =   1
       Top             =   1335
       Width           =   1200
       _ExtentX        =   2117
@@ -174,11 +176,11 @@ Begin VB.Form FormCanvasSize
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
-      Left            =   600
-      TabIndex        =   23
+      Left            =   2040
+      TabIndex        =   20
       Top             =   5280
-      Width           =   5175
-      _ExtentX        =   9128
+      Width           =   5895
+      _ExtentX        =   10398
       _ExtentY        =   873
    End
    Begin VB.Label lblAnchor 
@@ -198,8 +200,8 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   5
+      Left            =   1680
+      TabIndex        =   3
       Top             =   2520
       Width           =   1725
    End
@@ -220,8 +222,8 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   240
-      TabIndex        =   13
+      Left            =   1680
+      TabIndex        =   10
       Top             =   4920
       Width           =   2235
    End
@@ -243,8 +245,8 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
-      TabIndex        =   12
+      Left            =   1680
+      TabIndex        =   9
       Top             =   240
       Width           =   990
    End
@@ -265,38 +267,31 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   615
-      TabIndex        =   11
+      Left            =   2055
+      TabIndex        =   8
       Top             =   1950
       Width           =   2490
    End
    Begin VB.Line Line4 
       BorderColor     =   &H00808080&
-      X1              =   262
-      X2              =   262
+      X1              =   393
+      X2              =   393
       Y1              =   57
       Y2              =   105
    End
    Begin VB.Line Line3 
       BorderColor     =   &H00808080&
-      X1              =   232
-      X2              =   262
+      X1              =   328
+      X2              =   393
       Y1              =   56
       Y2              =   56
    End
    Begin VB.Line Line2 
       BorderColor     =   &H00808080&
-      X1              =   232
-      X2              =   262
+      X1              =   328
+      X2              =   393
       Y1              =   105
       Y2              =   105
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -2280
-      TabIndex        =   10
-      Top             =   6000
-      Width           =   9975
    End
    Begin VB.Label lblHeightUnit 
       Appearance      =   0  'Flat
@@ -314,8 +309,8 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   375
-      Left            =   2730
-      TabIndex        =   9
+      Left            =   4170
+      TabIndex        =   7
       Top             =   1365
       Width           =   855
    End
@@ -335,8 +330,8 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   480
-      Left            =   2730
-      TabIndex        =   8
+      Left            =   4170
+      TabIndex        =   6
       Top             =   735
       Width           =   855
    End
@@ -358,8 +353,8 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   600
-      TabIndex        =   7
+      Left            =   2040
+      TabIndex        =   5
       Top             =   1365
       Width           =   750
    End
@@ -381,8 +376,8 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   600
-      TabIndex        =   6
+      Left            =   2040
+      TabIndex        =   4
       Top             =   735
       Width           =   675
    End
@@ -396,8 +391,8 @@ Attribute VB_Exposed = False
 'Canvas Size Handler
 'Copyright ©2013-2013 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 13/June/13
-'Last update: initial build
+'Last updated: 25/August/13
+'Last update: add command bar, redesign interface to match
 '
 'This form handles canvas resizing.  You may wonder why it took me over a decade to implement this tool, when it's such a
 ' trivial one algorithmically.  The answer is that a number of user-interface support functions are necessary to build
@@ -479,7 +474,7 @@ Private Sub updateAnchorButtons()
     ReDim arrowLocations(0 To 8) As String
     fillArrowLocations arrowLocations
     
-    If g_IsVistaOrLater And g_IsThemingEnabled Then
+    If g_IsVistaOrLater And g_IsThemingEnabled And g_IsProgramCompiled Then
     
         'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
         ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
@@ -517,26 +512,74 @@ Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Inte
     updateAnchorButtons
 End Sub
 
-'Perform a canvas resize operation
-Private Sub CmdOK_Click()
-    
-    'Before resizing anything, check to make sure the textboxes have valid input
-    If tudWidth.IsValid And tudHeight.IsValid Then
-        
-        Me.Visible = False
-        Process "Canvas size", , buildParams(tudWidth, tudHeight, m_CurrentAnchor, colorPicker.Color)
-        Unload Me
-        
-    End If
-    
+'The current anchor must be manually saved as part of preset data
+Private Sub cmdBar_AddCustomPresetData()
+    cmdBar.addPresetData "currentAnchor", CStr(m_CurrentAnchor)
 End Sub
 
-Private Sub CmdCancel_Click()
-    Unload Me
+'OK button
+Private Sub cmdBar_OKClick()
+    Process "Canvas size", , buildParams(tudWidth, tudHeight, m_CurrentAnchor, colorPicker.Color)
+End Sub
+
+'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
+' present, simply randomize the width/height to +/- the current image's width/height divided by two.
+Private Sub cmdBar_RandomizeClick()
+    tudWidth = (pdImages(CurrentImage).Width / 2) + (Rnd * pdImages(CurrentImage).Width)
+    tudHeight = (pdImages(CurrentImage).Height / 2) + (Rnd * pdImages(CurrentImage).Height)
+End Sub
+
+'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
+Private Sub cmdBar_ReadCustomPresetData()
+    m_CurrentAnchor = CLng(cmdBar.retrievePresetData("currentAnchor"))
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updateAnchorButtons
+End Sub
+
+Private Sub cmdBar_ResetClick()
+
+    'Automatically set the width and height text boxes to match the image's current dimensions
+    tudWidth.Value = pdImages(CurrentImage).Width
+    tudHeight.Value = pdImages(CurrentImage).Height
+    
+    'Make borders fill with black by default
+    colorPicker.Color = RGB(0, 0, 0)
+    
+    'Set the middle position as the anchor
+    m_CurrentAnchor = 4
+
 End Sub
 
 'Upon form activation, determine the ratio between the width and height of the image
 Private Sub Form_Activate()
+    
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+        
+End Sub
+
+'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
+Private Sub Form_Load()
+
+    'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
+    ' will be filled with transparency.
+    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    
+        'Hide the background color selectors
+        colorPicker.Visible = False
+        
+        Dim formHeightDifference As Long
+        Me.ScaleMode = vbTwips
+        formHeightDifference = Me.Height - Me.ScaleHeight
+        Me.ScaleMode = vbPixels
+        
+        'Resize the form to match
+        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + 24) * Screen.TwipsPerPixelY
+        
+    End If
     
     'To prevent aspect ratio changes to one box resulting in recursion-type changes to the other, we only
     ' allow one box at a time to be updated.
@@ -559,39 +602,7 @@ Private Sub Form_Activate()
     End If
     
     'Start with a default top-left position for the anchor
-    m_CurrentAnchor = 0
     updateAnchorButtons
-    
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-        
-End Sub
-
-'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
-Private Sub Form_Load()
-
-    'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
-    ' will be filled with transparency.
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
-    
-        'Hide the background color selectors
-        colorPicker.Visible = False
-        
-        Dim formHeightDifference As Long
-        Me.ScaleMode = vbTwips
-        formHeightDifference = Me.Height - Me.ScaleHeight
-        Me.ScaleMode = vbPixels
-    
-        'Move the command bar into place
-        lblBackground.Top = lblFill.Top + lblFill.Height + 16
-        CmdOK.Top = lblBackground.Top + 10
-        CmdCancel.Top = CmdOK.Top
-        
-        'Resize the form to match
-        Me.Height = formHeightDifference + (CmdOK.Top + CmdOK.Height + 10) * Screen.TwipsPerPixelY
-        
-    End If
     
 End Sub
 
@@ -691,6 +702,10 @@ End Sub
 'PhotoDemon now displays an approximate aspect ratio for the selected values.  This can be helpful when
 ' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
 Private Sub updateAspectRatio()
+
+    'This sub may be called before all on-screen controls have been filled.  To prevent overflow errors, check for
+    ' DIV-BY-0 in advance.
+    If tudHeight = 0 Then Exit Sub
 
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
