@@ -399,15 +399,6 @@ Private Sub GetMouseStateFromParam( _
     y = lParam \ &H10000
 End Sub
 
-Private Function LowWord(ByVal inDWord As Long) As Integer
-    LowWord = inDWord And &H7FFF&
-    If (inDWord And &H8000&) Then LowWord = LowWord Or &H8000
-End Function
-
-Private Function HighWord(ByVal inDWord As Long) As Integer
-    HighWord = LowWord(((inDWord And &HFFFF0000) \ &H10000) And &HFFFF&)
-End Function
-
 '/// SUBCLASS /////////////////////////////////////////////////////////////////////////
 'bluMagic helps us tap into the Windows message stream going on in the background _
  so that we can trap mouse / window events and a whole lot more. This works using _

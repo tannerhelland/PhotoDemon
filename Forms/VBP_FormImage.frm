@@ -202,7 +202,7 @@ End Sub
 Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
-    If HScroll.Visible And ShiftDown And (Not CtrlDown) Then
+    If HScroll.Visible And (Not CtrlDown) Then
   
         If CharsScrolled < 0 Then
             
@@ -239,7 +239,7 @@ End Sub
 Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
   
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If VScroll.Visible And (Not ShiftDown) And (Not CtrlDown) Then
+    If VScroll.Visible And (Not CtrlDown) Then
       
         If LinesScrolled < 0 Then
             
