@@ -84,9 +84,8 @@ Attribute VB_Exposed = False
 'Image Form (Child MDI form)
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 24/June/13
-'Last update: rewrote selection handling code to utilize Processor calls.  This means selections are now part of the program's
-'             Undo/Redo chain, and they can also be recorded as part of macros.
+'Last updated: 26/August/13
+'Last update: Converted mouse tracking code to use bluMouseEvents
 '
 'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
 ' specialized program components in the MDIWindow module.
@@ -115,8 +114,9 @@ Dim m_initMouseX As Double, m_initMouseY As Double
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
 
-'New approach to mousewheel support - should be more robust than the old system
-Dim m_Subclass As cSelfSubHookCallback
+'An outside class provides access to mousewheel events for scrolling the filter view
+Private WithEvents cMouseEvents As bluMouseEvents
+Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -125,7 +125,10 @@ Public Sub ActivateWorkaround()
 
     'Update the current form variable
     CurrentImage = Val(Me.Tag)
-        
+    
+    'If possible, set focus to this window
+    If Me.Visible Then Me.SetFocus
+    
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
     ' unless they actually exist.)
@@ -170,17 +173,123 @@ Public Sub ActivateWorkaround()
     'If a selection is active on this image, update the text boxes to match
     If pdImages(CurrentImage).selectionActive Then
         metaToggle tSelection, True
-        'pdImages(CurrentImage).mainSelection.refreshTextBoxes
     Else
         metaToggle tSelection, False
     End If
     
     'Finally, if the histogram window is open, redraw it
-    If (FormHistogram.Visible = True) And pdImages(Me.Tag).loadedSuccessfully Then
+    If FormHistogram.Visible And pdImages(Me.Tag).loadedSuccessfully Then
         FormHistogram.TallyHistogramValues
         FormHistogram.DrawHistogram
     End If
     
+End Sub
+
+'Mousekey back triggers the same thing as clicking Undo
+Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+    If pdImages(Me.Tag).IsActive Then
+        If pdImages(Me.Tag).UndoState Then Process "Undo", , , False
+    End If
+End Sub
+
+'Mousekey forward triggers the same thing as clicking Redo
+Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+    If pdImages(Me.Tag).IsActive Then
+        If pdImages(Me.Tag).RedoState Then Process "Redo", , , False
+    End If
+End Sub
+
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+
+    'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
+    If HScroll.Visible And ShiftDown And (Not CtrlDown) Then
+  
+        If CharsScrolled < 0 Then
+            
+            If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
+                HScroll.Value = HScroll.Max
+            Else
+                HScroll.Value = HScroll.Value + HScroll.LargeChange
+            End If
+            
+            ScrollViewport Me
+        
+        ElseIf CharsScrolled > 0 Then
+            
+            If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
+                HScroll.Value = HScroll.Min
+            Else
+                HScroll.Value = HScroll.Value - HScroll.LargeChange
+            End If
+            
+            ScrollViewport Me
+            
+        End If
+        
+    End If
+  
+End Sub
+
+'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
+' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
+Private Sub cMouseEvents_MouseOut()
+    If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
+End Sub
+
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+  
+    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
+    If VScroll.Visible And (Not ShiftDown) And (Not CtrlDown) Then
+      
+        If LinesScrolled < 0 Then
+            
+            If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
+                VScroll.Value = VScroll.Max
+            Else
+                VScroll.Value = VScroll.Value + VScroll.LargeChange
+            End If
+            
+            ScrollViewport Me
+        
+        ElseIf LinesScrolled > 0 Then
+            
+            If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
+                VScroll.Value = VScroll.Min
+            Else
+                VScroll.Value = VScroll.Value - VScroll.LargeChange
+            End If
+            
+            ScrollViewport Me
+            
+        End If
+    
+    End If
+    
+    'NOTE: horizontal scrolling is now handled in the separate _MouseHScroll event.  This is necessary to handle mice with
+    '      a dedicated horizontal scroller.
+    
+    'Zooming - only trigger when Ctrl has been pressed
+    If CtrlDown And (Not ShiftDown) Then
+      
+        If LinesScrolled > 0 Then
+            
+            If FormMain.CmbZoom.ListIndex > 0 Then
+                FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+                'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
+                'PrepareViewport Me, "Ctrl+Mousewheel"
+            End If
+        
+        ElseIf LinesScrolled < 0 Then
+            
+            If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then
+                FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+                'PrepareViewport Me, "Ctrl+Mousewheel"
+        End If
+            
+        End If
+        
+    End If
+  
 End Sub
 
 'NOTE: _Activate and _GotFocus are confusing in VB6. _Activate will be fired whenever a child form
@@ -218,23 +327,9 @@ End Sub
 'LOAD form
 Private Sub Form_Load()
     
-    'Mouse subclassing is only available in the compiled EXE.
-    If g_IsProgramCompiled Then
-    
-        'Request mouse tracking
-        requestMouseTracking Me.hWnd
-        
-        'Add support for scrolling with the mouse wheel (e.g. initialize the relevant subclassing object)
-        Set m_Subclass = New cSelfSubHookCallback
-        
-        'Add two messages to the subclassing handler - one for handling mousewheel events, and another for handling mouse forward/back keypresses
-        If m_Subclass.ssc_Subclass(Me.hWnd, Me.hWnd, 1, Me) Then
-            m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEWHEEL 'Mouse wheel (used for zoom/pan)
-            m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEFORWARDBACK 'Mouse forward/back keys (used for undo/redo)
-            m_Subclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSELEAVE 'Mouse leaves the window (used to clear pixel coordinate display)
-        End If
-        
-    End If
+    'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
+    Set cMouseEvents = New bluMouseEvents
+    cMouseEvents.Attach Me.hWnd, FormMain.hWnd
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -348,9 +443,6 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
     'If the image has not yet been loaded, exit
     If Not pdImages(Me.Tag).loadedSuccessfully Then Exit Sub
-        
-    'Ask Windows to track the mouse relative to this form
-    requestMouseTracking Me.hWnd
     
     hasMouseMoved = hasMouseMoved + 1
     
@@ -649,6 +741,8 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
                 'I think this "Unload Me" statement may be causing some kind of infinite recursion - perhaps because it triggers this very
                 ' QueryUnload statement? Not sure, but I may need to revisit it if the problems don't go away...
+                'UPDATE 26 Aug 2013: after changing my subclassing code, the problem seems to have disappeared, but I'm leaving
+                ' this comment here until I'm absolutely certain the problem has been resolved.
                 Unload Me
                 'Set Me = Nothing
                 'Cancel = False
@@ -723,17 +817,8 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
-    'Mouse subclassing is only available in the compiled EXE.
-    If g_IsProgramCompiled Then
-    
-        'Stop requesting mouse tracking
-        requestMouseTracking Me.hWnd, True
-    
-        'Release the subclassing object responsible for mouse wheel support
-        m_Subclass.ssc_Terminate
-        Set m_Subclass = Nothing
-        
-    End If
+    'Unload the mouse tracker
+    Set cMouseEvents = Nothing
     
     Message "Closing image..."
     
@@ -887,132 +972,4 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     'Make the selection tools visible
     metaToggle tSelection, True
                         
-End Sub
-
-'This custom routine, combined with careful subclassing, allows us to handle mouse wheel events.
-Private Sub MouseWheel(ByVal MouseKeys As Long, ByVal mRotation As Long, ByVal xPos As Long, ByVal yPos As Long)
-  
-  'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-  If VScroll.Visible And (Not ShiftDown) And (Not CtrlDown) Then
-  
-    If mRotation < 0 Then
-        
-        If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
-            VScroll.Value = VScroll.Max
-        Else
-            VScroll.Value = VScroll.Value + VScroll.LargeChange
-        End If
-        
-        ScrollViewport Me
-    
-    ElseIf mRotation > 0 Then
-        
-        If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
-            VScroll.Value = VScroll.Min
-        Else
-            VScroll.Value = VScroll.Value - VScroll.LargeChange
-        End If
-        
-        ScrollViewport Me
-        
-    End If
-  End If
-  
-  'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
-  If HScroll.Visible And ShiftDown And (Not CtrlDown) Then
-  
-    If mRotation < 0 Then
-        
-        If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
-            HScroll.Value = HScroll.Max
-        Else
-            HScroll.Value = HScroll.Value + HScroll.LargeChange
-        End If
-        
-        ScrollViewport Me
-    
-    ElseIf mRotation > 0 Then
-        
-        If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
-            HScroll.Value = HScroll.Min
-        Else
-            HScroll.Value = HScroll.Value - HScroll.LargeChange
-        End If
-        
-        ScrollViewport Me
-        
-    End If
-  End If
-  
-  'Zooming - only trigger when Ctrl has been pressed
-  If CtrlDown And (Not ShiftDown) Then
-  
-    If mRotation > 0 Then
-        
-        If FormMain.CmbZoom.ListIndex > 0 Then
-            FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
-            'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
-            'PrepareViewport Me, "Ctrl+Mousewheel"
-        End If
-    
-    ElseIf mRotation < 0 Then
-        
-        If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then
-            FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
-            'PrepareViewport Me, "Ctrl+Mousewheel"
-        End If
-        
-    End If
-  End If
-    
-End Sub
-
-'This routine MUST BE KEPT as the final routine for this form. Its ordinal position determines its ability to subclass properly.
-' Subclassing is required to enable mousewheel support and other mouse events (e.g. the mouse leaving the window).
-Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
-                      
-    Dim MouseKeys As Long
-    Dim mRotation As Long
-    Dim xPos As Long
-    Dim yPos As Long
-    
-    'Only handle scroll events if the message relates to this form
-    If lParamUser = Me.hWnd Then
-
-        Select Case uMsg
-  
-            Case WM_MOUSEWHEEL
-    
-                MouseKeys = wParam And 65535
-                mRotation = wParam / 65536
-                xPos = lParam And 65535
-                yPos = lParam / 65536
-          
-                MouseWheel MouseKeys, mRotation, xPos, yPos
-          
-            'FYI: I used brute-force testing to discover what messages my mouse uses for its back/forward keys.
-            ' I have no idea if these values are consistent between hardware vendors
-            Case WM_MOUSEFORWARDBACK
-                        
-                'Mouse back key
-                If lParam = WM_MOUSEKEYBACK Then
-                    If pdImages(Me.Tag).IsActive Then
-                        If pdImages(Me.Tag).UndoState Then Process "Undo", , , False
-                    End If
-                'Mouse forward key
-                ElseIf lParam = WM_MOUSEKEYFORWARD Then
-                    If pdImages(Me.Tag).IsActive Then
-                        If pdImages(Me.Tag).RedoState Then Process "Redo", , , False
-                    End If
-                End If
-                
-            'If the mouse leaves the window and no button is pressed,
-            Case WM_MOUSELEAVE
-                'MsgBox "wha?"
-                If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
-            
-        End Select
-  
-    End If
-                      
 End Sub
