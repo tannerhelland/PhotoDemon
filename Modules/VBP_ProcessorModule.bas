@@ -699,6 +699,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Grid blur"
             FilterGridBlur
             
+        Case "Motion blur"
+            If showDialog Then
+                FormMotionBlur.Show vbModal, FormMain
+            Else
+                FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetBool(4)
+            End If
+            
         Case "Pixelate"
             If showDialog Then
                 FormPixelate.Show vbModal, FormMain
