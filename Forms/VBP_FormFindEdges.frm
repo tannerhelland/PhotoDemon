@@ -29,7 +29,7 @@ Begin VB.Form FormFindEdges
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   5775
       Width           =   12195
       _ExtentX        =   21511
@@ -47,7 +47,7 @@ Begin VB.Form FormFindEdges
    Begin PhotoDemon.smartCheckBox chkInvert 
       Height          =   480
       Left            =   9120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3360
       Width           =   2220
       _ExtentX        =   3916
@@ -76,14 +76,14 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1320
       Width           =   2895
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -104,7 +104,7 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   9120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   1320
       Width           =   2055
    End
@@ -125,7 +125,7 @@ Begin VB.Form FormFindEdges
       ForeColor       =   &H00404040&
       Height          =   1575
       Left            =   9120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1800
       Width           =   2895
       WordWrap        =   -1  'True

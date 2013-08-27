@@ -29,7 +29,7 @@ Begin VB.Form FormSpherize
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   14
+      TabIndex        =   0
       Top             =   5790
       Width           =   12105
       _ExtentX        =   21352
@@ -59,14 +59,14 @@ Begin VB.Form FormSpherize
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3345
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +76,7 @@ Begin VB.Form FormSpherize
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   4200
       Width           =   1005
       _ExtentX        =   1773
@@ -97,7 +97,7 @@ Begin VB.Form FormSpherize
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   4200
       Width           =   975
       _ExtentX        =   1720
@@ -116,7 +116,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   450
       Width           =   5895
       _ExtentX        =   10398
@@ -137,7 +137,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.sliderTextCombo sltOffsetY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   2370
       Width           =   5895
       _ExtentX        =   10398
@@ -158,7 +158,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.sliderTextCombo sltOffsetX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   1410
       Width           =   5895
       _ExtentX        =   10398
@@ -179,7 +179,7 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.smartCheckBox chkRays 
       Height          =   540
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   13
       Top             =   5040
       Width           =   3705
       _ExtentX        =   5980
@@ -214,7 +214,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   14
       Top             =   4680
       Width           =   1500
    End
@@ -235,7 +235,7 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   1080
       Width           =   1800
    End
@@ -256,7 +256,7 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2970
       Width           =   3315
    End
@@ -277,7 +277,7 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2040
       Width           =   1500
    End
@@ -299,7 +299,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   3840
       Width           =   1845
    End
@@ -321,7 +321,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   660
    End

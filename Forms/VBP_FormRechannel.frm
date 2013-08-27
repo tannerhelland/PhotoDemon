@@ -29,7 +29,7 @@ Begin VB.Form FormRechannel
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   14
+      TabIndex        =   0
       Top             =   5790
       Width           =   9450
       _ExtentX        =   16669
@@ -48,7 +48,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   0
       Left            =   6840
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   480
       Width           =   735
       _ExtentX        =   1296
@@ -68,7 +68,7 @@ Begin VB.Form FormRechannel
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -78,7 +78,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   1
       Left            =   6840
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   840
       Width           =   990
       _ExtentX        =   1746
@@ -98,7 +98,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   2
       Left            =   6840
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   1200
       Width           =   840
       _ExtentX        =   1482
@@ -118,7 +118,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   3
       Left            =   6840
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   2160
       Width           =   870
       _ExtentX        =   1535
@@ -138,7 +138,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   4
       Left            =   6840
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   2520
       Width           =   1305
       _ExtentX        =   2302
@@ -158,7 +158,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   5
       Left            =   6840
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   2880
       Width           =   1065
       _ExtentX        =   1879
@@ -178,7 +178,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   6
       Left            =   6840
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   3840
       Width           =   870
       _ExtentX        =   1535
@@ -198,7 +198,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   7
       Left            =   6840
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   4200
       Width           =   1305
       _ExtentX        =   2302
@@ -218,7 +218,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   8
       Left            =   6840
-      TabIndex        =   12
+      TabIndex        =   13
       Top             =   4560
       Width           =   1065
       _ExtentX        =   1879
@@ -238,7 +238,7 @@ Begin VB.Form FormRechannel
       Height          =   375
       Index           =   9
       Left            =   6840
-      TabIndex        =   13
+      TabIndex        =   14
       Top             =   4920
       Width           =   1545
       _ExtentX        =   2725
@@ -272,7 +272,7 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3480
       Width           =   1695
    End
@@ -294,7 +294,7 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1800
       Width           =   1560
    End
@@ -316,7 +316,7 @@ Begin VB.Form FormRechannel
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   1530
    End

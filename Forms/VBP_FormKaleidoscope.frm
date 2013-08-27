@@ -29,7 +29,7 @@ Begin VB.Form FormKaleidoscope
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   12
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -47,7 +47,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -57,7 +57,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   4605
       Width           =   1005
       _ExtentX        =   1773
@@ -78,7 +78,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   4605
       Width           =   975
       _ExtentX        =   1720
@@ -97,7 +97,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltMirrors 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   1170
       Width           =   5895
       _ExtentX        =   10398
@@ -118,7 +118,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   2010
       Width           =   5895
       _ExtentX        =   10398
@@ -138,7 +138,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltAngle2 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   2850
       Width           =   5895
       _ExtentX        =   10398
@@ -158,7 +158,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   3705
       Width           =   5895
       _ExtentX        =   10398
@@ -195,7 +195,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2535
       Width           =   1800
    End
@@ -216,7 +216,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   840
       Width           =   2055
    End
@@ -237,7 +237,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3390
       Width           =   2145
    End
@@ -260,7 +260,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4200
       Width           =   1845
    End
@@ -283,7 +283,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1680
       Width           =   1560
    End

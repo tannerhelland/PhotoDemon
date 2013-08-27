@@ -28,7 +28,7 @@ Begin VB.Form FormTransparency_Basic
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5790
       Width           =   11820
       _ExtentX        =   20849
@@ -47,7 +47,7 @@ Begin VB.Form FormTransparency_Basic
       Height          =   375
       Index           =   0
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   1920
       Width           =   1695
       _ExtentX        =   2990
@@ -66,7 +66,7 @@ Begin VB.Form FormTransparency_Basic
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +76,7 @@ Begin VB.Form FormTransparency_Basic
       Height          =   375
       Index           =   1
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2400
       Width           =   2115
       _ExtentX        =   3731
@@ -96,7 +96,7 @@ Begin VB.Form FormTransparency_Basic
       Height          =   375
       Index           =   2
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   2880
       Width           =   2595
       _ExtentX        =   4577
@@ -115,7 +115,7 @@ Begin VB.Form FormTransparency_Basic
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   495
       Left            =   6480
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   3360
       Width           =   5205
       _ExtentX        =   9181
@@ -150,7 +150,7 @@ Begin VB.Form FormTransparency_Basic
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1440
       Width           =   1380
    End

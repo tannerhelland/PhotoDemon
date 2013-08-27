@@ -29,7 +29,7 @@ Begin VB.Form FormPanAndZoom
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   12
+      TabIndex        =   0
       Top             =   5760
       Width           =   12090
       _ExtentX        =   21325
@@ -59,14 +59,14 @@ Begin VB.Form FormPanAndZoom
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   3855
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +75,7 @@ Begin VB.Form FormPanAndZoom
    Begin PhotoDemon.sliderTextCombo sltHorizontal 
       Height          =   495
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   930
       Width           =   5895
       _ExtentX        =   10186
@@ -96,7 +96,7 @@ Begin VB.Form FormPanAndZoom
    Begin PhotoDemon.sliderTextCombo sltVertical 
       Height          =   495
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1890
       Width           =   5895
       _ExtentX        =   10186
@@ -117,7 +117,7 @@ Begin VB.Form FormPanAndZoom
    Begin PhotoDemon.sliderTextCombo sltZoom 
       Height          =   495
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2850
       Width           =   5895
       _ExtentX        =   10186
@@ -138,7 +138,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   4800
       Width           =   1005
       _ExtentX        =   1773
@@ -159,7 +159,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   4800
       Width           =   975
       _ExtentX        =   1720
@@ -194,7 +194,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   4410
       Width           =   1845
    End
@@ -215,7 +215,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   3480
       Width           =   3315
    End
@@ -236,7 +236,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   2520
       Width           =   675
    End
@@ -257,7 +257,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   600
       Width           =   1605
    End
@@ -278,7 +278,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   1560
       Width           =   1305
    End

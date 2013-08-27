@@ -28,7 +28,7 @@ Begin VB.Form FormContour
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -46,7 +46,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.smartCheckBox chkBlackBackground 
       Height          =   570
       Left            =   6120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3120
       Width           =   2670
       _ExtentX        =   4710
@@ -66,7 +66,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +75,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.smartCheckBox chkSmoothing 
       Height          =   570
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3720
       Width           =   3030
       _ExtentX        =   5345
@@ -95,7 +95,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.sliderTextCombo sltThickness 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
@@ -129,7 +129,7 @@ Begin VB.Form FormContour
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2040
       Width           =   1050
    End
@@ -147,7 +147,7 @@ Begin VB.Form FormContour
       ForeColor       =   &H000000FF&
       Height          =   1095
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775

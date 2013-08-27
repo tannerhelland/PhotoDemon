@@ -29,7 +29,7 @@ Begin VB.Form FormPinch
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   12
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -59,14 +59,14 @@ Begin VB.Form FormPinch
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   3855
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +76,7 @@ Begin VB.Form FormPinch
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   4800
       Width           =   1005
       _ExtentX        =   1773
@@ -97,7 +97,7 @@ Begin VB.Form FormPinch
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   4800
       Width           =   975
       _ExtentX        =   1720
@@ -116,7 +116,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   2130
       Width           =   5895
       _ExtentX        =   10398
@@ -137,7 +137,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   2970
       Width           =   5895
       _ExtentX        =   10398
@@ -158,7 +158,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltAmount 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   1290
       Width           =   5895
       _ExtentX        =   10398
@@ -194,7 +194,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   3480
       Width           =   3315
    End
@@ -215,7 +215,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   960
       Width           =   1545
    End
@@ -236,7 +236,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2640
       Width           =   2145
    End
@@ -259,7 +259,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4410
       Width           =   1845
    End
@@ -282,7 +282,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1800
       Width           =   1260
    End

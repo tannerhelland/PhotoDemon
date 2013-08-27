@@ -29,7 +29,7 @@ Begin VB.Form FormRotateDistort
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5760
       Width           =   12090
       _ExtentX        =   21325
@@ -59,14 +59,14 @@ Begin VB.Form FormRotateDistort
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2535
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +76,7 @@ Begin VB.Form FormRotateDistort
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3480
       Width           =   1005
       _ExtentX        =   1773
@@ -97,7 +97,7 @@ Begin VB.Form FormRotateDistort
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3480
       Width           =   975
       _ExtentX        =   1720
@@ -196,7 +196,7 @@ Begin VB.Form FormRotateDistort
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   3090
       Width           =   1845
    End
@@ -217,7 +217,7 @@ Begin VB.Form FormRotateDistort
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   2160
       Width           =   3315
    End

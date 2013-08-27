@@ -27,7 +27,7 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   1320
       Width           =   5925
       _ExtentX        =   10451
@@ -48,7 +48,7 @@ Begin VB.Form FormBlackAndWhite
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   1860
       Width           =   5610
       _ExtentX        =   9895
@@ -79,14 +79,14 @@ Begin VB.Form FormBlackAndWhite
       Height          =   330
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2880
       Width           =   4935
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -96,7 +96,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   615
       Index           =   0
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   3840
       Width           =   2775
       _ExtentX        =   9763
@@ -107,7 +107,7 @@ Begin VB.Form FormBlackAndWhite
       Height          =   615
       Index           =   1
       Left            =   9000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   3840
       Width           =   2775
       _ExtentX        =   4895
@@ -117,7 +117,7 @@ Begin VB.Form FormBlackAndWhite
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   0
       Top             =   5790
       Width           =   12150
       _ExtentX        =   21431
@@ -148,7 +148,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3480
       Width           =   3945
    End
@@ -168,7 +168,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2520
       Width           =   2130
    End
@@ -188,7 +188,7 @@ Begin VB.Form FormBlackAndWhite
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   960
       Width           =   1080
    End

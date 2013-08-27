@@ -27,7 +27,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.sliderTextCombo sltWidth 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
@@ -48,7 +48,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -57,7 +57,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3840
       Width           =   2880
       _ExtentX        =   5080
@@ -77,7 +77,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
@@ -99,7 +99,7 @@ Begin VB.Form FormBoxBlur
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   7
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -130,7 +130,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2880
       Width           =   1215
    End
@@ -150,7 +150,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   1920
       Width           =   1140
    End
@@ -168,7 +168,7 @@ Begin VB.Form FormBoxBlur
       ForeColor       =   &H000000FF&
       Height          =   975
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775

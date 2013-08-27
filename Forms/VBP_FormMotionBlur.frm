@@ -28,7 +28,7 @@ Begin VB.Form FormMotionBlur
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -46,7 +46,7 @@ Begin VB.Form FormMotionBlur
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -55,7 +55,7 @@ Begin VB.Form FormMotionBlur
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
@@ -212,7 +212,7 @@ Begin VB.Form FormMotionBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   4680
       Visible         =   0   'False
       Width           =   5775
@@ -235,7 +235,7 @@ Begin VB.Form FormMotionBlur
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1080
       Width           =   660
    End

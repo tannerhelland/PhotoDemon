@@ -28,7 +28,7 @@ Begin VB.Form FormShadowHighlight
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   0
       Top             =   5760
       Width           =   12120
       _ExtentX        =   21378
@@ -46,7 +46,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -56,7 +56,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   480
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3240
       Width           =   3690
       _ExtentX        =   6509
@@ -75,7 +75,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.sliderTextCombo sltShadow 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
@@ -96,7 +96,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.sliderTextCombo sltHighlight 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   4170
       Width           =   5895
       _ExtentX        =   10398
@@ -117,7 +117,7 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   2640
       Width           =   5655
       _ExtentX        =   9975
@@ -142,7 +142,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2280
       Width           =   4530
    End
@@ -164,7 +164,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3840
       Width           =   1125
    End
@@ -186,7 +186,7 @@ Begin VB.Form FormShadowHighlight
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1320
       Width           =   1005
    End

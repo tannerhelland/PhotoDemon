@@ -29,7 +29,7 @@ Begin VB.Form FormGrayscale
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   12
+      TabIndex        =   0
       Top             =   5790
       Width           =   11895
       _ExtentX        =   20981
@@ -47,7 +47,7 @@ Begin VB.Form FormGrayscale
    Begin PhotoDemon.sliderTextCombo sltShades 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   3120
       Width           =   5655
       _ExtentX        =   9975
@@ -68,7 +68,7 @@ Begin VB.Form FormGrayscale
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -89,7 +89,7 @@ Begin VB.Form FormGrayscale
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2040
       Width           =   5535
    End
@@ -102,14 +102,14 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       ScaleHeight     =   855
       ScaleWidth      =   4935
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3240
       Width           =   4935
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   9
          Top             =   0
          Width           =   705
          _ExtentX        =   1244
@@ -130,7 +130,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   1
          Left            =   1560
-         TabIndex        =   9
+         TabIndex        =   10
          Top             =   0
          Width           =   945
          _ExtentX        =   1667
@@ -150,7 +150,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   2
          Left            =   3240
-         TabIndex        =   10
+         TabIndex        =   11
          Top             =   0
          Width           =   780
          _ExtentX        =   1376
@@ -176,14 +176,14 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       ScaleHeight     =   735
       ScaleWidth      =   4815
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3240
       Width           =   4815
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   7
          Top             =   0
          Width           =   1275
          _ExtentX        =   2249
@@ -204,7 +204,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   1
          Left            =   2160
-         TabIndex        =   7
+         TabIndex        =   8
          Top             =   0
          Width           =   1365
          _ExtentX        =   2408
@@ -237,7 +237,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2760
       Width           =   1980
    End
@@ -257,7 +257,7 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1605
       Width           =   1950
    End

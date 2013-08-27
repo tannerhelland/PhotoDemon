@@ -28,7 +28,7 @@ Begin VB.Form FormEmbossEngrave
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5790
       Width           =   11820
       _ExtentX        =   20849
@@ -46,7 +46,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3360
       Width           =   5415
       _ExtentX        =   9551
@@ -56,7 +56,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.smartOptionButton optEmboss 
       Height          =   345
       Left            =   6240
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1920
       Width           =   1200
       _ExtentX        =   2117
@@ -76,7 +76,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -86,7 +86,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.smartOptionButton optEngrave 
       Height          =   345
       Left            =   6240
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2370
       Width           =   1230
       _ExtentX        =   2170
@@ -264,10 +264,10 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
+    Dim TR As Long, tB As Long, tG As Long
 
     'Extract the red, green, and blue values from the color we've been passed
-    tR = ExtractR(cColor)
+    TR = ExtractR(cColor)
     tG = ExtractG(cColor)
     tB = ExtractB(cColor)
         
@@ -278,7 +278,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + tR)
+        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
         g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
         
@@ -375,10 +375,10 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tB As Long, tG As Long
+    Dim TR As Long, tB As Long, tG As Long
     
     'Extract the red, green, and blue values from the color we've been passed
-    tR = ExtractR(cColor)
+    TR = ExtractR(cColor)
     tG = ExtractG(cColor)
     tB = ExtractB(cColor)
         
@@ -389,7 +389,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + tR)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + TR)
         g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
         b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
         

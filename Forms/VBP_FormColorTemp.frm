@@ -28,7 +28,7 @@ Begin VB.Form FormColorTemp
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   0
       Top             =   5790
       Width           =   12330
       _ExtentX        =   21749
@@ -62,14 +62,14 @@ Begin VB.Form FormColorTemp
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   303
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2400
       Width           =   4575
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -78,7 +78,7 @@ Begin VB.Form FormColorTemp
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   3720
       Width           =   6135
       _ExtentX        =   10821
@@ -99,7 +99,7 @@ Begin VB.Form FormColorTemp
    Begin PhotoDemon.sliderTextCombo sltTemperature 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   1830
       Width           =   6135
       _ExtentX        =   10821
@@ -133,7 +133,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   10125
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   2880
       Width           =   735
    End
@@ -153,7 +153,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   6360
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2880
       Width           =   840
    End
@@ -173,7 +173,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3360
       Width           =   960
    End
@@ -193,7 +193,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1440
       Width           =   2280
    End

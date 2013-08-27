@@ -29,7 +29,7 @@ Begin VB.Form FormCurves
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   0
       Top             =   7455
       Width           =   13095
       _ExtentX        =   23098
@@ -59,7 +59,7 @@ Begin VB.Form FormCurves
       Height          =   360
       Left            =   8040
       Style           =   2  'Dropdown List
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   5850
       Width           =   4815
    End
@@ -74,14 +74,14 @@ Begin VB.Form FormCurves
       ScaleHeight     =   344
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   464
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   6960
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -90,7 +90,7 @@ Begin VB.Form FormCurves
    Begin PhotoDemon.smartCheckBox chkGrid 
       Height          =   480
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   6360
       Width           =   1350
       _ExtentX        =   2381
@@ -110,7 +110,7 @@ Begin VB.Form FormCurves
    Begin PhotoDemon.smartCheckBox chkDiagonal 
       Height          =   480
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   6840
       Width           =   3465
       _ExtentX        =   6112
@@ -145,7 +145,7 @@ Begin VB.Form FormCurves
       Height          =   240
       Index           =   1
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   5910
       Width           =   1605
    End
@@ -166,7 +166,7 @@ Begin VB.Form FormCurves
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   5400
       Width           =   1980
    End
@@ -184,7 +184,7 @@ Begin VB.Form FormCurves
       ForeColor       =   &H00404040&
       Height          =   1440
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   5910
       Width           =   5535
       WordWrap        =   -1  'True

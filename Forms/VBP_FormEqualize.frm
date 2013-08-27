@@ -28,7 +28,7 @@ Begin VB.Form FormEqualize
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5805
       Width           =   10155
       _ExtentX        =   17912
@@ -46,7 +46,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkRed 
       Height          =   570
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2040
       Width           =   720
       _ExtentX        =   1270
@@ -65,7 +65,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -74,7 +74,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkGreen 
       Height          =   570
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2520
       Width           =   975
       _ExtentX        =   1720
@@ -93,7 +93,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkBlue 
       Height          =   570
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3000
       Width           =   825
       _ExtentX        =   1455
@@ -112,7 +112,7 @@ Begin VB.Form FormEqualize
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   570
       Left            =   6240
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   3480
       Width           =   1455
       _ExtentX        =   2566
@@ -144,7 +144,7 @@ Begin VB.Form FormEqualize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1620
       Width           =   945
    End
