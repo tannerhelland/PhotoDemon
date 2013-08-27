@@ -29,7 +29,7 @@ Begin VB.Form FormRotate
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5790
       Width           =   12105
       _ExtentX        =   21352
@@ -48,7 +48,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3330
       Width           =   3390
       _ExtentX        =   5980
@@ -68,7 +68,7 @@ Begin VB.Form FormRotate
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -78,7 +78,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3720
       Width           =   3315
       _ExtentX        =   5847
@@ -97,7 +97,7 @@ Begin VB.Form FormRotate
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
@@ -133,7 +133,7 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2880
       Width           =   2025
    End
@@ -155,7 +155,7 @@ Begin VB.Form FormRotate
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1920
       Width           =   1560
    End

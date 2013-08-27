@@ -28,7 +28,7 @@ Begin VB.Form FormGamma
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   10
+      TabIndex        =   0
       Top             =   5790
       Width           =   12060
       _ExtentX        =   21273
@@ -46,7 +46,7 @@ Begin VB.Form FormGamma
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   480
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   5160
       Width           =   2250
       _ExtentX        =   3969
@@ -72,14 +72,14 @@ Begin VB.Form FormGamma
       ScaleHeight     =   159
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   3495
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -89,7 +89,7 @@ Begin VB.Form FormGamma
       Height          =   495
       Index           =   0
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -113,7 +113,7 @@ Begin VB.Form FormGamma
       Height          =   495
       Index           =   1
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   3840
       Width           =   5895
       _ExtentX        =   10398
@@ -137,7 +137,7 @@ Begin VB.Form FormGamma
       Height          =   495
       Index           =   2
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   4680
       Width           =   5895
       _ExtentX        =   10398
@@ -174,7 +174,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   4320
       Width           =   540
    End
@@ -195,7 +195,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3480
       Width           =   690
    End
@@ -215,7 +215,7 @@ Begin VB.Form FormGamma
       Height          =   1005
       Index           =   2
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   1170
       Width           =   2040
       WordWrap        =   -1  'True
@@ -237,7 +237,7 @@ Begin VB.Form FormGamma
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2640
       Width           =   435
    End

@@ -28,7 +28,7 @@ Begin VB.Form FormHSL
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   7
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -46,7 +46,7 @@ Begin VB.Form FormHSL
    Begin PhotoDemon.sliderTextCombo sltHue 
       Height          =   495
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   1770
       Width           =   5895
       _ExtentX        =   10398
@@ -66,7 +66,7 @@ Begin VB.Form FormHSL
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +75,7 @@ Begin VB.Form FormHSL
    Begin PhotoDemon.sliderTextCombo sltSaturation 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
@@ -95,7 +95,7 @@ Begin VB.Form FormHSL
    Begin PhotoDemon.sliderTextCombo sltLuminance 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   3480
       Width           =   5895
       _ExtentX        =   10398
@@ -128,7 +128,7 @@ Begin VB.Form FormHSL
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3120
       Width           =   1020
    End
@@ -148,7 +148,7 @@ Begin VB.Form FormHSL
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2280
       Width           =   1140
    End
@@ -168,7 +168,7 @@ Begin VB.Form FormHSL
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1440
       Width           =   480
    End

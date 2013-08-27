@@ -28,7 +28,7 @@ Begin VB.Form FormCanvasSize
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   21
+      TabIndex        =   0
       Top             =   6165
       Width           =   9705
       _ExtentX        =   17119
@@ -48,7 +48,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   8
       Left            =   3240
-      TabIndex        =   19
+      TabIndex        =   20
       Top             =   4080
       Width           =   570
    End
@@ -56,7 +56,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   7
       Left            =   2640
-      TabIndex        =   18
+      TabIndex        =   19
       Top             =   4080
       Width           =   570
    End
@@ -64,7 +64,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   6
       Left            =   2040
-      TabIndex        =   17
+      TabIndex        =   18
       Top             =   4080
       Width           =   570
    End
@@ -72,7 +72,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   5
       Left            =   3240
-      TabIndex        =   16
+      TabIndex        =   17
       Top             =   3480
       Width           =   570
    End
@@ -80,7 +80,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   4
       Left            =   2640
-      TabIndex        =   15
+      TabIndex        =   16
       Top             =   3480
       Width           =   570
    End
@@ -88,7 +88,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   3
       Left            =   2040
-      TabIndex        =   14
+      TabIndex        =   15
       Top             =   3480
       Width           =   570
    End
@@ -96,7 +96,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   2
       Left            =   3240
-      TabIndex        =   13
+      TabIndex        =   14
       Top             =   2880
       Width           =   570
    End
@@ -104,7 +104,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   1
       Left            =   2640
-      TabIndex        =   12
+      TabIndex        =   13
       Top             =   2880
       Width           =   570
    End
@@ -112,14 +112,14 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   0
       Left            =   2040
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   2880
       Width           =   570
    End
    Begin PhotoDemon.smartCheckBox chkRatio 
       Height          =   480
       Left            =   6120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   975
       Width           =   1770
       _ExtentX        =   3122
@@ -139,7 +139,7 @@ Begin VB.Form FormCanvasSize
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
       Left            =   2880
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   705
       Width           =   1200
       _ExtentX        =   2117
@@ -158,7 +158,7 @@ Begin VB.Form FormCanvasSize
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
       Left            =   2880
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1335
       Width           =   1200
       _ExtentX        =   2117
@@ -177,7 +177,7 @@ Begin VB.Form FormCanvasSize
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
       Left            =   2040
-      TabIndex        =   20
+      TabIndex        =   21
       Top             =   5280
       Width           =   5895
       _ExtentX        =   10398
@@ -201,7 +201,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   1680
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2520
       Width           =   1725
    End
@@ -223,7 +223,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   1680
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   4920
       Width           =   2235
    End
@@ -246,7 +246,7 @@ Begin VB.Form FormCanvasSize
       Height          =   285
       Index           =   0
       Left            =   1680
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   240
       Width           =   990
    End
@@ -268,7 +268,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   2055
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   1950
       Width           =   2490
    End
@@ -310,7 +310,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00808080&
       Height          =   375
       Left            =   4170
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   1365
       Width           =   855
    End
@@ -331,7 +331,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00808080&
       Height          =   480
       Left            =   4170
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   735
       Width           =   855
    End
@@ -354,7 +354,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   2040
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   1365
       Width           =   750
    End
@@ -377,7 +377,7 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   2040
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   735
       Width           =   675
    End

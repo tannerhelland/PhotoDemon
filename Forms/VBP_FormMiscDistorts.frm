@@ -29,7 +29,7 @@ Begin VB.Form FormMiscDistorts
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -57,7 +57,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   960
       Width           =   5655
    End
@@ -76,14 +76,14 @@ Begin VB.Form FormMiscDistorts
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   4005
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -93,7 +93,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   4920
       Width           =   1005
       _ExtentX        =   1773
@@ -114,7 +114,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   4920
       Width           =   975
       _ExtentX        =   1720
@@ -147,7 +147,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3600
       Width           =   4170
    End
@@ -169,7 +169,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4530
       Width           =   1845
    End
@@ -191,7 +191,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   570
       Width           =   1200
    End

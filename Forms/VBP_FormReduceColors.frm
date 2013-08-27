@@ -28,7 +28,7 @@ Begin VB.Form FormReduceColors
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   5775
       Width           =   12315
       _ExtentX        =   21722
@@ -47,7 +47,7 @@ Begin VB.Form FormReduceColors
       Height          =   375
       Index           =   0
       Left            =   6120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2400
       Width           =   1515
       _ExtentX        =   2672
@@ -66,7 +66,7 @@ Begin VB.Form FormReduceColors
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +76,7 @@ Begin VB.Form FormReduceColors
       Height          =   375
       Index           =   1
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   2880
       Width           =   3120
       _ExtentX        =   5503
@@ -107,7 +107,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H000000C0&
       Height          =   1455
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4200
       Visible         =   0   'False
       Width           =   6015
@@ -131,7 +131,7 @@ Begin VB.Form FormReduceColors
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1920
       Width           =   2265
    End

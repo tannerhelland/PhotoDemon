@@ -29,7 +29,7 @@ Begin VB.Form FormTwins
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5775
       Width           =   9555
       _ExtentX        =   16854
@@ -48,7 +48,7 @@ Begin VB.Form FormTwins
       Height          =   375
       Index           =   0
       Left            =   6960
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2640
       Width           =   1440
       _ExtentX        =   2540
@@ -68,7 +68,7 @@ Begin VB.Form FormTwins
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -78,7 +78,7 @@ Begin VB.Form FormTwins
       Height          =   375
       Index           =   1
       Left            =   6960
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3090
       Width           =   1140
       _ExtentX        =   2011
@@ -110,7 +110,7 @@ Begin VB.Form FormTwins
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6720
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2160
       Width           =   1755
    End

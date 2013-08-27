@@ -28,7 +28,7 @@ Begin VB.Form FormVibrance
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -46,7 +46,7 @@ Begin VB.Form FormVibrance
    Begin PhotoDemon.sliderTextCombo sltVibrance 
       Height          =   495
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
@@ -67,7 +67,7 @@ Begin VB.Form FormVibrance
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -89,7 +89,7 @@ Begin VB.Form FormVibrance
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2400
       Width           =   975
    End

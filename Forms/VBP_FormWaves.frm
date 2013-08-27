@@ -29,7 +29,7 @@ Begin VB.Form FormWaves
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   14
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -59,14 +59,14 @@ Begin VB.Form FormWaves
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   3975
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -76,7 +76,7 @@ Begin VB.Form FormWaves
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   4920
       Width           =   1005
       _ExtentX        =   1773
@@ -97,7 +97,7 @@ Begin VB.Form FormWaves
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   4920
       Width           =   975
       _ExtentX        =   1720
@@ -116,7 +116,7 @@ Begin VB.Form FormWaves
    Begin PhotoDemon.sliderTextCombo sltWavelengthX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   570
       Width           =   5895
       _ExtentX        =   10398
@@ -137,7 +137,7 @@ Begin VB.Form FormWaves
    Begin PhotoDemon.sliderTextCombo sltWavelengthY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   2250
       Width           =   5895
       _ExtentX        =   10398
@@ -158,7 +158,7 @@ Begin VB.Form FormWaves
    Begin PhotoDemon.sliderTextCombo sltAmplitudeX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   13
       Top             =   1410
       Width           =   5895
       _ExtentX        =   10398
@@ -178,7 +178,7 @@ Begin VB.Form FormWaves
    Begin PhotoDemon.sliderTextCombo sltAmplitudeY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   14
       Top             =   3090
       Width           =   5895
       _ExtentX        =   10398
@@ -211,7 +211,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   3600
       Width           =   3315
    End
@@ -232,7 +232,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   1920
       Width           =   2115
    End
@@ -253,7 +253,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2760
       Width           =   3090
    End
@@ -274,7 +274,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   1080
       Width           =   3390
    End
@@ -295,7 +295,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   240
       Width           =   2415
    End
@@ -318,7 +318,7 @@ Begin VB.Form FormWaves
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   4500
       Width           =   1845
    End

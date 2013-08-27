@@ -29,7 +29,7 @@ Begin VB.Form FormLens
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -47,7 +47,7 @@ Begin VB.Form FormLens
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -57,7 +57,7 @@ Begin VB.Form FormLens
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3885
       Width           =   1005
       _ExtentX        =   1773
@@ -78,7 +78,7 @@ Begin VB.Form FormLens
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   3885
       Width           =   975
       _ExtentX        =   1720
@@ -97,7 +97,7 @@ Begin VB.Form FormLens
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   2970
       Width           =   5895
       _ExtentX        =   10398
@@ -118,7 +118,7 @@ Begin VB.Form FormLens
    Begin PhotoDemon.sliderTextCombo sltIndex 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   2130
       Width           =   5895
       _ExtentX        =   10398
@@ -153,7 +153,7 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2640
       Width           =   2145
    End
@@ -175,7 +175,7 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   3480
       Width           =   1845
    End
@@ -197,7 +197,7 @@ Begin VB.Form FormLens
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1800
       Width           =   3330
    End

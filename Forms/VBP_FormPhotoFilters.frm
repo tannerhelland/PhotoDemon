@@ -28,7 +28,7 @@ Begin VB.Form FormPhotoFilters
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   5790
       Width           =   14745
       _ExtentX        =   26009
@@ -55,7 +55,7 @@ Begin VB.Form FormPhotoFilters
       ScaleHeight     =   281
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   551
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   480
       Width           =   8295
    End
@@ -63,14 +63,14 @@ Begin VB.Form FormPhotoFilters
       Height          =   4185
       LargeChange     =   32
       Left            =   14280
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   480
       Width           =   330
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -79,7 +79,7 @@ Begin VB.Form FormPhotoFilters
    Begin PhotoDemon.sliderTextCombo sltDensity 
       Height          =   495
       Left            =   7800
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   5040
       Width           =   5895
       _ExtentX        =   10398
@@ -114,7 +114,7 @@ Begin VB.Form FormPhotoFilters
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   1665
    End
@@ -136,7 +136,7 @@ Begin VB.Form FormPhotoFilters
       Height          =   285
       Index           =   0
       Left            =   6810
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   5130
       Width           =   840
    End

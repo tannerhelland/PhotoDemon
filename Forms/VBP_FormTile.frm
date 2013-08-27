@@ -29,7 +29,7 @@ Begin VB.Form FormTile
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5775
       Width           =   11595
       _ExtentX        =   20452
@@ -59,14 +59,14 @@ Begin VB.Form FormTile
       Height          =   360
       Left            =   6240
       Style           =   2  'Dropdown List
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1680
       Width           =   5175
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -221,7 +221,7 @@ Begin VB.Form FormTile
       ForeColor       =   &H00404040&
       Height          =   1155
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   3960
       Width           =   5355
       WordWrap        =   -1  'True
@@ -244,7 +244,7 @@ Begin VB.Form FormTile
       ForeColor       =   &H00404040&
       Height          =   405
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1320
       Width           =   2670
    End

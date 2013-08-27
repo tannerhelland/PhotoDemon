@@ -28,7 +28,7 @@ Begin VB.Form FormSmartBlur
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -47,7 +47,7 @@ Begin VB.Form FormSmartBlur
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   1800
       Width           =   1740
       _ExtentX        =   3069
@@ -67,7 +67,7 @@ Begin VB.Form FormSmartBlur
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -77,7 +77,7 @@ Begin VB.Form FormSmartBlur
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   2160
       Width           =   975
       _ExtentX        =   1720
@@ -96,7 +96,7 @@ Begin VB.Form FormSmartBlur
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -118,7 +118,7 @@ Begin VB.Form FormSmartBlur
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   3960
       Width           =   5925
       _ExtentX        =   10451
@@ -154,7 +154,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   1440
       Width           =   1440
    End
@@ -175,7 +175,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3600
       Width           =   1080
    End
@@ -193,7 +193,7 @@ Begin VB.Form FormSmartBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
@@ -216,7 +216,7 @@ Begin VB.Form FormSmartBlur
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2640
       Width           =   735
    End

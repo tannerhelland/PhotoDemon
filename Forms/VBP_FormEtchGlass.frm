@@ -29,7 +29,7 @@ Begin VB.Form FormFiguredGlass
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   10
+      TabIndex        =   0
       Top             =   5805
       Width           =   12090
       _ExtentX        =   21325
@@ -47,7 +47,7 @@ Begin VB.Form FormFiguredGlass
    Begin PhotoDemon.sliderTextCombo sltScale 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   1560
       Width           =   5895
       _ExtentX        =   10398
@@ -69,7 +69,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   330
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   4200
       Width           =   1005
       _ExtentX        =   1773
@@ -101,14 +101,14 @@ Begin VB.Form FormFiguredGlass
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3285
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -118,7 +118,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   330
       Index           =   1
       Left            =   7920
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   4200
       Width           =   975
       _ExtentX        =   1720
@@ -137,7 +137,7 @@ Begin VB.Form FormFiguredGlass
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
@@ -173,7 +173,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2910
       Width           =   3315
    End
@@ -194,7 +194,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2040
       Width           =   1200
    End
@@ -217,7 +217,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   3810
       Width           =   1845
    End
@@ -240,7 +240,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   1200
       Width           =   600
    End

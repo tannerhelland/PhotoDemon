@@ -28,7 +28,7 @@ Begin VB.Form FormColorize
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   5820
       Width           =   12345
       _ExtentX        =   21775
@@ -46,7 +46,7 @@ Begin VB.Form FormColorize
    Begin PhotoDemon.smartCheckBox chkSaturation 
       Height          =   480
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3240
       Width           =   2745
       _ExtentX        =   4842
@@ -68,7 +68,7 @@ Begin VB.Form FormColorize
       Left            =   6240
       Max             =   359
       Min             =   1
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2160
       Value           =   180
       Width           =   5790
@@ -92,14 +92,14 @@ Begin VB.Form FormColorize
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   352
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2640
       Width           =   5310
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -121,7 +121,7 @@ Begin VB.Form FormColorize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   1680
       Width           =   1545
    End

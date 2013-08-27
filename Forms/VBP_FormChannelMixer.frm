@@ -41,14 +41,14 @@ Begin VB.Form FormChannelMixer
       Left            =   6120
       List            =   "VBP_FormChannelMixer.frx":0002
       Style           =   2  'Dropdown List
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   480
       Width           =   5820
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -57,7 +57,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   1260
       Width           =   6015
       _ExtentX        =   10398
@@ -77,7 +77,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   2160
       Width           =   6015
       _ExtentX        =   10398
@@ -97,7 +97,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   3060
       Width           =   6015
       _ExtentX        =   10610
@@ -117,7 +117,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.smartCheckBox chkMonochrome 
       Height          =   570
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   5040
       Width           =   1785
       _ExtentX        =   3149
@@ -136,7 +136,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   3960
       Width           =   6015
       _ExtentX        =   10610
@@ -156,7 +156,7 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   570
       Left            =   8640
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   5040
       Width           =   2430
       _ExtentX        =   4286
@@ -176,7 +176,7 @@ Begin VB.Form FormChannelMixer
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   14
+      TabIndex        =   0
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -207,7 +207,7 @@ Begin VB.Form FormChannelMixer
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   14
       Top             =   4680
       Width           =   1500
    End
@@ -235,7 +235,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   13
       Top             =   120
       Width           =   1665
    End
@@ -256,7 +256,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   3630
       Width           =   975
    End
@@ -277,7 +277,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2730
       Width           =   540
    End
@@ -298,7 +298,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1830
       Width           =   690
    End
@@ -319,7 +319,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   930
       Width           =   435
    End

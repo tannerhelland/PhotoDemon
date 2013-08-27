@@ -28,7 +28,7 @@ Begin VB.Form FormModernArt
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -46,7 +46,7 @@ Begin VB.Form FormModernArt
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -55,7 +55,7 @@ Begin VB.Form FormModernArt
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2730
       Width           =   5895
       _ExtentX        =   10186
@@ -89,7 +89,7 @@ Begin VB.Form FormModernArt
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2400
       Width           =   960
    End
@@ -107,7 +107,7 @@ Begin VB.Form FormModernArt
       ForeColor       =   &H000000FF&
       Height          =   1095
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775

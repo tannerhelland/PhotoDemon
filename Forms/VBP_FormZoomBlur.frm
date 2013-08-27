@@ -28,7 +28,7 @@ Begin VB.Form FormZoomBlur
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   5790
       Width           =   12030
       _ExtentX        =   21220
@@ -46,7 +46,7 @@ Begin VB.Form FormZoomBlur
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922

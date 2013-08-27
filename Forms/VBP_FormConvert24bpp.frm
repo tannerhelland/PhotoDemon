@@ -28,30 +28,39 @@ Begin VB.Form FormConvert24bpp
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   5790
       Width           =   11820
-      _extentx        =   20849
-      _extenty        =   1323
+      _ExtentX        =   20849
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-      colorselection  =   -1
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   735
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   2640
       Width           =   5295
-      _extentx        =   9340
-      _extenty        =   1296
+      _ExtentX        =   9340
+      _ExtentY        =   1296
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -69,7 +78,7 @@ Begin VB.Form FormConvert24bpp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   2160
       Width           =   1935
    End

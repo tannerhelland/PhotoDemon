@@ -29,7 +29,7 @@ Begin VB.Form FormLevels
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   13
+      TabIndex        =   0
       Top             =   5775
       Width           =   12180
       _ExtentX        =   21484
@@ -47,7 +47,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltOutL 
       Height          =   495
       Left            =   6240
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   4050
       Width           =   5775
       _ExtentX        =   10186
@@ -66,7 +66,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -75,7 +75,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltOutR 
       Height          =   495
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   4890
       Width           =   5775
       _ExtentX        =   10186
@@ -95,7 +95,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltInL 
       Height          =   495
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   9
       Top             =   930
       Width           =   5775
       _ExtentX        =   10186
@@ -114,7 +114,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltInR 
       Height          =   495
       Left            =   6240
-      TabIndex        =   10
+      TabIndex        =   11
       Top             =   2610
       Width           =   5775
       _ExtentX        =   10186
@@ -135,7 +135,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.sliderTextCombo sltInM 
       Height          =   495
       Left            =   6240
-      TabIndex        =   12
+      TabIndex        =   13
       Top             =   1770
       Width           =   5775
       _ExtentX        =   10186
@@ -170,7 +170,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   4
       Left            =   6240
-      TabIndex        =   11
+      TabIndex        =   12
       Top             =   1440
       Width           =   2340
    End
@@ -191,7 +191,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   3
       Left            =   6240
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   2280
       Width           =   2055
    End
@@ -212,7 +212,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   2
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   8
       Top             =   600
       Width           =   1755
    End
@@ -233,7 +233,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   1
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   4560
       Width           =   1275
    End
@@ -254,7 +254,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   0
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   3720
       Width           =   1245
    End
@@ -274,7 +274,7 @@ Begin VB.Form FormLevels
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   3240
       Width           =   1350
    End
@@ -294,7 +294,7 @@ Begin VB.Form FormLevels
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   1200
    End
