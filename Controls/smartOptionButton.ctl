@@ -76,8 +76,10 @@ Attribute VB_Exposed = False
 'PhotoDemon "Smart" Option Button custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 28/January/13
-'Last update: initial build
+'Last updated: 27/August/13
+'Last update: suspend drawing of a focus rectangle until I can solve why sometimes it appears out of nowhere.  VB
+'             handles focus events very strangely (no surprise there!) and this isn't a high priority, so I may
+'             just disable focus rects entirely until post-6.0.
 '
 'Intrinsic VB option buttons have a number of limitations.  Most obnoxious is the lack of an "autosize" for the caption.
 ' Now that PhotoDemon has full translation support, option buttons are frequently resized at run-time, and if a
@@ -218,26 +220,29 @@ Private Sub chkFirst_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
-Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
 'I handle focus a little differently than Windows; in the IDE, the label caption is underlined.  (This makes debugging
 ' simpler.)  When compiled, a focus rectangle is drawn around the control only when it HAS FOCUS and IS NOT TRUE.  If
 ' the control is set to TRUE, there is no need for a focus rectangle.  But if it isn't TRUE, the focus rectangle makes
-' sense, becuase the user needs to be notified what control will be toggled.
+' sense, because the user needs to be notified what control will be toggled.
+
+'UPDATE 27 Aug 2013 - I am disabling focus rendering until I can solve why VB doesn't generate Enter and ExitFocus
+' events correctly.  The focus rectangle is being drawn randomly and not removed, and it's driving me nuts...
 Private Sub UserControl_EnterFocus()
-    If Not g_IsProgramCompiled Then lblCaption.Font.Underline = True
-    If g_IsProgramCompiled And (Value = False) Then updateFocusRect True
+    'If Not g_IsProgramCompiled Then lblCaption.Font.Underline = True
+    'If g_IsProgramCompiled And (Value = False) Then updateFocusRect True
 End Sub
 
 Private Sub UserControl_ExitFocus()
-    If Not g_IsProgramCompiled Then lblCaption.Font.Underline = False
-    If drewFocusRect Then updateFocusRect False
+    'If Not g_IsProgramCompiled Then lblCaption.Font.Underline = False
+    'If drewFocusRect Then updateFocusRect False
 End Sub
 
 'This can be used to draw or remove a focus rectangle
@@ -285,7 +290,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
