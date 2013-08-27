@@ -727,6 +727,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormSmartBlur.SmartBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
             End If
             
+        Case "Zoom blur"
+            If showDialog Then
+                FormZoomBlur.Show vbModal, FormMain
+            Else
+                FormZoomBlur.ZoomBlurFilter cParams.GetLong(1)
+            End If
         
         'Distort filters
         

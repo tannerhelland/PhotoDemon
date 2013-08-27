@@ -155,6 +155,7 @@ MOTIONBLUR   CUSTOM  MOVEABLE        LOADONCALL      weather_wind.png
 PIXELATE     CUSTOM  MOVEABLE        LOADONCALL      grid.png
 RADIALBLUR   CUSTOM  MOVEABLE        LOADONCALL      arrow_step_over.png
 SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      brain.png
+ZOOMBLUR     CUSTOM  MOVEABLE        LOADONCALL      arrow_in_out.png
 //
 DISTORT      CUSTOM  MOVEABLE        LOADONCALL      mizuhiki_paper_cord.png
 //--> Distort sub-menu
