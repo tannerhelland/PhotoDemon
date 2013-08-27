@@ -3,8 +3,9 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 21/August/13
-'Last update: Merged the old toolbar module into this one, and renamed it to better fit the program's current state.
+'Last updated: 27/August/13
+'Last update: subclass all picture boxes via SubclassFrame (in case they have controls on them whose backgrounds should be
+'             made transparent).
 '
 'Miscellaneous routines related to rendering PhotoDemon interface elements.
 '
@@ -18,13 +19,13 @@ Option Explicit
 
 'Experimental subclassing to fix background color problems
 ' Many thanks to pro VB programmer LaVolpe for this workaround for themed controls not respecting their owner's backcolor properly.
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
-Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
-Private Declare Function DefWindowProc Lib "user32.dll" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetProp Lib "user32" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
+Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_PAINT As Long = &HF&
 Private Const GWL_WNDPROC As Long = -4
@@ -79,7 +80,6 @@ End Enum
 ' 1: had to change smoothing type from Standard to ClearType
 ' 2: had to turn on smoothing, as it was originally turned off
 Private hadToChangeSmoothing As Long
-
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbox buttons)
@@ -351,14 +351,23 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
     'FORM STEP 2: subclass this form and force controls to render transparent borders properly.
     If g_IsProgramCompiled Then SubclassFrame tForm.hWnd, False
     
-    'FORM STEP 3: translate the form (and all controls on it)
+    'FORM STEP 3: find any picture boxes on the form that are being used as containers, and subclass them as well
+    If g_IsProgramCompiled Then
+        For Each eControl In tForm.Controls
+            If (TypeOf eControl Is PictureBox) Then
+                SubclassFrame eControl.hWnd, False
+            End If
+        Next
+    End If
+    
+    'FORM STEP 4: translate the form (and all controls on it)
     If g_Language.translationActive And tForm.Enabled Then
         g_Language.activateShortcut tForm.Name
         g_Language.applyTranslations tForm
         g_Language.deactivateShortcut
     End If
     
-    'FORM STEP 4: if a custom tooltip handler was passed in, activate and populate it now.
+    'FORM STEP 5: if a custom tooltip handler was passed in, activate and populate it now.
     If Not (customTooltips Is Nothing) Then
         
         'In rare cases, the custom tooltip handler passed to this function may already be initialized.  Some forms
@@ -460,8 +469,9 @@ End Sub
 
 'This sub is used to render control backgrounds as transparent
 Public Sub SubclassFrame(FramehWnd As Long, ReleaseSubclass As Boolean)
-    Dim prevProc As Long
     
+    Dim prevProc As Long
+
     prevProc = GetProp(FramehWnd, "scPproc")
     If ReleaseSubclass Then
         If prevProc Then
@@ -472,6 +482,7 @@ Public Sub SubclassFrame(FramehWnd As Long, ReleaseSubclass As Boolean)
         SetProp FramehWnd, "scPproc", GetWindowLong(FramehWnd, GWL_WNDPROC)
         SetWindowLong FramehWnd, GWL_WNDPROC, AddressOf WndProc_Frame
     End If
+    
 End Sub
 
 Private Function WndProc_Frame(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -487,6 +498,7 @@ Private Function WndProc_Frame(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wPa
         If uMsg = WM_DESTROY Then SubclassFrame hWnd, True
         WndProc_Frame = CallWindowProc(prevProc, hWnd, uMsg, wParam, lParam)
     End If
+    
 End Function
 
 'The next two subs can be used to show or hide the left and right toolbar panes.  An input parameter can be specified to force behavior.
