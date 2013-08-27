@@ -185,7 +185,6 @@ Private Enum WM
     WM_MOUSEMOVE = &H200
     WM_MOUSEWHEEL = &H20A
     WM_XBUTTONDOWN = &H20B      'Mouse X button pressed (Back / Forward)
-    WM_XBUTTONUP = &H20C        'Mouse X button released
     WM_MOUSEHWHEEL = &H20E
     WM_MOUSEHOVER = &H2A1
     WM_MOUSELEAVE = &H2A3
@@ -249,15 +248,7 @@ Event MouseBackButtonDown( _
     ByVal Shift As VBRUN.ShiftConstants, _
     ByVal x As Single, ByVal y As Single _
 )
-Event MouseBackButtonUp( _
-    ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
-)
 Event MouseForwardButtonDown( _
-    ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
-)
-Event MouseForwardButtonUp( _
     ByVal Shift As VBRUN.ShiftConstants, _
     ByVal x As Single, ByVal y As Single _
 )
@@ -288,7 +279,7 @@ Private Sub Class_Terminate()
         If hndParentForm <> 0 Then Magic.ssc_UnSubclass (hndParentForm)
         
         'Unsubclass the main target
-        Magic.ssc_DelMsg hndTarget, MSG_BEFORE, WM_SETCURSOR, WM_MOUSEMOVE, WM_MOUSEHOVER, WM_MOUSELEAVE, WM_XBUTTONDOWN, WM_XBUTTONUP
+        Magic.ssc_DelMsg hndTarget, MSG_BEFORE, WM_SETCURSOR, WM_MOUSEMOVE, WM_MOUSEHOVER, WM_MOUSELEAVE, WM_XBUTTONDOWN
         Magic.ssc_UnSubclass hndTarget
         Magic.ssc_Terminate
         Set Magic = Nothing
@@ -306,21 +297,15 @@ Public Sub Attach( _
     Optional ByVal ParentForm_hWnd As Long = 0 _
 )
     'Must attach at least something
-    If Target_hWnd = 0 Then
-        MsgBox "You must specify a non-zero Target Window Handle (`hWnd`) for " & _
-               "`bluMouseEvents.Attach`. Perhaps your code called an API and " & _
-               "received an invalid handle which you passed onwards.", _
-               vbOKOnly Or vbCritical, "Developer Error"
-        Exit Sub
-    End If
-    
-    'Keep hold of the window handles
-    hndTarget = Target_hWnd
-    hndParentForm = ParentForm_hWnd
+    If Target_hWnd = 0 Then Exit Sub
     
     'Clean up any current tracking
     Class_Terminate
     
+    'Keep hold of the window handles
+    hndTarget = Target_hWnd
+    hndParentForm = ParentForm_hWnd
+        
     'Start subclassing (see the subclass section at the bottom of the file)
     Set Magic = New cSelfSubHookCallback
     
@@ -344,7 +329,7 @@ Public Sub Attach( _
             IsOut = False
             
             'Listen into the mouse events
-            Magic.ssc_AddMsg hndTarget, MSG_BEFORE, WM_SETCURSOR, WM_MOUSEMOVE, WM_MOUSEHOVER, WM_MOUSELEAVE, WM_XBUTTONDOWN, WM_XBUTTONUP
+            Magic.ssc_AddMsg hndTarget, MSG_BEFORE, WM_SETCURSOR, WM_MOUSEMOVE, WM_MOUSEHOVER, WM_MOUSELEAVE, WM_XBUTTONDOWN
             
         End If
         
@@ -457,10 +442,16 @@ Private Sub SubclassWindowProcedure( _
         Dim Delta As Long
         Delta = wParam \ &H10000
         
+        'The horizontal wheel scroll gives a delta value opposite to vertical _
+         scrolling (that is, right is positive, whilst up (not down) is positive. _
+         We need to normalise this to ensure that real horizontal scroll doesn't act _
+         differently from shift+vscroll
+        If wMessage = WM_MOUSEHWHEEL Then Delta = -Delta
+        
         'WARNING: Most code examples out there integer divide the delta (amount _
          scrolled) by 120 to determine the number of "detents" (notches) of the wheel _
          have been scrolled, but newer wheel mice have no notches and scroll smoothly _
-         sending multiple `WM_MOUSEWHEEL` wMessages with smaller delta values, _
+         sending multiple `WM_MOUSEWHEEL` messages with smaller delta values, _
          therefore these examples break for absolute delta values that are not _
          multiples of 120. Instead, we will work on partial or multiple "lines" / _
          "chars" being scrolled. The height of a "line" / "char" is up to the _
@@ -532,8 +523,7 @@ Private Sub SubclassWindowProcedure( _
      <msdn.microsoft.com/en-us/library/windows/desktop/ms646245%28v=vs.85%29.aspx>
     '`WM_XBUTTONUP` _
      <msdn.microsoft.com/en-us/library/windows/desktop/ms646246%28v=vs.85%29.aspx>
-    ElseIf wMessage = WM_XBUTTONDOWN _
-        Or wMessage = WM_XBUTTONUP Then '-----------------------------------------------
+    ElseIf wMessage = WM_XBUTTONDOWN Then '-----------------------------------------------
         
         'NOTE: The correct way to handle the mouse X buttons is to process the _
          `WM_APPCOMMAND` wMessage as this will be sent back / forward commands _
@@ -548,19 +538,9 @@ Private Sub SubclassWindowProcedure( _
                 
         'Now test which X button
         If (wParam And MK.MK_XBUTTON1) <> 0 Then
-            'And raise the right event (button down / up)
-            If wMessage = WM_XBUTTONDOWN Then
-                RaiseEvent MouseBackButtonDown(Shift, x, y)
-            Else
-                RaiseEvent MouseBackButtonUp(Shift, x, y)
-            End If
+            RaiseEvent MouseBackButtonDown(Shift, x, y)
         ElseIf (wParam And MK.MK_XBUTTON2) <> 0 Then
-            'And raise the right event (button down / up)
-            If wMessage = WM_XBUTTONDOWN Then
-                RaiseEvent MouseForwardButtonDown(Shift, x, y)
-            Else
-                RaiseEvent MouseForwardButtonUp(Shift, x, y)
-            End If
+            RaiseEvent MouseForwardButtonDown(Shift, x, y)
         End If
         
         Let ReturnValue = 1
