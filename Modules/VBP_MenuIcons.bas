@@ -319,6 +319,7 @@ Public Sub ApplyAllMenuIcons()
         AddMenuIcon "PIXELATE", 6, 3, 4       'Pixelate (formerly Mosaic)
         AddMenuIcon "RADIALBLUR", 6, 3, 5     'Radial Blur
         AddMenuIcon "SMARTBLUR", 6, 3, 6      'Smart Blur
+        AddMenuIcon "ZOOMBLUR", 6, 3, 7       'Zoom Blur
     AddMenuIcon "DISTORT", 6, 4         'Distort
         '--> Distort sub-menu
         AddMenuIcon "LENSDISTORT", 6, 4, 0    'Apply lens distortion

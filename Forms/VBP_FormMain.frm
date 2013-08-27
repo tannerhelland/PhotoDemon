@@ -1378,6 +1378,10 @@ Begin VB.MDIForm FormMain
             Caption         =   "Smart blur..."
             Index           =   6
          End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Zoom blur..."
+            Index           =   7
+         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Distort"
@@ -2433,6 +2437,10 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         Case 6
             Process "Smart blur", True
         
+        'Zoom Blur
+        Case 7
+            Process "Zoom blur", True
+            
     End Select
 
 End Sub
