@@ -229,7 +229,7 @@ Attribute VB_Exposed = False
 'Last update: moved project into main PD Git repository
 '
 'This project is designed to scan through all project files in PhotoDemon, extract any user-facing English text, and compile
-' it into an XML file which can be used as the base for translations into other languages.  It reads the master PhotoDemon.vbp
+' it into an XML file which can be used as the basis for translations into other languages.  It reads the master PhotoDemon.vbp
 ' file, compiles a list of all project files, then analyzes them individually.  Control text is extracted (unless the text is
 ' in an FRX file - in that case the text needs to be manually rewritten so this project can find it).  Message box and
 ' progress/status bar text is also extracted, but this project relies on some particular PhotoDemon implementation quirks to
@@ -239,7 +239,7 @@ Attribute VB_Exposed = False
 '
 'This project also supports merging an updated English language XML file with an outdated non-English language file, the result
 ' of which can be used to fill-in missing translations while keeping any that are still valid.  I typically use this a week or
-' two before a formal release, so I can hand off new XML files to translators for them to update with any new or updated text.
+' two before a formal release, so I can hand off new XML files to translators for them to update with any new or modified text.
 '
 'NOTE: this project is intended only as a support tool for PhotoDemon.  It is not designed or tested for general-purpose use.
 '       I do not have any intention of supporting this tool outside its intended use, so please do not submit bug reports
@@ -978,8 +978,18 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
         If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
         If ((Mid(srcLines(lineNumber), i, 1) = ",") And Not insideQuotes) Then
-            endQuote = i - 1
+            
+            'Retreat backward until we find the last quotation mark, then report its location as the end of this text segment
+            Dim j As Long
+            For j = i To 1 Step -1
+                If Mid(srcLines(lineNumber), j, 1) = """" Then
+                    endQuote = j
+                    Exit For
+                End If
+            Next j
+            
             Exit For
+            
         End If
         
         If (i = Len(srcLines(lineNumber))) And Not insideQuotes Then
@@ -1363,7 +1373,7 @@ Private Sub Form_Load()
     addBlacklist "1:8 (12.5%)"
     addBlacklist "1:16 (6.25%)"
     addBlacklist "pngnq-s9 2.0.1"
-    addBlacklist "zLib 1.2.5"
+    addBlacklist "zLib 1.2.8"
     addBlacklist "EZTwain 1.18"
     addBlacklist "FreeImage 3.15.4"
     addBlacklist "ExifTool 9.29"
