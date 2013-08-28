@@ -1148,13 +1148,13 @@ MainErrHandler:
     'Out of memory error
     If Err.Number = 480 Or Err.Number = 7 Then
         AddInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
-        Message "Out of memory.  Function cancelled."
+        Message "Out of memory.  Function canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
     'Invalid picture error
     ElseIf Err.Number = 481 Then
         AddInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.")
-        Message "Invalid image.  Image load cancelled."
+        Message "Invalid image.  Image load canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
         'Since we know about this error, there's no need to display the extended box.  Display a smaller one, then exit.

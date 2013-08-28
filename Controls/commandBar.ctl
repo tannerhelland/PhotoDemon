@@ -21,7 +21,7 @@ Begin VB.UserControl commandBar
    ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
    Begin VB.CommandButton cmdRandomize 
-      Caption         =   "Rnd"
+      Caption         =   "Randomize"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -456,7 +456,7 @@ Private Function savePreset() As Boolean
                 
                 'If the user selects NO, exit and let them enter a new name
                 Case vbNo
-                    cmbPreset.Text = "(enter new name here)"
+                    cmbPreset.Text = g_Language.TranslateMessage("(enter new name here)")
                     cmbPreset.SetFocus
                     cmbPreset.SelStart = 0
                     cmbPreset.SelLength = Len(cmbPreset.Text)
@@ -486,7 +486,9 @@ Private Function savePreset() As Boolean
     
     'Also, add this preset to the combo box
     If Not overwritingExistingPreset Then
-        cmbPreset.AddItem " " & Trim$(cmbPreset.Text)
+        Dim newPresetName As String
+        newPresetName = " " & Trim$(cmbPreset.Text)
+        cmbPreset.AddItem newPresetName
     End If
     
     Message "Preset saved."
@@ -498,7 +500,7 @@ End Function
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set cmdOK.Font = mFont
+    Set CmdOK.Font = mFont
     Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
@@ -517,7 +519,7 @@ Public Property Let backColor(ByVal newColor As OLE_COLOR)
 End Property
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -534,7 +536,7 @@ Private Sub cmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Automatically validate all relevant controls on the parent object.  This is a huge perk, because it saves us
     ' from having to write validation code individually.
@@ -682,7 +684,7 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd CmdOK.hWnd
     setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
@@ -765,7 +767,7 @@ Private Sub updateControlLayout()
     
     'Right-align the Cancel and OK buttons
     cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
-    cmdOK.Left = cmdCancel.Left - cmdOK.Width - 8
+    CmdOK.Left = cmdCancel.Left - CmdOK.Width - 8
 
 End Sub
 
@@ -782,7 +784,7 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
             .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
@@ -1099,7 +1101,9 @@ Private Sub findAllXMLPresets()
     
         Dim i As Long
         For i = 0 To UBound(allPresets)
-            cmbPreset.AddItem " " & xmlEngine.getUniqueTag_String("fullPresetName", , , "presetEntry", "id", allPresets(i)), i
+            Dim presetToAdd As String
+            presetToAdd = " " & xmlEngine.getUniqueTag_String("fullPresetName", , , "presetEntry", "id", allPresets(i))
+            cmbPreset.AddItem presetToAdd, i
         Next i
     
     End If

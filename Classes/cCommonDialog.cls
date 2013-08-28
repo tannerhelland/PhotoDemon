@@ -567,7 +567,7 @@ With opfile
             pdMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation + vbApplicationModal + vbOKOnly, "Error: too many images"
         End If
             
-        ' Cancelled
+        ' canceled
         Message "Image load canceled. "
         VBGetOpenFileName = False
         FileName = ""
@@ -661,7 +661,7 @@ With opfile
         ' Look up the filter the user selected and return that
         Filter = FilterLookup(.lpstrFilter, FilterIndex)
     Case 0
-        ' Cancelled:
+        ' canceled:
         VBGetSaveFileName = False
         'FileName = ""
         'FileTitle = ""
@@ -759,7 +759,7 @@ Function VBChooseColor(Color As Long, _
         VBChooseColor = True
         Color = chclr.rgbResult
     Case 0
-        ' Cancelled
+        ' canceled
         VBChooseColor = False
         Color = -1
     Case Else
