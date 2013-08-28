@@ -190,7 +190,7 @@ Public Sub LoadTheProgram()
     'INITIALIZE ALL SELECTION TOOLS
     
         'Selection visual styles (currently lightbox or highlight)
-        FormMain.cmbSelRender(0).ToolTipText = "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
+        FormMain.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
         For i = 0 To FormMain.cmbSelRender.Count - 1
             FormMain.cmbSelRender(i).AddItem "Lightbox", 0
             FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
@@ -200,8 +200,8 @@ Public Sub LoadTheProgram()
         Next i
         
         'Selection smoothing (currently none, antialiased, fully feathered)
-        FormMain.cmbSelSmoothing(0).ToolTipText = "This option controls how smoothly a selection blends with its surroundings."
-        FormMain.sltSelectionFeathering.ToolTipText = "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        FormMain.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
+        FormMain.sltSelectionFeathering.ToolTipText = g_Language.TranslateMessage("This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.")
         FormMain.cmbSelSmoothing(0).AddItem "None", 0
         FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
         'Live feathering is not allowed on XP or Vista for performance reasons (GDI+ can't be used).
@@ -210,14 +210,14 @@ Public Sub LoadTheProgram()
         FormMain.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
-        FormMain.cmbSelType(0).ToolTipText = "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
+        FormMain.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
         FormMain.cmbSelType(0).AddItem "Interior", 0
         FormMain.cmbSelType(0).AddItem "Exterior", 1
         FormMain.cmbSelType(0).AddItem "Border", 2
         FormMain.cmbSelType(0).ListIndex = 0
         
-        FormMain.sltCornerRounding.ToolTipText = "This option adjusts the roundness of a rectangular selection's corners."
-        FormMain.sltSelectionLineWidth.ToolTipText = "This option adjusts the width of a line selection."
+        FormMain.sltCornerRounding.ToolTipText = g_Language.TranslateMessage("This option adjusts the roundness of a rectangular selection's corners.")
+        FormMain.sltSelectionLineWidth.ToolTipText = g_Language.TranslateMessage("This option adjusts the width of a line selection.")
             
     g_UserPreferences.loadToolSettings
             
@@ -1241,7 +1241,7 @@ Public Sub DrawMenuShortcuts()
         'FormMain.MnuColor(5).Caption = FormMain.MnuColor(5).Caption & vbTab & "Ctrl+Shift+H"
     
     'Tools menu
-    FormMain.mnuTool(4).Caption = FormMain.mnuTool(4).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
+    FormMain.mnuTool(5).Caption = FormMain.mnuTool(5).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
     
     'Window menu (Next Image and Previous Image, specifically)
     FormMain.MnuWindow(0).Caption = FormMain.MnuWindow(0).Caption & vbTab & "Page Down"

@@ -385,13 +385,14 @@ Public Sub ApplyAllMenuIcons()
     
     'Tools Menu
     AddMenuIcon "LANGUAGES", 7, 0       'Languages
-    AddMenuIcon "RECORD", 7, 2          'Macros
+    'AddMenuIcon "LANGEDIT", 7, 1    'Language editor
+    AddMenuIcon "RECORD", 7, 3          'Macros
         '--> Macro sub-menu
-        AddMenuIcon "OPENMACRO", 7, 2, 0      'Open Macro
-        AddMenuIcon "RECORD", 7, 2, 2         'Start Recording
-        AddMenuIcon "RECORDSTOP", 7, 2, 3     'Stop Recording
-    AddMenuIcon "PREFERENCES", 7, 4           'Options (Preferences)
-    AddMenuIcon "PLUGIN", 7, 5          'Plugin Manager
+        AddMenuIcon "OPENMACRO", 7, 3, 0      'Open Macro
+        AddMenuIcon "RECORD", 7, 3, 2         'Start Recording
+        AddMenuIcon "RECORDSTOP", 7, 3, 3     'Stop Recording
+    AddMenuIcon "PREFERENCES", 7, 5           'Options (Preferences)
+    AddMenuIcon "PLUGIN", 7, 6          'Plugin Manager
     
     'Window Menu
     AddMenuIcon "NEXTIMAGE", 8, 0       'Next image

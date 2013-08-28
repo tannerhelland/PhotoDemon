@@ -549,7 +549,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     'Make sure we found the plug-in when we loaded the program
     If g_ImageFormats.FreeImageEnabled = False Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save could not be completed without FreeImage library access."
+        Message "Save cannot be completed without FreeImage library."
         SaveGIFImage = False
         Exit Function
     End If
@@ -971,7 +971,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     'Make sure we found the plug-in when we loaded the program
     If g_ImageFormats.FreeImageEnabled = False Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save could not be completed without FreeImage library access."
+        Message "Save cannot be completed without FreeImage library."
         SavePPMImage = False
         Exit Function
     End If
@@ -1046,7 +1046,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     'Make sure we found the plug-in when we loaded the program
     If g_ImageFormats.FreeImageEnabled = False Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save could not be completed without FreeImage library access."
+        Message "Save cannot be completed without FreeImage library."
         SaveTGAImage = False
         Exit Function
     End If
@@ -1302,7 +1302,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     'Make sure we found the plug-in when we loaded the program
     If g_ImageFormats.FreeImageEnabled = False Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save could not be completed without FreeImage library access."
+        Message "Save cannot be completed without FreeImage library."
         SaveTIFImage = False
         Exit Function
     End If
@@ -1516,7 +1516,7 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     'Make sure we found the plug-in when we loaded the program
     If g_ImageFormats.FreeImageEnabled = False Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save could not be completed without FreeImage library access."
+        Message "Save cannot be completed without FreeImage library."
         SaveJP2Image = False
         Exit Function
     End If

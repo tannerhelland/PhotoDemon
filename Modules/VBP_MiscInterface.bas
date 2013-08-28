@@ -179,7 +179,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
         'Macro (top-level menu)
         Case tMacro
-            If FormMain.mnuTool(2).Enabled <> newState Then FormMain.mnuTool(2).Enabled = newState
+            If FormMain.mnuTool(3).Enabled <> newState Then FormMain.mnuTool(3).Enabled = newState
         
         'Edit (top-level menu)
         Case tEdit

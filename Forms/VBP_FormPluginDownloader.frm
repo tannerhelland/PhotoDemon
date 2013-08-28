@@ -298,7 +298,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
-         Caption         =   "zLib 1.2.5"
+         Caption         =   "zLib 1.2.8"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12

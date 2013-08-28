@@ -74,6 +74,216 @@ Begin VB.Form FormPluginManager
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
+      Index           =   1
+      Left            =   3000
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   513
+      TabIndex        =   32
+      Top             =   240
+      Width           =   7695
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "FreeImage plugin information"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   41
+         Top             =   15
+         Width           =   3165
+      End
+      Begin VB.Label lbPluginSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "expected version:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   0
+         Left            =   480
+         TabIndex        =   40
+         Top             =   600
+         Width           =   1740
+      End
+      Begin VB.Label lblPluginVersion 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "XX.XX.XX"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H0000C000&
+         Height          =   270
+         Index           =   0
+         Left            =   5520
+         TabIndex        =   39
+         Top             =   600
+         Width           =   960
+      End
+      Begin VB.Label lblPluginVersionTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "XX.XX.XX"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   0
+         Left            =   2400
+         TabIndex        =   38
+         Top             =   600
+         Width           =   960
+      End
+      Begin VB.Label lbPluginSubheader 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "version found:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   1
+         Left            =   3960
+         TabIndex        =   37
+         Top             =   600
+         Width           =   1395
+      End
+      Begin VB.Label lblHomepage 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "FreeImage homepage:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   0
+         Left            =   480
+         TabIndex        =   36
+         Top             =   1080
+         Width           =   2265
+      End
+      Begin VB.Label lblHomepageLink 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "http://freeimage.sourceforge.net/"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   270
+         Index           =   0
+         Left            =   2880
+         MouseIcon       =   "VBP_FormPluginManager.frx":0000
+         MousePointer    =   99  'Custom
+         TabIndex        =   35
+         Top             =   1080
+         Width           =   3330
+      End
+      Begin VB.Label lblLicense 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "FreeImage license:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   270
+         Index           =   0
+         Left            =   480
+         TabIndex        =   34
+         Top             =   1560
+         Width           =   1860
+      End
+      Begin VB.Label lblLicenseLink 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "FreeImage Public License (FIPL)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C07031&
+         Height          =   270
+         Index           =   0
+         Left            =   2880
+         MouseIcon       =   "VBP_FormPluginManager.frx":0152
+         MousePointer    =   99  'Custom
+         TabIndex        =   33
+         Top             =   1560
+         Width           =   3150
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4935
       Index           =   0
       Left            =   3000
       ScaleHeight     =   329
@@ -100,7 +310,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   4
          Left            =   6015
-         MouseIcon       =   "VBP_FormPluginManager.frx":0000
+         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
          MousePointer    =   99  'Custom
          TabIndex        =   88
          Top             =   4125
@@ -485,7 +695,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   0
          Left            =   5760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0152
+         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
          MousePointer    =   99  'Custom
          TabIndex        =   7
          Top             =   765
@@ -509,7 +719,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   1
          Left            =   6360
-         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
+         MouseIcon       =   "VBP_FormPluginManager.frx":0548
          MousePointer    =   99  'Custom
          TabIndex        =   6
          Top             =   1605
@@ -533,7 +743,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   2
          Left            =   5955
-         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
+         MouseIcon       =   "VBP_FormPluginManager.frx":069A
          MousePointer    =   99  'Custom
          TabIndex        =   5
          Top             =   2445
@@ -557,7 +767,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   3
          Left            =   5895
-         MouseIcon       =   "VBP_FormPluginManager.frx":0548
+         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
          MousePointer    =   99  'Custom
          TabIndex        =   4
          Top             =   3285
@@ -803,7 +1013,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":069A
+         MouseIcon       =   "VBP_FormPluginManager.frx":093E
          MousePointer    =   99  'Custom
          TabIndex        =   61
          Top             =   1560
@@ -847,7 +1057,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
+         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
          MousePointer    =   99  'Custom
          TabIndex        =   59
          Top             =   1080
@@ -1013,7 +1223,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":093E
+         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
          MousePointer    =   99  'Custom
          TabIndex        =   84
          Top             =   1560
@@ -1057,7 +1267,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
+         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
          MousePointer    =   99  'Custom
          TabIndex        =   82
          Top             =   1080
@@ -1351,7 +1561,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
+         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
          MousePointer    =   99  'Custom
          TabIndex        =   45
          Top             =   1080
@@ -1395,7 +1605,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
+         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
          MousePointer    =   99  'Custom
          TabIndex        =   43
          Top             =   1560
@@ -1434,7 +1644,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
+         MouseIcon       =   "VBP_FormPluginManager.frx":112A
          MousePointer    =   99  'Custom
          TabIndex        =   31
          Top             =   1560
@@ -1479,7 +1689,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
+         MouseIcon       =   "VBP_FormPluginManager.frx":127C
          MousePointer    =   99  'Custom
          TabIndex        =   29
          Top             =   1080
@@ -1616,216 +1826,6 @@ Begin VB.Form FormPluginManager
          Width           =   2460
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4935
-      Index           =   1
-      Left            =   3000
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   32
-      Top             =   240
-      Width           =   7695
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   41
-         Top             =   15
-         Width           =   3165
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   40
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   0
-         Left            =   5520
-         TabIndex        =   39
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   2400
-         TabIndex        =   38
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   3960
-         TabIndex        =   37
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   36
-         Top             =   1080
-         Width           =   2265
-      End
-      Begin VB.Label lblHomepageLink 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "http://freeimage.sourceforge.net/"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C07031&
-         Height          =   270
-         Index           =   0
-         Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":112A
-         MousePointer    =   99  'Custom
-         TabIndex        =   35
-         Top             =   1080
-         Width           =   3330
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   34
-         Top             =   1560
-         Width           =   1860
-      End
-      Begin VB.Label lblLicenseLink 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage Public License (FIPL)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00C07031&
-         Height          =   270
-         Index           =   0
-         Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":127C
-         MousePointer    =   99  'Custom
-         TabIndex        =   33
-         Top             =   1560
-         Width           =   3150
-      End
-   End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
@@ -1937,7 +1937,7 @@ Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As L
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     'Restore the original values for enabled or disabled plugins
     g_ImageFormats.FreeImageEnabled = pEnabled(0)
@@ -1951,7 +1951,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     Message "Saving plugin options..."
     

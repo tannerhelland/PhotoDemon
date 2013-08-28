@@ -560,9 +560,9 @@ Private Sub Form_Load()
     
     'Populate the histogram display drop-down
     cboHistogram.Clear
-    cboHistogram.AddItem " " & g_Language.TranslateMessage("none"), 0
-    cboHistogram.AddItem " " & g_Language.TranslateMessage("standard"), 1
-    cboHistogram.AddItem " " & g_Language.TranslateMessage("logarithmic"), 2
+    cboHistogram.AddItem " none", 0
+    cboHistogram.AddItem " standard", 1
+    cboHistogram.AddItem " logarithmic", 2
     cboHistogram.ListIndex = 1
     
 End Sub
