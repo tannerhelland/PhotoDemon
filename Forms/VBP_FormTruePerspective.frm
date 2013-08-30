@@ -25,6 +25,25 @@ Begin VB.Form FormPerspective
    ScaleWidth      =   1009
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.ComboBox cmbMapping 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   240
+      Style           =   2  'Dropdown List
+      TabIndex        =   9
+      Top             =   6360
+      Width           =   5550
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -74,7 +93,7 @@ Begin VB.Form FormPerspective
       Left            =   240
       Style           =   2  'Dropdown List
       TabIndex        =   3
-      Top             =   6735
+      Top             =   7335
       Width           =   5550
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -91,7 +110,7 @@ Begin VB.Form FormPerspective
       Index           =   0
       Left            =   240
       TabIndex        =   5
-      Top             =   7680
+      Top             =   8280
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -112,7 +131,7 @@ Begin VB.Form FormPerspective
       Index           =   1
       Left            =   2040
       TabIndex        =   6
-      Top             =   7680
+      Top             =   8280
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -126,6 +145,27 @@ Begin VB.Form FormPerspective
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "transformation type:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   120
+      TabIndex        =   8
+      Top             =   6000
+      Width           =   2175
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -145,7 +185,7 @@ Begin VB.Form FormPerspective
       Index           =   5
       Left            =   120
       TabIndex        =   4
-      Top             =   6360
+      Top             =   6960
       Width           =   3315
    End
    Begin VB.Label lblTitle 
@@ -168,7 +208,7 @@ Begin VB.Form FormPerspective
       Index           =   2
       Left            =   120
       TabIndex        =   1
-      Top             =   7290
+      Top             =   7890
       Width           =   1845
    End
 End
@@ -181,8 +221,11 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 23/August/13
-'Last update: added command bar, including custom code for saving/reading the nodes as part of presets
+'Last updated: 30/August/13
+'Last update: added an option for forward or reverse transformations.  I was hesitant to do this previously, because
+'             the difference is confusing, but I think I've finally found a way to present it that won't alienate
+'             casual users.  Hopefully this is the best of both worlds, as the reverse option really is nice if you
+'             have a reference object in the source image that needs to be perspective-corrected.
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -194,6 +237,7 @@ Attribute VB_Exposed = False
 '
 'I used a number of projects as references while build this tool.  Thank you to the following:
 '
+' http://www.cs.cmu.edu/~ph/texfund/texfund.pdf
 ' http://www.imagemagick.org/Usage/distorts/#perspective
 ' http://stackoverflow.com/questions/169902/projective-transformation
 ' http://freespace.virgin.net/hugo.elias/graphics/x_persp.htm
@@ -287,10 +331,18 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     Set cParams = New pdParamString
     If Len(listOfModifiers) > 0 Then cParams.setParamString listOfModifiers
     
+    'See if the user wants a rect -> quad ("Normal" in GIMP) or quad -> rect ("Corrective" in GIMP) mapping
+    Dim correctiveProjection As Boolean
+    If cParams.GetLong(9) = 0 Then
+        correctiveProjection = False
+    Else
+        correctiveProjection = True
+    End If
+    
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, cParams.GetLong(9), cParams.GetBool(10), curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, cParams.GetLong(10), cParams.GetBool(11), curLayerValues.maxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -342,7 +394,8 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
         y3 = y3 * hModifier
     End If
     
-    'Map those coordinates to the unit square by multiplying them by "1 / image_width" or "1 / image_height" as appropriate
+    'Map those coordinates to the unit square by multiplying them by "1 / image_width"
+    ' or "1 / image_height" as appropriate.
     x0 = x0 * invWidth
     y0 = y0 * invHeight
     x1 = x1 * invWidth
@@ -370,7 +423,6 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     
     'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
     Dim chkDenom As Double
-    
     chkDenom = (dx1 * dy2 - dy1 * dx2)
     If chkDenom = 0 Then chkDenom = 0.000000001
     
@@ -400,6 +452,51 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     hH = h21 * h13 - h11 * h23
     hI = h11 * h22 - h21 * h12
         
+    'We now have two options.  We can either...
+    ' 1) Proceed with the projection mapping, which assumes a RECTANGULAR source area and a QUADRILATERAL destination
+    '    area. (GIMP calls this Normal/Forward which is confusing from a coding standpoint, because it's still
+    '    reverse-mapping, where the user-drawn quadrilateral defines the boundaries of the destination area.)
+    ' 2) Invert the mapping matrix we've created, which changes the assumption to a QUADRILATERAL source area and a
+    '    RECTANGULAR destination area.  (GIMP calls this Corrective/Backward which is again confusing, as "Normal"
+    '    mapping is still a perfectly valid way to correct perspective distortion.  Anyway, this additional operation
+    '    simply changes the user-drawn quadrilateral to define the boundaries of the source area.)
+    
+    If correctiveProjection Then
+    
+        'Invert the transformation using the adjoint of the forward mapping.  If you don't know what an adjoint is
+        ' (don't worry, most don't! :), we're basically reversing the plane-to-plane mapping by which we've defined
+        ' this particular projection.  (This means that we want the quadrilateral to define a section of the SOURCE
+        ' image instead of a section of the DESTINATION image.)  For a detailed explanation of this process, please
+        ' read pages 24-25 of Paul Heckbert's thesis on projective transformations, which is really the best source
+        ' for understanding projective mappings in general: http://www.cs.cmu.edu/~ph/texfund/texfund.pdf
+        Dim newA As Double, newB As Double, newC As Double
+        Dim newD As Double, newE As Double, newF As Double
+        Dim newG As Double, newH As Double, newI As Double
+        
+        newA = hE * hI - hF * hH
+        newB = hC * hH - hB * hI
+        newC = hB * hF - hC * hE
+        
+        newD = hF * hG - hD * hI
+        newE = hA * hI - hC * hG
+        newF = hC * hD - hA * hF
+        
+        newG = hD * hH - hE * hG
+        newH = hB * hG - hA * hH
+        newI = hA * hE - hB * hD
+    
+        hA = newA
+        hB = newB
+        hC = newC
+        hD = newD
+        hE = newE
+        hF = newF
+        hG = newG
+        hH = newH
+        hI = newI
+        
+    End If
+        
     'Scale those values to match the size of the transformed image
     hA = hA * invWidth
     hD = hD * invWidth
@@ -407,7 +504,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     hB = hB * invHeight
     hE = hE * invHeight
     hH = hH * invHeight
-            
+    
     'With all that data calculated in advanced, the actual transform is quite simple.
             
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
@@ -447,6 +544,11 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
         
+End Sub
+
+Private Sub cmbMapping_Click()
+    redrawPreviewBox
+    updatePreview
 End Sub
 
 Private Sub cmdBar_AddCustomPresetData()
@@ -548,6 +650,11 @@ Private Sub Form_Load()
     ' them immediately available to all distort functions.
     popDistortEdgeBox cmbEdges, EDGE_ERASE
     
+    'Populate the mapping type combo box
+    cmbMapping.Clear
+    cmbMapping.AddItem " forward (outline defines destination area)", 0
+    cmbMapping.AddItem " reverse (outline defines source area)", 1
+    
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
         iWidth = pdImages(CurrentImage).mainSelection.boundWidth
@@ -608,15 +715,25 @@ Private Sub redrawPreviewBox()
     picDraw.Line (0, picDraw.Height / 2)-(picDraw.Width, picDraw.Height / 2)
     picDraw.Line (picDraw.Width / 2, 0)-(picDraw.Width / 2, picDraw.Height)
     
-    'Next, draw a silhouette around the original image outline
-    Dim i As Long
-    For i = 0 To 3
-        If i < 3 Then
-            picDraw.Line (m_oPoints(i).pX, m_oPoints(i).pY)-(m_oPoints(i + 1).pX, m_oPoints(i + 1).pY)
-        Else
-            picDraw.Line (m_oPoints(i).pX, m_oPoints(i).pY)-(m_oPoints(0).pX, m_oPoints(0).pY)
+    'Next, we will do one of two things:
+    ' 1) For forward mapping, draw a silhouette around the original image outline.
+    ' 2) For reverse mapping, just draw the image itself.
+    If cmbMapping.ListIndex = 0 Then
+        Dim i As Long
+        For i = 0 To 3
+            If i < 3 Then
+                picDraw.Line (m_oPoints(i).pX, m_oPoints(i).pY)-(m_oPoints(i + 1).pX, m_oPoints(i + 1).pY)
+            Else
+                picDraw.Line (m_oPoints(i).pX, m_oPoints(i).pY)-(m_oPoints(0).pX, m_oPoints(0).pY)
+            End If
+        Next i
+    Else
+        If cmdBar.previewsAllowed Then
+            Dim tmpSA As SAFEARRAY2D
+            prepImageData tmpSA, True, fxPreview
+            StretchBlt picDraw.hDC, m_oPoints(0).pX, m_oPoints(0).pY, m_oPoints(1).pX - m_oPoints(0).pX, m_oPoints(2).pY - m_oPoints(0).pY, workingLayer.getLayerDC, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, vbSrcCopy
         End If
-    Next i
+    End If
     
     'Next, draw connecting lines to form an image outline.  Use GDI+ for superior results (e.g. antialiasing).
     Dim oTransparency As Long
@@ -738,6 +855,9 @@ Private Function getPerspectiveParamString() As String
     'Bottom-left
     paramString = paramString & "|" & ((m_nPoints(3).pX - m_oPoints(3).pX) * (iWidth / m_previewWidth))
     paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
+    
+    'Quad to square or square to quad
+    paramString = paramString & "|" & CLng(cmbMapping.ListIndex)
     
     'Edge handling
     paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
