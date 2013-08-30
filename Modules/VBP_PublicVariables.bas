@@ -201,3 +201,16 @@ Public g_UndoRedoActive As Boolean
 ' Ambient.UserMode value supplied to ActiveX controls.  This fixes a problem where ActiveX controls sometimes think they
 ' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
 Public g_UserModeFix As Boolean
+
+'PhotoDemon's language files provide a small amount of metadata to help the program know how to use them.  This type
+' was previously declared inside the pdTranslate class, but with the addition of a Language Editor, I have moved it
+' here, so the entire project can access the type.
+Public Type pdLanguageFile
+    Author As String
+    FileName As String
+    langID As String
+    langName As String
+    langType As String
+    langVersion As String
+    langStatus As String
+End Type

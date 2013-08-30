@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 23/April/13
-'Last update: add translation support for text box tooltips
+'Last updated: 30/August/13
+'Last update: small modifications and additions to provide better interaction with the new Language Editor
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -25,6 +25,9 @@ Attribute VB_Exposed = False
 '
 'The latest revision of the translation engine operates on translation files stored as XML.  You can see
 ' (and freely edit) these files inside the /App/PhotoDemon/Languages/ subfolder of wherever PD is installed.
+' If you do decide to edit these language files, I strongly suggest saving the new files inside the USER
+' folder of the project, e.g. /Data/Languages/.  This will ensure they are not overwritten by software
+' updates or future changes to the official language files included with PD.
 '
 'Many features are on the roadmap for translation, including things like interactive editing and automatic
 ' updating of translation files, but this version of the engine focuses primarily on just getting the damn
@@ -44,13 +47,16 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Basic information about a language file is stored in this type of variable
-Private Type pdLanguageFile
-    FileName As String
-    langID As String
-    langName As String
-    langVersion As String
-    langStatus As String
-End Type
+' NOTE: this type is now publicly declared in the Public_Variables section.  I moved it because other functions (specifically, the
+'       new Language Editor) require access to the type.
+'Private Type pdLanguageFile
+'    FileName As String
+'    langID As String
+'    langName As String
+'    langType As String
+'    langVersion As String
+'    langStatus As String
+'End Type
 
 'Language-related API calls
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
@@ -95,6 +101,20 @@ Private m_hasTrailingColon As Boolean
 Dim m_shortcutActive As Boolean
 Dim m_shortcutLocation As Long
 
+'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
+' function will then fill with the data assembled from CheckAvailableLanguages().
+Friend Sub copyListOfLanguages(ByRef dstListOfLanguages() As pdLanguageFile)
+    
+    ReDim dstListOfLanguages(0 To numOfLanguages - 1) As pdLanguageFile
+    
+    'Copy all language data entries into the new array.
+    Dim i As Long
+    For i = 0 To numOfLanguages - 1
+        dstListOfLanguages(i) = availableLanguages(i)
+    Next i
+    
+End Sub
+
 'External functions can request the current language, which may then be used to request translations from
 ' 3rd-party plugins (specifically, ExifTool).
 Public Function getCurrentLanguage() As String
@@ -112,7 +132,7 @@ End Function
 Public Sub activateShortcut(ByVal shortcutText As String)
 
     m_shortcutLocation = InStr(1, m_translationFileContents, "(" & shortcutText & ")", vbTextCompare)
-    'MsgBox m_shortcutLocation
+    
     If m_shortcutLocation = 0 Then
         m_shortcutActive = False
         m_shortcutLocation = 1
@@ -351,7 +371,7 @@ End Function
 'Add all the language files in a given folder.  The function will return the number of languages found.
 ' Optionally, a language offset count can be provided.  This is required for any folders besides the first, as the
 ' function will use that as the array index where it can place found language file data.
-Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional ByVal langOffset As Long = 0) As Long
+Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional ByVal langOffset As Long = 0, Optional ByVal langTypeForThisFolder As String = "") As Long
 
     Dim nLanguages As Long
     nLanguages = 0
@@ -374,6 +394,7 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
                 'If this is a valid language file, get the language information (if available).
                 fillLanguageInfo curFileAsText, availableLanguages(nLanguages + langOffset)
                 availableLanguages(nLanguages + langOffset).FileName = chkFile
+                availableLanguages(nLanguages + langOffset).langType = langTypeForThisFolder
                 nLanguages = nLanguages + 1
                 
                 'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
@@ -399,15 +420,16 @@ Public Sub CheckAvailableLanguages()
     ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
     
     'Find all available OFFICIAL language files
-    numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath, 0)
+    numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath, 0, "Official")
     
     'Find all available USER language files
-    numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages)
+    numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages, "User")
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
     availableLanguages(numOfLanguages).FileName = ""
     availableLanguages(numOfLanguages).langID = "en-US"
     availableLanguages(numOfLanguages).langName = "English (US) - Default"
+    availableLanguages(numOfLanguages).langType = "Default"
     availableLanguages(numOfLanguages).langStatus = "Complete"
     availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
     numOfLanguages = numOfLanguages + 1
@@ -469,6 +491,7 @@ Private Sub fillLanguageInfo(ByRef fileString As String, ByRef targetLangHolder 
     targetLangHolder.langName = getTextBetweenTags(fileString, "langname")
     targetLangHolder.langVersion = getTextBetweenTags(fileString, "langversion")
     targetLangHolder.langStatus = getTextBetweenTags(fileString, "langstatus")
+    targetLangHolder.Author = getTextBetweenTags(fileString, "author")
     
     'If, for some reason, the language name is not available, copy the language ID into its place
     If targetLangHolder.langName = "" Then targetLangHolder.langName = UCase(targetLangHolder.langID)
@@ -503,11 +526,7 @@ End Sub
 
 'Copy the contents of one language file header over another
 Private Sub CopyLanguageData(ByRef dstLang As pdLanguageFile, ByRef srcLang As pdLanguageFile)
-    dstLang.langID = srcLang.langID
-    dstLang.langName = srcLang.langName
-    dstLang.langStatus = srcLang.langStatus
-    dstLang.langVersion = srcLang.langVersion
-    dstLang.FileName = srcLang.FileName
+    dstLang = srcLang
 End Sub
 
 'Given a file (as a String) and a tag (without brackets), return the text between that tag.
