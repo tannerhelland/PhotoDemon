@@ -1099,14 +1099,20 @@ End Sub
 'This routine sets the message on the splash screen (used only when the program is first started)
 Public Sub LoadMessage(ByVal sMsg As String)
 
+    Dim warnIDE As String
+    warnIDE = "(IDE NOT RECOMMENDED - PLEASE COMPILE)"
+    
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
         If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then sMsg = g_Language.TranslateMessage(sMsg)
+            If g_Language.translationActive Then
+                sMsg = g_Language.TranslateMessage(sMsg)
+                warnIDE = g_Language.TranslateMessage("(IDE NOT RECOMMENDED - PLEASE COMPILE)")
+            End If
         End If
     End If
     
-    If Not g_IsProgramCompiled Then sMsg = "(IDE NOT RECOMMENDED - PLEASE COMPILE)  " & sMsg
+    If Not g_IsProgramCompiled Then sMsg = warnIDE & "  " & sMsg
     
     If FormSplash.Visible Then
         FormSplash.lblMessage = sMsg
