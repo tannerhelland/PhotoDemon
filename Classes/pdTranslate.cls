@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 30/August/13
-'Last update: small modifications and additions to provide better interaction with the new Language Editor
+'Last updated: 03/September/13
+'Last update: replace all custom XML code with the new pdXML class
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -88,7 +88,7 @@ Private Const LANGREASON_FILEMISSING As Long = 3        ' 3) Requested language 
 Private m_reasonForLanguageDialog As Long
 
 'The full contents of the translation file will be loaded into this string.
-Private m_translationFileContents As String
+Private xmlEngine As pdXML
 
 'Is the class ready to be used for translations?
 Private m_isReady As Boolean
@@ -97,9 +97,11 @@ Private m_isReady As Boolean
 Private m_hasDotDotDot As Boolean
 Private m_hasTrailingColon As Boolean
 
+'TEMPORARY: placing old variables here as I convert this class to use the pdXML class
+'Private m_translationFileContents As String
 'Searching the main XML string is a time-consuming process.  Shortcuts can be activated if all text lies on the same form.
-Dim m_shortcutActive As Boolean
-Dim m_shortcutLocation As Long
+'Dim m_shortcutActive As Boolean
+'Dim m_shortcutLocation As Long
 
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from CheckAvailableLanguages().
@@ -127,33 +129,21 @@ Public Function getCurrentLanguage() As String
     
 End Function
 
-'To improve performance, the user can specify a "shortcut" - e.g. the name of the form being processed.  The translation engine
-' will then attempt to search in the vicinity of that shortcut, which should help it find a match more quickly
-Public Sub activateShortcut(ByVal shortcutText As String)
-
-    m_shortcutLocation = InStr(1, m_translationFileContents, "(" & shortcutText & ")", vbTextCompare)
-    
-    If m_shortcutLocation = 0 Then
-        m_shortcutActive = False
-        m_shortcutLocation = 1
-    End If
-
-End Sub
-
-Public Sub deactivateShortcut()
-    m_shortcutActive = False
-    m_shortcutLocation = 1
-End Sub
-
 'External function for asking the translator if a language selection dialog is needed
 Public Function isLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
     If reasonForDialog <> -1 Then reasonForDialog = m_reasonForLanguageDialog
     isLanguageDialogNeeded = m_needToShowLanguageDialog
 End Function
 
-'If the class has successfully initialized a translation file, this function will return TRUE
+'If a translation file has been requested and successfully loaded, this function will return TRUE
 Public Function readyToTranslate() As Boolean
-    readyToTranslate = m_isReady
+    
+    If Not xmlEngine Is Nothing Then
+        readyToTranslate = m_isReady
+    Else
+        readyToTranslate = False
+    End If
+    
 End Function
 
 'If the currently active language is different from the default language, this function will return TRUE
@@ -244,7 +234,7 @@ Public Sub DetermineLanguage()
     End If
     
     m_isReady = True
-
+    
 End Sub
 
 'Given a language filename, return the index in the availableLanguages() array
@@ -307,8 +297,8 @@ Public Sub ApplyLanguage()
     
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
     If translationActive Then
-        m_translationFileContents = ""
-        m_translationFileContents = getFileAsString(g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName)
+        Set xmlEngine = New pdXML
+        xmlEngine.loadXMLFile g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName
     End If
 
     'Redraw all text on the main form using the new language
@@ -377,22 +367,21 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     nLanguages = 0
     
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
-    Dim chkFile As String, curFileAsText As String
+    Dim chkFile As String
     chkFile = Dir(srcFolder & "*.xml", vbNormal)
         
     Do While (chkFile <> "")
-                
-        'Load the first 1024 bytes of the file into a string (this is done to keep this routine fast)
-        curFileAsText = getPartialFileAsString(srcFolder & chkFile)
         
-        'If the file has actual contents, investigate further.
-        If Len(curFileAsText) > 0 Then
+        'Use PD's XML engine to load the file
+        Dim tmpXMLEngine As pdXML
+        Set tmpXMLEngine = New pdXML
+        If tmpXMLEngine.loadXMLFile(srcFolder & chkFile) Then
         
-            'Is the .xml file a valid xml file?  Check the header to make sure.
-            If verifyXMLHeader(curFileAsText) Then
-            
+            'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
+            If tmpXMLEngine.isPDDataType("Translation") And tmpXMLEngine.validateLoadedXMLData("langid", "langname", "phrase") Then
+        
                 'If this is a valid language file, get the language information (if available).
-                fillLanguageInfo curFileAsText, availableLanguages(nLanguages + langOffset)
+                fillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages + langOffset)
                 availableLanguages(nLanguages + langOffset).FileName = chkFile
                 availableLanguages(nLanguages + langOffset).langType = langTypeForThisFolder
                 nLanguages = nLanguages + 1
@@ -484,18 +473,17 @@ Private Sub populateLanguageMenu()
 End Sub
 
 'Given a language file (or partial language file), extract the key language information and place it in the passed variable.
-Private Sub fillLanguageInfo(ByRef fileString As String, ByRef targetLangHolder As pdLanguageFile)
+Private Sub fillLanguageInfo(ByRef srcXMLEngine As pdXML, ByRef targetLangHolder As pdLanguageFile)
 
-    'First, get the language ID - this is the most important value, and technically the only REQUIRED one.
-    targetLangHolder.langID = getTextBetweenTags(fileString, "langid")
-    targetLangHolder.langName = getTextBetweenTags(fileString, "langname")
-    targetLangHolder.langVersion = getTextBetweenTags(fileString, "langversion")
-    targetLangHolder.langStatus = getTextBetweenTags(fileString, "langstatus")
-    targetLangHolder.Author = getTextBetweenTags(fileString, "author")
+    'First, get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
+    targetLangHolder.langID = srcXMLEngine.getUniqueTag_String("langid")
+    targetLangHolder.langName = srcXMLEngine.getUniqueTag_String("langname")
     
-    'If, for some reason, the language name is not available, copy the language ID into its place
-    If targetLangHolder.langName = "" Then targetLangHolder.langName = UCase(targetLangHolder.langID)
-    
+    'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
+    targetLangHolder.langVersion = srcXMLEngine.getUniqueTag_String("langversion")
+    targetLangHolder.langStatus = srcXMLEngine.getUniqueTag_String("langstatus")
+    targetLangHolder.Author = srcXMLEngine.getUniqueTag_String("author")
+        
 End Sub
 
 'Sort the availableLanguages array alphabetically, using language names as the sort parameter
@@ -519,134 +507,10 @@ End Sub
 'Swap the values of two language file headers
 Private Sub SwapLanguageData(ByRef langOne As pdLanguageFile, ByRef langTwo As pdLanguageFile)
     Dim langTmp As pdLanguageFile
-    CopyLanguageData langTmp, langOne
-    CopyLanguageData langOne, langTwo
-    CopyLanguageData langTwo, langTmp
+    langTmp = langOne
+    langOne = langTwo
+    langTwo = langTmp
 End Sub
-
-'Copy the contents of one language file header over another
-Private Sub CopyLanguageData(ByRef dstLang As pdLanguageFile, ByRef srcLang As pdLanguageFile)
-    dstLang = srcLang
-End Sub
-
-'Given a file (as a String) and a tag (without brackets), return the text between that tag.
-' NOTE: this function will always return the first occurence of the specified tag, starting at the specified search position.
-' If the tag is not found, a blank string will be returned.
-Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
-
-    Dim tagStart As Long, tagEnd As Long
-    tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbTextCompare)
-
-    'If the tag was found in the file, we also need to find the closing tag.
-    If tagStart > 0 Then
-    
-        tagEnd = InStr(tagStart, fileText, "</" & fTag & ">", vbTextCompare)
-        
-        'If the closing tag exists, return everything between that and the opening tag
-        If tagEnd > tagStart Then
-            
-            'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
-            tagStart = tagStart + Len(fTag) + 2
-            
-            'If the user passed a long, they want to know where this tag was found - return the location just after the
-            ' location where the closing tag was located.
-            If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(fTag) + 2
-            getTextBetweenTags = Mid(fileText, tagStart, tagEnd - tagStart)
-            
-        Else
-            getTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
-        End If
-        
-    Else
-        getTextBetweenTags = ""
-    End If
-
-End Function
-
-'Given an XML file (or sometimes, just the first 1024 bytes of an XML file), check to see if it has a valid XML header.
-' Also, check to see if it's a PhotoDemon language file or just a random XML file.
-Private Function verifyXMLHeader(ByRef fileContents As String) As Boolean
-        
-    'Check for "<?xml" in the file.  We don't care about encoding, etc - just that to keep things quick.
-    If InStr(1, fileContents, "<?xml", vbTextCompare) > 0 Then
-    
-        'If an XML header is found, check to see if a <language> tag exists too.
-        If InStr(1, fileContents, "<language>", vbTextCompare) > 0 Then
-        
-            'Next, ensure that a language id (tag <langid>) exists
-            If InStr(1, fileContents, "<langid>", vbTextCompare) > 0 Then
-            
-                'And finally, make sure the file contains at least one <phrase> tag
-                If InStr(1, fileContents, "<phrase>", vbTextCompare) > 0 Then
-                    verifyXMLHeader = True
-                Else
-                    verifyXMLHeader = False
-                End If
-            
-            Else
-                verifyXMLHeader = False
-            End If
-        
-        Else
-            verifyXMLHeader = False
-        End If
-    
-    Else
-        verifyXMLHeader = False
-    End If
-
-End Function
-
-'Retrieve only the first 1024 bytes of a file as a string.
-Private Function getPartialFileAsString(ByVal fName As String) As String
-        
-    ' ensure that the file exists
-    If FileExist(fName) Then
-        
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        
-        Dim fileLen As Long
-    
-        Open fName For Binary As #fileNum
-            fileLen = LOF(fileNum)
-            If fileLen > 1024 Then fileLen = 1024
-            getPartialFileAsString = Space$(fileLen)
-            Get #fileNum, , getPartialFileAsString
-        Close #fileNum
-    
-    Else
-        getPartialFileAsString = ""
-    End If
-    
-End Function
-
-'Retrieve an entire file and return it as a string.
-Private Function getFileAsString(ByVal fName As String) As String
-    
-    Dim tmpFileContents As String
-    
-    'Ensure that the file exists before attempting to load it
-    If FileExist(fName) Then
-        
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        Open fName For Binary As #fileNum
-            tmpFileContents = Space$(LOF(fileNum))
-            Get #fileNum, , tmpFileContents
-        Close #fileNum
-    
-        'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-        If InStr(1, tmpFileContents, vbTab) <> 0 Then tmpFileContents = Replace(tmpFileContents, vbTab, "")
-        
-        getFileAsString = tmpFileContents
-    
-    Else
-        getFileAsString = ""
-    End If
-    
-End Function
 
 'All text to be translated should be passed here first.  This sub will perform a few automatic checks of the string, and it will record what
 ' it finds.  For example, if the text has "..." at the end, this sub will remove that.  Its counterpart - postProcessText() - will re-apply
@@ -702,16 +566,15 @@ Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As St
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
     preProcessText curCaption
-    curCaption = "<translation>" & curCaption & "</translation>"
     
     Dim phraseLocation As Long
-    phraseLocation = getPhraseTagLocation(curCaption)
+    phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "translation", curCaption)
     
     'Make sure a phrase tag was found
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        curCaption = getTextBetweenTags(m_translationFileContents, "original", phraseLocation)
+        curCaption = xmlEngine.getUniqueTag_String("original", "", phraseLocation)
         postProcessText curCaption
         getOriginalTagFromTranslation = curCaption
         
@@ -726,16 +589,15 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
     preProcessText origCaption
-    origCaption = "<original>" & origCaption & "</original>"
     
     Dim phraseLocation As Long
-    phraseLocation = getPhraseTagLocation(origCaption)
+    phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "original", origCaption)
     
     'Make sure a phrase tag was found
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = getTextBetweenTags(m_translationFileContents, "translation", phraseLocation)
+        origCaption = xmlEngine.getUniqueTag_String("translation", "", phraseLocation)
         postProcessText origCaption
         If origCaption <> "" Then
             getTranslationTagFromCaption = origCaption
@@ -745,34 +607,6 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
         
     Else
         getTranslationTagFromCaption = ""
-    End If
-
-End Function
-
-'Given a string, return the location of the <phrase> tag enclosing said string
-Private Function getPhraseTagLocation(ByRef srcString As String) As Long
-
-    Dim sLocation As Long
-    
-    'If the user has activated shortcut searching, start from the position previously discovered
-    If m_shortcutActive Then
-        sLocation = InStr(m_shortcutLocation, m_translationFileContents, srcString, vbTextCompare)
-        If sLocation = 0 Then sLocation = InStrRev(m_translationFileContents, srcString, m_shortcutLocation, vbTextCompare)
-    'If shortcuts are inactive, or if they're active but the previous search failed, search starting from the start of the file
-    Else
-        sLocation = InStr(1, m_translationFileContents, srcString, vbTextCompare)
-    End If
-    
-    'If the source string was found, work backward to find the phrase tag location
-    If sLocation > 0 Then
-        sLocation = InStrRev(m_translationFileContents, "<phrase>", sLocation, vbTextCompare)
-        If sLocation > 0 Then
-            getPhraseTagLocation = sLocation
-        Else
-            getPhraseTagLocation = 0
-        End If
-    Else
-        getPhraseTagLocation = 0
     End If
 
 End Function
@@ -800,6 +634,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
         Else
             newString = srcMessage
         End If
+        
     End If
     
     'newString now contains the translated message (or the original text, if no translation was found).
@@ -908,6 +743,9 @@ End Sub
 
 'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
 Public Sub undoTranslations(ByRef srcForm As Form)
+
+    'This function only has to be applied if a translation is currently active.  If it isn't, simply exit.
+    If Not translationActive Then Exit Sub
 
     'Start by returning the form's original caption
     restoreFormCaption srcForm
@@ -1071,13 +909,5 @@ Public Sub applyTranslations(ByRef srcForm As Form)
     Next
     
     'If DISPLAY_TIMINGS Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
-    
-End Sub
-
-Private Sub Class_Initialize()
-    
-    'By default, shortcut searching is inactive
-    m_shortcutActive = False
-    m_shortcutLocation = 1
     
 End Sub

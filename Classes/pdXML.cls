@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 30/July/13
-'Last updated: 08/August/13
-'Last update: many new functions to support the new XML-format primary preferences file
+'Last updated: 03/September/13
+'Last update: added getLocationOfParentTag() function, which the translation engine needs for finding the <phrase>
+'             tag that encloses an original/translation text pair
 '
 'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
@@ -617,6 +618,23 @@ Public Function getLocationOfTagPlusAttribute(ByVal tagName As String, ByVal tag
     
     'If we made it all the way here, we were unable to find a matching tag/attribute combination.
     getLocationOfTagPlusAttribute = 0
+    
+End Function
+
+'Given a tag name and contents, return a pointer to the location of a specified "parent" tag.  (This is used by the
+' translation engine to find the "phrase" tag enclosing an original/translation tag pair.)
+Public Function getLocationOfParentTag(ByVal parentTagName As String, ByVal tagName As String, ByVal tagContents As String) As Long
+
+    'First, find the requested tag's location
+    Dim searchLocation As Long
+    searchLocation = InStr(1, xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", vbTextCompare)
+    
+    'Assuming that tag was found, look for the nearest parent tag occurrence
+    If searchLocation > 0 Then
+        getLocationOfParentTag = InStrRev(xmlContents, "<" & parentTagName & ">", searchLocation, vbTextCompare)
+    Else
+        getLocationOfParentTag = 0
+    End If
     
 End Function
 

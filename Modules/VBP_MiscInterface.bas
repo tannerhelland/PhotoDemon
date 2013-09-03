@@ -362,9 +362,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
     
     'FORM STEP 4: translate the form (and all controls on it)
     If g_Language.translationActive And tForm.Enabled Then
-        g_Language.activateShortcut tForm.Name
         g_Language.applyTranslations tForm
-        g_Language.deactivateShortcut
     End If
     
     'FORM STEP 5: if a custom tooltip handler was passed in, activate and populate it now.
