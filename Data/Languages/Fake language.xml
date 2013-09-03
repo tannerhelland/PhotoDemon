@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="windows-1252"?>
 
-<language>
-
+<pdData>
+	
+	<pdDataType>Translation</pdDataType>
+	
 	<langid>xx-XX</langid>
 	<langname>Fake language</langname>
 	<langversion>0.0.000</langversion>
@@ -9037,4 +9039,4 @@ By default, transparency will be split down the middle, or you can specify a cus
 <!-- 1091 are duplicate phrases, so only 1609 phrases have been written to file. -->
 <!-- These 1609 phrases contain approximately 10185 total words. -->
 
-</language>
+</pdData>
