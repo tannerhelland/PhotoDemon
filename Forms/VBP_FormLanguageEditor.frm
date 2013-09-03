@@ -320,6 +320,9 @@ Dim m_ToolTip As clsToolTip
 ' It only contains a list of languages already stored in the /App/PhotoDemon/Languages and Data/Languages folders.
 Dim listOfAvailableLanguages() As pdLanguageFile
 
+'The language currently being edited.  This curLanguage variable will contain all metadata for the language file.
+Dim curLanguage As pdLanguageFile
+
 'The current wizard page
 Dim curWizardPage As Long
 
@@ -342,16 +345,42 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     'Before changing the page, maek sure all user input on the current page is valid
     Select Case curWizardPage
     
-        'The first page is the language selection page.  A fair amount of initialization must happen after the user selects a language.
+        'The first page is the language selection page.  When the user leaves this page, we must load the language they've selected
+        ' into memory - so this validation step is quite large.
         Case 0
         
-            'Make sure a language has been selected
-            ' ***CURRENTLY CODING HERE***
-            If lstLanguages.ListIndex = -1 Then
-                
+            'If the user wants to edit an existing language, make sure they've selected one.  (I hate OK-only message boxes, but am
+            ' currently too lazy to write a more elegant warning!)
+            If optBaseLanguage(1) And (lstLanguages.ListIndex = -1) Then
+                pdMsgBox "Please select a language before continuing to the next step.", vbOKOnly + vbInformation + vbApplicationModal, "Please select a language"
+                Exit Sub
             End If
             
-        
+            'If they want to start a new language file from scratch, set the load path to the MASTER English language file (which is
+            ' hopefully present... if not, there's not much we can do.)
+            If optBaseLanguage(0) Then
+                
+                If loadAllPhrasesFromFile(g_UserPreferences.getLanguagePath & "Master\MASTER.xml") Then
+                    
+                'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
+                Else
+                    pdMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.", vbOKOnly + vbInformation + vbApplicationModal, "Master language file missing"
+                    Unload Me
+                End If
+            
+            'They want to edit an existing language.  Follow the same general pattern as for the master language file (above).
+            Else
+            
+                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.ListIndex).FileName) Then
+                    
+                'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
+                Else
+                    pdMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.", vbOKOnly + vbInformation + vbApplicationModal, "Language file could not be loaded"
+                    Unload Me
+                End If
+            
+            End If
+            
         'The second page is the phrase editing page.  This is the most important page in the wizard.
         Case 1
     
@@ -451,3 +480,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
+
+End Function
