@@ -667,7 +667,7 @@ Private Sub cmdExportHistogram_Click()
     
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Program Paths", "SaveImage", "")
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
     
     Dim cdfStr As String
     
@@ -695,7 +695,7 @@ Private Sub cmdExportHistogram_Click()
         'Save the new directory as the default path for future usage
         tempPathString = sFile
         StripDirectory tempPathString
-        g_UserPreferences.SetPref_String "Program Paths", "SaveImage", tempPathString
+        g_UserPreferences.SetPref_String "Paths", "Save Image", tempPathString
         
         Message "Saving histogram to file..."
         
@@ -745,7 +745,7 @@ Private Sub cmdExportHistogram_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Unload Me
 End Sub
 

@@ -485,13 +485,13 @@ Public Sub ResetMenuIcons()
     AddMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
     'Change the Show/Hide panel icon to match its current state
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False) Then
+    If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
         AddMenuIcon "LEFTPANSHOW", 2, 16     'Show the panel
     Else
         AddMenuIcon "LEFTPANHIDE", 2, 16     'Hide the panel
     End If
     
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False) Then
+    If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
         AddMenuIcon "RIGHTPANSHOW", 2, 17   'Show the panel
     Else
         AddMenuIcon "RIGHTPANHIDE", 2, 17   'Hide the panel
@@ -564,7 +564,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     Dim icoSize As Long
     
     'If we are rendering a dynamic taskbar icon, we will perform two reductions - first to 32x32, second to 16x16
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then icoSize = 32 Else icoSize = 16
+    If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then icoSize = 32 Else icoSize = 16
 
     'Determine aspect ratio
     Dim aspectRatio As Double
@@ -635,7 +635,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.
         
         'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 32x32 icon now
-        If g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
                 
             'Generate a blank monochrome mask to pass to the icon creation function.
             MonoBmp = CreateBitmap(icoSize, icoSize, 1, 1, ByVal 0&)
@@ -692,7 +692,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         addIconToList generatedIcon
         
         'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 16x16 icon now
-        If g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) Then
+        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
             setNewAppIcon generatedIcon
             pdImages(imgForm.Tag).curFormIcon16 = generatedIcon
         End If

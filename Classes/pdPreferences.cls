@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 14/August/13
-'Last update: removed the last bit of INI code from the project.  PhotoDemon is now 100% XML instead of INI.
+'Last updated: 04/September/13
+'Last update: large overhaul to mirror the rewrite in the Preferences dialog.  Preferences are now properly organized, with much
+'             prettier formatting in the final XML file.  Their categorization matches that of the Preferences dialog itself.
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
 ' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
@@ -34,7 +35,7 @@ Attribute VB_Exposed = False
 '
 'Finally, please do not interact with the XML file directly.  Always pass preference writes and reads through this class.  I cannot
 ' guarantee that the XML format or style will remain consistent between versions, but as long as you stick to the wrapping functions
-' in this class, your preferences will be read/written correctly.
+' in this class, preferences will be read/written correctly.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -92,7 +93,7 @@ Public Sub setSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
     newSelectionPath = FixPath(newSelectionPath)
     SelectionPath = newSelectionPath
-    SetPref_String "Program Paths", "Selections", SelectionPath
+    SetPref_String "Paths", "Selections", SelectionPath
 End Sub
 
 'Return the current Language directory
@@ -119,7 +120,7 @@ Public Sub setTempPath(ByVal newTempPath As String)
     'Ensure that this directory exists AND that we have write access to it.  If we do not, substitute the default system temp folder.
     If DirectoryExist(TempPath) = False Then TempPath = GetTemporaryPath()
     
-    SetPref_String "Program Paths", "TempFiles", TempPath
+    SetPref_String "Paths", "TempFiles", TempPath
     
 End Sub
 
@@ -148,7 +149,7 @@ Public Sub setMacroPath(ByVal newMacroPath As String)
     StripDirectory newMacroPath
     newMacroPath = FixPath(newMacroPath)
     MacroPath = newMacroPath
-    SetPref_String "Program Paths", "Macro", MacroPath
+    SetPref_String "Paths", "Macro", MacroPath
 End Sub
 
 'Return the current MRU icon directory
@@ -230,8 +231,8 @@ Public Sub loadUserSettings()
     'If no preferences file exists, build a default one
     If Not FileExist(PreferencesPath) Then createNewPreferencesFile
             
-    'Get the LogProgramMessages preference
-    g_LogProgramMessages = GetPref_Boolean("General Preferences", "LogProgramMessages", False)
+    'Get the LogProgramMessages preference first, because it will start being used right away
+    g_LogProgramMessages = GetPref_Boolean("Advanced", "LogProgramMessages", False)
     
     'If the user wants us to log program messages, open the log file and write out the current date and time
     If g_LogProgramMessages Then
@@ -251,44 +252,44 @@ Public Sub loadUserSettings()
             
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
-    TempPath = GetPref_String("Program Paths", "TempFiles", "")
+    TempPath = GetPref_String("Paths", "TempFiles", "")
     If Not DirectoryExist(TempPath) Then
         TempPath = GetTemporaryPath
-        SetPref_String "Program Paths", "TempFiles", TempPath
+        SetPref_String "Paths", "TempFiles", TempPath
     End If
     
     'Pull all other stored paths
-    MacroPath = GetPref_String("Program Paths", "Macro", MacroPath)
-    SelectionPath = GetPref_String("Program Paths", "Selections", SelectionPath)
+    MacroPath = GetPref_String("Paths", "Macro", MacroPath)
+    SelectionPath = GetPref_String("Paths", "Selections", SelectionPath)
     
     'Get the canvas background color
-    g_CanvasBackground = GetPref_Long("General Preferences", "CanvasBackground", RGB(201, 211, 226))
+    g_CanvasBackground = GetPref_Long("Interface", "CanvasBackground", RGB(201, 211, 226))
     
     'Get the canvas drop shadow preference
-    g_CanvasDropShadow = GetPref_Boolean("General Preferences", "CanvasDropShadow", False)
+    g_CanvasDropShadow = GetPref_Boolean("Interface", "CanvasDropShadow", False)
     
     'Get the alpha transparency checkerboard color mode (light/moderate/dark/custom)
-    g_AlphaCheckMode = GetPref_Long("General Preferences", "AlphaCheckMode", 1)
+    g_AlphaCheckMode = GetPref_Long("Transparency", "AlphaCheckMode", 1)
     
     'Get the alpha transparency checkerboard colors
-    g_AlphaCheckOne = GetPref_Long("General Preferences", "AlphaCheckOne", RGB(153, 153, 153))
-    g_AlphaCheckTwo = GetPref_Long("General Preferences", "AlphaCheckTwo", RGB(102, 102, 102))
+    g_AlphaCheckOne = GetPref_Long("Transparency", "AlphaCheckOne", RGB(153, 153, 153))
+    g_AlphaCheckTwo = GetPref_Long("Transparency", "AlphaCheckTwo", RGB(102, 102, 102))
     
     'Get the alpha checkerboard size
-    g_AlphaCheckSize = GetPref_Long("General Preferences", "AlphaCheckSize", 1)
+    g_AlphaCheckSize = GetPref_Long("Transparency", "AlphaCheckSize", 1)
     
     'Check if the user wants us to prompt them about closing unsaved images
-    g_ConfirmClosingUnsaved = GetPref_Boolean("General Preferences", "ConfirmClosingUnsaved", True)
+    g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
         
     'Check if the user wants the interface to use modern typefaces if available
-    g_UseFancyFonts = GetPref_Boolean("General Preferences", "UseFancyFonts", False)
+    g_UseFancyFonts = GetPref_Boolean("Interface", "UseFancyFonts", False)
     
     'Check if the user wants large images automatically zoomed when loaded
-    g_AutosizeLargeImages = GetPref_Long("General Preferences", "AutosizeLargeImages", 0)
+    g_AutosizeLargeImages = GetPref_Long("Loading", "InitialImageZoom", 0)
     
     'Grab the last-used common dialog filters
-    g_LastOpenFilter = GetPref_Long("File Formats", "LastOpenFilter", 1)
-    g_LastSaveFilter = GetPref_Long("File Formats", "LastSaveFilter", 3)
+    g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
+    g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
@@ -316,7 +317,7 @@ Public Sub loadToolSettings()
     'Selection type
     Dim i As Long
     For i = 0 To FormMain.cmbSelRender.Count - 1
-        FormMain.cmbSelRender(i).ListIndex = GetPref_Long("Tool Preferences", "LastSelectionShape", 0)
+        FormMain.cmbSelRender(i).ListIndex = GetPref_Long("Tools", "LastSelectionShape", 0)
     Next i
     
 End Sub
@@ -324,7 +325,7 @@ End Sub
 Public Sub saveToolSettings()
     
     'Last-used tool
-    SetPref_Long "Tool Preferences", "LastActiveTool", g_CurrentTool
+    SetPref_Long "Tools", "LastActiveTool", g_CurrentTool
         
 End Sub
 
@@ -349,114 +350,92 @@ Private Sub createNewPreferencesFile()
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
-    xmlEngine.prepareNewXML "PhotoDemon User Preferences"
+    xmlEngine.prepareNewXML "User Preferences"
     xmlEngine.writeBlankLine
     
     'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
     xmlEngine.writeComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
     xmlEngine.writeBlankLine
     
-    'Write out the first block of settings: program paths
-    xmlEngine.writeTag "ProgramPaths", "", True
-        xmlEngine.writeTag "TempFiles", GetTemporaryPath
-        xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "Macro", MacroPath
-        xmlEngine.writeTag "Selections", SelectionPath
-    xmlEngine.closeTag "ProgramPaths"
+    'Write out the "advanced" block of preferences:
+    xmlEngine.writeTag "Advanced", "", True
+        xmlEngine.writeTag "LogProgramMessages", "False"
+    xmlEngine.closeTag "Advanced"
     xmlEngine.writeBlankLine
-
-    'Write out the second block of settings: general preferences
-    xmlEngine.writeTag "GeneralPreferences", "", True
-        xmlEngine.writeTag "AlphaCheckMode", "0"
-        xmlEngine.writeTag "AlphaCheckOne", CStr(RGB(255, 255, 255))
-        xmlEngine.writeTag "AlphaCheckTwo", CStr(RGB(204, 204, 204))
-        xmlEngine.writeTag "AlphaCheckSize", "1"
-        xmlEngine.writeTag "AutosizeLargeImages", "0"
-        xmlEngine.writeTag "BitmapRLE", "False"
-        xmlEngine.writeTag "CanvasBackground", CStr(vb3DShadow) 'RGB(201, 211, 226)
-        xmlEngine.writeTag "CanvasDropShadow", "True"
-        xmlEngine.writeTag "CheckForUpdates", "True"
-        xmlEngine.writeTag "ConfirmClosingUnsaved", "True"
-        xmlEngine.writeTag "CurrentLanguageFile", ""
-        xmlEngine.writeTag "DefaultSaveFormat", "0"
+    
+    'Write out the "batch processor" block of preferences:
+    xmlEngine.writeTag "BatchProcess", "", True
+        xmlEngine.writeTag "DriveBox", ""
+        xmlEngine.writeTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
+        xmlEngine.writeTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+    xmlEngine.closeTag "BatchProcess"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
+    ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
+    xmlEngine.writeTag "Core", "", True
         xmlEngine.writeTag "DisplayIDEWarning", "True"
-        xmlEngine.writeTag "DynamicTaskbarIcon", "True"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "HideLeftPanel", "False"
         xmlEngine.writeTag "HideRightPanel", "False"
-        xmlEngine.writeTag "ImageCaptionSize", "0"
-        xmlEngine.writeTag "LastUpdateCheck", ""
-        xmlEngine.writeTag "LastPreferencesPage", "0"
+        xmlEngine.writeTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
         xmlEngine.writeTag "LastFilePreferencesPage", "1"
-        xmlEngine.writeTag "LogProgramMessages", "False"
-        xmlEngine.writeTag "MetadataExport", "1"
-        xmlEngine.writeTag "MRUCaptionSize", "0"
-        xmlEngine.writeTag "MultipageImagePrompt", "0"
-        xmlEngine.writeTag "OutgoingColorDepth", "1"
-        xmlEngine.writeTag "PNGBackgroundPreservation", "True"
-        xmlEngine.writeTag "PNGCompression", "9"
-        xmlEngine.writeTag "PNGInterlacing", "False"
-        xmlEngine.writeTag "PPMExportFormat", "0"
-        xmlEngine.writeTag "PromptForPluginDownload", "True"
-        xmlEngine.writeTag "RememberWindowLocation", "True"
+        xmlEngine.writeTag "LastPreferencesPage", "0"
+        xmlEngine.writeTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
         xmlEngine.writeTag "LastWindowState", "0"
         xmlEngine.writeTag "LastWindowLeft", "1"
         xmlEngine.writeTag "LastWindowTop", "1"
         xmlEngine.writeTag "LastWindowWidth", "1"
         xmlEngine.writeTag "LastWindowHeight", "1"
-        xmlEngine.writeTag "SaveBehavior", "0"
-        xmlEngine.writeTag "TGARLE", "False"
+    xmlEngine.closeTag "Core"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "file format" block of preferences:
+    xmlEngine.writeTag "FileFormats", "", True
+        xmlEngine.writeTag "BitmapRLE", "False"
+        xmlEngine.writeTag "PNGBackgroundColor", "True"
+        xmlEngine.writeTag "PNGCompression", "9"
+        xmlEngine.writeTag "PNGInterlacing", "False"
+        xmlEngine.writeTag "PPMExportFormat", "0"
+        xmlEngine.writeTag "TGARLE", "True"
         xmlEngine.writeTag "TIFFCMYK", "False"
         xmlEngine.writeTag "TIFFCompression", "0"
+    xmlEngine.closeTag "FileFormats"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "interface" block of preferences:
+    xmlEngine.writeTag "Interface", "", True
+        xmlEngine.writeTag "CanvasBackground", CStr(vb3DShadow) 'RGB(201, 211, 226)
+        xmlEngine.writeTag "CanvasDropShadow", "True"
+        xmlEngine.writeTag "DynamicTaskbarIcon", "True"
+        xmlEngine.writeTag "MRUCaptionLength", "0"
+        xmlEngine.writeTag "RememberWindowLocation", "True"
+        
         'On Vista and later, Segoe UI is used as the interface font instead of Tahoma
         If g_IsVistaOrLater Then xmlEngine.writeTag "UseFancyFonts", "True" Else xmlEngine.writeTag "UseFancyFonts", "False"
-        xmlEngine.writeTag "UseToneMapping", "True"
-        xmlEngine.writeTag "ValidateAlphaChannels", "True"
+        
+        xmlEngine.writeTag "WindowCaptionLength", "0"
+    xmlEngine.closeTag "Interface"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "language" block of preferences:
+    xmlEngine.writeTag "Language", "", True
+        xmlEngine.writeTag "CurrentLanguageFile", ""
+    xmlEngine.closeTag "Language"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "loading" block of preferences:
+    xmlEngine.writeTag "Loading", "", True
+        xmlEngine.writeTag "AutomaticallyLoadMetadata", "True"
+        xmlEngine.writeTag "InitialImageZoom", "0"
+        xmlEngine.writeTag "MultipageImagePrompt", "0"
+        xmlEngine.writeTag "HDRToneMapping", "True"
         xmlEngine.writeTag "VerifyInitialColorDepth", "True"
-    xmlEngine.closeTag "GeneralPreferences"
+    xmlEngine.closeTag "Loading"
     xmlEngine.writeBlankLine
     
-    'Write out the third block of settings: plugin preferences
-    xmlEngine.writeTag "PluginPreferences", "", True
-        xmlEngine.writeTag "ForceFreeImageDisable", "False"
-        xmlEngine.writeTag "ForceZLibDisable", "False"
-        xmlEngine.writeTag "ForceEZTwainDisable", "False"
-        xmlEngine.writeTag "ForcePngnqDisable", "False"
-        xmlEngine.writeTag "ForceExifToolDisable", "False"
-        xmlEngine.writeTag "LastPluginPreferencesPage", "0"
-        xmlEngine.writeTag "PngnqAlphaExtenuation", "False"
-        xmlEngine.writeTag "PngnqYUV", "True"
-        xmlEngine.writeTag "PngnqColorSample", "3"
-        xmlEngine.writeTag "PngnqDithering", "5"
-    xmlEngine.closeTag "PluginPreferences"
-    xmlEngine.writeBlankLine
-    
-    'Write out batch conversion preferences
-    xmlEngine.writeTag "BatchPreferences", "", True
-        xmlEngine.writeTag "DriveBox", ""
-        xmlEngine.writeTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-    xmlEngine.closeTag "BatchPreferences"
-    xmlEngine.writeBlankLine
-        
-    'Write out file format preferences
-    xmlEngine.writeTag "FileFormats", "", True
-        xmlEngine.writeTag "LastOpenFilter", "1"   'Default to "All Compatible Graphics" filter for loading
-        xmlEngine.writeTag "LastSaveFilter", "-1"  'Mark the last-used save filter as "unknown"
-    xmlEngine.closeTag "FileFormat"
-    xmlEngine.writeBlankLine
-        
-    'Write out tool preferences
-    xmlEngine.writeTag "ToolPreferences", "", True
-        xmlEngine.writeTag "ClearSelectionAfterCrop", "True"
-        xmlEngine.writeTag "LastSelectionShape", "0"
-        xmlEngine.writeTag "LastActiveTool", "0"
-    xmlEngine.closeTag "ToolPreferences"
-    xmlEngine.writeBlankLine
-                
-    'Finally, write out MRU placeholders
+    'Write out the "MRU" block of preferences:
     xmlEngine.writeTag "MRU", "", True
         xmlEngine.writeTag "NumberOfEntries", "0"
         xmlEngine.writeTag "f0", ""
@@ -469,6 +448,67 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "f7", ""
         xmlEngine.writeTag "f8", ""
     xmlEngine.closeTag "MRU"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "paths" block of preferences:
+    xmlEngine.writeTag "Paths", "", True
+        xmlEngine.writeTag "TempFiles", GetTemporaryPath
+        xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.writeTag "Macro", MacroPath
+        xmlEngine.writeTag "Selections", SelectionPath
+    xmlEngine.closeTag "Paths"
+    xmlEngine.writeBlankLine
+
+    'Write out the "plugins" block preferences:
+    xmlEngine.writeTag "Plugins", "", True
+        xmlEngine.writeTag "ForceExifToolDisable", "False"
+        xmlEngine.writeTag "ForceEZTwainDisable", "False"
+        xmlEngine.writeTag "ForceFreeImageDisable", "False"
+        xmlEngine.writeTag "ForcePngnqDisable", "False"
+        xmlEngine.writeTag "ForceZLibDisable", "False"
+        xmlEngine.writeTag "LastPluginPreferencesPage", "0"
+        xmlEngine.writeTag "PngnqAlphaExtenuation", "False"
+        xmlEngine.writeTag "PngnqColorSample", "3"
+        xmlEngine.writeTag "PngnqDithering", "5"
+        xmlEngine.writeTag "PngnqYUV", "True"
+    xmlEngine.closeTag "Plugins"
+    xmlEngine.writeBlankLine
+
+    'Write out the "saving" block of preferences:
+    xmlEngine.writeTag "Saving", "", True
+        xmlEngine.writeTag "ConfirmClosingUnsaved", "True"
+        xmlEngine.writeTag "MetadataExport", "1"
+        xmlEngine.writeTag "OutgoingColorDepth", "1"
+        xmlEngine.writeTag "OverwriteOrCopy", "0"
+        xmlEngine.writeTag "SuggestedFormat", "0"
+    xmlEngine.closeTag "Saving"
+    xmlEngine.writeBlankLine
+
+    'Write out the "tools" block of preferences:
+    xmlEngine.writeTag "Tools", "", True
+        xmlEngine.writeTag "ClearSelectionAfterCrop", "True"
+        xmlEngine.writeTag "LastSelectionShape", "0"
+        xmlEngine.writeTag "LastActiveTool", "0"
+    xmlEngine.closeTag "Tools"
+    xmlEngine.writeBlankLine
+
+    'Write out the "transparency" block of preferences:
+    xmlEngine.writeTag "Transparency", "", True
+        xmlEngine.writeTag "AlphaCheckMode", "0"
+        xmlEngine.writeTag "AlphaCheckOne", CStr(RGB(255, 255, 255))
+        xmlEngine.writeTag "AlphaCheckTwo", CStr(RGB(204, 204, 204))
+        xmlEngine.writeTag "AlphaCheckSize", "1"
+        xmlEngine.writeTag "ValidateAlphaChannels", "True"
+    xmlEngine.closeTag "Transparency"
+    xmlEngine.writeBlankLine
+    
+    'Write out the "updates" block of preferences:
+    xmlEngine.writeTag "Updates", "", True
+        xmlEngine.writeTag "CheckForUpdates", "True"
+        xmlEngine.writeTag "LastUpdateCheck", ""
+        xmlEngine.writeTag "PromptForPluginDownload", "True"
+    xmlEngine.closeTag "Updates"
     xmlEngine.writeBlankLine
     
     'With all tags successfully written, we can now close the XML data and write it out to file.
@@ -587,11 +627,8 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     xmlEngine.loadXMLFile PreferencesPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If xmlEngine.isPDDataType("PhotoDemon User Preferences") And xmlEngine.validateLoadedXMLData("GeneralPreferences") Then
-    
-        'Return the tag at that location
+    If xmlEngine.isPDDataType("User Preferences") And xmlEngine.validateLoadedXMLData("Paths") Then
         GetPreference = xmlEngine.getUniqueTag_String(strVariableName, , , strSectionHeader)
-        
     Else
         GetPreference = ""
     End If
@@ -612,7 +649,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
     xmlEngine.loadXMLFile PreferencesPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If xmlEngine.isPDDataType("PhotoDemon User Preferences") And xmlEngine.validateLoadedXMLData("GeneralPreferences") Then
+    If xmlEngine.isPDDataType("User Preferences") And xmlEngine.validateLoadedXMLData("Paths") Then
     
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
         If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then

@@ -161,7 +161,7 @@ End Function
 Public Sub activateNewLanguage(ByVal newLangIndex As Long)
 
     curLanguage = newLangIndex
-    g_UserPreferences.SetPref_String "General Preferences", "CurrentLanguageFile", availableLanguages(newLangIndex).FileName
+    g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(newLangIndex).FileName
     ApplyLanguage
 
 End Sub
@@ -214,7 +214,7 @@ Public Sub DetermineLanguage()
     Else
     
         Dim curLanguageFile As String
-        curLanguageFile = g_UserPreferences.GetPref_String("General Preferences", "CurrentLanguageFile", "")
+        curLanguageFile = g_UserPreferences.GetPref_String("Language", "Current Language File", "")
         
         'If no specific file has been named, use the default language
         If curLanguageFile = "" Then

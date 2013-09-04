@@ -216,6 +216,10 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
         If sectionStartLocation > 0 Then
             sectionLocation = InStr(sectionStartLocation, xmlContents, closeTag, vbTextCompare)
         Else
+            
+            'If the section tag was not found, we should really create the section for the user.  But as that's not a
+            ' a possibility at present, simply fail and exit.  (In the future, if new sections are added to the
+            ' user prefs file, I will need to implement this.)
             updateTag = False
             Exit Function
         End If

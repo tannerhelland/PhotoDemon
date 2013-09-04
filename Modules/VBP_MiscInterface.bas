@@ -335,16 +335,6 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
-                        
-        'STEP 4: correct tab stops so that the OK button is always 0, and Cancel is always 1
-        If (TypeOf eControl Is CommandButton) Then
-            If (eControl.Caption = "&OK") Then
-                If eControl.TabIndex <> 0 Then eControl.TabIndex = 0
-            End If
-        End If
-        If (TypeOf eControl Is CommandButton) Then
-            If (eControl.Caption = "&Cancel") Then eControl.TabIndex = 1
-        End If
                 
     Next
     
@@ -383,7 +373,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         Dim tmpTooltip As String
         For Each eControl In tForm.Controls
             
-            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
+            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is colorSelector) Then
                 If (Trim(eControl.ToolTipText) <> "") Then
                     tmpTooltip = eControl.ToolTipText
                     eControl.ToolTipText = ""
@@ -511,10 +501,10 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
         Case VISIBILITY_TOGGLE
         
             'Write the new value to the preferences files
-            g_UserPreferences.SetPref_Boolean "General Preferences", "HideLeftPanel", Not g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False)
+            g_UserPreferences.SetPref_Boolean "Core", "Hide Left Panel", Not g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False)
 
             'Toggle the text and picture box accordingly
-            If g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False) Then
+            If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
                 FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
                 FormMain.picLeftPane.Visible = False
             Else
@@ -544,10 +534,10 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
         Case VISIBILITY_TOGGLE
         
             'Write the new value to the preferences file
-            g_UserPreferences.SetPref_Boolean "General Preferences", "HideRightPanel", Not g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False)
+            g_UserPreferences.SetPref_Boolean "Core", "Hide Right Panel", Not g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False)
 
             'Toggle the text and picture box accordingly
-            If g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False) Then
+            If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
                 FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
                 FormMain.picRightPane.Visible = False
             Else
