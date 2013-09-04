@@ -135,7 +135,7 @@ Public Sub MRU_LoadFromFile()
     numOfMRUHashes = 0
     
     'Get the number of MRU entries from the preferences file
-    numEntries = g_UserPreferences.GetPref_Long("MRU", "NumberOfEntries", RECENT_FILE_COUNT)
+    numEntries = g_UserPreferences.GetPref_Long("MRU", "Number Of Entries", RECENT_FILE_COUNT)
     
     'Only load entries if MRU data exists
     If numEntries > 0 Then
@@ -153,7 +153,7 @@ Public Sub MRU_LoadFromFile()
             End If
             
             'Based on the user's preference for captioning, display either the full path or just the filename
-            If g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+            If g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
@@ -185,7 +185,7 @@ End Sub
 Public Sub MRU_SaveToFile()
 
     'Save the number of current entries
-    g_UserPreferences.SetPref_Long "MRU", "NumberOfEntries", numEntries
+    g_UserPreferences.SetPref_Long "MRU", "Number Of Entries", numEntries
     
     Dim x As Long
     
@@ -311,7 +311,7 @@ MRUEntryFound:
     End If
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    If g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+    If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
         FormMain.mnuRecDocs(0).Caption = getFilename(newFile)
     Else
         FormMain.mnuRecDocs(0).Caption = getShortMRU(newFile)
@@ -331,7 +331,7 @@ MRUEntryFound:
             Load FormMain.mnuRecDocs(x)
             
             'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-            If g_UserPreferences.GetPref_Long("General Preferences", "MRUCaptionSize", 0) = 0 Then
+            If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
                 FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
             Else
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
@@ -448,7 +448,7 @@ Public Sub MRU_ClearList()
     Next i
     
     'Reset the MRU count in the preferences file
-    g_UserPreferences.SetPref_Long "MRU", "NumberOfEntries", 0
+    g_UserPreferences.SetPref_Long "MRU", "Number Of Entries", 0
     
     'The icons in the MRU sub-menu need to be reset after this action
     ResetMenuIcons

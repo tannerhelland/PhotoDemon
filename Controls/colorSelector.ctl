@@ -26,6 +26,29 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Color Selector custom control
+'Copyright ©2012-2013 by Tanner Helland
+'Created: 17/August/13
+'Last updated: 04/September/13
+'Last update: external displayColorSelection function, which forces the control to display the color selection
+'             window (without requiring a user click)
+'
+'This thin user control is basically an empty control that when clicked, displays a color selection window.  If a
+' color is selected (e.g. Cancel is not pressed), it updates its back color to match, and raises a "ColorChanged"
+' event.
+'
+'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction with the
+' command bar user control, as it easily supports color reset/randomize/preset events.  It is also nice to be able
+' to update a single master function for color selection, then have the change propagate to all tool windows.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+'
+'***************************************************************************
+
+
+
 Option Explicit
 
 'This control doesn't really do anything interesting, besides allow a color to be selected.
@@ -49,6 +72,11 @@ Public Property Let Color(ByVal newColor As OLE_COLOR)
     PropertyChanged "Color"
     RaiseEvent ColorChanged
 End Property
+
+'Outside functions can call this to force a display of the color window
+Public Sub displayColorSelection()
+    UserControl_Click
+End Sub
 
 Private Sub UserControl_Click()
 

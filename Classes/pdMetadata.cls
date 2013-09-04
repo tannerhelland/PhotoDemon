@@ -133,7 +133,7 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
         Message "ExifTool plugin missing.  Metadata import abandoned."
         Exit Sub
     End If
-
+    
     maxMetadataCount = 0
     hasGPSCoordinates = False: gpsIndex = 0
     

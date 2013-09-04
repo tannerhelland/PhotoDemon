@@ -360,7 +360,7 @@ Dim m_ToolTip As clsToolTip
 'Do not download the update, but prompt the user again in the future
 Private Sub cmdNoDownload_Click()
     
-    g_UserPreferences.SetPref_Boolean "General Preferences", "CheckForUpdates", True
+    g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", True
     
     Message "Automatic update canceled."
     
@@ -380,7 +380,7 @@ End Sub
 'Do not download the update, and do not prompt the user again
 Private Sub cmdNoDownloadNoReminder_Click()
     
-    g_UserPreferences.SetPref_Boolean "General Preferences", "CheckForUpdates", False
+    g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", False
     
     Message "Automatic update canceled."
     

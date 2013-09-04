@@ -135,7 +135,7 @@ Public Sub ActivateWorkaround()
     If pdImages(CurrentImage).Width <> 0 Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
 
     'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "DynamicTaskbarIcon", True) And (MacroStatus <> MacroBATCH) Then
+    If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) And (MacroStatus <> MacroBATCH) Then
         If pdImages(CurrentImage).curFormIcon32 <> 0 Then
             setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32
         Else

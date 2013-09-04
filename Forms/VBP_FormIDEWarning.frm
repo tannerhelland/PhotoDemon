@@ -216,9 +216,9 @@ Public Sub showDialog()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
-    If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Boolean "General Preferences", "DisplayIDEWarning", False
+    If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Boolean "Core", "Display IDE Warning", False
     Me.Hide
 
 End Sub

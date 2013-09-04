@@ -99,10 +99,10 @@ Public Sub LoadTheProgram()
         
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
     Dim wRect As RECT
-    wRect.Left = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowLeft", 1)
-    wRect.Top = g_UserPreferences.GetPref_Long("General Preferences", "LastWindowTop", 1)
-    wRect.Right = wRect.Left + g_UserPreferences.GetPref_Long("General Preferences", "LastWindowWidth", 1)
-    wRect.Bottom = wRect.Top + g_UserPreferences.GetPref_Long("General Preferences", "LastWindowHeight", 1)
+    wRect.Left = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
+    wRect.Top = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
+    wRect.Right = wRect.Left + g_UserPreferences.GetPref_Long("Core", "Last Window Width", 1)
+    wRect.Bottom = wRect.Top + g_UserPreferences.GetPref_Long("Core", "Last Window Height", 1)
     g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
     
     'Make the splash screen's message display match the rest of PD
@@ -242,13 +242,13 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing user interface..."
                 
     'Display or hide the main form's tool panes according to the saved setting in the preferences file
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "HideLeftPanel", False) Then
+    If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
         ChangeLeftPane VISIBILITY_FORCEHIDE
     Else
         ChangeLeftPane VISIBILITY_FORCEDISPLAY
     End If
     
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "HideRightPanel", False) Then
+    If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
         ChangeRightPane VISIBILITY_FORCEHIDE
     Else
         ChangeRightPane VISIBILITY_FORCEDISPLAY
@@ -286,7 +286,7 @@ Public Sub LoadTheProgram()
     initializeIconHandler
     
     'Before displaying the main window, see if the user wants to restore last-used window location.
-    If g_UserPreferences.GetPref_Boolean("General Preferences", "RememberWindowLocation", True) Then restoreMainWindowLocation
+    If g_UserPreferences.GetPref_Boolean("Interface", "Remember Window Location", True) Then restoreMainWindowLocation
         
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
     If g_UseFancyFonts Then
@@ -709,7 +709,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If targetImage.mainLayer.getLayerColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
-            If g_UserPreferences.GetPref_Boolean("General Preferences", "ValidateAlphaChannels", True) Then
+            If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
             
                 If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
@@ -738,7 +738,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         targetImage.updateSize
-        If FileExist(sFile(thisImage)) Then targetImage.OriginalFileSize = fileLen(sFile(thisImage))
+        If FileExist(sFile(thisImage)) Then targetImage.OriginalFileSize = FileLen(sFile(thisImage))
         targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
                 
                 
@@ -752,7 +752,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
         ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
         
-        If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("General Preferences", "VerifyInitialColorDepth", True) Or mustCountColors) Then
+        If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Or mustCountColors) Then
             
             colorCountCheck = getQuickColorCount(targetImage, CurrentImage)
         
@@ -813,10 +813,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If the ExifTool plugin is available, use it to extract any possible metadata from the image file
+        ' If the ExifTool plugin is available, and user preferences asllow, extract any possible metadata from the image file
         '*************************************************************************************************************************************
         
-        If isThisPrimaryImage Then
+        If isThisPrimaryImage And g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
             Message "Compiling metadata..."
             Set targetImage.imgMetadata = New pdMetadata
             targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
@@ -847,7 +847,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             DisplaySize targetImage.Width, targetImage.Height
             
             If imgFormTitle = "" Then
-                If g_UserPreferences.GetPref_Long("General Preferences", "ImageCaptionSize", 0) = 0 Then
+                If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
                     FormMain.ActiveForm.Caption = getFilename(sFile(thisImage))
                 Else
                     FormMain.ActiveForm.Caption = sFile(thisImage)
@@ -1357,7 +1357,7 @@ Public Sub LoadPlugins()
     If isEZTwainAvailable Then
                 
         'If we do find the DLL, check to see if EZTwain has been forcibly disabled by the user.
-        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceEZTwainDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugins", "Force EZTwain Disable", False) Then
             g_ScanEnabled = False
         Else
             g_ScanEnabled = True
@@ -1380,7 +1380,7 @@ Public Sub LoadPlugins()
     If isZLibAvailable Then
     
         'Check to see if zLib has been forcibly disabled.
-        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceZLibDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugins", "Force ZLib Disable", False) Then
             g_ZLibEnabled = False
         Else
             g_ZLibEnabled = True
@@ -1394,7 +1394,7 @@ Public Sub LoadPlugins()
     If isFreeImageAvailable Then
         
         'Check to see if FreeImage has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceFreeImageDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugins", "Force FreeImage Disable", False) Then
             g_ImageFormats.FreeImageEnabled = False
         Else
             g_ImageFormats.FreeImageEnabled = True
@@ -1411,7 +1411,7 @@ Public Sub LoadPlugins()
     If isPngnqAvailable Then
         
         'Check to see if pngnq-s9 has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForcePngnqDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugins", "Force Pngnq Disable", False) Then
             g_ImageFormats.pngnqEnabled = False
         Else
             g_ImageFormats.pngnqEnabled = True
@@ -1425,7 +1425,7 @@ Public Sub LoadPlugins()
     If isExifToolAvailable Then
         
         'Check to see if ExifTool has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugin Preferences", "ForceExifToolDisable", False) Then
+        If g_UserPreferences.GetPref_Boolean("Plugins", "Force ExifTool Disable", False) Then
             g_ExifToolEnabled = False
         Else
             g_ExifToolEnabled = True

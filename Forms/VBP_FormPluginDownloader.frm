@@ -581,7 +581,7 @@ Private Sub cmdChoice_Click(Index As Integer)
         Case 1
         
             'Store this preference
-            g_UserPreferences.SetPref_Boolean "General Preferences", "PromptForPluginDownload", True
+            g_UserPreferences.SetPref_Boolean "Updates", "Prompt For Plugin Download", True
     
             'Close our Internet connection, if any
             If hInternetSession Then InternetCloseHandle hInternetSession
@@ -593,7 +593,7 @@ Private Sub cmdChoice_Click(Index As Integer)
         Case 2
             
             'Store this preference
-            g_UserPreferences.SetPref_Boolean "General Preferences", "PromptForPluginDownload", False
+            g_UserPreferences.SetPref_Boolean "Updates", "Prompt For Plugin Download", False
     
             'Close our Internet connection, if any
             If hInternetSession Then InternetCloseHandle hInternetSession
