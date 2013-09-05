@@ -183,7 +183,7 @@ Private Sub Form_Load()
     
     Dim extraString1 As String, extraString2 As String
     extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
-    extraString2 = "for more information on licensing, visit tannerhelland.com/photodemon/#license"
+    extraString2 = g_Language.TranslateMessage("for more information on licensing, visit tannerhelland.com/photodemon/#license")
     GenerateThankyou extraString1, extraString2
     GenerateThankyou ""
     extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
@@ -201,7 +201,7 @@ Private Sub Form_Load()
     GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/"
     GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html"
     GenerateThankyou "", ""
-    GenerateThankyou "Thank you for using PhotoDemon"
+    GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon")
     GenerateThankyou "tannerhelland.com/photodemon"
     
     'Assign the system hand cursor to all relevant objects
