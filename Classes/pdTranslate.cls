@@ -46,17 +46,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Basic information about a language file is stored in this type of variable
-' NOTE: this type is now publicly declared in the Public_Variables section.  I moved it because other functions (specifically, the
-'       new Language Editor) require access to the type.
-'Private Type pdLanguageFile
-'    FileName As String
-'    langID As String
-'    langName As String
-'    langType As String
-'    langVersion As String
-'    langStatus As String
-'End Type
+'NOTE: this class frequently uses a type called pdLanguageFile.  Because outside functions (like the Language Editor) also need
+' access to this type, I have moved it to the Public_Variables module.
 
 'Language-related API calls
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
@@ -96,12 +87,6 @@ Private m_isReady As Boolean
 'The following boolean values are marked by preProcessString, then read by postProcessString
 Private m_hasDotDotDot As Boolean
 Private m_hasTrailingColon As Boolean
-
-'TEMPORARY: placing old variables here as I convert this class to use the pdXML class
-'Private m_translationFileContents As String
-'Searching the main XML string is a time-consuming process.  Shortcuts can be activated if all text lies on the same form.
-'Dim m_shortcutActive As Boolean
-'Dim m_shortcutLocation As Long
 
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from CheckAvailableLanguages().
@@ -222,7 +207,7 @@ Public Sub DetermineLanguage()
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
         Else
-            If FileExist(g_UserPreferences.getLanguagePath & curLanguageFile) Then
+            If FileExist(curLanguageFile) Then
                 curLanguage = getLangIndexFromFile(curLanguageFile)
             Else
                 curLanguage = defaultLanguage
@@ -298,7 +283,7 @@ Public Sub ApplyLanguage()
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
     If translationActive Then
         Set xmlEngine = New pdXML
-        xmlEngine.loadXMLFile g_UserPreferences.getLanguagePath & availableLanguages(curLanguage).FileName
+        xmlEngine.loadXMLFile availableLanguages(curLanguage).FileName
     End If
 
     'Redraw all text on the main form using the new language
@@ -382,7 +367,7 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
         
                 'If this is a valid language file, get the language information (if available).
                 fillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages + langOffset)
-                availableLanguages(nLanguages + langOffset).FileName = chkFile
+                availableLanguages(nLanguages + langOffset).FileName = srcFolder & chkFile
                 availableLanguages(nLanguages + langOffset).langType = langTypeForThisFolder
                 nLanguages = nLanguages + 1
                 
