@@ -27,6 +27,15 @@ Begin VB.Form FormBatchWizard
    Begin VB.CommandButton cmdPrevious 
       Caption         =   "&Previous"
       Enabled         =   0   'False
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   615
       Left            =   10080
       TabIndex        =   7
@@ -69,6 +78,15 @@ Begin VB.Form FormBatchWizard
    End
    Begin VB.CommandButton cmdCancel 
       Caption         =   "&Cancel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   615
       Left            =   13860
       TabIndex        =   1
@@ -78,6 +96,15 @@ Begin VB.Form FormBatchWizard
    Begin VB.CommandButton cmdNext 
       Caption         =   "&Next"
       Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   615
       Left            =   11880
       TabIndex        =   0
@@ -2370,7 +2397,7 @@ Private Sub cmdAddFiles_Click()
 End Sub
 
 'Cancel and exit the dialog, with optional prompts as necessary (see Form_QueryUnload)
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 

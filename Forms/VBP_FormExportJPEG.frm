@@ -47,6 +47,15 @@ Begin VB.Form dialog_ExportJPEG
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   4440
       TabIndex        =   0
@@ -56,6 +65,15 @@ Begin VB.Form dialog_ExportJPEG
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   5910
       TabIndex        =   1
@@ -64,6 +82,15 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin VB.CommandButton cmdShowHide 
       Caption         =   " Hide advanced settings"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   240
       TabIndex        =   6
@@ -429,7 +456,7 @@ Private Sub toggleAdvancedSettings()
         lblBackground.Top = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 10
         CmdOK.Top = cmdShowHide.Top
-        CmdCancel.Top = CmdOK.Top
+        cmdCancel.Top = CmdOK.Top
     
     Else
     
@@ -450,7 +477,7 @@ Private Sub toggleAdvancedSettings()
         lblBackground.Top = lineSeparator.y1
         cmdShowHide.Top = lineSeparator.y1 + 10
         CmdOK.Top = cmdShowHide.Top
-        CmdCancel.Top = CmdOK.Top
+        cmdCancel.Top = CmdOK.Top
     
     End If
     
@@ -466,7 +493,7 @@ Private Sub toggleAdvancedSettings()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog(Optional ByVal showAdvanced As Boolean = False)
+Public Sub showDialog(Optional ByVal showAdvanced As Boolean = False)
 
     showAdvanced = False
 
