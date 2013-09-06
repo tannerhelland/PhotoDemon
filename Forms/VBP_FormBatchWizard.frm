@@ -2223,9 +2223,6 @@ Option Explicit
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Const LB_SETHORIZONTALEXTENT = &H194
 
-'API to add items to a listbox without a visual refresh occurring
-Private Declare Function LockWindowUpdate Lib "user32" (ByVal hWnd As Long) As Long
-
 'Used to render images onto command buttons at run-time
 Dim cImgCtl As clsControlImage
 

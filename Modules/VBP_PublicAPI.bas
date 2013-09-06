@@ -90,3 +90,6 @@ Public Declare Function GetTickCount Lib "kernel32" () As Long
 Public Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Public Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
 Public Declare Function ColorAdjustLuma Lib "shlwapi" (ByVal clrRGB As Long, ByVal n As Long, ByVal fScale As Long) As Long
+
+'LockWindowUpdate has many purposes, but I primarily use it to add items to a listbox without a visual refresh occurring
+Public Declare Function LockWindowUpdate Lib "user32" (ByVal hWnd As Long) As Long
