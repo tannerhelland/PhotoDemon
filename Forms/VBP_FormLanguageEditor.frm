@@ -83,6 +83,99 @@ Begin VB.Form FormLanguageEditor
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7455
+      Index           =   2
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   11
+      Top             =   720
+      Width           =   11775
+      Begin VB.ComboBox cmbPhraseFilter 
+         BackColor       =   &H00FFFFFF&
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   15
+         Top             =   6840
+         Width           =   4500
+      End
+      Begin VB.ListBox lstPhrases 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   5580
+         Left            =   240
+         TabIndex        =   13
+         Top             =   480
+         Width           =   4500
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "phrases to display:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         TabIndex        =   14
+         Top             =   6360
+         Width           =   1995
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "list of phrases:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   0
+         TabIndex        =   12
+         Top             =   0
+         Width           =   1560
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
       Index           =   0
       Left            =   3480
       ScaleHeight     =   497
@@ -419,100 +512,6 @@ Begin VB.Form FormLanguageEditor
          Width           =   7515
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   2
-      Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   11
-      Top             =   720
-      Width           =   11775
-      Begin VB.ComboBox cmbPhraseFilter 
-         BackColor       =   &H00FFFFFF&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   15
-         Top             =   6840
-         Width           =   4500
-      End
-      Begin VB.ListBox lstPhrases 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   5580
-         Left            =   240
-         Sorted          =   -1  'True
-         TabIndex        =   13
-         Top             =   480
-         Width           =   4500
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "phrases to display:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         TabIndex        =   14
-         Top             =   6360
-         Width           =   1995
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "list of phrases:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         TabIndex        =   12
-         Top             =   0
-         Width           =   1560
-      End
-   End
    Begin VB.Label lblBackground 
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -597,6 +596,19 @@ Dim listOfAvailableLanguages() As pdLanguageFile
 'The language currently being edited.  This curLanguage variable will contain all metadata for the language file.
 Dim curLanguage As pdLanguageFile
 
+'All phrases that need to be translated will be stored in this array
+Private Type Phrase
+    Original As String
+    Translation As String
+    Length As Long
+    ListBoxEntry As String
+End Type
+Dim numOfPhrases As Long
+Private allPhrases() As Phrase
+
+'Has the source XML language file been loaded yet?
+Dim xmlLoaded As Boolean
+
 'The current wizard page
 Dim curWizardPage As Long
 
@@ -615,6 +627,8 @@ End Sub
 'Change the active wizard page.  If moveForward is set to TRUE, the wizard page will be advanced; otherwise, it will move
 ' to the previous page.
 Private Sub changeWizardPage(ByVal moveForward As Boolean)
+
+    Dim i As Long
 
     'Before changing the page, maek sure all user input on the current page is valid
     Select Case curWizardPage
@@ -657,12 +671,12 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
-                curLanguage = listOfAvailableLanguages(lstLanguages.ListIndex)
+                curLanguage = listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex))
                 curLanguage.FileName = ""
                 curLanguage.langType = "Unofficial"
                 
                 'Attempt to load the selected language from file
-                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.ListIndex).FileName) Then
+                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName) Then
                     
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
                 Else
@@ -677,11 +691,11 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
         
             'When leaving the metadata page, automatically copy all text box entries into the metadata holder
             With curLanguage
-                .langID = txtLangID(0) & "-" & txtLangID(1)
-                .langName = txtLangName
-                .langStatus = txtLangStatus
-                .langVersion = txtLangVersion
-                .Author = txtLangAuthor
+                .langID = Trim$(txtLangID(0)) & "-" & Trim$(txtLangID(1))
+                .langName = Trim$(txtLangName)
+                .langStatus = Trim$(txtLangStatus)
+                .langVersion = Trim$(txtLangVersion)
+                .Author = Trim$(txtLangAuthor)
             End With
         
         'The third page is the phrase editing page.  This is the most important page in the wizard.
@@ -711,7 +725,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 'Language ID is the most complex, because we must parse the two halves into individual text boxes
                 If InStr(1, .langID, "-") > 0 Then
                     txtLangID(0) = Left$(.langID, InStr(1, .langID, "-") - 1)
-                    txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-"), Len(.langID) - InStr(1, .langID, "-"))
+                    txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-") + 1, Len(.langID) - InStr(1, .langID, "-"))
                 Else
                     txtLangID(0) = .langID
                     txtLangID(1) = ""
@@ -727,11 +741,25 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
         
         'Phrase editor
         Case 2
+        
+            'If the XML file was just loaded, add its contents to the list box
+            If Not xmlLoaded Then
+            
+                xmlLoaded = True
+                
+                lstPhrases.Clear
+                
+                LockWindowUpdate lstPhrases.hWnd
+                For i = 0 To numOfPhrases - 1
+                    lstPhrases.AddItem allPhrases(i).ListBoxEntry
+                Next i
+                LockWindowUpdate 0
+                
+            End If
     
     End Select
     
     'Hide all inactive panels (and show the active one)
-    Dim i As Long
     For i = 0 To picContainer.Count - 1
         If i = curWizardPage Then picContainer(i).Visible = True Else picContainer(i).Visible = False
     Next i
@@ -780,6 +808,9 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
+    
+    'Mark the XML file as not loaded
+    xmlLoaded = False
     
     'By default, the first wizard page is displayed.  (We start at -1 because we will incerement the page count by +1 with our first
     ' call to changeWizardPage in Form_Activate)
@@ -839,6 +870,61 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+'Given a source language file, find all phrase tags, and load them into a specialized phrase array
 Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
 
+    Dim xmlEngine As New pdXML
+    Set xmlEngine = New pdXML
+    
+    'Attempt to load the language file
+    If xmlEngine.loadXMLFile(srcLangFile) Then
+    
+        'Validate the language file's contents
+        If xmlEngine.isPDDataType("Translation") And xmlEngine.validateLoadedXMLData("phrase") Then
+        
+            'Attempt to load all phrase tag location occurrences
+            Dim phraseLocations() As Long
+            If xmlEngine.findAllTagLocations(phraseLocations, "phrase") Then
+            
+                numOfPhrases = UBound(phraseLocations) + 1
+                ReDim allPhrases(0 To numOfPhrases - 1) As Phrase
+                
+                Dim tmpString As String
+                
+                Dim i As Long
+                For i = 0 To numOfPhrases - 1
+                    tmpString = xmlEngine.getUniqueTag_String("original", , phraseLocations(i))
+                    allPhrases(i).Original = tmpString
+                    allPhrases(i).Length = Len(tmpString)
+                    allPhrases(i).Translation = xmlEngine.getUniqueTag_String("translation", , phraseLocations(i))
+                    
+                    'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
+                    ' and it can't be so long that it overflows the list box.
+                    If InStr(1, tmpString, vbCrLf) Then tmpString = Replace(tmpString, vbCrLf, "")
+                    If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, "")
+                    If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, "")
+                    If Len(tmpString) > 35 Then tmpString = Left$(tmpString, 35) & "..."
+                    
+                    allPhrases(i).ListBoxEntry = tmpString
+                    
+                Next i
+                
+                loadAllPhrasesFromFile = True
+            
+            Else
+                loadAllPhrasesFromFile = False
+            End If
+        
+        Else
+            loadAllPhrasesFromFile = False
+        End If
+    
+    Else
+        loadAllPhrasesFromFile = False
+    End If
+
 End Function
+
+Private Sub lstLanguages_Click()
+    If Not optBaseLanguage(1) Then optBaseLanguage(1) = True
+End Sub

@@ -757,3 +757,58 @@ Public Function findAllAttributeValues(ByRef sArray() As String, ByVal tagName A
     End If
 
 End Function
+
+'Given a tag name, find all the occurrences of that tag in the file.  Those occurrence locations will be placed in a
+' Long-type array, which the calling function can use to retrieve individual values at its leisure.
+' NOTE: per my personal requirements for this function, it assumes simple tags only (e.g. <tagname>).  This improves
+' performance.  This function could easily be modified to also find tags with attributes.
+Public Function findAllTagLocations(ByRef locationArray() As Long, ByVal tagName As String) As Boolean
+
+    Dim numOfTags As Long, tagArrayBound As Long
+    numOfTags = 0
+    tagArrayBound = 100
+    ReDim locationArray(0 To tagArrayBound) As Long
+    
+    Dim searchTag As String
+    searchTag = "<" & tagName & ">"
+    
+    Dim searchLocation As Long
+    searchLocation = 1
+    
+    'If the tag doesn't occur even once, fail the function and exit.
+    If InStr(searchLocation, xmlContents, searchTag, vbTextCompare) > 0 Then
+    
+        'Find one initial tag
+        searchLocation = InStr(searchLocation, xmlContents, searchTag, vbTextCompare)
+    
+        'Continue searching the parent string until no more occurrences are found
+        Do
+            
+            'Store the tag's location in the results array
+            locationArray(numOfTags) = searchLocation
+            
+            'Increment tag count.  If it exceeds the bounds of the array, resize the array to match.
+            numOfTags = numOfTags + 1
+            
+            If numOfTags > tagArrayBound Then
+                tagArrayBound = tagArrayBound * 2
+                ReDim Preserve locationArray(0 To tagArrayBound) As Long
+            End If
+            
+            'Find the next occurrence of the target tag
+            searchLocation = InStr(searchLocation + 1, xmlContents, searchTag, vbTextCompare)
+        
+        Loop While searchLocation > 0
+    
+        'Now that all tags have been located, resize the array to match the number of tags found, then exit
+        ReDim Preserve locationArray(0 To numOfTags - 1) As Long
+        findAllTagLocations = True
+        
+    Else
+    
+        findAllTagLocations = False
+    
+    End If
+    
+End Function
+
