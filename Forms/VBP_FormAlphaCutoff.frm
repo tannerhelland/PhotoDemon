@@ -62,6 +62,15 @@ Begin VB.Form dialog_AlphaCutoff
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   5550
       TabIndex        =   1
@@ -71,6 +80,15 @@ Begin VB.Form dialog_AlphaCutoff
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   4080
       TabIndex        =   0
@@ -249,7 +267,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog()
+Public Sub showDialog()
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
