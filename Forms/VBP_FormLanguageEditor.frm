@@ -24,6 +24,59 @@ Begin VB.Form FormLanguageEditor
    ScaleWidth      =   1024
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton cmdNext 
+      Caption         =   "&Next"
+      Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   11880
+      TabIndex        =   4
+      Top             =   8310
+      Width           =   1725
+   End
+   Begin VB.CommandButton cmdCancel 
+      Caption         =   "&Cancel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   13860
+      TabIndex        =   3
+      Top             =   8310
+      Width           =   1365
+   End
+   Begin VB.CommandButton cmdPrevious 
+      Caption         =   "&Previous"
+      Enabled         =   0   'False
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   10080
+      TabIndex        =   2
+      Top             =   8310
+      Width           =   1725
+   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -66,6 +119,7 @@ Begin VB.Form FormLanguageEditor
          _ExtentX        =   7726
          _ExtentY        =   661
          Caption         =   "start a new language file from scratch"
+         Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   12
@@ -86,7 +140,6 @@ Begin VB.Form FormLanguageEditor
          _ExtentX        =   6191
          _ExtentY        =   661
          Caption         =   "edit an existing language file:"
-         Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   12
@@ -119,32 +172,6 @@ Begin VB.Form FormLanguageEditor
          Width           =   3540
       End
    End
-   Begin VB.CommandButton cmdNext 
-      Caption         =   "&Next"
-      Default         =   -1  'True
-      Height          =   615
-      Left            =   11880
-      TabIndex        =   4
-      Top             =   8310
-      Width           =   1725
-   End
-   Begin VB.CommandButton cmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   615
-      Left            =   13860
-      TabIndex        =   3
-      Top             =   8310
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdPrevious 
-      Caption         =   "&Previous"
-      Enabled         =   0   'False
-      Height          =   615
-      Left            =   10080
-      TabIndex        =   2
-      Top             =   8310
-      Width           =   1725
-   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -152,6 +179,253 @@ Begin VB.Form FormLanguageEditor
       ForeColor       =   &H80000008&
       Height          =   7455
       Index           =   1
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   16
+      Top             =   720
+      Width           =   11775
+      Begin VB.TextBox txtLangAuthor 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   390
+         Left            =   240
+         TabIndex        =   28
+         Text            =   "enter your name here"
+         Top             =   5160
+         Width           =   10935
+      End
+      Begin VB.TextBox txtLangStatus 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   390
+         Left            =   240
+         TabIndex        =   26
+         Text            =   "incomplete"
+         Top             =   3240
+         Width           =   10935
+      End
+      Begin VB.TextBox txtLangVersion 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   390
+         Left            =   240
+         TabIndex        =   24
+         Text            =   "1.0.0"
+         Top             =   4200
+         Width           =   10935
+      End
+      Begin VB.TextBox txtLangName 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   390
+         Left            =   240
+         TabIndex        =   22
+         Text            =   "English (US)"
+         Top             =   2280
+         Width           =   10935
+      End
+      Begin VB.TextBox txtLangID 
+         Alignment       =   2  'Center
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   390
+         Index           =   1
+         Left            =   240
+         TabIndex        =   20
+         Text            =   "US"
+         Top             =   1320
+         Width           =   615
+      End
+      Begin VB.TextBox txtLangID 
+         Alignment       =   2  'Center
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   390
+         Index           =   0
+         Left            =   240
+         TabIndex        =   17
+         Text            =   "en"
+         Top             =   360
+         Width           =   615
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "author name(s)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   8
+         Left            =   0
+         TabIndex        =   27
+         Top             =   4800
+         Width           =   1635
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "translation status (e.g. ""complete"", ""unfinished"", etc - any descriptive text is acceptable)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         TabIndex        =   25
+         Top             =   2880
+         Width           =   9240
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "translation version (in Major.Minor.Revision format, e.g. ""1.0.0"")"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   0
+         TabIndex        =   23
+         Top             =   3840
+         Width           =   6855
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "full language name (e.g. ""English (US)""; this will be displayed in PhotoDemon's language menu)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   7
+         Left            =   0
+         TabIndex        =   21
+         Top             =   1920
+         Width           =   10215
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "country ID (2 characters in ISO 3166-1 alpha-2 format, e.g. ""US"" for ""United States"")"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   6
+         Left            =   0
+         TabIndex        =   19
+         Top             =   960
+         Width           =   9030
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "language ID (2 characters in ISO 639-1 format, e.g. ""en"" for ""English"")"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   0
+         TabIndex        =   18
+         Top             =   0
+         Width           =   7515
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   2
       Left            =   3480
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
@@ -355,12 +629,22 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 pdMsgBox "Please select a language before continuing to the next step.", vbOKOnly + vbInformation + vbApplicationModal, "Please select a language"
                 Exit Sub
             End If
-            
+                        
             'If they want to start a new language file from scratch, set the load path to the MASTER English language file (which is
             ' hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
                 
                 If loadAllPhrasesFromFile(g_UserPreferences.getLanguagePath & "Master\MASTER.xml") Then
+                    
+                    'Populate the current language's metadata container with some default values
+                    With curLanguage
+                        .langID = "en-US"
+                        .langName = "English (US)"
+                        .langStatus = g_Language.TranslateMessage("incomplete")
+                        .langType = "Unofficial"
+                        .langVersion = "1.0.0"
+                        .Author = g_Language.TranslateMessage("enter your name here")
+                    End With
                     
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
                 Else
@@ -371,6 +655,13 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             'They want to edit an existing language.  Follow the same general pattern as for the master language file (above).
             Else
             
+                'Fill the current language metadata container with matching information from the selected language,
+                ' with a few changes
+                curLanguage = listOfAvailableLanguages(lstLanguages.ListIndex)
+                curLanguage.FileName = ""
+                curLanguage.langType = "Unofficial"
+                
+                'Attempt to load the selected language from file
                 If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.ListIndex).FileName) Then
                     
                 'For some reason, we failed to load the master language file.  Tell them to download a fresh copy of PD.
@@ -381,14 +672,64 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             
             End If
             
-        'The second page is the phrase editing page.  This is the most important page in the wizard.
+        'The second page is the metadata editing page.
         Case 1
+        
+            'When leaving the metadata page, automatically copy all text box entries into the metadata holder
+            With curLanguage
+                .langID = txtLangID(0) & "-" & txtLangID(1)
+                .langName = txtLangName
+                .langStatus = txtLangStatus
+                .langVersion = txtLangVersion
+                .Author = txtLangAuthor
+            End With
+        
+        'The third page is the phrase editing page.  This is the most important page in the wizard.
+        Case 2
     
     End Select
+
+
 
     'Everything has successfully validated, so go ahead and advance (or decrement) the page count
     If moveForward Then curWizardPage = curWizardPage + 1 Else curWizardPage = curWizardPage - 1
         
+        
+        
+    'We can now apply any entrance-timed panel changes
+    Select Case curWizardPage
+    
+        'Language selection
+        Case 0
+        
+        'Metadata editor
+        Case 1
+        
+            'When entering the metadata page, automatically fill all boxes with the currently stored metadata entries
+            With curLanguage
+            
+                'Language ID is the most complex, because we must parse the two halves into individual text boxes
+                If InStr(1, .langID, "-") > 0 Then
+                    txtLangID(0) = Left$(.langID, InStr(1, .langID, "-") - 1)
+                    txtLangID(1) = Mid$(.langID, InStr(1, .langID, "-"), Len(.langID) - InStr(1, .langID, "-"))
+                Else
+                    txtLangID(0) = .langID
+                    txtLangID(1) = ""
+                End If
+                
+                'Everything else can be copied directly
+                txtLangName = .langName
+                txtLangStatus = .langStatus
+                txtLangVersion = .langVersion
+                txtLangAuthor = .Author
+                
+            End With
+        
+        'Phrase editor
+        Case 2
+    
+    End Select
+    
     'Hide all inactive panels (and show the active one)
     Dim i As Long
     For i = 0 To picContainer.Count - 1
@@ -404,27 +745,45 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     Else
         cmdNext.Enabled = True
     End If
-    '    cmdNext.Caption = g_Language.TranslateMessage("Save language and exit editor")
-    'Else
-    '    If cmdNext.Caption <> g_Language.TranslateMessage("Next") Then cmdNext.Caption = g_Language.TranslateMessage("Next")
-    'End If
-
+    
+    'Finally, change the top title caption to match the current step
+    lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", curWizardPage + 1)
+    lblWizardTitle.Caption = lblWizardTitle.Caption & " "
+    
+    Select Case curWizardPage
+    
+        Case 0
+            lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("select a language file")
+            
+        Case 1
+            lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("add language metadata")
+            
+        Case 2
+            lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("translate all phrases")
+    
+    End Select
+    
 End Sub
 
 Private Sub Form_Activate()
     
+    'DEV WARNING - REMOVE WHEN FINISHED!
+    MsgBox "This tool is currently under heavy development.  It may not work as expected (or at all).", vbInformation + vbOKOnly + vbApplicationModal, "Development warning"
+    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Advance to the first page
+    changeWizardPage True
         
 End Sub
 
 Private Sub Form_Load()
     
-    MsgBox "This tool is currently under heavy development.  It may not work as expected (or at all).", vbInformation + vbOKOnly + vbApplicationModal, "Development warning"
-    
-    'By default, the first wizard page is displayed
-    curWizardPage = 0
+    'By default, the first wizard page is displayed.  (We start at -1 because we will incerement the page count by +1 with our first
+    ' call to changeWizardPage in Form_Activate)
+    curWizardPage = -1
     
     'Retrieve a list of available languages from the translation engine
     g_Language.copyListOfLanguages listOfAvailableLanguages
@@ -467,7 +826,7 @@ Private Sub Form_Load()
             lstLanguages.ItemData(lstLanguages.NewIndex) = i
             
         Else
-            MsgBox i
+            'Ignore the default language entry entirely
         End If
     Next i
     
