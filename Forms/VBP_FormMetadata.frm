@@ -196,11 +196,11 @@ Private Sub chkFriendlyValues_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
@@ -257,6 +257,20 @@ Private Sub Form_Load()
         
     'Make the invisible buffer's font match the rest of PD
     picBuffer.FontName = g_InterfaceFont
+    
+    'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
+    If Not pdImages(CurrentImage).imgMetadata.hasMetadata Then
+        pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
+        
+        'If the image contains GPS metadata, enable that option now
+        metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+    End If
+    
+    'If the image STILL doesn't have metadata, warn the user and exit.
+    If Not pdImages(CurrentImage).imgMetadata.hasMetadata Then
+        pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+        Unload Me
+    End If
     
     'Initialize the category array
     ReDim mdCategories(0) As mdCategory

@@ -23,7 +23,9 @@ Attribute VB_Exposed = False
 '
 'Because metadata handling is complicated, I have wrapped all related functions into this class.  Each pdImage object
 ' has one (1) metadata class called "imgMetadata".  That class is publicly accessible.  If metadata is available at
-' load-time, the imgMetadata object will automatically be filled with any metadata found in the source file.
+' load-time, and user preferences allow, the imgMetadata object will automatically be filled with any metadata found
+' in the source file.  If the user disables this option, but has "export metadata" as a preference, metadata will be
+' loaded then.
 '
 'At present, metadata handling is 100% tied to the ExifTool plugin (see the "Plugin_ExifTool_Interface" module for more
 ' detail).  Because metadata is insanely complex to both read and write - if you want it done correctly - I have no
@@ -63,7 +65,7 @@ Public Function getMetadataCount() As Long
     getMetadataCount = maxMetadataCount
 End Function
 
-'If no metadata was found during the original FreeImage load process, this will return FALSE.  If any metadata of any
+'If no metadata was found during the image load process, this will return FALSE.  If any metadata of any
 ' compatible type was found, this will return TRUE.
 Public Function hasMetadata() As Boolean
     If maxMetadataCount = 0 Then hasMetadata = False Else hasMetadata = True
@@ -400,12 +402,14 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
         'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel
         Select Case saveOptions
             
-            'Save as much metadata as possible - basically, do a simply "copy all tags" from the original file to the new one
+            'Save as much metadata as possible - basically, copy all tags from the original file to the new one
             Case 0
             
                 Message "Embedding metadata..."
                 
-                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+                'The next part is easy - supply the original location on disk to ExifTool, and request a copying of metadata
+                ' from that file to the new one.  Note that any number of irrelevant tags - including stuff like old thumbnails -
+                ' will be copied over, but this option is called "copy all metadata" for a reason.
                 etReturn = writeMetadata(srcPDImage.LocationOnDisk, outputPath, srcPDImage)
                 
                 'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something

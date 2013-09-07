@@ -3,9 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 25/July/13
-'Last update: advanced GDI+ features are now checked at load time, and if not found, certain features are automatically disabled
-'             regardless of OS.  (This should help any Vista users, if such people still exist...)
+'Last updated: 06/September/13
+'Last update: make progress bar font match the rest of the program.  (Can't believe I missed this for so long!)
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -342,13 +341,15 @@ Public Sub LoadTheProgram()
         .TextAlignX = EVPRGcenter
         .TextAlignY = EVPRGcenter
         .ShowText = True
+        .Font.Name = g_InterfaceFont
+        .Font.Size = 9
         .Text = g_Language.TranslateMessage("Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)")
         .Draw
     End With
-    
+        
     'Clear the newly built progress bar
     SetProgBarVal 0
-    
+        
     
     
     '*************************************************************************************************************************************
@@ -813,17 +814,30 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If the ExifTool plugin is available, and user preferences asllow, extract any possible metadata from the image file
+        ' If the ExifTool plugin is available, and user preferences allow, extract any possible metadata from the image file
         '*************************************************************************************************************************************
         
-        If isThisPrimaryImage And g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-            Message "Compiling metadata..."
+        If g_ExifToolEnabled And isThisPrimaryImage Then
+        
             Set targetImage.imgMetadata = New pdMetadata
-            targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
+        
+            'A user preference determines whether we loda metadata now, or suspend it until requested (e.g. save or browse time)
+            If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+                Message "Compiling metadata..."
+                targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
+                
+                'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+                metaToggle tMetadata, targetImage.imgMetadata.hasMetadata
+                metaToggle tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
+            Else
             
-            'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-            metaToggle tMetadata, targetImage.imgMetadata.hasMetadata
-            metaToggle tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
+                'Enable the metadata browser.  If the user selects this, we will attempt to load metadata then.
+                metaToggle tMetadata, True
+                
+                'GPS metadata is forcibly disabled if the user doesn't allow for load-time parsing
+                metaToggle tGPSMetadata, False
+            End If
+            
         End If
         
         

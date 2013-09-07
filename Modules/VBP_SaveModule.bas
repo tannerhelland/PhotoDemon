@@ -367,8 +367,21 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
     If updateMRU And g_ExifToolEnabled Then
         
-        updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1), srcPDImage)
-        
+        'Before proceeding, see if we've already loaded metadata.  If we haven't, do so now.
+        ' (NOTE: do a preference check in advance.  If metadata export is disabled, don't waste the user's time by parsing metadata
+        '        that won't be written out to file.)
+        If Not srcPDImage.imgMetadata.hasMetadata And (g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 3) Then
+            Message "Preparing to write metadata..."
+            srcPDImage.imgMetadata.loadAllMetadata srcPDImage.LocationOnDisk, srcPDImage.OriginalFileFormat
+        End If
+    
+        'Only attempt to export metadata if ExifTool was able to successfully parse the file
+        If srcPDImage.imgMetadata.hasMetadata Then
+            updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1), srcPDImage)
+        Else
+            Message "No metadata to export.  Continuing save..."
+        End If
+                
     End If
     
     'UpdateMRU should only be true if the save was successful
