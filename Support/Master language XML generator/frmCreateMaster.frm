@@ -580,18 +580,18 @@ Private Sub cmdMergeAll_Click()
             
             'Unlike the normal merge option, we will automatically save the results to a new XML file
             
-            Dim fPath As String
-            fPath = m_OldLanguagePath & ".new"
-            
-            If FileExist(fPath) Then
-                Kill fPath
-                Debug.Print "Note - old file with same name was erased.  Hope this is what you wanted!"
+            'Start by backing up the old file
+            FileCopy m_OldLanguagePath, m_OldLanguagePath & ".backup"
+                        
+            If FileExist(m_OldLanguagePath) Then
+                Kill m_OldLanguagePath
+                Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") was erased.  Hope this is what you wanted!"
             End If
             
             Dim fileNum As Integer
             fileNum = FreeFile
             
-            Open fPath For Output As #fileNum
+            Open m_OldLanguagePath For Output As #fileNum
                 Print #fileNum, m_NewLanguageText
             Close #fileNum
             
