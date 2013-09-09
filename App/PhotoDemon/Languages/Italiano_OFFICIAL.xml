@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="windows-1252"?>
 
 	<pdData>
-		
+
 		<pdDataType>Translation</pdDataType>
-		
+
 		<langid>it-IT</langid>
 		<langname>Italiano</langname>
 		<langversion>5.9.0</langversion>
@@ -41,6 +41,11 @@
 		</phrase>
 
 		<phrase>
+			<original>for more information on licensing, visit tannerhelland.com/photodemon/#license</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>Please note that PhotoDemon uses several third-party plugins</original>
 			<translation></translation>
 		</phrase>
@@ -60,7 +65,12 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormAbout.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<phrase>
+			<original>Thank you for using PhotoDemon</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- VBP_FormAbout.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormAbout.frm-->
 
@@ -87,7 +97,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_SubModule.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases was written to file. -->
+		<!-- VBP_SubModule.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 		<!-- END text for VBP_SubModule.bas-->
 
@@ -236,37 +246,37 @@
 		<phrase>
 			<original>Open one or more images for editing.
 
-	(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)</original>
+(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)</original>
 			<translation>Apre una o più immagini per la modifica.
 
-	(Un altro sistema per aprire le immagini è di trascinarle dalla vostra scrivania o da gestione risorse e depositarle in PhotoDemon.)</translation>
+(Un altro sistema per aprire le immagini è di trascinarle dalla vostra scrivania o da gestione risorse e depositarle in PhotoDemon.)</translation>
 		</phrase>
 
 		<phrase>
 			<original>Close the current image.
 
-	If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
+If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
 			<translation>Chiude l'immagine corrente. 
-			
-	 Se l'immagine corrente non è salvata, riceverai un avviso per salvarla prima di chiuderla.</translation>
+
+ Se l'immagine corrente non è salvata, riceverai un avviso per salvarla prima di chiuderla.</translation>
 		</phrase>
 
 		<phrase>
 			<original>Close the current image.
 
-	Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
+Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
 			<translation>Chiude l'immagine corrente.
 
-	Siccome hai disattivato gli avvisi (via Modifica -> Prefferenze), non riceverai nessun avviso prima di chiuderla.</translation>
+Siccome hai disattivato gli avvisi (via Modifica -> Prefferenze), non riceverai nessun avviso prima di chiuderla.</translation>
 		</phrase>
 
 		<phrase>
 			<original>Save the current image.
 
-	WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
+WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
 			<translation>Salva l'immagine corrente.
 
-	ATTENZIONE: questo sovrasciverà l'immagine corrente. Per salvarla in un file differente, usa il bottone "Salva con nome".</translation>
+ATTENZIONE: questo sovrasciverà l'immagine corrente. Per salvarla in un file differente, usa il bottone "Salva con nome".</translation>
 		</phrase>
 
 		<phrase>
@@ -322,10 +332,10 @@
 		<phrase>
 			<original>Unfortunately, the image '%1' could not be found.
 
-	If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 			<translation>Sfortunatamente, l'immagine '%1' non è stata trovata.
-			
-	Se l'immagine era originariamente situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o ricollega il supporto e riprova.</translation>
+
+Se l'immagine era originariamente situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o ricollega il supporto e riprova.</translation>
 		</phrase>
 
 		<phrase>
@@ -361,14 +371,14 @@
 		<phrase>
 			<original>Unfortunately, PhotoDemon was unable to load the following image:
 
-	%1
+%1
 
-	Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
 			<translation>Sfortunatamente, PhotoDemon non è in grado di caricare l'immagine seguente: 
-			
-	%1 
 
-	Per favore utilizza un altro programma per salvarla in un formato generico (come JPEG o PNG) prima di caricarla in PhotoDemon. Grazie!</translation>
+%1 
+
+Per favore utilizza un altro programma per salvarla in un formato generico (come JPEG o PNG) prima di caricarla in PhotoDemon. Grazie!</translation>
 		</phrase>
 
 		<phrase>
@@ -459,14 +469,14 @@
 		<phrase>
 			<original>Unfortunately, PhotoDemon was unable to find the following image(s):
 
-	%1
+%1
 
-	If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 			<translation>Sfortunatamente, PhotoDemon non è in grado di trovare la seguente immagine(i): 
-			
-	%1 
 
-	Se l'immagine originale è situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o riattacca il supporto e riprova.</translation>
+%1 
+
+Se l'immagine originale è situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o riattacca il supporto e riprova.</translation>
 		</phrase>
 
 		<phrase>
@@ -482,14 +492,14 @@
 		<phrase>
 			<original>Unfortunately, PhotoDemon was unable to load the following image(s):
 
-	%1
+%1
 
-	Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!</original>
+Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!</original>
 			<translation>Sfortunatamente, PhotoDemon non è in grado di caricare la seguente immagine(i):
-			
-	%1 
 
-	Per favore, utilizza un altro programma per salvarla in un formato generico (come JPEG o PNG) prima di caricarla in PhotoDemon. Grazie!</translation>
+%1 
+
+Per favore, utilizza un altro programma per salvarla in un formato generico (come JPEG o PNG) prima di caricarla in PhotoDemon. Grazie!</translation>
 		</phrase>
 
 		<phrase>
@@ -500,6 +510,11 @@
 		<phrase>
 			<original>Undo restored successfully.</original>
 			<translation>Annullamento ripristinato con successo.</translation>
+		</phrase>
+
+		<phrase>
+			<original>(IDE NOT RECOMMENDED - PLEASE COMPILE)</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
@@ -522,7 +537,7 @@
 			<translation>Duplicazione dell'immagine completa.</translation>
 		</phrase>
 
-		<!-- VBP_LoadModule.bas contains 94 phrases. 17 were duplicates of existing phrases, so only 77 new phrases were written to file. -->
+		<!-- VBP_LoadModule.bas contains 96 phrases. 18 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
 
 		<!-- END text for VBP_LoadModule.bas-->
 
@@ -581,10 +596,10 @@
 		<phrase>
 			<original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
 
-	To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
+To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
 			<translation>La libreria di compressione zlib (zlibwapi.dll) è marcata come mancante o è disabilitata durante l'inizializzazione del programma.
 
-	Per abilitare il salvataggio PDI, per favore permetti a %1 di scaricare gli aggiornamenti andando nel menù Utilità -> Opzioni e selezionando la casella di spunta "offri di scaricare i plugin base".</translation>
+Per abilitare il salvataggio PDI, per favore permetti a %1 di scaricare gli aggiornamenti andando nel menù Utilità -> Opzioni e selezionando la casella di spunta "offri di scaricare i plugin base".</translation>
 		</phrase>
 
 		<phrase>
@@ -595,6 +610,16 @@
 		<phrase>
 			<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
 			<translation>Formato d'uscita non riconosciuto. Salvataggio interrotto. Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
+		</phrase>
+
+		<phrase>
+			<original>Preparing to write metadata</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>No metadata to export.  Continuing save</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
@@ -635,10 +660,10 @@
 		<phrase>
 			<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
-	To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
+To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
 			<translation>L'interfaccia del plugin FreeImage (FreeImage.dll) è marcata come mancante o è disabilitata durante l'inizializzazione del programma.
 
-	Per attivare il supporto per questa immagine, per favore copia il file FreeImage.dll (scaricabile da http:// freeimage.sourceforge.net/download.html) nella cartella plug-in e riavvia il programma.</translation>
+Per attivare il supporto per questa immagine, per favore copia il file FreeImage.dll (scaricabile da http:// freeimage.sourceforge.net/download.html) nella cartella plug-in e riavvia il programma.</translation>
 		</phrase>
 
 		<phrase>
@@ -686,7 +711,7 @@
 			<translation>Colori trovati. Salvataggio a 24bit di colore JPEG.</translation>
 		</phrase>
 
-		<!-- VBP_SaveModule.bas contains 83 phrases. 53 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+		<!-- VBP_SaveModule.bas contains 85 phrases. 53 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 		<!-- END text for VBP_SaveModule.bas-->
 
@@ -741,10 +766,10 @@
 		<phrase>
 			<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
-	To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
+To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
 			<translation>L'interfaccia dei plugin FreeImage (FreeImage.dll) è marcata come mancante o è disabilitata durante l'inizializzazione del programma.
-			
-	 Per attivare il supporto per questa funzionalità, per favore copia il file FreeImage.dll nella cartella plug-in e riavvia il programma.</translation>
+
+ Per attivare il supporto per questa funzionalità, per favore copia il file FreeImage.dll nella cartella plug-in e riavvia il programma.</translation>
 		</phrase>
 
 		<!-- VBP_FormReduceColors.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -1278,7 +1303,7 @@
 		<phrase>
 			<original>Unknown processor request submitted: %1
 
-	Please report this bug via the Help -> Submit Bug Report menu.</original>
+Please report this bug via the Help -> Submit Bug Report menu.</original>
 			<translation></translation>
 		</phrase>
 
@@ -1310,14 +1335,14 @@
 		<phrase>
 			<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
 
-	- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
+- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
 
-	- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
+- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
 			<translation>Sfortunatamente, questa immagine sembra essere valida. Questo può capitare se il file non contiene dati di un'immagine, o se contiene dati di un'immagine non supportata.
-			
-	- Se avete scaricato l'immagine da Internet, lo scaricamento potrebbe essere stato terminato prematuramente. Per favore prova a riscaricare l'immagine
 
-	- Se questo file proviene da una fotocamera digitale, uno scanner o da un altro programma di modifica delle immagini, è possibile che PhotoDemon semplicemente non capisca il formato particolare dell'immagine. Per favore salva l'immagine in un formato generico (come JPEG o PNG), poi riprova a caricarla.</translation>
+- Se avete scaricato l'immagine da Internet, lo scaricamento potrebbe essere stato terminato prematuramente. Per favore prova a riscaricare l'immagine
+
+- Se questo file proviene da una fotocamera digitale, uno scanner o da un altro programma di modifica delle immagini, è possibile che PhotoDemon semplicemente non capisca il formato particolare dell'immagine. Per favore salva l'immagine in un formato generico (come JPEG o PNG), poi riprova a caricarla.</translation>
 		</phrase>
 
 		<phrase>
@@ -1332,11 +1357,11 @@
 
 		<phrase>
 			<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-	1) the file hasn't been deleted, and...
-	2) the file location provided to PhotoDemon is correct.</original>
+1) the file hasn't been deleted, and...
+2) the file location provided to PhotoDemon is correct.</original>
 			<translation>Il file specificato non può essere localizzato. Se era memorizzato in un supporto rimovibile, per favore reinserisci il corretto dischetto, CD o il supporto rimovibile. Se il file non viene localizzato sul supporto rimovibile, assicurati che: 
-	 1) il file non sia stato cancellato, e... 
-	 2) il percorso fornito a PhotoDemon sia corretto.</translation>
+ 1) il file non sia stato cancellato, e... 
+ 2) il percorso fornito a PhotoDemon sia corretto.</translation>
 		</phrase>
 
 		<phrase>
@@ -1347,9 +1372,9 @@
 		<phrase>
 			<original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
-	Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
+Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
 			<translation>PhotoDemon non può trovare informazioni addizionali per questo tipo di errore. Questo significa che probabilmente l'errore è un bug che deve essere risolto! 
-	 Vuoi inviare un rapporto sul bug? (Questo non ruberà più di un minuto, e aiuterà tutti quelli che utilizzano il software.)</translation>
+ Vuoi inviare un rapporto sul bug? (Questo non ruberà più di un minuto, e aiuterà tutti quelli che utilizzano il software.)</translation>
 		</phrase>
 
 		<phrase>
@@ -1360,16 +1385,16 @@
 		<phrase>
 			<original>PhotoDemon has experienced an error.  Details on the problem include:
 
-	Error number %1
-	Description: %2
+Error number %1
+Description: %2
 
-	%3</original>
+%3</original>
 			<translation>PhotoDemon ha incontrato un errore. I dettagli sul problema sono: 
-			
-	Numero di errore %1
-	Descrizione: %2
 
-	%3</translation>
+Numero di errore %1
+Descrizione: %2
+
+%3</translation>
 		</phrase>
 
 		<phrase>
@@ -1380,10 +1405,10 @@
 		<phrase>
 			<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
 
-	Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
 			<translation>Grazie per aver inviato il rapporto sull'errore. Per essere sicuri che il bug sia risolto il più velocemente possibile, PhotoDemon ha bisogno di farti una o più domande. 
-			
-	 Hai un account GitHub ? (Se non hai idea di cosa significhi, rispondi "No".)</translation>
+
+ Hai un account GitHub ? (Se non hai idea di cosa significhi, rispondi "No".)</translation>
 		</phrase>
 
 		<phrase>
@@ -1393,17 +1418,17 @@
 
 		<phrase>
 			<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: 
-	%1
+%1
 
-	Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
 
-	When finished, click the Submit New Issue button.  Thank you!</original>
+When finished, click the Submit New Issue button.  Thank you!</original>
 			<translation>PhotoDemon ha automaticamente aperto una pagina sul rapporto del bug GitHub per voi. Nella casella titolo, per favore inserisci il numero di errore seguente con una piccola descrizione del problema: 
-	%1
+%1
 
-	Altri dettagli addizionali che ci fornirai vanno nella casella di testo più grande, inclusi i passi che hanno portato a questo errore, questo aiuterà per risolvere il problema il più velocemente possibile.
+Altri dettagli addizionali che ci fornirai vanno nella casella di testo più grande, inclusi i passi che hanno portato a questo errore, questo aiuterà per risolvere il problema il più velocemente possibile.
 
-	Quando hai finito, clicca il pulsante Submit New Issue. Grazie!</translation>
+Quando hai finito, clicca il pulsante Submit New Issue. Grazie!</translation>
 		</phrase>
 
 		<phrase>
@@ -1414,16 +1439,16 @@
 		<phrase>
 			<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Additional Details box, please describe the steps that led to this error.
 
-	In the bottom box of that page, please enter the following error number: 
-	%1
+In the bottom box of that page, please enter the following error number: 
+%1
 
-	When finished, click the Submit button.  Thank you!</original>
+When finished, click the Submit button.  Thank you!</original>
 			<translation>PhotoDemon ha automaticamente aperto una pagina sul rapporto del bug per voi. Nella casella addizionale Dettagli, per favore descrivi i passi che hanno portato a questo errore.
-			
-	 Nella casella in fondo alla pagina, per favore inserisci il numero di errore seguente: 
-	%1
 
-	 Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
+ Nella casella in fondo alla pagina, per favore inserisci il numero di errore seguente: 
+%1
+
+ Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
 		</phrase>
 
 		<phrase>
@@ -1727,10 +1752,10 @@
 		<phrase>
 			<original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
-	(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
+(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 			<translation>Se non salvate i dati della Macro, tutte le azioni registrate durante la sessione andranno perse definitivamente. Sei sicuro di voler annullare?
-			
-	(Premi No per ritornare alla finestra di salvataggio della Macro. Nota che puoi sempre eliminare questa Macro successivamente se decidi di non tenerla.)</translation>
+
+(Premi No per ritornare alla finestra di salvataggio della Macro. Nota che puoi sempre eliminare questa Macro successivamente se decidi di non tenerla.)</translation>
 		</phrase>
 
 		<phrase>
@@ -1771,9 +1796,9 @@
 		<phrase>
 			<original>Unfortunately, this macro file is no longer supported by the current version of PhotoDemon.
 
-	In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
+In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
 
-	(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
+(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
 			<translation></translation>
 		</phrase>
 
@@ -1881,10 +1906,10 @@
 		<phrase>
 			<original>This menu item only appears in the Visual Basic IDE.
 
-	You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
+You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.</original>
 			<translation>Questo elemento del menù appare solamente nell'IDE di Visual Basic.
-			
-	 Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi filtri. Io generalmente faccio prima così, poi quando un filtro lavora bene, gli assegno una subroutine propria.</translation>
+
+ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi filtri. Io generalmente faccio prima così, poi quando un filtro lavora bene, gli assegno una subroutine propria.</translation>
 		</phrase>
 
 		<phrase>
@@ -2035,23 +2060,23 @@
 		</phrase>
 
 		<phrase>
-			<original>Zoom In</original>
-			<translation>Zoom avanti</translation>
-		</phrase>
-
-		<phrase>
 			<original>Use this button to increase image zoom.</original>
 			<translation>Utilizza questo pulsante per aumentare lo zoom dell'immagine.</translation>
 		</phrase>
 
 		<phrase>
-			<original>Zoom Out</original>
-			<translation>Zoom indietro</translation>
+			<original>Zoom In</original>
+			<translation>Zoom avanti</translation>
 		</phrase>
 
 		<phrase>
 			<original>Use this button to decrease image zoom.</original>
 			<translation>Utilizza questo pulsante per diminuire lo zoom dell'immagine.</translation>
+		</phrase>
+
+		<phrase>
+			<original>Zoom Out</original>
+			<translation>Zoom indietro</translation>
 		</phrase>
 
 		<phrase>
@@ -3112,10 +3137,10 @@
 		<phrase>
 			<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
 
-	Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
 			<translation>Grazie per aver inviato il rapporto sul bug. Per essere sicuri che il bug verrà risolto il più presto possibile, PhotoDemon ha bisgno di sapere dove spedirlo.
 
-	Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</translation>
+Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</translation>
 		</phrase>
 
 		<phrase>
@@ -3322,10 +3347,10 @@
 		<phrase>
 			<original>The selected scanner or digital camera isn't responding.
 
-	Please make sure the device is turned on and ready for use.</original>
+Please make sure the device is turned on and ready for use.</original>
 			<translation>Lo scanner o la fotocamera selezionata non risponde.
 
-	Per favore assicurati che il dispositivo sia acceso e pronto per l'uso.</translation>
+Per favore assicurati che il dispositivo sia acceso e pronto per l'uso.</translation>
 		</phrase>
 
 		<phrase>
@@ -3341,10 +3366,10 @@
 		<phrase>
 			<original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
-	To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
+To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 			<translation>L'interfaccia dello scanner/fotocamera del plugin (EZTW32.dll) è marcato come mancante durante l'inizializzazione del programma.
 
-	Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (disponibile per lo scricamento sul sito http:// eztwain.com/ezt1_download.htm) all'interno della cartella plugin e riavvia il programma.</translation>
+Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (disponibile per lo scricamento sul sito http:// eztwain.com/ezt1_download.htm) all'interno della cartella plugin e riavvia il programma.</translation>
 		</phrase>
 
 		<phrase>
@@ -3564,7 +3589,7 @@
 			<translation>schizzo a matita</translation>
 		</phrase>
 
-		<!-- VBP_Filters_Edge.bas contains 6 phrases. 5 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_Filters_Edge.bas contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_Filters_Edge.bas-->
 
@@ -4000,26 +4025,6 @@
 		</phrase>
 
 		<phrase>
-			<original>if core plugins cannot be located, offer to download them</original>
-			<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
-		</phrase>
-
-		<phrase>
-			<original>automatically check for software updates every 10 days</original>
-			<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
-		</phrase>
-
-		<phrase>
-			<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-			<translation>Se questo è disabilitato, potete visitare tannerhelland.com/photodemon per scaricare l'ultima versione di PhotoDemon</translation>
-		</phrase>
-
-		<phrase>
-			<original>(disclaimer populated at run-time)</original>
-			<translation>(clausole elencate in esecuzione)</translation>
-		</phrase>
-
-		<phrase>
 			<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 			<translation>rendi il testo di PhotoDemon con caratteri tipografici moderni (disponibile solo su Vista o successivi)</translation>
 		</phrase>
@@ -4250,8 +4255,13 @@
 		</phrase>
 
 		<phrase>
-			<original>apply tone mapping to imported HDR and RAW images (48, 64, 96, 128bpp)</original>
-			<translation>applica la mappatura dei toni per le immagini importate HDR e RAW (48, 64, 96, 128bpp)</translation>
+			<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>when loading images, also load any available metadata</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
@@ -4260,38 +4270,28 @@
 		</phrase>
 
 		<phrase>
-			<original>global load options</original>
-			<translation>Opzioni globali di caricamento</translation>
+			<original>if an image contains multiple pages</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>load options for specific image types</original>
-			<translation>opzioni di caricamento specifiche per i tipi d'immagine</translation>
+			<original>multi-page images (animated GIF, icons, TIFF)</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>if a file contains multiple images</original>
-			<translation>se un file contiene immagini multiple</translation>
+			<original>high-dynamic range (HDR) images</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>multi-image files (animated GIF, multipage TIFF)</original>
-			<translation>file con immagini multiple (GIF animate, TIFF multipagina)</translation>
+			<original>zoom</original>
+			<translation>zoom</translation>
 		</phrase>
 
 		<phrase>
-			<original>high-dynamic range (HDR) files</original>
-			<translation>file con ampia gamma dinamica (HDR)</translation>
-		</phrase>
-
-		<phrase>
-			<original>initial viewport</original>
-			<translation>visualizzazione iniziale</translation>
-		</phrase>
-
-		<phrase>
-			<original>set initial image zoom to</original>
-			<translation>imposta lo zoom iniziale per l'immagine</translation>
+			<original>when an image is first loaded, set its viewport zoom to</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
@@ -4302,11 +4302,6 @@
 		<phrase>
 			<original>selections</original>
 			<translation>selezioni</translation>
-		</phrase>
-
-		<phrase>
-			<original>enable GDI+ support</original>
-			<translation>abilita il supporto GDI+</translation>
 		</phrase>
 
 		<phrase>
@@ -4340,22 +4335,28 @@
 		</phrase>
 
 		<phrase>
-			<original>run-time testing options (NOTE: these are not saved to the INI file)</original>
-			<translation>opzioni del test durante l'esecuzione (NOTA: non sono salvate nel file INI)</translation>
-		</phrase>
-
-		<phrase>
 			<original>debugging</original>
 			<translation>debuggamento</translation>
 		</phrase>
 
 		<phrase>
-			<original>Close the current image.
+			<original>if core plugins cannot be located, offer to download them</original>
+			<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
+		</phrase>
 
-	Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.</original>
-			<translation>Chiudi l'immagine corrente.
-			
-	 Poiché non hai attivato la richiesta di salvataggio (via Utilità -> Opzioni), non riceverai l'avvertimento di salvare questa immagine prima di chiuderla.</translation>
+		<phrase>
+			<original>automatically check for software updates every 10 days</original>
+			<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
+		</phrase>
+
+		<phrase>
+			<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
+			<translation>Se questo è disabilitato, potete visitare tannerhelland.com/photodemon per scaricare l'ultima versione di PhotoDemon</translation>
+		</phrase>
+
+		<phrase>
+			<original>(disclaimer populated at run-time)</original>
+			<translation>(clausole elencate in esecuzione)</translation>
 		</phrase>
 
 		<phrase>
@@ -4364,17 +4365,217 @@
 		</phrase>
 
 		<phrase>
+			<original>Close the current image.
+
+Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.</original>
+			<translation>Chiudi l'immagine corrente.
+
+ Poiché non hai attivato la richiesta di salvataggio (via Utilità -> Opzioni), non riceverai l'avvertimento di salvare questa immagine prima di chiuderla.</translation>
+		</phrase>
+
+		<phrase>
 			<original>This action will reset all preferences to their default values.  It cannot be undone.
 
-	Are you sure you want to continue?</original>
+Are you sure you want to continue?</original>
 			<translation>Questa azione reimposterà tutti i valori predefiniti nelle preferenze. Non può essere annullata.
-			
-	 Sei sicuro di voler continuare?</translation>
+
+ Sei sicuro di voler continuare?</translation>
 		</phrase>
 
 		<phrase>
 			<original>Reset all preferences</original>
 			<translation>Tutte le preferenze ripristinate</translation>
+		</phrase>
+
+		<phrase>
+			<original>system theme: light</original>
+			<translation>tema di sistema: chiaro</translation>
+		</phrase>
+
+		<phrase>
+			<original>system theme: dark</original>
+			<translation>tema di sistema: scuro</translation>
+		</phrase>
+
+		<phrase>
+			<original>custom color (click box to customize)</original>
+			<translation>colore personalizzato (clicca la casella per personalizzarlo)</translation>
+		</phrase>
+
+		<phrase>
+			<original>The image canvas sits "behind" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.</original>
+			<translation>La tela dell'immagine si siede "dietro" l'immagine sullo schermo. I colori scuri sono generalmente preferiti, come aiuto all'immagine nel restare fuori mentre lavori su di essa.</translation>
+		</phrase>
+
+		<phrase>
+			<original>Click to change the image window background color</original>
+			<translation>Clicca per cambiare lo sfondo nella finestra dell'immagine</translation>
+		</phrase>
+
+		<phrase>
+			<original>compact - file name only</original>
+			<translation>compatto - il nome dei file solamente</translation>
+		</phrase>
+
+		<phrase>
+			<original>descriptive - full location, including folder(s)</original>
+			<translation>descrittivo - percorso completo, incluse le cartelle</translation>
+		</phrase>
+
+		<phrase>
+			<original>compact - file names only</original>
+			<translation>compatto - il nome dei file solamente</translation>
+		</phrase>
+
+		<phrase>
+			<original>descriptive - full locations, including folder(s)</original>
+			<translation>descrittivo - percorso completo, incluse le cartelle</translation>
+		</phrase>
+
+		<phrase>
+			<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+			<translation>La larghezza del menù "File recenti" è limitata da Windows. Per prevenire che questo menù straripi, PhotoDemon può visualizzare solamente il nome dell'immagine al posto del percorso completo.</translation>
+		</phrase>
+
+		<phrase>
+			<original>feature disabled due to missing plugin</original>
+			<translation>caratteristica disabilitata a causa della mancanza del plugin</translation>
+		</phrase>
+
+		<phrase>
+			<original>While multitasking, some find it convenient to have the PhotoDemon task bar icon reflect the image currently being edited.  This option allows PhotoDemon to automatically update the task bar and window icons as necessary.</original>
+			<translation>Durante il multitasking, qualcuno trova conveniente che PhotoDemon rifletta l'immagine correntemente modificata nell'icona della barra delle applicazioni.
+Questa opzione permette a PhotoDemon di aggiornare automaticamente la barra delle applicazioni e le finestre disposte ad icona come necessario.</translation>
+		</phrase>
+
+		<phrase>
+			<original>render PhotoDemon text with modern typefaces</original>
+			<translation>rendi il testo di PhotoDemon con caratteri tipografici moderni</translation>
+		</phrase>
+
+		<phrase>
+			<original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
+			<translation>Questa opzione permette a PhotoDemon di scansionare le immagini entranti per determinare l'appropriata profondità del colore caso per caso (anziché basarsi sulla profondità del colore del file sorgente, il quale può essere stato scelto arbitrariamente).</translation>
+		</phrase>
+
+		<phrase>
+			<original>Tone mapping is used to preserve the tonal range of HDR images.  This setting is very useful for RAW photos and scanned documents, but it adds a significant amount of time to the image load process.</original>
+			<translation>La mappatura del tono è usata per preservare la gamma tonale dell'immagine HDR. Questo parametro è molto utile per le fotografie o i documenti scansionati RAW, ma aggiunge un significativo aumento del tempo per processare l'immagine.</translation>
+		</phrase>
+
+		<phrase>
+			<original>Because metadata comes in many shapes and sizes, processing it can take a long time.  If this option is disabled, images will load more quickly, but metadata browsing will not be available.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>ask me how I want to proceed</original>
+			<translation>chiedimi come voglio procedere</translation>
+		</phrase>
+
+		<phrase>
+			<original>load only the first page</original>
+			<translation>Carico solo la prima pagina</translation>
+		</phrase>
+
+		<phrase>
+			<original>load all pages</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Some image formats can hold multiple images in one file.  When these files are encountered, PhotoDemon can ignore the extra images, or it can load them all for you.</original>
+			<translation>Certi formati d'immagine possono mantenere immagini multiple in un file. Quando si incontrano questi file, PhotoDemon può ignorare le immagini supplementari, o può caricarle tutte per voi.</translation>
+		</phrase>
+
+		<phrase>
+			<original>automatically fit the image on-screen</original>
+			<translation>adatta automaticamente l'immagine sullo schermo</translation>
+		</phrase>
+
+		<phrase>
+			<original>1:1 (100% zoom, or "actual size")</original>
+			<translation>1:1 (100% zoom, o "dimensione attuale")</translation>
+		</phrase>
+
+		<phrase>
+			<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
+			<translation>Qualsiasi fotografia più larga di 2 milioni di pixel è troppo grande per adattarsi in un monitor da computer medio. PhotoDemon automaticamente la rimpicciolisce così che l'immagine sia visibile.</translation>
+		</phrase>
+
+		<phrase>
+			<original>to match the image file's original color depth</original>
+			<translation>per intonare la profondità di colore originale nel file dell'immagine</translation>
+		</phrase>
+
+		<phrase>
+			<original>automatically</original>
+			<translation>automaticamente</translation>
+		</phrase>
+
+		<phrase>
+			<original>by asking me what color depth I want to use</original>
+			<translation>chiedendomi quale profondità di colore voglio usare</translation>
+		</phrase>
+
+		<phrase>
+			<original>Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>the current file format of the image being saved</original>
+			<translation>il corrente formato di file dell'immagine è in corso di salvataggio</translation>
+		</phrase>
+
+		<phrase>
+			<original>the last image format I used in the "Save As" screen</original>
+			<translation>l'ultimo formato d'immagine che ho usato in "Salva con nome"</translation>
+		</phrase>
+
+		<phrase>
+			<original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
+			<translation>Parecchi Editor fotografici usano il formato dell'immagine corrente come predefinito in "Salva con nome". Quando si lavora con le immagini RAW che alla fine saranno salvate come JPEG, è utile avere PhotoDemon che ricorda questa opzione - da quì fino all'"ultima utilizzata".</translation>
+		</phrase>
+
+		<phrase>
+			<original>overwrite the current file (standard behavior)</original>
+			<translation>sovrascrivi il file corrente (comportamento predefinito)</translation>
+		</phrase>
+
+		<phrase>
+			<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+			<translation>salva una nuova copia, per esempio "nome file (2).jpg" (comportamento salvataggio)</translation>
+		</phrase>
+
+		<phrase>
+			<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+			<translation>In parecchi Editor fotografici, il comando "Salva" salva l'immagine sulla stessa versione originale, cancellando quella copia per sempre. PhotoDemon offre una opzione "più sicura", dove ogni salvataggio risulta in una nuova copia del file.</translation>
+		</phrase>
+
+		<phrase>
+			<original>preserve all original metadata, regardless of relevance</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>preserve all relevant metadata</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>do not preserve metadata</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
@@ -4403,6 +4604,26 @@
 		</phrase>
 
 		<phrase>
+			<original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
+			<translation>Alcuni tipi di file immagine supportano dei parametri addizionali durante l'importazione o l'esportazione. Come predefinito, PhotoDemon gestirà questo per te, ma puoi specificare dei parametri differenti se necessario.</translation>
+		</phrase>
+
+		<phrase>
+			<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
+			<translation>I file Bitmap supportano solo un tipo di compressione, e solamente con certe profondità di colore. PhotoDemon può applicare una semplice compressione RLE quando salvi l'immagine a 8bpp.</translation>
+		</phrase>
+
+		<phrase>
+			<original>PNG interlacing is similar to "progressive scan" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can "fade-in" while it downloads.</original>
+			<translation>L'interlacciamento PNG è simile alla "scansione progressiva" del JPEG. L'interlacciamento aumenta leggermente la dimensione del file, ma un'immagine inerlacciata può apparire con "dissolvenza in entrata" quando è scaricata.</translation>
+		</phrase>
+
+		<phrase>
+			<original>PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.</original>
+			<translation>I file PNG possono contenere un parametro per il colore dello sfondo. Questo può prendere ulteriore spazio nel file, così sei libero di disabilitarlo se non necessiti di un colore di sfondo.</translation>
+		</phrase>
+
+		<phrase>
 			<original>binary encoding (faster, smaller file size)</original>
 			<translation>codifica binaria (rapidissima, file di dimensioni molto ridotte)</translation>
 		</phrase>
@@ -4410,6 +4631,16 @@
 		<phrase>
 			<original>ASCII encoding (human-readable, multi-platform)</original>
 			<translation>Codifica ASCII (umanamente leggibile, multipiattaforma)</translation>
+		</phrase>
+
+		<phrase>
+			<original>Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)</original>
+			<translation>La codifica binaria dei file PPM è vivamente raccomandata. (In altre parole, non cambiare questa impostazione senza essere sicuro che la codifica ASCII è quello che vuoi. :)</translation>
+		</phrase>
+
+		<phrase>
+			<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
+			<translation>TGA supporta solo un tipo di compressione. PhotoDemon può applicare una semplice compressione RLE, quando salvi l'immagine in TGA.</translation>
 		</phrase>
 
 		<phrase>
@@ -4453,113 +4684,18 @@
 		</phrase>
 
 		<phrase>
-			<original>system theme: light</original>
-			<translation>tema di sistema: chiaro</translation>
+			<original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
+			<translation>TIFF supporta una varietà di tecniche di compressione. Alcune di queste tecniche sono limitate dalla specifica profondità di colore, quindi assicurati di sceglierne una che corrisponda all'immagine che stai salvando.</translation>
 		</phrase>
 
 		<phrase>
-			<original>system theme: dark</original>
-			<translation>tema di sistema: scuro</translation>
+			<original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
+			<translation>TIFF supporta entrambi gli spazi di colore RGB e CMYK. RGB è usato come predefinito, ma se un file TIFF viene usato in un documento stampato, CMYK è qualche volta richiesto.</translation>
 		</phrase>
 
 		<phrase>
-			<original>custom color (click box to customize)</original>
-			<translation>colore personalizzato (clicca la casella per personalizzarlo)</translation>
-		</phrase>
-
-		<phrase>
-			<original>dynamically update taskbar icon to match current image (FreeImage plugin required)</original>
-			<translation>aggiorna dinamicamente l'icona nella barra delle applicazioni per farla corrispondere all'immagine attuale (richiesto il plugin FreeImage)</translation>
-		</phrase>
-
-		<phrase>
-			<original>to match the image file's original color depth</original>
-			<translation>per intonare la profondità di colore originale nel file dell'immagine</translation>
-		</phrase>
-
-		<phrase>
-			<original>automatically</original>
-			<translation>automaticamente</translation>
-		</phrase>
-
-		<phrase>
-			<original>by asking me what color depth I want to use</original>
-			<translation>chiedendomi quale profondità di colore voglio usare</translation>
-		</phrase>
-
-		<phrase>
-			<original>overwrite the current file (standard behavior)</original>
-			<translation>sovrascrivi il file corrente (comportamento predefinito)</translation>
-		</phrase>
-
-		<phrase>
-			<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-			<translation>salva una nuova copia, per esempio "nome file (2).jpg" (comportamento salvataggio)</translation>
-		</phrase>
-
-		<phrase>
-			<original>the current file format of the image being saved</original>
-			<translation>il corrente formato di file dell'immagine è in corso di salvataggio</translation>
-		</phrase>
-
-		<phrase>
-			<original>the last image format I used in the "Save As" screen</original>
-			<translation>l'ultimo formato d'immagine che ho usato in "Salva con nome"</translation>
-		</phrase>
-
-		<phrase>
-			<original>preserve all original metadata, regardless of relevance</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>preserve all relevant metadata</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>do not preserve metadata</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>compact - file name only</original>
-			<translation>compatto - il nome dei file solamente</translation>
-		</phrase>
-
-		<phrase>
-			<original>descriptive - full location, including folder(s)</original>
-			<translation>descrittivo - percorso completo, incluse le cartelle</translation>
-		</phrase>
-
-		<phrase>
-			<original>compact - file names only</original>
-			<translation>compatto - il nome dei file solamente</translation>
-		</phrase>
-
-		<phrase>
-			<original>descriptive - full locations, including folder(s)</original>
-			<translation>descrittivo - percorso completo, incluse le cartelle</translation>
-		</phrase>
-
-		<phrase>
-			<original>ask me how I want to proceed</original>
-			<translation>chiedimi come voglio procedere</translation>
-		</phrase>
-
-		<phrase>
-			<original>load only the first image</original>
-			<translation>carica solo la prima immagine</translation>
-		</phrase>
-
-		<phrase>
-			<original>load all the images in the file</original>
-			<translation>carica tutte le immagini nel file</translation>
+			<original>When the "Crop to Selection" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.</original>
+			<translation>Quando il "Ritaglio della selezione" è usato, l'immagine risultante conterrà sempre una selezione della stessa dimensione dell'immagine intera. Questo generalmente non è necessario per conservarla, così PhotoDemon può pulirla per voi.</translation>
 		</phrase>
 
 		<phrase>
@@ -4583,6 +4719,21 @@
 		</phrase>
 
 		<phrase>
+			<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
+			<translation>Se l'immagine ha aree trasparenti, una scacchiera è tipicamente mostrata "dietro" l'immagine. Questa casella ti consente di cambiare il colore della scacchiera.</translation>
+		</phrase>
+
+		<phrase>
+			<original>Click to change the first checkerboard background color for alpha channels</original>
+			<translation>Clicca per cambiare il colore del primo sfondo della scacchiera per i canali alfa</translation>
+		</phrase>
+
+		<phrase>
+			<original>Click to change the second checkerboard background color for alpha channels</original>
+			<translation>Clicca per cambiare il colore del secondo sfondo della scacchiera per i canali alfa</translation>
+		</phrase>
+
+		<phrase>
 			<original>Small (4x4 pixels)</original>
 			<translation>Piccolo (4x4 pixel)</translation>
 		</phrase>
@@ -4598,38 +4749,33 @@
 		</phrase>
 
 		<phrase>
-			<original>automatically fit the image on-screen</original>
-			<translation>adatta automaticamente l'immagine sullo schermo</translation>
+			<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
+			<translation>Se l'immagine ha aree trasparenti, una scacchiera è tipicamente mostrata "dietro" l'immagine. Questa casella ti consente di cambiare la dimensione della scacchiera.</translation>
 		</phrase>
 
 		<phrase>
-			<original>1:1 (100% zoom, or "actual size")</original>
-			<translation>1:1 (100% zoom, o "dimensione attuale")</translation>
+			<original>When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.</original>
+			<translation>Quando è spuntata, questa opzione permette a PhotoDemon di rimuovere il canale alfa automaticamente dalle immagini importate. Questo migliora le prestazioni del programma, riducendo il consumo di RAM, e ridimensionando la dimensione dei file in esportazione.</translation>
 		</phrase>
 
 		<phrase>
-			<original>render PhotoDemon text with modern typefaces</original>
-			<translation>rendi il testo di PhotoDemon con caratteri tipografici moderni</translation>
+			<original>PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you.</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>enable GDI+ support (do not enable this if gdiplus.dll is not available)</original>
-			<translation>attiva il supporto GDI+ (non attivarlo se gdiplus.dll non è disponibile)</translation>
+			<original>PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory.
+
+The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
+
+If you choose to disable these features, you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.</original>
+			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>feature disabled due to missing plugin</original>
-			<translation>caratteristica disabilitata a causa della mancanza del plugin</translation>
-		</phrase>
-
-		<phrase>
-			<original>NOTE: Some options on this page have been disabled because the FreeImage plugin is missing.  To enable these options, please click on "Updates" and select "if core plugins cannot be located, offer to download them."  Then restart the program and select "Yes" when prompted.</original>
-			<translation>NOTA: Certe opzioni sono state disattivate per la mancanza del plugin FreeImage. Per attivare queste opzioni, per favore clicca "Aggiornamenti" e seleziona "se i plugin di base non sono localizzati, proponi di scaricarli." In seguito riavvia il programma e seleziona "Sì".</translation>
-		</phrase>
-
-		<phrase>
-			<original>NOTE: Many of these file format options require the FreeImage plugin.  Because you do not have the FreeImage plugin installed, these options may not perform as expected.</original>
-			<translation>NOTA: Molte opzioni per questo formato d'immagine richedono il plugin FreeImage. Siccome non hai il plugin FreeImage installato, queste opzioni non producono il risultato atteso.</translation>
+			<original>If this is checked, PhotoDemon will create a human-readable .log file that contains the text of every message displayed on the progress bar.  This will increase processing time, so only check this option if you really need debugging data.</original>
+			<translation>Se questa è spuntata, PhotoDemon ne creerà una umanamente leggibile. Il file di registro (.log) contiene il testo di ogni messaggio visualizzato nella barra di avanzamento. 
+Questo incrementerà il tempo del processo, così spunta questa opzione solo se devi realmente fare un debug ai dati.</translation>
 		</phrase>
 
 		<phrase>
@@ -4645,6 +4791,16 @@
 		<phrase>
 			<original>reading not accurate inside IDE</original>
 			<translation>lettura non accurata all'interno dell'IDE</translation>
+		</phrase>
+
+		<phrase>
+			<original>NOTE: Some options on this page have been disabled because the FreeImage plugin is missing.  To enable these options, please click on "Updates" and select "if core plugins cannot be located, offer to download them."  Then restart the program and select "Yes" when prompted.</original>
+			<translation>NOTA: Certe opzioni sono state disattivate per la mancanza del plugin FreeImage. Per attivare queste opzioni, per favore clicca "Aggiornamenti" e seleziona "se i plugin di base non sono localizzati, proponi di scaricarli." In seguito riavvia il programma e seleziona "Sì".</translation>
+		</phrase>
+
+		<phrase>
+			<original>NOTE: Many of these file format options require the FreeImage plugin.  Because you do not have the FreeImage plugin installed, these options may not perform as expected.</original>
+			<translation>NOTA: Molte opzioni per questo formato d'immagine richedono il plugin FreeImage. Siccome non hai il plugin FreeImage installato, queste opzioni non producono il risultato atteso.</translation>
 		</phrase>
 
 		<phrase>
@@ -4688,162 +4844,11 @@
 		</phrase>
 
 		<phrase>
-			<original>PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory.
-
-	The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
-
-	If you choose to disable these features, you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>While multitasking, some find it convenient to have the PhotoDemon task bar icon reflect the image currently being edited.  This option allows PhotoDemon to automatically update the task bar and window icons as necessary.</original>
-			<translation>Durante il multitasking, qualcuno trova conveniente che PhotoDemon rifletta l'immagine correntemente modificata nell'icona della barra delle applicazioni.
-	Questa opzione permette a PhotoDemon di aggiornare automaticamente la barra delle applicazioni e le finestre disposte ad icona come necessario.</translation>
-		</phrase>
-
-		<phrase>
-			<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-			<translation>La larghezza del menù "File recenti" è limitata da Windows. Per prevenire che questo menù straripi, PhotoDemon può visualizzare solamente il nome dell'immagine al posto del percorso completo.</translation>
-		</phrase>
-
-		<phrase>
-			<original>When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.</original>
-			<translation>Quando è spuntata, questa opzione permette a PhotoDemon di rimuovere il canale alfa automaticamente dalle immagini importate. Questo migliora le prestazioni del programma, riducendo il consumo di RAM, e ridimensionando la dimensione dei file in esportazione.</translation>
-		</phrase>
-
-		<phrase>
-			<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
-			<translation>I file Bitmap supportano solo un tipo di compressione, e solamente con certe profondità di colore. PhotoDemon può applicare una semplice compressione RLE quando salvi l'immagine a 8bpp.</translation>
-		</phrase>
-
-		<phrase>
-			<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-			<translation>TGA supporta solo un tipo di compressione. PhotoDemon può applicare una semplice compressione RLE, quando salvi l'immagine in TGA.</translation>
-		</phrase>
-
-		<phrase>
-			<original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
-			<translation>TIFF supporta entrambi gli spazi di colore RGB e CMYK. RGB è usato come predefinito, ma se un file TIFF viene usato in un documento stampato, CMYK è qualche volta richiesto.</translation>
-		</phrase>
-
-		<phrase>
-			<original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-			<translation>TIFF supporta una varietà di tecniche di compressione. Alcune di queste tecniche sono limitate dalla specifica profondità di colore, quindi assicurati di sceglierne una che corrisponda all'immagine che stai salvando.</translation>
-		</phrase>
-
-		<phrase>
-			<original>PNG interlacing is similar to "progressive scan" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can "fade-in" while it downloads.</original>
-			<translation>L'interlacciamento PNG è simile alla "scansione progressiva" del JPEG. L'interlacciamento aumenta leggermente la dimensione del file, ma un'immagine inerlacciata può apparire con "dissolvenza in entrata" quando è scaricata.</translation>
-		</phrase>
-
-		<phrase>
-			<original>PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.</original>
-			<translation>I file PNG possono contenere un parametro per il colore dello sfondo. Questo può prendere ulteriore spazio nel file, così sei libero di disabilitarlo se non necessiti di un colore di sfondo.</translation>
-		</phrase>
-
-		<phrase>
-			<original>Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)</original>
-			<translation>La codifica binaria dei file PPM è vivamente raccomandata. (In altre parole, non cambiare questa impostazione senza essere sicuro che la codifica ASCII è quello che vuoi. :)</translation>
-		</phrase>
-
-		<phrase>
-			<original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
-			<translation>Questa opzione permette a PhotoDemon di scansionare le immagini entranti per determinare l'appropriata profondità del colore caso per caso (anziché basarsi sulla profondità del colore del file sorgente, il quale può essere stato scelto arbitrariamente).</translation>
-		</phrase>
-
-		<phrase>
-			<original>Tone mapping is used to preserve the tonal range of HDR images.  This setting is very useful for RAW photos and scanned documents, but it adds a significant amount of time to the image load process.</original>
-			<translation>La mappatura del tono è usata per preservare la gamma tonale dell'immagine HDR. Questo parametro è molto utile per le fotografie o i documenti scansionati RAW, ma aggiunge un significativo aumento del tempo per processare l'immagine.</translation>
-		</phrase>
-
-		<phrase>
-			<original>When the "Crop to Selection" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.</original>
-			<translation>Quando il "Ritaglio della selezione" è usato, l'immagine risultante conterrà sempre una selezione della stessa dimensione dell'immagine intera. Questo generalmente non è necessario per conservarla, così PhotoDemon può pulirla per voi.</translation>
-		</phrase>
-
-		<phrase>
-			<original>If this is checked, PhotoDemon will create a human-readable .log file that contains the text of every message displayed on the progress bar.  This will increase processing time, so only check this option if you really need debugging data.</original>
-			<translation>Se questa è spuntata, PhotoDemon ne creerà una umanamente leggibile. Il file di registro (.log) contiene il testo di ogni messaggio visualizzato nella barra di avanzamento. 
-	Questo incrementerà il tempo del processo, così spunta questa opzione solo se devi realmente fare un debug ai dati.</translation>
-		</phrase>
-
-		<phrase>
-			<original>PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Some image file types support a variety of color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise.</original>
-			<translation>Alcuni tipi di file immagine supportano una varietà di profondità di colore. Gli sviluppatori di PhotoDemon, suggeriscono di lasciare al software la scelta della profondità di colore, a meno che non hai motivo di scegliere altrimenti.</translation>
-		</phrase>
-
-		<phrase>
-			<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-			<translation>In parecchi Editor fotografici, il comando "Salva" salva l'immagine sulla stessa versione originale, cancellando quella copia per sempre. PhotoDemon offre una opzione "più sicura", dove ogni salvataggio risulta in una nuova copia del file.</translation>
-		</phrase>
-
-		<phrase>
-			<original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-			<translation>Parecchi Editor fotografici usano il formato dell'immagine corrente come predefinito in "Salva con nome". Quando si lavora con le immagini RAW che alla fine saranno salvate come JPEG, è utile avere PhotoDemon che ricorda questa opzione - da quì fino all'"ultima utilizzata".</translation>
-		</phrase>
-
-		<phrase>
-			<original>Some image formats can hold multiple images in one file.  When these files are encountered, PhotoDemon can ignore the extra images, or it can load them all for you.</original>
-			<translation>Certi formati d'immagine possono mantenere immagini multiple in un file. Quando si incontrano questi file, PhotoDemon può ignorare le immagini supplementari, o può caricarle tutte per voi.</translation>
-		</phrase>
-
-		<phrase>
-			<original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-			<translation>Qualsiasi fotografia più larga di 2 milioni di pixel è troppo grande per adattarsi in un monitor da computer medio. PhotoDemon automaticamente la rimpicciolisce così che l'immagine sia visibile.</translation>
-		</phrase>
-
-		<phrase>
-			<original>The image canvas sits "behind" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.</original>
-			<translation>La tela dell'immagine si siede "dietro" l'immagine sullo schermo. I colori scuri sono generalmente preferiti, come aiuto all'immagine nel restare fuori mentre lavori su di essa.</translation>
-		</phrase>
-
-		<phrase>
-			<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-			<translation>Se l'immagine ha aree trasparenti, una scacchiera è tipicamente mostrata "dietro" l'immagine. Questa casella ti consente di cambiare il colore della scacchiera.</translation>
-		</phrase>
-
-		<phrase>
-			<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-			<translation>Se l'immagine ha aree trasparenti, una scacchiera è tipicamente mostrata "dietro" l'immagine. Questa casella ti consente di cambiare la dimensione della scacchiera.</translation>
-		</phrase>
-
-		<phrase>
-			<original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
-			<translation>Alcuni tipi di file immagine supportano dei parametri addizionali durante l'importazione o l'esportazione. Come predefinito, PhotoDemon gestirà questo per te, ma puoi specificare dei parametri differenti se necessario.</translation>
-		</phrase>
-
-		<phrase>
-			<original>Click to change the image window background color</original>
-			<translation>Clicca per cambiare lo sfondo nella finestra dell'immagine</translation>
-		</phrase>
-
-		<phrase>
-			<original>Click to change the first checkerboard background color for alpha channels</original>
-			<translation>Clicca per cambiare il colore del primo sfondo della scacchiera per i canali alfa</translation>
-		</phrase>
-
-		<phrase>
-			<original>Click to change the second checkerboard background color for alpha channels</original>
-			<translation>Clicca per cambiare il colore del secondo sfondo della scacchiera per i canali alfa</translation>
-		</phrase>
-
-		<phrase>
-			<original>Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, or the GPS coordinates of the photo's location, or many other items.  To view an image's metadata, use the Image -> Metadata menu.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
 			<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 			<translation>ATTENZIONE: questa cartella non è valida (accesso proibito). Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 		</phrase>
 
-		<!-- VBP_FormPreferences.frm contains 250 phrases. 66 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
+		<!-- VBP_FormPreferences.frm contains 248 phrases. 68 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormPreferences.frm-->
 
@@ -4936,7 +4941,7 @@
 			<translation>Caricamento dell'immagine</translation>
 		</phrase>
 
-		<!-- VBP_MDIWindow.bas contains 3 phrases. 2 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_MDIWindow.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_MDIWindow.bas-->
 
@@ -5440,14 +5445,14 @@
 		<phrase>
 			<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
-	You will need to download this image using your Internet browser of choice, then manually load it into %2.
+You will need to download this image using your Internet browser of choice, then manually load it into %2.
 
-	I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
+I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
 			<translation>Sfortunatamente, %1 impedisce a %2 di scaricare direttamente questa imagine. (Gli scaricamenti diretti sono a volte confusi come hotlinking dai server congigurati non correttamente.) 
-			
-	 Necessiti di scaricare l'immagine utilizzando il tuo navigatore predefinito per poi caricarla dentro a %2.
-	 
-	 Sinceramente mi scuso per questo inconveniente, ma sfortunatamente, non c'è nulla che %2 può fare a riguardo delle configurazione nei server avari. :(</translation>
+
+ Necessiti di scaricare l'immagine utilizzando il tuo navigatore predefinito per poi caricarla dentro a %2.
+ 
+ Sinceramente mi scuso per questo inconveniente, ma sfortunatamente, non c'è nulla che %2 può fare a riguardo delle configurazione nei server avari. :(</translation>
 		</phrase>
 
 		<phrase>
@@ -5604,19 +5609,19 @@
 		<phrase>
 			<original>Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
 
-	To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s)</original>
+To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s)</original>
 			<translation>Grazie per aver scelto PhotoDemon. Sfortunatamente, uno o più plugin necessari non possono essere localizzati. PhotoDemon continuerà a lavorare anche senza questi plugin, ma un certo numero di funzionalità saranno disabilitate. 
-			
-	 Per migliorare la tua esperienza come utente, per favore connettiti a Internet, poi consenti al programma di scaricare automaticamente e gratuitamente i seguenti plugin open-source</translation>
+
+ Per migliorare la tua esperienza come utente, per favore connettiti a Internet, poi consenti al programma di scaricare automaticamente e gratuitamente i seguenti plugin open-source</translation>
 		</phrase>
 
 		<phrase>
 			<original>Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
 
-	To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s)</original>
+To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s)</original>
 			<translation>Grazie per aver scelto PhotoDemon. Sfortunatamente, uno o più plugin necessari non possono essere localizzati. PhotoDemon continuerà a lavorare anche senza questi plugin, ma un certo numero di funzionalità saranno disabilitate.
 
-	 Per migliorare la tua esperienza come utente, per favore connettiti a Internet, poi consenti al programma di scaricare automaticamente e gratuitamente i seguenti plugin open-source</translation>
+ Per migliorare la tua esperienza come utente, per favore connettiti a Internet, poi consenti al programma di scaricare automaticamente e gratuitamente i seguenti plugin open-source</translation>
 		</phrase>
 
 		<phrase>
@@ -5862,10 +5867,10 @@
 		<phrase>
 			<original>The next time you launch the program, it will remind you about this software update.
 
-	Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.</original>
+Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.</original>
 			<translation>La prossima volta che lancerai il programma, ti ricorderà questo aggiornamento del software.
-			
-	Nota: puoi sempre scaricare manualmente l'ultima versione visitando il sito tannerhelland.com/photodemon.</translation>
+
+Nota: puoi sempre scaricare manualmente l'ultima versione visitando il sito tannerhelland.com/photodemon.</translation>
 		</phrase>
 
 		<phrase>
@@ -6341,9 +6346,9 @@
 
 		<phrase>
 			<original>%1 is not a valid entry.
-	Please enter a value between %2 and %3.</original>
+Please enter a value between %2 and %3.</original>
 			<translation>%1 non è una voce valida.
-	Per favore inserisci un valore compreso tra %2 e %3.</translation>
+Per favore inserisci un valore compreso tra %2 e %3.</translation>
 		</phrase>
 
 		<phrase>
@@ -6353,9 +6358,9 @@
 
 		<phrase>
 			<original>%1 is not a valid entry.
-	Please enter a numeric value.</original>
+Please enter a numeric value.</original>
 			<translation>%1 non è una voce valida.
-	Per favore inserisci un valore numerico.</translation>
+Per favore inserisci un valore numerico.</translation>
 		</phrase>
 
 		<!-- VBP_MiscValidation.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6560,10 +6565,10 @@
 		<phrase>
 			<original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
-	If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
+If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 			<translation>NOTA: se clicchi 'Salva', PhotoDemon salverà questa immagine usando il nome del file corrente. 
-			
-	 Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  'Annulla', poi utilizza il menù File -> Salva con nome.</translation>
+
+ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  'Annulla', poi utilizza il menù File -> Salva con nome.</translation>
 		</phrase>
 
 		<phrase>
@@ -6602,7 +6607,7 @@
 			<translation>Tutte le immagini compatibili</translation>
 		</phrase>
 
-		<!-- pdFormats.cls contains 4 phrases. 3 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- pdFormats.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for pdFormats.cls-->
 
@@ -6623,11 +6628,6 @@
 		<phrase>
 			<original>Multiple Images Found</original>
 			<translation>Immagini multiple trovate</translation>
-		</phrase>
-
-		<phrase>
-			<original>Load only the first page</original>
-			<translation>Carico solo la prima pagina</translation>
 		</phrase>
 
 		<phrase>
@@ -6710,7 +6710,7 @@
 			<translation>Questa opzione caricherà solo una pagina singola dal file TIFF.</translation>
 		</phrase>
 
-		<!-- VBP_FormMultiImage.frm contains 35 phrases. 17 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+		<!-- VBP_FormMultiImage.frm contains 35 phrases. 18 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormMultiImage.frm-->
 
@@ -7811,7 +7811,7 @@
 			<translation>Applicazione tecniche di arte moderna</translation>
 		</phrase>
 
-		<!-- VBP_FormModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_FormModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_FormModernArt.frm-->
 
@@ -8159,10 +8159,10 @@
 		<phrase>
 			<original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
-	Would you like to save your batch list before exiting?</original>
+Would you like to save your batch list before exiting?</original>
 			<translation>Se esci ora, la tua lista (la lista delle immagini da processare) sarà persa. Salvando la tua lista, puoi semplicemente riutilizzarla in un altro momento.
 
-	Vuoi salvare la tua lista prima di uscire?</translation>
+Vuoi salvare la tua lista prima di uscire?</translation>
 		</phrase>
 
 		<phrase>
@@ -8358,10 +8358,10 @@
 		<phrase>
 			<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
 
-	By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
+By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
 			<translation>Le immagini GIF supportano solo la trasparenza semplice, significa che ogni pixel in un'immagine GIF deve essere o completamente trasparente o completamente opaco. Se la tua lista da processare include immagini a 32bpp con canale alfa complesso, PhotoDemon può semplificarlo prima di salvarlo in formato GIF.
 
-	Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un valore della riduzione personalizzato.</translation>
+Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un valore della riduzione personalizzato.</translation>
 		</phrase>
 
 		<phrase>
@@ -8491,7 +8491,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormPerspective.frm contains 9 phrases. 8 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_FormPerspective.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_FormPerspective.frm-->
 
@@ -8503,7 +8503,22 @@
 		</phrase>
 
 		<phrase>
+			<original>transformation type</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>Applying new perspective</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>forward (outline defines destination area)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>reverse (outline defines source area)</original>
 			<translation></translation>
 		</phrase>
 
@@ -8527,7 +8542,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormTruePerspective.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- VBP_FormTruePerspective.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormTruePerspective.frm-->
 
@@ -8648,16 +8663,21 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormMetadata.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<phrase>
+			<original>This image does not contain any metadata.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>No metadata available</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- VBP_FormMetadata.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormMetadata.frm-->
 
 		<!-- BEGIN text for VBP_FormPanZoom.frm (FormPanAndZoom) -->
-
-		<phrase>
-			<original>zoom</original>
-			<translation>zoom</translation>
-		</phrase>
 
 		<phrase>
 			<original>horizontal pan</original>
@@ -8674,7 +8694,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormPanZoom.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- VBP_FormPanZoom.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormPanZoom.frm-->
 
@@ -8691,7 +8711,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormPoke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_FormPoke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_FormPoke.frm-->
 
@@ -9269,7 +9289,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormConvert24bpp.frm contains 3 phrases. 2 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_FormConvert24bpp.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_FormConvert24bpp.frm-->
 
@@ -9361,7 +9381,7 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormVibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_FormVibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_FormVibrance.frm-->
 
@@ -9736,26 +9756,189 @@
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormZoomBlur.frm contains 4 phrases. 3 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<!-- VBP_FormZoomBlur.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- END text for VBP_FormZoomBlur.frm-->
 
 		<!-- BEGIN text for VBP_FormLanguageEditor.frm (FormLanguageEditor) -->
 
 		<phrase>
-			<original>Step 1: select the language file to edit</original>
+			<original>phrases to display</original>
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormLanguageEditor.frm contains 6 phrases. 5 were duplicates of existing phrases, so only 1 new phrases were written to file. -->
+		<phrase>
+			<original>list of phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>start a new language file from scratch</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>edit an existing language file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language files currently available</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>author name(s)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>translation status (e.g. "complete", "unfinished", etc - any descriptive text is acceptable)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>translation version (in Major.Minor.Revision format, e.g. "1.0.0")</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>full language name (e.g. "English (US)"; this will be displayed in PhotoDemon's language menu)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>country ID (2 characters in ISO 3166-1 alpha-2 format, e.g. "US" for "United States")</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>language ID (2 characters in ISO 639-1 format, e.g. "en" for "English")</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Step 1: select a language file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Please select a language before continuing to the next step.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Please select a language</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Please wait while the language file is loaded</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>incomplete</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>enter your name here</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
+
+To start a new translation, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Master language file missing</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
+
+To continue, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Language file could not be loaded</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Step %1</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>select a language file</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>add language metadata</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>translate all phrases</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>official translation by</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>unofficial translation by</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>unknown author</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- VBP_FormLanguageEditor.frm contains 43 phrases. 15 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormLanguageEditor.frm-->
 
-	<!-- Automatic text extraction complete. -->
+		<!-- BEGIN text for cProgressBarOfficial.cls -->
 
-	<!-- As of this build, PhotoDemon contains 2884 phrases in total. -->
-	<!-- 1167 are duplicate phrases, so only 1717 phrases have been written to file. -->
-	<!-- These 1717 phrases contain approximately 10801 total words. -->
+		<!-- cProgressBarOfficial.cls contains 0 phrases. -->
+
+		<!-- END text for cProgressBarOfficial.cls-->
+
+		<!-- BEGIN text for VBP_FormPleaseWait.frm (FormWait) -->
+
+		<phrase>
+			<original>Processing request</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>please wait</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- VBP_FormPleaseWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+		<!-- END text for VBP_FormPleaseWait.frm-->
+
+		<!-- Automatic text extraction complete. -->
+
+		<phrasecount>1750</phrasecount>
+
+	<!-- As of this build, PhotoDemon contains 2934 phrases. -->
+	<!-- 1184 are duplicates, so only 1750 unique phrases have been written to file. -->
+	<!-- These 1750 phrases contain approximately 10592 total words. -->
 
 	</pdData>
 
