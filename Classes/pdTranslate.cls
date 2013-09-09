@@ -143,11 +143,11 @@ Public Function translationActive() As Boolean
 End Function
 
 'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
-Public Sub activateNewLanguage(ByVal newLangIndex As Long)
+Public Sub activateNewLanguage(ByVal newLangIndex As Long, Optional ByVal useDoEvents As Boolean = False)
 
     curLanguage = newLangIndex
     g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(newLangIndex).FileName
-    ApplyLanguage
+    ApplyLanguage useDoEvents
 
 End Sub
 
@@ -272,7 +272,7 @@ End Function
 'ALWAYS CALL DetermineLanguage BEFORE THIS STAGE!
 'Once a PhotoDemon language has been selected (via DetermineLanguage), this function can be called to "apply" that language to the program.
 ' NOTE: if the language is changed, this function must be called again to set the new language program-wide.
-Public Sub ApplyLanguage()
+Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
 
     'Mark the active language menu entry (and unmark all others)
     Dim i As Long
@@ -288,9 +288,9 @@ Public Sub ApplyLanguage()
 
     'Redraw all text on the main form using the new language
     If FormMain.Visible Then
-        FormMain.requestMakeFormPretty
+        FormMain.requestMakeFormPretty useDoEvents
         DrawMenuShortcuts
-        ApplyAllMenuIcons
+        ApplyAllMenuIcons True
         
         'Because the Undo and Redo captions are dynamic, they must be recreated in the current language
         metaToggle tUndo, FormMain.MnuUndo.Enabled
@@ -727,7 +727,7 @@ Public Sub translateFormCaption(ByRef srcForm As Form)
 End Sub
 
 'Enumerate all translations on a form (and its controls), and replace them with their original English equivalents
-Public Sub undoTranslations(ByRef srcForm As Form)
+Public Sub undoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
 
     'This function only has to be applied if a translation is currently active.  If it isn't, simply exit.
     If Not translationActive Then Exit Sub
@@ -781,13 +781,17 @@ Public Sub undoTranslations(ByRef srcForm As Form)
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = RestoreMessage(eControl.ToolTipText)
             
         End If
+        
+        'Optionally, DoEvents can be called after each change.  This slows the translation process, but it allows external progress
+        ' bars to be automatically refreshed.
+        If useDoEvents Then DoEvents
     
     Next
 
 End Sub
 
 'Enumerate all captions on a form (and its controls), and replace them with the translated equivalents of the current language
-Public Sub applyTranslations(ByRef srcForm As Form)
+Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
 
     If Not translationActive Then Exit Sub
 
@@ -890,6 +894,10 @@ Public Sub applyTranslations(ByRef srcForm As Form)
             
             End If
         End If
+        
+        'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
+        ' bars to be automatically refreshed.
+        If useDoEvents Then DoEvents
         
     Next
     
