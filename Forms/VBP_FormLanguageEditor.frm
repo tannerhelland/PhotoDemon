@@ -643,7 +643,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 pdMsgBox "Please select a language before continuing to the next step.", vbOKOnly + vbInformation + vbApplicationModal, "Please select a language"
                 Exit Sub
             End If
-                        
+            
             'If they want to start a new language file from scratch, set the load path to the MASTER English language file (which is
             ' hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
@@ -793,20 +793,6 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     
 End Sub
 
-Private Sub Form_Activate()
-    
-    'DEV WARNING - REMOVE WHEN FINISHED!
-    MsgBox "This tool is currently under heavy development.  It may not work as expected (or at all).", vbInformation + vbOKOnly + vbApplicationModal, "Development warning"
-    
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
-    'Advance to the first page
-    changeWizardPage True
-        
-End Sub
-
 Private Sub Form_Load()
     
     'Mark the XML file as not loaded
@@ -863,7 +849,17 @@ Private Sub Form_Load()
     
     'By default, no language is selected for the user
     lstLanguages.ListIndex = -1
+        
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
     
+    'Advance to the first page
+    changeWizardPage True
+    
+    'DEV WARNING - REMOVE WHEN FINISHED!
+    MsgBox "This tool is currently under heavy development.  It may not work as expected (or at all).", vbInformation + vbOKOnly + vbApplicationModal, "Development warning"
+        
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
