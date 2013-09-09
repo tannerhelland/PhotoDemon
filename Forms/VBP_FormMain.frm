@@ -2017,7 +2017,7 @@ End Sub
     'resetToolButtonStates
 'End Sub
 
-Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
     g_CurrentTool = Index
     resetToolButtonStates
 End Sub
@@ -2375,7 +2375,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2411,7 +2411,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -3083,15 +3083,20 @@ Private Sub mnuLanguages_Click(Index As Integer)
 
     Screen.MousePointer = vbHourglass
     
+    'Because loading a language can take some time, display a wait screen to discourage attempted interaction
+    displayWaitScreen g_Language.TranslateMessage("Please wait while the new language is applied..."), Me
+    
     'Remove the existing translation
     Message "Removing existing translation..."
-    g_Language.undoTranslations FormMain
+    g_Language.undoTranslations FormMain, True
     
     'Apply the new translation
     Message "Applying new translation..."
-    g_Language.activateNewLanguage Index
+    g_Language.activateNewLanguage Index, True
     
     Message "Language changed successfully."
+    
+    hideWaitScreen
     
     Screen.MousePointer = vbDefault
     
@@ -3505,7 +3510,7 @@ Private Sub mnuTool_Click(Index As Integer)
     
         'Language editor
         Case 1
-            If Not FormLanguageEditor.Visible Then FormLanguageEditor.Show vbModal, FormMain
+            If Not FormLanguageEditor.Visible Then FormLanguageEditor.Show vbModeless, FormMain
     
         'Options
         Case 5
@@ -3894,8 +3899,8 @@ Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boo
 End Function
 
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
-Public Sub requestMakeFormPretty()
-    makeFormPretty Me, m_ToolTip
+Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
+    makeFormPretty Me, m_ToolTip, , useDoEvents
 End Sub
 
 'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the

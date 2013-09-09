@@ -81,6 +81,27 @@ End Enum
 ' 2: had to turn on smoothing, as it was originally turned off
 Private hadToChangeSmoothing As Long
 
+Public Sub displayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
+    
+    FormWait.Visible = False
+    
+    FormWait.lblWaitTitle.Caption = waitTitle
+    FormWait.lblWaitTitle.Visible = True
+    FormWait.lblWaitTitle.Refresh
+    
+    Screen.MousePointer = vbHourglass
+    
+    FormWait.Show vbModeless, ownerForm
+    FormWait.Refresh
+    DoEvents
+    
+End Sub
+
+Public Sub hideWaitScreen()
+    Screen.MousePointer = vbDefault
+    Unload FormWait
+End Sub
+
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbox buttons)
 Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
@@ -304,7 +325,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False)
+Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
@@ -335,6 +356,10 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
+        
+        'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
+        ' bars to be automatically refreshed.
+        If useDoEvents Then DoEvents
                 
     Next
     
@@ -347,12 +372,17 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             If (TypeOf eControl Is PictureBox) Then
                 SubclassFrame eControl.hWnd, False
             End If
+            
+            'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
+            ' bars to be automatically refreshed.
+            If useDoEvents Then DoEvents
+        
         Next
     End If
     
     'FORM STEP 4: translate the form (and all controls on it)
     If g_Language.translationActive And tForm.Enabled Then
-        g_Language.applyTranslations tForm
+        g_Language.applyTranslations tForm, useDoEvents
     End If
     
     'FORM STEP 5: if a custom tooltip handler was passed in, activate and populate it now.
@@ -380,6 +410,11 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
                     customTooltips.AddTool eControl, tmpTooltip
                 End If
             End If
+            
+            'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
+            ' bars to be automatically refreshed.
+            If useDoEvents Then DoEvents
+            
         Next
         
     End If
@@ -739,11 +774,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    getPixelWidthOfString = txtSize.X
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    getPixelHeightOfString = txtSize.Y
 End Function

@@ -33,7 +33,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -124,6 +124,10 @@ Private cMenuImage As clsMenuImage
 'A second class is used to manage the icons for the MRU list.
 Private cMRUIcons As clsMenuImage
 
+'Some functions in this module take a long time to apply.  In order to refresh a generic progress bar on the "please wait" dialog,
+' this module-level variable can be set to TRUE.
+Private m_refreshOutsideProgressBar As Boolean
+
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons()
 
@@ -169,7 +173,9 @@ Public Sub LoadMenuIcons()
 End Sub
 
 'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.
-Public Sub ApplyAllMenuIcons()
+Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
+
+    m_refreshOutsideProgressBar = useDoEvents
 
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
@@ -414,6 +420,9 @@ Public Sub ApplyAllMenuIcons()
     AddMenuIcon "LICENSE", 9, 8         'License
     AddMenuIcon "ABOUT", 9, 10          'About PD
     
+    'When we're done, reset the doEvents tracker
+    m_refreshOutsideProgressBar = False
+    
 End Sub
 
 'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
@@ -463,6 +472,9 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     Else
         cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu + posModifier, subMenu
     End If
+    
+    'If an outside progress bar needs to refresh, do so now
+    If m_refreshOutsideProgressBar Then DoEvents
 
 End Sub
 
