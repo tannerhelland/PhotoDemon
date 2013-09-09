@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmCreateMaster 
    BackColor       =   &H80000005&
    Caption         =   " PhotoDemon Master Language XML Generator"
-   ClientHeight    =   6750
+   ClientHeight    =   7665
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   14535
@@ -16,10 +16,18 @@ Begin VB.Form frmCreateMaster
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   450
+   ScaleHeight     =   511
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdMergeAll 
+      Caption         =   "2a (Optional) Automatically merge all language files in default PhotoDemon folder with newest Master XML file..."
+      Height          =   735
+      Left            =   4800
+      TabIndex        =   13
+      Top             =   6600
+      Width           =   9495
+   End
    Begin VB.CheckBox chkRemoveDuplicates 
       BackColor       =   &H80000005&
       Caption         =   " Remove duplicate entries"
@@ -123,7 +131,7 @@ Begin VB.Form frmCreateMaster
       Height          =   495
       Left            =   4080
       TabIndex        =   11
-      Top             =   4440
+      Top             =   4560
       Width           =   10215
    End
    Begin VB.Label lblTitle 
@@ -225,8 +233,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Master English Language File (XML) Generator
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/January/13
-'Last updated: 07/September/13
-'Last update: changed Master Language File XML export format to match the new format required by PD
+'Last updated: 09/September/13
+'Last update: many small changes to improve output accuracy and speed.  Also, a new "merge all old language files" option,
+'             which saves me a lot of time when all language files need to be re-merged.
 '
 'This project is designed to scan through all project files in PhotoDemon, extract any user-facing English text, and compile
 ' it into an XML file which can be used as the basis for translations into other languages.  It reads the master PhotoDemon.vbp
@@ -280,7 +289,7 @@ Private Sub cmdMaster_Click()
     Set cDlg = New cCommonDialog
     
     Dim fPath As String
-    fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\MASTER.xml"
+    fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\Master\MASTER.xml"
     
     If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
@@ -457,7 +466,7 @@ Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As Stri
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
             If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(fTag) + 2
-            getTextBetweenTags = Mid(fileText, tagStart, tagEnd - tagStart)
+            getTextBetweenTags = Mid$(fileText, tagStart, tagEnd - tagStart)
             
         Else
             getTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
@@ -482,13 +491,131 @@ Private Sub preProcessText(ByRef srcString As String)
     
 End Sub
 
+'New option added 09 September 2013 - Merge all language files automatically.  This will save me some trouble in the future.
+Private Sub cmdMergeAll_Click()
+
+    Dim srcFolder As String
+    srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
+    
+    'Auto-load the latest master language file
+    m_MasterText = getFileAsString(srcFolder & "Master\MASTER.xml")
+    
+    'Iterate through every language file in the default PD directory
+    'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
+    Dim chkFile As String
+    chkFile = Dir(srcFolder & "*.xml", vbNormal)
+        
+    Do While (chkFile <> "")
+        
+        'Load the file into a string
+        m_OldLanguageText = getFileAsString(srcFolder & chkFile)
+        m_OldLanguagePath = srcFolder & chkFile
+        
+        'MsgBox m_OldLanguageText
+        
+        'BEGIN COPY OF CODE FROM cmdMerge
+        
+            'Make sure our source file strings are not empty
+            If m_MasterText = "" Or m_OldLanguageText = "" Then
+                Debug.Print "One or more source files are missing.  Supply those before attempting a merge."
+                Exit Sub
+            End If
+            
+            'Start by copying the contents of the master file into the destination string.  We will use that as our base, and update it
+            ' with the old translations as best we can.
+            m_NewLanguageText = m_MasterText
+                
+            Dim sPos As Long
+            sPos = InStr(1, m_NewLanguageText, "<phrase>")
+            
+            Dim origText As String, translatedText As String
+            Dim findText As String, replaceText As String
+            
+            'Copy over all top-level language and author information
+            replaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            replaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            replaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            replaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
+                
+            Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
+            phrasesProcessed = 0
+            phrasesFound = 0
+            phrasesMissed = 0
+            
+            'Start parsing the master text for <phrase> tags
+            Do
+            
+                phrasesProcessed = phrasesProcessed + 1
+            
+                'Retrieve the original text associated with this phrase tag
+                origText = getTextBetweenTags(m_MasterText, "original", sPos)
+                
+                'Attempt to retrieve a translation for this phrase using the old language file
+                translatedText = getTranslationTagFromCaption(origText)
+                
+                'Remove any tab stops from the translated text (which may have been added by an outside editor)
+                translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
+                
+                'If a translation was found, insert it into the new file
+                If translatedText <> "" Then
+                    findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
+                    replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
+                    m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
+                    phrasesFound = phrasesFound + 1
+                Else
+                    phrasesMissed = phrasesMissed + 1
+                End If
+            
+                'Find the next occurrence of a <phrase> tag
+                sPos = InStr(sPos + 1, m_MasterText, "<phrase>")
+                
+                If (phrasesProcessed And 15) = 0 Then
+                    lblUpdates.Caption = chkFile & ": " & phrasesProcessed & " phrases processed (" & phrasesFound & " found, " & phrasesMissed & " missed)"
+                    lblUpdates.Refresh
+                    DoEvents
+                End If
+            
+            Loop While sPos > 0
+            
+            'Unlike the normal merge option, we will automatically save the results to a new XML file
+            
+            Dim fPath As String
+            fPath = m_OldLanguagePath & ".new"
+            
+            If FileExist(fPath) Then
+                Kill fPath
+                Debug.Print "Note - old file with same name was erased.  Hope this is what you wanted!"
+            End If
+            
+            Dim fileNum As Integer
+            fileNum = FreeFile
+            
+            Open fPath For Output As #fileNum
+                Print #fileNum, m_NewLanguageText
+            Close #fileNum
+            
+        
+        'END COPY OF CODE FROM cmdMerge
+        
+        'Retrieve the next file and repeat
+        chkFile = Dir
+        
+    Loop
+    
+    lblUpdates.Caption = "All language files processed successfully."
+    lblUpdates.Refresh
+    DoEvents
+
+End Sub
+
 Private Sub cmdOldLanguage_Click()
 
     Dim cDlg As cCommonDialog
     Set cDlg = New cCommonDialog
     
     Dim fPath As String
-    fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\MASTER_edited.xml"
+    fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
     If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
@@ -538,15 +665,22 @@ Private Sub cmdProcess_Click()
     
     'With processing complete, write out our final stats (just for fun)
     outputText = outputText & vbCrLf & vbCrLf
-    outputText = outputText & vbTab & "<!-- Automatic text extraction complete. -->" & vbCrLf & vbCrLf
+    outputText = outputText & vbTab & vbTab & "<!-- Automatic text extraction complete. -->" & vbCrLf & vbCrLf
+    
+    'Updated 09 September 2013: write out phrase count as an actual tag, which PD's new language editor can use to approximate a max
+    ' value for its progress bar when loading the language file.
+    outputText = outputText & vbTab & vbTab & "<phrasecount>" & m_NumOfPhrasesWritten & "</phrasecount>"
+    outputText = outputText & vbCrLf & vbCrLf
+    
+    'Proceed with human-readable phrase statistics
     If CBool(chkRemoveDuplicates) Then
-        outputText = outputText & vbTab & "<!-- As of this build, PhotoDemon contains " & m_NumOfPhrasesFound & " phrases in total. -->"
+        outputText = outputText & vbTab & "<!-- As of this build, PhotoDemon contains " & m_NumOfPhrasesFound & " phrases. -->"
         outputText = outputText & vbCrLf
-        outputText = outputText & vbTab & "<!-- " & CStr(m_NumOfPhrasesFound - m_NumOfPhrasesWritten) & " are duplicate phrases, so only " & m_NumOfPhrasesWritten & " phrases have been written to file. -->"
+        outputText = outputText & vbTab & "<!-- " & CStr(m_NumOfPhrasesFound - m_NumOfPhrasesWritten) & " are duplicates, so only " & m_NumOfPhrasesWritten & " unique phrases have been written to file. -->"
         outputText = outputText & vbCrLf
         outputText = outputText & vbTab & "<!-- These " & m_NumOfPhrasesWritten & " phrases contain approximately " & m_numOfWords & " total words. -->"
     Else
-        outputText = outputText & vbTab & "<!-- As of this build, PhotoDemon contains " & m_NumOfPhrasesWritten & " phrases in total. -->"
+        outputText = outputText & vbTab & "<!-- As of this build, PhotoDemon contains " & m_NumOfPhrasesWritten & " phrases (including duplicates). -->"
         outputText = outputText & vbCrLf
         outputText = outputText & vbTab & "<!-- These " & m_NumOfPhrasesWritten & " phrases contain approximately " & m_numOfWords & " total words. -->"
     End If
@@ -557,9 +691,9 @@ Private Sub cmdProcess_Click()
     
     'Write the text out to file
     If CBool(chkRemoveDuplicates) Then
-        outputFile = m_VBPPath & "App\PhotoDemon\Languages\MASTER.xml"
+        outputFile = m_VBPPath & "App\PhotoDemon\Languages\Master\MASTER.xml"
     Else
-        outputFile = m_VBPPath & "App\PhotoDemon\Languages\MASTER (with duplicates).xml"
+        outputFile = m_VBPPath & "App\PhotoDemon\Languages\Master\MASTER (with duplicates).xml"
     End If
     
     If FileExist(outputFile) Then Kill outputFile
@@ -572,7 +706,7 @@ Private Sub cmdProcess_Click()
     Close #fileNum
     
     cmdProcess.Caption = "Processing complete!"
-    MsgBox "Text extraction complete!"
+    'MsgBox "Text extraction complete!"
     
 End Sub
 
@@ -608,7 +742,7 @@ Private Sub processFile(ByVal srcFile As String)
     'For convenience, write the name of the source file into the translation file - this can be helpful when
     ' tracking down errors or incomplete text.
     If LenB(m_FileName) > 0 Then
-        outputText = outputText & vbCrLf & vbCrLf & vbTab
+        outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
         If Len(shortcutName) > 0 Then
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " (" & shortcutName & ") -->"
         Else
@@ -733,7 +867,8 @@ nextLine:
     
     'For fun, write some stats about our processing results into the translation file.
     If m_FileName <> "" Then
-        outputText = outputText & vbCrLf & vbCrLf & vbTab
+        
+        outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
         If numOfPhrasesFound <> 1 Then
             outputText = outputText & "<!-- " & m_FileName & " contains " & numOfPhrasesFound & " phrases. "
         Else
@@ -751,7 +886,11 @@ nextLine:
                     Case numOfPhrasesFound
                         outputText = outputText & " All were duplicates of existing phrases, so no new phrases were written to file. -->"
                     Case Else
-                        outputText = outputText & CStr(phraseDifference) & " were duplicates of existing phrases, so only " & numOfPhrasesWritten & " new phrases were written to file. -->"
+                        If numOfPhrasesWritten = 1 Then
+                            outputText = outputText & CStr(phraseDifference) & " were duplicates of existing phrases, so only one new phrase was written to file. -->"
+                        Else
+                            outputText = outputText & CStr(phraseDifference) & " were duplicates of existing phrases, so only " & numOfPhrasesWritten & " new phrases were written to file. -->"
+                        End If
                 End Select
                 
             Else
@@ -759,7 +898,7 @@ nextLine:
                     Case 1
                         outputText = outputText & " The phrase was unique, so 1 new phrase was written to file. -->"
                     Case 2
-                        outputText = outputText & " Both phrases were unique, so " & numOfPhrasesFound & " new phrases was written to file. -->"
+                        outputText = outputText & " Both phrases were unique, so " & numOfPhrasesFound & " new phrases were written to file. -->"
                     Case Else
                         outputText = outputText & " All " & numOfPhrasesFound & " were unique, so " & numOfPhrasesFound & " new phrases were written to file. -->"
                 End Select
@@ -772,7 +911,7 @@ nextLine:
     'For convenience, once again write the name of the source file into the translation file - this can be helpful when
     ' tracking down errors or incomplete text.
     If m_FileName <> "" Then
-        outputText = outputText & vbCrLf & vbCrLf & vbTab
+        outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
         outputText = outputText & "<!-- END text for " & m_FileName & "-->"
     End If
     
@@ -1316,7 +1455,15 @@ Private Function countWordsInString(ByVal srcString As String) As Long
         Dim tmpArray() As String
         tmpArray = Split(Trim$(srcString), " ")
         
-        countWordsInString = UBound(tmpArray) + 1
+        Dim tmpWordCount As Long
+        tmpWordCount = 0
+        
+        Dim i As Long
+        For i = 0 To UBound(tmpArray)
+            If IsAlpha(tmpArray(i)) Then tmpWordCount = tmpWordCount + 1
+        Next i
+        
+        countWordsInString = tmpWordCount
         
     Else
         countWordsInString = 0
@@ -1410,4 +1557,37 @@ Private Function isBlacklisted(ByVal blString As String) As Boolean
         End If
     Next i
 
+End Function
+
+'Used to roughly estimate if a string is purely alphabetical (this project uses it to check if a statement is a "word" or not).
+Private Function IsAlpha(ByRef srcString As String) As Boolean
+    
+    Dim charID As Byte
+   
+    IsAlpha = True
+    
+    Dim i As Long
+    For i = 1 To Len(srcString)
+        charID = Asc(UCase$(Mid$(srcString, i, 1)))
+        
+        'First, check to see if the character lies outside the ASCII alphabet range
+        If ((charID < 65) Or (charID > 90)) Then
+        
+            'Next, if the length of the source string is greater than one, check to see if this is a hyphenated or punctuated word
+            If Len(srcString) > 1 Then
+                
+                'Allow certain punctuation to still count as "alphabetical"
+                If Not ((charID = 33) Or (charID = 34) Or (charID = 38) Or (charID = 40) Or (charID = 41) Or (charID = 44) Or (charID = 45) Or (charID = 46) Or (charID = 58) Or (charID = 59) Or (charID = 63) Or (charID = 64) Or (charID = 96)) Then
+                    IsAlpha = False
+                    Exit For
+                End If
+                
+            Else
+                IsAlpha = False
+                Exit For
+            End If
+            
+        End If
+    Next i
+    
 End Function
