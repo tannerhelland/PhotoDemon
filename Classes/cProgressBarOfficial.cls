@@ -355,3 +355,6 @@ Private Sub pvCopyBarProperties(Horizontal As Boolean, ByVal Smooth As Boolean, 
 End Sub
 
 
+Private Sub Class_Terminate()
+    If m_Hwnd Then DestroyWindow m_Hwnd
+End Sub

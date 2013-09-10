@@ -533,7 +533,7 @@ End Function
 
 'The next block of functions returns a unique tag value in the specified format.  "Unique" tags are those that only exist once in
 ' a file, so their location does not matter, as they can only appear once.
-Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "", Optional ByVal xmlSectionAttribute As String = "", Optional ByVal xmlSectionAttributeValue As String = "") As String
+Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defaultReturn As String = "", Optional ByVal searchLocation As Long = 1, Optional ByVal xmlSection As String = "", Optional ByVal xmlSectionAttribute As String = "", Optional ByVal xmlSectionAttributeValue As String = "") As String
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
@@ -553,7 +553,7 @@ Public Function getUniqueTag_String(ByVal tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tagName) > 0 Then
+    If LenB(tagName) > 0 Then
         getUniqueTag_String = CStr(tmpString)
     Else
         getUniqueTag_String = defaultReturn
@@ -762,7 +762,7 @@ End Function
 ' Long-type array, which the calling function can use to retrieve individual values at its leisure.
 ' NOTE: per my personal requirements for this function, it assumes simple tags only (e.g. <tagname>).  This improves
 ' performance.  This function could easily be modified to also find tags with attributes.
-Public Function findAllTagLocations(ByRef locationArray() As Long, ByVal tagName As String) As Boolean
+Public Function findAllTagLocations(ByRef locationArray() As Long, ByVal tagName As String, Optional ByVal useDoEvents As Boolean = False) As Boolean
 
     Dim numOfTags As Long, tagArrayBound As Long
     numOfTags = 0
@@ -797,6 +797,10 @@ Public Function findAllTagLocations(ByRef locationArray() As Long, ByVal tagName
             
             'Find the next occurrence of the target tag
             searchLocation = InStr(searchLocation + 1, xmlContents, searchTag, vbTextCompare)
+        
+            If useDoEvents Then
+                If (numOfTags And 7) = 0 Then DoEvents
+            End If
         
         Loop While searchLocation > 0
     
