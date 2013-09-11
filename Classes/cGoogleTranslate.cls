@@ -100,7 +100,7 @@ Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     
     getGoogleTranslation = ""
     
-    'If translation fails, we will try again once.  (Could be changed to as many times as you want, but one is sufficient IMO.)
+    'If translation fails, we will try again twice.  (Could be changed to as many times as you want, but twice is sufficient IMO.)
     Dim numOfRetries As Long
     numOfRetries = 0
     
@@ -113,17 +113,15 @@ RetryTranslation:
     ' obviously dependent on this PC's Internet connection.
     Do While ie.busy Or (Not ie.ReadyState = 4)
         
-        'Briefly wait to prevent spamming the processor with DoEvents calls
-        Sleep 100
-        DoEvents
+        'Briefly wait to prevent spamming the CPU with repeated loop calls
+        Sleep 200
         
     Loop
         
     'Sometimes the ie object claims to be ready, despite the output result not fully being filled.
     ' In an attempt to remedy this, we'll wait just a tiny bit longer...
     Do
-        Sleep 100
-        DoEvents
+        Sleep 200
     Loop Until (ie.ReadyState = 4) And (Not ie.busy)
         
     'Copy the translation (including all HTML elements) into a VB string
@@ -132,7 +130,7 @@ RetryTranslation:
     
     'If this translation matches the previous one, try again if necessary.
     If InStr(1, origHTML, lastTranslation, vbTextCompare) > 0 Then
-        If numOfRetries < 1 Then
+        If numOfRetries < 2 Then
             numOfRetries = numOfRetries + 1
             GoTo RetryTranslation
         End If
