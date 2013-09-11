@@ -101,10 +101,10 @@ Begin VB.Form FormLanguageEditor
          Left            =   5040
          TabIndex        =   36
          Top             =   5640
-         Width           =   5475
-         _ExtentX        =   9657
+         Width           =   5985
+         _ExtentX        =   10557
          _ExtentY        =   847
-         Caption         =   "use Google Translate to automatically fill blank translations "
+         Caption         =   "automatically estimate missing translations with Google Translate"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"

@@ -45,6 +45,10 @@ Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' Specify which languages by calling the setSrcLanguage and setDstLanguage functions.
 Private srcLanguage As String, dstLanguage As String
 
+'If the ie object fails to retrieve a translation, it will sometimes return the previous page instead of the current one.
+' To protect against this, we manually compare this translation to the previous one and request a new translation as necessary.
+Private lastTranslation As String
+
 Public Sub setSrcLanguage(ByVal srcLangID As String)
     srcLanguage = srcLangID
 End Sub
@@ -67,6 +71,8 @@ Private Sub Class_Initialize()
     'By default, translate from English to English
     srcLanguage = "en"
     dstLanguage = "en"
+    
+    lastTranslation = ""
 
 End Sub
 
@@ -93,7 +99,13 @@ Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     srcText = Replace(srcText, vbCr, "VBCRLF")
     
     getGoogleTranslation = ""
-
+    
+    'If translation fails, we will try again once.  (Could be changed to as many times as you want, but one is sufficient IMO.)
+    Dim numOfRetries As Long
+    numOfRetries = 0
+    
+RetryTranslation:
+    
     'Use the ie scripting object to access Google translate
     ie.navigate "http://translate.google.com/#" & srcLanguage & "/" & dstLanguage & "/" & srcText
     
@@ -118,6 +130,16 @@ Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     origHTML = ie.Document.getElementById("result_box").innerHTML
     ie.Document.Clear
     
+    'If this translation matches the previous one, try again if necessary.
+    If InStr(1, origHTML, lastTranslation, vbTextCompare) > 0 Then
+        If numOfRetries < 1 Then
+            numOfRetries = numOfRetries + 1
+            GoTo RetryTranslation
+        End If
+    Else
+        lastTranslation = origHTML
+    End If
+    
     'Return any characters we removed before translation
     origHTML = Replace(origHTML, "&#37;", "%", , , vbBinaryCompare)
     origHTML = Replace(origHTML, "VBCRLF", vbCrLf)
@@ -141,6 +163,7 @@ Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     processedHTML = Replace(processedHTML, " / ", "/", 1, , vbTextCompare)
     processedHTML = Replace(processedHTML, "»", "'", 1, , vbTextCompare)
     processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
+    processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
     
     'Return the translated data
     getGoogleTranslation = processedHTML
