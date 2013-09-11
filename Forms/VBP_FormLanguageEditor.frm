@@ -203,10 +203,10 @@ Begin VB.Form FormLanguageEditor
          Left            =   5040
          TabIndex        =   38
          Top             =   6000
-         Width           =   6240
-         _ExtentX        =   11007
+         Width           =   5520
+         _ExtentX        =   9737
          _ExtentY        =   847
-         Caption         =   "DOWN ARROW key automatically saves and proceeds to next phrase"
+         Caption         =   "ENTER key automatically saves and proceeds to next phrase"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -809,8 +809,7 @@ Private curLanguage As pdLanguageFile
 'All phrases that need to be translated will be stored in this array
 Private Type Phrase
     Original As String
-    OrigTranslation As String
-    NewTranslation As String
+    Translation As String
     Length As Long
     ListBoxEntry As String
 End Type
@@ -828,6 +827,14 @@ Private sysProgBar As cProgressBarOfficial
 
 'A Google Translate interface, which we use to auto-populate missing translations
 Private autoTranslate As clsGoogleTranslate
+
+'An XML engine is used to parse and update the actual language file contents
+Private xmlEngine As pdXML
+
+'To minimize the chance of data loss, PhotoDemon backs up translation data to two alternating files.  In the event of a crash anywhere in
+' the editing or export stages, this guarantees that we will never lose more than the last-edited phrase.
+Private curBackupFile As Long
+Private Const backupFileName As String = "PD_LANG_EDIT_BACKUP_"
 
 'During phrase editing, the user can choose to display all phrases, only translated phrases, or only untranslated phrases.
 Private Sub cmbPhraseFilter_Click()
@@ -849,7 +856,7 @@ Private Sub cmbPhraseFilter_Click()
         'Translated phrases
         Case 1
             For i = 0 To numOfPhrases - 1
-                If Len(allPhrases(i).NewTranslation) > 0 Then
+                If Len(allPhrases(i).Translation) > 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
                     lstPhrases.ItemData(lstPhrases.newIndex) = i
                 End If
@@ -858,7 +865,7 @@ Private Sub cmbPhraseFilter_Click()
         'Untranslated phrases
         Case 2
             For i = 0 To numOfPhrases - 1
-                If Len(allPhrases(i).NewTranslation) = 0 Then
+                If Len(allPhrases(i).Translation) = 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
                     lstPhrases.ItemData(lstPhrases.newIndex) = i
                 End If
@@ -884,19 +891,22 @@ End Sub
 Private Sub cmdNextPhrase_Click()
 
     'Store this translation to the phrases array
-    allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).NewTranslation = txtTranslation
+    allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation = txtTranslation
     
-    'TODO: if this translation differs from its original translation value, write it into the original XML string.
-    '      Then, write the XML out to file, and do it safe-style - e.g., always keep two copies saved, and alternate
-    '      between which file is used for the latest save.  This ensures that even if a crash occurs mid-save, we
-    '      never lose anything more than the last-translated phrase!  (Also needed is code to auto-detect these files
-    '      at load time, and allow the user to resume where they previously left off.)
+    'Insert this translation into the original XML file
+    xmlEngine.updateTagAtLocation "translation", txtTranslation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original)
     
-    '      A new function will be needed in the XML engine to update the proper translation tag.
+    'Write an alternating backup out to file
+    If curBackupFile = 1 Then curBackupFile = 0 Else curBackupFile = 1
     
+    Dim backupFile As String
+    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & CStr(curBackupFile) & ".tmpxml"
+    
+    xmlEngine.writeXMLToFile backupFile, True
+        
+    'If a specific type of phrase list is displayed, refresh it as necessary
     Dim newIndex As Long
     
-    'If a specific type of phrase list is displayed, refresh it as necessary
     Select Case cmbPhraseFilter.ListIndex
     
         'All phrases
@@ -1177,7 +1187,7 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
     
     'If the down arrow key is pressed while the user is in the phrase-editing panel, automatically save the current
     ' phrase and move to the next one.
-    If CBool(chkShortcut) And (KeyCode = vbKeyDown) And (curWizardPage = 3) Then
+    If CBool(chkShortcut) And (KeyCode = vbKeyReturn) And (curWizardPage = 3) Then
         cmdNextPhrase_Click
         KeyCode = 0
     End If
@@ -1188,6 +1198,7 @@ Private Sub Form_Load()
     
     'Mark the XML file as not loaded
     xmlLoaded = False
+    curBackupFile = 0
     
     'By default, the first wizard page is displayed.  (We start at -1 because we will incerement the page count by +1 with our first
     ' call to changeWizardPage in Form_Activate)
@@ -1271,7 +1282,6 @@ End Sub
 'Given a source language file, find all phrase tags, and load them into a specialized phrase array
 Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
 
-    Dim xmlEngine As New pdXML
     Set xmlEngine = New pdXML
     
     'Attempt to load the language file
@@ -1300,8 +1310,7 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                     tmpString = xmlEngine.getUniqueTag_String("original", , phraseLocations(i))
                     allPhrases(i).Original = tmpString
                     allPhrases(i).Length = Len(tmpString)
-                    allPhrases(i).OrigTranslation = xmlEngine.getUniqueTag_String("translation", , phraseLocations(i))
-                    allPhrases(i).NewTranslation = allPhrases(i).OrigTranslation
+                    allPhrases(i).Translation = xmlEngine.getUniqueTag_String("translation", , phraseLocations(i))
                     
                     'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
                     ' and it can't be so long that it overflows the list box.
@@ -1347,8 +1356,8 @@ Private Sub lstPhrases_Click()
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
-    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).NewTranslation) > 0 Then
-        txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).NewTranslation
+    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation) > 0 Then
+        txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation
         lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase (saved):")
     Else
     
