@@ -185,6 +185,42 @@ Public Function doesTagExist(ByVal tagName As String, Optional ByVal attributeNa
 
 End Function
 
+'This is a bit different from the updateTag function below (which exists primarily to deal with INI-style entries).  This function asks
+' for a location in the master string.  The first occurrence of the tag AFTER that location will be updated wiht the new value.  The
+' current value of the tag does not need to be known.
+'
+'The intended purpose of this function is adding/updating translations to a PD language file.  In that case, getLocationOfParentTag is
+' used to find the <phrase> wrapper, and that location is then passed to this function so the immediately following <translation> tag
+' can be updated.
+'
+'NOTE: Unlike the updateTag function, if the requested tagName cannot be found at this location, this function will not add a new tag
+' to the file.  It will simply fail and exit.  (updateTag will add the requested tag to the end of the specified section.)
+Public Function updateTagAtLocation(ByVal tagName As String, ByVal newTagContents As String, Optional ByVal startLocation As Long = 1) As Boolean
+
+    Dim tagLocation As Long
+    tagLocation = InStr(startLocation, xmlContents, "<" & tagName & ">", vbTextCompare)
+    
+    Dim topHalf As String, bottomHalf As String
+    
+    'If the tag was located successfully, update it with its new contents
+    If tagLocation > 0 Then
+        
+        'Split the XML file into two halves: the half before the relevant tag, and the half after
+        Dim tagCloseLocation As Long
+        tagCloseLocation = InStr(tagLocation, xmlContents, "</" & tagName & ">", vbTextCompare)
+        splitStringIn2 xmlContents, tagCloseLocation - 1, topHalf, bottomHalf
+        
+        'The "topHalf" string now includes everything before the closing tag.  Chop it off at the end of the start tag,
+        ' add the new contents, then add the bottom half of the original XML string.
+        xmlContents = Left$(topHalf, tagLocation + Len(tagName) + 1) & newTagContents & bottomHalf
+        
+        updateTagAtLocation = True
+    Else
+        updateTagAtLocation = False
+    End If
+
+End Function
+
 'Update an already existant tag located within a specific subsection of the XML file.  If the tag is not found, it will be added
 ' at the end of the section.
 Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
@@ -245,10 +281,8 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
             tagCloseLocation = InStr(tagLocation, xmlContents, "</" & tagName & ">", vbTextCompare)
             splitStringIn2 xmlContents, tagCloseLocation - 1, topHalf, bottomHalf
             
-            'The "topHalf" string now includes everything before the closing tag.  We want to split it again, leaving out the
-            ' previous value so we can replace it with our own.
-            
-            'Reassemble the string with the new value
+            'The "topHalf" string now includes everything before the closing tag.  Chop it off at the end of the start tag (e.g. after
+            ' the closing bracket), add the new contents, then add the bottom half of the original XML string.
             xmlContents = Left$(topHalf, tagLocation + Len(tagName) + 1) & tagContents & bottomHalf
             
             updateTag = True
@@ -467,7 +501,7 @@ Private Sub applyIndentation(ByRef srcString As String)
         If tagPosition > 0 Then
         
             'This line contains a tag.  Retrieve the tag's name.
-            curTag = Mid$(xmlArray(i), tagPosition + 1, InStr(1, xmlArray(i), ">", vbBinaryCompare) - tagPosition - 1)
+            curTag = Mid$(xmlArray(i), tagPosition + 1, InStr(tagPosition, xmlArray(i), ">", vbBinaryCompare) - tagPosition - 1)
             
             'Check for a closing tag, which would mean we need to place the current line one tab-stop to the left
             If InStr(1, curTag, "/", vbBinaryCompare) > 0 Then numOfTabs = numOfTabs - 1
