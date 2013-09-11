@@ -16,6 +16,7 @@ Begin VB.Form FormLanguageEditor
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -96,15 +97,23 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   11
       Top             =   720
       Width           =   11775
+      Begin VB.CommandButton cmdNextPhrase 
+         Caption         =   "Save this translation and proceed to the next phrase"
+         Height          =   615
+         Left            =   5040
+         TabIndex        =   37
+         Top             =   6600
+         Width           =   6615
+      End
       Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
          Height          =   480
          Left            =   5040
          TabIndex        =   36
-         Top             =   5640
-         Width           =   5985
-         _ExtentX        =   10557
+         Top             =   5520
+         Width           =   6015
+         _ExtentX        =   10610
          _ExtentY        =   847
-         Caption         =   "automatically estimate missing translations with Google Translate"
+         Caption         =   "automatically estimate missing translations (via Google Translate)"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -131,7 +140,7 @@ Begin VB.Form FormLanguageEditor
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
          TabIndex        =   35
-         Top             =   3240
+         Top             =   3120
          Width           =   6615
       End
       Begin VB.TextBox txtOriginal 
@@ -150,7 +159,7 @@ Begin VB.Form FormLanguageEditor
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
          TabIndex        =   34
-         Top             =   480
+         Top             =   360
          Width           =   6615
       End
       Begin VB.ComboBox cmbPhraseFilter 
@@ -183,13 +192,33 @@ Begin VB.Form FormLanguageEditor
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   5580
+         Height          =   5820
          Left            =   240
          TabIndex        =   13
-         Top             =   480
+         Top             =   360
          Width           =   4500
       End
-      Begin VB.Label lblTitle 
+      Begin PhotoDemon.smartCheckBox chkShortcut 
+         Height          =   480
+         Left            =   5040
+         TabIndex        =   38
+         Top             =   6000
+         Width           =   6240
+         _ExtentX        =   11007
+         _ExtentY        =   847
+         Caption         =   "DOWN ARROW key automatically saves and proceeds to next phrase"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTranslatedPhrase 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
          Caption         =   "translated phrase:"
@@ -204,10 +233,9 @@ Begin VB.Form FormLanguageEditor
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   285
-         Index           =   10
          Left            =   4920
          TabIndex        =   33
-         Top             =   2880
+         Top             =   2760
          Width           =   1905
       End
       Begin VB.Label lblTitle 
@@ -228,7 +256,7 @@ Begin VB.Form FormLanguageEditor
          Index           =   9
          Left            =   4920
          TabIndex        =   32
-         Top             =   120
+         Top             =   0
          Width           =   1665
       End
       Begin VB.Label lblTitle 
@@ -249,13 +277,13 @@ Begin VB.Form FormLanguageEditor
          Index           =   2
          Left            =   0
          TabIndex        =   14
-         Top             =   6360
+         Top             =   6480
          Width           =   1995
       End
-      Begin VB.Label lblTitle 
+      Begin VB.Label lblPhraseBox 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "list of phrases:"
+         Caption         =   "list of phrases (%1 items):"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -267,11 +295,10 @@ Begin VB.Form FormLanguageEditor
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   285
-         Index           =   1
          Left            =   0
          TabIndex        =   12
          Top             =   0
-         Width           =   1560
+         Width           =   2835
       End
    End
    Begin VB.PictureBox picContainer 
@@ -782,7 +809,8 @@ Private curLanguage As pdLanguageFile
 'All phrases that need to be translated will be stored in this array
 Private Type Phrase
     Original As String
-    Translation As String
+    OrigTranslation As String
+    NewTranslation As String
     Length As Long
     ListBoxEntry As String
 End Type
@@ -815,24 +843,24 @@ Private Sub cmbPhraseFilter_Click()
         Case 0
             For i = 0 To numOfPhrases - 1
                 lstPhrases.AddItem allPhrases(i).ListBoxEntry
-                lstPhrases.ItemData(lstPhrases.NewIndex) = i
+                lstPhrases.ItemData(lstPhrases.newIndex) = i
             Next i
         
         'Translated phrases
         Case 1
             For i = 0 To numOfPhrases - 1
-                If Len(allPhrases(i).Translation) > 0 Then
+                If Len(allPhrases(i).NewTranslation) > 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
-                    lstPhrases.ItemData(lstPhrases.NewIndex) = i
+                    lstPhrases.ItemData(lstPhrases.newIndex) = i
                 End If
             Next i
         
         'Untranslated phrases
         Case 2
             For i = 0 To numOfPhrases - 1
-                If Len(allPhrases(i).Translation) = 0 Then
+                If Len(allPhrases(i).NewTranslation) = 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
-                    lstPhrases.ItemData(lstPhrases.NewIndex) = i
+                    lstPhrases.ItemData(lstPhrases.newIndex) = i
                 End If
             Next i
     
@@ -840,6 +868,8 @@ Private Sub cmbPhraseFilter_Click()
                 
     LockWindowUpdate 0
     lstPhrases.Refresh
+    
+    updatePhraseBoxTitle
     
 End Sub
 
@@ -849,6 +879,78 @@ End Sub
 
 Private Sub cmdNext_Click()
     changeWizardPage True
+End Sub
+
+Private Sub cmdNextPhrase_Click()
+
+    'Store this translation to the phrases array
+    allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).NewTranslation = txtTranslation
+    
+    'TODO: if this translation differs from its original translation value, write it into the original XML string.
+    '      Then, write the XML out to file, and do it safe-style - e.g., always keep two copies saved, and alternate
+    '      between which file is used for the latest save.  This ensures that even if a crash occurs mid-save, we
+    '      never lose anything more than the last-translated phrase!  (Also needed is code to auto-detect these files
+    '      at load time, and allow the user to resume where they previously left off.)
+    
+    '      A new function will be needed in the XML engine to update the proper translation tag.
+    
+    Dim newIndex As Long
+    
+    'If a specific type of phrase list is displayed, refresh it as necessary
+    Select Case cmbPhraseFilter.ListIndex
+    
+        'All phrases
+        Case 0
+        
+            newIndex = lstPhrases.ListIndex + 1
+            
+            'Attempt to automatically move to the next item in the list
+            If newIndex <= lstPhrases.ListCount - 1 Then
+                lstPhrases.ListIndex = newIndex
+            Else
+                If lstPhrases.ListCount > 0 Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
+            End If
+        
+        'Translated phrases
+        Case 1
+            
+            'If the translation has been erased, this item is no longer part of the "translated phrases" group
+            If Len(txtTranslation) = 0 Then
+                
+                newIndex = lstPhrases.ListIndex
+                lstPhrases.RemoveItem lstPhrases.ListIndex
+                
+                'Attempt to automatically move to the next item in the list
+                If newIndex <= lstPhrases.ListCount - 1 Then
+                    lstPhrases.ListIndex = newIndex
+                Else
+                    If lstPhrases.ListCount > 0 Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
+                End If
+                
+            End If
+        
+        'Untranslated phrases
+        Case 2
+        
+            'If a translation has been provided, this item is no longer part of the "untranslated phrases" group
+            If Len(txtTranslation) > 0 Then
+                
+                newIndex = lstPhrases.ListIndex
+                lstPhrases.RemoveItem lstPhrases.ListIndex
+                
+                'Attempt to automatically move to the next item in the list
+                If newIndex <= lstPhrases.ListCount - 1 Then
+                    lstPhrases.ListIndex = newIndex
+                Else
+                    If lstPhrases.ListCount > 0 Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
+                End If
+                
+            End If
+    
+    End Select
+    
+    updatePhraseBoxTitle
+
 End Sub
 
 Private Sub cmdPrevious_Click()
@@ -1071,6 +1173,17 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     
 End Sub
 
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+    
+    'If the down arrow key is pressed while the user is in the phrase-editing panel, automatically save the current
+    ' phrase and move to the next one.
+    If CBool(chkShortcut) And (KeyCode = vbKeyDown) And (curWizardPage = 3) Then
+        cmdNextPhrase_Click
+        KeyCode = 0
+    End If
+    
+End Sub
+
 Private Sub Form_Load()
     
     'Mark the XML file as not loaded
@@ -1118,7 +1231,7 @@ Private Sub Form_Load()
             'To save us time in the future, use the .ItemData property of this entry to store the language's original index position
             ' in our listOfAvailableLanguages array.
             lstLanguages.AddItem listEntry
-            lstLanguages.ItemData(lstLanguages.NewIndex) = i
+            lstLanguages.ItemData(lstLanguages.newIndex) = i
             
         Else
             'Ignore the default language entry entirely
@@ -1186,15 +1299,16 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                 For i = 0 To numOfPhrases - 1
                     tmpString = xmlEngine.getUniqueTag_String("original", , phraseLocations(i))
                     allPhrases(i).Original = tmpString
-                    allPhrases(i).Length = LenB(tmpString)
-                    allPhrases(i).Translation = xmlEngine.getUniqueTag_String("translation", , phraseLocations(i))
+                    allPhrases(i).Length = Len(tmpString)
+                    allPhrases(i).OrigTranslation = xmlEngine.getUniqueTag_String("translation", , phraseLocations(i))
+                    allPhrases(i).NewTranslation = allPhrases(i).OrigTranslation
                     
                     'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
                     ' and it can't be so long that it overflows the list box.
                     If InStr(1, tmpString, vbCrLf) Then tmpString = Replace(tmpString, vbCrLf, "")
                     If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, "")
                     If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, "")
-                    If allPhrases(i).Length > 70 Then tmpString = Left$(tmpString, 35) & "..."
+                    If allPhrases(i).Length > 35 Then tmpString = Left$(tmpString, 35) & "..."
                     
                     allPhrases(i).ListBoxEntry = tmpString
                     
@@ -1226,13 +1340,20 @@ End Sub
 'When the phrase box is clicked, display the original and translated (if available) text in the right-hand text boxes
 Private Sub lstPhrases_Click()
     
+    lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase:")
+    lblTranslatedPhrase.ForeColor = RGB(64, 64, 64)
+    
     txtOriginal = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
-    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation) > 0 Then
-        txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation
+    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).NewTranslation) > 0 Then
+        txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).NewTranslation
+        lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase (saved):")
     Else
+    
+        lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase (NOT YET SAVED):")
+        lblTranslatedPhrase.ForeColor = RGB(208, 52, 52)
     
         If CBool(chkGoogleTranslate) Then
             txtTranslation = g_Language.TranslateMessage("waiting for Google Translate...")
@@ -1251,7 +1372,7 @@ Private Sub lstPhrases_Click()
         Else
             txtTranslation = ""
         End If
-    
+            
     End If
     
 End Sub
@@ -1263,4 +1384,9 @@ Private Sub tmrProgBar_Timer()
     
     sysProgBar.Refresh
     
+End Sub
+
+'The phrase list box label will automatically be updated with the current count of list items
+Private Sub updatePhraseBoxTitle()
+    lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", lstPhrases.ListCount - 1)
 End Sub

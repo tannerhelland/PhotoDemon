@@ -627,7 +627,7 @@ End Function
 
 'Given a tag name and contents, return a pointer to the location of a specified "parent" tag.  (This is used by the
 ' translation engine to find the "phrase" tag enclosing an original/translation tag pair.)
-Public Function getLocationOfParentTag(ByVal parentTagName As String, ByVal tagName As String, ByVal tagContents As String) As Long
+Public Function getLocationOfParentTag(ByRef parentTagName As String, ByRef tagName As String, ByRef tagContents As String) As Long
 
     'First, find the requested tag's location
     Dim searchLocation As Long
