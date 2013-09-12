@@ -66,7 +66,6 @@ Class=pcMemDC; Classes\pcMemDC.cls
 Module=Icon_and_Cursor_Handler; Modules\VBP_MenuIcons.bas
 Class=clsMenuImage; Classes\clsMenuImage.cls
 Form=Forms\VBP_FormWhiteBalance.frm
-Module=Text_Processing; Modules\VBP_TextModule.bas
 Form=Forms\VBP_FormSoftwareUpdates.frm
 Module=Software_Updater; Modules\VBP_SoftwareUpdater.bas
 Form=Forms\VBP_FormTile.frm

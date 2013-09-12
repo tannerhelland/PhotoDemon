@@ -1,10 +1,10 @@
 Attribute VB_Name = "File_And_Path_Handling"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 13/November/12
-'Last update: Updated DirectoryExist to not only check for a directory's existence, but also make sure we have access rights.
+'Last updated: 12/September/13
+'Last update: merged file functions from other modules into this one
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -50,18 +50,18 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
     'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
     If Right(tmpFilename, 1) = ")" Then
     
-        Dim I As Long
-        For I = Len(tmpFilename) - 2 To 1 Step -1
+        Dim i As Long
+        For i = Len(tmpFilename) - 2 To 1 Step -1
             
             ' If it isn't a number, see if it's an initial parentheses: "("
-            If Not (IsNumeric(Mid(tmpFilename, I, 1))) Then
+            If Not (IsNumeric(Mid(tmpFilename, i, 1))) Then
                 
                 'If it is a parentheses, then this file already has a "( #)" appended to it.  Figure out what the
                 ' number inside the parentheses is, and strip that entire block from the filename.
-                If Mid(tmpFilename, I, 1) = "(" Then
+                If Mid(tmpFilename, i, 1) = "(" Then
                 
-                    numToAppend = CLng(Val(Mid(tmpFilename, I + 1, Len(tmpFilename) - I - 1)))
-                    tmpFilename = Left(tmpFilename, I - 2)
+                    numToAppend = CLng(Val(Mid(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
+                    tmpFilename = Left(tmpFilename, i - 2)
                     Exit For
                 
                 'If this character is non-numeric and NOT an initial parentheses, this filename is not in the format we want.
@@ -74,7 +74,7 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
             End If
         
         'If this character IS a number, keep scanning.
-        Next I
+        Next i
     
     'If this is not already a copy of the format "filename (#).ext", start scanning at # = 2
     Else
@@ -225,3 +225,164 @@ Public Function ShellAndWait(ByVal sPath As String, ByVal winStyle As VbAppWinSt
 ShellError:
     ShellAndWait = False
 End Function
+
+'Make sure the right backslash of a path is existant
+Public Function FixPath(ByVal tempString As String) As String
+    If Right(tempString, 1) <> "\" Then
+        FixPath = tempString & "\"
+    Else
+        FixPath = tempString
+    End If
+End Function
+
+'Given a full file path (path + name + extension), remove everything but the directory structure
+Public Sub StripDirectory(ByRef sString As String)
+    
+    Dim X As Long
+    
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = "/") Or (Mid(sString, X, 1) = "\") Then
+            sString = Left(sString, X)
+            Exit Sub
+        End If
+    Next X
+    
+End Sub
+
+'Given a full file path (path + name + extension), return everything but the directory structure
+Public Function getDirectory(ByRef sString As String) As String
+    
+    Dim X As Long
+    
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = "/") Or (Mid(sString, X, 1) = "\") Then
+            getDirectory = Left(sString, X)
+            Exit Function
+        End If
+    Next X
+    
+End Function
+
+'Pull the filename ONLY (no directory) off a path
+Public Sub StripFilename(ByRef sString As String)
+    
+    Dim X As Long
+    
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = "/") Or (Mid(sString, X, 1) = "\") Then
+            sString = Right(sString, Len(sString) - X)
+            Exit Sub
+        End If
+    Next X
+    
+End Sub
+
+'Return the filename chunk of a path
+Public Function getFilename(ByVal sString As String) As String
+
+    Dim i As Long
+    
+    For i = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, i, 1) = "/") Or (Mid(sString, i, 1) = "\") Then
+            getFilename = Right(sString, Len(sString) - i)
+            Exit Function
+        End If
+    Next i
+    
+End Function
+
+'Pull the filename & directory out WITHOUT any extension (but with the ".")
+Public Sub StripOffExtension(ByRef sString As String)
+
+    Dim X As Long
+
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = ".") Then
+            sString = Left(sString, X - 1)
+            Exit Sub
+        End If
+    Next X
+    
+End Sub
+
+'Function to strip the extension from a filename
+Public Function GetExtension(sFile As String) As String
+    
+    Dim i As Long
+    For i = Len(sFile) To 1 Step -1
+    
+        'If we find a path before we find an extension, return a blank string
+        If (Mid(sFile, i, 1) = "\") Or (Mid(sFile, i, 1) = "/") Then
+            GetExtension = ""
+            Exit Function
+        End If
+        
+        If Mid(sFile, i, 1) = "." Then
+            GetExtension = Right$(sFile, Len(sFile) - i)
+            Exit Function
+        End If
+    Next i
+    
+    'If we reach this point, no extension was found
+    GetExtension = ""
+            
+End Function
+
+'Take a string and replace any invalid characters with "_"
+Public Sub makeValidWindowsFilename(ByRef FileName As String)
+
+    Dim strInvalidChars As String
+    strInvalidChars = "/*?""<>|"
+    
+    Dim invLoc As Long
+    
+    Dim X As Long
+    For X = 1 To Len(strInvalidChars)
+        invLoc = InStr(FileName, Mid$(strInvalidChars, X, 1))
+        If invLoc <> 0 Then
+            FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
+        End If
+    Next X
+
+End Sub
+
+'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
+Public Function GetDomainName(ByVal Address As String) As String
+        
+    Dim strOutput As String, strTemp As String
+    Dim lngLoopCount As Long
+    Dim lngBCount As Long, lngCharCount As Long
+    
+    strOutput$ = Replace(Address, "\", "/")
+        
+    lngCharCount = Len(strOutput)
+    
+    If (InStrB(1, strOutput, "/")) Then
+        
+        Do Until ((strTemp = "/") Or (lngLoopCount = lngCharCount))
+            lngLoopCount = lngLoopCount + 1
+            strTemp = Mid$(strOutput, lngBCount + 1, 1)
+            lngBCount = lngBCount + 1
+        Loop
+        
+    End If
+        
+    strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
+    lngBCount = 0
+    strTemp = "/"
+    
+    If (InStrB(1, strOutput, "/")) Then
+        
+        Do Until strTemp <> "/"
+            strTemp = Mid$(strOutput, lngBCount + 1, 1)
+            If strTemp = "/" Then lngBCount = lngBCount + 1
+        Loop
+    
+    End If
+        
+    strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
+    strOutput = Left$(strOutput, InStr(1, strOutput, "/", vbTextCompare) - 1)
+    GetDomainName = strOutput
+
+End Function
+
