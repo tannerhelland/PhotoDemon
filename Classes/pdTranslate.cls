@@ -397,7 +397,7 @@ Public Sub CheckAvailableLanguages()
     numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath, 0, "Official")
     
     'Find all available USER language files
-    numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages, "User")
+    numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages, "Unofficial")
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
     availableLanguages(numOfLanguages).FileName = ""
