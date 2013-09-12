@@ -900,7 +900,7 @@ Private Sub cmdNextPhrase_Click()
     If curBackupFile = 1 Then curBackupFile = 0 Else curBackupFile = 1
     
     Dim backupFile As String
-    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & CStr(curBackupFile) & ".tmpxml"
+    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & curLanguage.langID & "_" & CStr(curBackupFile) & ".tmpxml"
     
     xmlEngine.writeXMLToFile backupFile, True
         
@@ -1155,9 +1155,9 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
     If curWizardPage = picContainer.Count - 1 Then
-        cmdNext.Enabled = False
+        cmdNext.Caption = "&Save and Exit"
     Else
-        cmdNext.Enabled = True
+        cmdNext.Caption = "&Next"
     End If
     
     'Finally, change the top title caption to match the current step
