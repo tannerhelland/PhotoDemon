@@ -391,7 +391,7 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'Tools Menu
     AddMenuIcon "LANGUAGES", 7, 0       'Languages
-    'AddMenuIcon "LANGEDIT", 7, 1    'Language editor
+    AddMenuIcon "LANGEDITOR", 7, 1      'Language editor
     AddMenuIcon "RECORD", 7, 3          'Macros
         '--> Macro sub-menu
         AddMenuIcon "OPENMACRO", 7, 3, 0      'Open Macro
