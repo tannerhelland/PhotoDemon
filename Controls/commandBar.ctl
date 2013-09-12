@@ -456,7 +456,7 @@ Private Function savePreset() As Boolean
                 
                 'If the user selects NO, exit and let them enter a new name
                 Case vbNo
-                    cmbPreset.Text = g_Language.TranslateMessage("(enter new name here)")
+                    cmbPreset.Text = g_Language.TranslateMessage("(enter name here)")
                     cmbPreset.SetFocus
                     cmbPreset.SelStart = 0
                     cmbPreset.SelLength = Len(cmbPreset.Text)
@@ -509,12 +509,12 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
-Public Property Get backColor() As OLE_COLOR
-    backColor = UserControl.backColor
+Public Property Get BackColor() As OLE_COLOR
+    BackColor = UserControl.BackColor
 End Property
 
-Public Property Let backColor(ByVal newColor As OLE_COLOR)
-    UserControl.backColor = newColor
+Public Property Let BackColor(ByVal newColor As OLE_COLOR)
+    UserControl.BackColor = newColor
     PropertyChanged "BackColor"
 End Property
 
@@ -714,7 +714,7 @@ Private Sub UserControl_Initialize()
         
     End If
     
-    UserControl.backColor = backColor
+    UserControl.BackColor = BackColor
     
     'Prepare a font object for use
     Set mFont = New StdFont
@@ -737,7 +737,7 @@ Private Sub UserControl_InitProperties()
     
     Set mFont = UserControl.Font
     mFont_FontChanged ("")
-    backColor = &HEEEEEE
+    BackColor = &HEEEEEE
     dontAutoLoadLastPreset = False
     
 End Sub
@@ -746,7 +746,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     
     With PropBag
         Set Font = .ReadProperty("Font", Ambient.Font)
-        backColor = .ReadProperty("BackColor", &HEEEEEE)
+        BackColor = .ReadProperty("BackColor", &HEEEEEE)
         dontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
     End With
     
@@ -871,7 +871,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "Font", mFont, "Tahoma"
-        .WriteProperty "BackColor", backColor, &HEEEEEE
+        .WriteProperty "BackColor", BackColor, &HEEEEEE
         .WriteProperty "AutoloadLastPreset", suspendLastUsedAutoLoad, False
     End With
     

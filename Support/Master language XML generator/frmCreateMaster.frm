@@ -1533,6 +1533,7 @@ Private Sub Form_Load()
     addBlacklist "EZTwain"
     addBlacklist "FreeImage"
     addBlacklist "ExifTool"
+    addBlacklist "tannerhelland.com/contact"
     
 End Sub
 

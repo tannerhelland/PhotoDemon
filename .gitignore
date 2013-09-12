@@ -118,6 +118,7 @@ README_PSC-version.txt
 /Data/Presets
 /Data/Languages
 *.tmpxml
+*.backup
 
 # I keep copies of rc.exe and rcdll.dll in this folder,
 # but to my knowledge these are not redistributable, so

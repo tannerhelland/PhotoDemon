@@ -253,7 +253,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     srcLayer.createFromExistingLayer workingLayer
             
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -308,19 +308,19 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         umThreshold = umThreshold \ 5
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
+        For X = initX To finalX
+            QuickVal = X * qvDepth
+        For Y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = dstImageData(QuickVal + 2, y)
-            g = dstImageData(QuickVal + 1, y)
-            b = dstImageData(QuickVal, y)
+            r = dstImageData(QuickVal + 2, Y)
+            g = dstImageData(QuickVal + 1, Y)
+            b = dstImageData(QuickVal, Y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
+            r2 = srcImageData(QuickVal + 2, Y)
+            g2 = srcImageData(QuickVal + 1, Y)
+            b2 = srcImageData(QuickVal, Y)
             
             tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
                             
@@ -345,29 +345,29 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
                 newG = BlendColors(newG, g, blendVal)
                 newB = BlendColors(newB, b, blendVal)
                 
-                dstImageData(QuickVal + 2, y) = newR
-                dstImageData(QuickVal + 1, y) = newG
-                dstImageData(QuickVal, y) = newB
+                dstImageData(QuickVal + 2, Y) = newR
+                dstImageData(QuickVal + 1, Y) = newG
+                dstImageData(QuickVal, Y) = newB
                 
                 If qvDepth = 4 Then
-                    a2 = srcImageData(QuickVal + 3, y)
-                    a = dstImageData(QuickVal + 3, y)
+                    a2 = srcImageData(QuickVal + 3, Y)
+                    a = dstImageData(QuickVal + 3, Y)
                     newA = (scaleFactor * a) + (invScaleFactor * a2)
                     If newA > 255 Then newA = 255
                     If newA < 0 Then newA = 0
-                    dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
+                    dstImageData(QuickVal + 3, Y) = BlendColors(newA, a, blendVal)
                 End If
                 
             End If
                     
-        Next y
+        Next Y
             If toPreview = False Then
-                If (x And progBarCheck) = 0 Then
+                If (X And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal x + (finalY * 2)
+                    SetProgBarVal X + (finalY * 2)
                 End If
             End If
-        Next x
+        Next X
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
@@ -406,7 +406,7 @@ Private Sub Form_Activate()
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
         sltRadius.Max = 50
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
+        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
         lblIDEWarning.Visible = True
     Else
         '32bpp images take longer to process.  Limit the radius to 100 in this case.

@@ -282,7 +282,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
     gaussLayer.createFromExistingLayer workingLayer
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -330,21 +330,21 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
         Dim blendVal As Double
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
+        For X = initX To finalX
+            QuickVal = X * qvDepth
+        For Y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(QuickVal + 2, Y)
+            g = srcImageData(QuickVal + 1, Y)
+            b = srcImageData(QuickVal, Y)
             
             tDelta = (213 * r + 715 * g + 72 * b) \ 1000
             
             'Now, retrieve the gaussian pixels
-            r2 = GaussImageData(QuickVal + 2, y)
-            g2 = GaussImageData(QuickVal + 1, y)
-            b2 = GaussImageData(QuickVal, y)
+            r2 = GaussImageData(QuickVal + 2, Y)
+            g2 = GaussImageData(QuickVal + 1, Y)
+            b2 = GaussImageData(QuickVal, Y)
             
             'Calculate a delta between the two
             tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
@@ -355,32 +355,32 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
             
                 If tDelta > gThreshold Then
                     If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-                    dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+                    dstImageData(QuickVal + 2, Y) = BlendColors(srcImageData(QuickVal + 2, Y), GaussImageData(QuickVal + 2, Y), blendVal)
+                    dstImageData(QuickVal + 1, Y) = BlendColors(srcImageData(QuickVal + 1, Y), GaussImageData(QuickVal + 1, Y), blendVal)
+                    dstImageData(QuickVal, Y) = BlendColors(srcImageData(QuickVal, Y), GaussImageData(QuickVal, Y), blendVal)
+                    If qvDepth = 4 Then dstImageData(QuickVal + 3, Y) = BlendColors(srcImageData(QuickVal + 3, Y), GaussImageData(QuickVal + 3, Y), blendVal)
                 End If
             
             Else
             
                 If tDelta <= gThreshold Then
                     If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
-                    dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+                    dstImageData(QuickVal + 2, Y) = BlendColors(srcImageData(QuickVal + 2, Y), GaussImageData(QuickVal + 2, Y), blendVal)
+                    dstImageData(QuickVal + 1, Y) = BlendColors(srcImageData(QuickVal + 1, Y), GaussImageData(QuickVal + 1, Y), blendVal)
+                    dstImageData(QuickVal, Y) = BlendColors(srcImageData(QuickVal, Y), GaussImageData(QuickVal, Y), blendVal)
+                    If qvDepth = 4 Then dstImageData(QuickVal + 3, Y) = BlendColors(srcImageData(QuickVal + 3, Y), GaussImageData(QuickVal + 3, Y), blendVal)
                 End If
         
             End If
             
-        Next y
+        Next Y
             If toPreview = False Then
-                If (x And progBarCheck) = 0 Then
+                If (X And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal x + (finalY * 2)
+                    SetProgBarVal X + (finalY * 2)
                 End If
             End If
-        Next x
+        Next X
             
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
@@ -422,7 +422,7 @@ Private Sub Form_Activate()
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING!  This tool has been heavily optimized, but at high radius values it will still be quite slow inside the IDE.  Please compile before applying or previewing any radius larger than 20.")
+        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
         lblIDEWarning.Visible = True
     End If
     

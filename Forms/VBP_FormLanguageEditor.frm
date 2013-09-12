@@ -1411,7 +1411,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)")
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are finished editing this language, please consider sharing it!  Contact me by visiting:")
             helpText = helpText & vbCrLf & g_Language.TranslateMessage("tannerhelland.com/contact")
-            helpText = helpText & vbCrLf & g_Language.TranslateMessage("so we can discuss adding your translation to the official list of supported languages.  (Even partial translations are helpful!)")
+            helpText = helpText & vbCrLf & g_Language.TranslateMessage("so we can discuss adding your translation to the official list of supported languages.  Even partial translations are helpful!")
     
     End Select
     
@@ -1546,12 +1546,14 @@ Private Sub lstPhrases_Click()
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
+    lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
+    
     If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation) > 0 Then
         txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation
-        lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase (saved):")
+        lblTranslatedPhrase = lblTranslatedPhrase & " " & g_Language.TranslateMessage("(saved):")
     Else
     
-        lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase (NOT YET SAVED):")
+        lblTranslatedPhrase = lblTranslatedPhrase & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
         lblTranslatedPhrase.ForeColor = RGB(208, 52, 52)
     
         If CBool(chkGoogleTranslate) Then
@@ -1573,7 +1575,7 @@ Private Sub lstPhrases_Click()
         End If
             
     End If
-    
+        
 End Sub
 
 Private Sub optBaseLanguage_Click(Index As Integer)
@@ -1711,7 +1713,7 @@ Private Sub populateAvailableLanguages()
                 
                 'Display autosave time and date
                 listEntry = listEntry & " ("
-                listEntry = listEntry & g_Language.TranslateMessage("autosave from")
+                listEntry = listEntry & g_Language.TranslateMessage("autosaved on")
                 listEntry = listEntry & " "
                 listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
                 listEntry = listEntry & ") "
