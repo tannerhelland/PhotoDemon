@@ -180,7 +180,7 @@ Begin VB.Form FormLanguageEditor
          Left            =   240
          Style           =   2  'Dropdown List
          TabIndex        =   14
-         Top             =   6840
+         Top             =   6825
          Width           =   4500
       End
       Begin VB.ListBox lstPhrases 
@@ -279,7 +279,7 @@ Begin VB.Form FormLanguageEditor
          Index           =   2
          Left            =   0
          TabIndex        =   27
-         Top             =   6480
+         Top             =   6465
          Width           =   1995
       End
       Begin VB.Label lblPhraseBox 
@@ -489,7 +489,7 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   12
          Text            =   "enter your name here"
          Top             =   5160
-         Width           =   10935
+         Width           =   11415
       End
       Begin VB.TextBox txtLangStatus 
          BeginProperty Font 
@@ -506,7 +506,7 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   10
          Text            =   "incomplete"
          Top             =   3240
-         Width           =   10935
+         Width           =   2895
       End
       Begin VB.TextBox txtLangVersion 
          BeginProperty Font 
@@ -523,7 +523,7 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   11
          Text            =   "1.0.0"
          Top             =   4200
-         Width           =   10935
+         Width           =   2895
       End
       Begin VB.TextBox txtLangName 
          BeginProperty Font 
@@ -540,7 +540,7 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   9
          Text            =   "English (US)"
          Top             =   2280
-         Width           =   10935
+         Width           =   2895
       End
       Begin VB.TextBox txtLangID 
          Alignment       =   2  'Center
@@ -580,6 +580,111 @@ Begin VB.Form FormLanguageEditor
          Top             =   360
          Width           =   615
       End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "e.g. ""1.0.0"".  Please use Major.Minor.Revision format."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   4
+         Left            =   3360
+         TabIndex        =   44
+         Top             =   4290
+         Width           =   4620
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "e.g. ""complete"", ""unfinished"", etc.  Any descriptive text is acceptable."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   3
+         Left            =   3360
+         TabIndex        =   43
+         Top             =   3330
+         Width           =   5910
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "e.g. ""English"" or ""English (US)"".  This text will be displayed in PhotoDemon's Language menu."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   2
+         Left            =   3360
+         TabIndex        =   42
+         Top             =   2370
+         Width           =   7995
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "e.g. ""US"" for ""United States"".  Please use the official 2-character ISO 3166-1 format."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   1080
+         TabIndex        =   41
+         Top             =   1410
+         Width           =   7245
+      End
+      Begin VB.Label lblSubheader 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "e.g. ""en"" for ""English"".  Please use the official 2-character ISO 639-1 format."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   0
+         Left            =   1080
+         TabIndex        =   40
+         Top             =   435
+         Width           =   6570
+      End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
@@ -604,7 +709,7 @@ Begin VB.Form FormLanguageEditor
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "translation status (e.g. ""complete"", ""unfinished"", etc - any descriptive text is acceptable)"
+         Caption         =   "translation status"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -620,12 +725,12 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          TabIndex        =   33
          Top             =   2880
-         Width           =   9240
+         Width           =   1800
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "translation version (in Major.Minor.Revision format, e.g. ""1.0.0"")"
+         Caption         =   "translation version"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -641,12 +746,12 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          TabIndex        =   32
          Top             =   3840
-         Width           =   6855
+         Width           =   1950
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "full language name (e.g. ""English (US)""; this will be displayed in PhotoDemon's language menu)"
+         Caption         =   "language name"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -662,12 +767,12 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          TabIndex        =   31
          Top             =   1920
-         Width           =   10215
+         Width           =   1620
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "country ID (2 characters in ISO 3166-1 alpha-2 format, e.g. ""US"" for ""United States"")"
+         Caption         =   "country ID"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -683,12 +788,12 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          TabIndex        =   30
          Top             =   960
-         Width           =   9030
+         Width           =   1125
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "language ID (2 characters in ISO 639-1 format, e.g. ""en"" for ""English"")"
+         Caption         =   "language ID"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -704,7 +809,7 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          TabIndex        =   29
          Top             =   0
-         Width           =   7515
+         Width           =   1290
       End
    End
    Begin VB.Label lblBackground 
@@ -737,7 +842,6 @@ Begin VB.Form FormLanguageEditor
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   7320
-      Index           =   0
       Left            =   120
       TabIndex        =   21
       Top             =   780
@@ -782,24 +886,28 @@ Attribute VB_Exposed = False
 'Interactive Language (Translation) Editor
 'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
-'Last updated: 03/September/13
-'Last update: initial build
+'Last updated: 12/September/13
+'Last update: completed initial build
 '
-'Thanks to the incredible work of Frank Donckers, PhotoDemon provides a fully functional language translation engine.
+'Thanks to the incredible work of Frank Donckers, PhotoDemon includes a fully functional language translation engine.
 ' Many thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but also
 ' for taking the time to translate the entire PhotoDemon text collection into multiple languages. (This was a huge
 ' project, as PhotoDemon contains a LOT of text.)
 '
 'During the translation process, Frank pointed out that translating PhotoDemon's 1,000+ unique phrases takes a loooong
-' time.  This new language editor aims to take some of the tediousness out of the process.  I have borrowed many
-' concepts and code pieces from a similar project by Frank, which he used to create the original translation files.
+' time.  This new language editor aims to greatly speed up the process.  I have borrowed many concepts and code pieces
+' from a similar project by Frank, which he used to create the original translation files.
 '
-'The editor requires a source language file to start.  This can either be a blank English language file (provided
-' with all PD downloads) or an existing language file.  The user's work will be saved to a new language file of
-' their choosing in the User subfolder (currently /Data/Languages).
+'This integrated language editor requires a source language file to start.  This can either be a blank English
+' language file (provided with all PD downloads) or an existing language file.
 '
-'Google Translate can be used to automatically populate an "estimated" translation.  This was Frank's idea and
-' Frank's code - many thanks to him for such a clever feature!
+'Data retention is a key focus of the current implementation.  As a safeguard against crashes, two autosaves are
+' maintained for any active project.  Every time a phrase is edited or added, an autosave is created.  (Same goes for
+' language metadata.)  This should guarantee that even in the event of a crash, nothing more than the last-modified
+' phrase will be lost.
+'
+'To accelerate the translation process, Google Translate can be used to automatically populate an "estimated"
+' translation.  This was Frank's idea and Frank's code - many thanks to him for such a clever feature!
 '
 'Note: for the Google Translate© Terms of Use, please visit http://www.google.com/policies/terms/
 '
@@ -1080,7 +1188,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                     With curLanguage
                         .FileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
-                        .langName = "English (US)"
+                        .langName = g_Language.TranslateMessage("New Language")
                         .langStatus = g_Language.TranslateMessage("incomplete")
                         .langType = "Unofficial"
                         .langVersion = "1.0.0"
@@ -1261,12 +1369,12 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
     If curWizardPage = picContainer.Count - 1 Then
-        cmdNext.Caption = "&Save and Exit"
+        cmdNext.Caption = g_Language.TranslateMessage("&Save and Exit")
     Else
-        cmdNext.Caption = "&Next"
+        cmdNext.Caption = g_Language.TranslateMessage("&Next")
     End If
     
-    'Finally, change the top title caption to match the current step
+    'Finally, change the top title caption and left-hand help text to match the current step
     If curWizardPage < 1 Then
         lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", curWizardPage + 1)
     Else
@@ -1274,18 +1382,44 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     End If
     lblWizardTitle.Caption = lblWizardTitle.Caption & " "
     
+    Dim helpText As String
+    
     Select Case curWizardPage
     
         Case 0
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("select a language file")
             
+            helpText = g_Language.TranslateMessage("This tool allows you to create and edit PhotoDemon language files.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("This page also allows you to delete unused language files.  Note that there is no Undo when deleting language files, so please be careful!")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Upon clicking Next, the selected file will automatically be validated and parsed.  Depending on the number of translations present, this process may take a few seconds.")
+            If Not g_IsProgramCompiled Then helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(For best results, do not use this editor in the IDE!)")
+            
         Case 2
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("add language metadata")
             
+            helpText = g_Language.TranslateMessage("In this step, please provide a bit of metadata regarding this language.  This information helps PhotoDemon know how to handle this language file.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("The most important items on this page are the language ID and language name.  If these items are missing or invalid, PhotoDemon won't be able to use the language file.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please include the original author's name.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)")
+            
         Case 3
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("translate all phrases")
+            
+            helpText = g_Language.TranslateMessage("This final step allows you to edit existing translations, and add missing ones.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)")
+            helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are finished editing this language, please consider sharing it!  Contact me by visiting:")
+            helpText = helpText & vbCrLf & g_Language.TranslateMessage("tannerhelland.com/contact")
+            helpText = helpText & vbCrLf & g_Language.TranslateMessage("so we can discuss adding your translation to the official list of supported languages.  (Even partial translations are helpful!)")
     
     End Select
+    
+    lblExplanation.Caption = helpText
+    lblExplanation.Refresh
+    
+    'If translations are active, the translated text may not fit the label.  Automatically adjust it to fit.
+    fitWordwrapLabel lblExplanation, Me
     
 End Sub
 
@@ -1312,9 +1446,9 @@ Private Sub Form_Load()
         
     'Fill the "phrases to display" combo box
     cmbPhraseFilter.Clear
-    cmbPhraseFilter.AddItem g_Language.TranslateMessage("All phrases"), 0
-    cmbPhraseFilter.AddItem g_Language.TranslateMessage("Translated phrases"), 1
-    cmbPhraseFilter.AddItem g_Language.TranslateMessage("Untranslated phrases"), 2
+    cmbPhraseFilter.AddItem "All phrases", 0
+    cmbPhraseFilter.AddItem "Translated phrases", 1
+    cmbPhraseFilter.AddItem "Untranslated phrases", 2
     cmbPhraseFilter.ListIndex = 0
     
     'Initialize the Google Translate interface
@@ -1345,14 +1479,14 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
         'Validate the language file's contents
         If xmlEngine.isPDDataType("Translation") And xmlEngine.validateLoadedXMLData("phrase") Then
         
-            lblPleaseWait.Caption = "Please wait while the language file is validated..."
+            lblPleaseWait.Caption = g_Language.TranslateMessage("Please wait while the language file is validated...")
             lblPleaseWait.Refresh
         
             'Attempt to load all phrase tag location occurrences
             Dim phraseLocations() As Long
             If xmlEngine.findAllTagLocations(phraseLocations, "phrase", True) Then
             
-                lblPleaseWait.Caption = "Validation successful!  Loading all phrases and preparing translation engine..."
+                lblPleaseWait.Caption = g_Language.TranslateMessage("Validation successful!  Loading all phrases and preparing translation engine...")
                 lblPleaseWait.Refresh
                 
                 numOfPhrases = UBound(phraseLocations) + 1

@@ -227,6 +227,7 @@ CUSTFILTER   CUSTOM  MOVEABLE        LOADONCALL      table_pencil.png
 
 //Tools menu
 LANGUAGES    CUSTOM  MOVEABLE        LOADONCALL      language.png
+LANGEDITOR   CUSTOM  MOVEABLE        LOADONCALL      document_language_edit.png
 //--> Macro sub-menu
 OPENMACRO    CUSTOM  MOVEABLE        LOADONCALL      folder_video.png
 RECORD       CUSTOM  MOVEABLE        LOADONCALL      video.png
