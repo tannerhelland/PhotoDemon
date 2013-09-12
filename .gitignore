@@ -116,6 +116,7 @@ README_PSC-version.txt
 /Support/Master language XML generator/MasterTranslation.exe
 /Data/PhotoDemon_settings.xml
 /Data/Presets
+/Data/Languages
 *.tmpxml
 
 # I keep copies of rc.exe and rcdll.dll in this folder,
