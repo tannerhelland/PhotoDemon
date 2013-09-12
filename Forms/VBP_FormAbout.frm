@@ -154,6 +154,7 @@ Private Sub Form_Load()
     GenerateThankyou g_Language.TranslateMessage("a free, portable, powerful photo editor"), ""
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
+    GenerateThankyou "Abhijit Mhapsekar"
     GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/"
     GenerateThankyou "Alfred Hellmueller"
     GenerateThankyou "Allan Lima"
