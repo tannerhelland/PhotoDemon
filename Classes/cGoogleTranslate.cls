@@ -21,7 +21,7 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Frank Donckers
 'Created: 19/February/13
 'Last updated: 10/September/13
-'Last update: (by Tanner) moved all relevant code into this singular class
+'Last update: (by Tanner) moved all relevant code into this singular class, various minor modifications
 '
 'This class requires your project to have a reference to the Microsoft Scripting Library (scrrun.dll).
 '
@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 '
 '(Note from Tanner: this class relies on Google to provide its translation with very specific formatting.
 ' Google may change its code at any time, rendering this class ineffective.  Thus I cannot guarantee that
-' this code will always work!  Sorry!)
+' this code will always work.  Sorry!)
 '
 '***************************************************************************
 
@@ -133,6 +133,8 @@ RetryTranslation:
         If numOfRetries < 2 Then
             numOfRetries = numOfRetries + 1
             GoTo RetryTranslation
+        Else
+            lastTranslation = origHTML
         End If
     Else
         lastTranslation = origHTML

@@ -44,7 +44,7 @@ Begin VB.Form FormLanguageEditor
       EndProperty
       Height          =   615
       Left            =   11880
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   8310
       Width           =   1725
    End
@@ -61,7 +61,7 @@ Begin VB.Form FormLanguageEditor
       EndProperty
       Height          =   615
       Left            =   13860
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   8310
       Width           =   1365
    End
@@ -79,7 +79,7 @@ Begin VB.Form FormLanguageEditor
       EndProperty
       Height          =   615
       Left            =   10080
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   8310
       Width           =   1725
    End
@@ -94,21 +94,22 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   11
+      TabIndex        =   25
+      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin VB.CommandButton cmdNextPhrase 
          Caption         =   "Save this translation and proceed to the next phrase"
          Height          =   615
          Left            =   5040
-         TabIndex        =   37
+         TabIndex        =   18
          Top             =   6600
          Width           =   6615
       End
       Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
          Height          =   480
          Left            =   5040
-         TabIndex        =   36
+         TabIndex        =   16
          Top             =   5520
          Width           =   6015
          _ExtentX        =   10610
@@ -139,7 +140,7 @@ Begin VB.Form FormLanguageEditor
          Left            =   5040
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
-         TabIndex        =   35
+         TabIndex        =   15
          Top             =   3120
          Width           =   6615
       End
@@ -158,7 +159,8 @@ Begin VB.Form FormLanguageEditor
          Locked          =   -1  'True
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
-         TabIndex        =   34
+         TabIndex        =   19
+         TabStop         =   0   'False
          Top             =   360
          Width           =   6615
       End
@@ -177,7 +179,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   6840
          Width           =   4500
       End
@@ -201,7 +203,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.smartCheckBox chkShortcut 
          Height          =   480
          Left            =   5040
-         TabIndex        =   38
+         TabIndex        =   17
          Top             =   6000
          Width           =   5520
          _ExtentX        =   9737
@@ -234,7 +236,7 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   4920
-         TabIndex        =   33
+         TabIndex        =   39
          Top             =   2760
          Width           =   1905
       End
@@ -255,7 +257,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   9
          Left            =   4920
-         TabIndex        =   32
+         TabIndex        =   38
          Top             =   0
          Width           =   1665
       End
@@ -276,7 +278,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   14
+         TabIndex        =   27
          Top             =   6480
          Width           =   1995
       End
@@ -296,7 +298,7 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   0
-         TabIndex        =   12
+         TabIndex        =   26
          Top             =   0
          Width           =   2835
       End
@@ -312,9 +314,19 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   6
+      TabIndex        =   23
+      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
+      Begin VB.CommandButton cmdDeleteLanguage 
+         Caption         =   "Delete selected language file"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   8385
+         TabIndex        =   6
+         Top             =   6360
+         Width           =   3135
+      End
       Begin VB.ListBox lstLanguages 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -329,7 +341,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   4620
          Left            =   840
          Sorted          =   -1  'True
-         TabIndex        =   10
+         TabIndex        =   5
          Top             =   1560
          Width           =   10695
       End
@@ -337,7 +349,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   3
          Top             =   120
          Width           =   4380
          _ExtentX        =   7726
@@ -358,7 +370,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   4
          Top             =   600
          Width           =   3510
          _ExtentX        =   6191
@@ -391,7 +403,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   0
          Left            =   840
-         TabIndex        =   7
+         TabIndex        =   24
          Top             =   1080
          Width           =   3540
       End
@@ -407,7 +419,8 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   29
+      TabIndex        =   35
+      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin VB.PictureBox picProgBar 
@@ -420,7 +433,8 @@ Begin VB.Form FormLanguageEditor
          ScaleHeight     =   33
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   785
-         TabIndex        =   31
+         TabIndex        =   37
+         TabStop         =   0   'False
          Top             =   3000
          Width           =   11775
       End
@@ -440,7 +454,7 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   405
          Left            =   0
-         TabIndex        =   30
+         TabIndex        =   36
          Top             =   2400
          Width           =   11760
       End
@@ -456,7 +470,8 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   16
+      TabIndex        =   28
+      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin VB.TextBox txtLangAuthor 
@@ -471,7 +486,7 @@ Begin VB.Form FormLanguageEditor
          EndProperty
          Height          =   390
          Left            =   240
-         TabIndex        =   28
+         TabIndex        =   12
          Text            =   "enter your name here"
          Top             =   5160
          Width           =   10935
@@ -488,7 +503,7 @@ Begin VB.Form FormLanguageEditor
          EndProperty
          Height          =   390
          Left            =   240
-         TabIndex        =   26
+         TabIndex        =   10
          Text            =   "incomplete"
          Top             =   3240
          Width           =   10935
@@ -505,7 +520,7 @@ Begin VB.Form FormLanguageEditor
          EndProperty
          Height          =   390
          Left            =   240
-         TabIndex        =   24
+         TabIndex        =   11
          Text            =   "1.0.0"
          Top             =   4200
          Width           =   10935
@@ -522,7 +537,7 @@ Begin VB.Form FormLanguageEditor
          EndProperty
          Height          =   390
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   9
          Text            =   "English (US)"
          Top             =   2280
          Width           =   10935
@@ -541,7 +556,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   390
          Index           =   1
          Left            =   240
-         TabIndex        =   20
+         TabIndex        =   8
          Text            =   "US"
          Top             =   1320
          Width           =   615
@@ -560,7 +575,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   390
          Index           =   0
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   7
          Text            =   "en"
          Top             =   360
          Width           =   615
@@ -582,7 +597,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   8
          Left            =   0
-         TabIndex        =   27
+         TabIndex        =   34
          Top             =   4800
          Width           =   1635
       End
@@ -603,7 +618,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   25
+         TabIndex        =   33
          Top             =   2880
          Width           =   9240
       End
@@ -624,7 +639,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   23
+         TabIndex        =   32
          Top             =   3840
          Width           =   6855
       End
@@ -645,7 +660,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   7
          Left            =   0
-         TabIndex        =   21
+         TabIndex        =   31
          Top             =   1920
          Width           =   10215
       End
@@ -666,7 +681,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   19
+         TabIndex        =   30
          Top             =   960
          Width           =   9030
       End
@@ -687,7 +702,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   18
+         TabIndex        =   29
          Top             =   0
          Width           =   7515
       End
@@ -704,7 +719,7 @@ Begin VB.Form FormLanguageEditor
       EndProperty
       Height          =   855
       Left            =   -240
-      TabIndex        =   5
+      TabIndex        =   22
       Top             =   8235
       Width           =   17415
    End
@@ -724,7 +739,7 @@ Begin VB.Form FormLanguageEditor
       Height          =   7320
       Index           =   0
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   21
       Top             =   780
       Width           =   3135
       WordWrap        =   -1  'True
@@ -753,7 +768,7 @@ Begin VB.Form FormLanguageEditor
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   20
       Top             =   120
       Width           =   3555
    End
@@ -884,12 +899,56 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'Allow the user to delete the selected language file, if they so desire.
+Private Sub cmdDeleteLanguage_Click()
+
+    'Make sure a language is selected
+    If lstLanguages.ListIndex < 0 Then Exit Sub
+    
+    Dim msgReturn As VbMsgBoxResult
+
+    'Display different warnings for official languages (which can be restored) and user languages (which cannot)
+    If listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).langType = "Official" Then
+        
+        'Make sure we have write access to this folder before attempting to delete anything
+        If DirectoryHasWriteAccess(getDirectory(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName)) Then
+        
+            msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+            
+            If msgReturn = vbYes Then
+                Kill listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName
+                lstLanguages.RemoveItem lstLanguages.ListIndex
+                cmdDeleteLanguage.Enabled = False
+            End If
+        
+        'Write access not available
+        Else
+            pdMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly + vbInformation + vbApplicationModal, "Administrator access required"
+        End If
+    
+    'User-folder languages are gone forever once deleted, so change the wording of the deletion confirmation.
+    Else
+    
+        msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+        
+        If msgReturn = vbYes Then
+            Kill listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName
+            lstLanguages.RemoveItem lstLanguages.ListIndex
+            cmdDeleteLanguage.Enabled = False
+        End If
+        
+    End If
+
+End Sub
+
 Private Sub cmdNext_Click()
     changeWizardPage True
 End Sub
 
 Private Sub cmdNextPhrase_Click()
 
+    If lstPhrases.ListIndex < 0 Then Exit Sub
+    
     'Store this translation to the phrases array
     allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation = txtTranslation
     
@@ -897,12 +956,7 @@ Private Sub cmdNextPhrase_Click()
     xmlEngine.updateTagAtLocation "translation", txtTranslation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original)
     
     'Write an alternating backup out to file
-    If curBackupFile = 1 Then curBackupFile = 0 Else curBackupFile = 1
-    
-    Dim backupFile As String
-    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & curLanguage.langID & "_" & CStr(curBackupFile) & ".tmpxml"
-    
-    xmlEngine.writeXMLToFile backupFile, True
+    performAutosave
         
     'If a specific type of phrase list is displayed, refresh it as necessary
     Dim newIndex As Long
@@ -973,6 +1027,9 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
 
     Dim i As Long
 
+    Dim unloadFormNow As Boolean
+    unloadFormNow = False
+
     'Before changing the page, maek sure all user input on the current page is valid
     Select Case curWizardPage
     
@@ -1021,6 +1078,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                     
                     'Populate the current language's metadata container with some default values
                     With curLanguage
+                        .FileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
                         .langName = "English (US)"
                         .langStatus = g_Language.TranslateMessage("incomplete")
@@ -1043,8 +1101,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
                 curLanguage = listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex))
-                curLanguage.FileName = ""
-                curLanguage.langType = "Unofficial"
+                curLanguage.FileName = g_UserPreferences.getLanguagePath(True) & getFilename(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName)
                 
                 'Attempt to load the selected language from file
                 If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName) Then
@@ -1081,13 +1138,59 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             
             'Also, automatically set the destination language of the Google Translate interface
             autoTranslate.setDstLanguage Trim$(txtLangID(0))
+            
+            'Write these updated tags into the original XML text
+            With curLanguage
+                xmlEngine.updateTagAtLocation "langid", .langID
+                xmlEngine.updateTagAtLocation "langname", .langName
+                xmlEngine.updateTagAtLocation "langstatus", .langStatus
+                xmlEngine.updateTagAtLocation "langversion", .langVersion
+                xmlEngine.updateTagAtLocation "author", .Author
+            End With
+            
+            'Update the autosave file
+            performAutosave
         
         'The third page is the phrase editing page.  This is the most important page in the wizard.
         Case 3
+        
+            If moveForward Then
+            
+                'On this page, the "Next" button is relabeled as "Save and Exit".  It does exactly what it claims!
+                Dim CC As cCommonDialog
+                Set CC = New cCommonDialog
+                
+                'If the user is working from an official file or an autosave, the folder and/or extension of the original filename
+                ' may not be usable.  Strip just the original filename, and append our own folder and extension.
+                Dim sFile As String
+                
+                If curLanguage.langType = "Autosave" Then
+                    sFile = curLanguage.langName
+                    makeValidWindowsFilename sFile
+                    sFile = getDirectory(curLanguage.FileName) & sFile & ".xml"
+                Else
+                    sFile = getDirectory(curLanguage.FileName) & getFilenameWithoutExtension(curLanguage.FileName) & ".xml"
+                End If
+                
+                If CC.VBGetSaveFileName(sFile, , True, "XML file (.xml)|*.xml", , getDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd, 0) Then
+                
+                    'Write the current XML file out to the user's requested path
+                    xmlEngine.writeXMLToFile sFile
+                    unloadFormNow = True
+                    
+                Else
+                    Exit Sub
+                End If
+                
+            End If
     
     End Select
     
-
+    If unloadFormNow Then
+        Unload Me
+        Exit Sub
+    End If
+    
     'Everything has successfully validated, so go ahead and advance (or decrement) the page count
     If moveForward Then
         curWizardPage = curWizardPage + 1
@@ -1102,6 +1205,9 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     
         'Language selection
         Case 0
+        
+            'Fill the available languages list box with any language files on this system
+            populateAvailableLanguages
         
         '"Please wait" panel
         Case 1
@@ -1203,55 +1309,7 @@ Private Sub Form_Load()
     'By default, the first wizard page is displayed.  (We start at -1 because we will incerement the page count by +1 with our first
     ' call to changeWizardPage in Form_Activate)
     curWizardPage = -1
-    
-    'Retrieve a list of available languages from the translation engine
-    g_Language.copyListOfLanguages listOfAvailableLanguages
-    
-    'Add the contents of that array to the list box on the opening panel (the list of available languages, from which the user
-    ' can select a language file as the "starting point" for their own translation).
-    lstLanguages.Clear
-    
-    Dim i As Long
-    For i = 0 To UBound(listOfAvailableLanguages)
-    
-        'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
-        If StrComp(listOfAvailableLanguages(i).langType, "Default", vbTextCompare) <> 0 Then
-            Dim listEntry As String
-            listEntry = listOfAvailableLanguages(i).langName
-            
-            'For official translations, an author name will always be provided.  Include the author's name in the list.
-            If listOfAvailableLanguages(i).langType = "Official" Then
-                listEntry = listEntry & " ("
-                listEntry = listEntry & g_Language.TranslateMessage("official translation by")
-                listEntry = listEntry & " " & listOfAvailableLanguages(i).Author
-                listEntry = listEntry & ")"
-            
-            'For unofficial translations, an author name may not be provided.  Include the author's name only if it's available.
-            Else
-                listEntry = listEntry & " ("
-                listEntry = listEntry & g_Language.TranslateMessage("unofficial translation by")
-                listEntry = listEntry & " "
-                If Len(listOfAvailableLanguages(i).Author) > 0 Then
-                    listEntry = listEntry & listOfAvailableLanguages(i).Author
-                Else
-                    listEntry = listEntry & g_Language.TranslateMessage("unknown author")
-                End If
-                listEntry = listEntry & ")"
-            End If
-            
-            'To save us time in the future, use the .ItemData property of this entry to store the language's original index position
-            ' in our listOfAvailableLanguages array.
-            lstLanguages.AddItem listEntry
-            lstLanguages.ItemData(lstLanguages.newIndex) = i
-            
-        Else
-            'Ignore the default language entry entirely
-        End If
-    Next i
-    
-    'By default, no language is selected for the user
-    lstLanguages.ListIndex = -1
-    
+        
     'Fill the "phrases to display" combo box
     cmbPhraseFilter.Clear
     cmbPhraseFilter.AddItem g_Language.TranslateMessage("All phrases"), 0
@@ -1269,9 +1327,6 @@ Private Sub Form_Load()
     
     'Advance to the first page
     changeWizardPage True
-    
-    'DEV WARNING - REMOVE WHEN FINISHED!
-    MsgBox "This tool is currently under heavy development.  It may not work as expected (or at all).", vbInformation + vbOKOnly + vbApplicationModal, "Development warning"
         
 End Sub
 
@@ -1290,7 +1345,7 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
         'Validate the language file's contents
         If xmlEngine.isPDDataType("Translation") And xmlEngine.validateLoadedXMLData("phrase") Then
         
-            lblPleaseWait.Caption = "Please wait while the original language file is validated..."
+            lblPleaseWait.Caption = "Please wait while the language file is validated..."
             lblPleaseWait.Refresh
         
             'Attempt to load all phrase tag location occurrences
@@ -1344,6 +1399,7 @@ End Function
 
 Private Sub lstLanguages_Click()
     If Not optBaseLanguage(1) Then optBaseLanguage(1) = True
+    If lstLanguages.ListIndex >= 0 Then cmdDeleteLanguage.Enabled = True Else cmdDeleteLanguage.Enabled = False
 End Sub
 
 'When the phrase box is clicked, display the original and translated (if available) text in the right-hand text boxes
@@ -1386,6 +1442,16 @@ Private Sub lstPhrases_Click()
     
 End Sub
 
+Private Sub optBaseLanguage_Click(Index As Integer)
+
+    If lstLanguages.ListIndex >= 0 Then
+        cmdDeleteLanguage.Enabled = True
+    Else
+        cmdDeleteLanguage.Enabled = False
+    End If
+
+End Sub
+
 Private Sub tmrProgBar_Timer()
     
     sysProgBar.Value = sysProgBar.Value + 1
@@ -1398,4 +1464,137 @@ End Sub
 'The phrase list box label will automatically be updated with the current count of list items
 Private Sub updatePhraseBoxTitle()
     lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", lstPhrases.ListCount - 1)
+End Sub
+
+'Call this function whenever we want the in-memory XML data saved to an autosave file
+Private Sub performAutosave()
+
+    'We keep two autosaves at all times; simply alternate between them each time a save is requested
+    If curBackupFile = 1 Then curBackupFile = 0 Else curBackupFile = 1
+    
+    'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
+    ' (assuming they have different language IDs).
+    Dim backupFile As String
+    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & curLanguage.langID & "_" & CStr(curBackupFile) & ".tmpxml"
+    
+    'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
+    xmlEngine.writeXMLToFile backupFile, True
+
+End Sub
+
+'Fill the first panel ("select a language file") with all available language files on this system
+Private Sub populateAvailableLanguages()
+
+    'Retrieve a list of available languages from the translation engine
+    g_Language.copyListOfLanguages listOfAvailableLanguages
+    
+    'We now do a bit of additional work.  Look for any autosave files (with extension .tmpxml) in the user language folder.  Allow the
+    ' user to load these if available.
+    Dim chkFile As String
+    chkFile = Dir(g_UserPreferences.getLanguagePath(True) & "*.tmpxml", vbNormal)
+        
+    Do While (chkFile <> "")
+        
+        'Use PD's XML engine to load the file
+        Dim tmpXMLEngine As pdXML
+        Set tmpXMLEngine = New pdXML
+        If tmpXMLEngine.loadXMLFile(g_UserPreferences.getLanguagePath(True) & chkFile) Then
+        
+            'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
+            If tmpXMLEngine.isPDDataType("Translation") And tmpXMLEngine.validateLoadedXMLData("langid", "langname", "phrase") Then
+            
+                ReDim Preserve listOfAvailableLanguages(0 To UBound(listOfAvailableLanguages) + 1) As pdLanguageFile
+                
+                With listOfAvailableLanguages(UBound(listOfAvailableLanguages))
+                    'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
+                    .langID = tmpXMLEngine.getUniqueTag_String("langid")
+                    .langName = tmpXMLEngine.getUniqueTag_String("langname")
+    
+                    'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
+                    .langVersion = tmpXMLEngine.getUniqueTag_String("langversion")
+                    .langStatus = tmpXMLEngine.getUniqueTag_String("langstatus")
+                    .Author = tmpXMLEngine.getUniqueTag_String("author")
+                    
+                    'Finally, add some internal metadata
+                    .FileName = g_UserPreferences.getLanguagePath(True) & chkFile
+                    .langType = "Autosave"
+                    
+                End With
+                
+            End If
+            
+        End If
+        
+        'Retrieve the next file and repeat
+        chkFile = Dir
+    
+    Loop
+    
+    'All autosave files have now been loaded as well
+    
+    'Add the contents of that array to the list box on the opening panel (the list of available languages, from which the user
+    ' can select a language file as the "starting point" for their own translation).
+    lstLanguages.Clear
+    
+    Dim i As Long
+    For i = 0 To UBound(listOfAvailableLanguages)
+    
+        'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
+        If StrComp(listOfAvailableLanguages(i).langType, "Default", vbTextCompare) <> 0 Then
+            Dim listEntry As String
+            listEntry = listOfAvailableLanguages(i).langName
+            
+            'For official translations, an author name will always be provided.  Include the author's name in the list.
+            If listOfAvailableLanguages(i).langType = "Official" Then
+                listEntry = listEntry & " ("
+                listEntry = listEntry & g_Language.TranslateMessage("official translation by")
+                listEntry = listEntry & " " & listOfAvailableLanguages(i).Author
+                listEntry = listEntry & ")"
+            
+            'For unofficial translations, an author name may not be provided.  Include the author's name only if it's available.
+            ElseIf listOfAvailableLanguages(i).langType = "Unofficial" Then
+                listEntry = listEntry & " "
+                listEntry = listEntry & g_Language.TranslateMessage("by")
+                listEntry = listEntry & " "
+                If Len(listOfAvailableLanguages(i).Author) > 0 Then
+                    listEntry = listEntry & listOfAvailableLanguages(i).Author
+                Else
+                    listEntry = listEntry & g_Language.TranslateMessage("unknown author")
+                End If
+                
+            'Anything else is an autosave.
+            Else
+            
+                'Include author name if available
+                listEntry = listEntry & " "
+                listEntry = listEntry & g_Language.TranslateMessage("by")
+                listEntry = listEntry & " "
+                If Len(listOfAvailableLanguages(i).Author) > 0 Then
+                    listEntry = listEntry & listOfAvailableLanguages(i).Author
+                Else
+                    listEntry = listEntry & g_Language.TranslateMessage("unknown author")
+                End If
+                
+                'Display autosave time and date
+                listEntry = listEntry & " ("
+                listEntry = listEntry & g_Language.TranslateMessage("autosave from")
+                listEntry = listEntry & " "
+                listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
+                listEntry = listEntry & ") "
+            
+            End If
+            
+            'To save us time in the future, use the .ItemData property of this entry to store the language's original index position
+            ' in our listOfAvailableLanguages array.
+            lstLanguages.AddItem listEntry
+            lstLanguages.ItemData(lstLanguages.newIndex) = i
+            
+        Else
+            'Ignore the default language entry entirely
+        End If
+    Next i
+    
+    'By default, no language is selected for the user
+    lstLanguages.ListIndex = -1
+    
 End Sub
