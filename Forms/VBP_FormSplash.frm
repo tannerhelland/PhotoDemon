@@ -18,7 +18,6 @@ Begin VB.Form FormSplash
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   Icon            =   "VBP_FormSplash.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
@@ -28,24 +27,6 @@ Begin VB.Form FormSplash
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picBackground 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   8265
-      Left            =   0
-      Picture         =   "VBP_FormSplash.frx":000C
-      ScaleHeight     =   551
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   779
-      TabIndex        =   0
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   11685
-   End
    Begin VB.Label lblMessage 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -63,7 +44,7 @@ Begin VB.Form FormSplash
       ForeColor       =   &H00C0C0C0&
       Height          =   330
       Left            =   285
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   7320
       Width           =   11205
       WordWrap        =   -1  'True
@@ -78,8 +59,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Splash Screen
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 30/May/13
-'Last update: removed all code from here and placed it in the Loading module; also, new splash screen!
+'Last updated: 13/September/13
+'Last update: logos are now stored in the resource file.  No more picture box placeholders!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -92,15 +73,18 @@ Public Sub prepareSplash()
 
     'Before we can display the splash screen, we need to paint the program logo to it.  (This is done to
     ' guarantee proper painting regardless of screen DPI.)
-    Dim logoWidth As Long, logoHeight As Long
-    Dim logoAspectRatio As Double
+    Dim logoLayer As pdLayer
+    Set logoLayer = New pdLayer
+    If loadResourceToLayer("PDLOGO", logoLayer) Then
     
-    logoWidth = picBackground.ScaleWidth
-    logoHeight = picBackground.ScaleHeight
-    logoAspectRatio = CDbl(logoWidth) / CDbl(logoHeight)
-    
-    SetStretchBltMode Me.hDC, STRETCHBLT_HALFTONE
-    StretchBlt Me.hDC, 0, 0, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio, picBackground.hDC, 0, 0, logoWidth, logoHeight, vbSrcCopy
-    Me.Picture = Me.Image
+        Dim logoAspectRatio As Double
+        logoAspectRatio = CDbl(logoLayer.getLayerWidth) / CDbl(logoLayer.getLayerHeight)
+        
+        SetStretchBltMode Me.hDC, STRETCHBLT_HALFTONE
+        StretchBlt Me.hDC, 0, 0, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio, logoLayer.getLayerDC, 0, 0, logoLayer.getLayerWidth, logoLayer.getLayerHeight, vbSrcCopy
+        Me.Picture = Me.Image
+        
+    End If
     
 End Sub
+
