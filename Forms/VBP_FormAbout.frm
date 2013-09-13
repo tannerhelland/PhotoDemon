@@ -18,7 +18,6 @@ Begin VB.Form FormAbout
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   Icon            =   "VBP_FormAbout.frx":0000
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   595
@@ -27,26 +26,26 @@ Begin VB.Form FormAbout
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
+   Begin VB.PictureBox picBuffer 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00000000&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   5535
+      Left            =   600
+      ScaleHeight     =   369
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   697
+      TabIndex        =   1
+      Top             =   600
+      Width           =   10455
+   End
    Begin VB.Timer tmrText 
       Enabled         =   0   'False
       Interval        =   17
       Left            =   360
       Top             =   8400
-   End
-   Begin VB.PictureBox picBuffer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00000000&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H00FFFFFF&
-      Height          =   4455
-      Left            =   600
-      ScaleHeight     =   297
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   721
-      TabIndex        =   1
-      Top             =   240
-      Visible         =   0   'False
-      Width           =   10815
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -66,24 +65,6 @@ Begin VB.Form FormAbout
       Top             =   8280
       Width           =   1365
    End
-   Begin VB.PictureBox picBackground 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   8265
-      Left            =   0
-      Picture         =   "VBP_FormAbout.frx":000C
-      ScaleHeight     =   551
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   779
-      TabIndex        =   2
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   11685
-   End
 End
 Attribute VB_Name = "FormAbout"
 Attribute VB_GlobalNameSpace = False
@@ -94,8 +75,9 @@ Attribute VB_Exposed = False
 'About Form
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 31/May/13
-'Last update: rewrote the scrolling credits against my new pdText object.  Performance is waaaay better!
+'Last updated: 13/September/13
+'Last update: all logos are now stored in the resource file.  Added a mask for more "legit" credit rendering. :)
+'             Non-96dpi screens also render the credits and image correctly now.  Yay!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -109,26 +91,27 @@ Private Type pdCredit
     URL As String
 End Type
 
-Dim creditList() As pdCredit
-Dim numOfCredits As Long
+Private creditList() As pdCredit
+Private numOfCredits As Long
 
 'The offset is incremented upward; this controls the credit scroll distance
-Dim scrollOffset As Long
+Private scrollOffset As Double
 
 'Height of each credit content block
 Private Const BLOCKHEIGHT As Long = 54
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Private m_ToolTip As clsToolTip
 
-Dim backLayer As pdLayer
-Dim bufferLayer As pdLayer
-Dim m_BufferLeft As Long, m_BufferTop As Long
-Dim m_BufferWidth As Long, m_BufferHeight As Long
-Dim m_FormWidth As Long
+Private backLayer As pdLayer
+Private bufferLayer As pdLayer
+Private m_BufferWidth As Long, m_BufferHeight As Long
+Private m_FormWidth As Long
+
+Private logoLayer As pdLayer, maskLayer As pdLayer
 
 'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
-Dim firstFont As pdFont, secondFont As pdFont
+Private firstFont As pdFont, secondFont As pdFont
 
 Private Sub CmdOK_Click()
     tmrText.Enabled = False
@@ -137,6 +120,15 @@ End Sub
 
 Private Sub Form_Load()
 
+    'Load the logo from the resource file
+    Set logoLayer = New pdLayer
+    loadResourceToLayer "PDLOGONOTEXT", logoLayer
+    
+    'Load the logo mask from the resource file into a temporary layer
+    Dim tmpMaskLayer As pdLayer
+    Set tmpMaskLayer = New pdLayer
+    loadResourceToLayer "PDLOGOMASK", tmpMaskLayer
+    
     scrollOffset = 0
 
     ReDim creditList(0) As pdCredit
@@ -144,6 +136,9 @@ Private Sub Form_Load()
     numOfCredits = 0
     
     'Shout-outs to other designers, programmers, testers and sponsors who provided various resources
+    GenerateThankyou ""
+    GenerateThankyou ""
+    GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
@@ -219,18 +214,34 @@ Private Sub Form_Load()
     makeFormPretty Me, m_ToolTip
     
     'Initialize the background layer (this allows for faster blitting than a picture box)
+    ' Note that this layer is dynamically resized; this solves issues with high-DPI screens
     Set backLayer = New pdLayer
-    backLayer.CreateFromPicture picBackground.Picture
+    Dim logoAspectRatio As Double
+    logoAspectRatio = CDbl(logoLayer.getLayerWidth) / CDbl(logoLayer.getLayerHeight)
+    backLayer.createFromExistingLayer logoLayer, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio
     
-    'The PicBuffer picture box is used only as a reference.  No drawing ever occurs on it - instead, we use our own buffer layer.
+    'Copy the resized logo into the logo layer.  (We don't want to resize it every time we need it.)
+    logoLayer.eraseLayer
+    logoLayer.createFromExistingLayer backLayer
+    
+    'Create a mask layer at the same size.
+    Set maskLayer = New pdLayer
+    maskLayer.createFromExistingLayer tmpMaskLayer, backLayer.getLayerWidth, backLayer.getLayerHeight, False
+    tmpMaskLayer.eraseLayer
+    Set tmpMaskLayer = Nothing
+    
+    'In order to fix high-DPI screen issues, resize the buffer at run-time.  (Why not blit directly to the form?  Because
+    ' the OK command button will flicker.  Instead, we just draw to a picture box sized to match the form.)
+    picBuffer.Move 0, 0, backLayer.getLayerWidth, backLayer.getLayerHeight
+    
+    'Remember that the PicBuffer picture box is used only as a placeholder.  We render everything manually to an
+    ' off-screen buffer, then flip that buffer to the picture box after all rendering is complete.
     Set bufferLayer = New pdLayer
-    bufferLayer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    bufferLayer.createBlank backLayer.getLayerWidth, backLayer.getLayerHeight * 0.9, 24, 0
     
     'Initialize a few other variables for speed reasons
-    m_BufferLeft = picBuffer.Left
-    m_BufferTop = picBuffer.Top
-    m_BufferWidth = picBuffer.ScaleWidth
-    m_BufferHeight = picBuffer.ScaleHeight
+    m_BufferWidth = backLayer.getLayerWidth
+    m_BufferHeight = backLayer.getLayerHeight
     m_FormWidth = Me.ScaleWidth
     
     'Initialize a custom font objects for names
@@ -250,8 +261,9 @@ Private Sub Form_Load()
     secondFont.setTextAlignment vbRightJustify
     
     'Render the primary background image to the form
-    StretchBlt Me.hDC, 0, 0, m_FormWidth, backLayer.getLayerHeight, backLayer.getLayerDC, 0, 0, backLayer.getLayerWidth, backLayer.getLayerHeight, vbSrcCopy
-    Me.Picture = Me.Image
+    BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoLayer.getLayerDC, 0, 0, vbSrcCopy
+    picBuffer.Picture = picBuffer.Image
+    picBuffer.Refresh
     
     'Start the credit scroll timer
     tmrText.Enabled = True
@@ -277,21 +289,37 @@ End Sub
 ' scrolling code I wrote for the metadata browser.
 Private Sub tmrText_Timer()
     
-    scrollOffset = scrollOffset + 1
+    scrollOffset = scrollOffset + fixDPIFloat(1)
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
-    'Erase the buffer by copying over a chunk of the background image (onto which we will render the text)
-    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, backLayer.getLayerDC, m_BufferLeft, m_BufferTop, vbSrcCopy
-    
+    'Erase the back layer by copying over the logo (onto which we will render the text)
+    BitBlt backLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, logoLayer.getLayerDC, 0, 0, vbSrcCopy
+        
     'Render all text
     Dim i As Long
     For i = 0 To numOfCredits - 1
-        renderCredit i, 8, i * BLOCKHEIGHT - scrollOffset - 2
+        renderCredit i, fixDPI(8), fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPIFloat(2)
     Next i
     
+    'The back layer now contains the credit text drawn over the program logo.
+    
+    'Black out the section of the back layer where the base text appears - we don't want text rendering over
+    ' the top of this section.
+    BitBlt backLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, maskLayer.getLayerDC, 0, 0, vbMergePaint
+    
+    'Blit a blank copy of the logo to the buffer layer
+    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, logoLayer.getLayerDC, 0, 0, vbSrcCopy
+    
+    'Blit the logo mask over the top
+    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, maskLayer.getLayerDC, 0, 0, vbSrcPaint
+    
+    'Blit the back layer, with the text, over the top of the buffer
+    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, backLayer.getLayerDC, 0, 0, vbSrcAnd
+    'srcpaint,srcand
     'Copy the buffer to the main form and refresh it
-    BitBlt Me.hDC, m_BufferLeft, m_BufferTop, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
-    Me.Picture = Me.Image
+    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
+    picBuffer.Picture = picBuffer.Image
+    picBuffer.Refresh
     
 End Sub
 
@@ -310,14 +338,14 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         drawString = creditList(blockIndex).Name
         
         'Render the "name" field
-        firstFont.attachToDC bufferLayer.getLayerDC
+        firstFont.attachToDC backLayer.getLayerDC
         firstFont.fastRenderText m_BufferWidth - offsetX, offsetY, drawString
                 
         'Below the name, add the URL (or other description)
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
         drawString = creditList(blockIndex).URL
         
-        secondFont.attachToDC bufferLayer.getLayerDC
+        secondFont.attachToDC backLayer.getLayerDC
         secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
         
     End If
