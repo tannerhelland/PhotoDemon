@@ -3,22 +3,22 @@ Begin VB.UserControl commandBar
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   ClientHeight    =   750
+   ClientHeight    =   756
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   9555
+   ClientWidth     =   9552
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   9.75
+      Size            =   9.6
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   50
+   ScaleHeight     =   63
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   637
+   ScaleWidth      =   796
    ToolboxBitmap   =   "commandBar.ctx":0000
    Begin VB.CommandButton cmdRandomize 
       Caption         =   "Randomize"
@@ -763,11 +763,15 @@ Private Sub updateControlLayout()
     UserControl.Height = fixDPI(50) * Screen.TwipsPerPixelY
     
     'Make the control the same width as its parent
-    UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
+    If g_UserModeFix Then
     
-    'Right-align the Cancel and OK buttons
-    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
-    CmdOK.Left = cmdCancel.Left - CmdOK.Width - fixDPI(8)
+        UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
+        
+        'Right-align the Cancel and OK buttons
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        CmdOK.Left = cmdCancel.Left - CmdOK.Width - fixDPI(8)
+        
+    End If
 
 End Sub
 
