@@ -61,8 +61,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Smart" Check Box custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 29/January/13
-'Last updated: 29/January/13
-'Last update: initial build
+'Last updated: 13/September/13
+'Last update: fix non-96dpi layout issues
 '
 'Intrinsic VB checkboxes have a number of limitations.  Most obnoxious is the lack of an "autosize" for the caption.
 ' Now that PhotoDemon has full translation support, checkboxes are frequently resized at run-time, and if a
@@ -133,7 +133,7 @@ Private Sub chkBox_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -230,7 +230,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -287,11 +287,11 @@ Private Sub updateControlSize()
     newHeight = (lblCaption.Height * 2) '* Screen.TwipsPerPixelY
     If newHeight < chkBox.Height Then newHeight = chkBox.Height
     UserControl.Height = newHeight * Screen.TwipsPerPixelY
-    UserControl.Width = (lblCaption.Left + lblCaption.Width + 2) * Screen.TwipsPerPixelX
+    UserControl.Width = (lblCaption.Left + lblCaption.Width + fixDPI(2)) * Screen.TwipsPerPixelX
     
     'Center the option button vertically
     Dim hModifier As Long
-    hModifier = -1
+    hModifier = fixDPI(-1)
     If g_IsProgramCompiled And g_UseFancyFonts Then hModifier = 0
     
     'Center-align the check box vertically
@@ -303,7 +303,7 @@ Private Sub updateControlSize()
     'When compiled, set the option button to be the full size of the user control.  Thanks to subclassing, the option
     ' button will still be fully transparent.  This allows the caption to be seen, while also allowing Vista/7's
     ' "hover" animation to still work with the mouse.  In the IDE, an underline is used to display focus.
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then chkBox.Width = UserControl.ScaleWidth - 2
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then chkBox.Width = UserControl.ScaleWidth - fixDPI(2)
             
     lblCaption.Refresh
     chkBox.Refresh

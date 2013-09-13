@@ -104,8 +104,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 24/August/13
-'Last update: finally implement proper randomizing of option button controls
+'Last updated: 13/September/13
+'Last update: fix non-96dpi layout issues
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -760,14 +760,14 @@ End Sub
 Private Sub updateControlLayout()
 
     'Force a standard user control size
-    UserControl.Height = 50 * Screen.TwipsPerPixelY
+    UserControl.Height = fixDPI(50) * Screen.TwipsPerPixelY
     
     'Make the control the same width as its parent
     UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
     
     'Right-align the Cancel and OK buttons
-    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - 8
-    CmdOK.Left = cmdCancel.Left - CmdOK.Width - 8
+    cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+    CmdOK.Left = cmdCancel.Left - CmdOK.Width - fixDPI(8)
 
 End Sub
 
