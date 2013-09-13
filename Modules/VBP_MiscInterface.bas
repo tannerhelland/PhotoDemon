@@ -3,9 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 27/August/13
-'Last update: subclass all picture boxes via SubclassFrame (in case they have controls on them whose backgrounds should be
-'             made transparent).
+'Last updated: 13/September/13
+'Last update: new DPI translation functions for fixing non-96dpi issues
 '
 'Miscellaneous routines related to rendering PhotoDemon interface elements.
 '
@@ -80,6 +79,46 @@ End Enum
 ' 1: had to change smoothing type from Standard to ClearType
 ' 2: had to turn on smoothing, as it was originally turned off
 Private hadToChangeSmoothing As Long
+
+'PD is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.  To remedy
+' this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
+Private dpiRatio As Double
+
+Public Function fixDPI(ByVal pxMeasurement As Long) As Long
+
+    'The first time this function is called, dpiRatio will be 0.  Calculate it.
+    If dpiRatio = 0# Then
+    
+        'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
+        dpiRatio = 1440 / Screen.TwipsPerPixelX
+        
+        'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
+        ' this calculation.
+        dpiRatio = dpiRatio / 96
+    
+    End If
+    
+    fixDPI = CLng(dpiRatio * CDbl(pxMeasurement))
+    
+End Function
+
+Public Function fixDPIFloat(ByVal pxMeasurement As Long) As Double
+
+    'The first time this function is called, dpiRatio will be 0.  Calculate it.
+    If dpiRatio = 0# Then
+    
+        'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
+        dpiRatio = 1440 / Screen.TwipsPerPixelX
+        
+        'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
+        ' this calculation.
+        dpiRatio = dpiRatio / 96
+    
+    End If
+    
+    fixDPIFloat = dpiRatio * CDbl(pxMeasurement)
+    
+End Function
 
 Public Sub displayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
