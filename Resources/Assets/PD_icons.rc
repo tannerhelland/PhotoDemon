@@ -258,6 +258,11 @@ ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
 
 //Special-purpose images
 
+//Program logo, with and without text overlay, and a mask for the About text blitting
+PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      splash_2013.jpg
+PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      splash_2013_no_overlay.jpg
+PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
+
 //Toolbox icons
 T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
 T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
@@ -300,8 +305,10 @@ MARROWDOWN   CUSTOM  MOVEABLE        LOADONCALL      arrow_270_medium.png
 MARROWDOWNR  CUSTOM  MOVEABLE        LOADONCALL      arrow_315_medium.png
 MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
 
-//Sample image for rendering sample effects
+//Resize mode sample images
 RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
 RSZ_FITIN    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_inclusive.png
 RSZ_FITEX    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_exclusive.png
+
+//Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg
