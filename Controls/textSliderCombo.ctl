@@ -64,8 +64,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 23/April/13
-'Last update: finished initial build
+'Last updated: 13/September/13
+'Last update: fix non-96dpi layout issues
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -320,7 +320,7 @@ Private Sub UserControl_Initialize()
     End If
     
     'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    If g_UseFancyFonts Then hsPrimary.Height = 23 Else hsPrimary.Height = 22
+    If g_UseFancyFonts Then hsPrimary.Height = fixDPI(23) Else hsPrimary.Height = fixDPI(22)
     
     origForecolor = ForeColor
         
@@ -368,9 +368,9 @@ End Sub
 Private Sub UserControl_Resize()
 
     'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
-    txtPrimary.Left = UserControl.ScaleWidth - 56
-    shpError.Left = txtPrimary.Left - 4
-    If txtPrimary.Left - 15 > 0 Then hsPrimary.Width = txtPrimary.Left - 15         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
+    txtPrimary.Left = UserControl.ScaleWidth - fixDPI(56)
+    shpError.Left = txtPrimary.Left - fixDPI(4)
+    If txtPrimary.Left - fixDPI(15) > 0 Then hsPrimary.Width = txtPrimary.Left - fixDPI(15)         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
 
 End Sub
 

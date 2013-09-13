@@ -66,9 +66,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 12/August/13
-'Last update: add a property + code for selecting a color from the preview window; containers can use the ColorSelected
-'             event and SelectedColor property (I just realized how confusing that is... oops) to handle the input
+'Last updated: 13/September/13
+'Last update: fix non-96dpi layout issues
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -280,7 +279,7 @@ Private Sub UserControl_AmbientChanged(PropertyName As String)
     
     'Keep the control's backcolor in sync with the parent object
     If UCase$(PropertyName) = "BACKCOLOR" Then
-        backColor = Ambient.backColor
+        BackColor = Ambient.BackColor
     End If
 
 End Sub
@@ -309,7 +308,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     
     'Set the background of the fxPreview to match the background of our parent object
-    backColor = Ambient.backColor
+    BackColor = Ambient.BackColor
     
     'Mark the original image as having NOT been set
     m_HasOriginal = False
@@ -362,7 +361,7 @@ Private Sub redrawControl()
     picPreview.Width = ScaleWidth
     
     'Adjust the preview picture box's height to be just above the "show original image" link
-    lblBeforeToggle.Top = ScaleHeight - 24
+    lblBeforeToggle.Top = ScaleHeight - fixDPI(24)
     picPreview.Height = lblBeforeToggle.Top - (ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
         
 End Sub

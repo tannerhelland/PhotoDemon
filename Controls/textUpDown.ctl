@@ -64,8 +64,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / UpDown custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 23/April/13
-'Last update: finished initial build
+'Last updated: 13/September/13
+'Last update: fix non-96dpi layout issues
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -371,13 +371,13 @@ Private Sub UserControl_Resize()
 
     'Keep the text box and scroll bar perfectly aligned, with a 1px border for the red "error" box
     If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then
-        vsPrimary.Width = 19
+        vsPrimary.Width = fixDPI(19)
         vsPrimary.Top = 0
         vsPrimary.Height = UserControl.ScaleHeight
     Else
-        vsPrimary.Width = 17
-        vsPrimary.Top = 1
-        vsPrimary.Height = UserControl.ScaleHeight - 2
+        vsPrimary.Width = fixDPI(17)
+        vsPrimary.Top = fixDPI(1)
+        vsPrimary.Height = UserControl.ScaleHeight - fixDPI(2)
     End If
     
     txtPrimary.Left = 1

@@ -76,10 +76,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Smart" Option Button custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 27/August/13
-'Last update: suspend drawing of a focus rectangle until I can solve why sometimes it appears out of nowhere.  VB
-'             handles focus events very strangely (no surprise there!) and this isn't a high priority, so I may
-'             just disable focus rects entirely until post-6.0.
+'Last updated: 13/September/13
+'Last update: fix non-96dpi layout issues
 '
 'Intrinsic VB option buttons have a number of limitations.  Most obnoxious is the lack of an "autosize" for the caption.
 ' Now that PhotoDemon has full translation support, option buttons are frequently resized at run-time, and if a
@@ -220,11 +218,11 @@ Private Sub chkFirst_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
-Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
@@ -290,7 +288,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Value = True
 End Sub
 
@@ -342,16 +340,16 @@ Private Sub updateControlSize()
 
     'Segoe UI requires a slightly different layout
     If g_UseFancyFonts Then
-        If g_IsProgramCompiled Then lblCaption.Top = 0 Else lblCaption.Top = 2
+        If g_IsProgramCompiled Then lblCaption.Top = 0 Else lblCaption.Top = fixDPI(2)
     Else
-        If g_IsProgramCompiled Then lblCaption.Top = 2 Else lblCaption.Top = 1
+        If g_IsProgramCompiled Then lblCaption.Top = fixDPI(2) Else lblCaption.Top = fixDPI(1)
     End If
     
     'Force the height to match that of the label
     Dim fontModifier As Long
-    If (g_UseFancyFonts And g_IsProgramCompiled) Then fontModifier = 1 Else fontModifier = 4
+    If (g_UseFancyFonts And g_IsProgramCompiled) Then fontModifier = fixDPI(1) Else fontModifier = fixDPI(4)
     UserControl.Height = (lblCaption.Height + lblCaption.Top * 2 + fontModifier) * Screen.TwipsPerPixelY
-    UserControl.Width = (lblCaption.Left + lblCaption.Width + 2) * Screen.TwipsPerPixelX
+    UserControl.Width = (lblCaption.Left + lblCaption.Width + fixDPI(2)) * Screen.TwipsPerPixelX
     
     'Center the option button vertically
     optButton.Top = (UserControl.ScaleHeight - optButton.Height) \ 2
@@ -359,7 +357,7 @@ Private Sub updateControlSize()
     'When compiled, set the option button to be the full size of the user control.  Thanks to subclassing, the option
     ' button will still be fully transparent.  This allows the caption to be seen, while also allowing Vista/7's
     ' "hover" animation to still work with the mouse.  In the IDE, an underline is used to display focus.
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then optButton.Width = UserControl.ScaleWidth - 2
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then optButton.Width = UserControl.ScaleWidth - fixDPI(2)
             
     lblCaption.Refresh
     optButton.Refresh
