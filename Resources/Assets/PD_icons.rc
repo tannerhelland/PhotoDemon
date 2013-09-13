@@ -16,8 +16,8 @@ SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
 DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
 SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
 
-SAVE         CUSTOM  MOVEABLE        LOADONCALL      tango_save.png
-SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      tango_save_as.png
+SAVE         CUSTOM  MOVEABLE        LOADONCALL      disk.png
+SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      disk_save_as.png
 CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
 BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
 PRINT        CUSTOM  MOVEABLE        LOADONCALL      printer.png
@@ -84,7 +84,7 @@ SELECTBORDER CUSTOM  MOVEABLE        LOADONCALL      select_border.png
 SELECTFTHR   CUSTOM  MOVEABLE        LOADONCALL      select_feather.png
 SELECTSHRP   CUSTOM  MOVEABLE        LOADONCALL      select_sharpen.png
 SELECTLOAD   CUSTOM  MOVEABLE        LOADONCALL      select_load.png
-SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      tango_save.png
+SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      disk.png
 
 
 //Adjustments menu
@@ -280,12 +280,11 @@ PRESETSAVE   CUSTOM  MOVEABLE        LOADONCALL      blue_document_text_disk_24x
 RANDOMIZE24  CUSTOM  MOVEABLE        LOADONCALL      equalizer_24x24.png
 
 //Large (32x32) command button images
-LRGSAVE      CUSTOM  MOVEABLE        LOADONCALL      document_save_large.png
+LRGSAVE      CUSTOM  MOVEABLE        LOADONCALL      floppy_32.png
 LRGDONTSAVE  CUSTOM  MOVEABLE        LOADONCALL      image_missing.png
 LRGUNDO      CUSTOM  MOVEABLE        LOADONCALL      edit_undo_32.png
 LRGIMGMULTI  CUSTOM  MOVEABLE        LOADONCALL      multi_image.png
 LRGIMGSMALL  CUSTOM  MOVEABLE        LOADONCALL      image_small.png
-LRGOPENDOC   CUSTOM  MOVEABLE        LOADONCALL      document_open.png
 ARROWDOWN    CUSTOM  MOVEABLE        LOADONCALL      arrow_down_32x32.png
 PLUS         CUSTOM  MOVEABLE        LOADONCALL      plus_32.png
 ARROWRIGHT   CUSTOM  MOVEABLE        LOADONCALL      arrow_right_32.png
