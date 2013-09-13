@@ -3,8 +3,8 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 19/August/13
-'Last update: properly pass along cursor hotspot requests sent to the setPNGCursorToHwnd function
+'Last updated: 13/September/13
+'Last update: if a resource is in BMP format, use internal VB methods to load it (instead of relying on GDI+)
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -981,81 +981,102 @@ End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), load it to a pdLayer object.
 ' The calling function is responsible for deleting the layer once they are done with it.
-Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As pdLayer, Optional ByVal vbSupportedFormat As Boolean = False) As Boolean
     
-    'Start by extracting the PNG data into a bytestream
-    Dim ImageData() As Byte
-    ImageData() = LoadResData(resTitle, "CUSTOM")
+    'If the requested image is in a VB-compatible format (e.g. BMP), we don't need to use GDI+
+    If vbSupportedFormat Then
     
-    Dim IStream As IUnknown
-    Dim tmpRect As RECTF
-    Dim gdiBitmap As Long, hBitmap As Long
+        'Load the requested image into a temporary StdPicture object
+        Dim tmpPic As StdPicture
+        Set tmpPic = New StdPicture
+        tmpPic = LoadResPicture(resTitle, 0)
         
-    CreateStreamOnHGlobal ImageData(0), 0&, IStream
+        'Copy that image into the supplied layer
+        If dstLayer.CreateFromPicture(tmpPic) Then
+            loadResourceToLayer = True
+        Else
+            loadResourceToLayer = False
+        End If
+        
+        Exit Function
+        
+    Else
     
-    If Not IStream Is Nothing Then
+        'Start by extracting the PNG data into a bytestream
+        Dim ImageData() As Byte
+        ImageData() = LoadResData(resTitle, "CUSTOM")
         
-        'Use GDI+ to convert the bytestream into a usable image
-        ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
-        If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
+        Dim IStream As IUnknown
+        Dim tmpRect As RECTF
+        Dim gdiBitmap As Long, hBitmap As Long
+            
+        CreateStreamOnHGlobal ImageData(0), 0&, IStream
         
-            'Retrieve the image's size and pixel format
-            GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
+        If Not IStream Is Nothing Then
             
-            Dim gdiPixelFormat As Long
-            GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
+            'Use GDI+ to convert the bytestream into a usable image
+            ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
+            If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
             
-            'If the image has an alpha channel, create a 32bpp layer to receive it
-            If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
-            Else
-                dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 24
-            End If
-            
-            'Convert the GDI+ bitmap to a standard Windows hBitmap
-            If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
-            
-                'Select the hBitmap into a new DC so we can BitBlt it into the layer
-                Dim gdiDC As Long
-                gdiDC = CreateCompatibleDC(0)
-                SelectObject gdiDC, hBitmap
+                'Retrieve the image's size and pixel format
+                GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
                 
-                'Copy the GDI+ bitmap into the layer
-                BitBlt dstLayer.getLayerDC, 0, 0, tmpRect.fWidth, tmpRect.fHeight, gdiDC, 0, 0, vbSrcCopy
+                Dim gdiPixelFormat As Long
+                GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
                 
-                'Verify the alpha channel
-                If Not dstLayer.verifyAlphaChannel Then dstLayer.convertTo24bpp
+                'If the image has an alpha channel, create a 32bpp layer to receive it
+                If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
+                    dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
+                Else
+                    dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 24
+                End If
                 
-                'Release the Windows-format bitmap and temporary device context
-                DeleteObject hBitmap
-                DeleteDC gdiDC
+                'Convert the GDI+ bitmap to a standard Windows hBitmap
+                If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
                 
-                'Release the GDI+ bitmap as well
+                    'Select the hBitmap into a new DC so we can BitBlt it into the layer
+                    Dim gdiDC As Long
+                    gdiDC = CreateCompatibleDC(0)
+                    SelectObject gdiDC, hBitmap
+                    
+                    'Copy the GDI+ bitmap into the layer
+                    BitBlt dstLayer.getLayerDC, 0, 0, tmpRect.fWidth, tmpRect.fHeight, gdiDC, 0, 0, vbSrcCopy
+                    
+                    'Verify the alpha channel
+                    If Not dstLayer.verifyAlphaChannel Then dstLayer.convertTo24bpp
+                    
+                    'Release the Windows-format bitmap and temporary device context
+                    DeleteObject hBitmap
+                    DeleteDC gdiDC
+                    
+                    'Release the GDI+ bitmap as well
+                    GdipDisposeImage gdiBitmap
+                    
+                    'Free the memory stream
+                    Set IStream = Nothing
+                    
+                    loadResourceToLayer = True
+                    Exit Function
+                
+                End If
+                
+                'Release the GDI+ bitmap and mark the load as failed
                 GdipDisposeImage gdiBitmap
-                
-                'Free the memory stream
-                Set IStream = Nothing
-                
-                loadResourceToLayer = True
+                loadResourceToLayer = False
                 Exit Function
-            
+                    
             End If
-            
-            'Release the GDI+ bitmap and mark the load as failed
-            GdipDisposeImage gdiBitmap
+        
+            'Free the memory stream
+            Set IStream = Nothing
             loadResourceToLayer = False
             Exit Function
-                
+        
         End If
-    
-        'Free the memory stream
-        Set IStream = Nothing
+        
         loadResourceToLayer = False
         Exit Function
     
     End If
-    
-    loadResourceToLayer = False
-    Exit Function
-    
+        
 End Function
