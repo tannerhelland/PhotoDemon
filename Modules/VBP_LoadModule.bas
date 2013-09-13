@@ -31,14 +31,24 @@ Public Sub LoadTheProgram()
     ' Prepare the splash screen (but don't display it yet)
     '*************************************************************************************************************************************
     
-    'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
-    FormSplash.Visible = False
-    FormSplash.prepareSplash
+    'We need GDI+ to extract a JPEG from the resource file and convert it in-memory.  (Yes, there are other ways to do this.  No, I don't
+    ' care about using them.)  Check it's availability
+    If isGDIPlusAvailable() Then
     
+        'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
+        FormSplash.Visible = False
+        FormSplash.prepareSplash
+        
+    End If
+        
     'Check the environment.  If inside the the IDE, the splash needs to be modified slightly.
     CheckLoadingEnvironment
     
-    If g_IsProgramCompiled Then m_LoadTime = 2# Else m_LoadTime = 1#
+    If g_GDIPlusAvailable Then
+        If g_IsProgramCompiled Then m_LoadTime = 2# Else m_LoadTime = 1#
+    Else
+        m_LoadTime = 0#
+    End If
     
     '*************************************************************************************************************************************
     ' Determine which version of Windows the user is running (as other load functions rely on this)
@@ -413,10 +423,10 @@ Private Sub LoadImagesFromCommandLine()
         Dim tChar As String
         
         'Scan the command line one character at a time
-        Dim x As Long
-        For x = 1 To Len(g_CommandLine)
+        Dim X As Long
+        For X = 1 To Len(g_CommandLine)
             
-            tChar = Mid(g_CommandLine, x, 1)
+            tChar = Mid(g_CommandLine, X, 1)
                 
             'If the current character is a quotation mark, change inQuotes to specify that we are either inside
             ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -428,11 +438,11 @@ Private Sub LoadImagesFromCommandLine()
                     
                 '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                 ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, x - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - x)
+                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, X - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - X)
                     
             End If
             
-        Next x
+        Next X
             
         'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
         ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -441,10 +451,10 @@ Private Sub LoadImagesFromCommandLine()
             
         'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
         ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-        For x = 0 To UBound(sFile)
-            sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
-            sFile(x) = Replace$(sFile(x), Chr(34), "")
-        Next x
+        For X = 0 To UBound(sFile)
+            sFile(X) = Replace$(sFile(X), Chr(42), Chr(32))
+            sFile(X) = Replace$(sFile(X), Chr(34), "")
+        Next X
         
     End If
         
@@ -1450,7 +1460,7 @@ Public Sub LoadPlugins()
     End If
     
     'Finally, check GDI+ availability
-    If isGDIPlusAvailable() Then
+    If g_GDIPlusAvailable Then
         g_ImageFormats.GDIPlusEnabled = True
     Else
         g_ImageFormats.GDIPlusEnabled = False

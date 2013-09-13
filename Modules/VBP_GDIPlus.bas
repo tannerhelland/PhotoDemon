@@ -264,12 +264,12 @@ Private Declare Function GdipSetSmoothingMode Lib "GdiPlus" (ByVal mGraphics As 
 Private Declare Function GdipDeleteBrush Lib "GdiPlus" (ByVal mBrush As Long) As Long
 Private Declare Function GdipCreateSolidFill Lib "GdiPlus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
 Private Declare Function GdipDrawLine Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
-Private Declare Function GdipDrawEllipse Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
+Private Declare Function GdipDrawEllipse Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal X As Single, ByVal Y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillEllipseI Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipCreatePath Lib "GdiPlus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
 Private Declare Function GdipDeletePath Lib "GdiPlus" (ByVal mPath As Long) As Long
 'Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
-Private Declare Function GdipAddPathArc Lib "GdiPlus" (ByVal mPath As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
+Private Declare Function GdipAddPathArc Lib "GdiPlus" (ByVal mPath As Long, ByVal X As Single, ByVal Y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
 Private Declare Function GdipClosePathFigure Lib "GdiPlus" (ByVal mPath As Long) As Long
 Private Declare Function GdipFillPath Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mPath As Long) As Long
 Private Declare Function GdipDrawPath Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal mPath As Long) As Long
@@ -846,10 +846,12 @@ Public Function isGDIPlusAvailable() As Boolean
     
     If (GdiplusStartup(g_GDIPlusToken, gdiCheck) <> [OK]) Then
         isGDIPlusAvailable = False
+        g_GDIPlusAvailable = False
         g_GDIPlusFXAvailable = False
     Else
     
         isGDIPlusAvailable = True
+        g_GDIPlusAvailable = True
         
         'Next, check to see if v1.1 is available.  This allows for advanced fx work.
         Dim hMod As Long

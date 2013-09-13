@@ -214,3 +214,8 @@ Public Type pdLanguageFile
     langVersion As String
     langStatus As String
 End Type
+
+'GDI+ availability is determined at the very start of the program; we rely on it heavily, so expect problems if
+' it can't be initialized!
+Public g_GDIPlusAvailable As Boolean
+
