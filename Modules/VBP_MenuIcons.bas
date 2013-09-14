@@ -989,7 +989,7 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
         'Load the requested image into a temporary StdPicture object
         Dim tmpPic As StdPicture
         Set tmpPic = New StdPicture
-        tmpPic = LoadResPicture(resTitle, 0)
+        Set tmpPic = LoadResPicture(resTitle, 0)
         
         'Copy that image into the supplied layer
         If dstLayer.CreateFromPicture(tmpPic) Then

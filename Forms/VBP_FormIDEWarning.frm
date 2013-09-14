@@ -195,9 +195,9 @@ Public Sub showDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = 18
-    If g_UseFancyFonts Then iconY = iconY + 2
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 22, iconY
+    iconY = fixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, fixDPI(22), iconY
     
     lblWarning(1).Caption = g_Language.TranslateMessage("Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.")
     lblWarning(2).Caption = g_Language.TranslateMessage("Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.")
@@ -216,7 +216,7 @@ Public Sub showDialog()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Boolean "Core", "Display IDE Warning", False
     Me.Hide

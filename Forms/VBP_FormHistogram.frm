@@ -745,7 +745,7 @@ Private Sub cmdExportHistogram_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
@@ -767,7 +767,7 @@ Private Sub Form_Activate()
     'Blank out the specific level labels populated by moving the mouse across the form
     ' Also, align the value labels with their (potentially translated) corresponding title labels
     For i = 0 To lblValue.Count - 1
-        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + 8
+        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + fixDPI(8)
         lblValue(i) = ""
     Next i
         
@@ -959,14 +959,14 @@ End Sub
 'If the form is resized, adjust all the controls to match
 Private Sub Form_Resize()
 
-    picH.Width = Me.ScaleWidth - picH.Left - 8
-    picGradient.Width = Me.ScaleWidth - picGradient.Left - 8
+    picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
+    picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
     lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - 8
+    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
     
     'Only draw the histogram if the histogram data has been initialized
     ' (This is necessary because VB triggers the Resize event before the Activate event)
-    If histogramGenerated = True Then DrawHistogram
+    If histogramGenerated Then DrawHistogram
     
 End Sub
 

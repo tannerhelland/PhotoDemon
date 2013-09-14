@@ -142,8 +142,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 25/August/13
-'Last update: converted mousewheel code to bluMouseEvents
+'Last updated: 14/September/13
+'Last update: fix non-96 dpi issues with the custom listbox
 '
 'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -242,7 +242,7 @@ Private Sub Form_Activate()
     makeFormPretty Me, m_ToolTip
     
     'Realign the bottom check boxes
-    chkFriendlyValues.Left = chkFriendlyNames.Left + chkFriendlyNames.Width + 24
+    chkFriendlyValues.Left = chkFriendlyNames.Left + chkFriendlyNames.Width + fixDPI(24)
     
 End Sub
 
@@ -368,7 +368,7 @@ Private Sub lstMetadata_Click()
         
     'First, determine if the vertical scrollbar needs to be visible or not
     Dim maxMDSize As Long
-    maxMDSize = BLOCKHEIGHT * mdCategories(curCategory).Count
+    maxMDSize = fixDPIFloat(BLOCKHEIGHT) * mdCategories(curCategory).Count
     
     vsMetadata.Value = 0
     If maxMDSize < picBuffer.Height Then
@@ -395,7 +395,7 @@ Private Sub redrawMetadataList()
         
     Dim i As Long
     For i = 0 To mdCategories(curCategory).Count - 1
-        renderMDBlock curCategory, i, 8, i * BLOCKHEIGHT - scrollOffset - 2
+        renderMDBlock curCategory, i, fixDPI(8), fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
     Next i
     
     'Copy the buffer to the main form
@@ -419,7 +419,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         tertiaryColor = vbActiveTitleBar
     
         Dim linePadding As Long
-        linePadding = 4
+        linePadding = fixDPI(4)
     
         Dim mHeight As Single
         Dim drawString As String
@@ -446,13 +446,13 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
             End If
         End If
         
-        drawTextOnObject picBuffer, drawString, offsetX + 4, offsetY + mHeight, 11, secondaryColor, False
+        drawTextOnObject picBuffer, drawString, offsetX + fixDPI(4), offsetY + mHeight, 11, secondaryColor, False
         
         'Draw a divider line near the bottom of the metadata block
         Dim lineY As Long
         If blockIndex < mdCategories(blockCategory).Count - 1 Then
-            lineY = offsetY + BLOCKHEIGHT - 8
-            picBuffer.Line (4, lineY)-(picBuffer.ScaleWidth - 8, lineY), tertiaryColor
+            lineY = offsetY + fixDPI(BLOCKHEIGHT - 8)
+            picBuffer.Line (fixDPI(4), lineY)-(picBuffer.ScaleWidth - fixDPI(8), lineY), tertiaryColor
         End If
         
     End If
