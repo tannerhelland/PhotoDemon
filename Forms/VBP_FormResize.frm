@@ -26,11 +26,11 @@ Begin VB.Form FormResize
    StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
-      Height          =   750
+      Height          =   744
       Left            =   0
       TabIndex        =   0
-      Top             =   7710
-      Width           =   9705
+      Top             =   7716
+      Width           =   9708
       _ExtentX        =   17119
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -720,8 +720,8 @@ Private Sub Form_Load()
         colorPicker.Visible = False
         
         'Move up the controls beneath it
-        optFit(2).Top = optFit(1).Top + 48
-        lblSubtext(2).Top = optFit(2).Top + 26
+        optFit(2).Top = optFit(1).Top + fixDPI(48)
+        lblSubtext(2).Top = optFit(2).Top + fixDPI(26)
         
     End If
     
@@ -1092,7 +1092,7 @@ Private Sub updateFormLayout()
         colorPicker.Visible = False
                 
         'Resize the form to match
-        Me.Height = formHeightDifference + (chkNames.Top + chkNames.Height + cmdBar.Height + 24) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (chkNames.Top + chkNames.Height + cmdBar.Height + fixDPI(24)) * Screen.TwipsPerPixelY
     
     Else
     
@@ -1112,7 +1112,7 @@ Private Sub updateFormLayout()
         If pdImages(CurrentImage).mainLayer.getLayerColorDepth <> 32 Then colorPicker.Visible = True
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (lblSubtext(2).Top + lblSubtext(2).Height + cmdBar.Height + 24) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (lblSubtext(2).Top + lblSubtext(2).Height + cmdBar.Height + fixDPI(24)) * Screen.TwipsPerPixelY
     
     End If
 

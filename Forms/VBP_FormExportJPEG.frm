@@ -451,10 +451,10 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = False
     
         'Move all other controls accordingly
-        lineSeparator.y1 = sltQuality.Top + 48
+        lineSeparator.y1 = sltQuality.Top + fixDPI(48)
         lineSeparator.y2 = lineSeparator.y1
         lblBackground.Top = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + 10
+        cmdShowHide.Top = lineSeparator.y1 + fixDPI(10)
         CmdOK.Top = cmdShowHide.Top
         cmdCancel.Top = CmdOK.Top
     
@@ -472,10 +472,10 @@ Private Sub toggleAdvancedSettings()
         cmbSubsample.Visible = True
         
         'Move all other controls accordingly
-        lineSeparator.y1 = cmbSubsample.Top + 48
+        lineSeparator.y1 = cmbSubsample.Top + fixDPI(48)
         lineSeparator.y2 = lineSeparator.y1
         lblBackground.Top = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + 10
+        cmdShowHide.Top = lineSeparator.y1 + fixDPI(10)
         CmdOK.Top = cmdShowHide.Top
         cmdCancel.Top = CmdOK.Top
     

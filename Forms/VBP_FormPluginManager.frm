@@ -62,7 +62,7 @@ Begin VB.Form FormPluginManager
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   4920
+      Height          =   4650
       Left            =   120
       TabIndex        =   2
       Top             =   240
@@ -1937,7 +1937,7 @@ Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As L
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     'Restore the original values for enabled or disabled plugins
     g_ImageFormats.FreeImageEnabled = pEnabled(0)
@@ -1951,7 +1951,7 @@ Private Sub cmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     Message "Saving plugin options..."
     
@@ -2101,15 +2101,15 @@ Private Sub Form_Load()
     
     'If a translation is active, realign text as necessary
     If g_Language.translationActive Then
-        lblPluginStatus.Left = lblTitle(0).Left + lblTitle(0).Width + 8
+        lblPluginStatus.Left = lblTitle(0).Left + lblTitle(0).Width + fixDPI(8)
         
         For i = 0 To lblStatus.Count - 1
-            lblStatus(i).Left = lblInterfaceSubheader(i).Left + lblInterfaceSubheader(i).Width + 8
+            lblStatus(i).Left = lblInterfaceSubheader(i).Left + lblInterfaceSubheader(i).Width + fixDPI(8)
         Next i
         
         For i = 0 To lblHomepage.Count - 1
-            lblHomepageLink(i).Left = lblHomepage(i).Left + lblHomepage(i).Width + 8
-            lblLicenseLink(i).Left = lblLicense(i).Left + lblLicense(i).Width + 8
+            lblHomepageLink(i).Left = lblHomepage(i).Left + lblHomepage(i).Width + fixDPI(8)
+            lblLicenseLink(i).Left = lblLicense(i).Left + lblLicense(i).Width + fixDPI(8)
         Next i
         
     End If

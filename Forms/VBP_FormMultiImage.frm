@@ -170,9 +170,9 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = 18
-    If g_UseFancyFonts Then iconY = iconY + 2
-    DrawSystemIcon IDI_QUESTION, Me.hDC, 22, iconY
+    iconY = fixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
+    DrawSystemIcon IDI_QUESTION, Me.hDC, fixDPI(22), iconY
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo

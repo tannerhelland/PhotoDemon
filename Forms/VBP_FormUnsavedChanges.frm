@@ -167,7 +167,7 @@ Public Property Let formID(formID As Long)
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub ShowDialog()
+Public Sub showDialog()
     
     Dim i As Long
     
@@ -187,9 +187,9 @@ Public Sub ShowDialog()
     
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = 24
-    If g_UseFancyFonts Then iconY = iconY + 2
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, 277, iconY
+    iconY = fixDPI(24)
+    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, fixDPI(277), iconY
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -264,7 +264,7 @@ Public Sub ShowDialog()
 
     Me.ScaleMode = vbPixels
     
-    chkRepeat.Left = Me.ScaleWidth - chkRepeat.Width - 26
+    chkRepeat.Left = Me.ScaleWidth - chkRepeat.Width - fixDPI(26)
 
     'Apply any custom styles to the form
     makeFormPretty Me, m_ToolTip, True

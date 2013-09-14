@@ -277,9 +277,9 @@ Public Sub showDialog()
         
     'Automatically draw a question icon using the system icon set
     Dim iconY As Long
-    iconY = 18
-    If g_UseFancyFonts Then iconY = iconY + 2
-    DrawSystemIcon IDI_ASTERISK, Me.hDC, 22, iconY
+    iconY = fixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
+    DrawSystemIcon IDI_ASTERISK, Me.hDC, fixDPI(22), iconY
         
     'Initialize our temporary layer render object
     Set tmpLayer = New pdLayer
