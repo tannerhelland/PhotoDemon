@@ -62,7 +62,8 @@ Begin VB.Form FormRadialBlur
       _ExtentY        =   873
       Min             =   1
       Max             =   360
-      Value           =   5
+      SigDigits       =   1
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -208,11 +209,11 @@ Attribute VB_Exposed = False
 'Radial Blur Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 26/August/13
-'Last updated: 26/August/13
-'Last update: remove zoom blur, which is going to get a custom implementation. Also, fix the top-center line
-'              of the image not being blurred properly. This requires some convoluted image manipulation to assure
-'              proper wrapping, but that proved far easier (and more performance-friendly) than changing the
-'              horizontal blur code to wrap image edges.
+'Last updated: 15/September/13
+'Last update: adjust radius calculation method to produce correct ANGLE values - because of the polar-conversion
+'              shortcut we use, angle is actually a ratio of the horizontal width of the image, where 360 degrees
+'              is equivalent to the full width.  Now the output is identical to GIMP, Paint.NET, etc. (actually,
+'              our output quality is better :) with no noticeable speed drop.
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a radial blur tool that supports variable angles,
 ' and capable of operating in real-time.  This function is mostly just a wrapper to PD's horizontal blur and
@@ -228,16 +229,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
 'Apply radial blur to an image
 'Inputs: angle of the blur, and whether it should be symmetrical (e.g. equal in +/- angle amounts)
-Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying radial blur..."
     
@@ -251,22 +248,21 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Bo
     Set srcLayer = New pdLayer
     srcLayer.createFromExistingLayer workingLayer
     
-    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    If toPreview Then
-        If iWidth > iHeight Then
-            bRadius = (bRadius / iWidth) * curLayerValues.Width
-        Else
-            bRadius = (bRadius / iHeight) * curLayerValues.Height
-        End If
-        If bRadius = 0 Then bRadius = 1
-    End If
+    'By dividing blur radius by 360 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
+    Dim actualBlurSize As Long
+    actualBlurSize = (bRadius / 360) * curLayerValues.Width
+    If actualBlurSize < 1 Then actualBlurSize = 1
     
     Dim finalX As Long, finalY As Long
     finalX = workingLayer.getLayerWidth
     finalY = workingLayer.getLayerHeight
     
+    'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
+    Dim newProgBarMax As Long
+    newProgBarMax = finalX * 2 + (workingLayer.getLayerWidth + actualBlurSize * 2)
+    
     'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-    If CreatePolarCoordLayer(1, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, finalX * 3) Then
+    If CreatePolarCoordLayer(1, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, newProgBarMax) Then
     
         'We now need to do something a little unconventional.  When converting to polar coordinates, the line running from
         ' the top-center of the image to the center point ends up being separated onto the full left and right sides of the
@@ -284,7 +280,7 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Bo
         srcHeight = workingLayer.getLayerHeight
         
         Dim dstWidth As Long
-        dstWidth = srcWidth + bRadius * 2
+        dstWidth = srcWidth + actualBlurSize * 2
         
         Dim dstX As Long
         dstX = (dstWidth - srcWidth) \ 2
@@ -306,9 +302,9 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Bo
     
         'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
         Dim leftRadius As Long
-        If blurSymmetrically Then leftRadius = bRadius Else leftRadius = 0
+        If blurSymmetrically Then leftRadius = actualBlurSize Else leftRadius = 0
         
-        If CreateHorizontalBlurLayer(leftRadius, bRadius, tmpLayer, srcLayer, toPreview, finalX * 3, finalX) Then
+        If CreateHorizontalBlurLayer(leftRadius, actualBlurSize, tmpLayer, srcLayer, toPreview, newProgBarMax, finalX) Then
         
             'Copy the blurred results of the source layer back into the temporary layer
             tmpLayer.createFromExistingLayer srcLayer
@@ -321,7 +317,7 @@ Public Sub RadialBlurFilter(ByVal bRadius As Long, ByVal blurSymmetrically As Bo
             tmpLayer.eraseLayer
             
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-            CreatePolarCoordLayer 0, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, finalX * 3, finalX * 2
+            CreatePolarCoordLayer 0, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, newProgBarMax, finalX + dstWidth
             
         End If
         
@@ -371,15 +367,6 @@ Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
     cmdBar.markPreviewStatus False
-    
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
     
 End Sub
 
