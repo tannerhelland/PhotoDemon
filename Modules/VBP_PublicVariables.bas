@@ -45,8 +45,6 @@ Public Enum SelectionRender
     sInvertRect = 3
 End Enum
 
-Public g_SelectionRenderPreference As SelectionRender
-
 
 'Zoom data
 Public Type ZoomData

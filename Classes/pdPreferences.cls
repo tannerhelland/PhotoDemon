@@ -310,25 +310,6 @@ Public Sub loadUserSettings()
         
 End Sub
 
-'Save and load tool settings - note that this must be done after the various tool controls have been initialized
-' on the main form.
-Public Sub loadToolSettings()
-
-    'Selection type
-    Dim i As Long
-    For i = 0 To FormMain.cmbSelRender.Count - 1
-        FormMain.cmbSelRender(i).ListIndex = GetPref_Long("Tools", "LastSelectionShape", 0)
-    Next i
-    
-End Sub
-
-Public Sub saveToolSettings()
-    
-    'Last-used tool
-    SetPref_Long "Tools", "LastActiveTool", g_CurrentTool
-        
-End Sub
-
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Public Sub resetPreferences()
     If FileExist(PreferencesPath) Then Kill PreferencesPath
@@ -488,8 +469,6 @@ Private Sub createNewPreferencesFile()
     'Write out the "tools" block of preferences:
     xmlEngine.writeTag "Tools", "", True
         xmlEngine.writeTag "ClearSelectionAfterCrop", "True"
-        xmlEngine.writeTag "LastSelectionShape", "0"
-        xmlEngine.writeTag "LastActiveTool", "0"
     xmlEngine.closeTag "Tools"
     xmlEngine.writeBlankLine
 
