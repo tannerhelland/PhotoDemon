@@ -145,10 +145,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -170,12 +166,8 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview 
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        If iWidth > iHeight Then
-            gRadius = (gRadius / iWidth) * curLayerValues.Width
-        Else
-            gRadius = (gRadius / iHeight) * curLayerValues.Height
-        End If
-        If gRadius = 0 Then gRadius = 1
+        gRadius = gRadius * curLayerValues.previewModifier
+        If gRadius = 0 Then gRadius = 0.1
     End If
     
     CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
@@ -219,19 +211,6 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     updatePreview
-    
-End Sub
-
-Private Sub Form_Load()
-
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
     
 End Sub
 

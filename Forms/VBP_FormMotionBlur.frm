@@ -269,10 +269,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -288,11 +284,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        If iWidth > iHeight Then
-            bDistance = (bDistance / iWidth) * curLayerValues.Width
-        Else
-            bDistance = (bDistance / iHeight) * curLayerValues.Height
-        End If
+        bDistance = bDistance * curLayerValues.previewModifier
         If bDistance = 0 Then bDistance = 1
     End If
     
@@ -430,15 +422,6 @@ Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
     cmdBar.markPreviewStatus False
-    
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
     
 End Sub
 
