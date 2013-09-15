@@ -3,9 +3,11 @@ Attribute VB_Name = "FastDrawing"
 'Fast API Graphics Routines Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 13/August/13
-'Last update: preview objects now handle their own rendering; this allows us to delay rendering during special preview events, like
-'              color selection on a preview window
+'Last updated: 15/September/13
+'Last update: during a preview, clients should not have to track and calculate the difference between preview dimensions
+'              and actual image dimensions (important for things like Blur, where the preview radius must be reduced in
+'              order to provide an accurate preview).  PrepImageData now does this for them, and they can simply access
+'              the .previewModifier value as necessary.
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
@@ -24,31 +26,65 @@ Option Explicit
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Long, lpSrc As Long, ByVal byteLength As Long)
 
+'Any time a tool dialog is in use, the image to be operated on will be stored IN THIS LAYER.
+'- In preview mode, workingLayer will contain a small, preview-size version of the image.
+'- In non-preview mode, workingLayer will contain a copy of the full image.  We do not allow various effects and tools to operate
+'   on the original image data, in case they cancel a function mid-way (we must be able to restore the original image).
+'- If a selection is active, workingLayer will contain the selected part of the image, converted to 32bpp mode as necessary
+'   (e.g. if feathering or antialiasing is enabled on the selection).
 Public workingLayer As pdLayer
 
-'prepImageData will fill a variable of this type with everything a filter or effect could possibly want to know
-' about the layer it's operating on.  Filters are free to ignore this data, but it is always made available.
+'prepImageData is the function all PhotoDemon tools call when they need a copy of the image to operate on.  That function fills a
+' variable of this type (FilterInfo) with everything a filter or effect could possibly want to know about the current layer.
+' Note that filters are free to ignore this data, but it is ALWAYS populated and made available.
 Public Type FilterInfo
-    Left As Long            'Coordinates of the top-left location the filter is supposed to operate on
+    
+    'Coordinates of the top-left location the filter is supposed to operate on
+    Left As Long
     Top As Long
-    Right As Long           'Right and Bottom could be inferred, but we do it here to minimize effort on the calling routine's part
+    
+    'Note that Right and Bottom could be inferred from Left + Width and Top + Height, but we
+    ' explicitly state them to minimize effort on the calling routine's part
+    Right As Long
     Bottom As Long
-    Width As Long           'Dimensions of the area the filter is supposed to operate on
+    
+    'Dimensions of the area the filter is supposed to operate on.  (Relevant if a selection is active.)
+    Width As Long
     Height As Long
-    minX As Long            'The lowest coordinate the filter is allowed to check.  This is almost always (0, 0)
+    
+    'The lowest coordinate the filter is allowed to check.  This is almost always the top-left of the image (0, 0).
+    MinX As Long
     MinY As Long
-    maxX As Long            'The highest coordinate the filter is allowed to check.  This is almost always (width, height)
+    
+    'The highest coordinate the filter is allowed to check.  This is almost always (width, height).
+    MaxX As Long
     MaxY As Long
-    colorDepth As Long      'The colorDepth of the current layer; right now, this should always be 24 or 32
-    BytesPerPixel As Long   'BPP is colorDepth / 8.  It is provided for convenience.
-    LayerX As Long          'Filters shouldn't have to worry about where the layer is physically located, but when it comes
-    LayerY As Long          ' time to set the layer back in place, these may be useful (as when previewing, for example)
+    
+    'The colorDepth of the current layer, specified as BITS per pixel; this will always be 24 or 32
+    ColorDepth As Long
+    
+    'BytesPerPixel is simply colorDepth / 8.  It is provided for convenience.
+    BytesPerPixel As Long
+    
+    'Filters shouldn't have to worry about where the layer is physically located, but when it comes
+    ' time to set the layer back in place, knowing the layer's location on the primary image may be
+    ' useful (as when previewing, for example)
+    LayerX As Long
+    LayerY As Long
+    
+    'When in preview mode, the on-screen image will typically be represented at a smaller-than-actual size.
+    ' If an effect or filter operates on a radius (e.g. "blur radius 20"), that radius value has to be shrunk
+    ' when working on the preview - otherwise, the preview effect will look much stronger than it actually is!
+    ' This value can be multiplied by a radius or other value but ONLY WHEN PREVIEW MODE IS ACTIVE.
+    previewModifier As Double
+    
 End Type
 
+'Calling functions can use this variable to access all FilterInfo for the current workingLayer copy.
 Public curLayerValues As FilterInfo
 
-'We may need a temporary copy of the selection mask; if so, it will be stored here
-Dim tmpSelectionMask As pdLayer
+'We may need a temporary copy of the selection mask for rendering purposes; if so, it will be stored here
+Private tmpSelectionMask As pdLayer
 
 'This function can be used to populate a valid SAFEARRAY2D structure against any layer
 Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
@@ -67,8 +103,8 @@ Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
 End Sub
 
 
-'prepImageData's job is to copy the relevant layer into a temporary object, which is what individual filters and effects
-' will operate on.  prepImageData() also populates the relevant SafeArray object and a host of other variables, which
+'prepImageData's job is to copy the relevant layer into a temporary object, which individual filters and effects will
+' then operate on.  prepImageData() also populates the relevant SafeArray object and a host of other variables, which
 ' filters and effects can then copy locally to ensure the fastest possible runtime speed.
 '
 'If the filter will be rendering a preview only, it can specify the fxPreview control that will receive the preview effect.
@@ -84,11 +120,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
 
     'Prepare our temporary layer
     Set workingLayer = New pdLayer
-    
-    'Prepare a reference to a picture box (only needed when previewing)
-    Dim previewPictureBox As PictureBox
-    
-    'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window
+        
+    'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
     Dim dstWidth As Double, dstHeight As Double
     Dim srcWidth As Double, srcHeight As Double
     Dim newWidth As Long, newHeight As Long
@@ -110,11 +143,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     'If this IS a preview, more work is involved.
     Else
     
-        Set previewPictureBox = previewTarget.getPreviewPic
-        dstWidth = previewPictureBox.ScaleWidth
-        dstHeight = previewPictureBox.ScaleHeight
+        'The destination width and height is the width and height of the preview picture box.
+        dstWidth = previewTarget.getPreviewPic.ScaleWidth
+        dstHeight = previewTarget.getPreviewPic.ScaleHeight
             
-        'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
+        'The source values need to be adjusted contingent on whether this is a selection or a full-image preview.
         If pdImages(CurrentImage).selectionActive Then
             srcWidth = pdImages(CurrentImage).mainSelection.boundWidth
             srcHeight = pdImages(CurrentImage).mainSelection.boundHeight
@@ -131,8 +164,18 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             newHeight = srcHeight
         End If
         
-        'And finally, create our workingLayer using these values
+        'Now, create the workingLayer object using the calculated dimensions.
+        
+        'If a selection is active, quite a bit of additional work must be applied.  The selected area must be "chopped" out of the image,
+        ' and converted to 32bpp (so that feathering and antialiased selections are properly handled).
         If pdImages(CurrentImage).selectionActive Then
+        
+            'Start by chopping out the full rectangular bounding area of the selection, and placing it inside the workingLayer object.
+            ' This is done at the same color depth as the source image.
+            
+            'Note that we do this in two steps.  First, we create a temporary layer that contains the rectangular bounding area at its
+            ' original size.  Next, we create the working layer, which is the PROPERLY SIZED version of the data (e.g. shrunk if this
+            ' is a preview).  These steps could be combined into one.
             Dim copyLayer As pdLayer
             Set copyLayer = New pdLayer
             copyLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
@@ -141,7 +184,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             copyLayer.eraseLayer
             Set copyLayer = Nothing
             
-            'Also, make a copy of the selection mask at the same dimensions as the preview.  We will use this to remove the sections of the
+            'Next, make a copy of the selection mask at the same dimensions as the preview.  We will use this to remove the sections of the
             ' selection that are not selected.  (Say that 10 times fast...lol)
             Dim tmpSelectionMaskCopy As pdLayer
             Set tmpSelectionMaskCopy = New pdLayer
@@ -152,13 +195,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             tmpSelectionMaskCopy.eraseLayer
             Set tmpSelectionMaskCopy = Nothing
             
-            'In the future, we will first check to see if this selection has a complex area, e.g. if it is not a
-            ' square or a rectangle.  If it IS complex, we need to modify it further to remove inactive pixels.
-            'If pdImages(CurrentImage).mainSelection.isComplicated (or something like this) ...
-            
-            'For now, however, all selections are fully processed.
-            
-            'Start by converting the working layer to 32bpp.  Unselected areas must be made transparent, so 24bpp won't work.
+            'Now, convert the working layer to 32bpp.  Unselected areas must be made transparent, so 24bpp won't work.
             Dim already32bpp As Boolean
             
             If workingLayer.getLayerColorDepth = 32 Then
@@ -168,7 +205,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 workingLayer.convertTo32bpp
             End If
             
-            'Next, we are going to remove any pixels that are not part of the selection mask.
+            'Next, we are going to remove any pixels that are not part of the selected area.  We use the selection mask
+            ' (as stored in tmpSelectionMaskCopy) as our guide.
             Dim wlImageData() As Byte
             Dim wlSA As SAFEARRAY2D
             prepSafeArray wlSA, workingLayer
@@ -191,8 +229,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 Else
                     wlImageData(x * 4 + 3, y) = selImageData(x * 3, y)
                 End If
+                
             Next y
             Next x
+            
+            'Working layer is now a 32bpp image that accurately represents the selected area.
             
             'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
             CopyMemory ByVal VarPtrArray(wlImageData), 0&, 4
@@ -200,6 +241,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             CopyMemory ByVal VarPtrArray(selImageData), 0&, 4
             Erase selImageData
             
+        
+        'If a selection is not currently active, this step is incredibly simple!
         Else
             workingLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight
         End If
@@ -220,17 +263,18 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .Bottom = workingLayer.getLayerHeight - 1
         .Width = workingLayer.getLayerWidth
         .Height = workingLayer.getLayerHeight
-        .minX = 0
+        .MinX = 0
         .MinY = 0
-        .maxX = workingLayer.getLayerWidth - 1
+        .MaxX = workingLayer.getLayerWidth - 1
         .MaxY = workingLayer.getLayerHeight - 1
-        .colorDepth = workingLayer.getLayerColorDepth
+        .ColorDepth = workingLayer.getLayerColorDepth
         .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
         .LayerX = 0
         .LayerY = 0
+        .previewModifier = workingLayer.getLayerWidth / pdImages(CurrentImage).mainLayer.getLayerWidth
     End With
 
-    'Set up the progress bar (only if this is NOT a preview, mind you)
+    'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
     If Not isPreview Then
         If newProgBarMax = -1 Then
             SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
@@ -244,9 +288,10 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
 End Sub
 
 
-'The counterpart to prepImageData, finalizeImageData copies the working layer back into its source then renders it
-' to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData will rely on
-' the values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS be called before this routine.
+'The counterpart to prepImageData, finalizeImageData copies the working layer back into the source image, then renders
+' everything to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData
+' will rely on the preview-related values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS
+' be called before this routine.
 Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
 
     'If the user has canceled the current action, disregard the working layer and exit immediately.  The central processor
@@ -257,6 +302,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Set workingLayer = Nothing
         
         Exit Sub
+        
     End If
 
     Dim wlImageData() As Byte
