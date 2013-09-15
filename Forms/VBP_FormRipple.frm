@@ -332,8 +332,8 @@ Attribute VB_Exposed = False
 'Image "Ripple" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 06/January/13
-'Last updated: 24/August/13
-'Last update: added command bar
+'Last updated: 15/September/13
+'Last update: fixed preview wavelength calculation, so the preview now accurately reflects the final image.
 '
 'This tool allows the user to apply a "water ripple" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -401,13 +401,16 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
+    
+    'During a preview, shrink the wavelength to more accurately reflect the final imgae
+    If toPreview Then rippleWavelength = rippleWavelength * curLayerValues.previewModifier
+    
     'Rippling requires some specialized variables
     
     'First, calculate the center of the image
