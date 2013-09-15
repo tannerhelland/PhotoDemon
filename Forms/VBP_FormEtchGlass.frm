@@ -332,7 +332,8 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-      
+    
+    'During a preview, shrink the scale so that the preview accurately reflects how the final image will appear
     If toPreview Then fxScale = fxScale * curLayerValues.previewModifier
       
     'Our etched glass effect requires some specialized variables
