@@ -70,7 +70,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(formToBuffer.Tag).selectionActive Then
     
         'If it is, composite the selection against the temporary buffer
-        pdImages(formToBuffer.Tag).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, g_SelectionRenderPreference
+        pdImages(formToBuffer.Tag).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(formToBuffer.Tag).targetLeft, pdImages(formToBuffer.Tag).targetTop, pdImages(formToBuffer.Tag).targetWidth, pdImages(formToBuffer.Tag).targetHeight, FormMain.cmbSelRender(0).ListIndex
     
     End If
         

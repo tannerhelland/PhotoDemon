@@ -174,6 +174,7 @@ Begin VB.MDIForm FormMain
             Width           =   3000
             _ExtentX        =   5318
             _ExtentY        =   873
+            Max             =   10000
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   9.75
@@ -302,7 +303,7 @@ Begin VB.MDIForm FormMain
             _ExtentX        =   5318
             _ExtentY        =   873
             Min             =   1
-            Max             =   100
+            Max             =   10000
             Value           =   1
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -344,7 +345,7 @@ Begin VB.MDIForm FormMain
             _ExtentX        =   5318
             _ExtentY        =   873
             Min             =   1
-            Max             =   500
+            Max             =   10000
             Value           =   10
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1909,13 +1910,13 @@ Private cImgCtl As clsControlImage
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Private m_ToolTip As clsToolTip
 
+'The value of all controls on this form are saved and loaded to file by this class
+Private WithEvents lastUsedSettings As pdLastUsedSettings
+Attribute lastUsedSettings.VB_VarHelpID = -1
+
 'When the selection type is changed, update the corresponding preference and redraw all selections
 Private Sub cmbSelRender_Click(Index As Integer)
-    
-    'Remember the selection type, and write it out to the preferences file as well
-    g_SelectionRenderPreference = FormMain.cmbSelRender(Index).ListIndex
-    g_UserPreferences.SetPref_Long "Tools", "Last Selection Shape", g_SelectionRenderPreference
-        
+            
     If NumOfWindows > 0 Then
     
         Dim i As Long
@@ -2118,10 +2119,7 @@ Private Sub newToolSelected()
     
         'Rectangular, elliptical selections
         Case SELECT_RECT
-        
-            'Load the visual style setting from the preferences file
-            FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPref_Long("Tools", "Last Selection Shape", 0)
-        
+                
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
                 If (g_PreviousTool = SELECT_CIRC) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle) Then
@@ -2137,9 +2135,6 @@ Private Sub newToolSelected()
             End If
             
         Case SELECT_CIRC
-            
-            'Load the visual style setting from the preferences file
-            FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPref_Long("Tools", "Last Selection Shape", 0)
         
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
@@ -2158,9 +2153,6 @@ Private Sub newToolSelected()
         'Line selections
         Case SELECT_LINE
         
-            'Load the visual style setting from the preferences file
-            FormMain.cmbSelRender(0).ListIndex = g_UserPreferences.GetPref_Long("Tools", "Last Selection Shape", 0)
-            
             'Deactivate the position text boxes - those shouldn't be accessible unless a line selection is presently active
             If selectionsAllowed(True) Then
                 If pdImages(CurrentImage).mainSelection.getSelectionShape = sLine Then
@@ -2188,6 +2180,35 @@ End Sub
 
 Private Sub cmdZoomOut_Click()
     FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+End Sub
+
+Private Sub lastUsedSettings_AddCustomPresetData()
+    
+    'Write the currently selected selection tool to file
+    lastUsedSettings.addPresetData "ActiveSelectionTool", g_CurrentTool
+    
+End Sub
+
+Private Sub lastUsedSettings_ReadCustomPresetData()
+
+    'Restore the last-used selection tool (which will be saved in the main form's preset file, if it exists)
+    g_PreviousTool = -1
+    If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) > 0 Then
+        g_CurrentTool = CLng(lastUsedSettings.retrievePresetData("ActiveSelectionTool"))
+    Else
+        g_CurrentTool = SELECT_RECT
+    End If
+    cmdTools_Click CInt(g_CurrentTool)
+    
+    'The save/load preset control will save/load values of a number of controls that don't need to be saved.
+    ' Reset those controls now.
+    CmbZoom.ListIndex = ZoomIndex100
+    
+    Dim i As Long
+    For i = 0 To tudSel.Count - 1
+        tudSel(i) = 0
+    Next i
+
 End Sub
 
 'THE BEGINNING OF EVERYTHING
@@ -2238,12 +2259,7 @@ Private Sub MDIForm_Load()
             
         End With
     End If
-    
-    'Select the last-used tool (which should be saved in the preferences file)
-    g_PreviousTool = -1
-    g_CurrentTool = g_UserPreferences.GetPref_Long("Tools", "Last Active Tool", 0)
-    cmdTools_Click CInt(g_CurrentTool)
-        
+            
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
     If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
@@ -2361,6 +2377,11 @@ Private Sub MDIForm_Load()
     
     End If
     
+    'Load the last-used settings for the main form
+    Set lastUsedSettings = New pdLastUsedSettings
+    lastUsedSettings.setParentForm Me
+    lastUsedSettings.loadAllControlValues
+    
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
     'Render the main form with any extra visual styles we've decided to apply
@@ -2431,6 +2452,9 @@ End Sub
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
 Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
+    'Save all last-used settings to file
+    lastUsedSettings.saveAllControlValues
+    
     'If the histogram form is open, close it
     Unload FormHistogram
     
@@ -2470,10 +2494,7 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)
     MRU_SaveToFile
-    
-    'Save all current tool options to file
-    g_UserPreferences.saveToolSettings
-    
+        
     'Restore the user's font smoothing setting as necessary
     handleClearType False
     

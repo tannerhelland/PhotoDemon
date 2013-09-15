@@ -205,7 +205,6 @@ Public Sub LoadTheProgram()
             FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
             FormMain.cmbSelRender(i).AddItem "Highlight (Red)", 2
             FormMain.cmbSelRender(i).ListIndex = 0
-            g_SelectionRenderPreference = 0
         Next i
         
         'Selection smoothing (currently none, antialiased, fully feathered)
@@ -213,6 +212,7 @@ Public Sub LoadTheProgram()
         FormMain.sltSelectionFeathering.ToolTipText = g_Language.TranslateMessage("This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.")
         FormMain.cmbSelSmoothing(0).AddItem "None", 0
         FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
+        
         'Live feathering is not allowed on XP or Vista for performance reasons (GDI+ can't be used).
         ' On these OSes, feathering must be applied via the Selection -> Feathering menu.
         If g_GDIPlusFXAvailable Then FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
@@ -227,8 +227,6 @@ Public Sub LoadTheProgram()
         
         FormMain.sltCornerRounding.ToolTipText = g_Language.TranslateMessage("This option adjusts the roundness of a rectangular selection's corners.")
         FormMain.sltSelectionLineWidth.ToolTipText = g_Language.TranslateMessage("This option adjusts the width of a line selection.")
-            
-    g_UserPreferences.loadToolSettings
             
         
         
