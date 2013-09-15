@@ -254,8 +254,8 @@ Attribute VB_Exposed = False
 'Image "Figured Glass" Distortion
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 25/April/13
-'Last update: simplified code by relying on the new slider/text custom control
+'Last updated: 15/September/13
+'Last update: fix the preview to show the same distortion size as the final effect.  (It should be almost 1:1 perfect now!)
 '
 'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
 ' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
@@ -291,7 +291,7 @@ End Sub
 'Apply a "figured glass" effect to an image
 Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Projecting image through simulated glass..."
+    If Not toPreview Then Message "Projecting image through simulated glass..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -326,13 +326,15 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
+      
+    If toPreview Then fxScale = fxScale * curLayerValues.previewModifier
+      
     'Our etched glass effect requires some specialized variables
         
     'Invert turbulence
