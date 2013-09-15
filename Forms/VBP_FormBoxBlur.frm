@@ -184,8 +184,8 @@ Attribute VB_Exposed = False
 'Box Blur Tool
 'Copyright ©2000-2013 by Tanner Helland
 'Created: some time 2000
-'Last updated: 24/April/13
-'Last update: greatly simplified code by using the new slider/text custom control
+'Last updated: 15/September/13
+'Last update: rely on prepImageData to calculate a preview radius conversion factor for us
 '
 'This is a heavily optimized box blur.  An "accumulation" technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -201,10 +201,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -216,7 +212,7 @@ End Sub
 'Input: horizontal and vertical size of the box (I call it radius, because the final box size is 2r + 1)
 Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Applying box blur to image..."
+    If Not toPreview Then Message "Applying box blur to image..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -230,8 +226,8 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        hRadius = (hRadius / iWidth) * curLayerValues.Width
-        vRadius = (vRadius / iHeight) * curLayerValues.Height
+        hRadius = hRadius * curLayerValues.previewModifier
+        vRadius = vRadius * curLayerValues.previewModifier
         If hRadius = 0 Then hRadius = 1
         If vRadius = 0 Then vRadius = 1
     End If
@@ -269,19 +265,6 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     updatePreview
-    
-End Sub
-
-Private Sub Form_Load()
-
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
     
 End Sub
 

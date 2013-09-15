@@ -176,10 +176,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
-' original image width in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -221,8 +217,8 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     
     'If this is a preview, we need to adjust the mosaic values to match the size of the preview box
     If toPreview Then
-        BlockSizeX = (BlockSizeX / iWidth) * curLayerValues.Width
-        BlockSizeY = (BlockSizeY / iHeight) * curLayerValues.Height
+        BlockSizeX = BlockSizeX * curLayerValues.previewModifier
+        BlockSizeY = BlockSizeY * curLayerValues.previewModifier
         If BlockSizeX = 0 Then BlockSizeX = 1
         If BlockSizeY = 0 Then BlockSizeY = 1
     End If
@@ -375,15 +371,12 @@ Private Sub Form_Load()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+        sltWidth.Max = pdImages(CurrentImage).mainSelection.boundWidth
+        sltHeight.Max = pdImages(CurrentImage).mainSelection.boundHeight
     Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
+        sltWidth.Max = pdImages(CurrentImage).Width
+        sltHeight.Max = pdImages(CurrentImage).Height
     End If
-        
-    sltWidth.Max = iWidth
-    sltHeight.Max = iHeight
     
 End Sub
 

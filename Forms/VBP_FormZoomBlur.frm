@@ -125,10 +125,6 @@ Option Explicit
 'AlphaBlend is used to render a fast zoom blur estimation
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
-'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
-' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -144,11 +140,7 @@ Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As B
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        If iWidth > iHeight Then
-            zDistance = (zDistance / iWidth) * curLayerValues.Width
-        Else
-            zDistance = (zDistance / iHeight) * curLayerValues.Height
-        End If
+        zDistance = zDistance * curLayerValues.previewModifier
         If zDistance = 0 Then zDistance = 1
     End If
     
@@ -184,10 +176,10 @@ Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As B
     'Finally, we're going to use the image's aspect ratio to try and generate a more realistic zoom blur.  Calculate
     ' that ratio now.
     Dim aspectRatio As Double
-    If iWidth > iHeight Then
-        aspectRatio = iHeight / iWidth
+    If workingLayer.getLayerWidth > workingLayer.getLayerHeight Then
+        aspectRatio = workingLayer.getLayerHeight / workingLayer.getLayerWidth
     Else
-        aspectRatio = iWidth / iHeight
+        aspectRatio = workingLayer.getLayerWidth / workingLayer.getLayerHeight
     End If
     
     'Now comes the actual transform.  We basically just repeat a series of AlphaBlend calls on the image, blending at 50% opacity
@@ -204,7 +196,7 @@ Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As B
             ' same aspect ratio as the image itself (e.g. the "zoom" lines extend from the center toward the corners, and not
             ' at 45 degree increments).
             zoomOffset = i / 2
-            If iWidth > iHeight Then
+            If workingLayer.getLayerWidth > workingLayer.getLayerHeight Then
                 StretchBlt tmpSrcLayer.getLayerDC, 0, 0, finalX, finalY, workingLayer.getLayerDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), vbSrcCopy
             Else
                 StretchBlt tmpSrcLayer.getLayerDC, 0, 0, finalX, finalY, workingLayer.getLayerDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, vbSrcCopy
@@ -231,7 +223,7 @@ Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As B
             ' same aspect ratio as the image itself (e.g. the "zoom" lines extend from the center toward the corners, and not
             ' at 45 degree increments).
             zoomOffset = Abs(i / 2)
-            If iWidth > iHeight Then
+            If workingLayer.getLayerWidth > workingLayer.getLayerHeight Then
                 StretchBlt tmpSrcLayer.getLayerDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), workingLayer.getLayerDC, 0, 0, finalX, finalY, vbSrcCopy
             Else
                 StretchBlt tmpSrcLayer.getLayerDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, workingLayer.getLayerDC, 0, 0, finalX, finalY, vbSrcCopy
@@ -280,15 +272,6 @@ Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
     cmdBar.markPreviewStatus False
-    
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
-    Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
-    End If
     
 End Sub
 
