@@ -332,8 +332,8 @@ Attribute VB_Exposed = False
 'Image "Waves" Distortion
 'Copyright ©2000-2013 by Tanner Helland
 'Created: 07/January/13
-'Last updated: 24/August/13
-'Last update: add command bar
+'Last updated: 15/September/13
+'Last update: fix preview calculations; they are now properly modified, so the final image actually matches the preview
 '
 'This tool allows the user to apply a "waves" distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a high-quality result.
@@ -362,7 +362,7 @@ End Sub
 'Apply a "wave-like" effect to an image
 Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, ByVal yWavelength As Double, ByVal yAmplitude As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Dipping image in virtual wave pool..."
+    If Not toPreview Then Message "Dipping image in virtual wave pool..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -397,16 +397,24 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.MaxX, curLayerValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
+        
     'This wave transformation requires specialized variables
     xWavelength = 51 - xWavelength
     yWavelength = 51 - yWavelength
+    
+    'During a preview, modify the wavelength and amplitude values to make the preview representative of the final image
+    If toPreview Then
+        xWavelength = xWavelength * curLayerValues.previewModifier
+        yWavelength = yWavelength * curLayerValues.previewModifier
+        xAmplitude = xAmplitude * curLayerValues.previewModifier
+        yAmplitude = yAmplitude * curLayerValues.previewModifier
+    End If
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
