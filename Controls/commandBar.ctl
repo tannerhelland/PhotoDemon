@@ -3,22 +3,22 @@ Begin VB.UserControl commandBar
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   ClientHeight    =   756
+   ClientHeight    =   750
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   9552
+   ClientWidth     =   9555
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   9.6
+      Size            =   9.75
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   63
+   ScaleHeight     =   50
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   796
+   ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
    Begin VB.CommandButton cmdRandomize 
       Caption         =   "Randomize"
@@ -214,8 +214,8 @@ Private allowPreviews As Boolean
 ' internal preview checks when requesting previews.
 Private userAllowsPreviews As Boolean
 
-'When the user is writing reading/custom preview data to file, we need a way for them to transfer their custom
-' data to this control.
+'When a tool dialog needs to read or write custom preset data (e.g. the Curves dialog, with its unique Curves
+' user control), we use these variables to store all custom data supplied to us.
 Private numUserPresetEntries As Long
 Private userPresetNames() As String
 Private userPresetData() As String
@@ -882,7 +882,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
-' those values in the section titles presetName.
+' those values in the section titled "presetName".
 Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used settings")
     
     presetName = Trim$(presetName)
