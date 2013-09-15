@@ -7,8 +7,8 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 'Last update: added support for the new language selection dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
-' the number to grow as I phase out generic message boxes in favor of more descriptive (and eye-catching)
-' dialogs designed around a specific purpose.
+' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
+' designed around a specific purpose.
 '
 'All dialogs are based off the same template, as you can see - they are just modal forms with a specially
 ' designed ".ShowDialog" sub or function that sets a ".userResponse" property.  The wrapper function in this
@@ -29,7 +29,7 @@ Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
     Load dialog_UnsavedChanges
     
     dialog_UnsavedChanges.formID = formID
-    dialog_UnsavedChanges.ShowDialog
+    dialog_UnsavedChanges.showDialog
     
     confirmClose = dialog_UnsavedChanges.DialogResult
     
@@ -42,7 +42,7 @@ End Function
 Public Function promptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
 
     Load dialog_MultiImage
-    dialog_MultiImage.ShowDialog srcFilename, numOfPages
+    dialog_MultiImage.showDialog srcFilename, numOfPages
     
     promptMultiImage = dialog_MultiImage.DialogResult
     
@@ -55,7 +55,7 @@ End Function
 Public Function promptJPEGSettings(Optional ByVal showAdvanced As Boolean = False) As VbMsgBoxResult
 
     Load dialog_ExportJPEG
-    dialog_ExportJPEG.ShowDialog showAdvanced
+    dialog_ExportJPEG.showDialog showAdvanced
 
     promptJPEGSettings = dialog_ExportJPEG.DialogResult
     
@@ -68,7 +68,7 @@ End Function
 Public Function promptJP2Settings() As VbMsgBoxResult
 
     Load dialog_ExportJP2
-    dialog_ExportJP2.ShowDialog
+    dialog_ExportJP2.showDialog
 
     promptJP2Settings = dialog_ExportJP2.DialogResult
     
@@ -82,7 +82,7 @@ Public Function promptColorDepth(ByVal outputFormat As Long) As VbMsgBoxResult
 
     Load dialog_ExportColorDepth
     dialog_ExportColorDepth.imageFormat = outputFormat
-    dialog_ExportColorDepth.ShowDialog
+    dialog_ExportColorDepth.showDialog
 
     promptColorDepth = dialog_ExportColorDepth.DialogResult
     
@@ -97,7 +97,7 @@ Public Function promptAlphaCutoff(ByRef srcLayer As pdLayer) As VbMsgBoxResult
 
     Load dialog_AlphaCutoff
     dialog_AlphaCutoff.refLayer = srcLayer
-    dialog_AlphaCutoff.ShowDialog
+    dialog_AlphaCutoff.showDialog
 
     promptAlphaCutoff = dialog_AlphaCutoff.DialogResult
     
@@ -111,7 +111,7 @@ Public Function displayIDEWarning() As VbMsgBoxResult
 
     Load dialog_IDEWarning
 
-    dialog_IDEWarning.ShowDialog
+    dialog_IDEWarning.showDialog
 
     displayIDEWarning = dialog_IDEWarning.DialogResult
     
