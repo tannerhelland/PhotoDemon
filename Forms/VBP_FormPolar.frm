@@ -25,6 +25,25 @@ Begin VB.Form FormPolar
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkSwapXY 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   11
+      Top             =   1590
+      Width           =   2550
+      _ExtentX        =   4498
+      _ExtentY        =   847
+      Caption         =   "swap x and y coordinates"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -60,7 +79,7 @@ Begin VB.Form FormPolar
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   3225
+      Top             =   3585
       Width           =   5700
    End
    Begin VB.ComboBox cboConvert 
@@ -79,7 +98,7 @@ Begin VB.Form FormPolar
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   5
-      Top             =   1320
+      Top             =   1200
       Width           =   4860
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -96,7 +115,7 @@ Begin VB.Form FormPolar
       Index           =   0
       Left            =   6120
       TabIndex        =   8
-      Top             =   4200
+      Top             =   4560
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -117,7 +136,7 @@ Begin VB.Form FormPolar
       Index           =   1
       Left            =   7920
       TabIndex        =   9
-      Top             =   4200
+      Top             =   4560
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -136,7 +155,7 @@ Begin VB.Form FormPolar
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   2280
+      Top             =   2595
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -171,7 +190,7 @@ Begin VB.Form FormPolar
       Index           =   5
       Left            =   6000
       TabIndex        =   7
-      Top             =   2850
+      Top             =   3210
       Width           =   3315
    End
    Begin VB.Label lblHeight 
@@ -191,7 +210,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   1920
+      Top             =   2235
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -213,7 +232,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   3810
+      Top             =   4170
       Width           =   1845
    End
    Begin VB.Label lblConvert 
@@ -235,7 +254,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   960
+      Top             =   840
       Width           =   2325
    End
 End
@@ -273,6 +292,10 @@ Private Sub cboConvert_Click()
     updatePreview
 End Sub
 
+Private Sub chkSwapXY_Click()
+    updatePreview
+End Sub
+
 Private Sub cmbEdges_Click()
     updatePreview
 End Sub
@@ -282,7 +305,7 @@ End Sub
 ' 0) Convert rectangular to polar
 ' 1) Convert polar to rectangular
 ' 2) Polar inversion
-Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boolean, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Performing polar coordinate conversion..."
         
@@ -297,7 +320,11 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal polarRadius As D
     srcLayer.createFromExistingLayer workingLayer
     
     'Use the external function to create a polar coordinate layer
-    CreatePolarCoordLayer conversionMethod, polarRadius, edgeHandling, useBilinear, srcLayer, workingLayer, toPreview
+    If swapXAndY Then
+        CreatePolarCoordLayer conversionMethod, polarRadius, edgeHandling, useBilinear, srcLayer, workingLayer, toPreview
+    Else
+        CreateXSwappedPolarCoordLayer conversionMethod, polarRadius, edgeHandling, useBilinear, srcLayer, workingLayer, toPreview
+    End If
     
     srcLayer.eraseLayer
     Set srcLayer = Nothing
@@ -309,7 +336,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , buildParams(cboConvert.ListIndex, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -318,6 +345,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 100
+    chkSwapXY.Value = vbUnchecked
     cmbEdges.ListIndex = EDGE_ERASE
 End Sub
 
@@ -364,5 +392,5 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub

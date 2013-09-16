@@ -731,7 +731,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormZoomBlur.Show vbModal, FormMain
             Else
-                FormZoomBlur.ZoomBlurFilter cParams.GetLong(1)
+                FormZoomBlur.ZoomBlurWrapper cParams.GetBool(1), cParams.GetLong(2)
             End If
         
         'Distort filters
@@ -789,7 +789,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormPolar.Show vbModal, FormMain
             Else
-                FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
+                FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Ripple"
