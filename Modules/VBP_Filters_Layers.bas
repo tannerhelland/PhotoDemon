@@ -1585,6 +1585,237 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
 
 End Function
 
+'Given two layers, fill one with a polar-coordinate conversion of the other.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+' NOTE: unlike the traditional polar conversion function above, this one swaps x and y values.  There is no canonical definition for
+'       how to polar convert an image, so we allow the user to choose whichever method they prefer.
+Public Function CreateXSwappedPolarCoordLayer(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcLayer.getLayerWidth - 1
+    finalY = srcLayer.getLayerHeight - 1
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    qvDepth = srcLayer.getLayerColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalX
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
+    progBarCheck = findBestProgBarValue()
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, finalX, finalY
+    
+    'Polar conversion requires a number of specialized variables
+    
+    'Calculate the center of the image
+    Dim midX As Double, midY As Double
+    midX = CDbl(finalX - initX) / 2
+    midX = midX + initX
+    midY = CDbl(finalY - initY) / 2
+    midY = midY + initY
+    
+    'Rotation values
+    Dim theta As Double, sRadius As Double, sRadius2 As Double, sDistance As Double
+    Dim r As Double, t As Double
+    
+    'X and Y values, remapped around a center point of (0, 0)
+    Dim nX As Double, nY As Double
+    
+    'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
+    Dim srcX As Double, srcY As Double
+        
+    'Max radius is calculated as the distance from the center of the image to a corner
+    Dim tWidth As Long, tHeight As Long
+    tWidth = finalX - initX
+    tHeight = finalY - initY
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
+              
+    sRadius = sRadius * (polarRadius / 100)
+    sRadius2 = sRadius * sRadius
+        
+    polarRadius = 1 / (polarRadius / 100)
+        
+    Dim iAspect As Double
+    iAspect = tHeight / tWidth
+              
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Each polar conversion requires a unique set of code
+        Select Case conversionMethod
+        
+            'Rectangular to polar
+            Case 0
+                            
+                'Remap the coordinates around a center point of (0, 0)
+                nX = x - midX
+                nY = y - midY
+                
+                'Calculate distance automatically
+                sDistance = (nX * nX) + (nY * nY)
+                
+                If sDistance <= sRadius2 Then
+                
+                    'X is handled differently based on its relation to the center of the image
+                    If y >= midY Then
+                        nY = y - midY
+                        If x > midX Then
+                            theta = PI - Atn(nY / nX)
+                            r = Sqr(sDistance)
+                        ElseIf x < midX Then
+                            theta = Atn(nY / (midX - x))
+                            r = Sqr(nY * nY + (midX - x) * (midX - x))
+                        Else
+                            theta = PI_HALF
+                            r = nY
+                        End If
+                    Else
+                        nY = midY - y
+                        If x > midX Then
+                            theta = PI + Atn(nY / nX)
+                            r = Sqr(sDistance)
+                        ElseIf x < midX Then
+                            theta = PI_DOUBLE - Atn(nY / (midX - x))
+                            r = Sqr(nY * nY + (midX - x) * (midX - x))
+                        Else
+                            theta = PI * 1.5
+                            r = nY
+                        End If
+                    End If
+                                        
+                    srcY = finalY - (finalY / PI_DOUBLE * theta)
+                    srcX = finalX * (r / sRadius)
+                    
+                Else
+                
+                    srcX = x
+                    srcY = y
+                    
+                End If
+                
+            'Polar to rectangular
+            Case 1
+            
+                'Remap the coordinates around a center point of (0, 0)
+                nX = x - midX
+                nY = y - midY
+                
+                'Calculate distance automatically
+                sDistance = (nX * nX) + (nY * nY)
+            
+                If sDistance <= sRadius2 Then
+                
+                    theta = (y / finalY) * PI_DOUBLE
+                    
+                    If theta >= (PI * 1.5) Then
+                        t = PI_DOUBLE - theta
+                    ElseIf theta >= PI Then
+                        t = theta - PI
+                    ElseIf theta > PI_HALF Then
+                        t = PI - theta
+                    Else
+                        t = theta
+                    End If
+                    
+                    r = sRadius * (x / finalX)
+                    
+                    nY = -r * Sin(t)
+                    nX = r * Cos(t)
+                    
+                    If theta >= 1.5 * PI Then
+                        srcY = midY - nY
+                        srcX = midX - nX
+                    ElseIf theta >= PI Then
+                        srcY = midY - nY
+                        srcX = midX + nX
+                    ElseIf theta >= PI_HALF Then
+                        srcY = midY + nY
+                        srcX = midX + nX
+                    Else
+                        srcY = midY + nY
+                        srcX = midX - nX
+                    End If
+                    
+                Else
+                
+                    srcX = x
+                    srcY = y
+                
+                End If
+                            
+            'Polar inversion
+            Case 2
+            
+                'Remap the coordinates around a center point of (0, 0)
+                nX = x - midX
+                nY = y - midY
+                
+                'Calculate distance automatically
+                sDistance = (nX * nX) + (nY * nY)
+                
+                If sDistance <> 0 Then
+                    srcX = midX + midX * midX * (nX / sDistance) * polarRadius
+                    srcY = midY + midY * midY * (nY / sDistance) * polarRadius
+                    srcX = Modulo(srcX, finalX)
+                    srcY = Modulo(srcY, finalY)
+                Else
+                    srcX = x
+                    srcY = y
+                End If
+            
+        End Select
+        
+        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    If cancelCurrentAction Then CreateXSwappedPolarCoordLayer = 0 Else CreateXSwappedPolarCoordLayer = 1
+
+End Function
+
 'Given two layers, fill one with a box blur version of the other.  A highly optimized accumulation algorithm is used to improve performance.
 'Input: horizontal and vertical size of the box (I call these radii, because the final box size is 2r + 1)
 Public Function CreateBoxBlurLayer(ByVal hRadius As Long, ByVal vRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
@@ -1883,7 +2114,7 @@ Public Function CreateBoxBlurLayer(ByVal hRadius As Long, ByVal vRadius As Long,
     
 End Function
 
-'Given two layers, fill one with a horizontally blur version of the other.  A highly-optimized modified accumulation algorithm
+'Given two layers, fill one with a horizontally blurred version of the other.  A highly-optimized modified accumulation algorithm
 ' is used to improve performance.
 'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
 Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
@@ -1937,8 +2168,6 @@ Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius A
     'Blurring takes a lot of variables
     Dim lbX As Long, ubX As Long
     Dim obuX As Boolean
-    
-    NumOfPixels = 0
     
     'This horizontal blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
     ' we will store the accumulated blur total for each horizontal line, and only update it when we move one column to the right.
@@ -2042,6 +2271,166 @@ Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius A
     Erase dstImageData
     
     If cancelCurrentAction Then CreateHorizontalBlurLayer = 0 Else CreateHorizontalBlurLayer = 1
+    
+End Function
+
+'Given two layers, fill one with a vertically blurred version of the other.  A highly-optimized modified accumulation algorithm
+' is used to improve performance.
+'Input: up and down distance to blur (I call these radii, because the final box size is (upoffset + downoffset + 1)
+Public Function CreateVerticalBlurLayer(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcLayer.getLayerWidth - 1
+    finalY = srcLayer.getLayerHeight - 1
+        
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, QuickY As Long, qvDepth As Long
+    qvDepth = srcLayer.getLayerColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then
+        SetProgBarMax finalY
+    Else
+        SetProgBarMax modifyProgBarMax
+    End If
+    progBarCheck = findBestProgBarValue()
+    
+    Dim yRadius As Long
+    yRadius = finalY - initY
+    
+    'Limit the up and down offsets to the height of the image
+    If uRadius > yRadius Then uRadius = yRadius
+    If dRadius > yRadius Then dRadius = yRadius
+        
+    'The number of pixels in the current vertical line are tracked dynamically.
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
+            
+    'Blurring takes a lot of variables
+    Dim lbY As Long, ubY As Long
+    Dim obuY As Boolean
+        
+    'This vertical blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
+    ' we will store the accumulated blur total for each vertical line, and only update it when we move one row down.
+    Dim rTotals() As Long, gTotals() As Long, bTotals() As Long, aTotals() As Long
+    ReDim rTotals(initX To finalX) As Long
+    ReDim gTotals(initX To finalX) As Long
+    ReDim bTotals(initX To finalX) As Long
+    ReDim aTotals(initX To finalX) As Long
+    
+    'Populate the initial arrays.  We can ignore the up offset at this point, as we are starting at row 0 (and there are no
+    ' pixels above that!)
+    For y = initY To initY + dRadius - 1
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+        rTotals(x) = rTotals(x) + srcImageData(QuickVal + 2, y)
+        gTotals(x) = gTotals(x) + srcImageData(QuickVal + 1, y)
+        bTotals(x) = bTotals(x) + srcImageData(QuickVal, y)
+        If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, y)
+    Next x
+        'Increase the pixel tally
+        NumOfPixels = NumOfPixels + 1
+    Next y
+                
+    'Loop through each row in the image, tallying blur values as we go
+    For y = initY To finalY
+        
+        'Determine the loop bounds of the current blur box in the Y direction
+        lbY = y - uRadius
+        If lbY < 0 Then lbY = 0
+        ubY = y + dRadius
+        
+        If ubY > finalY Then
+            obuY = True
+            ubY = finalY
+        Else
+            obuY = False
+        End If
+                
+        'Remove trailing values from the blur collection if they lie outside the processing radius
+        If lbY > 0 Then
+        
+            QuickY = lbY - 1
+        
+            For x = initX To finalX
+                QuickVal = x * qvDepth
+                rTotals(x) = rTotals(x) - srcImageData(QuickVal + 2, QuickY)
+                gTotals(x) = gTotals(x) - srcImageData(QuickVal + 1, QuickY)
+                bTotals(x) = bTotals(x) - srcImageData(QuickVal, QuickY)
+                If qvDepth = 4 Then aTotals(x) = aTotals(x) - srcImageData(QuickVal + 3, QuickY)
+            Next x
+            
+            NumOfPixels = NumOfPixels - 1
+        
+        End If
+        
+        'Add leading values to the blur box if they lie inside the processing radius
+        If Not obuY Then
+        
+            QuickY = ubY
+            
+            For x = initX To finalX
+                QuickVal = x * qvDepth
+                rTotals(x) = rTotals(x) + srcImageData(QuickVal + 2, QuickY)
+                gTotals(x) = gTotals(x) + srcImageData(QuickVal + 1, QuickY)
+                bTotals(x) = bTotals(x) + srcImageData(QuickVal, QuickY)
+                If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, QuickY)
+            Next x
+            
+            NumOfPixels = NumOfPixels + 1
+            
+        End If
+            
+        'Process the current row.  This simply involves calculating blur values, and applying them to the destination image.
+        For x = initX To finalX
+            
+            QuickVal = x * qvDepth
+            
+            'With the blur box successfully calculated, we can finally apply the results to the image.
+            dstImageData(QuickVal + 2, y) = rTotals(x) \ NumOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(x) \ NumOfPixels
+            dstImageData(QuickVal, y) = bTotals(x) \ NumOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ NumOfPixels
+    
+        Next x
+        
+        'Halt for external events, like ESC-to-cancel and progress bar updates
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
+        
+    Next y
+        
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    If cancelCurrentAction Then CreateVerticalBlurLayer = 0 Else CreateVerticalBlurLayer = 1
     
 End Function
 
