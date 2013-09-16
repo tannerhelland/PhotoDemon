@@ -3,8 +3,9 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 13/September/13
-'Last update: if a resource is in BMP format, use internal VB methods to load it (instead of relying on GDI+)
+'Last updated: 15/September/13
+'Last update: "Clear recent items" in the MRU list now gets a large, prettier icon on Vista (to match the size of the
+'               image thumbnails in the menu).
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -494,7 +495,9 @@ Public Sub ResetMenuIcons()
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
-    AddMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
+    
+    'Vista+ gets a nice, large icon added later in the process.  XP is stuck with a 16x16 one, which we add now.
+    If Not g_IsVistaOrLater Then AddMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
     'Change the Show/Hide panel icon to match its current state
     If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
@@ -552,6 +555,12 @@ Public Sub ResetMenuIcons()
             End If
         
         Next i
+        
+        'Vista+ users now get their nice, large clear icon.
+        If g_IsVistaOrLater Then
+            cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
+            cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0 + posModifier, 1
+        End If
                 
     End If
         
@@ -987,12 +996,12 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
     If vbSupportedFormat Then
     
         'Load the requested image into a temporary StdPicture object
-        Dim tmpPic As StdPicture
-        Set tmpPic = New StdPicture
-        Set tmpPic = LoadResPicture(resTitle, 0)
+        Dim tmppic As StdPicture
+        Set tmppic = New StdPicture
+        Set tmppic = LoadResPicture(resTitle, 0)
         
         'Copy that image into the supplied layer
-        If dstLayer.CreateFromPicture(tmpPic) Then
+        If dstLayer.CreateFromPicture(tmppic) Then
             loadResourceToLayer = True
         Else
             loadResourceToLayer = False
