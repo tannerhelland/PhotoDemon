@@ -56,7 +56,7 @@ Begin VB.Form FormZoomBlur
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   2640
+      Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -71,6 +71,68 @@ Begin VB.Form FormZoomBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton OptStyle 
+      Height          =   360
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   2160
+      Width           =   1140
+      _ExtentX        =   2011
+      _ExtentY        =   635
+      Caption         =   "modern"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton OptStyle 
+      Height          =   360
+      Index           =   1
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   2520
+      Width           =   1305
+      _ExtentX        =   2302
+      _ExtentY        =   635
+      Caption         =   "traditional"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "style:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   1800
+      Width           =   570
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -90,7 +152,7 @@ Begin VB.Form FormZoomBlur
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   2280
+      Top             =   3000
       Width           =   945
    End
 End
@@ -103,8 +165,9 @@ Attribute VB_Exposed = False
 'Zoom Blur Tool
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 27/August/13
-'Last updated: 27/August/13
-'Last update: initial build
+'Last updated: 16/September/13
+'Last update: added a "traditional" mode, with optimizations based on aspect ratio (to minimize data loss from
+'              repeated polar coord conversions)
 '
 'Basic zoom blur tool.  For performance reasons, my approach relies heavily on StretchBlt and AlphaBlend.  The
 ' resulting zoom is of reasonably good quality, and it outperforms similar tools in both GIMP and Paint.NET, so I
@@ -128,21 +191,27 @@ Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Apply motion blur to an image
-'Inputs: angle of the blur, distance of the blur
-Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Because PD now provides two styles of zoom blur, I've added this wrapper function, which calls the appropriate *actual* zoom blur
+' function, without the caller having to know details about either implementation.
+Public Sub ZoomBlurWrapper(ByVal useModernStyle As Boolean, ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+
+    If useModernStyle Then
+        ZoomBlurModern zDistance, toPreview, dstPic
+    Else
+        ZoomBlurTraditional zDistance, toPreview, dstPic
+    End If
+
+End Sub
+
+'Apply motion blur to an image using a "modern" approach that allows for both in and out zoom
+'Inputs: distance of the blur
+Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying zoom blur..."
     
     'Call prepImageData, which will initialize a workingLayer object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
-    
-    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    If toPreview Then
-        zDistance = zDistance * curLayerValues.previewModifier
-        If zDistance = 0 Then zDistance = 1
-    End If
     
     Dim finalX As Long, finalY As Long
     finalX = workingLayer.getLayerWidth
@@ -181,6 +250,9 @@ Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As B
     Else
         aspectRatio = workingLayer.getLayerWidth / workingLayer.getLayerHeight
     End If
+    
+    'Zoom distance must be adjusted during a preview, so that the preview accurately represents the finished product.
+    If toPreview Then zDistance = zDistance * curLayerValues.previewModifier
     
     'Now comes the actual transform.  We basically just repeat a series of AlphaBlend calls on the image, blending at 50% opacity
     ' as we go.  Ridiculous?  Yes.  Simple?  Yes.  :)
@@ -248,8 +320,93 @@ Public Sub ZoomBlurFilter(ByVal zDistance As Long, Optional ByVal toPreview As B
     
 End Sub
 
+'Apply "traditional" zoom blur to an image
+'Inputs: distance of the blur
+Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    
+    If Not toPreview Then Message "Applying zoom blur..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    
+    'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcLayer As pdLayer
+    Set srcLayer = New pdLayer
+    srcLayer.createFromExistingLayer workingLayer
+    
+    'By dividing blur distance by 200 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
+    If toPreview Then
+        bDistance = bDistance * curLayerValues.previewModifier
+        If bDistance < 1 Then bDistance = 1
+    End If
+    
+    Dim finalX As Long, finalY As Long
+    finalX = workingLayer.getLayerWidth
+    finalY = workingLayer.getLayerHeight
+    
+    Dim newProgBarMax As Long
+    
+    'Zoom blur basically works by converting an image to polar coordinates, applying a horizontal blur, then converting
+    ' back to rectangular coordinates.  Even with interpolation, the two coordinate conversion functions result in a loss
+    ' of image data, so I've gone to some lengths to try and mitigate this.
+    '
+    'Polar coordinate conversion basically works by using either X or Y to represent radius, and the other to represent theta
+    ' (or the angle of the pixel).  Because images are stored as rectangles, radius tends to preserve more of the original data
+    ' than theta, and obviously the larger of X or Y will retain more data by virtue of having more pixels available.
+    '
+    'Thus, PD checks the image's aspect ratio.  Whichever dimension is bigger is used to determine the type of polar coordinate
+    ' conversion used.  This should result in improved quality for both portrait and landscape aspect ratio images.
+    
+    If finalX > finalY Then
+    
+        'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
+        newProgBarMax = finalX * 3
+    
+        'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
+        If CreatePolarCoordLayer(1, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax) Then
+            
+            'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
+            If CreateVerticalBlurLayer(bDistance, bDistance, workingLayer, srcLayer, toPreview, newProgBarMax, finalX) Then
+                
+                'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
+                CreatePolarCoordLayer 0, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax, finalX + finalX
+                
+            End If
+            
+        End If
+    
+    Else
+    
+        'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
+        newProgBarMax = finalX * 2 + finalY
+    
+        'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
+        If CreateXSwappedPolarCoordLayer(1, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax) Then
+            
+            'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
+            If CreateHorizontalBlurLayer(bDistance, bDistance, workingLayer, srcLayer, toPreview, newProgBarMax, finalX) Then
+                
+                'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
+                CreateXSwappedPolarCoordLayer 0, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax, finalX + finalY
+                
+            End If
+            
+        End If
+    
+    End If
+    
+    srcLayer.eraseLayer
+    Set srcLayer = Nothing
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    finalizeImageData toPreview, dstPic
+    
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Zoom blur", , buildParams(sltDistance)
+    Process "Zoom blur", , buildParams(OptStyle(0), sltDistance)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -281,7 +438,21 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ZoomBlurFilter sltDistance, True, fxPreview
+    If cmdBar.previewsAllowed Then ZoomBlurWrapper OptStyle(0), sltDistance, True, fxPreview
+End Sub
+
+'Modern style allows for zooming in and out.  Traditional only allows out.
+Private Sub OptStyle_Click(Index As Integer)
+
+    If OptStyle(0) Then
+        sltDistance.Min = -200
+    Else
+        If sltDistance.Value < 0 Then sltDistance.Value = Abs(sltDistance.Value)
+        sltDistance.Min = 0
+    End If
+    
+    updatePreview
+
 End Sub
 
 Private Sub sltDistance_Change()
