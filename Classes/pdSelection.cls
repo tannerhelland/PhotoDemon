@@ -15,11 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 08/August/13
-'Last update: make all param calls (getting and setting) operate on RELATIVE coordinates instead of ABSOLUTE ones.  This
-'              was previously done only for files; now it is done for all paramString operations.  This means that
-'              selection operations recorded as part of a macro will always be played back relativel to the size of the
-'              current image, vastly improving the usefulness of recorded selection operations.
+'Last updated: 16/September/13
+'Last update: fix bug where feathering radius was still used to calculate selection boundaries, if feathering had been
+'              used previously but since disabled.
 '
 'This class handles all selections in PhotoDemon.  Rectangular and elliptical selections are now implemented, with more
 ' to follow in the coming months.
@@ -473,7 +471,7 @@ End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
 ' Note that this this should only be called after a transformation type has been set.
-Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
+Public Sub setInitialTransformCoordinates(ByVal X As Double, Y As Double)
 
     'If new transform coordinates are being set, this selection must be "unlocked"
     lockedIn = False
@@ -495,10 +493,10 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
             
                 'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
                 Case 0
-                    x1 = x
-                    y1 = y
-                    x2 = x
-                    y2 = y
+                    x1 = X
+                    y1 = Y
+                    x2 = X
+                    y2 = Y
                 
                 '1 - NW corner
                 Case 1
@@ -511,34 +509,34 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
                 Case 2
                     x1 = selLeft
                     y1 = selTop + selHeight
-                    x2 = x
-                    y2 = y
+                    x2 = X
+                    y2 = Y
                 
                 '3 - SE corner
                 Case 3
                     x1 = selLeft
                     y1 = selTop
-                    x2 = x
-                    y2 = y
+                    x2 = X
+                    y2 = Y
                 
                 '4 - SW corner
                 Case 4
                     x1 = selLeft + selWidth
                     y1 = selTop
-                    x2 = x
-                    y2 = y
+                    x2 = X
+                    y2 = Y
                 
                 '5 - N edge
                 Case 5
                     x1 = selLeft
                     x2 = selLeft + selWidth
                     y1 = selTop + selHeight
-                    y2 = y
+                    y2 = Y
                 
                 '6 - E edge
                 Case 6
                     x1 = selLeft
-                    x2 = x
+                    x2 = X
                     y1 = selTop
                     y2 = selTop + selHeight
                 
@@ -547,19 +545,19 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
                     x1 = selLeft
                     x2 = selLeft + selWidth
                     y1 = selTop
-                    y2 = y
+                    y2 = Y
                 
                 '8 - W edge
                 Case 8
                     x1 = selLeft + selWidth
-                    x2 = x
+                    x2 = X
                     y1 = selTop
                     y2 = selTop + selHeight
                 
                 '9 - interior of selection, not near a corner or edge
                 Case 9
-                    moveXDist = x - selLeft
-                    moveYDist = y - selTop
+                    moveXDist = X - selLeft
+                    moveYDist = Y - selTop
             
             End Select
         
@@ -569,20 +567,20 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
         
             'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
             Case 0
-                x1 = x
-                y1 = y
-                x2 = x
-                y2 = y
+                x1 = X
+                y1 = Y
+                x2 = X
+                y2 = Y
             
             'First point is being moved
             Case 1
-                x1 = x
-                y1 = y
+                x1 = X
+                y1 = Y
             
             'Second point is being moved
             Case 2
-                x2 = x
-                y2 = y
+                x2 = X
+                y2 = Y
         
     End Select
     
@@ -591,7 +589,7 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and stores them internally
-Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
+Public Sub setInitialCoordinates(ByVal X As Double, Y As Double)
     
     'If new initial coordinates are being set, this selection must be "unlocked"
     lockedIn = False
@@ -599,19 +597,19 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     'The use of setInitialCoordinates means this is not a transformation
     transformModeActive = False
     
-    x1 = x
-    y1 = y
+    x1 = X
+    y1 = Y
     
     'Make a back-up copy of the coordinates.  These values will never be changed except by the user moving the mouse.
-    actualX1 = x
-    actualY1 = y
+    actualX1 = X
+    actualY1 = Y
     
     'Set the second set of point to match the first set
     Select Case sShape
         
         Case sRectangle, sCircle, sLine
-            x2 = x
-            y2 = y
+            x2 = X
+            y2 = Y
             
             'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
             isTransformable = True
@@ -625,7 +623,7 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
 End Sub
 
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
-Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
+Public Sub setAdditionalCoordinates(ByVal X As Double, Y As Double)
     
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)
@@ -643,30 +641,30 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                     ' (See setInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
                     '  these to constants instead of numbers... :P)
                     Case 0 To 4
-                        x2 = x
-                        y2 = y
+                        x2 = X
+                        y2 = Y
                     
                     '5 - N edge
                     Case 5
-                        y2 = y
+                        y2 = Y
                         
                     '6 - E edge
                     Case 6
-                        x2 = x
+                        x2 = X
                         
                     '7 - S edge
                     Case 7
-                        y2 = y
+                        y2 = Y
                         
                     '8 - W edge
                     Case 8
-                        x2 = x
+                        x2 = X
                         
                     '9 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
                     Case 9
                     
-                        x1 = x - moveXDist
-                        y1 = y - moveYDist
+                        x1 = X - moveXDist
+                        y1 = Y - moveYDist
                         x2 = x1 + selWidth
                         y2 = y1 + selHeight
                         'Message x1 & "," & y1 & " <--> " & x2 & "," & y2 & " | " & selLeft & "," & selTop & " <--> " & selWidth & "," & selHeight
@@ -683,13 +681,13 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                     
                     'First point is being moved
                     Case 1
-                        x1 = x
-                        y1 = y
+                        x1 = X
+                        y1 = Y
                         
                     'Second point is being moved
                     Case 2
-                        x2 = x
-                        y2 = y
+                        x2 = X
+                        y2 = Y
                         
                 End Select
                         
@@ -703,12 +701,12 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     'No transform mode makes this easy; just update the second set of points and redraw the selection
     Else
     
-        x2 = x
-        y2 = y
+        x2 = X
+        y2 = Y
         
         'Make a back-up copy of the coordinates.  These values will never be changed except by the user moving the mouse.
-        actualX2 = x
-        actualY2 = y
+        actualX2 = X
+        actualY2 = Y
     
         updateInternalCoords
         
@@ -1168,10 +1166,17 @@ Private Sub createSelectionMask()
                 boundWidth = containingPDImage.Width
                 boundHeight = containingPDImage.Height
             Else
-                boundLeft = selLeft - featheringRadius
-                boundTop = selTop - featheringRadius
-                boundWidth = selWidth + featheringRadius * 2
-                boundHeight = selHeight + featheringRadius * 2
+                If sSmooth = sFullyFeathered Then
+                    boundLeft = selLeft - featheringRadius
+                    boundTop = selTop - featheringRadius
+                    boundWidth = selWidth + featheringRadius * 2
+                    boundHeight = selHeight + featheringRadius * 2
+                Else
+                    boundLeft = selLeft
+                    boundTop = selTop
+                    boundWidth = selWidth
+                    boundHeight = selHeight
+                End If
             End If
             
         'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
@@ -1183,10 +1188,17 @@ Private Sub createSelectionMask()
                 boundWidth = containingPDImage.Width
                 boundHeight = containingPDImage.Height
             Else
-                boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
-                boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
-                boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
-                boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
+                If sSmooth = sFullyFeathered Then
+                    boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
+                    boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
+                    boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
+                    boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
+                Else
+                    boundLeft = minX - (selectionLineWidth / 2)
+                    boundTop = MinY - (selectionLineWidth / 2)
+                    boundWidth = (maxX - minX) + selectionLineWidth
+                    boundHeight = (MaxY - MinY) + selectionLineWidth
+                End If
             End If
             
         Case Else
@@ -1376,7 +1388,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim QuickVal As Long
     
     Dim selMaskData() As Byte
@@ -1418,9 +1430,9 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             'Use a look-up table to dim the non-active parts of the image
             Dim hData(0 To 255) As Byte
             
-            For x = 0 To 255
-                hData(x) = x \ 3
-            Next x
+            For X = 0 To 255
+                hData(X) = X \ 3
+            Next X
             
             dstRight = dstRight - 1
             dstBottom = dstBottom - 1
@@ -1428,42 +1440,42 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
             ' every pixel inside the loop.
             ReDim xLookup(imgLeft To rightBound) As Long
-            For x = imgLeft To rightBound
-                tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
+            For X = imgLeft To rightBound
+                tmpCalculation = hScrollVal + Int((X - imgLeft) / ZoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
-                xLookup(x) = tmpCalculation * 3
-            Next x
+                xLookup(X) = tmpCalculation * 3
+            Next X
             
             ReDim yLookup(imgTop To bottomBound) As Long
-            For y = imgTop To bottomBound
-                tmpCalculation = vScrollVal + Int((y - imgTop) / ZoomVal)
+            For Y = imgTop To bottomBound
+                tmpCalculation = vScrollVal + Int((Y - imgTop) / ZoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
-                yLookup(y) = tmpCalculation
-            Next y
+                yLookup(Y) = tmpCalculation
+            Next Y
                         
             'Dim the non-active parts of the image
-            For x = imgLeft To rightBound
-                QuickVal = x * 3
-            For y = imgTop To bottomBound
+            For X = imgLeft To rightBound
+                QuickVal = X * 3
+            For Y = imgTop To bottomBound
             
-                tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
+                tmpSelHolder = selMaskData(xLookup(X), yLookup(Y))
                 
                 'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
                 If tmpSelHolder = 0 Then
-                    iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = hData(iData(QuickVal, y))
+                    iData(QuickVal + 2, Y) = hData(iData(QuickVal + 2, Y))
+                    iData(QuickVal + 1, Y) = hData(iData(QuickVal + 1, Y))
+                    iData(QuickVal, Y) = hData(iData(QuickVal, Y))
                 ElseIf tmpSelHolder < 255 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(QuickVal + 2, y) = BlendColors(hData(iData(QuickVal + 2, y)), iData(QuickVal + 2, y), tmpSelDivider)
-                    iData(QuickVal + 1, y) = BlendColors(hData(iData(QuickVal + 1, y)), iData(QuickVal + 1, y), tmpSelDivider)
-                    iData(QuickVal, y) = BlendColors(hData(iData(QuickVal, y)), iData(QuickVal, y), tmpSelDivider)
+                    iData(QuickVal + 2, Y) = BlendColors(hData(iData(QuickVal + 2, Y)), iData(QuickVal + 2, Y), tmpSelDivider)
+                    iData(QuickVal + 1, Y) = BlendColors(hData(iData(QuickVal + 1, Y)), iData(QuickVal + 1, Y), tmpSelDivider)
+                    iData(QuickVal, Y) = BlendColors(hData(iData(QuickVal, Y)), iData(QuickVal, Y), tmpSelDivider)
                 End If
                 
-            Next y
-            Next x
+            Next Y
+            Next X
             
             'With our work complete, point all arrays away from their respective DIBs, then deallocate them
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1500,11 +1512,11 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
                 newB = 49
             End If
             
-            For x = 0 To 255
-                rData(x) = (newR + x) \ 2
-                gData(x) = (newG + x) \ 2
-                bData(x) = (newB + x) \ 2
-            Next x
+            For X = 0 To 255
+                rData(X) = (newR + X) \ 2
+                gData(X) = (newG + X) \ 2
+                bData(X) = (newB + X) \ 2
+            Next X
             
             dstRight = dstRight - 1
             dstBottom = dstBottom - 1
@@ -1512,44 +1524,44 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             'Build look-up tables for both the x and y direction.  This is faster than calculating
             ' such values for every pixel inside the loop.
             ReDim xLookup(imgLeft To rightBound) As Long
-            For x = imgLeft To rightBound
-                tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
+            For X = imgLeft To rightBound
+                tmpCalculation = hScrollVal + Int((X - imgLeft) / ZoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
-                xLookup(x) = tmpCalculation * 3
-            Next x
+                xLookup(X) = tmpCalculation * 3
+            Next X
             
             ReDim yLookup(imgTop To bottomBound) As Long
-            For y = imgTop To bottomBound
-                tmpCalculation = vScrollVal + Int((y - imgTop) / ZoomVal)
+            For Y = imgTop To bottomBound
+                tmpCalculation = vScrollVal + Int((Y - imgTop) / ZoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
-                yLookup(y) = tmpCalculation
-            Next y
+                yLookup(Y) = tmpCalculation
+            Next Y
             
             'Dim the non-active parts of the image
-            For x = imgLeft To rightBound
-                QuickVal = x * 3
-            For y = imgTop To bottomBound
+            For X = imgLeft To rightBound
+                QuickVal = X * 3
+            For Y = imgTop To bottomBound
             
-                tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
+                tmpSelHolder = selMaskData(xLookup(X), yLookup(Y))
                 
                 'If this pixels is over an active pixel in the selection mask, mark it with the selected color
                 If tmpSelHolder = 255 Then
-                    iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = bData(iData(QuickVal, y))
+                    iData(QuickVal + 2, Y) = rData(iData(QuickVal + 2, Y))
+                    iData(QuickVal + 1, Y) = gData(iData(QuickVal + 1, Y))
+                    iData(QuickVal, Y) = bData(iData(QuickVal, Y))
                     
                 'Partially selected pixels are rendered with antialiasing
                 ElseIf tmpSelHolder > 0 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(QuickVal + 2, y) = BlendColors(iData(QuickVal + 2, y), rData(iData(QuickVal + 2, y)), tmpSelDivider)
-                    iData(QuickVal + 1, y) = BlendColors(iData(QuickVal + 1, y), gData(iData(QuickVal + 1, y)), tmpSelDivider)
-                    iData(QuickVal, y) = BlendColors(iData(QuickVal, y), bData(iData(QuickVal, y)), tmpSelDivider)
+                    iData(QuickVal + 2, Y) = BlendColors(iData(QuickVal + 2, Y), rData(iData(QuickVal + 2, Y)), tmpSelDivider)
+                    iData(QuickVal + 1, Y) = BlendColors(iData(QuickVal + 1, Y), gData(iData(QuickVal + 1, Y)), tmpSelDivider)
+                    iData(QuickVal, Y) = BlendColors(iData(QuickVal, Y), bData(iData(QuickVal, Y)), tmpSelDivider)
                 End If
                 
-            Next y
-            Next x
+            Next Y
+            Next X
             
             'With our work complete, point all arrays away from their respective DIBs, then deallocate them
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1882,7 +1894,7 @@ Public Sub invertSelection()
     Message "Inverting selection..."
     
     'Point a standard 2D byte array at the selection mask
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim QuickVal As Long
     
     Dim selMaskData() As Byte
@@ -1901,18 +1913,18 @@ Public Sub invertSelection()
     progBarCheck = findBestProgBarValue()
     
     'After all that work, the Invert code itself is very small and unexciting!
-    For x = 0 To maskWidth
-        QuickVal = x * 3
-    For y = 0 To maskHeight
-        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
-        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
-        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
-    Next y
-        If (x And progBarCheck) = 0 Then
+    For X = 0 To maskWidth
+        QuickVal = X * 3
+    For Y = 0 To maskHeight
+        selMaskData(QuickVal, Y) = 255 - selMaskData(QuickVal, Y)
+        selMaskData(QuickVal + 1, Y) = 255 - selMaskData(QuickVal + 1, Y)
+        selMaskData(QuickVal + 2, Y) = 255 - selMaskData(QuickVal + 2, Y)
+    Next Y
+        If (X And progBarCheck) = 0 Then
             'If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
     
     'Release our temporary byte array
     CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
@@ -1945,7 +1957,7 @@ Public Sub findNewBoundsManually()
     isMaskReady = True
 
     'Point a standard 2D byte array at the selection mask
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim QuickVal As Long
     
     Dim selMaskData() As Byte
@@ -1961,141 +1973,141 @@ Public Sub findNewBoundsManually()
     
     'Find the top bound first.
     boundFound = False
-    y = 0
+    Y = 0
     Do
     
-        For x = 0 To maskWidth
-            QuickVal = x * 3
-            If selMaskData(QuickVal, y) <> 0 Then
+        For X = 0 To maskWidth
+            QuickVal = X * 3
+            If selMaskData(QuickVal, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+            ElseIf selMaskData(QuickVal + 1, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+            ElseIf selMaskData(QuickVal + 2, Y) <> 0 Then
                 boundFound = True
             End If
             
             If boundFound Then
-                selTop = y
+                selTop = Y
                 boundTop = selTop
                 Exit For
             End If
             
-        Next x
+        Next X
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (y = maskHeight) Then
+        If (Not boundFound) And (Y = maskHeight) Then
             Debug.Print "No top boundary found - is mask blank?"
             boundFound = True
             selTop = 0
             boundTop = selTop
         End If
         
-        y = y + 1
+        Y = Y + 1
     
     Loop While Not boundFound
     
     'Next, find the bottom bound
     boundFound = False
-    y = maskHeight
+    Y = maskHeight
     
     Do
     
-        For x = 0 To maskWidth
-            QuickVal = x * 3
-            If selMaskData(QuickVal, y) <> 0 Then
+        For X = 0 To maskWidth
+            QuickVal = X * 3
+            If selMaskData(QuickVal, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+            ElseIf selMaskData(QuickVal + 1, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+            ElseIf selMaskData(QuickVal + 2, Y) <> 0 Then
                 boundFound = True
             End If
             
             If boundFound Then
-                selHeight = y - selTop + 1
+                selHeight = Y - selTop + 1
                 boundHeight = selHeight
                 Exit For
             End If
             
-        Next x
+        Next X
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (y = 0) Then
+        If (Not boundFound) And (Y = 0) Then
             Debug.Print "No bottom boundary found - is mask blank?"
             boundFound = True
             selHeight = maskHeight - selTop + 1
             boundHeight = selHeight
         End If
         
-        y = y - 1
+        Y = Y - 1
     
     Loop While Not boundFound
     
     'Next, find the left bound
     boundFound = False
-    x = 0
+    X = 0
     Do
     
-        For y = 0 To maskHeight
-            If selMaskData(x, y) <> 0 Then
+        For Y = 0 To maskHeight
+            If selMaskData(X, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(x + 1, y) <> 0 Then
+            ElseIf selMaskData(X + 1, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(x + 2, y) <> 0 Then
+            ElseIf selMaskData(X + 2, Y) <> 0 Then
                 boundFound = True
             End If
             
             If boundFound Then
-                selLeft = x \ 3
+                selLeft = X \ 3
                 boundLeft = selLeft
                 Exit For
             End If
             
-        Next y
+        Next Y
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (x = maskWidth * 3) Then
+        If (Not boundFound) And (X = maskWidth * 3) Then
             Debug.Print "No left boundary found - is mask blank?"
             boundFound = True
             selLeft = 0
             boundLeft = selLeft
         End If
         
-        x = x + 3
+        X = X + 3
     
     Loop While Not boundFound
     
     'Finally, find the right bound
     boundFound = False
-    x = maskWidth * 3
+    X = maskWidth * 3
     
     Do
     
-        For y = 0 To maskHeight
-            If selMaskData(x, y) <> 0 Then
+        For Y = 0 To maskHeight
+            If selMaskData(X, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(x + 1, y) <> 0 Then
+            ElseIf selMaskData(X + 1, Y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(x + 2, y) <> 0 Then
+            ElseIf selMaskData(X + 2, Y) <> 0 Then
                 boundFound = True
             End If
             
             If boundFound Then
-                selWidth = (x \ 3) - selLeft + 1
+                selWidth = (X \ 3) - selLeft + 1
                 boundWidth = selWidth
                 Exit For
             End If
             
-        Next y
+        Next Y
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (x = 0) Then
+        If (Not boundFound) And (X = 0) Then
             Debug.Print "No right boundary found - is mask blank?"
             boundFound = True
             selWidth = maskWidth - selLeft + 1
             boundWidth = selWidth
         End If
         
-        x = x - 3
+        X = X - 3
         
     Loop While Not boundFound
     
@@ -2122,7 +2134,7 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
     srcLayer.createFromExistingLayer selMask
             
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
     'Unsharp masking requires a gaussian blur layer to operate.  Create one now.
     If CreateGaussianBlurLayer(sharpenRadius, selMask, srcLayer, False, selMask.getLayerHeight * 2 + selMask.getLayerWidth) Then
@@ -2160,19 +2172,19 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
         Dim tLumDelta As Long
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = 0 To selMask.getLayerWidth - 1
-            QuickVal = x * 3
-        For y = 0 To selMask.getLayerHeight - 1
+        For X = 0 To selMask.getLayerWidth - 1
+            QuickVal = X * 3
+        For Y = 0 To selMask.getLayerHeight - 1
             
             'Retrieve the original image's pixels
-            r = selMaskData(QuickVal + 2, y)
-            g = selMaskData(QuickVal + 1, y)
-            b = selMaskData(QuickVal, y)
+            r = selMaskData(QuickVal + 2, Y)
+            g = selMaskData(QuickVal + 1, Y)
+            b = selMaskData(QuickVal, Y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
+            r2 = srcImageData(QuickVal + 2, Y)
+            g2 = srcImageData(QuickVal + 1, Y)
+            b2 = srcImageData(QuickVal, Y)
             
             tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
                 
@@ -2194,15 +2206,15 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
             
-            selMaskData(QuickVal + 2, y) = newR
-            selMaskData(QuickVal + 1, y) = newG
-            selMaskData(QuickVal, y) = newB
+            selMaskData(QuickVal + 2, Y) = newR
+            selMaskData(QuickVal + 1, Y) = newG
+            selMaskData(QuickVal, Y) = newB
                     
-        Next y
-            If (x And progBarCheck) = 0 Then
-                SetProgBarVal x + (selMask.getLayerHeight * 2)
+        Next Y
+            If (X And progBarCheck) = 0 Then
+                SetProgBarVal X + (selMask.getLayerHeight * 2)
             End If
-        Next x
+        Next X
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
