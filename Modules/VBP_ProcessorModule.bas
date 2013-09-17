@@ -1078,8 +1078,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the histogram form is visible and images are loaded, redraw the histogram
     If FormHistogram.Visible Then
         If NumOfWindows > 0 Then
-            FormHistogram.TallyHistogramValues
-            FormHistogram.DrawHistogram
+            
+            'Note that the histogram is automatically drawn when an MDI child form receives focus.  This happens below
+            ' (look for FormMain.ActiveForm.SetFocus), so we do not need to manually redraw the histogram here.
+            'FormHistogram.TallyHistogramValues
+            'FormHistogram.DrawHistogram
         Else
             'If the histogram is visible but no images are open, unload the histogram
             Unload FormHistogram
@@ -1109,7 +1112,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo > 0) Then
-        If NumOfWindows > 0 Then FormMain.ActiveForm.SetFocus
+        If NumOfWindows > 0 Then FormMain.ActiveForm.ActivateWorkaround
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True

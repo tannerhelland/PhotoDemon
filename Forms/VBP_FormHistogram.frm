@@ -86,7 +86,7 @@ Begin VB.Form FormHistogram
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
+   Begin VB.CommandButton cmdOK 
       Caption         =   "Close Histogram"
       Default         =   -1  'True
       Height          =   495
@@ -101,9 +101,9 @@ Begin VB.Form FormHistogram
       BackColor       =   &H80000005&
       BeginProperty Font 
          Name            =   "Arial"
-         Size            =   8.25
+         Size            =   14.25
          Charset         =   0
-         Weight          =   400
+         Weight          =   700
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
@@ -650,14 +650,8 @@ Private channelMaxLog() As Double
 Private channelMaxPosition() As Byte
 Private maxChannel As Byte          'This identifies the channel with the highest value (red, green, or blue)
 
-'Which histograms does the user want drawn?
-Private hEnabled(0 To 3) As Boolean
-
-'Loop and position variables
-Private x As Long, y As Long
-
 'Modified cubic spline variables:
-Dim nPoints As Integer
+Private nPoints As Integer
 Private iX() As Double
 Private iY() As Double
 Private p() As Double
@@ -665,17 +659,18 @@ Private u() As Double
 Private results() As Long   'Stores the y-values for each x-value in the final spline
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Private m_ToolTip As clsToolTip
+
+'To improve histogram render performance, we cache a number of translated strings; this saves us having to re-translate them
+' every time the histogram is redrawn.
+Private strTotalPixels As String
+Private strMaxCount As String
+Private strRed As String, strGreen As String, strBlue As String, strLuminance As String
+Private strLevel As String
 
 'When channels are enabled or disabled, redraw the histogram
 Private Sub chkChannel_Click(Index As Integer)
-    
-    For x = 0 To 3
-        hEnabled(x) = CBool(chkChannel(x))
-    Next x
-    
     DrawHistogram
-    
 End Sub
 
 Private Sub chkFillCurve_Click()
@@ -699,26 +694,28 @@ End Sub
 'Just to be safe, regenerate the histogram whenever the form receives focus
 Private Sub Form_Activate()
     
-    histogramGenerated = False
-
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
-    'For now, initialize all histogram types
-    Dim i As Long
-    For i = 0 To 3
-        hEnabled(i) = True
-    Next i
+    'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
+    strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
+    strMaxCount = g_Language.TranslateMessage("max count") & ": "
+    strRed = g_Language.TranslateMessage("red")
+    strGreen = g_Language.TranslateMessage("green")
+    strBlue = g_Language.TranslateMessage("blue")
+    strLuminance = g_Language.TranslateMessage("luminance")
+    strLevel = g_Language.TranslateMessage("level")
     
     'Blank out the specific level labels populated by moving the mouse across the form
     ' Also, align the value labels with their (potentially translated) corresponding title labels
+    Dim i As Long
     For i = 0 To lblValue.Count - 1
         lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + fixDPI(8)
         lblValue(i) = ""
     Next i
     
-    TallyHistogramValues
+    If Not histogramGenerated Then TallyHistogramValues
     DrawHistogram
     
 End Sub
@@ -741,21 +738,19 @@ Public Sub DrawHistogram()
     'LastX and LastY are used to draw a connecting line between histogram points
     Dim LastX As Long, LastY As Long
     
-    'Now draw a little gradient below the histogram window, to help orient the user
-    DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
-    
     'We now need to calculate a max histogram value based on which RGB channels are enabled
     hMax = 0:    hMaxLog = 0:   maxChannel = 4  'Set maxChannel to an arbitrary value higher than 2
     
-    For x = 0 To 2
-        If hEnabled(x) Then
-            If channelMax(x) > hMax Then
-                hMax = channelMax(x)
-                hMaxLog = channelMaxLog(x)
-                maxChannel = x
+    Dim i As Long
+    For i = 0 To 2
+        If CBool(chkChannel(i)) Then
+            If channelMax(i) > hMax Then
+                hMax = channelMax(i)
+                hMaxLog = channelMaxLog(i)
+                maxChannel = i
             End If
         End If
-    Next x
+    Next i
     
     'We'll need to draw up to four lines - one each for red, green, blue, and luminance,
     ' depending on what channels the user has enabled.
@@ -764,7 +759,7 @@ Public Sub DrawHistogram()
     For hType = 0 To 3
     
         'Only draw this histogram channel if the user has requested it
-        If hEnabled(hType) Then
+        If CBool(chkChannel(hType)) Then
         
             'The type of histogram we're drawing will determine the color of the histogram
             'line - we'll make it match what we're drawing (red/green/blue/black)
@@ -808,6 +803,7 @@ Public Sub DrawHistogram()
                 Dim xCalc As Long
                 
                 'Run a loop through every histogram value...
+                Dim x As Long, y As Long
                 For x = 0 To picH.ScaleWidth
             
                     'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
@@ -847,33 +843,41 @@ Public Sub DrawHistogram()
     'Last but not least, generate the statistics at the bottom of the form
     
     'Total number of pixels
-    lblTotalPixels.Caption = g_Language.TranslateMessage("total pixels") & ": " & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
+    lblTotalPixels.Caption = strTotalPixels & (pdImages(CurrentImage).Width * pdImages(CurrentImage).Height)
     
     'Maximum value; if a color channel is enabled, use that
-    If hEnabled(0) Or hEnabled(1) Or hEnabled(2) Then
+    If CBool(chkChannel(0)) Or CBool(chkChannel(1)) Or CBool(chkChannel(2)) Then
         
         'Reset hMax, which may have been changed if the luminance histogram was rendered
         hMax = channelMax(maxChannel)
-        lblMaxCount.Caption = g_Language.TranslateMessage("max count") & ": " & hMax
+        lblMaxCount.Caption = strMaxCount & hMax
         
         'Also display the channel with that max value, if applicable
         Select Case maxChannel
             Case 0
-                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("red")
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & strRed
             Case 1
-                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("green")
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & strGreen
             Case 2
-                lblMaxCount.Caption = lblMaxCount.Caption & " (" & g_Language.TranslateMessage("blue")
+                lblMaxCount.Caption = lblMaxCount.Caption & " (" & strBlue
         End Select
         
-        lblMaxCount.Caption = lblMaxCount.Caption & ", " & g_Language.TranslateMessage("level") & " " & channelMaxPosition(maxChannel) & ")"
+        lblMaxCount.Caption = lblMaxCount.Caption & ", " & strLevel & " " & channelMaxPosition(maxChannel) & ")"
     
     'Otherwise, default to luminance
     Else
-        lblMaxCount.Caption = channelMax(3) & " (" & g_Language.TranslateMessage("Luminance")
-        lblMaxCount.Caption = lblMaxCount.Caption & ", " & g_Language.TranslateMessage("level") & " " & channelMaxPosition(3) & ")"
+        lblMaxCount.Caption = channelMax(3) & " (" & strLuminance
+        lblMaxCount.Caption = lblMaxCount.Caption & ", " & strLevel & " " & channelMaxPosition(3) & ")"
     End If
         
+End Sub
+
+Private Sub Form_Deactivate()
+    histogramGenerated = False
+End Sub
+
+Private Sub Form_Load()
+    histogramGenerated = False
 End Sub
 
 'If the form is resized, adjust all the controls to match
@@ -882,7 +886,10 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
     picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
     lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
+    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
+    
+    'Now draw a little gradient below the histogram window, to help orient the user
+    DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
     
     'Only draw the histogram if the histogram data has been initialized
     ' (This is necessary because VB triggers the Resize event before the Activate event)
@@ -956,7 +963,15 @@ Private Sub DrawHistogramGradient(ByRef dstObject As PictureBox, ByVal Color1 As
 End Sub
 
 'This routine draws the histogram using cubic splines to smooth the output
-Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeight As Long, ByVal fillCurve As Boolean)
+Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeight As Long, ByVal fillCurve As Boolean)
+    
+    'Initialize a few variables that are simply copies of image properties; this is faster than repeatedly accessing the properties themselves.
+    Dim histWidth As Long, histHeight As Long
+    histWidth = picH.ScaleWidth
+    histHeight = picH.ScaleHeight
+    
+    Dim curHistColor As Long
+    curHistColor = picH.ForeColor
     
     'Create an array consisting of 256 points, where each point corresponds to a histogram value
     nPoints = 256
@@ -966,18 +981,23 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     ReDim u(nPoints) As Double
     
     'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
+    Dim logMode As Boolean
+    logMode = CBool(chkLog)
+    
     Dim i As Long
     For i = 1 To nPoints
-        iX(i) = (i - 1) * (picH.ScaleWidth / 255)
-        If CBool(chkLog) Then
+        iX(i) = (i - 1) * (histWidth / 255)
+        
+        If logMode Then
             iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
         Else
             iY(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
         End If
+        
     Next i
     
     'results() will hold the actual pixel (x,y) values for each line to be drawn to the picture box
-    ReDim results(0 To picH.ScaleWidth) As Long
+    ReDim results(0 To histWidth) As Long
     
     'Now run a loop through the knots, calculating spline values as we go
     Call SetPandU
@@ -985,40 +1005,49 @@ Private Function drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal 
     For i = 1 To nPoints - 1
         For xPos = iX(i) To iX(i + 1)
             yPos = getCurvePoint(i, xPos)
-            results(xPos) = yPos
+            
+            'Add two to the final point, to shift the histogram slightly downward
+            results(xPos) = yPos + 2
         Next xPos
     Next i
     
+    'The area under the curve is filled if: 1) the "fill curve" checkbox is selected, and 2) the curve is something other than luminance
+    Dim needToFill As Boolean
+    If (histogramChannel < 3) And fillCurve Then needToFill = True Else needToFill = False
+    
     'If "Fill curve" is selected, we need to manually draw the left-most column (as the draw loop starts at 1)
     ' Note that the luminance curve is never filled.
-    If (histogramChannel < 3) And fillCurve Then GDIPlusDrawLineToDC picH.hDC, 0, results(0) + 2, 0, picH.ScaleHeight, picH.ForeColor, 64, 1, False
+    If needToFill Then GDIPlusDrawLineToDC picH.hDC, 0, results(0), 0, histHeight, curHistColor, 64, 1, False
     
     'Draw the finished spline, using GDI+ for antialiasing
-    For i = 1 To picH.ScaleWidth
-        GDIPlusDrawLineToDC picH.hDC, i, results(i) + 2, i - 1, results(i - 1) + 2, picH.ForeColor
-        If histogramChannel < 3 And fillCurve Then GDIPlusDrawLineToDC picH.hDC, i, results(i) + 2, i, picH.ScaleHeight, picH.ForeColor, 64, 1, False
+    For i = 1 To histWidth
+        GDIPlusDrawLineToDC picH.hDC, i, results(i), i - 1, results(i - 1), curHistColor
+        If needToFill Then GDIPlusDrawLineToDC picH.hDC, i, results(i), i, histHeight, curHistColor, 64, 1, False
     Next i
     
     picH.Picture = picH.Image
     
-End Function
+End Sub
 
 'Original required spline function:
-Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
+Private Function getCurvePoint(ByRef i As Long, ByVal v As Double) As Double
+
     Dim t As Double
     'derived curve equation (which uses p's and u's for coefficients)
     t = (v - iX(i)) / u(i)
     getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+    
 End Function
 
 'Original required spline function:
-Private Function f(x As Double) As Double
+Private Function f(ByRef x As Double) As Double
         f = x * x * x - x
 End Function
 
 'Original required spline function:
 Private Sub SetPandU()
-    Dim i As Integer
+
+    Dim i As Long
     Dim d() As Double
     Dim w() As Double
     ReDim d(nPoints) As Double
@@ -1050,12 +1079,38 @@ Private Sub SetPandU()
         p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
     Next
     p(nPoints) = 0#
+    
 End Sub
 
 'Build the histogram tables.  This only needs to be called once, when the image is changed. It will generate all histogram
 ' data for all channels (including luminance, and all log variants).
 Public Sub TallyHistogramValues()
+
+    'Notify the user that the histogram is being generated
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
     
+    'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
+    If (picH.Picture.Width = 0) Then
+        tmpLayer.createBlank picH.ScaleWidth, picH.ScaleHeight
+    Else
+        tmpLayer.CreateFromPicture picH.Picture
+    End If
+    
+    Dim notifyFont As pdFont
+    Set notifyFont = New pdFont
+    notifyFont.setFontFace g_InterfaceFont
+    notifyFont.setFontSize 14
+    notifyFont.setFontColor 0
+    notifyFont.setFontBold True
+    notifyFont.setTextAlignment vbCenter
+    notifyFont.createFontObject
+    notifyFont.attachToDC tmpLayer.getLayerDC
+    
+    notifyFont.fastRenderText picH.ScaleWidth / 2, picH.ScaleHeight / 2, g_Language.TranslateMessage("Please wait while the histogram is updated...")
+    tmpLayer.renderToPictureBox picH
+    Set tmpLayer = Nothing
+
     Message "Updating histogram..."
     
     'Blank the red, green, blue, and luminance count text boxes
