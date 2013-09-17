@@ -3,7 +3,7 @@ Begin VB.Form FormPerspective
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Perspective Correction"
+   Caption         =   " Perspective"
    ClientHeight    =   9615
    ClientLeft      =   -15
    ClientTop       =   225
