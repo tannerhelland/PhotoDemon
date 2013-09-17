@@ -24,6 +24,26 @@ Begin VB.Form FormGaussianBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.smartCheckBox chkEstimate 
+      Height          =   480
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   3120
+      Width           =   2625
+      _ExtentX        =   4630
+      _ExtentY        =   847
+      Caption         =   "favor speed over accuracy"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -47,7 +67,7 @@ Begin VB.Form FormGaussianBlur
       Height          =   495
       Left            =   6000
       TabIndex        =   4
-      Top             =   2760
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -111,7 +131,7 @@ Begin VB.Form FormGaussianBlur
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   2400
+      Top             =   2160
       Width           =   1230
    End
 End
@@ -124,8 +144,10 @@ Attribute VB_Exposed = False
 'Gaussian Blur Tool
 'Copyright ©2010-2013 by Tanner Helland
 'Created: 01/July/10
-'Last updated: 24/April/13
-'Last update: simplified code by converting interface to new scroll/text custom control
+'Last updated: 17/September/13
+'Last update: provide an option for "fast instead of accurate"; this is a huge speed gain (~20x) with minimal
+'              deterioration in quality (3% difference from a true Gaussian) - probably worth it for most applications,
+'              and the true Gaussian is still available for those who want/need it.
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
 ' that utilizes a separable convolution kernel AND allows for sub-pixel radii.
@@ -150,7 +172,7 @@ Dim m_ToolTip As clsToolTip
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal useApproximation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     If Not toPreview Then Message "Applying gaussian blur..."
         
@@ -170,7 +192,15 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview 
         If gRadius = 0 Then gRadius = 0.1
     End If
     
-    CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+    'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
+    ' and the results so indistinguishable (3% different according to the Central Limit Theorem:
+    ' https://www.khanacademy.org/math/probability/statistics-inferential/sampling_distribution/v/central-limit-theorem?playlist=Statistics
+    ' ), that I recommend the fast method instead.
+    If useApproximation Then
+        CreateApproximateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+    Else
+        CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+    End If
     
     srcLayer.eraseLayer
     Set srcLayer = Nothing
@@ -180,9 +210,13 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal toPreview 
             
 End Sub
 
+Private Sub chkEstimate_Click()
+    updatePreview
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gaussian blur", , CStr(sltRadius)
+    Process "Gaussian blur", , buildParams(sltRadius, CBool(chkEstimate))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -194,6 +228,9 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
+    
+    'This tooltip is somewhat long, so apply it at run-time to prevent it from being stuck inside an .frx file
+    chkEstimate.ToolTipText = g_Language.TranslateMessage("Gaussian blur can be approximated within 3% by three iterations of a box blur.  This is much faster (20x faster on average), but with some limitations: it only supports integer radii, and the blur is slightly less accurate.  Unless you absolutely need the accuracy, consider using the fast method.")
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -219,7 +256,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, CBool(chkEstimate), True, fxPreview
 End Sub
 
 Private Sub sltRadius_Change()

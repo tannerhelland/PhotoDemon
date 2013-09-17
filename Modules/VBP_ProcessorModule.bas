@@ -693,7 +693,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormGaussianBlur.Show vbModal, FormMain
             Else
-                FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1)
+                FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1), cParams.GetBool(2)
             End If
         
         Case "Grid blur"
