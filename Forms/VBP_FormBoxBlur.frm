@@ -184,10 +184,11 @@ Attribute VB_Exposed = False
 'Box Blur Tool
 'Copyright ©2000-2013 by Tanner Helland
 'Created: some time 2000
-'Last updated: 15/September/13
-'Last update: rely on prepImageData to calculate a preview radius conversion factor for us
+'Last updated: 17/September/13
+'Last update: replace on the old accumulation technique with separable horizontal and vertical blurs.  Hot damn,
+'              this thing is fast!
 '
-'This is a heavily optimized box blur.  An "accumulation" technique is used instead of the standard sliding
+'This is a heavily optimized box blur.  Separable horizontal and vertical blurs are used, instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
 ' This allows the algorithm to perform extremely well, despite being written in pure VB.
 '
@@ -232,9 +233,10 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         If vRadius = 0 Then vRadius = 1
     End If
     
-    'Apply the box blur
-    CreateBoxBlurLayer hRadius, vRadius, srcLayer, workingLayer, toPreview
-        
+    'Apply the box blur in two steps: a fast horizontal blur, then a fast vertical blur
+    CreateHorizontalBlurLayer hRadius, hRadius, workingLayer, srcLayer, toPreview, workingLayer.getLayerWidth + workingLayer.getLayerHeight
+    CreateVerticalBlurLayer vRadius, vRadius, srcLayer, workingLayer, toPreview, workingLayer.getLayerWidth + workingLayer.getLayerHeight, workingLayer.getLayerWidth
+    
     srcLayer.eraseLayer
     Set srcLayer = Nothing
     
