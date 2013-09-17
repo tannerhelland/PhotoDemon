@@ -3598,14 +3598,15 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     If Timer - lastAccelerator < 0.25 Then Exit Sub
 
+    'Accelerators are divided into two groups: those that can be fired if no images are present (e.g. Open, Paste),
+    ' and those that require an image.
+
+    '***********************************************************
+    'Accelerators that DO NOT require at least one loaded image:
+
     'Import from Internet
     If ctlAccelerator.Key(nIndex) = "Internet_Import" Then
         If Not FormInternetImport.Visible Then FormInternetImport.Show vbModal, FormMain
-    End If
-    
-    'Save As...
-    If ctlAccelerator.Key(nIndex) = "Save_As" Then
-        If FormMain.MnuSaveAs.Enabled Then Process "Save as", True
     End If
     
     'Capture the screen
@@ -3616,13 +3617,45 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         If Not FormPreferences.Visible Then FormPreferences.Show vbModal, FormMain
     End If
     
+    'Empty clipboard
+    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process "Empty clipboard", , , False
+    
+    'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
+    ' to cancel batch conversions, but in the future it should be applied elsewhere.
+    If ctlAccelerator.Key(nIndex) = "Escape" Then
+        If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
+    End If
+    
+    'MRU files
+    Dim i As Integer
+    For i = 0 To 9
+        If ctlAccelerator.Key(nIndex) = ("MRU_" & i) Then
+            If FormMain.mnuRecDocs.Count > i Then
+                If FormMain.mnuRecDocs(i).Enabled = True Then
+                    FormMain.mnuRecDocs_Click i
+                End If
+            End If
+        End If
+    Next i
+    
+    '***********************************************************
+    'Accelerators that DO require at least one loaded image:
+    
+    'If no images are loaded, or another form is active, exit.
+    If FormLanguageEditor.Visible Then Exit Sub
+    
+    If NumOfWindows = 0 Then Exit Sub
+    
+    
+    'Save As...
+    If ctlAccelerator.Key(nIndex) = "Save_As" Then
+        If FormMain.MnuSaveAs.Enabled Then Process "Save as", True
+    End If
+    
     'Redo
     If ctlAccelerator.Key(nIndex) = "Redo" Then
         If FormMain.MnuRedo.Enabled Then Process "Redo", , , False
     End If
-    
-    'Empty clipboard
-    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process "Empty clipboard", , , False
     
     'Fit on screen
     If ctlAccelerator.Key(nIndex) = "FitOnScreen" Then FitOnScreen
@@ -3675,12 +3708,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
     End If
     
-    'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
-    ' to cancel batch conversions, but in the future it should be applied elsewhere.
-    If ctlAccelerator.Key(nIndex) = "Escape" Then
-        If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
-    End If
-    
     'Brightness/Contrast
     If ctlAccelerator.Key(nIndex) = "Bright_Contrast" Then
         Process "Brightness and contrast", True
@@ -3723,18 +3750,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         End If
     
     End If
-    
-    'MRU files
-    Dim i As Integer
-    For i = 0 To 9
-        If ctlAccelerator.Key(nIndex) = ("MRU_" & i) Then
-            If FormMain.mnuRecDocs.Count > i Then
-                If FormMain.mnuRecDocs(i).Enabled = True Then
-                    FormMain.mnuRecDocs_Click i
-                End If
-            End If
-        End If
-    Next i
     
     lastAccelerator = Timer
     
