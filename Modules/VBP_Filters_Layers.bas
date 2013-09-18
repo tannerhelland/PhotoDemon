@@ -963,7 +963,7 @@ End Function
 ' for all but the most stringent blur needs.
 '
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal numIterations As Long = 3, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create an extra temp layer.  This will contain the intermediate copy of our horizontal/vertical blurs.
     Dim gaussLayer As pdLayer
@@ -979,30 +979,41 @@ Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadiu
     
     progBarCheck = findBestProgBarValue()
     
-    'Modify the Gaussian radius, and convert it to an integer
+    'Modify the Gaussian radius, and convert it to an integer.  (Box blurs don't work on floating-point radii.)
     Dim comparableRadius As Long
-    comparableRadius = equivalentGaussianRadius * 0.3
+    
+    'If the number of iterations = 3, we can approximate a correct radius using a piece-wise quadratic convolution kernel.
+    ' This should result in a kernel that's ~97% identical to a Gaussian kernel.  For a more in-depth explanation of
+    ' converting between standard deviation and a box blur estimation, please see this W3 spec:
+    ' http://www.w3.org/TR/SVG11/filters.html#feGaussianBlurElement
+    If numIterations = 3 Then
+        Dim stdDev As Double
+        stdDev = Sqr(-(equivalentGaussianRadius * equivalentGaussianRadius) / (2 * Log(1# / 255#)))
+        comparableRadius = Int(stdDev * 2.37997232) / 2 - 1
+    Else
+    
+        'For larger iterations, it's not worth the trouble to perform a fine estimation, as the repeat iterations will
+        ' eliminate any smaller discrepancies.  Use a quick-and-dirty computation to calculate radius:
+        comparableRadius = Int(equivalentGaussianRadius / numIterations + 0.5)
+    
+    End If
+    
+    'Box blurs require a radius of at least 1, so force it to that
     If comparableRadius < 1 Then comparableRadius = 1
     
-    'Apply a box blur 3x, switching between the gauss and destination layers as we go
+    'Iterate a box blur, switching between the gauss and destination layers as we go
+    Dim i As Long
+    For i = 1 To numIterations
     
-    'First pass
-    If CreateHorizontalBlurLayer(comparableRadius, comparableRadius, dstLayer, gaussLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset) Then
-    If CreateVerticalBlurLayer(comparableRadius, comparableRadius, gaussLayer, dstLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + gaussLayer.getLayerWidth) Then
+        If CreateHorizontalBlurLayer(comparableRadius, comparableRadius, dstLayer, gaussLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussLayer.getLayerWidth * (i - 1)) + (gaussLayer.getLayerHeight * (i - 1))) > 0 Then
+            If CreateVerticalBlurLayer(comparableRadius, comparableRadius, gaussLayer, dstLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussLayer.getLayerWidth * i) + (gaussLayer.getLayerHeight * (i - 1))) = 0 Then
+                Exit For
+            End If
+        Else
+            Exit For
+        End If
     
-    'Second pass
-    If CreateHorizontalBlurLayer(comparableRadius, comparableRadius, dstLayer, gaussLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + gaussLayer.getLayerWidth + gaussLayer.getLayerHeight) Then
-    If CreateVerticalBlurLayer(comparableRadius, comparableRadius, gaussLayer, dstLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + gaussLayer.getLayerWidth * 2 + gaussLayer.getLayerHeight) Then
-        
-    'Third pass
-    If CreateHorizontalBlurLayer(comparableRadius, comparableRadius, dstLayer, gaussLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + gaussLayer.getLayerWidth * 2 + gaussLayer.getLayerHeight * 2) Then
-    If CreateVerticalBlurLayer(comparableRadius, comparableRadius, gaussLayer, dstLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + gaussLayer.getLayerWidth * 3 + gaussLayer.getLayerHeight * 2) Then
-    End If
-    End If
-    End If
-    End If
-    End If
-    End If
+    Next i
     
     'Erase the temporary layer and exit
     gaussLayer.eraseLayer
