@@ -292,7 +292,7 @@ Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     tmpRect.Left = 0
     tmpRect.Top = 0
     tmpRect.Bottom = 0
-    tmpRect.Right = strWidth
+    tmpRect.Right = strWidth - 1
     
     DrawText curDC, srcString, Len(srcString), tmpRect, DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
     
