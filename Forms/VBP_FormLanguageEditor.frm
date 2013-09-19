@@ -1280,7 +1280,10 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                     sFile = getDirectory(curLanguage.FileName) & getFilenameWithoutExtension(curLanguage.FileName) & ".xml"
                 End If
                 
-                If CC.VBGetSaveFileName(sFile, , True, "XML file (.xml)|*.xml", , getDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd, 0) Then
+                Dim cdFilter As String
+                cdFilter = g_Language.TranslateMessage("XML file") & " (.xml)|*.xml"
+                
+                If CC.VBGetSaveFileName(sFile, , True, cdFilter, , getDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd, 0) Then
                 
                     'Write the current XML file out to the user's requested path
                     xmlEngine.writeXMLToFile sFile
