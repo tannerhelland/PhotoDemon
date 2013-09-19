@@ -339,10 +339,10 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     'If the text is too tall, shrink the font until an acceptable size is found.  Note that the reported text value tends to be
     ' smaller than the space actually required.  I do not know why this happens.  To account for it, I cut a further 10% from
     ' the requested height, just to be safe.
-    If (lblHeight > srcLabel.Height * 0.9) Then
+    If (lblHeight > srcLabel.Height * 0.85) Then
             
         'Try shrinking the font size until an acceptable width is found
-        Do While (lblHeight > srcLabel.Height * 0.9) And (curFontSize >= 8)
+        Do While (lblHeight > srcLabel.Height * 0.85) And (curFontSize >= 8)
         
             curFontSize = curFontSize - 1
             
