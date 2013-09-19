@@ -357,6 +357,7 @@ Begin VB.Form FormBatchWizard
          Width           =   6615
       End
       Begin VB.Label lblFit 
+         Alignment       =   1  'Right Justify
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
@@ -2130,7 +2131,7 @@ Begin VB.Form FormBatchWizard
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   7320
+      Height          =   7365
       Index           =   0
       Left            =   120
       TabIndex        =   4
