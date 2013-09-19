@@ -165,7 +165,7 @@ Private Sub Form_Load()
     GenerateThankyou "Frank Donckers"
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/"
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
-    GenerateThankyou "GioRock", ""
+    GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
     GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
