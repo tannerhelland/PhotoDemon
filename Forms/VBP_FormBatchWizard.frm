@@ -2440,10 +2440,17 @@ Private Sub cmdLoadList_Click()
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", "")
     
+    Dim cdFilter As String
+    cdFilter = g_Language.TranslateMessage("Batch Image List") & " (.pdl)|*.pdl"
+    cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Load a list of images")
+    
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
     
-    If CC.VBGetOpenFileName(sFile, , True, False, False, True, "Batch Image List (.pdl)|*.pdl|All files|*.*", 0, tempPathString, "Load a list of images", ".pdl", FormBatchWizard.hWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , True, False, False, True, cdFilter, 0, tempPathString, cdTitle, ".pdl", FormBatchWizard.hWnd, OFN_HIDEREADONLY) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -2801,11 +2808,17 @@ Private Function saveCurrentBatchList() As Boolean
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "List Folder", "")
     
+    Dim cdFilter As String
+    cdFilter = g_Language.TranslateMessage("Batch Image List") & " (.pdl)|*.pdl"
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Save the current list of images")
+    
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
     
     Dim sFile As String
-    If CC.VBGetSaveFileName(sFile, , True, "Batch Image List (.pdl)|*.pdl|All files|*.*", 0, tempPathString, "Save the current list of images", ".pdl", FormBatchWizard.hWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdFilter, 0, tempPathString, cdTitle, ".pdl", FormBatchWizard.hWnd, OFN_HIDEREADONLY) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -2885,6 +2898,10 @@ Private Sub cmdSelectMacro_Click()
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Macro", "")
     
+    Dim cdFilter As String
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
+    cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
+    
     'Prepare a common dialog object
     Dim cDialog As cCommonDialog
     Set cDialog = New cCommonDialog
@@ -2892,7 +2909,7 @@ Private Sub cmdSelectMacro_Click()
     Dim sFile As String
    
     'If the user provides a valid macro file, use that as part of the batch process
-    If cDialog.VBGetOpenFileName(sFile, , , , , True, PROGRAMNAME & " Macro Data (." & MACRO_EXT & ")|*." & MACRO_EXT & "|All files|*.*", , tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd, OFN_HIDEREADONLY) Then
+    If cDialog.VBGetOpenFileName(sFile, , , , , True, cdFilter, , tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd, OFN_HIDEREADONLY) Then
         
         'As a convenience to the user, save this directory as the default macro path
         tempPathString = sFile
