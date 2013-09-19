@@ -1,4 +1,4 @@
-# PhotoDemon (currently v6.0 alpha)
+# PhotoDemon (currently v6.0 beta)
 
 ![PhotoDemon Screenshot] (http://tannerhelland.com/wp-content/uploads/PhotoDemon_curves.jpg)
 
@@ -79,8 +79,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 PhotoDemon would not be possible without the help of many talented contributors, including...
 * Frank Donckers for extensive help with the translation engine. Frank also created the Dutch, German, and French language files (30,000 words in total!)
+(http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=2213335741)
 * GioRock for the Italian language file and additional translation debugging (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
-* audioglider for the Channel Mixer and Vibrance tools (https://github.com/audioglider)
+* audioglider for the Channel Mixer, Vibrance, and Exposure tools (https://github.com/audioglider)
 * Robert Rayment for detailed research and bug-testing on a variety of features (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1)
 * Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class (http://www.vb-helper.com/howto_multi_line_tooltip.html)
 * Kroc of camendesign.com for the bluMouseEvents library (http://camendesign.com)
@@ -106,4 +107,4 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License) (http://www.sno.phy.queensu.ca/~phil/exiftool/)
 * Bernhard Stockmann for his many excellent GIMP tutorials (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)
 * Paul Bourke for references on miscellaneous image distortions (http://paulbourke.net/miscellaneous/)
-* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
+* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Abhijit Mhapsekar, Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
