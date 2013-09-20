@@ -162,7 +162,7 @@ Public Sub ActivateWorkaround()
     metaToggle tSave, Not pdImages(CurrentImage).HasBeenSaved
     
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasMetadata
+    metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasXMLMetadata
     metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
     
     'Check the image's color depth, and check/uncheck the matching Image Mode setting
