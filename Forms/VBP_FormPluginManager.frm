@@ -1842,17 +1842,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 24/May/13
-'Last update: added support for ExifTool
+'Last updated: 20/September/13
+'Last update: expected version strings for each plugin are now declared in the Public_Constants module.
 '
 'Dialog for presenting the user data related to the currently installed plugins.
 '
-'I seriously considered merging this form with the main Preferences (now Options) dialog, but there
-' are simply too many settings present.  Rather than clutter up the main Preferences dialog with
-' plugin-related settings, I have moved those all here.
+'I seriously considered merging this form with the main Preferences (now Options) dialog, but there are simply
+' too many settings present.  Rather than clutter up the main Preferences dialog with plugin-related settings,
+' I have moved those all here.
 '
-'In the future, I suppose this could be merged with the plugin updater to form one giant plugin
-' handler, but for now it makes sense to make both available (and to keep them separate).
+'In the future, I suppose this could be merged with the plugin updater to form one giant plugin handler, but
+' for now it makes sense to make both available (and to keep them separate).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -2162,19 +2162,19 @@ Private Sub UpdatePluginLabels()
     Dim pluginStatus As Boolean
     
     'FreeImage
-    pluginStatus = popPluginLabel(0, "FreeImage", "3.15.4", isFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
+    pluginStatus = popPluginLabel(0, "FreeImage", EXPECTED_FREEIMAGE_VERSION, isFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
     
     'zLib
-    pluginStatus = pluginStatus And popPluginLabel(1, "zLib", "1.2.8", isZLibAvailable, g_ZLibEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(1, "zLib", EXPECTED_ZLIB_VERSION, isZLibAvailable, g_ZLibEnabled)
     
     'EZTwain
-    pluginStatus = pluginStatus And popPluginLabel(2, "EZTwain", "1.18.0", isEZTwainAvailable, g_ScanEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(2, "EZTwain", EXPECTED_EZTWAIN_VERSION, isEZTwainAvailable, g_ScanEnabled)
     
     'pngnq-s9
-    pluginStatus = pluginStatus And popPluginLabel(3, "pngnq-s9", "2.0.1", isPngnqAvailable, g_ImageFormats.pngnqEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(3, "pngnq-s9", EXPECTED_PNGNQ_VERSION, isPngnqAvailable, g_ImageFormats.pngnqEnabled)
     
     'ExifTool
-    pluginStatus = pluginStatus And popPluginLabel(4, "ExifTool", "9.29", isExifToolAvailable, g_ExifToolEnabled)
+    pluginStatus = pluginStatus And popPluginLabel(4, "ExifTool", EXPECTED_EXIFTOOL_VERSION, isExifToolAvailable, g_ExifToolEnabled)
     
     If pluginStatus Then
         lblPluginStatus.ForeColor = GOODCOLOR

@@ -8,8 +8,8 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 '              caching binary metadata.
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
-' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin will be
-' available by default in all versions of PhotoDemon after and including 5.6 (release TBD, estimated summer 2013).
+' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
+' available by default in all versions of PhotoDemon after and including 6.0.
 '
 'ExifTool is a comprehensive image metadata handler written by Phil Harvey.  No DLL or VB-compatible library is
 ' available, so PhotoDemon relies on the stock Windows ExifTool executable file for all interfacing.  You can read
@@ -26,9 +26,10 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 '
 'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
-'This project was designed against v9.29 of ExifTool (18 May '13).  It may not work with other versions of the
-' software.  Additional documentation regarding the use of ExifTool can be found in the official ExifTool
-' package, downloadable from http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-9.29.tar.gz
+'This project was originally designed against v9.37 of ExifTool (14 Sep '13).  While I do test newer versions, it's
+' impossible to test all metadata possibilities, so problems may arise if used with other versions of the software.
+' Additional documentation regarding the use of ExifTool can be found in the official ExifTool package, downloadable
+' from http://www.sno.phy.queensu.ca/~phil/exiftool/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
