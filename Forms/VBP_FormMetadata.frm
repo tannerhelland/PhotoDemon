@@ -246,6 +246,11 @@ Private Sub Form_Activate()
     
 End Sub
 
+'When the metadata list is clicked, set focus to the vertical scroll bar (better mousewheel behavior this way)
+Private Sub Form_Click()
+    vsMetadata.SetFocus
+End Sub
+
 'LOAD dialog
 Private Sub Form_Load()
 
