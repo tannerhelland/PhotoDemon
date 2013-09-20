@@ -825,17 +825,17 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the ExifTool plugin is available, and user preferences allow, extract any possible metadata from the image file
         '*************************************************************************************************************************************
         
+        Set targetImage.imgMetadata = New pdMetadata
+        
         If g_ExifToolEnabled And isThisPrimaryImage Then
-        
-            Set targetImage.imgMetadata = New pdMetadata
-        
+                
             'A user preference determines whether we loda metadata now, or suspend it until requested (e.g. save or browse time)
             If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
                 Message "Compiling metadata..."
                 targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
                 
                 'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-                metaToggle tMetadata, targetImage.imgMetadata.hasMetadata
+                metaToggle tMetadata, targetImage.imgMetadata.hasXMLMetadata
                 metaToggle tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
             Else
             
@@ -1565,7 +1565,7 @@ End Sub
 
 'Check for IDE or compiled EXE, and set program parameters accordingly
 Private Sub CheckLoadingEnvironment()
-    If App.LogMode = 1 Then
+    If App.logMode = 1 Then
         g_IsProgramCompiled = True
     Else
         g_IsProgramCompiled = False

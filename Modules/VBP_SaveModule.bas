@@ -3,10 +3,9 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 26/March/13
-'Last update: Rewrote all save subs to use string-based parameters.  Also, moved all handling of preferences to external forms.
-'              Save functions don't rely on any saved preferences now - they expect external functions to explicitly request any
-'              special save parameters.
+'Last updated: 20/September/13
+'Last update: Implemented full support for metadata caching.  If metadata is not loaded at image load-time, the save function will now
+'              detect this and cache any relevant metadata before overwriting a file.
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -191,6 +190,45 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
     
     '****************************************************************************************************
+    ' Before saving the image (especially in the case of an overwrite), we need to cache the source image's metadata.
+    '****************************************************************************************************
+    
+    'If metadata export is enabled, cache the metadata now
+    If g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 3 Then
+    
+        Message "Caching current image's metadata..."
+        
+        'PhotoDemon stores metadata in two possible ways: a full binary copy (necessary for "preserve all metadata regardless of relevance")
+        ' or a full XML copy (necessary for all other metadata options).  Check which type the user wants us to write, and make sure we
+        ' have a copy of the image's metadata in that format.  If we don't, cache it now.
+        If g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) = 0 Then
+        
+            'Binary metadata is requested.  Cache it now (if necessary).
+            If Not srcPDImage.imgMetadata.hasBinaryMetadata Then
+                srcPDImage.imgMetadata.quickCacheMetadata srcPDImage.LocationOnDisk
+            End If
+        
+        Else
+        
+            'XML metadata is requested.  Cache it now (if necessary).
+            If Not srcPDImage.imgMetadata.hasXMLMetadata Then
+            
+                srcPDImage.imgMetadata.loadAllMetadata srcPDImage.LocationOnDisk, srcPDImage.OriginalFileFormat
+                    
+                'As a convenience to the user, if metadata was loaded successfully, dis/enable metadata menu items accordingly
+                metaToggle tMetadata, srcPDImage.imgMetadata.hasXMLMetadata
+                metaToggle tGPSMetadata, srcPDImage.imgMetadata.hasGPSMetadata()
+            End If
+        
+        End If
+        
+    End If
+    
+    'If available, metadata has now been cached to memory.  This means we can delete or overwrite the source file without
+    ' losing its metadata contents.
+    
+    
+    '****************************************************************************************************
     ' Based on the requested file type and color depth, call the appropriate save function
     '****************************************************************************************************
         
@@ -361,22 +399,19 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
     End Select
     
-    'If the file was successfully written, we can now add metadata to it.  I don't like doing this in two steps, but that's a necessary
-    ' evil of routing all metadata handling through the ExifTool plugin.
+    '****************************************************************************************************
+    ' If the file was successfully written, we can now embed any additional metadata.
+    '****************************************************************************************************
+    
+    'Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
+    ' through an external plugin.
     
     'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
+    ' If the file was not written successfully, abandon any attempts at metadata embedding.
     If updateMRU And g_ExifToolEnabled Then
         
-        'Before proceeding, see if we've already loaded metadata.  If we haven't, do so now.
-        ' (NOTE: do a preference check in advance.  If metadata export is disabled, don't waste the user's time by parsing metadata
-        '        that won't be written out to file.)
-        If Not srcPDImage.imgMetadata.hasMetadata And (g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 3) Then
-            Message "Preparing to write metadata..."
-            srcPDImage.imgMetadata.loadAllMetadata srcPDImage.LocationOnDisk, srcPDImage.OriginalFileFormat
-        End If
-    
-        'Only attempt to export metadata if ExifTool was able to successfully parse the file
-        If srcPDImage.imgMetadata.hasMetadata Then
+        'Only attempt to export metadata if ExifTool was able to successfully parse or cache metadata prior to saving
+        If srcPDImage.imgMetadata.hasXMLMetadata Or srcPDImage.imgMetadata.hasBinaryMetadata Then
             updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1), srcPDImage)
         Else
             Message "No metadata to export.  Continuing save..."

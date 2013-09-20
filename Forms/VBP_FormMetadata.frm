@@ -204,7 +204,7 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsMetadata.Visible Then
@@ -259,7 +259,7 @@ Private Sub Form_Load()
     picBuffer.FontName = g_InterfaceFont
     
     'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
-    If Not pdImages(CurrentImage).imgMetadata.hasMetadata Then
+    If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
         pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
         
         'If the image contains GPS metadata, enable that option now
@@ -267,7 +267,7 @@ Private Sub Form_Load()
     End If
     
     'If the image STILL doesn't have metadata, warn the user and exit.
-    If Not pdImages(CurrentImage).imgMetadata.hasMetadata Then
+    If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
         pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
         Unload Me
     End If

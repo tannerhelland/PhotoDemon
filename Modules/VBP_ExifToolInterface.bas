@@ -3,8 +3,9 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 'ExifTool Plugin Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 27/May/13
-'Last update: use custom separators for list-type values; this is much easier than parsing them manually
+'Last updated: 20/September/13
+'Last update: when only saving relevant metadata, remove useless padding tags.  Also, a new function for quickly
+'              caching binary metadata.
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin will be
@@ -138,6 +139,75 @@ Public Function getExifToolVersion() As String
     
 End Function
 
+'Given a path to a valid image file, retrieve all metadata into a single (enormous) byte array.  This is done by exporting metadata to
+' ExifTool's preferred MIE sidecar format, then loading that file as an array.
+Public Function cacheMetadata(ByVal srcFile As String, ByRef dstArray() As Byte) As Boolean
+    
+    'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
+    ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
+    Dim Quotes As String
+    Quotes = Chr(34)
+    
+    'Build a full shell path for the ExifTool export operation
+    Dim shellPath As String
+    shellPath = g_PluginPath & "exiftool.exe "
+    
+    'Ignore minor errors and warnings
+    shellPath = shellPath & "-m "
+    
+    'Supply the source path
+    shellPath = shellPath & "-tagsfromfile " & Quotes & srcFile & Quotes & " "
+    
+    'We need to write the data to a temp file.  Build that filename now.
+    Dim tmpOutputFile As String
+    tmpOutputFile = g_UserPreferences.getTempPath
+    
+    'Append a partial hash to the temporary filename to avoid overwriting any existing metadata files in the temp folder (highly unlikely,
+    ' but we play it safe anyway!)
+    Dim cSHA2 As CSHA256
+    Set cSHA2 = New CSHA256
+    tmpOutputFile = tmpOutputFile & "pdmd_" & Left$(cSHA2.SHA256(srcFile), 16) & ".mie"
+    
+    shellPath = shellPath & Quotes & tmpOutputFile & Quotes
+    
+    'Before launching the shell, launch a single DoEvents.  This gives us some leeway before Windows marks the program
+    ' as unresponsive...
+    DoEvents
+    
+    'Pass control to ExifTool and wait for it to finish
+    Dim shellCheck As Boolean
+    shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
+    
+    'If the shell was successful and the metadata sidecar file was created successfully, load it as a byte array
+    If shellCheck Then
+    
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Open tmpOutputFile For Binary Access Read As #fileNum
+        
+        'If the file exists, load it, mark this function as successful, and exit
+        If LOF(fileNum) > 0 Then
+            ReDim dstArray(0 To LOF(fileNum) - 1) As Byte
+            Get #fileNum, 1, dstArray
+            
+            cacheMetadata = True
+            
+        Else
+            cacheMetadata = False
+        End If
+        
+        Close #fileNum
+        
+        'Kill the temp file
+        If FileExist(tmpOutputFile) Then Kill tmpOutputFile
+        
+    Else
+        cacheMetadata = False
+    End If
+    
+End Function
+
 'Given a path to a valid image file, retrieve all metadata into a single (enormous) string
 Public Function getMetadata(ByVal srcFile As String, ByVal srcFormat As Long) As String
     
@@ -232,6 +302,9 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & " -ImageWidth=" & srcPDImage.Width & " -ExifIFD:ExifImageWidth=" & srcPDImage.Width
     cmdParams = cmdParams & " -ImageHeight=" & srcPDImage.Height & " -ExifIFD:ExifImageHeight=" & srcPDImage.Height
     
+    'If the user only wants the preservation of relevant metadata, remove useless padding tags
+    If g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 0 Then cmdParams = cmdParams & " --Padding"
+    
     'If we were asked to remove GPS data, do so now
     If removeGPS Then cmdParams = cmdParams & " -gps:all="
     
@@ -291,7 +364,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         If bShowWindow Then .wShowWindow = SW_NORMAL Else .wShowWindow = SW_HIDE
         
     End With
-    'MsgBox sApplicationPath & vbCrLf & sCommandLineParams
+    
     If CreateProcess(sApplicationPath, sCommandLineParams, ByVal 0&, ByVal 0&, 1, 0&, ByVal 0&, vbNullString, si, PI) Then
 
         'Close the thread handle, as we have no use for it
