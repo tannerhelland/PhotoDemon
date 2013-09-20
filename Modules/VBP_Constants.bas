@@ -4,10 +4,13 @@ Option Explicit
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
 Public Const DISPLAY_TIMINGS As Boolean = True
 
-'Constants used for pulling up an API browse-for-folder box
-Public Const BIF_RETURNONLYFSDIRS = 1
-Public Const BFFM_INITIALIZED = 1
-Public Const MAX_PATH_LEN = 260
+'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
+' the plugin is available, obviously).
+Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.15.4"
+Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
+Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
+Public Const EXPECTED_PNGNQ_VERSION As String = "2.0.1"
+Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.37"
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
@@ -16,7 +19,7 @@ Public Const FILTER_EXT As String * 3 = "pde"
 Public Const MACRO_EXT As String * 3 = "pdm"
 Public Const SELECTION_EXT As String * 3 = "pds"
 
-'Constants used for passing image resize options
+'Constants used for passing image resize options.
 ' Note that options 3-6 require use of the FreeImage library
 Public Const RESIZE_NORMAL As Long = 0
 Public Const RESIZE_HALFTONE As Long = 1
@@ -66,3 +69,8 @@ Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400
 
 'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
 Public Const MOUSESELACCURACY As Double = 8#
+
+'Constants used for pulling up an API browse-for-folder box
+Public Const BIF_RETURNONLYFSDIRS = 1
+Public Const BFFM_INITIALIZED = 1
+Public Const MAX_PATH_LEN = 260
