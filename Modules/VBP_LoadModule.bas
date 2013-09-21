@@ -743,7 +743,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' Store some universally important information to the target image object
+        ' Store some universally important information in the target image object
         '*************************************************************************************************************************************
         
         targetImage.updateSize
@@ -841,9 +841,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
                 'Enable the metadata browser.  If the user selects this, we will attempt to load metadata then.
                 metaToggle tMetadata, True
+                metaToggle tGPSMetadata, True
                 
-                'GPS metadata is forcibly disabled if the user doesn't allow for load-time parsing
-                metaToggle tGPSMetadata, False
             End If
             
         End If

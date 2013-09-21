@@ -142,17 +142,19 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 14/September/13
-'Last update: fix non-96 dpi issues with the custom listbox
+'Last updated: 21/September/13
+'Last update: fix mousewheel behavior to give preference to the main list box, without requiring a click to obtain focus.
+'              Thanks to contributor Kroc for advice on remedying this issue.
 '
-'As of version 5.6, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
+'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'This dialog interacts heavily with the pdMetadata class to present users with a relatively simple interface for
-' perusing (and eventually, editing) an image's metadata.  Designing this dialog is difficult as it is impossible to
-' predict what metadata types and entries might exist in a finished file, so I've opted for the most flexible system
-' I can.  No assumptions are made about present categories or tag counts, so any type of metadata should theoretically
-' be viewable.
+' perusing (and eventually, editing - didn't make the cut for 6.0 but hopefully will in 6.2) an image's metadata.
+'
+'Designing this dialog was quite difficult as it is impossible to predict what metadata types and entries might exist in
+' an image file, so I've opted for the most flexible system I can.  No assumptions are made about present categories or
+' tag counts, so any type or amount of metadata should theoretically be viewable.
 '
 'Categories are displayed on the left, and selecting a category repopulates the fields on the right.  Future updates
 ' could include the ability to add or remove individual tags...
@@ -169,13 +171,13 @@ Private Type mdCategory
     Count As Long
 End Type
 
-Dim mdCategories() As mdCategory
-Dim numOfCategories As Long
-Dim highestCategoryCount As Long
+Private mdCategories() As mdCategory
+Private numOfCategories As Long
+Private highestCategoryCount As Long
 
 'This array will hold all tags currently in storage, but sorted into categories
-Dim allTags() As mdItem
-Dim curTagCount() As Long
+Private allTags() As mdItem
+Private curTagCount() As Long
 
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 64
@@ -186,6 +188,11 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'Because we technically have two scrollable controls on this page, we must differentiate between the two when a mousewheel event is fired.
+' By default, Windows will not pass scrollwheel events to the parent form (per my testing?) when a list box on that form has focus.  If
+' the left list box is clicked, this value will be set to TRUE.  If the mouse leaves the list box, we automatically set this to FALSE.
+Private mouseOverMetadataCategoryBox As Boolean
 
 Private Sub chkFriendlyNames_Click()
     redrawMetadataList
@@ -246,11 +253,6 @@ Private Sub Form_Activate()
     
 End Sub
 
-'When the metadata list is clicked, set focus to the vertical scroll bar (better mousewheel behavior this way)
-Private Sub Form_Click()
-    vsMetadata.SetFocus
-End Sub
-
 'LOAD dialog
 Private Sub Form_Load()
 
@@ -258,25 +260,11 @@ Private Sub Form_Load()
     
     'Enable mousewheel scrolling for the metadata box
     Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach picBuffer.hWnd, Me.hWnd
+    cMouseEvents.Attach Me.hWnd
         
     'Make the invisible buffer's font match the rest of PD
     picBuffer.FontName = g_InterfaceFont
-    
-    'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
-    If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
-        pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
         
-        'If the image contains GPS metadata, enable that option now
-        metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
-    End If
-    
-    'If the image STILL doesn't have metadata, warn the user and exit.
-    If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
-        pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
-        Unload Me
-    End If
-    
     'Initialize the category array
     ReDim mdCategories(0) As mdCategory
     numOfCategories = 0
@@ -353,6 +341,17 @@ Private Sub Form_Load()
     picBuffer.Height = lstMetadata.Height
     
     lstMetadata.ListIndex = 0
+    
+End Sub
+
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    
+    'When the mouse enters the form area, set focus to the vertical scroll bar, so we can automatically mousewheel it (instead of the
+    ' left listbox)
+    If mouseOverMetadataCategoryBox Then
+        mouseOverMetadataCategoryBox = False
+        If vsMetadata.Visible Then vsMetadata.SetFocus
+    End If
     
 End Sub
 
@@ -462,6 +461,11 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         
     End If
 
+End Sub
+
+'To solve the problem of "two mouse-scrollable lists on one dialog), we track the mouse's location and handle scroll events accordingly.
+Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    mouseOverMetadataCategoryBox = True
 End Sub
 
 'When the scrollbar is moved, redraw the metadata list

@@ -95,6 +95,16 @@ Public Function hasBinaryMetadata() As Boolean
     
 End Function
 
+'It can be desirable to know if we have checked for GPS data and not found any, vs we have NOT looked for GPS data and we have no
+' idea if the image contains any.
+Public Function haveAttemptedToFindGPSData() As Boolean
+    If maxMetadataCount = 0 Then
+        haveAttemptedToFindGPSData = False
+    Else
+        haveAttemptedToFindGPSData = True
+    End If
+End Function
+
 'Some metadata options require the presence of GPS data in the photo.  If a GPS entry was found at metadata load-time, return TRUE.
 Public Function hasGPSMetadata() As Boolean
     hasGPSMetadata = hasGPSCoordinates
