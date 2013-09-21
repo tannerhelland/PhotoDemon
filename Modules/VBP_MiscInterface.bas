@@ -302,14 +302,47 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             'FormMain.MnuTransparency(0).Enabled = Not newState
             'FormMain.MnuTransparency(1).Enabled = Not newState
             FormMain.MnuTransparency(3).Enabled = newState
-            
+        
+        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  Otherwise, its enablement will change depending
+        ' on the user's preferences for when to load metadata.
         Case tMetadata
         
-            If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
+            If g_ExifToolEnabled Then
+            
+                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
+                ' we will leave the metadata menu always enabled.
+                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+                    If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
+                Else
+                    If Not FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = True
+                End If
+                
+            Else
+                If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
+            End If
         
         Case tGPSMetadata
         
-            If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
+            If g_ExifToolEnabled Then
+            
+                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
+                ' we will leave the metadata menu always enabled.
+                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+                    If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
+                Else
+                    
+                    'If an on-demand model is being used, check to see if the user has attempted to load metadata for this image.
+                    ' If they have, set the toggle to match the GPS metadata's state.
+                    If pdImages(CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+                        If FormMain.MnuMetadata(3).Enabled <> pdImages(CurrentImage).imgMetadata.hasGPSMetadata Then FormMain.MnuMetadata(3).Enabled = pdImages(CurrentImage).imgMetadata.hasGPSMetadata
+                    Else
+                        If Not FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = True
+                    End If
+                End If
+                
+            Else
+                If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
+            End If
             
     End Select
     
@@ -813,11 +846,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    getPixelWidthOfString = txtSize.X
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    getPixelHeightOfString = txtSize.Y
 End Function

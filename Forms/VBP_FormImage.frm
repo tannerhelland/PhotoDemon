@@ -162,8 +162,27 @@ Public Sub ActivateWorkaround()
     metaToggle tSave, Not pdImages(CurrentImage).HasBeenSaved
     
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasXMLMetadata
-    metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+    ' Note that if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
+    ' browse at their leisure.
+    If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+        
+        'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
+        metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasXMLMetadata
+        metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+        
+    Else
+    
+        'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
+        ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
+        ' In that rare case, we can enable the GPS menu correctly.
+        metaToggle tMetadata, True
+        If pdImages(CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+            metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata
+        Else
+            metaToggle tGPSMetadata, True
+        End If
+                
+    End If
     
     'Check the image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False

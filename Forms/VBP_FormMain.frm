@@ -2018,7 +2018,7 @@ End Sub
     'resetToolButtonStates
 'End Sub
 
-Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
     g_CurrentTool = Index
     resetToolButtonStates
 End Sub
@@ -2396,7 +2396,7 @@ Private Sub MDIForm_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2432,7 +2432,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -3136,6 +3136,22 @@ Private Sub MnuMetadata_Click(Index As Integer)
     
         'Browse metadata
         Case 0
+        
+            'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
+            If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
+                pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
+                
+                'If the image contains GPS metadata, enable that option now
+                metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+            End If
+            
+            'If the image STILL doesn't have metadata, warn the user and exit.
+            If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
+                Message "No metadata available."
+                pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+                Exit Sub
+            End If
+            
             FormMetadata.Show vbModal, Me
         
         'Separator
@@ -3148,7 +3164,25 @@ Private Sub MnuMetadata_Click(Index As Integer)
         'Map photo location
         Case 3
             
-            'Note that mapping can only be performed if GPS metadata exists for this image
+            'Note that mapping can only be performed if GPS metadata exists for this image.  If the user clicks this option while
+            ' using the on-demand model for metadata caching, we must now attempt to load metadata.
+            If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
+            
+                'Attempt to load it now...
+                Message "Loading metadata for this image..."
+                pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
+                
+                'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+                metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasXMLMetadata
+                metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+            
+            End If
+            
+            If Not pdImages(CurrentImage).imgMetadata.hasGPSMetadata Then
+                pdMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"
+                Exit Sub
+            End If
+            
             Dim gMapsURL As String, latString As String, lonString As String
             If pdImages(CurrentImage).imgMetadata.fillLatitudeLongitude(latString, lonString) Then
                 
