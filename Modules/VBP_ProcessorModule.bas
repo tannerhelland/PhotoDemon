@@ -176,15 +176,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     ' list of every possible PhotoDemon action, filter, or other operation.  Depending on the processID, additional
     ' actions will be performed.
     '
-    'Note that prior to the 5.6 release, this function used numeric identifiers instead of strings.  This has since
+    'Note that prior to the 6.0 release, this function used numeric identifiers instead of strings.  This has since
     ' been abandoned in favor of a string-based approach, and at present there are no plans to restore the old
     ' numeric behavior.  Strings simplify the code, they make it much easier to add new functions, and they will
     ' eventually allow for a "filter browser" that allows the user to preview any effect from a single dialog.
     ' Numeric IDs were much harder to manage in that context, and over time their numbering grew so arbitrary that
     ' it made maintenance very difficult.
     '
-    'For ease of reference, the various processIDs are divided into categories of similar functions.  This
-    ' organization is simply to improve readability; there is no functional purpose.
+    'For ease of reference, the various processIDs are divided into categories of similar functions.  These categories
+    ' match the organization of PhotoDemon's menus.  Please note that such organization in this function is simply to
+    ' improve readability; there is no functional purpose to it.
     '
     '******************************************************************************************************************
     

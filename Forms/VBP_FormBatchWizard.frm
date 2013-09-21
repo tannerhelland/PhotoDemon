@@ -2203,7 +2203,7 @@ Attribute VB_Exposed = False
 '
 '3) Select output file format.  There are three choices: retain original format (e.g. "rename only", which allows the user to
 '    use the tool as a batch renamer), pick optimal format for web (which will intermix JPEG and PNG intelligently) - POSTPONED
-'    UNTIL 5.6 - or the user can pick their own format.  A comprehensive selection of PhotoDemon's many file format options is
+'    UNTIL 6.2 - or the user can pick their own format.  A comprehensive selection of PhotoDemon's many file format options is
 '    also provided.
 '
 '4) Choose where the files will go and what they will be named.  This includes a number of renaming options, which is a big

@@ -635,7 +635,7 @@ Private Sub cboResample_Click()
     lastSelectedResample = resampleTypes(cboResample.ListIndex).ProgramID
 End Sub
 
-'New to v5.6, PhotoDemon gives the user friendly resample names by default.  They can toggle these off at their liking.
+'New to v6.0, PhotoDemon gives the user friendly resample names by default.  They can toggle these off at their liking.
 Private Sub chkNames_Click()
     refillResampleBox
 End Sub
