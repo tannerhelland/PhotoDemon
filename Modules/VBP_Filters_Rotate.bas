@@ -247,8 +247,12 @@ Public Sub MenuCropToSelection()
     pdImages(CurrentImage).retrieveProcessedSelection tmpLayer
     
     'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
-    ' I now fully crop the image, including removal of all unselected pixels.  This almost always results in a 32bpp image.
-    ' I am leaving the old code here in case I decide to revert it after further user testing.  (Comment added during 5.6 beta.)
+    ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square
+    ' selections, this will always result in a 32bpp image.
+    '
+    'The old code will be left here few a few releases, in case I decide to provide a preference for alternate behavior, per user request.
+    ' (Note: comment added for the 6.0 release; consider removing by 6.4 if no complaints received.)
+    '
     'Copy the selection area to the temporary layer
     'tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
     'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
