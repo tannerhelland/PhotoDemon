@@ -115,7 +115,7 @@ Attribute VB_Exposed = False
 ' work.  All this dialog does is set up the kernel, then pass it on to DoFilter.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 

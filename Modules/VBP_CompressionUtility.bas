@@ -10,7 +10,7 @@ Attribute VB_Name = "Plugin_zLib_Interface"
 'Module to handle file compression and decompression to a custom file format via the zLib compression library.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -79,7 +79,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
 
     'Allocate an array to receive the data from a file
     Dim DataBytes() As Byte
-    ReDim DataBytes(fileLen(srcFilename) - 1)
+    ReDim DataBytes(FileLen(srcFilename) - 1)
 
     'Copy the data from the source into a numerical array
     Dim fileNum As Integer
@@ -161,7 +161,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
 
     'Allocate a temporary array for receiving the compressed data
     Dim DataBytes() As Byte
-    ReDim DataBytes(fileLen(srcFilename) - Len(FileHeader) - 1)
+    ReDim DataBytes(FileLen(srcFilename) - Len(FileHeader) - 1)
     
     'Copy out the header and then the compressed data
     Dim fileNum As Integer

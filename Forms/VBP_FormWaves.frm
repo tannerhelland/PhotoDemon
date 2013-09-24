@@ -346,7 +346,7 @@ Attribute VB_Exposed = False
 ' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -383,7 +383,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -423,28 +423,28 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     Dim srcX As Double, srcY As Double
                      
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
+    For X = initX To finalX
+        QuickVal = X * qvDepth
     For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
         nX = (Y - yAmplitude) / xWavelength
-        nY = (x - xAmplitude) / yWavelength
+        nY = (X - xAmplitude) / yWavelength
         
-        srcX = x + Sin(nX) * xAmplitude
+        srcX = X + Sin(nX) * xAmplitude
         srcY = Y + Sin(nY) * yAmplitude
                 
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                         
     Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
             
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

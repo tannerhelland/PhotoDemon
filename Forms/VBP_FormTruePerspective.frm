@@ -244,7 +244,7 @@ Attribute VB_Exposed = False
 ' http://stackoverflow.com/questions/530396/how-to-draw-a-perspective-correct-grid-in-2d?lq=1
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -315,7 +315,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -511,28 +511,28 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     Dim srcX As Double, srcY As Double
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
                 
         'Reverse-map the coordinates back onto the original image (to allow for resampling)
-        chkDenom = (hG * x + hH * y + hI)
+        chkDenom = (hG * X + hH * Y + hI)
         If chkDenom = 0 Then chkDenom = 0.000000001
         
-        srcX = imgWidth * (hA * x + hB * y + hC) / chkDenom
-        srcY = imgHeight * (hD * x + hE * y + hF) / chkDenom
+        srcX = imgWidth * (hA * X + hB * Y + hC) / chkDenom
+        srcY = imgHeight * (hD * X + hE * Y + hF) / chkDenom
                 
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -761,24 +761,24 @@ Private Sub redrawPreviewBox()
 
 End Sub
 
-Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     m_isMouseDown = True
     
     'If the mouse is over a point, mark it as the active point
-    m_selPoint = checkClick(x, y)
+    m_selPoint = checkClick(X, Y)
     
 End Sub
 
-Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'If the mouse is not down, indicate to the user that points can be moved
     If Not m_isMouseDown Then
         
         'If the user is close to a knot, change the mousepointer to 'move'
-        If checkClick(x, y) > -1 Then
+        If checkClick(X, Y) > -1 Then
             If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
             
-            Select Case checkClick(x, y)
+            Select Case checkClick(X, Y)
                 Case 0
                     picDraw.ToolTipText = g_Language.TranslateMessage("top-left")
                 Case 1
@@ -798,8 +798,8 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
     Else
     
         If m_selPoint >= 0 Then
-            m_nPoints(m_selPoint).pX = x
-            m_nPoints(m_selPoint).pY = y
+            m_nPoints(m_selPoint).pX = X
+            m_nPoints(m_selPoint).pY = Y
             redrawPreviewBox
             updatePreview
         End If
@@ -808,17 +808,17 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
 
 End Sub
 
-Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     m_isMouseDown = False
     m_selPoint = -1
 End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
-Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
+Private Function checkClick(ByVal X As Long, ByVal Y As Long) As Long
     Dim dist As Double
     Dim i As Long
     For i = 0 To 3
-        dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
+        dist = pDistance(X, Y, m_nPoints(i).pX, m_nPoints(i).pY)
         'If we're close to an existing point, return the index of that point
         If dist < mouseAccuracy Then
             checkClick = i

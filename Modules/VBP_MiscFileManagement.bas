@@ -7,7 +7,7 @@ Attribute VB_Name = "File_And_Path_Handling"
 'Last update: merged file functions from other modules into this one
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -238,42 +238,42 @@ End Function
 'Given a full file path (path + name + extension), remove everything but the directory structure
 Public Sub StripDirectory(ByRef sString As String)
     
-    Dim x As Long
+    Dim X As Long
     
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
-            sString = Left(sString, x)
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = "/") Or (Mid(sString, X, 1) = "\") Then
+            sString = Left(sString, X)
             Exit Sub
         End If
-    Next x
+    Next X
     
 End Sub
 
 'Given a full file path (path + name + extension), return the directory structure
 Public Function getDirectory(ByRef sString As String) As String
     
-    Dim x As Long
+    Dim X As Long
     
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
-            getDirectory = Left(sString, x)
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = "/") Or (Mid(sString, X, 1) = "\") Then
+            getDirectory = Left(sString, X)
             Exit Function
         End If
-    Next x
+    Next X
     
 End Function
 
 'Pull the filename ONLY (no directory) off a path
 Public Sub StripFilename(ByRef sString As String)
     
-    Dim x As Long
+    Dim X As Long
     
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
-            sString = Right(sString, Len(sString) - x)
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = "/") Or (Mid(sString, X, 1) = "\") Then
+            sString = Right(sString, Len(sString) - X)
             Exit Sub
         End If
-    Next x
+    Next X
     
 End Sub
 
@@ -314,14 +314,14 @@ End Function
 'Pull the filename & directory out WITHOUT any extension (but with the ".")
 Public Sub StripOffExtension(ByRef sString As String)
 
-    Dim x As Long
+    Dim X As Long
 
-    For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = ".") Then
-            sString = Left(sString, x - 1)
+    For X = Len(sString) - 1 To 1 Step -1
+        If (Mid(sString, X, 1) = ".") Then
+            sString = Left(sString, X - 1)
             Exit Sub
         End If
-    Next x
+    Next X
     
 End Sub
 
@@ -356,13 +356,13 @@ Public Sub makeValidWindowsFilename(ByRef FileName As String)
     
     Dim invLoc As Long
     
-    Dim x As Long
-    For x = 1 To Len(strInvalidChars)
-        invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
+    Dim X As Long
+    For X = 1 To Len(strInvalidChars)
+        invLoc = InStr(FileName, Mid$(strInvalidChars, X, 1))
         If invLoc <> 0 Then
             FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
         End If
-    Next x
+    Next X
 
 End Sub
 

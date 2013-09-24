@@ -12,7 +12,7 @@ Attribute VB_Name = "MRU_List_Handler"
 ' version from this link (good as of 22 Nov '12): http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -141,29 +141,29 @@ Public Sub MRU_LoadFromFile()
     If numEntries > 0 Then
         ReDim MRUlist(0 To numEntries) As String
         
-        Dim x As Long
+        Dim X As Long
         
         'Loop through each MRU entry, loading them onto the menu as we go
-        For x = 0 To numEntries - 1
-            MRUlist(x) = g_UserPreferences.GetPref_String("MRU", "f" & x, "")
-            If x <> 0 Then
-                Load FormMain.mnuRecDocs(x)
+        For X = 0 To numEntries - 1
+            MRUlist(X) = g_UserPreferences.GetPref_String("MRU", "f" & X, "")
+            If X <> 0 Then
+                Load FormMain.mnuRecDocs(X)
             Else
-                FormMain.mnuRecDocs(x).Enabled = True
+                FormMain.mnuRecDocs(X).Enabled = True
             End If
             
             'Based on the user's preference for captioning, display either the full path or just the filename
             If g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) = 0 Then
-                FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
+                FormMain.mnuRecDocs(X).Caption = getFilename(MRUlist(X))
             Else
-                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
+                FormMain.mnuRecDocs(X).Caption = getShortMRU(MRUlist(X))
             End If
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
             ' Also, shortcuts are disabled in the IDE because the VB Accelerator control that handles them requires subclassing.
-            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & vbTab & "Ctrl+" & X Else FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & "   "
             
-        Next x
+        Next X
         
         'Make the "Clear MRU" option visible
         FormMain.MnuRecentSepBar1.Visible = True
@@ -187,21 +187,21 @@ Public Sub MRU_SaveToFile()
     'Save the number of current entries
     g_UserPreferences.SetPref_Long "MRU", "Number Of Entries", numEntries
     
-    Dim x As Long
+    Dim X As Long
     
     'Only save entries if MRU data exists
     If numEntries <> 0 Then
-        For x = 0 To numEntries - 1
-            g_UserPreferences.SetPref_String "MRU", "f" & x, MRUlist(x)
-        Next x
+        For X = 0 To numEntries - 1
+            g_UserPreferences.SetPref_String "MRU", "f" & X, MRUlist(X)
+        Next X
     End If
     
     'Unload all corresponding menu entries.  (This doesn't matter when the program is closing, but we also use this
     ' routine to refresh the MRU list after changing the caption preference - and for that an unload is required.)
     If numEntries <> 0 Then
-        For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
-            Unload FormMain.mnuRecDocs(x)
-        Next x
+        For X = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
+            Unload FormMain.mnuRecDocs(X)
+        Next X
         'DoEvents
     End If
     
@@ -218,15 +218,15 @@ Public Sub MRU_SaveToFile()
         
         'Compare this file to the hash for all current MRU entries
         If numEntries <> 0 Then
-            For x = 0 To numEntries - 1
+            For X = 0 To numEntries - 1
                 
                 'If this hash matches one on file, mark it as OK.
-                If StrComp(g_UserPreferences.getIconPath & chkFile, getMRUThumbnailPath(x), vbTextCompare) = 0 Then
+                If StrComp(g_UserPreferences.getIconPath & chkFile, getMRUThumbnailPath(X), vbTextCompare) = 0 Then
                     fileOK = True
                     Exit For
                 End If
                 
-            Next x
+            Next X
         Else
             fileOK = False
         End If
@@ -253,17 +253,17 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
     Dim curLocation As Long
     curLocation = -1
     
-    Dim x As Long
+    Dim X As Long
     
     'First, check to see if our entry currently exists in the MRU list
-    For x = 0 To numEntries - 1
+    For X = 0 To numEntries - 1
         'If we find this entry in the list, then special measures must be taken
-        If MRUlist(x) = newFile Then
+        If MRUlist(X) = newFile Then
             alreadyThere = True
-            curLocation = x
+            curLocation = X
             GoTo MRUEntryFound
         End If
-    Next x
+    Next X
     
 MRUEntryFound:
     
@@ -272,9 +272,9 @@ MRUEntryFound:
         
         If curLocation <> 0 Then
             'Move every path before this file DOWN
-            For x = curLocation To 1 Step -1
-                MRUlist(x) = MRUlist(x - 1)
-            Next x
+            For X = curLocation To 1 Step -1
+                MRUlist(X) = MRUlist(X - 1)
+            Next X
         End If
     
     'File doesn't exist in the MRU list...
@@ -294,9 +294,9 @@ MRUEntryFound:
         ReDim Preserve MRUlist(0 To numEntries) As String
     
         If numEntries > 1 Then
-            For x = numEntries To 1 Step -1
-                MRUlist(x) = MRUlist(x - 1)
-            Next x
+            For X = numEntries To 1 Step -1
+                MRUlist(X) = MRUlist(X - 1)
+            Next X
         End If
         
     End If
@@ -322,24 +322,24 @@ MRUEntryFound:
     
     If numEntries > 1 Then
         'Unload existing menus...
-        For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
-            Unload FormMain.mnuRecDocs(x)
-        Next x
+        For X = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
+            Unload FormMain.mnuRecDocs(X)
+        Next X
         'DoEvents
         'Load new menus...
-        For x = 1 To numEntries - 1
-            Load FormMain.mnuRecDocs(x)
+        For X = 1 To numEntries - 1
+            Load FormMain.mnuRecDocs(X)
             
             'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
             If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
-                FormMain.mnuRecDocs(x).Caption = getFilename(MRUlist(x))
+                FormMain.mnuRecDocs(X).Caption = getFilename(MRUlist(X))
             Else
-                FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
+                FormMain.mnuRecDocs(X).Caption = getShortMRU(MRUlist(X))
             End If
             
-            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & vbTab & "Ctrl+" & X Else FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & "   "
             
-        Next x
+        Next X
     End If
     
     'Save a thumbnail of this image to file.

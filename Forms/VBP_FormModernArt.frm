@@ -139,7 +139,7 @@ Attribute VB_Exposed = False
 ' include it.  :)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -173,7 +173,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -224,13 +224,13 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     NumOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
-    For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
-    For y = initY To initY + mRadius '- 1
+    For X = initX To initX + mRadius - 1
+        QuickVal = X * qvDepth
+    For Y = initY To initY + mRadius '- 1
     
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(QuickVal + 2, Y)
+        g = srcImageData(QuickVal + 1, Y)
+        b = srcImageData(QuickVal, Y)
         rValues(r) = rValues(r) + 1
         gValues(g) = gValues(g) + 1
         bValues(b) = bValues(b) + 1
@@ -238,18 +238,18 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         'Increase the pixel tally
         NumOfPixels = NumOfPixels + 1
         
-    Next y
-    Next x
+    Next Y
+    Next X
                 
     'Loop through each pixel in the image, tallying median values as we go
-    For x = initX To finalX
+    For X = initX To finalX
             
-        QuickVal = x * qvDepth
+        QuickVal = X * qvDepth
         
         'Determine the bounds of the current median box in the X direction
-        lbX = x - mRadius
+        lbX = X - mRadius
         If lbX < 0 Then lbX = 0
-        ubX = x + mRadius
+        ubX = X + mRadius
         
         If ubX > finalX Then
             obuX = True
@@ -346,7 +346,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         End If
             
     'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For y = startY To stopY Step yStep
+    For Y = startY To stopY Step yStep
             
         'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
         'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
@@ -354,10 +354,10 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         If atBottom Then
         
             'Calculate bounds
-            lbY = y - mRadius
+            lbY = Y - mRadius
             If lbY < 0 Then lbY = 0
             
-            ubY = y + mRadius
+            ubY = Y + mRadius
             If ubY > finalY Then
                 obuY = True
                 ubY = finalY
@@ -402,7 +402,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         'The exact same code as above, but in the opposite direction
         Else
         
-            lbY = y - mRadius
+            lbY = Y - mRadius
             If lbY < 0 Then
                 oblY = True
                 lbY = 0
@@ -410,7 +410,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                 oblY = False
             End If
             
-            ubY = y + mRadius
+            ubY = Y + mRadius
             If ubY > finalY Then ubY = finalY
                                 
             If ubY < finalY Then
@@ -506,36 +506,36 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         highB = i + 1
         
         'Retrieve the original pixel data
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(QuickVal + 2, Y)
+        g = srcImageData(QuickVal + 1, Y)
+        b = srcImageData(QuickVal, Y)
                 
         'Finally, apply the results to the image.
         If Abs(lowR - r) > (highR - r) Then
-            dstImageData(QuickVal + 2, y) = lowR
+            dstImageData(QuickVal + 2, Y) = lowR
         Else
-            dstImageData(QuickVal + 2, y) = highR
+            dstImageData(QuickVal + 2, Y) = highR
         End If
         If Abs(lowG - g) > (highG - g) Then
-            dstImageData(QuickVal + 1, y) = lowG
+            dstImageData(QuickVal + 1, Y) = lowG
         Else
-            dstImageData(QuickVal + 1, y) = highG
+            dstImageData(QuickVal + 1, Y) = highG
         End If
         If Abs(lowB - b) > (highB - b) Then
-            dstImageData(QuickVal, y) = lowB
+            dstImageData(QuickVal, Y) = lowB
         Else
-            dstImageData(QuickVal, y) = highB
+            dstImageData(QuickVal, Y) = highB
         End If
         
-    Next y
+    Next Y
         atBottom = Not atBottom
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
         
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -175,7 +175,7 @@ Attribute VB_Exposed = False
 ' effect at a large radius (> 10).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -217,7 +217,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcLayer.getLayerWidth - 1
@@ -273,32 +273,32 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     Dim maxBinCount As Long, maxBinIndex As Byte
     
     'Generate an initial array of median data for the first pixel
-    For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
-    For y = initY To initY + mRadius
+    For X = initX To initX + mRadius - 1
+        QuickVal = X * qvDepth
+    For Y = initY To initY + mRadius
     
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(QuickVal + 2, Y)
+        g = srcImageData(QuickVal + 1, Y)
+        b = srcImageData(QuickVal, Y)
         l = lLookup(r + g + b)
         rValues(l) = rValues(l) + r
         gValues(l) = gValues(l) + g
         bValues(l) = bValues(l) + b
         lValues(l) = lValues(l) + 1
         
-    Next y
-    Next x
+    Next Y
+    Next X
                 
     'Loop through each pixel in the image, tallying median values as we go
-    For x = initX To finalX
+    For X = initX To finalX
             
-        QuickVal = x * qvDepth
+        QuickVal = X * qvDepth
         
         'Determine the bounds of the current median box in the X direction
-        lbX = x - mRadius
+        lbX = X - mRadius
         If lbX < 0 Then lbX = 0
         
-        ubX = x + mRadius
+        ubX = X + mRadius
         If ubX > finalX Then
             obuX = True
             ubX = finalX
@@ -398,7 +398,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
         End If
             
     'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For y = startY To stopY Step yStep
+    For Y = startY To stopY Step yStep
             
         'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
         'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
@@ -406,10 +406,10 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
         If atBottom Then
         
             'Calculate bounds
-            lbY = y - mRadius
+            lbY = Y - mRadius
             If lbY < 0 Then lbY = 0
             
-            ubY = y + mRadius
+            ubY = Y + mRadius
             If ubY > finalY Then
                 obuY = True
                 ubY = finalY
@@ -456,7 +456,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
         'The exact same code as above, but in the opposite direction
         Else
         
-            lbY = y - mRadius
+            lbY = Y - mRadius
             If lbY < 0 Then
                 oblY = True
                 lbY = 0
@@ -464,7 +464,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
                 oblY = False
             End If
             
-            ubY = y + mRadius
+            ubY = Y + mRadius
             If ubY > finalY Then ubY = finalY
                                 
             If ubY < finalY Then
@@ -521,19 +521,19 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
         If b > 255 Then b = 255
                 
         'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(QuickVal + 2, Y) = r
+        dstImageData(QuickVal + 1, Y) = g
+        dstImageData(QuickVal, Y) = b
         
-    Next y
+    Next Y
         atBottom = Not atBottom
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
         
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

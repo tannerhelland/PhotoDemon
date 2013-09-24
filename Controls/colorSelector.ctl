@@ -43,7 +43,7 @@ Attribute VB_Exposed = False
 ' to update a single master function for color selection, then have the change propagate to all tool windows.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -67,7 +67,7 @@ End Property
 
 Public Property Let Color(ByVal newColor As OLE_COLOR)
     curColor = newColor
-    UserControl.backColor = curColor
+    UserControl.BackColor = curColor
     drawControlBorders
     PropertyChanged "Color"
     RaiseEvent ColorChanged

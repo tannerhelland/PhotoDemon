@@ -186,7 +186,7 @@ Attribute VB_Exposed = False
 'http://www.filmcentre.co.uk/faqs_filter.htm
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -512,28 +512,28 @@ Private Sub Form_Unload(Cancel As Integer)
         
 End Sub
 
-Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
-    curFilter = getFilterAtPosition(x, y)
+    curFilter = getFilterAtPosition(X, Y)
     redrawFilterList
     updatePreview
     
 End Sub
 
-Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
-    curFilterHover = getFilterAtPosition(x, y)
+    curFilterHover = getFilterAtPosition(X, Y)
     redrawFilterList
     
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the filter at that location
-Private Function getFilterAtPosition(ByVal x As Long, ByVal y As Long) As Long
+Private Function getFilterAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     
     Dim vOffset As Long
     vOffset = vsFilter.Value
     
-    getFilterAtPosition = (y + vOffset) \ fixDPI(BLOCKHEIGHT)
+    getFilterAtPosition = (Y + vOffset) \ fixDPI(BLOCKHEIGHT)
     
 End Function
 
@@ -560,7 +560,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -591,14 +591,14 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     filterDensity = filterDensity / 100
             
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
         originalLuminance = (getLuminance(r, g, b) / 255)
@@ -616,18 +616,18 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -647,7 +647,7 @@ Private Sub vsFilter_Scroll()
 End Sub
 
 'This custom routine, combined with careful subclassing, allows us to handle mousewheel events for this form.
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsFilter.Visible Then
@@ -660,7 +660,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
                 vsFilter.Value = vsFilter.Value + vsFilter.LargeChange
             End If
             
-            curFilterHover = getFilterAtPosition(x, y)
+            curFilterHover = getFilterAtPosition(X, Y)
             redrawFilterList
         
         ElseIf LinesScrolled > 0 Then
@@ -671,7 +671,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
                 vsFilter.Value = vsFilter.Value - vsFilter.LargeChange
             End If
             
-            curFilterHover = getFilterAtPosition(x, y)
+            curFilterHover = getFilterAtPosition(X, Y)
             redrawFilterList
             
         End If

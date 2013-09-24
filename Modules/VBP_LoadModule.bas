@@ -10,7 +10,7 @@ Attribute VB_Name = "Loading"
 ' plugins, files, and anything else the program needs to take from the hard drive.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -1133,7 +1133,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
         End If
     End If
     
-    If Not g_IsProgramCompiled Then sMsg = warnIDE & "  " & sMsg
+    If Not g_IsProgramCompiled Then sMsg = sMsg & "  " & warnIDE
     
     If FormSplash.Visible Then
         FormSplash.lblMessage = sMsg

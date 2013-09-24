@@ -10,7 +10,7 @@ Attribute VB_Name = "Filters_Miscellaneous"
 'The general image filter module; contains unorganized routines at present.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -40,7 +40,7 @@ Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -59,30 +59,30 @@ Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     Dim hMax As Double, hMaxLog As Double
     hMax = 0:    hMaxLog = 0
     
-    For x = 0 To 3
-        channelMax(x) = 0
-        channelMaxLog(x) = 0
-        For y = 0 To 255
-            hData(x, y) = 0
-        Next y
-    Next x
+    For X = 0 To 3
+        channelMax(X) = 0
+        channelMaxLog(X) = 0
+        For Y = 0 To 255
+            hData(X, Y) = 0
+        Next Y
+    Next X
     
     'Build a look-up table for luminance conversion; 765 = 255 * 3
     Dim lumLookup(0 To 765) As Byte
     
-    For x = 0 To 765
-        lumLookup(x) = x \ 3
-    Next x
+    For X = 0 To 765
+        lumLookup(X) = X \ 3
+    Next X
     
     'Run a quick loop through the image, gathering what we need to calculate our histogram
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we use a simpler average value.
         l = lumLookup(r + g + b)
@@ -99,37 +99,37 @@ Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
         'Luminance
         hData(3, l) = hData(3, l) + 1
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
     'Run a quick loop through the completed array to find maximum values
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) > channelMax(x) Then
-                channelMax(x) = hData(x, y)
-                channelMaxPosition(x) = y
+    For X = 0 To 3
+        For Y = 0 To 255
+            If hData(X, Y) > channelMax(X) Then
+                channelMax(X) = hData(X, Y)
+                channelMaxPosition(X) = Y
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     'Now calculate the logarithmic version of the histogram
-    For x = 0 To 3
-        If channelMax(x) <> 0 Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0
-    Next x
+    For X = 0 To 3
+        If channelMax(X) <> 0 Then channelMaxLog(X) = Log(channelMax(X)) Else channelMaxLog(X) = 0
+    Next X
     
-    For x = 0 To 3
-        For y = 0 To 255
-            If hData(x, y) <> 0 Then
-                hDataLog(x, y) = Log(hData(x, y))
+    For X = 0 To 3
+        For Y = 0 To 255
+            If hData(X, Y) <> 0 Then
+                hDataLog(X, Y) = Log(hData(X, Y))
             Else
-                hDataLog(x, y) = 0
+                hDataLog(X, Y) = 0
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
 End Sub
 
@@ -206,30 +206,30 @@ Public Sub MenuFadeLastEffect()
     progBarCheck = findBestProgBarValue()
     
     'Local loop variables can be more efficiently cached by VB's compiler
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
     'Finally, prepare a look-up table for the alpha-blend
     Dim aLookUp(0 To 255, 0 To 255) As Byte
     Dim tmpCalc As Long
     
-    For x = 0 To 255
-    For y = 0 To 255
-        tmpCalc = (x + y) \ 2
-        aLookUp(x, y) = CByte(tmpCalc)
-    Next y
-    Next x
+    For X = 0 To 255
+    For Y = 0 To 255
+        tmpCalc = (X + Y) \ 2
+        aLookUp(X, Y) = CByte(tmpCalc)
+    Next Y
+    Next X
         
     'Loop through both images, alpha-blending pixels as we go
-    For x = 0 To minWidth - 1
-        QuickVal = x * qvDepth
-        QuickValUndo = x * qvDepthUndo
-    For y = 0 To minHeight - 1
-        cImageData(QuickVal, y) = aLookUp(cImageData(QuickVal, y), uImageData(QuickValUndo, y))
-        cImageData(QuickVal + 1, y) = aLookUp(cImageData(QuickVal + 1, y), uImageData(QuickValUndo + 1, y))
-        cImageData(QuickVal + 2, y) = aLookUp(cImageData(QuickVal + 2, y), uImageData(QuickValUndo + 2, y))
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    For X = 0 To minWidth - 1
+        QuickVal = X * qvDepth
+        QuickValUndo = X * qvDepthUndo
+    For Y = 0 To minHeight - 1
+        cImageData(QuickVal, Y) = aLookUp(cImageData(QuickVal, Y), uImageData(QuickValUndo, Y))
+        cImageData(QuickVal + 1, Y) = aLookUp(cImageData(QuickVal + 1, Y), uImageData(QuickValUndo + 1, Y))
+        cImageData(QuickVal + 2, Y) = aLookUp(cImageData(QuickVal + 2, Y), uImageData(QuickValUndo + 2, Y))
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
         
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(uImageData), 0&, 4
@@ -262,7 +262,7 @@ Public Sub MenuHeatMap()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -286,18 +286,18 @@ Public Sub MenuHeatMap()
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         grayVal = gLookup(r + g + b)
         
@@ -326,16 +326,16 @@ Public Sub MenuHeatMap()
         'Now convert those HSL values back to RGB, but substitute in our artificial hue value (calculated above)
         tHSLToRGB hVal, sVal, lVal, r, g, b
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -377,7 +377,7 @@ Public Sub MenuComicBook()
     gaussLayer.createFromExistingLayer workingLayer
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -422,21 +422,21 @@ Public Sub MenuComicBook()
     Dim blendVal As Double
     
     'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
         'Retrieve the original image's pixels
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(QuickVal + 2, Y)
+        g = srcImageData(QuickVal + 1, Y)
+        b = srcImageData(QuickVal, Y)
         
         tDelta = (213 * r + 715 * g + 72 * b) \ 1000
         
         'Now, retrieve the gaussian pixels
-        r2 = GaussImageData(QuickVal + 2, y)
-        g2 = GaussImageData(QuickVal + 1, y)
-        b2 = GaussImageData(QuickVal, y)
+        r2 = GaussImageData(QuickVal + 2, Y)
+        g2 = GaussImageData(QuickVal + 1, Y)
+        b2 = GaussImageData(QuickVal, Y)
         
         'Calculate a delta between the two
         tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
@@ -445,18 +445,18 @@ Public Sub MenuComicBook()
         'If the delta is below the specified threshold, replace it with the blurred data.
         If tDelta > gThreshold Then
             If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-            dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-            dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-            dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+            dstImageData(QuickVal + 2, Y) = BlendColors(srcImageData(QuickVal + 2, Y), GaussImageData(QuickVal + 2, Y), blendVal)
+            dstImageData(QuickVal + 1, Y) = BlendColors(srcImageData(QuickVal + 1, Y), GaussImageData(QuickVal + 1, Y), blendVal)
+            dstImageData(QuickVal, Y) = BlendColors(srcImageData(QuickVal, Y), GaussImageData(QuickVal, Y), blendVal)
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, Y) = BlendColors(srcImageData(QuickVal + 3, Y), GaussImageData(QuickVal + 3, Y), blendVal)
         End If
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x + (finalY * 2)
+            SetProgBarVal X + (finalY * 2)
         End If
-    Next x
+    Next X
         
     'With our work complete, release all arrays
     CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
@@ -488,31 +488,31 @@ Public Sub MenuComicBook()
     Dim z As Long
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-        QuickValLeft = (x - 1) * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+        QuickValRight = (X + 1) * qvDepth
+        QuickValLeft = (X - 1) * qvDepth
+    For Y = initY To finalY
         For z = 0 To 2
     
             tMin = 255
-            tmpColor = srcImageData(QuickValRight + z, y)
+            tmpColor = srcImageData(QuickValRight + z, Y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y - 1)
+            tmpColor = srcImageData(QuickValRight + z, Y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValRight + z, y + 1)
+            tmpColor = srcImageData(QuickValRight + z, Y + 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y)
+            tmpColor = srcImageData(QuickValLeft + z, Y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y - 1)
+            tmpColor = srcImageData(QuickValLeft + z, Y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickValLeft + z, y + 1)
+            tmpColor = srcImageData(QuickValLeft + z, Y + 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickVal + z, y)
+            tmpColor = srcImageData(QuickVal + z, Y)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickVal + z, y - 1)
+            tmpColor = srcImageData(QuickVal + z, Y - 1)
             If tmpColor < tMin Then tMin = tmpColor
-            tmpColor = srcImageData(QuickVal + z, y + 1)
+            tmpColor = srcImageData(QuickVal + z, Y + 1)
             If tmpColor < tMin Then tMin = tmpColor
             
             If tMin > 255 Then tMin = 255
@@ -521,36 +521,36 @@ Public Sub MenuComicBook()
             Select Case z
             
                 Case 0
-                    b = 255 - (srcImageData(QuickVal, y) - tMin)
+                    b = 255 - (srcImageData(QuickVal, Y) - tMin)
             
                 Case 1
-                    g = 255 - (srcImageData(QuickVal + 1, y) - tMin)
+                    g = 255 - (srcImageData(QuickVal + 1, Y) - tMin)
                     
                 Case 2
-                    r = 255 - (srcImageData(QuickVal + 2, y) - tMin)
+                    r = 255 - (srcImageData(QuickVal + 2, Y) - tMin)
             
             End Select
                     
         Next z
         
-        r2 = dstImageData(QuickVal + 2, y)
-        g2 = dstImageData(QuickVal + 1, y)
-        b2 = dstImageData(QuickVal, y)
+        r2 = dstImageData(QuickVal + 2, Y)
+        g2 = dstImageData(QuickVal + 1, Y)
+        b2 = dstImageData(QuickVal, Y)
         
         r = ((CSng(r) / 255) * (CSng(r2) / 255)) * 255
         g = ((CSng(g) / 255) * (CSng(g2) / 255)) * 255
         b = ((CSng(b) / 255) * (CSng(b2) / 255)) * 255
         
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(QuickVal + 2, Y) = r
+        dstImageData(QuickVal + 1, Y) = g
+        dstImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x + finalX + (finalY * 2)
+            SetProgBarVal X + finalX + (finalY * 2)
         End If
-    Next x
+    Next X
     
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
@@ -575,7 +575,7 @@ Public Sub MenuSynthesize()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -597,18 +597,18 @@ Public Sub MenuSynthesize()
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         grayVal = gLookup(r + g + b)
         
@@ -623,16 +623,16 @@ Public Sub MenuSynthesize()
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -655,7 +655,7 @@ Public Sub MenuAlien()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -676,13 +676,13 @@ Public Sub MenuAlien()
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         newR = b + g - r
         newG = r + b - g
@@ -695,16 +695,16 @@ Public Sub MenuAlien()
         If newB > 255 Then newB = 255
         If newB < 0 Then newB = 0
         
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        ImageData(QuickVal + 2, Y) = newR
+        ImageData(QuickVal + 1, Y) = newG
+        ImageData(QuickVal, Y) = newB
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -728,7 +728,7 @@ Public Sub MenuAntique()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -746,29 +746,29 @@ Public Sub MenuAntique()
     
     'We're going to need grayscale values as part of the effect; grayscale is easily optimized via a look-up table
     Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
     
     'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
     Dim gammaLookUp(0 To 255) As Byte
     Dim tmpVal As Double
-    For x = 0 To 255
-        tmpVal = x / 255
+    For X = 0 To 255
+        tmpVal = X / 255
         tmpVal = tmpVal ^ (1 / 1.6)
         tmpVal = tmpVal * 255
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
-        gammaLookUp(x) = CByte(tmpVal)
-    Next x
+        gammaLookUp(X) = CByte(tmpVal)
+    Next X
     
     'Finally, we also need to adjust brightness.  A look-up table is once again invaluable
     Dim bLookup(0 To 255) As Byte
-    For x = 0 To 255
-        tmpVal = x * 1.75
+    For X = 0 To 255
+        tmpVal = X * 1.75
         If tmpVal > 255 Then tmpVal = 255
-        bLookup(x) = CByte(tmpVal)
-    Next x
+        bLookup(X) = CByte(tmpVal)
+    Next X
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -776,13 +776,13 @@ Public Sub MenuAntique()
     Dim gray As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         gray = gLookup(r + g + b)
         
@@ -802,16 +802,16 @@ Public Sub MenuAntique()
         newG = gammaLookUp(newG)
         newB = gammaLookUp(newB)
         
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        ImageData(QuickVal + 2, Y) = newR
+        ImageData(QuickVal + 1, Y) = newG
+        ImageData(QuickVal, Y) = newB
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -835,7 +835,7 @@ Public Sub MenuSepia()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -856,13 +856,13 @@ Public Sub MenuSepia()
     Dim newR As Double, newG As Double, newB As Double
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
                 
         newR = CSng(r) * 0.393 + CSng(g) * 0.769 + CSng(b) * 0.189
         newG = CSng(r) * 0.349 + CSng(g) * 0.686 + CSng(b) * 0.168
@@ -876,16 +876,16 @@ Public Sub MenuSepia()
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -934,7 +934,7 @@ Public Sub MenuDream()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -957,18 +957,18 @@ Public Sub MenuDream()
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        newR = ImageData(QuickVal + 2, y)
-        newG = ImageData(QuickVal + 1, y)
-        newB = ImageData(QuickVal, y)
+        newR = ImageData(QuickVal + 2, Y)
+        newG = ImageData(QuickVal + 1, Y)
+        newB = ImageData(QuickVal, Y)
         
         grayVal = gLookup(newR + newG + newB)
         
@@ -983,16 +983,16 @@ Public Sub MenuDream()
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -1015,7 +1015,7 @@ Public Sub MenuRadioactive()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1036,13 +1036,13 @@ Public Sub MenuRadioactive()
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         If r = 0 Then r = 1
         If g = 0 Then g = 1
@@ -1058,16 +1058,16 @@ Public Sub MenuRadioactive()
         
         newG = 255 - newG
         
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        ImageData(QuickVal + 2, Y) = newR
+        ImageData(QuickVal + 1, Y) = newG
+        ImageData(QuickVal, Y) = newB
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -1090,7 +1090,7 @@ Public Sub MenuFilmNoir()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1112,42 +1112,42 @@ Public Sub MenuFilmNoir()
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
     
     'Same goes for contrast
     Dim cLookup(0 To 255) As Byte, cCalc As Long
                 
-    For x = 0 To 255
-        cCalc = x + (((x - 127) * 30) \ 100)
+    For X = 0 To 255
+        cCalc = X + (((X - 127) * 30) \ 100)
         If cCalc > 255 Then cCalc = 255
         If cCalc < 0 Then cCalc = 0
-        cLookup(x) = CByte(cCalc)
-    Next x
+        cLookup(X) = CByte(cCalc)
+    Next X
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         grayVal = gLookup(r + g + b)
         grayVal = cLookup(grayVal)
         
-        ImageData(QuickVal + 2, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 2, Y) = grayVal
+        ImageData(QuickVal + 1, Y) = grayVal
+        ImageData(QuickVal, Y) = grayVal
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -1170,7 +1170,7 @@ Public Sub MenuCountColors()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1199,13 +1199,13 @@ Public Sub MenuCountColors()
     Dim chkValue As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         chkValue = RGB(r, g, b)
         If UniqueColors(chkValue) = False Then
@@ -1213,9 +1213,9 @@ Public Sub MenuCountColors()
             UniqueColors(chkValue) = True
         End If
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -1245,7 +1245,7 @@ Public Sub MenuTest()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1263,9 +1263,9 @@ Public Sub MenuTest()
     
     'Because gray values are constant, we can use a look-up table to calculate them
     Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, grayVal As Long
@@ -1274,13 +1274,13 @@ Public Sub MenuTest()
     Dim h As Double, s As Double, l As Double
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         grayVal = gLookup(r + g + b)
         
@@ -1297,13 +1297,13 @@ Public Sub MenuTest()
         If newG > 255 Then newG = 255
         If newB > 255 Then newB = 255
                 
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        ImageData(QuickVal + 2, Y) = newR
+        ImageData(QuickVal + 1, Y) = newG
+        ImageData(QuickVal, Y) = newB
                 
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

@@ -475,11 +475,10 @@ Attribute VB_Exposed = False
 '
 'Module for interfacing with the printer.  For a program that's not designed around printing, PhotoDemon's interface is
 ' surprisingly robust.  All settings are handled through the default VB printer object.  A key feature of this routine
-' (PrintPictureToFitPage) was first written by Waty Thierry (http://www.ppreview.net/) - many thanks go out to him for
-' his great work on printing in VB.
+' (PrintPictureToFitPage) is based off code first written by Waty Thierry (http://www.ppreview.net/).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -602,12 +601,12 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
-    Dim x As Long
+    Dim X As Long
     
     'Load a list of printers into the combo box
-    For x = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(x).DeviceName
-    Next x
+    For X = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(X).DeviceName
+    Next X
 
     'Pre-select the current printer
     cbPrinters = Printer.DeviceName
@@ -725,27 +724,11 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
-'Thanks to Waty Thierry for the original version of this function
-' (Note that it has been heavily modified for use within PhotoDemon - you may download the original at http://www.freevbcode.com/ShowCode.asp?ID=194)
+'This PrintPictureToFitPage function is based off code originally written by Waty Thierry.
+' (It has been heavily modified for use within PhotoDemon, but you may download the original at http://www.freevbcode.com/ShowCode.asp?ID=194)
 Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal iOrientation As PrinterOrientationConstants, Optional ByVal iCenter As Boolean = True, Optional ByVal iFit As Boolean = True) As Boolean
 
-  ' #VBIDEUtils#***************************************************
-  ' * Programmer Name  : Waty Thierry
-  ' * Web Site         : www.geocities.com/ResearchTriangle/6311/
-  ' * E-Mail           : waty.thierry@usa.net
-  ' * Date             : 13/Oct/98
-  ' * Time             : 09:18
-  ' * Module Name      : Capture_Module
-  ' * Module Filename  : Capture.bas
-  ' * Procedure Name   : PrintPictureToFitPage
-  ' * Parameters       : Prn As Printer
-  ' *                    Pic As Picture
-  ' ***************************************************************
-  ' * Comments         : Prints a Picture object as big as possible
-  ' *
-  ' ***************************************************************
-
-    Const vbHiMetric  As Integer = 8
+    Const vbHiMetric As Integer = 8
 
     Dim e As Long
     Dim PicRatio As Double

@@ -269,7 +269,7 @@ Attribute VB_Exposed = False
 ' number of outrageous sizes... :)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -416,14 +416,14 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If isPreview = False Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
-    For x = 0 To xLoop
-    For y = 0 To yLoop
-        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
-    Next y
-        If isPreview = False Then SetProgBarVal x
-    Next x
+    For X = 0 To xLoop
+    For Y = 0 To yLoop
+        BitBlt tmpLayer.getLayerDC, X * iWidth, Y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
+    Next Y
+        If isPreview = False Then SetProgBarVal X
+    Next X
     
     If Not isPreview Then
     

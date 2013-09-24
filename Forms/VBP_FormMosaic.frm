@@ -170,7 +170,7 @@ Attribute VB_Exposed = False
 'Form for handling all the pixellation image transform code.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -209,7 +209,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -251,15 +251,15 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     Dim r As Long, g As Long, b As Long
     
     'Loop through each pixel in the image, diffusing as we go
-    For x = initX To xLoop
-        QuickVal = x * qvDepth
-    For y = initY To yLoop
+    For X = initX To xLoop
+        QuickVal = X * qvDepth
+    For Y = initY To yLoop
         
         'This sub loop is to gather all of the data for the current mosaic tile
-        initXLoop = x * BlockSizeX
-        initYLoop = y * BlockSizeY
-        dstXLoop = (x + 1) * BlockSizeX - 1
-        dstYLoop = (y + 1) * BlockSizeY - 1
+        initXLoop = X * BlockSizeX
+        initYLoop = Y * BlockSizeY
+        dstXLoop = (X + 1) * BlockSizeX - 1
+        dstYLoop = (Y + 1) * BlockSizeY - 1
         
         For i = initXLoop To dstXLoop
             QuickVal = i * qvDepth
@@ -317,14 +317,14 @@ NextPixelatePixel3:
         b = 0
         NumOfPixels = 0
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

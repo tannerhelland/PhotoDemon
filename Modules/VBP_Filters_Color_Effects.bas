@@ -9,7 +9,7 @@ Attribute VB_Name = "Filters_Color_Effects"
 'Runs all color-related filters (invert, negative, shifting, etc.).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -27,7 +27,7 @@ Public Sub MenuInvert()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -44,18 +44,18 @@ Public Sub MenuInvert()
     progBarCheck = findBestProgBarValue()
     
     'After all that work, the Invert code itself is very small and unexciting!
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        ImageData(QuickVal, y) = 255 Xor ImageData(QuickVal, y)
-        ImageData(QuickVal + 1, y) = 255 Xor ImageData(QuickVal + 1, y)
-        ImageData(QuickVal + 2, y) = 255 Xor ImageData(QuickVal + 2, y)
-    Next y
-        If (x And progBarCheck) = 0 Then
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
+        ImageData(QuickVal, Y) = 255 Xor ImageData(QuickVal, Y)
+        ImageData(QuickVal + 1, Y) = 255 Xor ImageData(QuickVal + 1, Y)
+        ImageData(QuickVal + 2, Y) = 255 Xor ImageData(QuickVal + 2, Y)
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -82,7 +82,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -102,27 +102,27 @@ Public Sub MenuCShift(ByVal sType As Byte)
     Dim r As Long, g As Long, b As Long
     
     'After all that work, the Invert code itself is very small and unexciting!
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         If sType = 0 Then
-            r = ImageData(QuickVal, y)
-            g = ImageData(QuickVal + 2, y)
-            b = ImageData(QuickVal + 1, y)
+            r = ImageData(QuickVal, Y)
+            g = ImageData(QuickVal + 2, Y)
+            b = ImageData(QuickVal + 1, Y)
         Else
-            r = ImageData(QuickVal + 1, y)
-            g = ImageData(QuickVal, y)
-            b = ImageData(QuickVal + 2, y)
+            r = ImageData(QuickVal + 1, Y)
+            g = ImageData(QuickVal, Y)
+            b = ImageData(QuickVal + 2, Y)
         End If
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-    Next y
-        If (x And progBarCheck) = 0 Then
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -145,7 +145,7 @@ Public Sub MenuNegative()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -166,14 +166,14 @@ Public Sub MenuNegative()
     Dim h As Double, s As Double, l As Double
     
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Use those to calculate hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -182,16 +182,16 @@ Public Sub MenuNegative()
         tHSLToRGB h, s, 1 - l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -214,7 +214,7 @@ Public Sub MenuInvertHue()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -235,14 +235,14 @@ Public Sub MenuInvertHue()
     Dim h As Double, s As Double, l As Double
     
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Use those to calculate hue, saturation, and luminance
         tRGBToHSL r, g, b, h, s, l
@@ -254,16 +254,16 @@ Public Sub MenuInvertHue()
         tHSLToRGB h, s, l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -286,7 +286,7 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -307,13 +307,13 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
     Dim newR As Long, newG As Long, newB As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         If r = 0 Then r = 1
         If g = 0 Then g = 1
@@ -327,16 +327,16 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         If newG > 255 Then newG = 255
         If newB > 255 Then newB = 255
         
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        ImageData(QuickVal + 2, Y) = newR
+        ImageData(QuickVal + 1, Y) = newG
+        ImageData(QuickVal, Y) = newB
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -363,7 +363,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -383,13 +383,13 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     Dim r As Long, g As Long, b As Long, maxVal As Long, minVal As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         If useMax Then
             maxVal = Max3Int(r, g, b)
@@ -403,16 +403,16 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
             If b > minVal Then b = 0
         End If
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
-        If (x And progBarCheck) = 0 Then
+    Next Y
+        If (X And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x
+            SetProgBarVal X
         End If
-    Next x
+    Next X
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

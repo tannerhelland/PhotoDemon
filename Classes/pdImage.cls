@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 ' additional layers may be utilized within each image.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -420,13 +420,13 @@ Public Sub ClearUndos()
     'Using a temporary string, destroy every possible Undo file
     Dim tempFile As String
     
-    Dim x As Long
-    For x = 0 To UndoTotal
-        tempFile = GenerateUndoFile(x)
+    Dim X As Long
+    For X = 0 To UndoTotal
+        tempFile = GenerateUndoFile(X)
         If FileExist(tempFile) Then Kill tempFile
-        tempFile = GenerateUndoFile(x) & ".selection"
+        tempFile = GenerateUndoFile(X) & ".selection"
         If FileExist(tempFile) Then Kill tempFile
-    Next x
+    Next X
     
     'Set the current and maximum Undo number to 0
     UndoNum = 0
@@ -573,7 +573,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     leftOffset = mainSelection.boundLeft
     topOffset = mainSelection.boundTop
     
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim thisAlpha As Long
     Dim blendAlpha As Double
     
@@ -583,26 +583,26 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     Dim dstLayerCD As Long, dstQuickX As Long
     dstLayerCD = dstLayer.getLayerColorDepth \ 8
             
-    For x = 0 To dstLayer.getLayerWidth - 1
-        dstQuickX = x * dstLayerCD
-        srcQuickX = (leftOffset + x) * srcLayerCD
-    For y = 0 To dstLayer.getLayerHeight - 1
+    For X = 0 To dstLayer.getLayerWidth - 1
+        dstQuickX = X * dstLayerCD
+        srcQuickX = (leftOffset + X) * srcLayerCD
+    For Y = 0 To dstLayer.getLayerHeight - 1
     
-        srcQuickY = topOffset + y
-        thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
+        srcQuickY = topOffset + Y
+        thisAlpha = selData((leftOffset + X) * 3, srcQuickY)
         
-        dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
-        dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
-        dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
+        dstImageData(dstQuickX, Y) = srcImageData(srcQuickX, srcQuickY)
+        dstImageData(dstQuickX + 1, Y) = srcImageData(srcQuickX + 1, srcQuickY)
+        dstImageData(dstQuickX + 2, Y) = srcImageData(srcQuickX + 2, srcQuickY)
         If srcLayerCD = 4 Then
             blendAlpha = thisAlpha / 255
-            dstImageData(dstQuickX + 3, y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
+            dstImageData(dstQuickX + 3, Y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
         Else
-            dstImageData(dstQuickX + 3, y) = thisAlpha
+            dstImageData(dstQuickX + 3, Y) = thisAlpha
         End If
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'Clear all array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

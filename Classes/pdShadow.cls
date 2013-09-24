@@ -25,7 +25,7 @@ Attribute VB_Exposed = False
 ' and possibly even text.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -40,7 +40,7 @@ Private nwShadow As pdLayer, neShadow As pdLayer
 Private swShadow As pdLayer, seShadow As pdLayer
 
 'Create the images necessary for rendering a drop shadow around a square object.
-Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStrength As Byte, ByVal backColor As Long)
+Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStrength As Byte, ByVal BackColor As Long)
 
     'Note that the shadow strength is just a value between 255 and 0, which will be subtracted from pixel
     ' color values in order to create a "shadow" illusion.
@@ -60,8 +60,8 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     Set singleVShadow = New pdLayer
     
     'Initialize shadows that are (1 x shadowRadius) and (shadowRadius x 1) in size
-    singleHShadow.createBlank 1, shadowRadius, 24, backColor
-    singleVShadow.createBlank shadowRadius, 1, 24, backColor
+    singleHShadow.createBlank 1, shadowRadius, 24, BackColor
+    singleVShadow.createBlank shadowRadius, 1, 24, BackColor
     
     'Now, draw a smoothly alpha-blended shadow onto each of those
     
@@ -117,95 +117,95 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     'Now, we need to render the first of four corner shadows.  The render will only be done once, and each subsequent corner
     ' will simply be a rotation of this initial shadow.
     Set seShadow = New pdLayer
-    seShadow.createBlank shadowRadius, shadowRadius, 24, backColor
+    seShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
     prepSafeArray tmpSA, seShadow
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Loop through the image, alpha-blending a drop shadow effect as we go
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim distPixels As Double
     
-    For x = 0 To loopSize
-        QuickX = x * 3
-    For y = 0 To loopSize
-        distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
+    For X = 0 To loopSize
+        QuickX = X * 3
+    For Y = 0 To loopSize
+        distPixels = distanceTwoPoints(0, 0, X, Y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, y) = BlendColors(shadowLookup(iData(QuickX + 2, y)), iData(QuickX + 2, y), distPixels)
-        iData(QuickX + 1, y) = BlendColors(shadowLookup(iData(QuickX + 1, y)), iData(QuickX + 1, y), distPixels)
-        iData(QuickX, y) = BlendColors(shadowLookup(iData(QuickX, y)), iData(QuickX, y), distPixels)
-    Next y
-    Next x
+        iData(QuickX + 2, Y) = BlendColors(shadowLookup(iData(QuickX + 2, Y)), iData(QuickX + 2, Y), distPixels)
+        iData(QuickX + 1, Y) = BlendColors(shadowLookup(iData(QuickX + 1, Y)), iData(QuickX + 1, Y), distPixels)
+        iData(QuickX, Y) = BlendColors(shadowLookup(iData(QuickX, Y)), iData(QuickX, Y), distPixels)
+    Next Y
+    Next X
         
     'Release our DIB pointer
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
         
     'Now, corner number 2
     Set swShadow = New pdLayer
-    swShadow.createBlank shadowRadius, shadowRadius, 24, backColor
+    swShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
     prepSafeArray tmpSA, swShadow
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Loop through the image, alpha-blending a drop shadow effect as we go
-    For x = 0 To loopSize
-        QuickX = (loopSize - x) * 3
-    For y = 0 To loopSize
-        distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
+    For X = 0 To loopSize
+        QuickX = (loopSize - X) * 3
+    For Y = 0 To loopSize
+        distPixels = distanceTwoPoints(0, 0, X, Y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, y) = BlendColors(shadowLookup(iData(QuickX + 2, y)), iData(QuickX + 2, y), distPixels)
-        iData(QuickX + 1, y) = BlendColors(shadowLookup(iData(QuickX + 1, y)), iData(QuickX + 1, y), distPixels)
-        iData(QuickX, y) = BlendColors(shadowLookup(iData(QuickX, y)), iData(QuickX, y), distPixels)
-    Next y
-    Next x
+        iData(QuickX + 2, Y) = BlendColors(shadowLookup(iData(QuickX + 2, Y)), iData(QuickX + 2, Y), distPixels)
+        iData(QuickX + 1, Y) = BlendColors(shadowLookup(iData(QuickX + 1, Y)), iData(QuickX + 1, Y), distPixels)
+        iData(QuickX, Y) = BlendColors(shadowLookup(iData(QuickX, Y)), iData(QuickX, Y), distPixels)
+    Next Y
+    Next X
         
     'Release our DIB pointer
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
 
     'Now, corner number 3
     Set nwShadow = New pdLayer
-    nwShadow.createBlank shadowRadius, shadowRadius, 24, backColor
+    nwShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
     prepSafeArray tmpSA, nwShadow
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Loop through the image, alpha-blending a drop shadow effect as we go
-    For x = 0 To loopSize
-        QuickX = (loopSize - x) * 3
-    For y = 0 To loopSize
-        distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
+    For X = 0 To loopSize
+        QuickX = (loopSize - X) * 3
+    For Y = 0 To loopSize
+        distPixels = distanceTwoPoints(0, 0, X, Y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 2, loopSize - y)), iData(QuickX + 2, loopSize - y), distPixels)
-        iData(QuickX + 1, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 1, loopSize - y)), iData(QuickX + 1, loopSize - y), distPixels)
-        iData(QuickX, loopSize - y) = BlendColors(shadowLookup(iData(QuickX, loopSize - y)), iData(QuickX, loopSize - y), distPixels)
-    Next y
-    Next x
+        iData(QuickX + 2, loopSize - Y) = BlendColors(shadowLookup(iData(QuickX + 2, loopSize - Y)), iData(QuickX + 2, loopSize - Y), distPixels)
+        iData(QuickX + 1, loopSize - Y) = BlendColors(shadowLookup(iData(QuickX + 1, loopSize - Y)), iData(QuickX + 1, loopSize - Y), distPixels)
+        iData(QuickX, loopSize - Y) = BlendColors(shadowLookup(iData(QuickX, loopSize - Y)), iData(QuickX, loopSize - Y), distPixels)
+    Next Y
+    Next X
         
     'Release our DIB pointer
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     
     'And finally, corner number 4
     Set neShadow = New pdLayer
-    neShadow.createBlank shadowRadius, shadowRadius, 24, backColor
+    neShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
     prepSafeArray tmpSA, neShadow
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Loop through the image, alpha-blending a drop shadow effect as we go
-    For x = 0 To loopSize
-        QuickX = x * 3
-    For y = 0 To loopSize
-        distPixels = distanceTwoPoints(0, 0, x, y) / (shadowRadius - 1)
+    For X = 0 To loopSize
+        QuickX = X * 3
+    For Y = 0 To loopSize
+        distPixels = distanceTwoPoints(0, 0, X, Y) / (shadowRadius - 1)
         If distPixels > 1 Then distPixels = 1
-        iData(QuickX + 2, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 2, loopSize - y)), iData(QuickX + 2, loopSize - y), distPixels)
-        iData(QuickX + 1, loopSize - y) = BlendColors(shadowLookup(iData(QuickX + 1, loopSize - y)), iData(QuickX + 1, loopSize - y), distPixels)
-        iData(QuickX, loopSize - y) = BlendColors(shadowLookup(iData(QuickX, loopSize - y)), iData(QuickX, loopSize - y), distPixels)
-    Next y
-    Next x
+        iData(QuickX + 2, loopSize - Y) = BlendColors(shadowLookup(iData(QuickX + 2, loopSize - Y)), iData(QuickX + 2, loopSize - Y), distPixels)
+        iData(QuickX + 1, loopSize - Y) = BlendColors(shadowLookup(iData(QuickX + 1, loopSize - Y)), iData(QuickX + 1, loopSize - Y), distPixels)
+        iData(QuickX, loopSize - Y) = BlendColors(shadowLookup(iData(QuickX, loopSize - Y)), iData(QuickX, loopSize - Y), distPixels)
+    Next Y
+    Next X
         
     'Release our DIB pointer
     CopyMemory ByVal VarPtrArray(iData), 0&, 4

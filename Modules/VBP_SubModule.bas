@@ -10,7 +10,7 @@ Attribute VB_Name = "Misc_Uncategorized"
 ' hoping to clear out most of this module in favor of a more organized approach.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
