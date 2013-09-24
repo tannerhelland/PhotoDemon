@@ -629,7 +629,7 @@ Attribute VB_Exposed = False
    '    second derivatives must be equal at knots
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -803,33 +803,33 @@ Public Sub DrawHistogram()
                 Dim xCalc As Long
                 
                 'Run a loop through every histogram value...
-                Dim x As Long, y As Long
-                For x = 0 To picH.ScaleWidth
+                Dim X As Long, Y As Long
+                For X = 0 To picH.ScaleWidth
             
                     'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
                     ' the tallest possible value (when RData(x) = MaxVal).  We then subtract that value from tHeight because
                     ' y values INCREASE as we move DOWN a picture box - remember that (0,0) is in the top left.
-                    xCalc = Int((x / picH.ScaleWidth) * 256)
+                    xCalc = Int((X / picH.ScaleWidth) * 256)
                     If xCalc > 255 Then xCalc = 255
                     
                     'Use logarithmic values if requested by the user
                     If CBool(chkLog) Then
-                        y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
+                        Y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
                     Else
-                        y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
+                        Y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
                     End If
                     
                     'Draw a line from the last (x,y) to the current (x,y)
-                    picH.Line (LastX, LastY + 2)-(x, y + 2)
+                    picH.Line (LastX, LastY + 2)-(X, Y + 2)
                         
                     'If "fill curve" is selected, fill the area beneath this point.  (Note that luminance curve is never filled!)
-                    If hType < 3 And CBool(chkFillCurve) Then GDIPlusDrawLineToDC picH.hDC, x, y + 2, x, picH.ScaleHeight, picH.ForeColor, 64, 1, False
+                    If hType < 3 And CBool(chkFillCurve) Then GDIPlusDrawLineToDC picH.hDC, X, Y + 2, X, picH.ScaleHeight, picH.ForeColor, 64, 1, False
                         
                     'Update the LastX/Y values
-                    LastX = x
-                    LastY = y
+                    LastX = X
+                    LastY = Y
                     
-                Next x
+                Next X
             
             End If
                 
@@ -886,7 +886,7 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
     picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
     lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
+    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
     
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
@@ -899,9 +899,9 @@ End Sub
 
 'When the mouse moves over the histogram, display the level and count for the histogram
 'entry at the x-value over which the mouse passes
-Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picH_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim xCalc As Long
-    xCalc = Int((x / picH.ScaleWidth) * 256)
+    xCalc = Int((X / picH.ScaleWidth) * 256)
     If xCalc > 255 Then xCalc = 255
     lblValue(0).Caption = xCalc
     lblValue(1).Caption = hData(0, xCalc)
@@ -952,13 +952,13 @@ Private Sub DrawHistogramGradient(ByRef dstObject As PictureBox, ByVal Color1 As
     
     'Last, run a loop through the width of the picture box, incrementing the color as
     'we go (thus creating a gradient effect)
-    Dim x As Long
-    For x = 0 To iWidth
-        r2 = r + VR * x
-        g2 = g + VG * x
-        b2 = b + VB * x
-        dstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
-    Next x
+    Dim X As Long
+    For X = 0 To iWidth
+        r2 = r + VR * X
+        g2 = g + VG * X
+        b2 = b + VB * X
+        dstObject.Line (X, 0)-(X, iHeight), RGB(r2, g2, b2)
+    Next X
     
 End Sub
 
@@ -1040,8 +1040,8 @@ Private Function getCurvePoint(ByRef i As Long, ByVal v As Double) As Double
 End Function
 
 'Original required spline function:
-Private Function f(ByRef x As Double) As Double
-        f = x * x * x - x
+Private Function f(ByRef X As Double) As Double
+        f = X * X * X - X
 End Function
 
 'Original required spline function:
@@ -1145,7 +1145,7 @@ Public Sub StretchHistogram()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1172,14 +1172,14 @@ Public Sub StretchHistogram()
     bMin = 255
         
     'Loop through each pixel in the image, checking max/min values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         If r < rMin Then rMin = r
         If r > rMax Then rMax = r
@@ -1188,8 +1188,8 @@ Public Sub StretchHistogram()
         If b < bMin Then bMin = b
         If b > bMax Then bMax = b
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     Message "Stretching histogram..."
     Dim rdif As Long, Gdif As Long, Bdif As Long
@@ -1201,50 +1201,50 @@ Public Sub StretchHistogram()
     'Lookup tables make the stretching go faster
     Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
-    For x = 0 To 255
+    For X = 0 To 255
         If rdif <> 0 Then
-            r = 255 * ((x - rMin) / rdif)
+            r = 255 * ((X - rMin) / rdif)
             If r < 0 Then r = 0
             If r > 255 Then r = 255
-            rLookup(x) = r
+            rLookup(X) = r
         Else
-            rLookup(x) = x
+            rLookup(X) = X
         End If
         If Gdif <> 0 Then
-            g = 255 * ((x - gMin) / Gdif)
+            g = 255 * ((X - gMin) / Gdif)
             If g < 0 Then g = 0
             If g > 255 Then g = 255
-            gLookup(x) = g
+            gLookup(X) = g
         Else
-            gLookup(x) = x
+            gLookup(X) = X
         End If
         If Bdif <> 0 Then
-            b = 255 * ((x - bMin) / Bdif)
+            b = 255 * ((X - bMin) / Bdif)
             If b < 0 Then b = 0
             If b > 255 Then b = 255
-            bLookup(x) = b
+            bLookup(X) = b
         Else
-            bLookup(x) = x
+            bLookup(X) = X
         End If
-    Next x
+    Next X
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
                 
-        ImageData(QuickVal + 2, y) = rLookup(r)
-        ImageData(QuickVal + 1, y) = gLookup(g)
-        ImageData(QuickVal, y) = bLookup(b)
+        ImageData(QuickVal + 2, Y) = rLookup(r)
+        ImageData(QuickVal + 1, Y) = gLookup(g)
+        ImageData(QuickVal, Y) = bLookup(b)
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

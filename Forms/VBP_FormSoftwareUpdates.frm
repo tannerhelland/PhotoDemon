@@ -346,7 +346,7 @@ Attribute VB_Exposed = False
 ' notified again. (FYI - this option can be enabled/disabled from the 'Tools' -> 'Options' menu.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -370,7 +370,7 @@ Private Sub cmdNoDownload_Click()
     picNo.Left = 0
     picNo.Top = 0
     'DoEvents
-    txtNoExplanation.Text = g_Language.TranslateMessage("The next time you launch the program, it will remind you about this software update." & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.")
+    txtNoExplanation.Text = g_Language.TranslateMessage("The next time you launch the program, it will remind you about this software update." & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting photodemon.org.")
     picNo.Visible = True
     cmdOKNo.Visible = True
     cmdOKNo.SetFocus
@@ -390,7 +390,7 @@ Private Sub cmdNoDownloadNoReminder_Click()
     picNo.Left = 0
     picNo.Top = 0
     'DoEvents
-    txtNoExplanation.Text = "You will no longer be prompted about software updates.  (If you change your mind in the future, this setting can be reversed from the 'Tools' -> 'Options' menu.)" & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon."
+    txtNoExplanation.Text = "You will no longer be prompted about software updates.  (If you change your mind in the future, this setting can be reversed from the 'Tools' -> 'Options' menu.)" & vbCrLf & vbCrLf & "Note: you can always manually download the latest version by visiting photodemon.org"
     picNo.Visible = True
     cmdOKNo.Visible = True
     cmdOKNo.SetFocus
@@ -404,7 +404,7 @@ End Sub
 
 'Yes, the user wants us to download the new version.  Launch a link to the update page and close this form.
 Private Sub cmdYesDownload_Click()
-    OpenURL "http://www.tannerhelland.com/photodemon/#download"
+    OpenURL "http://www.photodemon.org/download"
     Message "Thanks for downloading the latest PhotoDemon update.  Hope you enjoy it!"
     Unload Me
 End Sub
@@ -455,7 +455,7 @@ End Sub
 
 'Open a browser window with the PhotoDemon download page
 Private Sub lblDirectPDDownload_Click()
-    OpenURL "http://www.tannerhelland.com/photodemon/#download"
+    OpenURL "http://www.photodemon.org/download"
 End Sub
 
 'When the user clicks the "more information" link, open a browser window with the blog article pulled from updates.txt

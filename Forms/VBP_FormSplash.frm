@@ -28,24 +28,25 @@ Begin VB.Form FormSplash
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
    Begin VB.Label lblMessage 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
       Caption         =   "Live updates..."
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00C0C0C0&
+      ForeColor       =   &H00E0E0E0&
       Height          =   330
       Left            =   285
       TabIndex        =   0
-      Top             =   7320
+      Top             =   7920
       Width           =   11205
       WordWrap        =   -1  'True
    End
@@ -63,7 +64,7 @@ Attribute VB_Exposed = False
 'Last update: logos are now stored in the resource file.  No more picture box placeholders!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 

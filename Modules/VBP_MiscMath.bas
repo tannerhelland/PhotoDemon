@@ -11,7 +11,7 @@ Attribute VB_Name = "Math_Functions"
 ' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -148,43 +148,43 @@ Public Function distanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, 
 End Function
 
 'Return the arctangent of two values (rise / run)
-Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
+Public Function Atan2(ByVal Y As Double, ByVal X As Double) As Double
  
-    If (y = 0) And (x = 0) Then
+    If (Y = 0) And (X = 0) Then
         Atan2 = 0
         Exit Function
     End If
  
-    If y > 0 Then
-        If x >= y Then
-            Atan2 = Atn(y / x)
-        ElseIf x <= -y Then
-            Atan2 = Atn(y / x) + PI
+    If Y > 0 Then
+        If X >= Y Then
+            Atan2 = Atn(Y / X)
+        ElseIf X <= -Y Then
+            Atan2 = Atn(Y / X) + PI
         Else
-            Atan2 = PI_HALF - Atn(x / y)
+            Atan2 = PI_HALF - Atn(X / Y)
         End If
     Else
-        If x >= -y Then
-            Atan2 = Atn(y / x)
-        ElseIf x <= y Then
-            Atan2 = Atn(y / x) - PI
+        If X >= -Y Then
+            Atan2 = Atn(Y / X)
+        ElseIf X <= Y Then
+            Atan2 = Atn(Y / X) - PI
         Else
-            Atan2 = -Atn(x / y) - PI_HALF
+            Atan2 = -Atn(X / Y) - PI_HALF
         End If
     End If
  
 End Function
 
 'Arcsine function
-Public Function Asin(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Asin = Atan2(x, Sqr(1 - x * x))
+Public Function Asin(ByVal X As Double) As Double
+    If (X > 1) Or (X < -1) Then X = 1
+    Asin = Atan2(X, Sqr(1 - X * X))
 End Function
 
 'Arccosine function
-Public Function Acos(ByVal x As Double) As Double
-    If (x > 1) Or (x < -1) Then x = 1
-    Acos = Atan2(Sqr(1 - x * x), x)
+Public Function Acos(ByVal X As Double) As Double
+    If (X > 1) Or (X < -1) Then X = 1
+    Acos = Atan2(Sqr(1 - X * X), X)
 End Function
 
 

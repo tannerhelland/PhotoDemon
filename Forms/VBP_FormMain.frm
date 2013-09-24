@@ -1880,7 +1880,9 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README.txt file for additional information regarding licensing and redistribution.
 
-'PhotoDemon is Copyright ©1999-2013 by Tanner Helland, www.tannerhelland.com
+'PhotoDemon is Copyright ©1999-2013 by Tanner Helland, tannerhelland.com
+
+'Please visit photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Main Program MDI Form
@@ -1893,7 +1895,7 @@ Attribute VB_Exposed = False
 ' primary purpose is sending parameters to other, more interesting sections of the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -2902,7 +2904,7 @@ Private Sub MnuHelp_Click(Index As Integer)
         
         'Donations are so very, very welcome!
         Case 0
-            OpenURL "http://www.tannerhelland.com/donate"
+            OpenURL "http://photodemon.org/donate"
             
         'Check for updates
         Case 2
@@ -2934,7 +2936,7 @@ Private Sub MnuHelp_Click(Index As Integer)
         
         'Submit feedback
         Case 3
-            OpenURL "http://www.tannerhelland.com/photodemon-contact/"
+            OpenURL "http://photodemon.org/about/contact/"
         
         'Submit bug report
         Case 4
@@ -2960,18 +2962,18 @@ Private Sub MnuHelp_Click(Index As Integer)
                 
             End If
             
-            'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
+            'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
             If msgReturn = vbYes Then
                 'Shell a browser window with the GitHub issue report form
                 OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
             ElseIf msgReturn = vbNo Then
-                'Shell a browser window with the tannerhelland.com PhotoDemon contact form
-                OpenURL "http://www.tannerhelland.com/photodemon-contact/"
+                'Shell a browser window with the photodemon.org contact form
+                OpenURL "http://photodemon.org/about/contact/"
             End If
             
         'PhotoDemon's homepage
         Case 6
-            OpenURL "http://www.tannerhelland.com/photodemon"
+            OpenURL "http://www.photodemon.org"
             
         'Download source code
         Case 7
@@ -2979,7 +2981,7 @@ Private Sub MnuHelp_Click(Index As Integer)
         
         'Read terms and license agreement
         Case 8
-            OpenURL "http://www.tannerhelland.com/photodemon/#license"
+            OpenURL "http://photodemon.org/about/license/"
             
         'Display About page
         Case 10

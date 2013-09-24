@@ -11,14 +11,14 @@ Attribute VB_Name = "Software_Updater"
 ' version of PhotoDemon's "download image from Internet" code.
 '
 'The code should be extremely robust against Internet and other miscellaneous errors.  Technically an update check is
-' very simple - simply download an XML file from the tannerhelland.com server, and compare the version numbers in the
+' very simple - simply download an XML file from the photodemon.org server, and compare the version numbers in the
 ' file against the ones supplied by this build.  If the numbers don't match, recommend an update.
 '
 'Note that this code interfaces with the user preferences file so the user can opt to not check for updates and never
 ' be notified again. (FYI - this option can be enabled/disabled from the 'Tools' -> 'Options' menu.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -42,7 +42,7 @@ End Enum
 'Same goes for the update announcement path
 Public updateAnnouncement As String
 
-'Check for a software update; the update info will be contained in a text file at http://tannerhelland.com/photodemon_files/updates.txt
+'Check for a software update; the update info will be contained in an XML file at http://photodemon.org/downloads/updates.xml
 ' This function will return one of three values:
 ' 0 - something went wrong (no Internet connection, etc)
 ' 1 - the check was successful, but this version is up-to-date
@@ -51,7 +51,7 @@ Public Function CheckForSoftwareUpdate() As UpdateCheck
 
     'First things first - set up our target URL
     Dim URL As String
-    URL = "http://tannerhelland.com/photodemon_files/updates.xml"
+    URL = "http://photodemon.org/downloads/updates.xml"
     'URL = "http://tannerhelland.com/photodemon_files/updates_testing.txt"
        
     'Open an Internet session and assign it a handle

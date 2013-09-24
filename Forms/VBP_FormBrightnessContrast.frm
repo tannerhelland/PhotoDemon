@@ -173,7 +173,7 @@ Attribute VB_Exposed = False
 ' curves or white balance instead!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -205,7 +205,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -241,31 +241,31 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         Dim BrightTable(0 To 255) As Byte
         Dim BTCalc As Long
         
-        For x = 0 To 255
-            BTCalc = x + Bright
+        For X = 0 To 255
+            BTCalc = X + Bright
             If BTCalc > 255 Then BTCalc = 255
             If BTCalc < 0 Then BTCalc = 0
-            BrightTable(x) = CByte(BTCalc)
-        Next x
+            BrightTable(X) = CByte(BTCalc)
+        Next X
         
         'Loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
+        For X = initX To finalX
+            QuickVal = X * qvDepth
+        For Y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, y) = BrightTable(ImageData(QuickVal, y))
-            ImageData(QuickVal + 1, y) = BrightTable(ImageData(QuickVal + 1, y))
-            ImageData(QuickVal + 2, y) = BrightTable(ImageData(QuickVal + 2, y))
+            ImageData(QuickVal, Y) = BrightTable(ImageData(QuickVal, Y))
+            ImageData(QuickVal + 1, Y) = BrightTable(ImageData(QuickVal + 1, Y))
+            ImageData(QuickVal + 2, Y) = BrightTable(ImageData(QuickVal + 2, Y))
             
-        Next y
+        Next Y
             If toPreview = False Then
-                If (x And progBarCheck) = 0 Then
+                If (X And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal x
+                    SetProgBarVal X
                 End If
             End If
-        Next x
+        Next X
         
     End If
     
@@ -297,15 +297,15 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
                 Dim NumOfPixels As Long
                 NumOfPixels = 0
                 
-                For x = initX To finalX
-                    QuickVal = x * qvDepth
-                For y = initY To finalY
-                    rTotal = rTotal + ImageData(QuickVal + 2, y)
-                    gTotal = gTotal + ImageData(QuickVal + 1, y)
-                    bTotal = bTotal + ImageData(QuickVal, y)
+                For X = initX To finalX
+                    QuickVal = X * qvDepth
+                For Y = initY To finalY
+                    rTotal = rTotal + ImageData(QuickVal + 2, Y)
+                    gTotal = gTotal + ImageData(QuickVal + 1, Y)
+                    bTotal = bTotal + ImageData(QuickVal, Y)
                     NumOfPixels = NumOfPixels + 1
-                Next y
-                Next x
+                Next Y
+                Next X
                 
                 rTotal = rTotal \ NumOfPixels
                 gTotal = gTotal \ NumOfPixels
@@ -331,31 +331,31 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         'Like brightness, contrast works beautifully with look-up tables
         Dim ContrastTable(0 To 255) As Byte, CTCalc As Long
                 
-        For x = 0 To 255
-            CTCalc = x + (((x - Mean) * Contrast) \ 100)
+        For X = 0 To 255
+            CTCalc = X + (((X - Mean) * Contrast) \ 100)
             If CTCalc > 255 Then CTCalc = 255
             If CTCalc < 0 Then CTCalc = 0
-            ContrastTable(x) = CByte(CTCalc)
-        Next x
+            ContrastTable(X) = CByte(CTCalc)
+        Next X
         
         'Loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
+        For X = initX To finalX
+            QuickVal = X * qvDepth
+        For Y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, y) = ContrastTable(ImageData(QuickVal, y))
-            ImageData(QuickVal + 1, y) = ContrastTable(ImageData(QuickVal + 1, y))
-            ImageData(QuickVal + 2, y) = ContrastTable(ImageData(QuickVal + 2, y))
+            ImageData(QuickVal, Y) = ContrastTable(ImageData(QuickVal, Y))
+            ImageData(QuickVal + 1, Y) = ContrastTable(ImageData(QuickVal + 1, Y))
+            ImageData(QuickVal + 2, Y) = ContrastTable(ImageData(QuickVal + 2, Y))
             
-        Next y
+        Next Y
             If toPreview = False Then
-                If (x And progBarCheck) = 0 Then
+                If (X And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    If Bright <> 0 Then SetProgBarVal x + finalX Else SetProgBarVal x
+                    If Bright <> 0 Then SetProgBarVal X + finalX Else SetProgBarVal X
                 End If
             End If
-        Next x
+        Next X
         
     End If
     

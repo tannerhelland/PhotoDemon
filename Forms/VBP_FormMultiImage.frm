@@ -122,7 +122,7 @@ Attribute VB_Exposed = False
 ' Note that this setting can also be changed from the Edit -> Preferences menu.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 

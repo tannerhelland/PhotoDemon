@@ -161,7 +161,7 @@ Attribute VB_Exposed = False
 'interfacing layer to the 4 main filters: Emboss/EmbossToColor and Engrave/EngraveToColor
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -246,7 +246,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right - 1
@@ -272,15 +272,15 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     tB = ExtractB(cColor)
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+        QuickValRight = (X + 1) * qvDepth
+    For Y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
-        g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
+        r = Abs(CLng(srcImageData(QuickVal + 2, Y)) - CLng(srcImageData(QuickValRight + 2, Y)) + TR)
+        g = Abs(CLng(srcImageData(QuickVal + 1, Y)) - CLng(srcImageData(QuickValRight + 1, Y)) + tG)
+        b = Abs(CLng(srcImageData(QuickVal, Y)) - CLng(srcImageData(QuickValRight, Y)) + tB)
         
         If r > 255 Then
             r = 255
@@ -300,25 +300,25 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(QuickVal + 2, Y) = r
+        dstImageData(QuickVal + 1, Y) = g
+        dstImageData(QuickVal, Y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
-        If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
-            dstImageData(QuickValRight + 1, y) = g
-            dstImageData(QuickValRight, y) = b
+        If X = finalX Then
+            dstImageData(QuickValRight + 2, Y) = r
+            dstImageData(QuickValRight + 1, Y) = g
+            dstImageData(QuickValRight, Y) = b
         End If
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -357,7 +357,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right - 1
@@ -383,15 +383,15 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
     tB = ExtractB(cColor)
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+        QuickValRight = (X + 1) * qvDepth
+    For Y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + TR)
-        g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, Y)) - CLng(srcImageData(QuickVal + 2, Y)) + TR)
+        g = Abs(CLng(srcImageData(QuickValRight + 1, Y)) - CLng(srcImageData(QuickVal + 1, Y)) + tG)
+        b = Abs(CLng(srcImageData(QuickValRight, Y)) - CLng(srcImageData(QuickVal, Y)) + tB)
         
         If r > 255 Then
             r = 255
@@ -411,25 +411,25 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(QuickVal + 2, Y) = r
+        dstImageData(QuickVal + 1, Y) = g
+        dstImageData(QuickVal, Y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
-        If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
-            dstImageData(QuickValRight + 1, y) = g
-            dstImageData(QuickValRight, y) = b
+        If X = finalX Then
+            dstImageData(QuickValRight + 2, Y) = r
+            dstImageData(QuickValRight + 1, Y) = g
+            dstImageData(QuickValRight, Y) = b
         End If
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -36,7 +36,7 @@ Attribute VB_Exposed = False
 ' used preferentially over FreeImage for reading and writing certain filetypes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -275,17 +275,17 @@ Public Sub generateInputFormats()
     'Now that all input files have been added, we can compile a common-dialog-friendly version of this index
     
     'Loop through each entry in the arrays, and append them to the common-dialog-formatted string
-    Dim x As Long
-    For x = 0 To numOfInputFormats
+    Dim X As Long
+    For X = 0 To numOfInputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
-        If x <> 0 Then
-            commonDialogInputs = commonDialogInputs & "|" & inputDescriptions(x) & "|" & inputExtensions(x)
+        If X <> 0 Then
+            commonDialogInputs = commonDialogInputs & "|" & inputDescriptions(X) & "|" & inputExtensions(X)
         Else
-            commonDialogInputs = inputDescriptions(x) & "|" & inputExtensions(x)
+            commonDialogInputs = inputDescriptions(X) & "|" & inputExtensions(X)
         End If
     
-    Next x
+    Next X
     
     'Input format generation complete!
     
@@ -357,19 +357,19 @@ Public Sub generateOutputFormats()
     'Now that all output files have been added, we can compile a common-dialog-friendly version of this index
     
     'Loop through each entry in the arrays, and append them to the common-dialog-formatted string
-    Dim x As Long
-    For x = 0 To numOfOutputFormats
+    Dim X As Long
+    For X = 0 To numOfOutputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
-        If x <> 0 Then
-            commonDialogOutputs = commonDialogOutputs & "|" & outputDescriptions(x) & "|*." & outputExtensions(x)
-            cdOutputDefaultExtensions = cdOutputDefaultExtensions & "|." & outputExtensions(x)
+        If X <> 0 Then
+            commonDialogOutputs = commonDialogOutputs & "|" & outputDescriptions(X) & "|*." & outputExtensions(X)
+            cdOutputDefaultExtensions = cdOutputDefaultExtensions & "|." & outputExtensions(X)
         Else
-            commonDialogOutputs = outputDescriptions(x) & "|*." & outputExtensions(x)
-            cdOutputDefaultExtensions = "." & outputExtensions(x)
+            commonDialogOutputs = outputDescriptions(X) & "|*." & outputExtensions(X)
+            cdOutputDefaultExtensions = "." & outputExtensions(X)
         End If
     
-    Next x
+    Next X
     
     'Output format generation complete!
         

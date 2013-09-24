@@ -10,7 +10,7 @@ Attribute VB_Name = "Drawing"
 ' drawing the canvas background of image forms, and a gradient-rendering sub (used primarily on the histogram form).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -27,7 +27,7 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long) As Long
 
 'Simplified pure-VB function for rendering text to an object.
 Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, ByVal xPos As Long, ByVal yPos As Long, Optional ByVal newFontSize As Long = 12, Optional ByVal newFontColor As Long = 0, Optional ByVal makeFontBold As Boolean = False, Optional ByVal makeFontItalic As Boolean = False)
@@ -43,10 +43,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal X As Long, ByVal Y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, x, y, hIcon
+    DrawIcon hDC, X, Y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -131,7 +131,7 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
 
     'Calculation variables (used to interpolate between the gradient colors)
     Dim VR As Double, VG As Double, VB As Double
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
     'Red, green, and blue variables for each gradient color
     Dim r As Long, g As Long, b As Long
@@ -170,19 +170,19 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
-        For x = 0 To tmpWidth
-            r2 = r + VR * x
-            g2 = g + VG * x
-            b2 = b + VB * x
-            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
-        Next x
+        For X = 0 To tmpWidth
+            r2 = r + VR * X
+            g2 = g + VG * X
+            b2 = b + VB * X
+            DstPicBox.Line (X, 0)-(X, tmpHeight), RGB(r2, g2, b2)
+        Next X
     Else
-        For y = 0 To tmpHeight
-            r2 = r + VR * y
-            g2 = g + VG * y
-            b2 = b + VB * y
-            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
-        Next y
+        For Y = 0 To tmpHeight
+            r2 = r + VR * Y
+            g2 = g + VG * Y
+            b2 = b + VB * Y
+            DstPicBox.Line (0, Y)-(tmpWidth, Y), RGB(r2, g2, b2)
+        Next Y
     End If
     
 End Sub

@@ -154,7 +154,7 @@ Attribute VB_Exposed = False
 'The separate standalone Gaussian Blur function is used for noise smoothing.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -193,7 +193,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     noiseLayer.createFromExistingLayer workingLayer
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -226,8 +226,8 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     Randomize Timer
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
+    For X = initX To finalX
+        QuickVal = X * qvDepth
     For Y = initY To finalY
                     
         'Generate monochromatic noise, e.g. the same amount of noise for each color component, based around RGB(127, 127, 127)
@@ -240,12 +240,12 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         
     Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our noise generation complete, point dstImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -301,8 +301,8 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         Dim r As Long, g As Long, b As Long
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = initX To finalX
-            QuickVal = x * qvDepth
+        For X = initX To finalX
+            QuickVal = X * qvDepth
         For Y = initY To finalY
             
             'Retrieve the original image's pixels
@@ -331,12 +331,12 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
             
         Next Y
             If Not toPreview Then
-                If (x And progBarCheck) = 0 Then
+                If (X And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal finalX + x + finalY + finalY
+                    SetProgBarVal finalX + X + finalY + finalY
                 End If
             End If
-        Next x
+        Next X
         
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4

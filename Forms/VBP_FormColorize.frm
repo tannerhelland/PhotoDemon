@@ -142,7 +142,7 @@ Attribute VB_Exposed = False
 ' for the HSL transformation code
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -178,7 +178,7 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -199,14 +199,14 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     Dim h As Double, s As Double, l As Double
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Get the hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -219,18 +219,18 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -253,11 +253,11 @@ Private Sub Form_Activate()
     Dim r As Long, g As Long, b As Long
     
     'Simple gradient-ish code implementation of drawing hue
-    Dim x As Long
-    For x = 0 To picHueDemo.ScaleWidth
+    Dim X As Long
+    For X = 0 To picHueDemo.ScaleWidth
     
         'Based on our x-position, gradient a value between -1 and 5
-        hVal = x / picHueDemo.ScaleWidth
+        hVal = X / picHueDemo.ScaleWidth
         hVal = hVal * 360
         hVal = (hVal - 60) / 60
         
@@ -265,9 +265,9 @@ Private Sub Form_Activate()
         tHSLToRGB hVal, 1, 0.5, r, g, b
         
         'Draw the color
-        picHueDemo.Line (x, 0)-(x, picHueDemo.ScaleHeight), RGB(r, g, b)
+        picHueDemo.Line (X, 0)-(X, picHueDemo.ScaleHeight), RGB(r, g, b)
         
-    Next x
+    Next X
     
     picHueDemo.Picture = picHueDemo.Image
     

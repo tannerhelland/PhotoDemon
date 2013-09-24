@@ -80,7 +80,7 @@ Attribute VB_Exposed = False
 '             Non-96dpi screens also render the credits and image correctly now.  Yay!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -145,13 +145,13 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
+    GenerateThankyou ""
     GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2013 Tanner Helland"
-    GenerateThankyou g_Language.TranslateMessage("a free, portable, powerful photo editor"), ""
+    GenerateThankyou g_Language.TranslateMessage("the fast, free, portable photo editor"), ""
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
     GenerateThankyou "Abhijit Mhapsekar"
     GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/"
-    GenerateThankyou "Alfred Hellmueller"
     GenerateThankyou "Allan Lima"
     GenerateThankyou "Andrew Yeoman"
     GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
@@ -159,10 +159,9 @@ Private Sub Form_Load()
     GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
     GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
     GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
-    GenerateThankyou "Dave Jamison", "http://www.modeltrainsoftware.com/"
     GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm"
     GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/"
-    GenerateThankyou "Frank Donckers"
+    GenerateThankyou "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/"
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
     GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
@@ -181,14 +180,13 @@ Private Sub Form_Load()
     GenerateThankyou "Rod Stephens", "http://www.vb-helper.com"
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/"
-    GenerateThankyou "Waty Thierry", "http://www.ppreview.net/"
     GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
-    GenerateThankyou "Zhu JinYong"
+    GenerateThankyou "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1"
     GenerateThankyou ""
     
     Dim extraString1 As String, extraString2 As String
     extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
-    extraString2 = g_Language.TranslateMessage("for more information on licensing, visit tannerhelland.com/photodemon/#license")
+    extraString2 = g_Language.TranslateMessage("for more information on licensing, visit photodemon.org/about/license/")
     GenerateThankyou extraString1, extraString2
     GenerateThankyou ""
     extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
@@ -207,7 +205,7 @@ Private Sub Form_Load()
     GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html"
     GenerateThankyou "", ""
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon")
-    GenerateThankyou "tannerhelland.com/photodemon"
+    GenerateThankyou "photodemon.org"
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -237,7 +235,7 @@ Private Sub Form_Load()
     'Remember that the PicBuffer picture box is used only as a placeholder.  We render everything manually to an
     ' off-screen buffer, then flip that buffer to the picture box after all rendering is complete.
     Set bufferLayer = New pdLayer
-    bufferLayer.createBlank backLayer.getLayerWidth, backLayer.getLayerHeight * 0.9, 24, 0
+    bufferLayer.createBlank backLayer.getLayerWidth, backLayer.getLayerHeight, 24, 0
     
     'Initialize a few other variables for speed reasons
     m_BufferWidth = backLayer.getLayerWidth

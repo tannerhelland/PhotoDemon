@@ -83,7 +83,7 @@ Attribute VB_Exposed = False
 ' main picture box, or by pressing Alt+T.  This replaces the side-by-side "before and after" of past versions.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 

@@ -9,7 +9,7 @@ Attribute VB_Name = "Filters_Transform"
 'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -42,7 +42,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     finalX = pdImages(CurrentImage).Width - 1
     finalY = pdImages(CurrentImage).Height - 1
             
@@ -57,9 +57,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Build a grayscale lookup table.  We will only be comparing luminance - not colors - when determining where to crop.
     Dim gLookup(0 To 765) As Long
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
+    For X = 0 To 765
+        gLookup(X) = CByte(X \ 3)
+    Next X
     
     'The new edges of the image will mark these values for us
     Dim newTop As Long, newBottom As Long, newLeft As Long, newRight As Long
@@ -76,10 +76,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     'Scan the image, starting at the top-left and moving right
-    For y = 0 To finalY
-    For x = 0 To finalX
-        QuickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+    For Y = 0 To finalY
+    For X = 0 To finalX
+        QuickVal = X * qvDepth
+        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -87,9 +87,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next x
+    Next X
         If colorFails Then Exit For
-    Next y
+    Next Y
     
     'We have now reached one of two conditions:
     '1) The entire image is one solid color
@@ -106,7 +106,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Next, check for case (2)
     Else
-        newTop = y
+        newTop = Y
     End If
     
     initY = newTop
@@ -119,11 +119,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     initColor = gLookup(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
     SetProgBarVal 1
     
-    For x = 0 To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = 0 To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -131,11 +131,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next y
+    Next Y
         If colorFails Then Exit For
-    Next x
+    Next X
     
-    newLeft = x
+    newLeft = X
     
     'Repeat the above steps, but tracking the right edge instead.  Note also that we will only be scanning from wherever
     ' the top crop failed - this saves processing time.
@@ -146,11 +146,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     initColor = gLookup(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
     SetProgBarVal 2
     
-    For x = finalX To 0 Step -1
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = finalX To 0 Step -1
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -158,11 +158,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next y
+    Next Y
         If colorFails Then Exit For
-    Next x
+    Next X
     
-    newRight = x
+    newRight = X
     
     'Finally, repeat the steps above for the bottom of the image.  Note also that we will only be scanning from wherever
     ' the left and right crops failed - this saves processing time.
@@ -175,10 +175,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
-    For y = finalY To initY Step -1
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+    For Y = finalY To initY Step -1
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -186,11 +186,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next x
+    Next X
         If colorFails Then Exit For
-    Next y
+    Next Y
     
-    newBottom = y
+    newBottom = Y
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -363,7 +363,7 @@ Public Sub MenuRotate90Clockwise()
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, i As Long
+    Dim X As Long, Y As Long, i As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
@@ -385,18 +385,18 @@ Public Sub MenuRotate90Clockwise()
     progBarCheck = findBestProgBarValue()
         
     'Rotate the source image into the destination image, using the arrays provided
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        QuickValY = y * qvDepth
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
+        QuickValY = Y * qvDepth
         
         For i = 0 To qvDepth - 1
-            dstImageData(iHeight - QuickValY + i, finalX - x) = srcImageData(iWidth - QuickVal + i, y)
+            dstImageData(iHeight - QuickValY + i, finalX - X) = srcImageData(iWidth - QuickVal + i, Y)
         Next i
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -477,7 +477,7 @@ Public Sub MenuRotate270Clockwise()
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, i As Long
+    Dim X As Long, Y As Long, i As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
@@ -498,18 +498,18 @@ Public Sub MenuRotate270Clockwise()
     progBarCheck = findBestProgBarValue()
         
     'Rotate the source image into the destination image, using the arrays provided
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        QuickValY = y * qvDepth
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
+        QuickValY = Y * qvDepth
         
         For i = 0 To qvDepth - 1
-            dstImageData(QuickValY + i, x) = srcImageData(iWidth - QuickVal + i, y)
+            dstImageData(QuickValY + i, X) = srcImageData(iWidth - QuickVal + i, Y)
         Next i
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+    Next Y
+        If (X And progBarCheck) = 0 Then SetProgBarVal X
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

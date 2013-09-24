@@ -259,7 +259,7 @@ Attribute VB_Exposed = False
 ' table and can correct any color channel.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -334,7 +334,7 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -362,10 +362,10 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     Dim gLookup(0 To 2, 0 To 255) As Byte
     Dim tmpVal As Double
     
-    For y = 0 To 2
-    For x = 0 To 255
-        tmpVal = x / 255
-        Select Case y
+    For Y = 0 To 2
+    For X = 0 To 255
+        tmpVal = X / 255
+        Select Case Y
             Case 0
                 tmpVal = tmpVal ^ (1 / rGamma)
             Case 1
@@ -378,33 +378,33 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookup(y, x) = tmpVal
-    Next x
-    Next y
+        gLookup(Y, X) = tmpVal
+    Next X
+    Next Y
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = gLookup(0, r)
-        ImageData(QuickVal + 1, y) = gLookup(1, g)
-        ImageData(QuickVal, y) = gLookup(2, b)
+        ImageData(QuickVal + 2, Y) = gLookup(0, r)
+        ImageData(QuickVal + 1, Y) = gLookup(1, g)
+        ImageData(QuickVal, Y) = gLookup(2, b)
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -426,7 +426,7 @@ Private Sub updatePreview()
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
-        Dim x As Long, y As Long
+        Dim X As Long, Y As Long
         
         Dim xWidth As Long, yHeight As Long
         xWidth = picChart.ScaleWidth
@@ -440,15 +440,15 @@ Private Sub updatePreview()
         Dim gamVal As Double, tmpVal As Double
         
         'Draw each of the current gamma curves for the user's reference
-        For y = 0 To 2
+        For Y = 0 To 2
             
             'If all channels are in sync, draw only blue; otherwise, color each channel individually
-            gamVal = sltGamma(y)
+            gamVal = sltGamma(Y)
             If (sltGamma(0) = sltGamma(1)) And (sltGamma(1) = sltGamma(2)) Then
                 picChart.ForeColor = RGB(0, 0, 255)
             Else
             
-                Select Case y
+                Select Case Y
                     Case 0
                         picChart.ForeColor = RGB(255, 0, 0)
                     Case 1
@@ -465,18 +465,18 @@ Private Sub updatePreview()
             curY = yHeight
         
             'Draw the next channel (with antialiasing!)
-            For x = 0 To xWidth
-                tmpVal = x / xWidth
+            For X = 0 To xWidth
+                tmpVal = X / xWidth
                 tmpVal = tmpVal ^ (1 / gamVal)
                 tmpVal = yHeight - (tmpVal * yHeight)
                 curY = tmpVal
-                curX = x
+                curX = X
                 GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
                 prevX = curX
                 prevY = curY
-            Next x
+            Next X
             
-        Next y
+        Next Y
         
         picChart.Picture = picChart.Image
         picChart.Refresh

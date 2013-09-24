@@ -498,7 +498,7 @@ Attribute VB_Exposed = False
 ' a number of more advanced resampling techniques via FreeImage.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -906,28 +906,28 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 yScale = (srcHeight - 1) / fitHeight
                             
                 'Coordinate variables for source and destination
-                Dim x As Long, y As Long
+                Dim X As Long, Y As Long
                 Dim srcX As Double, srcY As Double
                             
-                For x = 0 To fitWidth - 1
+                For X = 0 To fitWidth - 1
                     
                     'Generate the x calculation variables
-                    srcX = x * xScale
+                    srcX = X * xScale
                     
                     'Draw each pixel in the new image
-                    For y = 0 To fitHeight - 1
+                    For Y = 0 To fitHeight - 1
                         
                         'Generate the y calculation variables
-                        srcY = y * yScale
+                        srcY = Y * yScale
                         
                         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-                        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                                             
-                    Next y
+                    Next Y
                 
-                    If (x And progBarCheck) = 0 Then SetProgBarVal x
+                    If (X And progBarCheck) = 0 Then SetProgBarVal X
                     
-                Next x
+                Next X
                             
                 'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
                 CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

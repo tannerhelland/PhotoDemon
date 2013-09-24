@@ -18,7 +18,7 @@ Attribute VB_Name = "Processor"
 ' for various functions, so the majority of the routine is a huge Case Select statement.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -1193,7 +1193,7 @@ MainErrHandler:
     
         secondaryReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making PhotoDemon better")
     
-        'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the tannerhelland.com contact form
+        'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
         If secondaryReturn = vbYes Then
             'Shell a browser window with the GitHub issue report form
             OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
@@ -1202,11 +1202,11 @@ MainErrHandler:
             pdMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: " & vbCrLf & "%1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions", Err.Number
             
         Else
-            'Shell a browser window with the tannerhelland.com PhotoDemon contact form
-            OpenURL "http://www.tannerhelland.com/photodemon-contact/"
+            'Shell a browser window with the photodemon.org contact form
+            OpenURL "http://photodemon.org/about/contact/"
             
             'Display one final message box with additional instructions
-            pdMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Additional Details box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "In the bottom box of that page, please enter the following error number: " & vbCrLf & "%1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions", Err.Number
+            pdMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "Also in that box, please include the following error number: " & vbCrLf & "%1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions", Err.Number
             
         End If
     

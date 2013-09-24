@@ -523,7 +523,7 @@ Attribute VB_Exposed = False
 ' never be reminded again. (FYI - this option can be enabled/disabled from the 'Tools' -> 'Options' menu.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -640,7 +640,7 @@ Private Sub Form_Load()
     
     'zLib
     If isInternetConnected Then
-        URL = "http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc"
+        URL = "http://www.photodemon.org/downloads/zlibwapi.pdc"
         zLibSize = getPluginSize(hInternetSession, URL)
         
         'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
@@ -652,7 +652,7 @@ Private Sub Form_Load()
     
     'EZTwain
     If isInternetConnected Then
-        URL = "http://www.tannerhelland.com/photodemon_files/eztw32.pdc"
+        URL = "http://www.photodemon.org/downloads/eztw32.pdc"
         ezTW32Size = getPluginSize(hInternetSession, URL)
         
         'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
@@ -664,7 +664,7 @@ Private Sub Form_Load()
     
     'FreeImage
     If isInternetConnected Then
-        URL = "http://www.tannerhelland.com/photodemon_files/freeimage.pdc"
+        URL = "http://www.photodemon.org/downloads/freeimage.pdc"
         freeImageSize = getPluginSize(hInternetSession, URL)
         
         'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
@@ -676,7 +676,7 @@ Private Sub Form_Load()
     
     'pngnq-s9
     If isInternetConnected Then
-        URL = "http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc"
+        URL = "http://www.photodemon.org/downloads/pngnq-s9.pdc"
         pngnqSize = getPluginSize(hInternetSession, URL)
         
         'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
@@ -688,7 +688,7 @@ Private Sub Form_Load()
     
     'ExifTool
     If isInternetConnected Then
-        URL = "http://www.tannerhelland.com/photodemon_files/exiftool.pdc"
+        URL = "http://www.photodemon.org/downloads/exiftool.pdc"
         exifToolSize = getPluginSize(hInternetSession, URL)
         
         'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
@@ -818,7 +818,7 @@ Private Function downloadAllPlugins() As Boolean
     curNumOfFiles = 1
     
     'Time to get the files.  Start with zLib.
-    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
+    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/zlibwapi.pdc", curNumOfFiles, numOfFiles, zLibSize, False)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
@@ -830,7 +830,7 @@ Private Function downloadAllPlugins() As Boolean
     curNumOfFiles = curNumOfFiles + 1
     
     'Next comes EZTW32
-    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
+    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/eztw32.pdc", curNumOfFiles, numOfFiles, ezTW32Size, True)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
@@ -842,7 +842,7 @@ Private Function downloadAllPlugins() As Boolean
     curNumOfFiles = curNumOfFiles + 1
             
     'Next is FreeImage
-    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
+    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/freeimage.pdc", curNumOfFiles, numOfFiles, freeImageSize, True)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
@@ -854,7 +854,7 @@ Private Function downloadAllPlugins() As Boolean
     curNumOfFiles = curNumOfFiles + 1
     
     'Next is pngnq-s9
-    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
+    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
@@ -866,7 +866,7 @@ Private Function downloadAllPlugins() As Boolean
     curNumOfFiles = curNumOfFiles + 1
     
     'Last is ExifTool
-    downloadSuccessful = downloadPlugin("http://www.tannerhelland.com/photodemon_files/exiftool.pdc", curNumOfFiles, numOfFiles, exifToolSize, True)
+    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/exiftool.pdc", curNumOfFiles, numOfFiles, exifToolSize, True)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False

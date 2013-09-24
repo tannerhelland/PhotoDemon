@@ -2239,7 +2239,7 @@ Attribute VB_Exposed = False
 'Note that this form interacts heavily with the pdPreferences class.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -2362,7 +2362,7 @@ Private Sub cmbFiletype_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     'Restore any settings that may have been changed in real-time
     If g_UseFancyFonts <> originalg_useFancyFonts Then
@@ -2395,7 +2395,7 @@ Private Sub cmdCategory_Click(Index As Integer)
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     Message "Saving preferences..."
     
@@ -3005,7 +3005,7 @@ Private Sub LoadAllPreferences()
         'END prompt for missing plugin download
     
         'Populate the network access disclaimer in the "Update" panel
-            lblExplanation.Caption = g_Language.TranslateMessage("PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory." & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server." & vbCrLf & vbCrLf & "If you choose to disable these features, you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.")
+            lblExplanation.Caption = g_Language.TranslateMessage("PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory." & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server." & vbCrLf & vbCrLf & "If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.")
     
     'END Update preferences
     

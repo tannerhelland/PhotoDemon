@@ -353,7 +353,7 @@ Attribute VB_Exposed = False
 ' http://paulbourke.net/miscellaneous/imagewarp/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -398,7 +398,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -460,21 +460,21 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     ReDim xLookup(initX To finalX) As Double
     ReDim yLookup(initY To finalY) As Double
     
-    For x = initX To finalX
+    For X = initX To finalX
         If minDimVertical Then
-            xLookup(x) = (2 * (x - halfDimDiff)) / minDimension - 1
+            xLookup(X) = (2 * (X - halfDimDiff)) / minDimension - 1
         Else
-            xLookup(x) = (2 * x) / minDimension - 1
+            xLookup(X) = (2 * X) / minDimension - 1
         End If
-    Next x
+    Next X
     
-    For y = initY To finalY
+    For Y = initY To finalY
         If minDimVertical Then
-            yLookup(y) = (2 * y) / minDimension - 1
+            yLookup(Y) = (2 * Y) / minDimension - 1
         Else
-            yLookup(y) = (2 * (y - halfDimDiff)) / minDimension - 1
+            yLookup(Y) = (2 * (Y - halfDimDiff)) / minDimension - 1
         End If
-    Next y
+    Next Y
     
     'We can also calculate a few constants in advance
     Dim twoDivByPI As Double
@@ -484,13 +484,13 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     halfMinDimension = minDimension / 2
             
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0), and normalize them to (-1, 1)
-        nX = xLookup(x)
-        nY = yLookup(y)
+        nX = xLookup(X)
+        nY = yLookup(Y)
         
         'Next, map them to polar coordinates and apply the spherification
         r = Sqr(nX * nX + nY * nY)
@@ -509,23 +509,23 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         If useRays Then
-            fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+            fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
         Else
             If r < 1 Then
-                fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+                fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
             Else
-                fSupport.forcePixels x, y, 255, 255, 255, 0, dstImageData
+                fSupport.forcePixels X, Y, 255, 255, 255, 0, dstImageData
             End If
         End If
                 
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

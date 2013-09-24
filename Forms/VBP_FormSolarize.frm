@@ -111,7 +111,7 @@ Attribute VB_Exposed = False
 'Updated solarizing interface; it has been optimized for speed and ease-of-implementation.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -134,7 +134,7 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -152,28 +152,28 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
             
     'Because solarize values are constant, we can use a look-up table to calculate them.  Very fast.
     Dim sLookup(0 To 255) As Byte
-    For x = 0 To 255
-        If x > Threshold Then sLookup(x) = 255 - x Else sLookup(x) = x
-    Next x
+    For X = 0 To 255
+        If X > Threshold Then sLookup(X) = 255 - X Else sLookup(X) = X
+    Next X
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Perform the solarize in a single line, thanks to our pre-built look-up table
-        ImageData(QuickVal + 2, y) = sLookup(ImageData(QuickVal + 2, y))
-        ImageData(QuickVal + 1, y) = sLookup(ImageData(QuickVal + 1, y))
-        ImageData(QuickVal, y) = sLookup(ImageData(QuickVal, y))
+        ImageData(QuickVal + 2, Y) = sLookup(ImageData(QuickVal + 2, Y))
+        ImageData(QuickVal + 1, Y) = sLookup(ImageData(QuickVal + 1, Y))
+        ImageData(QuickVal, Y) = sLookup(ImageData(QuickVal, Y))
         
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

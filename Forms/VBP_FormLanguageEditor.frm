@@ -912,7 +912,7 @@ Attribute VB_Exposed = False
 'Note: for the Google Translate© Terms of Use, please visit http://www.google.com/policies/terms/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -1199,7 +1199,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 Else
                     Screen.MousePointer = vbDefault
                     tmrProgBar.Enabled = False
-                    pdMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.", vbOKOnly + vbInformation + vbApplicationModal, "Master language file missing"
+                    pdMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Master language file missing"
                     Unload Me
                 End If
             
@@ -1220,7 +1220,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 Else
                     Screen.MousePointer = vbDefault
                     tmrProgBar.Enabled = False
-                    pdMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.", vbOKOnly + vbInformation + vbApplicationModal, "Language file could not be loaded"
+                    pdMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Language file could not be loaded"
                     Unload Me
                 End If
             
@@ -1413,7 +1413,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.")
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)")
             helpText = helpText & vbCrLf & vbCrLf & g_Language.TranslateMessage("When you are finished editing this language, please consider sharing it!  Contact me by visiting:")
-            helpText = helpText & vbCrLf & g_Language.TranslateMessage("tannerhelland.com/contact")
+            helpText = helpText & vbCrLf & g_Language.TranslateMessage("photodemon.org/about/contact/")
             helpText = helpText & vbCrLf & g_Language.TranslateMessage("so we can discuss adding your translation to the official list of supported languages.  Even partial translations are helpful!")
     
     End Select
