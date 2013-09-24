@@ -104,8 +104,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 13/September/13
-'Last update: fix non-96dpi layout issues
+'Last updated: 24/September/13
+'Last update: translate all control text when a translation is active.  (Can't believe I missed this before!)
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -500,7 +500,7 @@ End Function
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
+    Set cmdOK.Font = mFont
     Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
@@ -684,7 +684,7 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
     setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
@@ -769,7 +769,7 @@ Private Sub updateControlLayout()
         
         'Right-align the Cancel and OK buttons
         cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
-        CmdOK.Left = cmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
 
@@ -783,12 +783,13 @@ Private Sub UserControl_Show()
     'When the control is first made visible, rebuild individual tooltips using a custom solution
     ' (which allows for linebreaks and theming).
     If g_UserModeFix Then
+        
         Set m_ToolTip = New clsToolTip
         With m_ToolTip
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
             .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
@@ -796,7 +797,18 @@ Private Sub UserControl_Show()
             .AddTool cmbPreset, g_Language.TranslateMessage("Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save button on the left.")
             
         End With
-    
+        
+        'Translate all control captions
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
+        
+        'In the IDE, we also need to translate the left-hand buttons
+        If Not g_IsProgramCompiled Then
+            cmdReset.Caption = g_Language.TranslateMessage(cmdReset.Caption)
+            cmdRandomize.Caption = g_Language.TranslateMessage(cmdRandomize.Caption)
+            cmdSavePreset.Caption = g_Language.TranslateMessage(cmdSavePreset.Caption)
+        End If
+        
         'If our parent tool has an XML settings file, load it now, and if it doesn't have one, create a blank one
         Set xmlEngine = New pdXML
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
