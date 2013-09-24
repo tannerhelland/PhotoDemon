@@ -4,10 +4,10 @@ Begin VB.Form FormSoftwareUpdate
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Update Notifier"
-   ClientHeight    =   5295
+   ClientHeight    =   5310
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   10695
+   ClientWidth     =   10710
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,9 +20,9 @@ Begin VB.Form FormSoftwareUpdate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   353
+   ScaleHeight     =   354
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   713
+   ScaleWidth      =   714
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOKNo 
@@ -73,7 +73,7 @@ Begin VB.Form FormSoftwareUpdate
       Begin VB.Label lblDirectPDDownload 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "http://www.tannerhelland.com/photodemon"
+         Caption         =   "http://www.photodemon.org"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -90,7 +90,7 @@ Begin VB.Form FormSoftwareUpdate
          MousePointer    =   99  'Custom
          TabIndex        =   14
          Top             =   3480
-         Width           =   4710
+         Width           =   3090
       End
       Begin VB.Label lblDownloadTitle 
          Alignment       =   2  'Center
