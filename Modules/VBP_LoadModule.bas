@@ -1152,12 +1152,22 @@ Public Sub LoadAccelerators()
     With FormMain.ctlAccelerator
     
         'File menu
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuSaveAs, True, True, True
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, True, True
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", FormMain.MnuScreenCapture, True, True, True
+        .AddAccelerator vbKeyO, vbCtrlMask, "Open", FormMain.MnuFile(0), True, False, True, False
+        .AddAccelerator vbKeyS, vbCtrlMask, "Save", FormMain.MnuFile(4), True, True, True, False
+        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuFile(5), True, True, True, False
+        .AddAccelerator vbKeyF4, vbCtrlMask, "Close", FormMain.MnuFile(7), True, True, True, False
+        .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", FormMain.MnuFile(8), True, True, True, False
+        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(10), True, True, True
+        .AddAccelerator vbKeyP, vbCtrlMask, "Print", FormMain.MnuFile(12), True, True, True
+        .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(14), True, False, True, False
         
-            'Most-recently used files.  Note that we cannot automatically associate these with a menu, as their menu may not
-            ' exist at run-time.
+            'File -> Import submenu
+            .AddAccelerator vbKeyI, vbCtrlMask, "Scan image", FormMain.MnuScanImage, True, False, True, False
+            .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, True, True, False
+            .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", FormMain.MnuScreenCapture, True, True, True, False
+        
+            'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
+            ' exist at run-time.  (They are dynamically created as necessary.)
             .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
             .AddAccelerator vbKey1, vbCtrlMask, "MRU_1"
             .AddAccelerator vbKey2, vbCtrlMask, "MRU_2"
@@ -1170,37 +1180,36 @@ Public Sub LoadAccelerators()
             .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
             
         'Edit menu
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True
-        .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo", FormMain.MnuRedo, True, True, True
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty clipboard", FormMain.MnuEmptyClipboard, True, True, True
+        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True, False
+        .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo", FormMain.MnuRedo, True, True, True, False
         
         'View menu
-        .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True
-        .AddAccelerator vbKeyAdd, 0, "Zoom_In", FormMain.MnuZoomIn, False, True
-        .AddAccelerator vbKeySubtract, 0, "Zoom_Out", FormMain.MnuZoomOut, False, True
-        .AddAccelerator vbKey5, 0, "Zoom_161", FormMain.MnuSpecificZoom(0), False, True
-        .AddAccelerator vbKey4, 0, "Zoom_81", FormMain.MnuSpecificZoom(1), False, True
-        .AddAccelerator vbKey3, 0, "Zoom_41", FormMain.MnuSpecificZoom(2), False, True
-        .AddAccelerator vbKey2, 0, "Zoom_21", FormMain.MnuSpecificZoom(3), False, True
-        .AddAccelerator vbKey1, 0, "Actual_Size", FormMain.MnuSpecificZoom(4), False, True
-        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", FormMain.MnuSpecificZoom(5), False, True
-        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", FormMain.MnuSpecificZoom(6), False, True
-        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", FormMain.MnuSpecificZoom(7), False, True
-        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", FormMain.MnuSpecificZoom(8), False, True
+        .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, False
+        .AddAccelerator vbKeyAdd, 0, "Zoom_In", FormMain.MnuZoomIn, False, True, False, False
+        .AddAccelerator vbKeySubtract, 0, "Zoom_Out", FormMain.MnuZoomOut, False, True, False, False
+        .AddAccelerator vbKey5, 0, "Zoom_161", FormMain.MnuSpecificZoom(0), False, True, False, False
+        .AddAccelerator vbKey4, 0, "Zoom_81", FormMain.MnuSpecificZoom(1), False, True, False, False
+        .AddAccelerator vbKey3, 0, "Zoom_41", FormMain.MnuSpecificZoom(2), False, True, False, False
+        .AddAccelerator vbKey2, 0, "Zoom_21", FormMain.MnuSpecificZoom(3), False, True, False, False
+        .AddAccelerator vbKey1, 0, "Actual_Size", FormMain.MnuSpecificZoom(4), False, True, False, False
+        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", FormMain.MnuSpecificZoom(5), False, True, False, False
+        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", FormMain.MnuSpecificZoom(6), False, True, False, False
+        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", FormMain.MnuSpecificZoom(7), False, True, False, False
+        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", FormMain.MnuSpecificZoom(8), False, True, False, False
         
         'Image menu
-        .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False
-        .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(7), True, True, False
+        .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False, 1
+        .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(7), True, True, False, 1
         
         'Color Menu
-        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True
-        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True
-        
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True, 1
+        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True, 1
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True, 1
+                
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(1), False, True, False
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False, False
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(1), False, True, False, False
                 
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"
@@ -1215,9 +1224,6 @@ End Sub
 'After all menu shortcuts (accelerators) are loaded above, the custom shortcuts need to be added to the menu entries themselves.
 ' If we don't do this, the user won't know how to trigger the shortcuts!
 Public Sub DrawAccelerators()
-
-    'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
-    'If Not g_IsProgramCompiled Then Exit Sub
 
     Dim i As Long
     
