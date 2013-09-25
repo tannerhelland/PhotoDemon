@@ -172,26 +172,26 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         
         'Copy (menu item only)
         Case tCopy
-            If FormMain.MnuCopy.Enabled <> newState Then FormMain.MnuCopy.Enabled = newState
+            If FormMain.MnuEdit(4).Enabled <> newState Then FormMain.MnuEdit(4).Enabled = newState
         
         'Paste (menu item only)
         Case tPaste
-            If FormMain.MnuPaste.Enabled <> newState Then FormMain.MnuPaste.Enabled = newState
+            If FormMain.MnuEdit(5).Enabled <> newState Then FormMain.MnuEdit(5).Enabled = newState
         
         'Undo (left-hand panel button AND menu item)
         Case tUndo
-            If FormMain.MnuUndo.Enabled <> newState Then
+            If FormMain.MnuEdit(0).Enabled <> newState Then
                 FormMain.cmdUndo.Enabled = newState
-                FormMain.MnuUndo.Enabled = newState
+                FormMain.MnuEdit(0).Enabled = newState
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
                 FormMain.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID
-                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             Else
                 FormMain.cmdUndo.ToolTip = ""
-                FormMain.MnuUndo.Caption = g_Language.TranslateMessage("Undo")
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             End If
             
@@ -221,19 +221,19 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         
         'Redo (left-hand panel button AND menu item)
         Case tRedo
-            If FormMain.MnuRedo.Enabled <> newState Then
+            If FormMain.MnuEdit(1).Enabled <> newState Then
                 FormMain.cmdRedo.Enabled = newState
-                FormMain.MnuRedo.Enabled = newState
+                FormMain.MnuEdit(1).Enabled = newState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                FormMain.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID)
-                FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID 'GetNameOfProcess(pdImages(CurrentImage).getRedoProcessID) '& vbTab & "Ctrl+Alt+Z"
+                FormMain.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             Else
                 FormMain.cmdRedo.ToolTip = ""
-                FormMain.MnuRedo.Caption = g_Language.TranslateMessage("Redo")
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             End If
             
@@ -243,11 +243,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         
         'Edit (top-level menu)
         Case tEdit
-            If FormMain.MnuEdit.Enabled <> newState Then FormMain.MnuEdit.Enabled = newState
+            If FormMain.MnuEditTop.Enabled <> newState Then FormMain.MnuEditTop.Enabled = newState
         
         'Repeat last action (menu item only)
         Case tRepeatLast
-            If FormMain.MnuRepeatLast.Enabled <> newState Then FormMain.MnuRepeatLast.Enabled = newState
+            If FormMain.MnuEdit(2).Enabled <> newState Then FormMain.MnuEdit(2).Enabled = newState
             
         'Selections in general
         Case tSelection

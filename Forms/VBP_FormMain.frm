@@ -990,34 +990,36 @@ Begin VB.MDIForm FormMain
          Index           =   14
       End
    End
-   Begin VB.Menu MnuEdit 
+   Begin VB.Menu MnuEditTop 
       Caption         =   "&Edit"
-      Begin VB.Menu MnuUndo 
+      Begin VB.Menu MnuEdit 
          Caption         =   "&Undo"
-         Shortcut        =   ^Z
+         Index           =   0
       End
-      Begin VB.Menu MnuRedo 
+      Begin VB.Menu MnuEdit 
          Caption         =   "&Redo"
-         Shortcut        =   ^Y
+         Index           =   1
       End
-      Begin VB.Menu MnuRepeatLast 
+      Begin VB.Menu MnuEdit 
          Caption         =   "Repeat &last action"
          Enabled         =   0   'False
-         Shortcut        =   ^F
+         Index           =   2
       End
-      Begin VB.Menu MnuEditSepBar 
+      Begin VB.Menu MnuEdit 
          Caption         =   "-"
+         Index           =   3
       End
-      Begin VB.Menu MnuCopy 
+      Begin VB.Menu MnuEdit 
          Caption         =   "&Copy to clipboard"
-         Shortcut        =   ^C
+         Index           =   4
       End
-      Begin VB.Menu MnuPaste 
+      Begin VB.Menu MnuEdit 
          Caption         =   "&Paste as new image"
-         Shortcut        =   ^V
+         Index           =   5
       End
-      Begin VB.Menu MnuEmptyClipboard 
+      Begin VB.Menu MnuEdit 
          Caption         =   "&Empty clipboard"
+         Index           =   6
       End
    End
    Begin VB.Menu MnuView 
@@ -3320,14 +3322,6 @@ Private Sub MnuNegative_Click()
     Process "Film negative"
 End Sub
 
-Private Sub MnuCopy_Click()
-    Process "Copy to clipboard", , , False
-End Sub
-
-Private Sub MnuEmptyClipboard_Click()
-    Process "Empty clipboard", , , False
-End Sub
-
 Private Sub MnuInvert_Click()
     Process "Invert RGB"
 End Sub
@@ -3356,9 +3350,6 @@ Private Sub MnuNoise_Click(Index As Integer)
         
 End Sub
 
-Private Sub MnuPaste_Click()
-    Process "Paste as new image", , , False
-End Sub
 
 Private Sub MnuPlayMacroRecording_Click()
     Process "Play macro", True
@@ -3387,14 +3378,6 @@ Public Sub mnuRecDocs_Click(Index As Integer)
         PreLoadImage sFile
     End If
     
-End Sub
-
-Private Sub MnuRedo_Click()
-    Process "Redo", , , False
-End Sub
-
-Private Sub MnuRepeatLast_Click()
-    Process "Repeat last action"
 End Sub
 
 Private Sub MnuRightPanel_Click()
@@ -3642,10 +3625,6 @@ Private Sub MnuTransparency_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuUndo_Click()
-    Process "Undo", , , False
-End Sub
-
 Private Sub MnuVibrate_Click()
     Process "Vibrate"
 End Sub
@@ -3676,8 +3655,18 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     With ctlAccelerator
     
         If .isProcString(nIndex) Then
+            
+            'If the action requires an open image, check for that first
+            If .imageRequired(nIndex) Then
+                If NumOfWindows = 0 Then Exit Sub
+                If Not (FormLanguageEditor Is Nothing) Then
+                    If FormLanguageEditor.Visible Then Exit Sub
+                End If
+            End If
+    
             Process .Key(nIndex), .displayDialog(nIndex), , .shouldCreateUndo(nIndex)
             Exit Sub
+            
         End If
     
     End With

@@ -293,8 +293,8 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         ApplyAllMenuIcons True
         
         'Because the Undo and Redo captions are dynamic, they must be recreated in the current language
-        metaToggle tUndo, FormMain.MnuUndo.Enabled
-        metaToggle tRedo, FormMain.MnuRedo.Enabled
+        metaToggle tUndo, FormMain.MnuEdit(0).Enabled
+        metaToggle tRedo, FormMain.MnuEdit(1).Enabled
         
         'Normally we would want to reset menu icons manually, but the metaToggle calls above call ResetMenuIcons for us.
         'ResetMenuIcons
