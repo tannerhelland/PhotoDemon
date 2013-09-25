@@ -1093,7 +1093,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuImage 
          Caption         =   "&Duplicate"
          Index           =   0
-         Shortcut        =   ^D
       End
       Begin VB.Menu MnuImage 
          Caption         =   "-"
@@ -1126,7 +1125,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuImage 
          Caption         =   "Resize..."
          Index           =   4
-         Shortcut        =   ^R
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Canvas size..."
@@ -1222,7 +1220,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuSelect 
          Caption         =   "All"
          Index           =   0
-         Shortcut        =   ^A
       End
       Begin VB.Menu MnuSelect 
          Caption         =   "None"
@@ -3062,11 +3059,7 @@ Private Sub MnuImage_Click(Index As Integer)
     
         'Duplicate
         Case 0
-        
-            'It may seem odd, but the Duplicate function can be found in the "Loading" module; I do this because
-            ' we effectively LOAD a copy of the original image, so all loading operations (create a form, catalog
-            ' metadata, initialize properties) have to be repeated.
-            DuplicateCurrentImage
+            Process "Duplicate image", , , False
         
         'Separator
         Case 1

@@ -294,6 +294,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'IMAGE MENU FUNCTIONS
         ' This includes all actions that can only operate on a full image (never selections).  These actions are recorded.
         
+        'Duplicate image
+        Case "Duplicate image"
+            
+            'It may seem odd, but the Duplicate function can be found in the "Loading" module; I do this because
+            ' we effectively LOAD a copy of the original image, so all loading operations (create a form, catalog
+            ' metadata, initialize properties) have to be repeated.
+            DuplicateCurrentImage
+        
         'Alpha channel addition/removal
         Case "Add alpha channel"
             If showDialog Then
