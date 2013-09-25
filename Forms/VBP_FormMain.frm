@@ -1283,12 +1283,10 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuColor 
          Caption         =   "Gamma..."
          Index           =   3
-         Shortcut        =   ^G
       End
       Begin VB.Menu MnuColor 
          Caption         =   "Levels..."
          Index           =   4
-         Shortcut        =   ^L
       End
       Begin VB.Menu MnuColor 
          Caption         =   "Shadows and highlights..."
@@ -1297,7 +1295,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuColor 
          Caption         =   "White balance..."
          Index           =   6
-         Shortcut        =   ^W
       End
       Begin VB.Menu MnuColor 
          Caption         =   "-"
@@ -1310,7 +1307,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuColor 
          Caption         =   "Hue and saturation..."
          Index           =   9
-         Shortcut        =   ^H
       End
       Begin VB.Menu MnuColor 
          Caption         =   "Photo filters..."
@@ -1319,7 +1315,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuColor 
          Caption         =   "Temperature..."
          Index           =   11
-         Shortcut        =   ^T
       End
       Begin VB.Menu MnuColor 
          Caption         =   "Vibrance..."
@@ -1784,7 +1779,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu mnuTool 
          Caption         =   "Plugin manager"
          Index           =   6
-         Shortcut        =   ^M
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -3671,6 +3665,13 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     If ctlAccelerator.Key(nIndex) = "Preferences" Then
         If Not FormPreferences.Visible Then
             FormPreferences.Show vbModal, FormMain
+            Exit Sub
+        End If
+    End If
+    
+    If ctlAccelerator.Key(nIndex) = "Plugin manager" Then
+        If Not FormPluginManager.Visible Then
+            FormPluginManager.Show vbModal, FormMain
             Exit Sub
         End If
     End If

@@ -1219,13 +1219,19 @@ Public Sub LoadAccelerators()
         
         'Adjustments Menu
         .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True, 1
+        .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuColor(3), True, True, True, False
+        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuColor(4), True, True, True, False
         .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True, 1
+        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuColor(6), True, True, True, False
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True, 1
+        .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(9), True, True, True, False
+        .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuColor(11), True, True, True, False
         
         'Effects Menu
         
         'Tools menu
         .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True, False
+        .AddAccelerator vbKeyM, vbCtrlMask, "Plugin manager", FormMain.mnuTool(6), False, False, True, False
         
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False, False
