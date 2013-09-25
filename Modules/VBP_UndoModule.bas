@@ -146,7 +146,7 @@ Public Sub RestoreRedoData()
     FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
         
     'Load the Redo bitmap file
-    LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType
+    LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType, True
     
     'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False

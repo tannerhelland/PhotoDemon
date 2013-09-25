@@ -1075,7 +1075,7 @@ LoadVBImageFail:
 End Function
 
 'UNDO loading
-Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional ByVal isRedoData As Boolean = False)
 
     'Several Undo Types are supported
     'Select Case undoType
@@ -1113,7 +1113,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long)
     'Render the image to the screen
     PrepareViewport FormMain.ActiveForm, "LoadUndo"
         
-    Message "Undo restored successfully."
+    If isRedoData Then
+        Message "Redo restored successfully."
+    Else
+        Message "Undo restored successfully."
+    End If
     
 End Sub
 
@@ -1180,8 +1184,12 @@ Public Sub LoadAccelerators()
             .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
             
         'Edit menu
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True, False
-        .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo", FormMain.MnuRedo, True, True, True, False
+        .AddAccelerator vbKeyZ, vbCtrlMask, "Undo", FormMain.MnuEdit(0), True, True, False, False
+        .AddAccelerator vbKeyY, vbCtrlMask, "Redo", FormMain.MnuEdit(1), True, True, False, False
+        .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", FormMain.MnuEdit(2), True, True, False, True
+        
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy to clipboard", FormMain.MnuEdit(4), True, True, False, False
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(5), True, False, False, False
         
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, False
@@ -1202,11 +1210,16 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(7), True, True, False, 1
         
-        'Color Menu
+        'Select Menu
         .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True, 1
         .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True, 1
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True, 1
-                
+        
+        'Effects Menu
+        
+        'Tools menu
+        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True, False
+        
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False, False
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(1), False, True, False, False

@@ -146,7 +146,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
         
         'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.
-        FormMain.MnuRepeatLast.Enabled = True
+        FormMain.MnuEdit(2).Enabled = True
         With LastProcess
             .Id = processID
             .Dialog = showDialog
@@ -252,16 +252,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' This includes things like copying or pasting an image.  These actions are never recorded.
         
         Case "Undo"
-            RestoreUndoData
+            If FormMain.MnuEdit(0).Enabled Then
+                RestoreUndoData
             
-            'Also, redraw the current child form icon
-            CreateCustomFormIcon FormMain.ActiveForm
+                'Also, redraw the current child form icon
+                CreateCustomFormIcon FormMain.ActiveForm
+            End If
             
         Case "Redo"
-            RestoreRedoData
+            If FormMain.MnuEdit(1).Enabled Then
+                RestoreRedoData
             
-            'Also, redraw the current child form icon
-            CreateCustomFormIcon FormMain.ActiveForm
+                'Also, redraw the current child form icon
+                CreateCustomFormIcon FormMain.ActiveForm
+            End If
         
         Case "Copy to clipboard"
             ClipboardCopy
