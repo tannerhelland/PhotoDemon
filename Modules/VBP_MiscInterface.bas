@@ -151,23 +151,23 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         
         'Open (left-hand panel button AND menu item)
         Case tOpen
-            If FormMain.MnuOpen.Enabled <> newState Then
+            If FormMain.MnuFile(0).Enabled <> newState Then
                 FormMain.cmdOpen.Enabled = newState
-                FormMain.MnuOpen.Enabled = newState
+                FormMain.MnuFile(0).Enabled = newState
             End If
             
         'Save (left-hand panel button AND menu item)
         Case tSave
-            If FormMain.MnuSave.Enabled <> newState Then
+            If FormMain.MnuFile(4).Enabled <> newState Then
                 FormMain.cmdSave.Enabled = newState
-                FormMain.MnuSave.Enabled = newState
+                FormMain.MnuFile(4).Enabled = newState
             End If
             
         'Save As (menu item only)
         Case tSaveAs
-            If FormMain.MnuSaveAs.Enabled <> newState Then
+            If FormMain.MnuFile(5).Enabled <> newState Then
                 FormMain.cmdSaveAs.Enabled = newState
-                FormMain.MnuSaveAs.Enabled = newState
+                FormMain.MnuFile(5).Enabled = newState
             End If
         
         'Copy (menu item only)
@@ -200,7 +200,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If FormMain.MnuImageTop.Enabled <> newState Then
                 FormMain.MnuImageTop.Enabled = newState
                 'Use this same command to disable other menus
-                FormMain.MnuPrint.Enabled = newState
+                FormMain.MnuFile(12).Enabled = newState
                 FormMain.MnuFitOnScreen.Enabled = newState
                 FormMain.MnuFitWindowToImage.Enabled = newState
                 FormMain.MnuZoomIn.Enabled = newState

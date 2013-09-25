@@ -3,8 +3,8 @@ Attribute VB_Name = "MRU_List_Handler"
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2013 by Tanner Helland
 'Created: 22/May/05
-'Last updated: 25/November/12
-'Last update: finished debugging MRU icons and preferences related to MRU caption length
+'Last updated: 25/September/13
+'Last update: allow MRU accelerators (Ctrl + menu index) in the IDE, since we now use IDE-safe subclassing.
 '
 'Handles the creation and maintenance of the program's MRU list.  The MRU list is stored in the user preferences file.
 '
@@ -160,8 +160,7 @@ Public Sub MRU_LoadFromFile()
             End If
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
-            ' Also, shortcuts are disabled in the IDE because the VB Accelerator control that handles them requires subclassing.
-            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & vbTab & "Ctrl+" & X Else FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & "   "
+            If g_IsVistaOrLater Then FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & vbTab & "Ctrl+" & X Else FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & "   "
             
         Next X
         
@@ -337,7 +336,7 @@ MRUEntryFound:
                 FormMain.mnuRecDocs(X).Caption = getShortMRU(MRUlist(X))
             End If
             
-            If (g_IsVistaOrLater And g_IsProgramCompiled) Then FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & vbTab & "Ctrl+" & X Else FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & "   "
+            If g_IsVistaOrLater Then FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & vbTab & "Ctrl+" & X Else FormMain.mnuRecDocs(X).Caption = FormMain.mnuRecDocs(X).Caption & "   "
             
         Next X
     End If
@@ -476,8 +475,6 @@ End Function
 
 'Remove null characters from a string
 Private Function TrimNull(ByVal sString As String) As String
-
    TrimNull = Left$(sString, lstrlenW(StrPtr(sString)))
-   
 End Function
 

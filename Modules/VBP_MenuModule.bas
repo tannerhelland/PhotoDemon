@@ -261,3 +261,40 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Set CC = Nothing
     
 End Function
+
+'Close the active image
+Public Sub MenuClose()
+    
+    'Make sure the correct flag is set so that the MDI Child QueryUnload behaves properly (e.g. note that we
+    ' are not closing ALL images - just this one.)
+    g_ClosingAllImages = False
+    Unload FormMain.ActiveForm
+    
+End Sub
+
+'Close all active images
+Public Sub MenuCloseAll()
+
+    'Note that the user has opted to close ALL open images; this is used by the MDI children to know what kind
+    ' of "Unsaved changes" dialog to display.
+    g_ClosingAllImages = True
+
+    'Loop through each image object and close their associated forms
+    Dim i As Long
+    For i = 0 To NumOfImagesLoaded
+    
+        If Not (pdImages(i) Is Nothing) Then
+            If pdImages(i).IsActive Then Unload pdImages(i).containingForm
+        End If
+        
+        'If the user presses "cancel" at some point in the unload chain, obey their request immediately
+        ' (e.g. stop unloading images)
+        If Not g_ClosingAllImages Then Exit For
+        
+    Next i
+
+    'Reset the "closing all images" flags
+    g_ClosingAllImages = False
+    g_DealWithAllUnsavedImages = False
+
+End Sub

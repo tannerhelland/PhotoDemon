@@ -63,7 +63,8 @@ Private m_ProcessingTime As Double
 '                to a specific type of Undo.  (1 = image undo, 2 = selection undo - these values are needed because undoing a selection
 '                requires completely different code vs undoing an image filter.)  This value is set to 1 by default, but some functions
 '                - like "Count image colors" - may explicitly specify that no Undo is necessary.  NOTE: if showDialog is TRUE, this value
-'                will automatically be set to 0, which means "DO NOT CREATE UNDO".
+'                will automatically be set to 0, which means "DO NOT CREATE UNDO", because we never create Undo data when showing a
+'                dialog (as the user may cancel it).
 ' - *relevantTool: some Process calls are initiated by a particular tool (for example, "create selection" will be called by one of the
 '                  selection tools).  This parameter can contain the relevant tool for a given action.  If Undo is used to return to a
 '                  previous state, the relevant tool can automatically be selected, making it much easier for the user to make changes
@@ -202,6 +203,33 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Save as"
             MenuSaveAs CurrentImage
+            
+        Case "Close"
+            MenuClose
+            
+        Case "Close all"
+            MenuCloseAll
+            
+        Case "Batch wizard"
+            If showDialog Then
+                
+                'Because the Batch Wizard window provides a custom drag/drop implementation, we disable regular drag/drop while it's active
+                g_AllowDragAndDrop = False
+                FormBatchWizard.Show vbModal, FormMain
+                g_AllowDragAndDrop = True
+                
+            End If
+            
+        Case "Print"
+            If showDialog Then
+                If Not FormPrint.Visible Then FormPrint.Show vbModal, FormMain
+            End If
+            
+        Case "Exit program"
+            Unload FormMain
+            
+            'If the user does not cancel the exit, we must forcibly exit this sub (otherwise the program will not exit)
+            If g_ProgramShuttingDown Then Exit Sub
         
         Case "Select scanner or camera"
             Twain32SelectScanner

@@ -418,8 +418,8 @@ Public Sub UpdateMDIStatus()
         metaToggle tMacro, False
         metaToggle tRepeatLast, False
         metaToggle tSelection, False
-        FormMain.MnuClose.Enabled = False
-        FormMain.MnuCloseAll.Enabled = False
+        FormMain.MnuFile(7).Enabled = False
+        FormMain.MnuFile(8).Enabled = False
         FormMain.cmdClose.Enabled = False
         FormMain.MnuFitWindowToImage.Enabled = False
         FormMain.MnuFitOnScreen.Enabled = False
@@ -485,9 +485,9 @@ Public Sub UpdateMDIStatus()
         metaToggle tFilter, True
         metaToggle tMacro, True
         metaToggle tRepeatLast, pdImages(CurrentImage).RedoState
-        FormMain.MnuClose.Enabled = True
+        FormMain.MnuFile(7).Enabled = True
         FormMain.cmdClose.Enabled = True
-        FormMain.MnuCloseAll.Enabled = True
+        FormMain.MnuFile(8).Enabled = True
         FormMain.MnuFitWindowToImage.Enabled = True
         FormMain.MnuFitOnScreen.Enabled = True
         FormMain.lblImgSize.ForeColor = &H544E43

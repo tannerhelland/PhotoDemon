@@ -45,6 +45,7 @@ Private Type tAccel
     isProcessorReady As Boolean
     requiresImage As Boolean
     procShowForm As Boolean
+    procUndo As Long
     relevantMenu As Menu
 End Type
 
@@ -67,10 +68,13 @@ Private m_Subclass As cSelfSubHookCallback
 Private Const HC_ACTION = 0
 
 'NOTE FROM TANNER: if the isProcessorString value is set to TRUE, vKey is assumed to a be a string meant for the software processor, and
-'                  it will be directly passed there when its associated hotkey is used.  requiresOpenImage is used to specify that this
-'                  action must be disallowed unless an image is loaded and active.  showProcForm controls the "showDialog" parameter of
-'                  processor string directives.
-Public Function AddAccelerator(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal vKey As Variant, Optional ByRef correspondingMenu As Menu, Optional ByVal isProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True) As Long
+'                  it will be directly passed there when its associated hotkey is used.  Other custom parameters added by me include:
+'                  + correspondingMenu: a reference to the menu associated with this hotkey.  The reference is used to dynamically draw
+'                                       the shortcut text to the menu.
+'                  + requiresOpenImage: specifies that this action must be disallowed unless an image is loaded and active.
+'                  + showProcForm controls the "showDialog" parameter of processor string directives.
+'                  + recordProcUndo controls the "createUndo" parameter of processor string directives.  0 means do not create Undo data.
+Public Function AddAccelerator(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal vKey As Variant, Optional ByRef correspondingMenu As Menu, Optional ByVal isProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal recordProcUndo As Long = 0) As Long
 Attribute AddAccelerator.VB_Description = "Adds an accelerator to the control, returning the index of the accelerator added."
     Dim i As Long
     Dim iIdx As Long
@@ -108,6 +112,7 @@ Attribute AddAccelerator.VB_Description = "Adds an accelerator to the control, r
                 Set .relevantMenu = correspondingMenu
             End If
         End If
+        .procUndo = recordProcUndo
     End With
     
     AddAccelerator = iIdx
@@ -246,9 +251,14 @@ Public Property Get hasMenu(ByVal nIndex As Long) As Boolean
     End If
 End Property
 
-'Used to retrieve the program menu associated wiht a given accelerator
+'Used to retrieve the program menu associated with a given accelerator
 Public Property Get associatedMenu(ByVal nIndex As Long) As Menu
     Set associatedMenu = m_tAccel(nIndex).relevantMenu
+End Property
+
+'Used to retrieve the processor Undo status of a given accelerator
+Public Property Get shouldCreateUndo(ByVal nIndex As Long) As Long
+    shouldCreateUndo = m_tAccel(nIndex).procUndo
 End Property
 
 'Used to retrieve a string representation of a shorcut

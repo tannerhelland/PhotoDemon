@@ -892,14 +892,15 @@ Begin VB.MDIForm FormMain
          WordWrap        =   -1  'True
       End
    End
-   Begin VB.Menu MnuFile 
+   Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
-      Begin VB.Menu MnuOpen 
+      Begin VB.Menu MnuFile 
          Caption         =   "&Open..."
-         Shortcut        =   ^O
+         Index           =   0
       End
-      Begin VB.Menu MnuRecent 
+      Begin VB.Menu MnuFile 
          Caption         =   "Open &recent"
+         Index           =   1
          Begin VB.Menu mnuRecDocs 
             Caption         =   "Empty"
             Enabled         =   0   'False
@@ -912,8 +913,9 @@ Begin VB.MDIForm FormMain
             Caption         =   "Clear recent image list"
          End
       End
-      Begin VB.Menu MnuAcquire 
+      Begin VB.Menu MnuFile 
          Caption         =   "&Import"
+         Index           =   2
          Begin VB.Menu MnuImportClipboard 
             Caption         =   "From clipboard"
          End
@@ -922,7 +924,6 @@ Begin VB.MDIForm FormMain
          End
          Begin VB.Menu MnuScanImage 
             Caption         =   "From scanner or camera..."
-            Shortcut        =   ^I
          End
          Begin VB.Menu MnuSelectScanner 
             Caption         =   "Select which scanner or camera to use"
@@ -940,47 +941,53 @@ Begin VB.MDIForm FormMain
             Caption         =   "Screen capture..."
          End
       End
-      Begin VB.Menu MnuFileSepBar 
+      Begin VB.Menu MnuFile 
          Caption         =   "-"
-         Index           =   0
+         Index           =   3
       End
-      Begin VB.Menu MnuSave 
+      Begin VB.Menu MnuFile 
          Caption         =   "&Save"
-         Shortcut        =   ^S
+         Index           =   4
       End
-      Begin VB.Menu MnuSaveAs 
+      Begin VB.Menu MnuFile 
          Caption         =   "Save &as..."
+         Index           =   5
       End
-      Begin VB.Menu MnuFileSepBar1 
+      Begin VB.Menu MnuFile 
          Caption         =   "-"
+         Index           =   6
       End
-      Begin VB.Menu MnuClose 
+      Begin VB.Menu MnuFile 
          Caption         =   "&Close"
-         Shortcut        =   ^{F4}
+         Index           =   7
       End
-      Begin VB.Menu MnuCloseAll 
+      Begin VB.Menu MnuFile 
          Caption         =   "Close all"
+         Index           =   8
       End
-      Begin VB.Menu MnuFileSepBar2 
+      Begin VB.Menu MnuFile 
          Caption         =   "-"
+         Index           =   9
       End
-      Begin VB.Menu MnuBatchConvert 
+      Begin VB.Menu MnuFile 
          Caption         =   "&Batch process..."
-         Shortcut        =   ^B
+         Index           =   10
       End
-      Begin VB.Menu MnuFileSepBar3 
+      Begin VB.Menu MnuFile 
          Caption         =   "-"
+         Index           =   11
       End
-      Begin VB.Menu MnuPrint 
+      Begin VB.Menu MnuFile 
          Caption         =   "&Print..."
-         Shortcut        =   ^P
+         Index           =   12
       End
-      Begin VB.Menu MnuFileSepBar4 
+      Begin VB.Menu MnuFile 
          Caption         =   "-"
+         Index           =   13
       End
-      Begin VB.Menu MnuExit 
+      Begin VB.Menu MnuFile 
          Caption         =   "E&xit"
-         Shortcut        =   ^Q
+         Index           =   14
       End
    End
    Begin VB.Menu MnuEdit 
@@ -2564,11 +2571,6 @@ Private Sub MnuArtistic_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuBatchConvert_Click()
-    g_AllowDragAndDrop = False
-    FormBatchWizard.Show vbModal, FormMain
-    g_AllowDragAndDrop = True
-End Sub
 
 Private Sub MnuBlackLight_Click()
     Process "Black light", True
@@ -2617,37 +2619,6 @@ End Sub
 
 Private Sub MnuClearMRU_Click()
     MRU_ClearList
-End Sub
-
-Private Sub MnuClose_Click()
-    
-    'Note that we are not closing ALL images - just one of them
-    g_ClosingAllImages = False
-    Unload Me.ActiveForm
-    
-End Sub
-
-Private Sub MnuCloseAll_Click()
-
-    'Note that the user has opted to close ALL open images
-    g_ClosingAllImages = True
-
-    'Go through each image object and close the containing form
-    Dim i As Long
-    For i = 0 To NumOfImagesLoaded
-        If (Not pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then Unload pdImages(i).containingForm
-        End If
-        
-        'If the user pressed "cancel", obey their request immediately and stop processing images
-        If Not g_ClosingAllImages Then Exit For
-        
-    Next i
-
-    'Reset the "closing all images" flag
-    g_ClosingAllImages = False
-    g_DealWithAllUnsavedImages = False
-    
 End Sub
 
 'All Color sub-menu entries are handled here.
@@ -2897,6 +2868,69 @@ End Sub
 
 Private Sub MnuFadeLastEffect_Click()
     Process "Fade last effect"
+End Sub
+
+'All file menu actions are launched from here
+Private Sub MnuFile_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Open
+        Case 0
+            Process "Open", True
+        
+        '<Open Recent top-level>
+        Case 1
+        
+        '<Import top-level>
+        Case 2
+        
+        '<separator>
+        Case 3
+        
+        'Save
+        Case 4
+            Process "Save", True
+            
+        'Save as
+        Case 5
+            Process "Save as", True
+            
+        '<separator>
+        Case 6
+        
+        'Close
+        Case 7
+            Process "Close", True
+        
+        'Close all
+        Case 8
+            Process "Close all", True
+        
+        '<separator>
+        Case 9
+        
+        'Batch wizard
+        Case 10
+            Process "Batch wizard", True
+        
+        '<separator>
+        Case 11
+        
+        'Print
+        Case 12
+            Process "Print", True
+        
+        '<separator>
+        Case 13
+        
+        'Exit
+        Case 14
+            Process "Exit program", True
+        
+    
+    End Select
+
 End Sub
 
 Private Sub MnuFitOnScreen_Click()
@@ -3294,10 +3328,6 @@ Private Sub MnuEmptyClipboard_Click()
     Process "Empty clipboard", , , False
 End Sub
 
-Private Sub MnuExit_Click()
-    Unload FormMain
-End Sub
-
 Private Sub MnuInvert_Click()
     Process "Invert RGB"
 End Sub
@@ -3326,20 +3356,12 @@ Private Sub MnuNoise_Click(Index As Integer)
         
 End Sub
 
-Private Sub MnuOpen_Click()
-    Process "Open", True
-End Sub
-
 Private Sub MnuPaste_Click()
     Process "Paste as new image", , , False
 End Sub
 
 Private Sub MnuPlayMacroRecording_Click()
     Process "Play macro", True
-End Sub
-
-Private Sub MnuPrint_Click()
-    If Not FormPrint.Visible Then FormPrint.Show vbModal, FormMain
 End Sub
 
 Private Sub MnuRadioactive_Click()
@@ -3404,16 +3426,8 @@ Private Sub MnuRotate_Click(Index As Integer)
             
 End Sub
 
-Private Sub MnuSave_Click()
-    Process "Save", , , False
-End Sub
-
-Private Sub MnuSaveAs_Click()
-    Process "Save as", True
-End Sub
-
 Private Sub MnuScanImage_Click()
-    Process "Scan image", , , False
+    Process "Scan image", True
 End Sub
 
 Private Sub MnuScreenCapture_Click()
@@ -3661,7 +3675,10 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     With ctlAccelerator
     
-        If .isProcString(nIndex) Then Process .Key(nIndex), .displayDialog(nIndex)
+        If .isProcString(nIndex) Then
+            Process .Key(nIndex), .displayDialog(nIndex), , .shouldCreateUndo(nIndex)
+            Exit Sub
+        End If
     
     End With
 
