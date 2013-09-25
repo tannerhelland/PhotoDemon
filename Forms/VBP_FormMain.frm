@@ -2393,7 +2393,7 @@ Private Sub MDIForm_Load()
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
     
     'Finally, return focus to the main form
-    'FormMain.SetFocus
+    FormMain.SetFocus
      
 End Sub
 
@@ -2486,6 +2486,9 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     'Release GDIPlus (if applicable)
     If g_ImageFormats.GDIPlusEnabled Then releaseGDIPlus
     
+    'Stop tracking hotkeys
+    ctlAccelerator.Enabled = False
+    
     'Destroy all custom-created form icons
     destroyAllIcons
     
@@ -2501,6 +2504,18 @@ Private Sub MDIForm_Unload(Cancel As Integer)
     handleClearType False
     
     ReleaseFormTheming Me
+    
+    'As a final failsafe, forcibly unload any remaining forms
+    Dim tmpForm As Form
+    For Each tmpForm In Forms
+        
+        'Note that there is no need to unload FormMain, as we're about to unload it anyway!
+        If tmpForm.Name <> "FormMain" Then
+            Unload tmpForm
+            Set tmpForm = Nothing
+        End If
+        
+    Next tmpForm
     
 End Sub
 
@@ -3091,7 +3106,7 @@ End Sub
 
 'Attempt to import an image from the Internet
 Private Sub MnuImportFromInternet_Click()
-    If FormInternetImport.Visible = False Then FormInternetImport.Show vbModal, FormMain
+    Process "Internet import", True
 End Sub
 
 Private Sub MnuAlien_Click()
@@ -3375,7 +3390,7 @@ Private Sub MnuRotate_Click(Index As Integer)
         
         'Rotate 270
         Case 1
-            Process "Rotate 90° Counter-Clockwise"
+            Process "Rotate 90° counter-clockwise"
         
         'Rotate 180
         Case 2
@@ -3402,7 +3417,7 @@ Private Sub MnuScanImage_Click()
 End Sub
 
 Private Sub MnuScreenCapture_Click()
-    Process "Screen capture", , , False
+    Process "Screen capture", True
 End Sub
 
 'All select menu items are handled here
@@ -3630,33 +3645,37 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     If Not FormMain.Enabled Then Exit Sub
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
-    ' faster than one quarter-second apart.
+    ' faster than one quarter-second apart.  (Ideally, the key repeat delay should be pulled from the OS - not sure how
+    ' to do this at present, but will revisit in the future.)
     Static lastAccelerator As Double
     
     If Timer - lastAccelerator < 0.25 Then Exit Sub
 
-    'Accelerators are divided into two groups: those that can be fired if no images are present (e.g. Open, Paste),
-    ' and those that require an image.
+    'Accelerators are divided into three groups, and they are processed in the following order:
+    ' 1) Direct processor strings.  These are automatically submitted to the software processor.
+    ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
+    ' 3) Non-processor directives that require an image.
 
     '***********************************************************
-    'Accelerators that DO NOT require at least one loaded image:
-
-    'Import from Internet
-    If ctlAccelerator.Key(nIndex) = "Internet_Import" Then
-        If Not FormInternetImport.Visible Then FormInternetImport.Show vbModal, FormMain
-    End If
+    'Accelerators that are direct processor strings are handled automatically
     
-    'Capture the screen
-    If ctlAccelerator.Key(nIndex) = "Screen_Capture" Then Process "Screen capture", , , False
+    With ctlAccelerator
+    
+        If .isProcString(nIndex) Then Process .Key(nIndex), .displayDialog(nIndex)
+    
+    End With
+
+    '***********************************************************
+    'Accelerators that DO NOT require at least one loaded image, and that require special handling:
     
     'Open program preferences
     If ctlAccelerator.Key(nIndex) = "Preferences" Then
-        If Not FormPreferences.Visible Then FormPreferences.Show vbModal, FormMain
+        If Not FormPreferences.Visible Then
+            FormPreferences.Show vbModal, FormMain
+            Exit Sub
+        End If
     End If
-    
-    'Empty clipboard
-    If ctlAccelerator.Key(nIndex) = "Empty_Clipboard" Then Process "Empty clipboard", , , False
-    
+        
     'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
     ' to cancel batch conversions, but in the future it should be applied elsewhere.
     If ctlAccelerator.Key(nIndex) = "Escape" Then
@@ -3668,7 +3687,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     For i = 0 To 9
         If ctlAccelerator.Key(nIndex) = ("MRU_" & i) Then
             If FormMain.mnuRecDocs.Count > i Then
-                If FormMain.mnuRecDocs(i).Enabled = True Then
+                If FormMain.mnuRecDocs(i).Enabled Then
                     FormMain.mnuRecDocs_Click i
                 End If
             End If
@@ -3676,22 +3695,12 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     Next i
     
     '***********************************************************
-    'Accelerators that DO require at least one loaded image:
+    'Accelerators that DO require at least one loaded image, and that require special handling:
     
     'If no images are loaded, or another form is active, exit.
-    If FormLanguageEditor.Visible Then Exit Sub
-    
     If NumOfWindows = 0 Then Exit Sub
-    
-    
-    'Save As...
-    If ctlAccelerator.Key(nIndex) = "Save_As" Then
-        If FormMain.MnuSaveAs.Enabled Then Process "Save as", True
-    End If
-    
-    'Redo
-    If ctlAccelerator.Key(nIndex) = "Redo" Then
-        If FormMain.MnuRedo.Enabled Then Process "Redo", , , False
+    If Not (FormLanguageEditor Is Nothing) Then
+        If FormLanguageEditor.Visible Then Exit Sub
     End If
     
     'Fit on screen
@@ -3743,30 +3752,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
         If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
-    End If
-    
-    'Brightness/Contrast
-    If ctlAccelerator.Key(nIndex) = "Bright_Contrast" Then
-        Process "Brightness and contrast", True
-    End If
-    
-    'Color balance
-    If ctlAccelerator.Key(nIndex) = "Color_Balance" Then
-        Process "Color balance", True
-    End If
-    
-    'Shadows / Highlights
-    If ctlAccelerator.Key(nIndex) = "Shadow_Highlight" Then
-        Process "Shadows and highlights", True
-    End If
-    
-    'Rotate Right / Left
-    If ctlAccelerator.Key(nIndex) = "Rotate_Left" Then Process "Rotate 90° counter-clockwise"
-    If ctlAccelerator.Key(nIndex) = "Rotate_Right" Then Process "Rotate 90° clockwise"
-    
-    'Crop to selection
-    If ctlAccelerator.Key(nIndex) = "Crop_Selection" Then
-        If pdImages(CurrentImage).selectionActive Then Process "Crop"
     End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
@@ -3895,11 +3880,11 @@ Private Sub MnuWindow_Click(Index As Integer)
 End Sub
 
 Private Sub MnuZoomIn_Click()
-    If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+    If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.CmbZoom.Enabled = True And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+    If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
 End Sub
 
 'When the form is resized, the left-hand bar needs to be manually redrawn.  Unfortunately, VB doesn't trigger

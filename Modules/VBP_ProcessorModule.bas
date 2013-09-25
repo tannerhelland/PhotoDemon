@@ -211,6 +211,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Screen capture"
             CaptureScreen
+            
+        Case "Internet import"
+            If Not FormInternetImport.Visible Then
+                FormInternetImport.Show vbModal, FormMain
+                Exit Sub
+            End If
         
         
         
