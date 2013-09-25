@@ -21,7 +21,8 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.  The original version of this code required a separate subclass/hook module, which I have
-'      rewritten against cSelfSubHookCallback to improve IDE safety and reliability.
+'      rewritten against cSelfSubHookCallback to improve IDE safety and reliability.  I have also modified the custom tAccel type (and
+'      related code) to automatically handle interaction with PhotoDemon's software processor.
 
 'You may download the original version of this code at:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
@@ -41,6 +42,10 @@ Private Type tAccel
     eKeyCode As KeyCodeConstants
     eShift As ShiftConstants
     sKey As String
+    isProcessorReady As Boolean
+    requiresImage As Boolean
+    procShowForm As Boolean
+    relevantMenu As Menu
 End Type
 
 Private m_tAccel() As tAccel
@@ -61,7 +66,11 @@ Attribute KeyUp.VB_Description = "Raised whenever a key is released in the appli
 Private m_Subclass As cSelfSubHookCallback
 Private Const HC_ACTION = 0
 
-Public Function AddAccelerator(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal vKey As Variant) As Long
+'NOTE FROM TANNER: if the isProcessorString value is set to TRUE, vKey is assumed to a be a string meant for the software processor, and
+'                  it will be directly passed there when its associated hotkey is used.  requiresOpenImage is used to specify that this
+'                  action must be disallowed unless an image is loaded and active.  showProcForm controls the "showDialog" parameter of
+'                  processor string directives.
+Public Function AddAccelerator(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal vKey As Variant, Optional ByRef correspondingMenu As Menu, Optional ByVal isProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True) As Long
 Attribute AddAccelerator.VB_Description = "Adds an accelerator to the control, returning the index of the accelerator added."
     Dim i As Long
     Dim iIdx As Long
@@ -91,6 +100,14 @@ Attribute AddAccelerator.VB_Description = "Adds an accelerator to the control, r
         .sKey = vKey
         .eKeyCode = KeyCode
         .eShift = Shift
+        .isProcessorReady = isProcessorString
+        .requiresImage = requiresOpenImage
+        .procShowForm = showProcDialog
+        If Not IsMissing(correspondingMenu) Then
+            If Not IsEmpty(correspondingMenu) Then
+                Set .relevantMenu = correspondingMenu
+            End If
+        End If
     End With
     
     AddAccelerator = iIdx
@@ -197,6 +214,81 @@ Attribute IsActive.VB_Description = "Gets whether the form holding the accelerat
      End If
 End Property
 
+'Used to see if a given accelerator key is a processor string directive
+Public Property Get isProcString(ByVal nIndex As Long) As Boolean
+    If Index(nIndex) > 0 Then
+        isProcString = m_tAccel(nIndex).isProcessorReady
+    End If
+End Property
+
+'Used to see if a given accelerator requires at least one open image to process
+Public Property Get imageRequired(ByVal nIndex As Long) As Boolean
+    If Index(nIndex) > 0 Then
+        imageRequired = m_tAccel(nIndex).requiresImage
+    End If
+End Property
+
+'Used to see if a given accelerator - of processor string type - wants a dialog displayed or not
+Public Property Get displayDialog(ByVal nIndex As Long) As Boolean
+    If Index(nIndex) > 0 Then
+        displayDialog = m_tAccel(nIndex).procShowForm
+    End If
+End Property
+
+'Used to see if a given accelerator is associated with a program menu
+Public Property Get hasMenu(ByVal nIndex As Long) As Boolean
+    If Index(nIndex) > 0 Then
+        If Not (m_tAccel(nIndex).relevantMenu Is Nothing) Then
+            hasMenu = True
+        Else
+            hasMenu = False
+        End If
+    End If
+End Property
+
+'Used to retrieve the program menu associated wiht a given accelerator
+Public Property Get associatedMenu(ByVal nIndex As Long) As Menu
+    Set associatedMenu = m_tAccel(nIndex).relevantMenu
+End Property
+
+'Used to retrieve a string representation of a shorcut
+Public Function stringRep(ByVal nIndex As Long) As String
+    If Index(nIndex) > 0 Then
+        Dim tmpString As String
+        If m_tAccel(nIndex).eShift And vbCtrlMask Then tmpString = "Ctrl+"
+        If m_tAccel(nIndex).eShift And vbAltMask Then tmpString = tmpString & "Alt+"
+        If m_tAccel(nIndex).eShift And vbShiftMask Then tmpString = tmpString & "Shift+"
+        
+        'Processing the string itself takes a bit of extra work, as some keyboard keys won't automatically map to a string
+        Select Case m_tAccel(nIndex).eKeyCode
+        
+            Case vbKeyAdd
+                tmpString = tmpString & "+"
+            
+            Case vbKeySubtract
+                tmpString = tmpString & "-"
+            
+            Case vbKeyReturn
+                tmpString = tmpString & "Enter"
+            
+            Case vbKeyPageUp
+                tmpString = tmpString & "Page Up"
+            
+            Case vbKeyPageDown
+                tmpString = tmpString & "Page Down"
+                
+            Case vbKeyF1 To vbKeyF16
+                tmpString = tmpString & "F" & (CLng(m_tAccel(nIndex).eKeyCode) - 111)
+            
+            Case Else
+                tmpString = tmpString & UCase(Chr(m_tAccel(nIndex).eKeyCode))
+            
+        End Select
+        
+        stringRep = tmpString
+    End If
+End Function
+
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_Description = "Gets/sets whether the control responds to accelerator keys."
      Enabled = m_bEnabled
@@ -291,7 +383,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     Dim iAccel As Long
     Dim eShiftCode As ShiftConstants
    
-    On Error Resume Next
+    'On Error Resume Next
     
     If Not UserControl.EventsFrozen Then
     
@@ -321,6 +413,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                          If .eKeyCode = wParam Then
                             If .eShift = eShiftCode Then
                                RaiseEvent Accelerator(iAccel, bCancel)
+                               bHandled = True
                                Exit For
                             End If
                          End If

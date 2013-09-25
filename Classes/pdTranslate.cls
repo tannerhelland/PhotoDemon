@@ -289,7 +289,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     'Redraw all text on the main form using the new language
     If FormMain.Visible Then
         FormMain.requestMakeFormPretty useDoEvents
-        DrawMenuShortcuts
+        DrawAccelerators
         ApplyAllMenuIcons True
         
         'Because the Undo and Redo captions are dynamic, they must be recreated in the current language

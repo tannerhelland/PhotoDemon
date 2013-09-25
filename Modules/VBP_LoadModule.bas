@@ -321,7 +321,7 @@ Public Sub LoadTheProgram()
     MRU_LoadFromFile
     
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
-    LoadMenuShortcuts
+    LoadAccelerators
             
     'Load and draw all menu icons
     LoadMenuIcons
@@ -1144,19 +1144,20 @@ Public Sub LoadMessage(ByVal sMsg As String)
 End Sub
 
 'Generates all shortcuts that VB can't; many thanks to Steve McMahon for his accelerator class, which helps a great deal
-Public Sub LoadMenuShortcuts()
+Public Sub LoadAccelerators()
 
     'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
-    If Not g_IsProgramCompiled Then Exit Sub
+    'If Not g_IsProgramCompiled Then Exit Sub
 
     With FormMain.ctlAccelerator
     
         'File menu
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save_As"
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet_Import"
-        .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen_Capture"
+        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuSaveAs, True, True, True
+        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, True, True
+        .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", FormMain.MnuScreenCapture, True, True, True
         
-            'Most-recently used files
+            'Most-recently used files.  Note that we cannot automatically associate these with a menu, as their menu may not
+            ' exist at run-time.
             .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
             .AddAccelerator vbKey1, vbCtrlMask, "MRU_1"
             .AddAccelerator vbKey2, vbCtrlMask, "MRU_2"
@@ -1169,110 +1170,72 @@ Public Sub LoadMenuShortcuts()
             .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
             
         'Edit menu
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences"
-        .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo"
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty_Clipboard"
+        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True
+        .AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask, "Redo", FormMain.MnuRedo, True, True, True
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Empty clipboard", FormMain.MnuEmptyClipboard, True, True, True
         
         'View menu
-        .AddAccelerator vbKey0, 0, "FitOnScreen"
-        .AddAccelerator vbKeyAdd, 0, "Zoom_In"
-        .AddAccelerator vbKeySubtract, 0, "Zoom_Out"
-        .AddAccelerator vbKey5, 0, "Zoom_161"
-        .AddAccelerator vbKey4, 0, "Zoom_81"
-        .AddAccelerator vbKey3, 0, "Zoom_41"
-        .AddAccelerator vbKey2, 0, "Zoom_21"
-        .AddAccelerator vbKey1, 0, "Actual_Size"
-        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12"
-        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14"
-        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18"
-        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116"
+        .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True
+        .AddAccelerator vbKeyAdd, 0, "Zoom_In", FormMain.MnuZoomIn, False, True
+        .AddAccelerator vbKeySubtract, 0, "Zoom_Out", FormMain.MnuZoomOut, False, True
+        .AddAccelerator vbKey5, 0, "Zoom_161", FormMain.MnuSpecificZoom(0), False, True
+        .AddAccelerator vbKey4, 0, "Zoom_81", FormMain.MnuSpecificZoom(1), False, True
+        .AddAccelerator vbKey3, 0, "Zoom_41", FormMain.MnuSpecificZoom(2), False, True
+        .AddAccelerator vbKey2, 0, "Zoom_21", FormMain.MnuSpecificZoom(3), False, True
+        .AddAccelerator vbKey1, 0, "Actual_Size", FormMain.MnuSpecificZoom(4), False, True
+        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", FormMain.MnuSpecificZoom(5), False, True
+        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", FormMain.MnuSpecificZoom(6), False, True
+        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", FormMain.MnuSpecificZoom(7), False, True
+        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", FormMain.MnuSpecificZoom(8), False, True
         
         'Image menu
-        .AddAccelerator vbKeyL, 0, "Rotate_Left"
-        .AddAccelerator vbKeyR, 0, "Rotate_Right"
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop_Selection"
+        .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False
+        .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(7), True, True, False
         
         'Color Menu
-        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Bright_Contrast"
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color_Balance"
-        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadow_Highlight"
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True
+        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True
         
         'Window menu
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image"
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image"
-        
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(1), False, True, False
+                
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"
         
         .Enabled = True
     End With
 
-    DrawMenuShortcuts
+    DrawAccelerators
     
 End Sub
 
 'After all menu shortcuts (accelerators) are loaded above, the custom shortcuts need to be added to the menu entries themselves.
 ' If we don't do this, the user won't know how to trigger the shortcuts!
-Public Sub DrawMenuShortcuts()
+Public Sub DrawAccelerators()
 
     'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
-    If Not g_IsProgramCompiled Then Exit Sub
+    'If Not g_IsProgramCompiled Then Exit Sub
 
-    'File menu
-    FormMain.MnuSaveAs.Caption = FormMain.MnuSaveAs.Caption & vbTab & "Ctrl+Shift+S"
-    FormMain.MnuImportFromInternet.Caption = FormMain.MnuImportFromInternet.Caption & vbTab & "Ctrl+Shift+I"
-    FormMain.MnuScreenCapture.Caption = FormMain.MnuScreenCapture.Caption & vbTab & "Ctrl+Alt+I"
+    Dim i As Long
+    
+    For i = 1 To FormMain.ctlAccelerator.Count
+        With FormMain.ctlAccelerator
+            If .hasMenu(i) Then
+                .associatedMenu(i).Caption = .associatedMenu(i).Caption & vbTab & .stringRep(i)
+            End If
+        End With
+    Next i
+
+    'A few menu shortcuts must be drawn manually.
+    
+    'Because the Import -> From Clipboard menu shares the same shortcut as Edit -> Paste, we must manually add
+    ' its shortcut (as only the Edit -> Paste will be automatically handled).
     FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
-
-    'Edit menu
-    'This Redo shortcut remains, but it is hidden; the Windows convention of Ctrl+Y is displayed instead.
-    'FormMain.MnuRedo.Caption = FormMain.MnuRedo.Caption & vbTab & "Ctrl+Alt+Z"
-    FormMain.MnuEmptyClipboard.Caption = FormMain.MnuEmptyClipboard.Caption & vbTab & "Ctrl+Shift+X"
-    
-    'View menu
-    FormMain.MnuFitOnScreen.Caption = FormMain.MnuFitOnScreen.Caption & vbTab & "0"
-    FormMain.MnuZoomIn.Caption = FormMain.MnuZoomIn.Caption & vbTab & " +"
-    FormMain.MnuZoomOut.Caption = FormMain.MnuZoomOut.Caption & vbTab & "-"
-    FormMain.MnuSpecificZoom(0).Caption = FormMain.MnuSpecificZoom(0).Caption & vbTab & "5"
-    FormMain.MnuSpecificZoom(1).Caption = FormMain.MnuSpecificZoom(1).Caption & vbTab & "4"
-    FormMain.MnuSpecificZoom(2).Caption = FormMain.MnuSpecificZoom(2).Caption & vbTab & "3"
-    FormMain.MnuSpecificZoom(3).Caption = FormMain.MnuSpecificZoom(3).Caption & vbTab & "2"
-    FormMain.MnuSpecificZoom(4).Caption = FormMain.MnuSpecificZoom(4).Caption & vbTab & "1"
-    FormMain.MnuSpecificZoom(5).Caption = FormMain.MnuSpecificZoom(5).Caption & vbTab & "Shift+2"
-    FormMain.MnuSpecificZoom(6).Caption = FormMain.MnuSpecificZoom(6).Caption & vbTab & "Shift+3"
-    FormMain.MnuSpecificZoom(7).Caption = FormMain.MnuSpecificZoom(7).Caption & vbTab & "Shift+4"
-    FormMain.MnuSpecificZoom(8).Caption = FormMain.MnuSpecificZoom(8).Caption & vbTab & "Shift+5"
-        
-    'Image menu
-    
-        'Rotate clockwise
-        FormMain.MnuRotate(0).Caption = FormMain.MnuRotate(0).Caption & vbTab & "R"
-        
-        'Rotate counter-clockwise
-        FormMain.MnuRotate(1).Caption = FormMain.MnuRotate(1).Caption & vbTab & "L"
-        
-        'Crop to selection
-        FormMain.MnuImage(7).Caption = FormMain.MnuImage(7).Caption & vbTab & "Ctrl+Shift+X"
-    
-    'Color menu
-        
-        'Brightness/contrast
-        'FormMain.MnuColor(0).Caption = FormMain.MnuColor(0).Caption & vbTab & "Ctrl+Shift+B"
-        
-        '
-        'FormMain.MnuColor(1).Caption = FormMain.MnuColor(1).Caption & vbTab & "Ctrl+Shift+C"
-        
-        '
-        'FormMain.MnuColor(5).Caption = FormMain.MnuColor(5).Caption & vbTab & "Ctrl+Shift+H"
-    
-    'Tools menu
-    FormMain.mnuTool(5).Caption = FormMain.mnuTool(5).Caption & vbTab & "Alt+Enter"     'Options (Preferences)
-    
-    'Window menu (Next Image and Previous Image, specifically)
-    FormMain.MnuWindow(0).Caption = FormMain.MnuWindow(0).Caption & vbTab & "Page Down"
-    FormMain.MnuWindow(1).Caption = FormMain.MnuWindow(1).Caption & vbTab & "Page Up"
     
 End Sub
 
