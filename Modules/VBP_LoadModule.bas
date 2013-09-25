@@ -1206,11 +1206,18 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", FormMain.MnuSpecificZoom(8), False, True, False, False
         
         'Image menu
-        .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False, 1
-        .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
+        .AddAccelerator vbKeyD, vbCtrlMask, "Duplicate image", FormMain.MnuImage(0), True, True, False, 0
+        .AddAccelerator vbKeyR, vbCtrlMask, "Resize", FormMain.MnuImage(4), True, True, True, 0
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(7), True, True, False, 1
         
+            'Image -> Rotate submenu
+            .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
+            .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False, 1
+        
         'Select Menu
+        .AddAccelerator vbKeyA, vbCtrlMask, "Select all", FormMain.MnuSelect(0), True, True, False, 2
+        
+        'Adjustments Menu
         .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True, 1
         .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True, 1
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True, 1
