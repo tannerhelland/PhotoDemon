@@ -2858,6 +2858,42 @@ Private Sub MnuEdge_Click(Index As Integer)
 
 End Sub
 
+Private Sub MnuEdit_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Undo
+        Case 0
+            Process "Undo", False, , 0
+        
+        'Redo
+        Case 1
+            Process "Redo", False, , 0
+        
+        'Repeat last
+        Case 2
+            Process "Repeat last action", False, , 1
+        
+        '<separator>
+        Case 3
+        
+        'Copy to clipboard
+        Case 4
+            Process "Copy to clipboard", False, , 0, , False
+        
+        'Paste as new image
+        Case 5
+            Process "Paste as new image", False, , 0, , False
+        
+        'Empty clipboard
+        Case 6
+            Process "Empty clipboard", False, , 0, , False
+                
+    
+    End Select
+    
+End Sub
+
 Private Sub MnuFadeLastEffect_Click()
     Process "Fade last effect"
 End Sub
