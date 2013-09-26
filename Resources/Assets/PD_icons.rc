@@ -89,22 +89,43 @@ SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      disk.png
 
 
 //Adjustments menu
+
+CHANNELMIX   CUSTOM  MOVEABLE        LOADONCALL      block.png
+//--> Channels sub-menu
+RECHANNEL    CUSTOM  MOVEABLE        LOADONCALL      arrow_merge_blue.png
+COLORSHIFTR  CUSTOM  MOVEABLE        LOADONCALL      arrow_switch.png
+COLORSHIFTL  CUSTOM  MOVEABLE        LOADONCALL      arrow_switch_180.png
+CHANNELMAX   CUSTOM  MOVEABLE        LOADONCALL      channel_maximum.png
+CHANNELMIN   CUSTOM  MOVEABLE        LOADONCALL      channel_minimum.png
+
+//--> Colors sub-menu
+COLORBALANCE CUSTOM  MOVEABLE        LOADONCALL      chart_pie_separate.png
+WHITEBAL     CUSTOM  MOVEABLE        LOADONCALL      weather_clouds.png
+HSL          CUSTOM  MOVEABLE        LOADONCALL      color.png
+PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
+VIBRANCE     CUSTOM  MOVEABLE        LOADONCALL      image_saturation_up.png
+COLORIZE     CUSTOM  MOVEABLE        LOADONCALL      color_swatch.png
+GRAYSCALE    CUSTOM  MOVEABLE        LOADONCALL      image_gray.png
+SEPIA        CUSTOM  MOVEABLE        LOADONCALL      zone.png
+//
+
+LIGHTING     CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
+//--> Lighting sub-menu
 BRIGHT       CUSTOM  MOVEABLE        LOADONCALL      contrast.png
 CURVES       CUSTOM  MOVEABLE        LOADONCALL      layer_shape_curve.png
 EXPOSURE     CUSTOM  MOVEABLE        LOADONCALL      occluder.png
 GAMMA        CUSTOM  MOVEABLE        LOADONCALL      television_test.png
 LEVELS       CUSTOM  MOVEABLE        LOADONCALL      color_adjustment.png
 SHDWHGHLGHT  CUSTOM  MOVEABLE        LOADONCALL      ghost.png
-WHITEBAL     CUSTOM  MOVEABLE        LOADONCALL      weather_clouds.png
-
-COLORBALANCE CUSTOM  MOVEABLE        LOADONCALL      chart_pie_separate.png
-HSL          CUSTOM  MOVEABLE        LOADONCALL      color.png
-PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
 TEMPERATURE  CUSTOM  MOVEABLE        LOADONCALL      thermometer.png
-VIBRANCE     CUSTOM  MOVEABLE        LOADONCALL      image_saturation_up.png
+//
 
-COLORIZE     CUSTOM  MOVEABLE        LOADONCALL      color_swatch.png
-GRAYSCALE    CUSTOM  MOVEABLE        LOADONCALL      image_gray.png
+HISTOGRAM    CUSTOM  MOVEABLE        LOADONCALL      chart.png
+//--> Histogram sub-menu
+EQUALIZE     CUSTOM  MOVEABLE        LOADONCALL      equalizer_flat.png
+STRETCH      CUSTOM  MOVEABLE        LOADONCALL      ui_splitter_horizontal.png
+//
+
 INVERT       CUSTOM  MOVEABLE        LOADONCALL      images.png
 //--> Invert sub-menu
 INVCMYK      CUSTOM  MOVEABLE        LOADONCALL      invert_film.png
@@ -112,25 +133,12 @@ INVHUE       CUSTOM  MOVEABLE        LOADONCALL      invert_hue.png
 INVRGB       CUSTOM  MOVEABLE        LOADONCALL      invert_rgb.png
 INVCOMPOUND  CUSTOM  MOVEABLE        LOADONCALL      invert_compound.png
 //
+
 MONOCHROME   CUSTOM  MOVEABLE        LOADONCALL      checkerboard.png
 //--> Monochrome sub-menu
 COLORTOMONO  CUSTOM  MOVEABLE        LOADONCALL      color_to_monochrome.png
 MONOTOCOLOR  CUSTOM  MOVEABLE        LOADONCALL      monochrome_to_color.png
 //
-SEPIA        CUSTOM  MOVEABLE        LOADONCALL      zone.png
-
-CHANNELMIX   CUSTOM  MOVEABLE        LOADONCALL      block.png
-//--> Components sub-menu
-RECHANNEL    CUSTOM  MOVEABLE        LOADONCALL      arrow_merge_blue.png
-COLORSHIFTR  CUSTOM  MOVEABLE        LOADONCALL      arrow_switch.png
-COLORSHIFTL  CUSTOM  MOVEABLE        LOADONCALL      arrow_switch_180.png
-CHANNELMAX   CUSTOM  MOVEABLE        LOADONCALL      channel_maximum.png
-CHANNELMIN   CUSTOM  MOVEABLE        LOADONCALL      channel_minimum.png
-
-HISTOGRAM    CUSTOM  MOVEABLE        LOADONCALL      chart.png
-//--> Histogram sub-menu
-EQUALIZE     CUSTOM  MOVEABLE        LOADONCALL      equalizer_flat.png
-STRETCH      CUSTOM  MOVEABLE        LOADONCALL      ui_splitter_horizontal.png
 
 
 //Filters menu
@@ -201,7 +209,7 @@ MEDIAN       CUSTOM  MOVEABLE        LOADONCALL      balance.png
 OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
 //--> Other sub-menu
 ALIEN        CUSTOM  MOVEABLE        LOADONCALL      game.png
-BLACKLIGHT   CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
+BLACKLIGHT   CUSTOM  MOVEABLE        LOADONCALL      black_light_bulb.png
 DREAM        CUSTOM  MOVEABLE        LOADONCALL      smiley_sleep.png
 HEATMAP      CUSTOM  MOVEABLE        LOADONCALL      spectrum_emission.png
 RADIOACTIVE  CUSTOM  MOVEABLE        LOADONCALL      radioactivity.png

@@ -206,7 +206,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.MnuZoomIn.Enabled = newState
                 FormMain.MnuZoomOut.Enabled = newState
                 FormMain.MnuSelectTop.Enabled = newState
-                FormMain.MnuColorTop.Enabled = newState
+                FormMain.MnuAdjustmentsTop.Enabled = newState
                 FormMain.MnuWindowTop.Enabled = newState
                 
                 For i = 0 To FormMain.MnuSpecificZoom.Count - 1
