@@ -6,8 +6,8 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>5.9.0</langversion>
-<langstatus>Completo</langstatus>
+<langversion>2.0.2</langversion>
+<langstatus>Completa</langstatus>
 
 <author>GioRock</author>
 
@@ -5246,7 +5246,7 @@ Questo incrementerà il tempo del processo, così spunta questa opzione solo se de
 
 <phrase>
 <original>Print canceled.</original>
-<translation>Stampa cancellata.</translation>
+<translation>Stampa annullata.</translation>
 </phrase>
 
 <phrase>
@@ -5393,7 +5393,7 @@ Questo incrementerà il tempo del processo, così spunta questa opzione solo se de
 
 <phrase>
 <original>Image download canceled.</original>
-<translation>Scaricamento dell'immagine cancellato.</translation>
+<translation>Scaricamento dell'immagine annullato.</translation>
 </phrase>
 
 <phrase>
@@ -5453,7 +5453,7 @@ Questo incrementerà il tempo del processo, così spunta questa opzione solo se de
 
 <phrase>
 <original>Download canceled.  (Remote server denied access.)</original>
-<translation>Scaricamento cancellato. (Il server remoto nega l'accesso.)</translation>
+<translation>Scaricamento annullato. (Il server remoto nega l'accesso.)</translation>
 </phrase>
 
 <phrase>
@@ -5481,7 +5481,7 @@ Necessiti di scaricare l'immagine utilizzando il tuo navigatore predefinito per 
 
 <phrase>
 <original>Internet import canceled.</original>
-<translation>Importazione da Internet cancellata.</translation>
+<translation>Importazione da Internet annullata.</translation>
 </phrase>
 
 <phrase>
@@ -5607,12 +5607,12 @@ Necessiti di scaricare l'immagine utilizzando il tuo navigatore predefinito per 
 
 <phrase>
 <original>Automatic plugin download canceled.  Plugin-related features disabled for this session.</original>
-<translation>Scaricamento automatico dei Plugin cancellato. Le funzionalità dei Plugin sono disabilitate per questa sessione.</translation>
+<translation>Scaricamento automatico dei Plugin annullato. Le funzionalità dei Plugin sono disabilitate per questa sessione.</translation>
 </phrase>
 
 <phrase>
 <original>Automatic plugin download canceled.  Plugin-related features permanently disabled.</original>
-<translation>Scaricamento automatico dei Plugin cancellato. Le funzionalità dei Plugin sono disabilitate permanentemente.</translation>
+<translation>Scaricamento automatico dei Plugin annullato. Le funzionalità dei Plugin sono disabilitate permanentemente.</translation>
 </phrase>
 
 <phrase>
@@ -6521,7 +6521,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>La rotazione arbitraria necessita del plugin FreeImage, il quale però non può essere localizzato. Rotazione cancellata.</translation>
+<translation>La rotazione arbitraria necessita del plugin FreeImage, il quale però non può essere localizzato. Rotazione annullata.</translation>
 </phrase>
 
 <phrase>
@@ -8449,7 +8449,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 
 <phrase>
 <original>Batch conversion canceled.</original>
-<translation>Conversione automatica cancellata.</translation>
+<translation>Conversione automatica annullata.</translation>
 </phrase>
 
 <phrase>
