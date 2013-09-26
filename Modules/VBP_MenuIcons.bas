@@ -264,45 +264,56 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "SELECTLOAD", 4, 10     'Load selection from file
     AddMenuIcon "SELECTSAVE", 4, 11     'Save selection to file
     
-    'Color Menu
-    AddMenuIcon "BRIGHT", 5, 0          'Brightness/Contrast
-    AddMenuIcon "CURVES", 5, 1          'Curves
-    AddMenuIcon "EXPOSURE", 5, 2        'Exposure
-    AddMenuIcon "GAMMA", 5, 3           'Gamma Correction
-    AddMenuIcon "LEVELS", 5, 4          'Levels
-    AddMenuIcon "SHDWHGHLGHT", 5, 5     'Shadow/Highlight
-    AddMenuIcon "WHITEBAL", 5, 6        'White Balance
-     
-    AddMenuIcon "COLORBALANCE", 5, 8    'Color balance
-    AddMenuIcon "HSL", 5, 9             'HSL adjustment
-    AddMenuIcon "PHOTOFILTER", 5, 10    'Photo filters
-    AddMenuIcon "TEMPERATURE", 5, 11    'Temperature
-    AddMenuIcon "VIBRANCE", 5, 12       'Vibrance
+    'Adjustments Menu
     
-    AddMenuIcon "COLORIZE", 5, 14       'Colorize
-    AddMenuIcon "GRAYSCALE", 5, 15      'Grayscale
-    AddMenuIcon "INVERT", 5, 16         'Invert
-        AddMenuIcon "INVCMYK", 5, 16, 0       'Invert CMYK
-        AddMenuIcon "INVHUE", 5, 16, 1        'Invert Hue
-        AddMenuIcon "INVRGB", 5, 16, 2        'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 5, 16, 4   'Compound Invert
-    AddMenuIcon "MONOCHROME", 5, 17     'Monochrome
-        AddMenuIcon "COLORTOMONO", 5, 17, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 5, 17, 1   'Monochrome to grayscale
-    AddMenuIcon "SEPIA", 5, 18          'Sepia
+    'Channels
+    AddMenuIcon "CHANNELMIX", 5, 0     'Channels top-level
+        AddMenuIcon "CHANNELMIX", 5, 0, 0    'Channel mixer
+        AddMenuIcon "RECHANNEL", 5, 0, 1     'Rechannel
+        AddMenuIcon "CHANNELMAX", 5, 0, 3    'Channel max
+        AddMenuIcon "CHANNELMIN", 5, 0, 4    'Channel min
+        AddMenuIcon "COLORSHIFTL", 5, 0, 6   'Shift Left
+        AddMenuIcon "COLORSHIFTR", 5, 0, 7   'Shift Right
+            
+    'Color
+    AddMenuIcon "HSL", 5, 1            'Color balance
+        AddMenuIcon "COLORBALANCE", 5, 1, 0  'Color balance
+        AddMenuIcon "WHITEBAL", 5, 1, 1      'White Balance
+        AddMenuIcon "HSL", 5, 1, 3           'HSL adjustment
+        AddMenuIcon "PHOTOFILTER", 5, 1, 4   'Photo filters
+        AddMenuIcon "VIBRANCE", 5, 1, 5      'Vibrance
+        AddMenuIcon "COLORIZE", 5, 1, 7      'Colorize
+        AddMenuIcon "GRAYSCALE", 5, 1, 8     'Grayscale
+        AddMenuIcon "SEPIA", 5, 1, 9         'Sepia
     
-    AddMenuIcon "CHANNELMIX", 5, 20     'Components top-level
-        AddMenuIcon "CHANNELMIX", 5, 20, 0    'Channel mixer
-        AddMenuIcon "RECHANNEL", 5, 20, 1     'Rechannel
-        AddMenuIcon "COLORSHIFTR", 5, 20, 3   'Shift Right
-        AddMenuIcon "COLORSHIFTL", 5, 20, 4   'Shift Left
-        AddMenuIcon "CHANNELMAX", 5, 20, 6    'Channel max
-        AddMenuIcon "CHANNELMIN", 5, 20, 7    'Channel min
+    'Histogram
+    AddMenuIcon "HISTOGRAM", 5, 2      'Histogram top-level
+        AddMenuIcon "HISTOGRAM", 5, 2, 0     'Display Histogram
+        AddMenuIcon "EQUALIZE", 5, 2, 2      'Equalize
+        AddMenuIcon "STRETCH", 5, 2, 3       'Stretch
+    
+    'Invert
+    AddMenuIcon "INVERT", 5, 3         'Invert top-level
+        AddMenuIcon "INVCMYK", 5, 3, 0     'Invert CMYK
+        AddMenuIcon "INVHUE", 5, 3, 1       'Invert Hue
+        AddMenuIcon "INVRGB", 5, 3, 2       'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 5, 3, 4  'Compound Invert
         
-    AddMenuIcon "HISTOGRAM", 5, 22      'Histogram
-        AddMenuIcon "HISTOGRAM", 5, 22, 0     'Display Histogram
-        AddMenuIcon "EQUALIZE", 5, 22, 2      'Equalize
-        AddMenuIcon "STRETCH", 5, 22, 3       'Stretch
+    'Lighting
+    AddMenuIcon "LIGHTING", 5, 4       'Lighting top-level
+        AddMenuIcon "BRIGHT", 5, 4, 0       'Brightness/Contrast
+        AddMenuIcon "CURVES", 5, 4, 1       'Curves
+        AddMenuIcon "EXPOSURE", 5, 4, 2     'Exposure
+        AddMenuIcon "GAMMA", 5, 4, 3        'Gamma Correction
+        AddMenuIcon "LEVELS", 5, 4, 4       'Levels
+        AddMenuIcon "SHDWHGHLGHT", 5, 4, 5  'Shadow/Highlight
+        AddMenuIcon "TEMPERATURE", 5, 4, 6  'Temperature
+    
+    'Monochrome
+    AddMenuIcon "MONOCHROME", 5, 5      'Monochrome
+        AddMenuIcon "COLORTOMONO", 5, 5, 0   'Color to monochrome
+        AddMenuIcon "MONOTOCOLOR", 5, 5, 1   'Monochrome to grayscale
+    
     
     'Effects (Filters) Menu
     AddMenuIcon "FADELAST", 6, 0        'Fade Last

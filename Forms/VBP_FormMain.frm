@@ -1266,75 +1266,107 @@ Begin VB.MDIForm FormMain
          Index           =   11
       End
    End
-   Begin VB.Menu MnuColorTop 
+   Begin VB.Menu MnuAdjustmentsTop 
       Caption         =   "&Adjustments"
-      Begin VB.Menu MnuColor 
-         Caption         =   "Brightness and contrast..."
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Channels"
          Index           =   0
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "Channel mixer..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "Rechannel..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "Maximum channel"
+            Index           =   3
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "Minimum channel"
+            Index           =   4
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "-"
+            Index           =   5
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "Shift channels left"
+            Index           =   6
+         End
+         Begin VB.Menu MnuColorComponents 
+            Caption         =   "Shift channels right"
+            Index           =   7
+         End
       End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Curves..."
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Color"
          Index           =   1
+         Begin VB.Menu MnuColor 
+            Caption         =   "Color balance..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "White balance..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Hue and saturation..."
+            Index           =   3
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Photo filters..."
+            Index           =   4
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Vibrance..."
+            Index           =   5
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "-"
+            Index           =   6
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Colorize..."
+            Index           =   7
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Grayscale..."
+            Index           =   8
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Sepia"
+            Index           =   9
+         End
       End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Exposure..."
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Histogram"
          Index           =   2
+         Begin VB.Menu MnuHistogram 
+            Caption         =   "Display histogram"
+         End
+         Begin VB.Menu mnuHistogramSepBar1 
+            Caption         =   "-"
+         End
+         Begin VB.Menu MnuHistogramEqualize 
+            Caption         =   "Equalize..."
+         End
+         Begin VB.Menu MnuHistogramStretch 
+            Caption         =   "Stretch"
+         End
       End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Gamma..."
-         Index           =   3
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Levels..."
-         Index           =   4
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Shadows and highlights..."
-         Index           =   5
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "White balance..."
-         Index           =   6
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "-"
-         Index           =   7
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Color balance..."
-         Index           =   8
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Hue and saturation..."
-         Index           =   9
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Photo filters..."
-         Index           =   10
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Temperature..."
-         Index           =   11
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Vibrance..."
-         Index           =   12
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "-"
-         Index           =   13
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Colorize..."
-         Index           =   14
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Grayscale..."
-         Index           =   15
-      End
-      Begin VB.Menu MnuColor 
+      Begin VB.Menu MnuAdjustments 
          Caption         =   "Invert"
-         Index           =   16
+         Index           =   3
          Begin VB.Menu MnuNegative 
             Caption         =   "Invert CMYK (film negative)"
          End
@@ -1351,9 +1383,41 @@ Begin VB.MDIForm FormMain
             Caption         =   "Compound invert"
          End
       End
-      Begin VB.Menu MnuColor 
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Lighting"
+         Index           =   4
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Brightness and contrast..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Curves..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Exposure..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Gamma..."
+            Index           =   3
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Levels..."
+            Index           =   4
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Shadows and highlights..."
+            Index           =   5
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Temperature..."
+            Index           =   6
+         End
+      End
+      Begin VB.Menu MnuAdjustments 
          Caption         =   "Monochrome"
-         Index           =   17
+         Index           =   5
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Color to monochrome..."
             Index           =   0
@@ -1361,70 +1425,6 @@ Begin VB.MDIForm FormMain
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Monochrome to grayscale..."
             Index           =   1
-         End
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Sepia"
-         Index           =   18
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "-"
-         Index           =   19
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Components"
-         Index           =   20
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "Channel mixer..."
-            Index           =   0
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "Rechannel..."
-            Index           =   1
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "-"
-            Index           =   2
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "Shift channels right"
-            Index           =   3
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "Shift channels left"
-            Index           =   4
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "-"
-            Index           =   5
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "Maximum channel..."
-            Index           =   6
-         End
-         Begin VB.Menu MnuColorComponents 
-            Caption         =   "Minimum channel..."
-            Index           =   7
-         End
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "-"
-         Index           =   21
-      End
-      Begin VB.Menu MnuColor 
-         Caption         =   "Histogram"
-         Index           =   22
-         Begin VB.Menu MnuHistogram 
-            Caption         =   "Display histogram"
-         End
-         Begin VB.Menu mnuHistogramSepBar1 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuHistogramEqualize 
-            Caption         =   "Equalize..."
-         End
-         Begin VB.Menu MnuHistogramStretch 
-            Caption         =   "Stretch"
          End
       End
    End
@@ -2619,97 +2619,44 @@ Private Sub MnuColor_Click(Index As Integer)
 
     Select Case Index
     
-        'The first block of entries involves lighting fixes
-        
-        'Brightness/Contrast
-        Case 0
-            Process "Brightness and contrast", True
-        
-        'Curves
-        Case 1
-            Process "Curves", True
-        
-        'Exposure
-        Case 2
-            Process "Exposure", True
-            
-        'Gamma correction
-        Case 3
-            Process "Gamma", True
-            
-        'Levels
-        Case 4
-            Process "Levels", True
-            
-        'Shadows/Midtones/Highlights
-        Case 5
-            Process "Shadows and highlights", True
-            
-        'White balance
-        Case 6
-            Process "White balance", True
-            
-        'The second block of entries involves color fixes
-            
-        'Separator
-        Case 7
-        
         'Color balance
-        Case 8
+        Case 0
             Process "Color balance", True
-            
+        
+        'White balance
+        Case 1
+            Process "White balance", True
+        
+        '<separator>
+        Case 2
+        
         'HSL
-        Case 9
+        Case 3
             Process "Hue and saturation", True
-            
+        
         'Photo filters
-        Case 10
+        Case 4
             Process "Photo filter", True
-        
-        'Temperature
-        Case 11
-            Process "Temperature", True
-        
+
         'Vibrance
-        Case 12
+        Case 5
             Process "Vibrance", True
         
-        'The third block of entries involves wholesale image color changes (grayscale, colorize, etc)
-        
         '<separator>
-        Case 13
+        Case 6
         
         'Colorize
-        Case 14
+        Case 7
             Process "Colorize", True
-        
+            
         'Grayscale (black and white)
-        Case 15
+        Case 8
             Process "Grayscale", True
-            
-        '<Invert top-level>
-        Case 16
         
-        '<Monochrome top-level>
-        Case 17
-            
         'Sepia
-        Case 18
+        Case 9
             Process "Sepia"
-            
-        '<separator>
-        Case 19
-        
-        '<Components top-level>
-        Case 20
-        
-        '<separator>
-        Case 21
-        
-        '<Histogram top-level>
-        Case 22
 
-        
     End Select
 
 End Sub
@@ -2730,25 +2677,25 @@ Private Sub MnuColorComponents_Click(Index As Integer)
         '<separator>
         Case 2
         
-        'Shift colors right
+        'Max channel
         Case 3
-            Process "Shift colors (right)"
-            
-        'Shift colors left
+            Process "Maximum channel"
+        
+        'Min channel
         Case 4
-            Process "Shift colors (left)"
+            Process "Minimum channel"
             
         '<separator>
         Case 5
         
-        'Max channel
+        'Shift colors left
         Case 6
-            Process "Maximum channel"
-        
-        'Min channel
+            Process "Shift colors (left)"
+            
+        'Shift colors right
         Case 7
-            Process "Minimum channel"
-    
+            Process "Shift colors (right)"
+        
     End Select
     
 End Sub
@@ -3202,6 +3149,42 @@ End Sub
 'The user can toggle the appearance of the left-hand panel from this menu.  This toggle is also stored in the preferences file.
 Private Sub MnuLeftPanel_Click()
     ChangeLeftPane VISIBILITY_TOGGLE
+End Sub
+
+Private Sub MnuLighting_Click(Index As Integer)
+
+    Select Case Index
+            
+        'Brightness/Contrast
+        Case 0
+            Process "Brightness and contrast", True
+        
+        'Curves
+        Case 1
+            Process "Curves", True
+        
+        'Exposure
+        Case 2
+            Process "Exposure", True
+            
+        'Gamma correction
+        Case 3
+            Process "Gamma", True
+            
+        'Levels
+        Case 4
+            Process "Levels", True
+
+        'Shadows/Midtones/Highlights
+        Case 5
+            Process "Shadows and highlights", True
+            
+        'Temperature
+        Case 6
+            Process "Temperature", True
+    
+    End Select
+
 End Sub
 
 'All metadata sub-menu options are handled here
