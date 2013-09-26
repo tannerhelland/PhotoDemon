@@ -24,6 +24,7 @@ Option Explicit
 '======================================================================================
 'MaSS1VE : The Master System Sonic 1 Visual Editor; Copyright (C) Kroc Camen, 2013
 'Licenced under a Creative Commons 3.0 Attribution Licence
+'http://creativecommons.org/licenses/by/3.0/
 '--You may use and modify this code how you see fit as long as you give credit
 '======================================================================================
 'CLASS :: bluMouseEvents
@@ -73,8 +74,8 @@ End Enum
 'A point _
  <msdn.microsoft.com/en-us/library/windows/desktop/dd162805%28v=vs.85%29.aspx>
 Private Type POINT
-   x As Long
-   y As Long
+   X As Long
+   Y As Long
 End Type
 
 'A rectangle _
@@ -116,8 +117,8 @@ Private Declare Function user32_GetWindowRect Lib "user32" Alias "GetWindowRect"
  <msdn.microsoft.com/en-us/library/windows/desktop/dd162882%28v=vs.85%29.aspx>
 Private Declare Function user32_PtInRect Lib "user32" Alias "PtInRect" ( _
     ByRef InRect As RECT, _
-    ByVal x As Long, _
-    ByVal y As Long _
+    ByVal X As Long, _
+    ByVal Y As Long _
 ) As BOOL
 
 'Load a mouse cursor _
@@ -227,30 +228,30 @@ Event MouseIn()
 Event MouseHover( _
     ByVal Button As VBRUN.MouseButtonConstants, _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
+    ByVal X As Single, ByVal Y As Single _
 )
 'Mouse wheel scroll
 Event MouseVScroll( _
     ByVal LinesScrolled As Single, _
     ByVal Button As VBRUN.MouseButtonConstants, _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
+    ByVal X As Single, ByVal Y As Single _
 )
 Event MouseHScroll( _
     ByVal CharsScrolled As Single, _
     ByVal Button As VBRUN.MouseButtonConstants, _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
+    ByVal X As Single, ByVal Y As Single _
 )
 
 'Mouse X-buttons
 Event MouseBackButtonDown( _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
+    ByVal X As Single, ByVal Y As Single _
 )
 Event MouseForwardButtonDown( _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal x As Single, ByVal y As Single _
+    ByVal X As Single, ByVal Y As Single _
 )
 
 'CLASS Initialize _
@@ -370,7 +371,7 @@ Private Sub GetMouseStateFromParam( _
     ByVal wParam As Long, ByVal lParam As Long, _
     ByRef Button As VBRUN.MouseButtonConstants, _
     ByRef Shift As VBRUN.ShiftConstants, _
-    ByRef x As Single, ByRef y As Single _
+    ByRef X As Single, ByRef Y As Single _
 )
     'TODO: Alt mask?
     If (wParam And MK.MK_LBUTTON) <> 0 Then Button = Button Or vbLeftButton
@@ -380,8 +381,8 @@ Private Sub GetMouseStateFromParam( _
     If (wParam And MK.MK_SHIFT) <> 0 Then Shift = Shift Or vbShiftMask
     
     'The X and Y mouse coords are in the Long value as upper and lower 16-bits
-    x = lParam And &HFFFF&
-    y = lParam \ &H10000
+    X = lParam And &HFFFF&
+    Y = lParam \ &H10000
 End Sub
 
 '/// SUBCLASS /////////////////////////////////////////////////////////////////////////
@@ -405,7 +406,7 @@ Private Sub SubclassWindowProcedure( _
      (mouse button, ctrl/shift key state and mouse X / Y)
     Dim Button As VBRUN.MouseButtonConstants
     Dim Shift As VBRUN.ShiftConstants
-    Dim x As Single, y As Single
+    Dim X As Single, Y As Single
     
     '`WM_MOUSEWHEEL`: _
      <msdn.microsoft.com/en-us/library/windows/desktop/ms645617%28v=vs.85%29.aspx>
@@ -433,8 +434,8 @@ Private Sub SubclassWindowProcedure( _
         If hndParentForm <> 0 Then user32_GetWindowRect hndParentForm, WindowRECT
         
         'Determine which mouse button / meta keys are pressed
-        GetMouseStateFromParam wParam, lParam, Button, Shift, x, y
-        If user32_PtInRect(WindowRECT, x, y) = API_FALSE Then Exit Sub
+        GetMouseStateFromParam wParam, lParam, Button, Shift, X, Y
+        If user32_PtInRect(WindowRECT, X, Y) = API_FALSE Then Exit Sub
         
         'The upper bytes of the `wParam` contain the amount the wheel scrolled, _
          which will be some fraction or multiple of 120 _
@@ -463,12 +464,12 @@ Private Sub SubclassWindowProcedure( _
             Dim CharsScrolled As Single
             CharsScrolled = WheelScrollChars * (Delta / 120)
             'Alert the controller so it can do the scrolling
-            RaiseEvent MouseHScroll(CharsScrolled, Button, Shift, x, y)
+            RaiseEvent MouseHScroll(CharsScrolled, Button, Shift, X, Y)
         Else
             Dim LinesScrolled As Single
             LinesScrolled = WheelScrollLines * (Delta / 120)
             'Alert the controller so it can do the scrolling
-            RaiseEvent MouseVScroll(LinesScrolled, Button, Shift, x - clientOffsetX, y - clientOffsetY)
+            RaiseEvent MouseVScroll(LinesScrolled, Button, Shift, X - clientOffsetX, Y - clientOffsetY)
         End If
         
         ReturnValue = 0
@@ -482,8 +483,8 @@ Private Sub SubclassWindowProcedure( _
         IsTracking = False
         
         'Determine which mouse button / meta keys are pressed
-        GetMouseStateFromParam wParam, lParam, Button, Shift, x, y
-        RaiseEvent MouseHover(Button, Shift, x, y)
+        GetMouseStateFromParam wParam, lParam, Button, Shift, X, Y
+        RaiseEvent MouseHover(Button, Shift, X, Y)
         
         ReturnValue = 0
         Handled = True
@@ -534,13 +535,13 @@ Private Sub SubclassWindowProcedure( _
         
         'Determine which meta keys are pressed, this doesn't determine _
          the mouse X buttons but fills in everything else we need
-        Call GetMouseStateFromParam(wParam, lParam, Button, Shift, x, y)
+        Call GetMouseStateFromParam(wParam, lParam, Button, Shift, X, Y)
                 
         'Now test which X button
         If (wParam And MK.MK_XBUTTON1) <> 0 Then
-            RaiseEvent MouseBackButtonDown(Shift, x, y)
+            RaiseEvent MouseBackButtonDown(Shift, X, Y)
         ElseIf (wParam And MK.MK_XBUTTON2) <> 0 Then
-            RaiseEvent MouseForwardButtonDown(Shift, x, y)
+            RaiseEvent MouseForwardButtonDown(Shift, X, Y)
         End If
         
         Let ReturnValue = 1
