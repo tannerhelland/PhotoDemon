@@ -1166,8 +1166,8 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(14), True, False, True, False
         
             'File -> Import submenu
-            .AddAccelerator vbKeyI, vbCtrlMask, "Scan image", FormMain.MnuScanImage, True, False, True, False
-            .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, True, True, False
+            .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", FormMain.MnuScanImage, True, False, True, False
+            .AddAccelerator vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, True, True, False
             .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", FormMain.MnuScreenCapture, True, True, True, False
         
             'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
@@ -1206,32 +1206,60 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", FormMain.MnuSpecificZoom(8), False, True, False, False
         
         'Image menu
-        .AddAccelerator vbKeyD, vbCtrlMask, "Duplicate image", FormMain.MnuImage(0), True, True, False, 0
+        .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", FormMain.MnuImage(0), True, True, False, 0
         .AddAccelerator vbKeyR, vbCtrlMask, "Resize", FormMain.MnuImage(4), True, True, True, 0
+        .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas resize", FormMain.MnuImage(5), True, True, True, 0
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(7), True, True, False, 1
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Autocrop", FormMain.MnuImage(8), True, True, False, 1
+        'KeyCode 188 = <,  (next to the letter M)
+        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(15), True, True, False, 0
         
             'Image -> Rotate submenu
             .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
             .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False, 1
+            .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary rotation", FormMain.MnuRotate(3), True, True, True, False
         
         'Select Menu
         .AddAccelerator vbKeyA, vbCtrlMask, "Select all", FormMain.MnuSelect(0), True, True, False, 2
+        .AddAccelerator vbKeyD, vbCtrlMask, "Remove selection", FormMain.MnuSelect(1), False, True, False, 2
+        .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Invert selection", FormMain.MnuSelect(2), True, True, False, 2
+        'KeyCode 219 = {[  (next to the letter P), 221 = }]
+        .AddAccelerator 221, vbCtrlMask Or vbAltMask, "Grow selection", FormMain.MnuSelect(4), True, True, True, False
+        .AddAccelerator 219, vbCtrlMask Or vbAltMask, "Shrink selection", FormMain.MnuSelect(5), True, True, True, False
+        .AddAccelerator vbKeyD, vbCtrlMask Or vbAltMask, "Feather selection", FormMain.MnuSelect(7), True, True, True, False
         
         'Adjustments Menu
-        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True, 1
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuColor(0), True, True, True, False
+        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", FormMain.MnuColor(1), True, True, True, False
+        .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", FormMain.MnuColor(2), True, True, True, False
         .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuColor(3), True, True, True, False
         .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuColor(4), True, True, True, False
-        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True, 1
+        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuColor(5), True, True, True, False
         .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuColor(6), True, True, True, False
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True, 1
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(8), True, True, True, False
         .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(9), True, True, True, False
+        .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", FormMain.MnuColor(10), True, True, True, False
         .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuColor(11), True, True, True, False
+        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuColor(12), True, True, True, False
+        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Grayscale", FormMain.MnuColor(15), True, True, True, False
+        
+            'Adjustments -> Invert submenu
+            .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", FormMain.mnuInvert, True, True, True, False
+            
+            'Adjustments -> Monochrome submenu
+            .AddAccelerator vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", FormMain.MnuMonochrome(0), True, True, True, False
         
         'Effects Menu
+        '.AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask Or vbShiftMask, "Add RGB noise", FormMain.MnuNoise(1), True, True, True, False
+        '.AddAccelerator vbKeyG, vbCtrlMask Or vbAltMask Or vbShiftMask, "Gaussian blur", FormMain.MnuBlurFilter(1), True, True, True, False
+        '.AddAccelerator vbKeyY, vbCtrlMask Or vbAltMask Or vbShiftMask, "Correct lens distortion", FormMain.MnuDistortFilter(1), True, True, True, False
+        '.AddAccelerator vbKeyU, vbCtrlMask Or vbAltMask Or vbShiftMask, "Unsharp mask", FormMain.MnuSharpen(1), True, True, True, False
         
         'Tools menu
         .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True, False
-        .AddAccelerator vbKeyM, vbCtrlMask, "Plugin manager", FormMain.mnuTool(6), False, False, True, False
+        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", FormMain.mnuTool(6), False, False, True, False
+        'KeyCode 190 = >.  (two over from the letter M)
+        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuPlayMacroRecording, True, True, True, False
         
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False, False
