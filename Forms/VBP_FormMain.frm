@@ -2627,7 +2627,6 @@ Private Sub MnuColor_Click(Index As Integer)
         
         'Curves
         Case 1
-            'MsgBox "Still under construction!  The new Curves dialog should be finished in a week or so..."
             Process "Curves", True
         
         'Exposure
@@ -3752,6 +3751,11 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
         If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
+    End If
+    
+    'Remove selection
+    If ctlAccelerator.Key(nIndex) = "Remove selection" Then
+        Process "Remove selection", , pdImages(CurrentImage).mainSelection.getSelectionParamString, 2
     End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)

@@ -290,6 +290,21 @@ Public Function stringRep(ByVal nIndex As Long) As String
             Case vbKeyF1 To vbKeyF16
                 tmpString = tmpString & "F" & (CLng(m_tAccel(nIndex).eKeyCode) - 111)
             
+            'In the future I will enumerate virtual key bindings properly, using the data at this link:
+            ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+            'For this quick-and-dirty 6.0 fix, however, I'm implementing them as magic numbers.
+            Case 188
+                tmpString = tmpString & ","
+                
+            Case 190
+                tmpString = tmpString & "."
+                
+            Case 219
+                tmpString = tmpString & "["
+                
+            Case 221
+                tmpString = tmpString & "]"
+                
             Case Else
                 tmpString = tmpString & UCase(Chr(m_tAccel(nIndex).eKeyCode))
             
