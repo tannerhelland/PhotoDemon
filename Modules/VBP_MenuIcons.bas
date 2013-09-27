@@ -282,8 +282,8 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         AddMenuIcon "HSL", 5, 1, 3           'HSL adjustment
         AddMenuIcon "PHOTOFILTER", 5, 1, 4   'Photo filters
         AddMenuIcon "VIBRANCE", 5, 1, 5      'Vibrance
-        AddMenuIcon "COLORIZE", 5, 1, 7      'Colorize
-        AddMenuIcon "GRAYSCALE", 5, 1, 8     'Grayscale
+        AddMenuIcon "GRAYSCALE", 5, 1, 7     'Grayscale
+        AddMenuIcon "COLORIZE", 5, 1, 8      'Colorize
         AddMenuIcon "SEPIA", 5, 1, 9         'Sepia
     
     'Histogram

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormGrayscale 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " "
+   Caption         =   " Black and White"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -244,7 +244,7 @@ Begin VB.Form FormGrayscale
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "grayscale method:"
+      Caption         =   "method:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -259,7 +259,7 @@ Begin VB.Form FormGrayscale
       Left            =   6000
       TabIndex        =   2
       Top             =   1605
-      Width           =   1950
+      Width           =   900
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -287,48 +287,9 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'This routine is used to call the appropriate grayscale routine with the preview flag set
+'Preview the current grayscale conversion technique
 Private Sub drawGrayscalePreview()
-
-    If cmdBar.previewsAllowed Then
-        
-        Select Case cboMethod.ListIndex
-        
-            Case 0
-                MenuGrayscaleAverage True, fxPreview
-                
-            Case 1
-                MenuGrayscale True, fxPreview
-                
-            Case 2
-                MenuDesaturate True, fxPreview
-                
-            Case 3
-                If optDecompose(0).Value Then
-                    MenuDecompose 0, True, fxPreview
-                Else
-                    MenuDecompose 1, True, fxPreview
-                End If
-                
-            Case 4
-                If optChannel(0).Value Then
-                    MenuGrayscaleSingleChannel 0, True, fxPreview
-                ElseIf optChannel(1).Value Then
-                    MenuGrayscaleSingleChannel 1, True, fxPreview
-                Else
-                    MenuGrayscaleSingleChannel 2, True, fxPreview
-                End If
-                
-            Case 5
-                fGrayscaleCustom sltShades, True, fxPreview
-                
-            Case 6
-                fGrayscaleCustomDither sltShades, True, fxPreview
-                
-        End Select
-            
-    End If
-
+    If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), True, fxPreview
 End Sub
 
 Private Sub cboMethod_Click()
@@ -380,43 +341,85 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
+    Process "Black and white", False, buildParams(cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex))
+End Sub
 
-    Select Case cboMethod.ListIndex
-    
+'All different grayscale (black and white) routines are handled by this single function
+Public Sub masterGrayscaleFunction(Optional ByVal grayscaleMethod As Long, Optional ByVal additionalParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+
+    'Use a parameter parse string to extract any additional parameters.
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString additionalParams
+
+    'Different grayscale conversion methods call different individual subs
+    Select Case grayscaleMethod
+        
         Case 0
-            Process "Grayscale (average)"
+            MenuGrayscaleAverage toPreview, dstPic
             
         Case 1
-            Process "Grayscale (ITU standard)"
+            MenuGrayscale toPreview, dstPic
             
         Case 2
-            Process "Desaturate"
+            MenuDesaturate toPreview, dstPic
+            
+        Case 3
+            MenuDecompose cParams.GetLong(1), toPreview, dstPic
+            
+        Case 4
+            MenuGrayscaleSingleChannel cParams.GetLong(1), toPreview, dstPic
+            
+        Case 5
+            fGrayscaleCustom cParams.GetLong(1), toPreview, dstPic
+            
+        Case 6
+            fGrayscaleCustomDither cParams.GetLong(1), toPreview, dstPic
+            
+    End Select
+
+End Sub
+
+'Some grayscale functions require extra parameters.  Some do not.  Call this function to retrieve any extra parameters
+' for a given grayscale conversion method.
+Private Function getExtraGrayscaleParams(ByVal grayscaleMethod As Long) As String
+
+    Select Case grayscaleMethod
+        
+        Case 0
+            getExtraGrayscaleParams = ""
+            
+        Case 1
+            getExtraGrayscaleParams = ""
+            
+        Case 2
+            getExtraGrayscaleParams = ""
             
         Case 3
             If optDecompose(0).Value Then
-                Process "Grayscale (decomposition)", , "0"
+                getExtraGrayscaleParams = "0"
             Else
-                Process "Grayscale (decomposition)", , "1"
+                getExtraGrayscaleParams = "1"
             End If
             
         Case 4
             If optChannel(0).Value Then
-                Process "Grayscale (single channel)", , "0"
+                getExtraGrayscaleParams = "0"
             ElseIf optChannel(1).Value Then
-                Process "Grayscale (single channel)", , "1"
+                getExtraGrayscaleParams = "1"
             Else
-                Process "Grayscale (single channel)", , "2"
+                getExtraGrayscaleParams = "2"
             End If
             
         Case 5
-            Process "Grayscale (custom # of colors)", , CStr(sltShades.Value)
+            getExtraGrayscaleParams = CStr(sltShades.Value)
             
         Case 6
-            Process "Grayscale (custom dither)", , CStr(sltShades.Value)
+            getExtraGrayscaleParams = CStr(sltShades.Value)
             
     End Select
-       
-End Sub
+
+End Function
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdateVisibleControls
@@ -445,7 +448,7 @@ End Sub
 'Reduce to X # gray shades
 Public Sub fGrayscaleCustom(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Converting image to %1 shades of gray...", numOfShades
+    If Not toPreview Then Message "Converting image to %1 shades of gray...", numOfShades
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -531,7 +534,7 @@ End Sub
 'Reduce to X # gray shades (dithered)
 Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Converting to %1 shades of gray, with dithering...", numOfShades
+    If Not toPreview Then Message "Converting to %1 shades of gray, with dithering...", numOfShades
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -638,7 +641,7 @@ End Sub
 'Reduce to gray via (r+g+b)/3
 Public Sub MenuGrayscaleAverage(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Converting image to grayscale..."
+    If Not toPreview Then Message "Converting image to black and white..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -713,7 +716,7 @@ End Sub
 'Reduce to gray in a more human-eye friendly manner
 Public Sub MenuGrayscale(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Generating ITU-R compatible grayscale image..."
+    If Not toPreview Then Message "Converting image to black and white..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -783,7 +786,7 @@ End Sub
 'Reduce to gray via HSL -> convert S to 0
 Public Sub MenuDesaturate(Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
-    If toPreview = False Then Message "Desaturating image..."
+    If Not toPreview Then Message "Converting image to black and white..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -852,7 +855,7 @@ End Sub
 'Reduce to gray by selecting the minimum (maxOrMin = 0) or maximum (maxOrMin = 1) color in each pixel
 Public Sub MenuDecompose(ByVal maxOrMin As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Decomposing image..."
+    If Not toPreview Then Message "Converting image to black and white..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -932,7 +935,7 @@ Public Sub MenuGrayscaleSingleChannel(ByVal cChannel As Long, Optional ByVal toP
             cString = g_Language.TranslateMessage("blue")
     End Select
 
-    If toPreview = False Then Message "Converting image to grayscale using %1 values...", cString
+    If Not toPreview Then Message "Converting image to black and white using %1 values...", cString
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

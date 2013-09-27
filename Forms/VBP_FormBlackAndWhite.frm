@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormBlackAndWhite 
+Begin VB.Form FormMonochrome 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Monochrome Conversion"
@@ -193,13 +193,13 @@ Begin VB.Form FormBlackAndWhite
       Width           =   1080
    End
 End
-Attribute VB_Name = "FormBlackAndWhite"
+Attribute VB_Name = "FormMonochrome"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Black/White Color Reduction Form
+'Monochrome Conversion Form
 'Copyright ©2002-2013 by Tanner Helland
 'Created: some time 2002
 'Last updated: 17/August/13

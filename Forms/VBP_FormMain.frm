@@ -1336,11 +1336,11 @@ Begin VB.MDIForm FormMain
             Index           =   6
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Colorize..."
+            Caption         =   "Black and white..."
             Index           =   7
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Grayscale..."
+            Caption         =   "Colorize..."
             Index           =   8
          End
          Begin VB.Menu MnuColor 
@@ -2651,14 +2651,14 @@ Private Sub MnuColor_Click(Index As Integer)
         '<separator>
         Case 6
         
-        'Colorize
-        Case 7
-            Process "Colorize", True
-            
         'Grayscale (black and white)
-        Case 8
-            Process "Grayscale", True
+        Case 7
+            Process "Black and white", True
         
+        'Colorize
+        Case 8
+            Process "Colorize", True
+                
         'Sepia
         Case 9
             Process "Sepia"

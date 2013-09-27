@@ -572,29 +572,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         'Grayscale conversions
-        Case "Desaturate"
-            FormGrayscale.MenuDesaturate
-            
-        Case "Grayscale"
-            FormGrayscale.Show vbModal, FormMain
-            
-        Case "Grayscale (ITU standard)"
-            FormGrayscale.MenuGrayscale
-            
-        Case "Grayscale (average)"
-            FormGrayscale.MenuGrayscaleAverage
-            
-        Case "Grayscale (custom # of colors)"
-            FormGrayscale.fGrayscaleCustom cParams.GetLong(1)
-            
-        Case "Grayscale (custom dither)"
-            FormGrayscale.fGrayscaleCustomDither cParams.GetLong(1)
-            
-        Case "Grayscale (decomposition)"
-            FormGrayscale.MenuDecompose cParams.GetLong(1)
-            
-        Case "Grayscale (single channel)"
-            FormGrayscale.MenuGrayscaleSingleChannel cParams.GetLong(1)
+        Case "Black and white"
+            If showDialog Then
+                FormGrayscale.Show vbModal, FormMain
+            Else
+                FormGrayscale.masterGrayscaleFunction cParams.GetLong(1), cParams.GetString(2)
+            End If
         
         'Invert operations
         Case "Invert RGB"
@@ -613,9 +596,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
         Case "Color to monochrome"
             If showDialog Then
-                FormBlackAndWhite.Show vbModal, FormMain
+                FormMonochrome.Show vbModal, FormMain
             Else
-                FormBlackAndWhite.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+                FormMonochrome.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Monochrome to grayscale"
