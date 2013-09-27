@@ -1269,8 +1269,40 @@ Begin VB.MDIForm FormMain
    Begin VB.Menu MnuAdjustmentsTop 
       Caption         =   "&Adjustments"
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Channels"
+         Caption         =   "Black and white..."
          Index           =   0
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Brightness and contrast..."
+         Index           =   1
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Color balance..."
+         Index           =   2
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Curves..."
+         Index           =   3
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Levels..."
+         Index           =   4
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Vibrance..."
+         Index           =   5
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "White balance..."
+         Index           =   6
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "-"
+         Index           =   7
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Channels"
+         Index           =   8
          Begin VB.Menu MnuColorComponents 
             Caption         =   "Channel mixer..."
             Index           =   0
@@ -1306,7 +1338,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Color"
-         Index           =   1
+         Index           =   9
          Begin VB.Menu MnuColor 
             Caption         =   "Color balance..."
             Index           =   0
@@ -1350,7 +1382,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Histogram"
-         Index           =   2
+         Index           =   10
          Begin VB.Menu MnuHistogram 
             Caption         =   "Display histogram"
          End
@@ -1366,7 +1398,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Invert"
-         Index           =   3
+         Index           =   11
          Begin VB.Menu MnuNegative 
             Caption         =   "Invert CMYK (film negative)"
          End
@@ -1385,7 +1417,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Lighting"
-         Index           =   4
+         Index           =   12
          Begin VB.Menu MnuLighting 
             Caption         =   "Brightness and contrast..."
             Index           =   0
@@ -1417,7 +1449,7 @@ Begin VB.MDIForm FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Monochrome"
-         Index           =   5
+         Index           =   13
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Color to monochrome..."
             Index           =   0
@@ -2523,6 +2555,43 @@ Private Sub MDIForm_Unload(Cancel As Integer)
         
     Next tmpForm
     
+End Sub
+
+'The top-level adjustments menu provides some shortcuts to most-used items.
+Private Sub MnuAdjustments_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Black and white
+        Case 0
+            Process "Black and white", True
+        
+        'Brightness and contrast
+        Case 1
+            Process "Brightness and contrast", True
+        
+        'Color balance
+        Case 2
+            Process "Color balance", True
+        
+        'Curves
+        Case 3
+            Process "Curves", True
+        
+        'Levels
+        Case 4
+            Process "Levels", True
+        
+        'Vibrance
+        Case 5
+            Process "Vibrance", True
+        
+        'White balance
+        Case 6
+            Process "White balance", True
+    
+    End Select
+
 End Sub
 
 'All artistic filters are launched here

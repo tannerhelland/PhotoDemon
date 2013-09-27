@@ -266,53 +266,62 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'Adjustments Menu
     
+    'Adjustment shortcuts (top-level menu items)
+    AddMenuIcon "GRAYSCALE", 5, 0       'Black and white
+    AddMenuIcon "BRIGHT", 5, 1          'Brightness/Contrast
+    AddMenuIcon "COLORBALANCE", 5, 2    'Color balance
+    AddMenuIcon "CURVES", 5, 3          'Curves
+    AddMenuIcon "LEVELS", 5, 4          'Levels
+    AddMenuIcon "VIBRANCE", 5, 5        'Vibrance
+    AddMenuIcon "WHITEBAL", 5, 6        'White Balance
+       
     'Channels
-    AddMenuIcon "CHANNELMIX", 5, 0     'Channels top-level
-        AddMenuIcon "CHANNELMIX", 5, 0, 0    'Channel mixer
-        AddMenuIcon "RECHANNEL", 5, 0, 1     'Rechannel
-        AddMenuIcon "CHANNELMAX", 5, 0, 3    'Channel max
-        AddMenuIcon "CHANNELMIN", 5, 0, 4    'Channel min
-        AddMenuIcon "COLORSHIFTL", 5, 0, 6   'Shift Left
-        AddMenuIcon "COLORSHIFTR", 5, 0, 7   'Shift Right
+    AddMenuIcon "CHANNELMIX", 5, 8     'Channels top-level
+        AddMenuIcon "CHANNELMIX", 5, 8, 0    'Channel mixer
+        AddMenuIcon "RECHANNEL", 5, 8, 1     'Rechannel
+        AddMenuIcon "CHANNELMAX", 5, 8, 3    'Channel max
+        AddMenuIcon "CHANNELMIN", 5, 8, 4    'Channel min
+        AddMenuIcon "COLORSHIFTL", 5, 8, 6   'Shift Left
+        AddMenuIcon "COLORSHIFTR", 5, 8, 7   'Shift Right
             
     'Color
-    AddMenuIcon "HSL", 5, 1            'Color balance
-        AddMenuIcon "COLORBALANCE", 5, 1, 0  'Color balance
-        AddMenuIcon "WHITEBAL", 5, 1, 1      'White Balance
-        AddMenuIcon "HSL", 5, 1, 3           'HSL adjustment
-        AddMenuIcon "PHOTOFILTER", 5, 1, 4   'Photo filters
-        AddMenuIcon "VIBRANCE", 5, 1, 5      'Vibrance
-        AddMenuIcon "GRAYSCALE", 5, 1, 7     'Grayscale
-        AddMenuIcon "COLORIZE", 5, 1, 8      'Colorize
-        AddMenuIcon "SEPIA", 5, 1, 9         'Sepia
+    AddMenuIcon "HSL", 5, 9            'Color balance
+        AddMenuIcon "COLORBALANCE", 5, 9, 0  'Color balance
+        AddMenuIcon "WHITEBAL", 5, 9, 1      'White Balance
+        AddMenuIcon "HSL", 5, 9, 3           'HSL adjustment
+        AddMenuIcon "PHOTOFILTER", 5, 9, 4   'Photo filters
+        AddMenuIcon "VIBRANCE", 5, 9, 5      'Vibrance
+        AddMenuIcon "GRAYSCALE", 5, 9, 7     'Black and white
+        AddMenuIcon "COLORIZE", 5, 9, 8      'Colorize
+        AddMenuIcon "SEPIA", 5, 9, 9         'Sepia
     
     'Histogram
-    AddMenuIcon "HISTOGRAM", 5, 2      'Histogram top-level
-        AddMenuIcon "HISTOGRAM", 5, 2, 0     'Display Histogram
-        AddMenuIcon "EQUALIZE", 5, 2, 2      'Equalize
-        AddMenuIcon "STRETCH", 5, 2, 3       'Stretch
+    AddMenuIcon "HISTOGRAM", 5, 10      'Histogram top-level
+        AddMenuIcon "HISTOGRAM", 5, 10, 0     'Display Histogram
+        AddMenuIcon "EQUALIZE", 5, 10, 2      'Equalize
+        AddMenuIcon "STRETCH", 5, 10, 3       'Stretch
     
     'Invert
-    AddMenuIcon "INVERT", 5, 3         'Invert top-level
-        AddMenuIcon "INVCMYK", 5, 3, 0     'Invert CMYK
-        AddMenuIcon "INVHUE", 5, 3, 1       'Invert Hue
-        AddMenuIcon "INVRGB", 5, 3, 2       'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 5, 3, 4  'Compound Invert
+    AddMenuIcon "INVERT", 5, 11         'Invert top-level
+        AddMenuIcon "INVCMYK", 5, 11, 0     'Invert CMYK
+        AddMenuIcon "INVHUE", 5, 11, 1       'Invert Hue
+        AddMenuIcon "INVRGB", 5, 11, 2       'Invert RGB
+        AddMenuIcon "INVCOMPOUND", 5, 11, 4  'Compound Invert
         
     'Lighting
-    AddMenuIcon "LIGHTING", 5, 4       'Lighting top-level
-        AddMenuIcon "BRIGHT", 5, 4, 0       'Brightness/Contrast
-        AddMenuIcon "CURVES", 5, 4, 1       'Curves
-        AddMenuIcon "EXPOSURE", 5, 4, 2     'Exposure
-        AddMenuIcon "GAMMA", 5, 4, 3        'Gamma Correction
-        AddMenuIcon "LEVELS", 5, 4, 4       'Levels
-        AddMenuIcon "SHDWHGHLGHT", 5, 4, 5  'Shadow/Highlight
-        AddMenuIcon "TEMPERATURE", 5, 4, 6  'Temperature
+    AddMenuIcon "LIGHTING", 5, 12       'Lighting top-level
+        AddMenuIcon "BRIGHT", 5, 12, 0       'Brightness/Contrast
+        AddMenuIcon "CURVES", 5, 12, 1       'Curves
+        AddMenuIcon "EXPOSURE", 5, 12, 2     'Exposure
+        AddMenuIcon "GAMMA", 5, 12, 3        'Gamma Correction
+        AddMenuIcon "LEVELS", 5, 12, 4       'Levels
+        AddMenuIcon "SHDWHGHLGHT", 5, 12, 5  'Shadow/Highlight
+        AddMenuIcon "TEMPERATURE", 5, 12, 6  'Temperature
     
     'Monochrome
-    AddMenuIcon "MONOCHROME", 5, 5      'Monochrome
-        AddMenuIcon "COLORTOMONO", 5, 5, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 5, 5, 1   'Monochrome to grayscale
+    AddMenuIcon "MONOCHROME", 5, 13      'Monochrome
+        AddMenuIcon "COLORTOMONO", 5, 13, 0   'Color to monochrome
+        AddMenuIcon "MONOTOCOLOR", 5, 13, 1   'Monochrome to grayscale
     
     
     'Effects (Filters) Menu
