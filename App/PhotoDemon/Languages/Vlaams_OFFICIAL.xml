@@ -26,8 +26,8 @@
 </phrase>
 
 <phrase>
-<original>a free, portable, powerful photo editor</original>
-<translation>een gratis, draagbare, krachtige foto-editor</translation>
+<original>the fast, free, portable photo editor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -41,8 +41,8 @@
 </phrase>
 
 <phrase>
-<original>for more information on licensing, visit tannerhelland.com/photodemon/#license</original>
-<translation>voor meer informatie over licenties, bezoek tannerhelland.com/photodemon/#license</translation>
+<original>for more information on licensing, visit photodemon.org/about/license/</original>
+<translation>voor meer informatie over licenties, bezoek photodemon.org/about/license/</translation>
 </phrase>
 
 <phrase>
@@ -184,11 +184,6 @@
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Dit bevederingsschuiver zorgt voor onmiddellijke aanpassingen van de bevedering. Vanwege de prestaties, is het beperkt tot kleine radiaties. Voor een grotere bevederings radiatie, gebruik je het Selecteren -> bevedering menu.</translation>
-</phrase>
-
-<phrase>
 <original>None</original>
 <translation>geen</translation>
 </phrase>
@@ -224,6 +219,11 @@
 </phrase>
 
 <phrase>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<translation>Dit bevederingsschuiver zorgt voor onmiddellijke aanpassingen van de bevedering. Vanwege de prestaties, is het beperkt tot kleine radiaties. Voor een grotere bevederings radiatie, gebruik je het Selecteren -> bevedering menu.</translation>
+</phrase>
+
+<phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
 <translation>Deze optie past de ronding aan van de hoeken van een geselecteerde rechthoekige selectie.</translation>
 </phrase>
@@ -231,6 +231,11 @@
 <phrase>
 <original>This option adjusts the width of a line selection.</original>
 <translation>Deze optie past de breedte aan van een lijn selectie.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of the selection border.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -508,6 +513,11 @@ Please use another program to save these images in a generic format (such as JPE
 </phrase>
 
 <phrase>
+<original>Redo restored successfully.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Undo restored successfully.</original>
 <translation>Ongedaan maken met succes hersteld.</translation>
 </phrase>
@@ -537,7 +547,7 @@ Please use another program to save these images in a generic format (such as JPE
 <translation>Duplicatie afbeelding klaar.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 96 phrases. 18 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 95 phrases. 15 were duplicates of existing phrases, so only 80 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -589,6 +599,11 @@ Please use another program to save these images in a generic format (such as JPE
 </phrase>
 
 <phrase>
+<original>Caching current image's metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No %1 encoder found. Save aborted.</original>
 <translation>Geen %1 encoder gevonden. Opslaan afgebroken.</translation>
 </phrase>
@@ -610,11 +625,6 @@ Om PDI opslag mogelijk te maken, staat u %1 toe plugin updates te downloaden doo
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
 <translation>Output formaat niet herkend. Opslaan afgebroken. Gebruik het Help -> Indienen Bug Report menu-item om dit incident te melden .</translation>
-</phrase>
-
-<phrase>
-<original>Preparing to write metadata</original>
-<translation>Voorbereiden om metadata te schrijven</translation>
 </phrase>
 
 <phrase>
@@ -1440,18 +1450,13 @@ Wanneer u klaar bent, klikt u op de Submit New Issue knop. Dank je wel!</transla
 </phrase>
 
 <phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Additional Details box, please describe the steps that led to this error.
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
 
-In the bottom box of that page, please enter the following error number: 
+Also in that box, please include the following error number: 
 %1
 
 When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon heeft automatisch een bug rapport webpagina geopend voor u. In het vak Extra Details, beschrijf je de stappen die hebben geleid tot deze fout.
-
-In het onderste vak van die pagina, vul je dan de volgende foutin :
-%1
-
-Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1652,11 +1657,6 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 </phrase>
 
 <phrase>
-<original>&Export Histogram to File</original>
-<translation>&Exporteer Histogram naar bestand</translation>
-</phrase>
-
-<phrase>
 <original>Close Histogram</original>
 <translation>Sluit Histogram</translation>
 </phrase>
@@ -1664,6 +1664,16 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 <phrase>
 <original>luminance</original>
 <translation>Luminantie</translation>
+</phrase>
+
+<phrase>
+<original>fill histogram curves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>visible channels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1697,13 +1707,13 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 </phrase>
 
 <phrase>
-<original>Saving histogram to file</original>
-<translation>Opslaan histogram naar bestand</translation>
+<original>max count</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Histogram save complete.</original>
-<translation>Opslaan van histogram afgelopen.</translation>
+<original>Please wait while the histogram is updated</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1721,7 +1731,7 @@ Wanneer je klaar bent, klik je op de knop Send. Dank je wel!</translation>
 <translation>Uitrekken histogram</translation>
 </phrase>
 
-<!-- VBP_FormHistogram.frm contains 47 phrases. 30 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_FormHistogram.frm contains 46 phrases. 28 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_FormHistogram.frm-->
 
@@ -2422,13 +2432,18 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
-<original>Curves</original>
-<translation>Curven</translation>
+<original>Black and white</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Blootstelling</translation>
+<original>Color balance</original>
+<translation>Kleurbalans</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Curven</translation>
 </phrase>
 
 <phrase>
@@ -2437,8 +2452,8 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
-<original>Shadows and highlights</original>
-<translation>Schaduwen en glanspunten</translation>
+<original>Vibrance</original>
+<translation>Vibratie</translation>
 </phrase>
 
 <phrase>
@@ -2447,8 +2462,43 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
-<original>Color balance</original>
-<translation>Kleurbalans</translation>
+<original>Channels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Kanaal mixer</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Herkanaliseren</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Maximum kanaal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minimum kanaal</translation>
+</phrase>
+
+<phrase>
+<original>Shift channels left</original>
+<translation>Shuif kanalen links</translation>
+</phrase>
+
+<phrase>
+<original>Shift channels right</original>
+<translation>Shuif-kanalen rechts</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2462,23 +2512,28 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
-<original>Temperature</original>
-<translation>Temperatuur</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibratie</translation>
-</phrase>
-
-<phrase>
 <original>Colorize</original>
 <translation>Verkleuren</translation>
 </phrase>
 
 <phrase>
-<original>Grayscale</original>
-<translation>Grijswaarden</translation>
+<original>Sepia</original>
+<translation>Sepia</translation>
+</phrase>
+
+<phrase>
+<original>Display histogram</original>
+<translation>Weergave Histogram</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>Egaliseren</translation>
+</phrase>
+
+<phrase>
+<original>Stretch</original>
+<translation>Rekken</translation>
 </phrase>
 
 <phrase>
@@ -2502,6 +2557,26 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
+<original>Lighting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Blootstelling</translation>
+</phrase>
+
+<phrase>
+<original>Shadows and highlights</original>
+<translation>Schaduwen en glanspunten</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Temperatuur</translation>
+</phrase>
+
+<phrase>
 <original>Monochrome</original>
 <translation>Zwart-wit</translation>
 </phrase>
@@ -2514,61 +2589,6 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 <phrase>
 <original>Monochrome to grayscale</original>
 <translation>Monochroom in grijswaarden</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sepia</translation>
-</phrase>
-
-<phrase>
-<original>Components</original>
-<translation>Onderdelen</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Kanaal mixer</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Herkanaliseren</translation>
-</phrase>
-
-<phrase>
-<original>Shift channels right</original>
-<translation>Shuif-kanalen rechts</translation>
-</phrase>
-
-<phrase>
-<original>Shift channels left</original>
-<translation>Shuif kanalen links</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Maximum kanaal</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Minimum kanaal</translation>
-</phrase>
-
-<phrase>
-<original>Display histogram</original>
-<translation>Weergave Histogram</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>Egaliseren</translation>
-</phrase>
-
-<phrase>
-<original>Stretch</original>
-<translation>Rekken</translation>
 </phrase>
 
 <phrase>
@@ -3102,13 +3122,13 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
-<original>Shift colors (right)</original>
-<translation>Verschuif kleuren (rechts)</translation>
+<original>Shift colors (left)</original>
+<translation>Verschuif kleuren (links)</translation>
 </phrase>
 
 <phrase>
-<original>Shift colors (left)</original>
-<translation>Verschuif kleuren (links)</translation>
+<original>Shift colors (right)</original>
+<translation>Verschuif kleuren (rechts)</translation>
 </phrase>
 
 <phrase>
@@ -3124,6 +3144,41 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 <phrase>
 <original>Edge enhance</original>
 <translation>Verbeteren</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Herhaal Laatste Actie</translation>
+</phrase>
+
+<phrase>
+<original>Copy to clipboard</original>
+<translation>Kopiëren naar het klembord</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Plakken als nieuwe afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>Ledig klembord</translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3161,6 +3216,11 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>Duplicate image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crop</original>
 <translation>Bijsnijden</translation>
 </phrase>
@@ -3171,8 +3231,8 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
-<original>Paste as new image</original>
-<translation>Plakken als nieuwe afbeelding</translation>
+<original>Internet import</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3196,6 +3256,36 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>No metadata available.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any metadata.</original>
+<translation>De afbeelding bevat geen metadata.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>Geen metadata beschikbaar</translation>
+</phrase>
+
+<phrase>
+<original>Loading metadata for this image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Water</original>
 <translation>Water</translation>
 </phrase>
@@ -3203,16 +3293,6 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <phrase>
 <original>Film negative</original>
 <translation>Film Negatief</translation>
-</phrase>
-
-<phrase>
-<original>Copy to clipboard</original>
-<translation>Kopiëren naar het klembord</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>Ledig klembord</translation>
 </phrase>
 
 <phrase>
@@ -3226,17 +3306,12 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
-<original>Repeat last action</original>
-<translation>Herhaal Laatste Actie</translation>
-</phrase>
-
-<phrase>
 <original>Rotate 90° clockwise</original>
 <translation>Draai 90° naar rechts</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° Counter-Clockwise</original>
+<original>Rotate 90° counter-clockwise</original>
 <translation>Draai 90° tegen de klok in</translation>
 </phrase>
 
@@ -3345,7 +3420,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 420 phrases. 143 were duplicates of existing phrases, so only 277 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 439 phrases. 149 were duplicates of existing phrases, so only 290 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -3471,8 +3546,8 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 </phrase>
 
 <phrase>
-<original>grayscale method</original>
-<translation>grijstinten methode</translation>
+<original>style</original>
+<translation>stijl</translation>
 </phrase>
 
 <phrase>
@@ -3491,41 +3566,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 </phrase>
 
 <phrase>
-<original>Grayscale (average)</original>
-<translation>Grijswaarden (gemiddeld)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (ITU standard)</original>
-<translation>Grijswaarden (ITU standaard)</translation>
-</phrase>
-
-<phrase>
-<original>Desaturate</original>
-<translation>Verzadiging verminderen</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (decomposition)</original>
-<translation>Grijswaarden (Decompositie)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (single channel)</original>
-<translation>Grijswaarden (Enkel kanaal)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (custom # of colors)</original>
-<translation>Grijswaarden (Aangepast # kleuren)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (custom dither)</original>
-<translation>Grijswaarden (Aangepaste Dither)</translation>
-</phrase>
-
-<phrase>
 <original>Converting image to %1 shades of gray</original>
 <translation>Omzetten van afbeelding naar %1 grijstinten</translation>
 </phrase>
@@ -3536,28 +3576,13 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 </phrase>
 
 <phrase>
-<original>Converting image to grayscale</original>
-<translation>Omzetten afbeelding naar grijswaarden</translation>
+<original>Converting image to black and white</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Generating ITU-R compatible grayscale image</original>
-<translation>Genereren van ITU-R compatibel grijswaardenafbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Desaturating image</original>
-<translation>Verzadigen afbeellding</translation>
-</phrase>
-
-<phrase>
-<original>Decomposing image</original>
-<translation>Ontbinden afbeellding</translation>
-</phrase>
-
-<phrase>
-<original>Converting image to grayscale using %1 values</original>
-<translation>Omzetten afbeelding in grijswaarden met behulp van %1 waarden</translation>
+<original>Converting image to black and white using %1 values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3568,6 +3593,11 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 <phrase>
 <original>Highest Quality (ITU Standard)</original>
 <translation>Hoogste kwaliteit (ITU standaard)</translation>
+</phrase>
+
+<phrase>
+<original>Desaturate</original>
+<translation>Verzadiging verminderen</translation>
 </phrase>
 
 <phrase>
@@ -3590,7 +3620,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 <translation>Specifiek # van tinten (gerasterd)</translation>
 </phrase>
 
-<!-- VBP_FormGrayscale.frm contains 45 phrases. 18 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- VBP_FormGrayscale.frm contains 37 phrases. 19 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGrayscale.frm-->
 
@@ -3853,7 +3883,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <!-- END text for VBP_CompressionUtility.bas-->
 
-<!-- BEGIN text for VBP_FormBlackAndWhite.frm (FormBlackAndWhite) -->
+<!-- BEGIN text for VBP_FormBlackAndWhite.frm (FormMonochrome) -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -4034,6 +4064,26 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 <phrase>
 <original>File Format Options</original>
 <translation>opties voor het bestandsformaat</translation>
+</phrase>
+
+<phrase>
+<original>if core plugins cannot be located, offer to download them</original>
+<translation>als core plugins niet gevonden worden, aanbieden om ze te downloaden</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for software updates every 10 days</original>
+<translation>automatisch controleren op software-updates om de 10 dagen</translation>
+</phrase>
+
+<phrase>
+<original>If this is disabled, you can visit photodemon.org to manually download the latest version of PhotoDemon</original>
+<translation>Als dit uitgeschakeld is, kan u een bezoek brengen aan photodemon.org voor het handmatig downloaden van de nieuwste versie van PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer opgevuld in run-time)</translation>
 </phrase>
 
 <phrase>
@@ -4349,26 +4399,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 <phrase>
 <original>debugging</original>
 <translation>debugging</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>als core plugins niet gevonden worden, aanbieden om ze te downloaden</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>automatisch controleren op software-updates om de 10 dagen</translation>
-</phrase>
-
-<phrase>
-<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-<translation>Als dit uitgeschakeld is, kan u een bezoek brengen aan tannerhelland.com/photodemon voor het handmatig downloaden van de nieuwste versie van PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer opgevuld in run-time)</translation>
 </phrase>
 
 <phrase>
@@ -4779,12 +4809,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
 
-If you choose to disable these features, you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.</original>
+If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.</original>
 <translation>PhotoDemon biedt twee niet-essentiële functies die internettoegang nodig hebben: het controleren op software-updates, en het aanbieden om de kern plugins te downloaden als ze niet aanwezig zijn in de \App\PhotoDemon\Plugins subdirectory.
 
 De ontwikkelaars van PhotoDemon nemen privacy zeer serieus, dus geen informatie - statistische of anderszins - wordt geüpload door deze functies. Het controleren op software-updates maak enkel gebruik van de download van het "updates.txt" bestand met de nieuwste softwareversie nummer. Ook het downloaden van ontbrekende plugins gaat gewoon om het downloaden van een of meer gecomprimeerde plugin bestanden vanop de PhotoDemon server.
 
-Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht op tannerhelland.com/photodemon om de meest recente versie van het programma handmatig te downloaden.</translation>
+Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht op photodemon.org om de meest recente versie van het programma handmatig te downloaden.</translation>
 </phrase>
 
 <phrase>
@@ -5114,11 +5144,6 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 </phrase>
 
 <phrase>
-<original>style</original>
-<translation>stijl</translation>
-</phrase>
-
-<phrase>
 <original>Embossing image</original>
 <translation>Reliëf afbeelding</translation>
 </phrase>
@@ -5128,7 +5153,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 <translation>Graveren afbeelding</translation>
 </phrase>
 
-<!-- VBP_FormEmbossEngrave.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_FormEmbossEngrave.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -5875,10 +5900,10 @@ Om uw gebruikerservaring te verbeteren, dient u het programma toegang te geven v
 <phrase>
 <original>The next time you launch the program, it will remind you about this software update.
 
-Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.</original>
+Note: you can always manually download the latest version by visiting photodemon.org.</original>
 <translation>De volgende keer dat u het programma start, zal het u aan deze software-update herinneren.
 
-Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar tannerhelland.com/photodemon te gaan.</translation>
+Opmerking: u kunt de nieuwste versie altijd handmatig downloaden door naar photodemon.org te gaan.</translation>
 </phrase>
 
 <phrase>
@@ -7071,81 +7096,6 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 </phrase>
 
 <phrase>
-<original>FreeImage plugin information</original>
-<translation>FreeImage plugin informatie</translation>
-</phrase>
-
-<phrase>
-<original>expected version</original>
-<translation>verwacht versie</translation>
-</phrase>
-
-<phrase>
-<original>version found</original>
-<translation>versie gevonden</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage homepage</original>
-<translation>FreeImage homepage</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage license</original>
-<translation>FreeImage licentie</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>FreeImage Publieke Licentie (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>uitschakelen ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>en actueel</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>Huidige plugin status</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>GOED</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>Uitschakelen FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Uitschakelen zLib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>Uitschakelen EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable pngnq-s9</original>
-<translation>Uitschakelen pngnq-s9</translation>
-</phrase>
-
-<phrase>
 <original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
 <translation>analyseren kleuren met YUV in plaats van RGB</translation>
 </phrase>
@@ -7198,6 +7148,16 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 <phrase>
 <original>pngnq-s9 homepage</original>
 <translation>pngnq-s9 homepage</translation>
+</phrase>
+
+<phrase>
+<original>version found</original>
+<translation>versie gevonden</translation>
+</phrase>
+
+<phrase>
+<original>expected version</original>
+<translation>verwacht versie</translation>
 </phrase>
 
 <phrase>
@@ -7258,6 +7218,71 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 <phrase>
 <original>zLib plugin information</original>
 <translation>zLib plugin informatie</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage plugin information</original>
+<translation>FreeImage plugin informatie</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage homepage</original>
+<translation>FreeImage homepage</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage license</original>
+<translation>FreeImage licentie</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>FreeImage Publieke Licentie (FIPL)</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>uitschakelen ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>en actueel</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>status</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>Huidige plugin status</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>GOED</translation>
+</phrase>
+
+<phrase>
+<original>Disable FreeImage</original>
+<translation>Uitschakelen FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Uitschakelen zLib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>Uitschakelen EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable pngnq-s9</original>
+<translation>Uitschakelen pngnq-s9</translation>
 </phrase>
 
 <phrase>
@@ -7532,6 +7557,11 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 </phrase>
 
 <phrase>
+<original>swap x and y coordinates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>conversion technique</original>
 <translation>conversietechniek</translation>
 </phrase>
@@ -7556,11 +7586,21 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 <translation>Polaire inversie</translation>
 </phrase>
 
-<!-- VBP_FormPolar.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormPolar.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPolar.frm-->
 
 <!-- BEGIN text for VBP_FormGaussianBlur.frm (FormGaussianBlur) -->
+
+<phrase>
+<original>better</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>best</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>blur radius</original>
@@ -7577,7 +7617,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 <translation>WAARSCHUWING! Deze tool is zeer langzaam wanneer gebruikt in de IDE. Gelieve te compileren voor de beste resultaten.</translation>
 </phrase>
 
-<!-- VBP_FormGaussianBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormGaussianBlur.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGaussianBlur.frm-->
 
@@ -8179,6 +8219,16 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>Batch Image List</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Load a list of images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This is not a valid list of images. Please try a different file.</original>
 <translation>Dit is geen geldige lijst van afbeeldingen. Probeer een ander bestand.</translation>
 </phrase>
@@ -8339,6 +8389,11 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>Save the current list of images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
 <translation>U heeft geen afbeeldingsbestanden geselecteerd. Voeg één of meer bestanden toe aan de batch lijst voor het opslaan.</translation>
 </phrase>
@@ -8467,7 +8522,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <translation>verwerkt voor annulering. Laatst bewerkt beeld was "%1"</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 244 phrases. 136 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 258 phrases. 147 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -8504,11 +8559,6 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <!-- END text for VBP_FormPerspective.frm-->
 
 <!-- BEGIN text for VBP_FormTruePerspective.frm (FormPerspective) -->
-
-<phrase>
-<original>Perspective Correction</original>
-<translation>Correctie perspectief</translation>
-</phrase>
 
 <phrase>
 <original>transformation type</original>
@@ -8550,7 +8600,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <translation>onder-links</translation>
 </phrase>
 
-<!-- VBP_FormTruePerspective.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_FormTruePerspective.frm contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTruePerspective.frm-->
 
@@ -8629,7 +8679,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <translation>Verwijderen metadata met potentïele belangen</translation>
 </phrase>
 
-<!-- pdMetadata.cls contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 29 phrases. 18 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -8671,17 +8721,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <translation>kan waarden niet lezen</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any metadata.</original>
-<translation>De afbeelding bevat geen metadata.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>Geen metadata beschikbaar</translation>
-</phrase>
-
-<!-- VBP_FormMetadata.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormMetadata.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMetadata.frm-->
 
@@ -9750,11 +9790,21 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <!-- BEGIN text for VBP_FormZoomBlur.frm (FormZoomBlur) -->
 
 <phrase>
+<original>modern</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>traditional</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying zoom blur</original>
 <translation>Toepassen zoomvervaging</translation>
 </phrase>
 
-<!-- VBP_FormZoomBlur.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormZoomBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormZoomBlur.frm-->
 
@@ -9941,10 +9991,10 @@ Standaard, transparantie zal worden verdeeld in het midden, of u kunt een aangep
 <phrase>
 <original>Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
-To start a new translation, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.</original>
+To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Spijtig genoeg kan het master taalbestand niet gevonden worden op deze PC. Dit bestand is ingesloten bij de originele release van PhotoDemon, maar kan niet toegevoegd zijn tijdens ontwerp of met beta versies.
 
-Om een nieuwe vertaling te starten, download je een nieuwe kopij van PhotoDemon vanop tannerhelland.com/photodemon.</translation>
+Om een nieuwe vertaling te starten, download je een nieuwe kopij van PhotoDemon vanop photodemon.org.</translation>
 </phrase>
 
 <phrase>
@@ -9955,15 +10005,20 @@ Om een nieuwe vertaling te starten, download je een nieuwe kopij van PhotoDemon 
 <phrase>
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
-To continue, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.</original>
+To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Spijtig genoeg kan dit taalbestand niet geladen worden. Het is mogelijk dat de kopij op deze PC out-of-date is.
 
-Download een nieuwe kopij van PhotoDemon vanop tannerhelland.com/photodemon. om verder te gaan</translation>
+Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan</translation>
 </phrase>
 
 <phrase>
 <original>Language file could not be loaded</original>
 <translation>Taalbestand kan niet geladen worden</translation>
+</phrase>
+
+<phrase>
+<original>XML file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10131,7 +10186,7 @@ Download een nieuwe kopij van PhotoDemon vanop tannerhelland.com/photodemon. om 
 <translation>automatisch opgeslagen op</translation>
 </phrase>
 
-<!-- VBP_FormLanguageEditor.frm contains 124 phrases. 53 were duplicates of existing phrases, so only 71 new phrases were written to file. -->
+<!-- VBP_FormLanguageEditor.frm contains 128 phrases. 56 were duplicates of existing phrases, so only 72 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLanguageEditor.frm-->
 
@@ -10158,15 +10213,24 @@ Download een nieuwe kopij van PhotoDemon vanop tannerhelland.com/photodemon. om 
 
 <!-- END text for cGoogleTranslate.cls-->
 
+<!-- BEGIN text for pdLastUsedSettings.cls -->
+
+<phrase>
+<original>This form's preset file may be corrupted.  A new preset file has been created.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLastUsedSettings.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for pdLastUsedSettings.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>1791</phrasecount>
+<phrasecount>1804</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3017 phrases. -->
-<!-- 1226 are duplicates, so only 1791 unique phrases have been written to file. -->
-<!-- These 1791 phrases contain approximately 11017 total words. -->
+<!-- As of this build, PhotoDemon contains 3055 phrases. -->
+<!-- 1251 are duplicates, so only 1804 unique phrases have been written to file. -->
+<!-- These 1804 phrases contain approximately 11078 total words. -->
 
 </pdData>
-
-
 

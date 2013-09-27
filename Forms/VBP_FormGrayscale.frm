@@ -244,7 +244,7 @@ Begin VB.Form FormGrayscale
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "method:"
+      Caption         =   "style:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -259,7 +259,7 @@ Begin VB.Form FormGrayscale
       Left            =   6000
       TabIndex        =   2
       Top             =   1605
-      Width           =   900
+      Width           =   570
    End
 End
 Attribute VB_Name = "FormGrayscale"

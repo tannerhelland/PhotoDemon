@@ -234,7 +234,9 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/January/13
 'Last updated: 27/September/13
-'Last update: add detection code for new
+'Last update: add detection code for new tooltip types; fix vbCrLf/vbLf issue the same way we fixed it in PD (necessary because
+'             localization settings on a PC will sometimes use one in place of the other, so Frank's language files are always
+'             the opposite of mine!)
 '
 'This project is designed to scan through all project files in PhotoDemon, extract any user-facing English text, and compile
 ' it into an XML file which can be used as the basis for translations into other languages.  It reads the master PhotoDemon.vbp
@@ -352,6 +354,13 @@ Private Sub cmdMerge_Click()
         
         'Attempt to retrieve a translation for this phrase using the old language file
         translatedText = getTranslationTagFromCaption(origText)
+                
+        'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+        If translatedText = "" Then
+            If (InStr(1, origText, vbCrLf) > 0) Then
+                translatedText = getTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
+            End If
+        End If
                 
         'If a translation was found, insert it into the new file
         If translatedText <> "" Then
@@ -553,13 +562,22 @@ Private Sub cmdMergeAll_Click()
                 'Attempt to retrieve a translation for this phrase using the old language file
                 translatedText = getTranslationTagFromCaption(origText)
                 
+                'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+                If translatedText = "" Then
+                    If (InStr(1, origText, vbCrLf) > 0) Then
+                        translatedText = getTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
+                    End If
+                End If
+                
                 'Remove any tab stops from the translated text (which may have been added by an outside editor)
                 translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
-                
+                                
                 'If a translation was found, insert it into the new file
                 If translatedText <> "" Then
-                    findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
-                    replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
+                    'findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
+                    'replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
+                    findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
+                    replaceText = "<original>" & origText & "</original>" & vbCrLf & "<translation>" & translatedText & "</translation>"
                     m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
                     phrasesFound = phrasesFound + 1
                 Else
@@ -609,18 +627,20 @@ Private Sub cmdMergeAll_Click()
 End Sub
 
 Private Sub cmdOldLanguage_Click()
-
+    
     Dim cDlg As cCommonDialog
     Set cDlg = New cCommonDialog
     
     Dim fPath As String
     fPath = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
-    If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+    Dim tmpLangFile As String
+    
+    If cDlg.VBGetOpenFileName(tmpLangFile, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_OldLanguageText = getFileAsString(fPath)
-        m_OldLanguagePath = fPath
+        m_OldLanguageText = getFileAsString(tmpLangFile)
+        m_OldLanguagePath = tmpLangFile
         
     End If
     
@@ -802,7 +822,7 @@ Private Sub processFile(ByVal srcFile As String)
         ElseIf InStr(1, curLineText, "ToolTipText", vbTextCompare) And (InStr(1, curLineText, ".ToolTipText", vbTextCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
-        ElseIf (InStr(1, curLineText, "ToolTip", vbTextCompare) > 0) And (InStr(1, curLineText, ".ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipTitle", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipBackColor", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipType", vbTextCompare) = 0) And (InStr(1, curLineText, "m_ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "clsToolTip", vbTextCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, curLineText, "delaytime", vbTextCompare) = 0) Then
+        ElseIf (InStr(1, curLineText, "ToolTip", vbTextCompare) > 0) And (InStr(1, curLineText, ".ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipTitle", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipBackColor", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipType", vbTextCompare) = 0) And (InStr(1, curLineText, "m_ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "clsToolTip", vbTextCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, curLineText, "delaytime", vbTextCompare) = 0) And (InStr(1, curLineText, "eControl.ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "tooltipBackup", vbTextCompare) = 0) And (InStr(1, curLineText, "newTooltip", vbTextCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
         
         ElseIf InStr(1, curLineText, "TooltipTitle", vbTextCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (Not m_FileName = "jcButton.ctl") Then
@@ -1009,7 +1029,7 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     
         If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
-        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")") Or (i = Len(srcLines(lineNumber)))) And (Not insideQuotes) Then
+        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
             endQuote = i - 1
             Exit For
         End If
@@ -1482,7 +1502,7 @@ Private Function getFileAsString(ByVal fName As String) As String
         Close #fileNum
     
         'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-        'If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
+        If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
     
     Else
         getFileAsString = ""
@@ -1599,6 +1619,8 @@ Private Sub Form_Load()
     addBlacklist "FreeImage"
     addBlacklist "ExifTool"
     addBlacklist "tannerhelland.com/contact"
+    addBlacklist "photodemon.org/about/contact"
+    addBlacklist "photodemon.org/about/contact/"
     
 End Sub
 

@@ -1602,7 +1602,11 @@ End Sub
 
 'The phrase list box label will automatically be updated with the current count of list items
 Private Sub updatePhraseBoxTitle()
-    lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", lstPhrases.ListCount - 1)
+    If lstPhrases.ListCount > 0 Then
+        lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", lstPhrases.ListCount - 1)
+    Else
+        lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", 0)
+    End If
 End Sub
 
 'Call this function whenever we want the in-memory XML data saved to an autosave file
