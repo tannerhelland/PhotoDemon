@@ -488,7 +488,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             If useDoEvents Then DoEvents
             
         Next
-        
+                
     End If
     
     
