@@ -1916,6 +1916,12 @@ Private m_ToolTip As clsToolTip
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
+'A weird situation arises on the main form if the language is changed at run-time.  All tooltips will have already been moved to
+' a custom tooltip class, so the controls themselves will not contain any tooltips.  Thus they will also not be re-translated to
+' a new language.  To remedy this, we make a backup of all tooltips when the program is first run.  We then re-apply this backup
+' collection whenever we need tooltips replaced.
+Private tooltipBackup As Collection
+
 'When the selection type is changed, update the corresponding preference and redraw all selections
 Private Sub cmbSelRender_Click(Index As Integer)
             
@@ -3981,6 +3987,62 @@ End Function
 
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
 Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
+    
+    Dim eControl As Control
+    
+    'If we have not made a backup yet, do so now
+    If tooltipBackup Is Nothing Then
+        Set tooltipBackup = New Collection
+        
+        'Enumerate through every control on the form.  Store a copy of its tooltip inside our collection.
+        For Each eControl In Me.Controls
+            
+            'If this is a control that has a tooltip, backup the tooltip now
+            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+                
+                Dim tmpString As String
+                tmpString = eControl.ToolTipText
+                
+                'If a translation is already active, we want to back up the ENGLISH tooltip - not a translated one.
+                If g_Language.translationActive Then tmpString = g_Language.RestoreMessage(tmpString)
+                
+                If InControlArray(eControl) Then
+                    tooltipBackup.Add tmpString, eControl.Name & "_" & eControl.Index
+                Else
+                    tooltipBackup.Add tmpString, eControl.Name
+                End If
+            End If
+            
+        Next
+    
+    'If we HAVE made a backup and this function is being called, restore all tooltips now.  That way, when they are passed to the
+    ' makeFormPretty function, all tooltips will be available for translation.
+    Else
+    
+        'Enumerate through every control on the form.  Restore its tooltip if found.
+        For Each eControl In Me.Controls
+            
+            'If this is a control that has a tooltip, backup the tooltip now
+            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+                
+                If InControlArray(eControl) Then
+                    eControl.ToolTipText = tooltipBackup.Item(eControl.Name & "_" & eControl.Index)
+                Else
+                    eControl.ToolTipText = tooltipBackup.Item(eControl.Name)
+                End If
+                
+            End If
+            'Or (TypeOf eControl Is textUpDown)
+            If (TypeOf eControl Is sliderTextCombo) Then
+                eControl.refreshTooltipObject
+            End If
+            
+        Next
+        
+        Set m_ToolTip = New clsToolTip
+    
+    End If
+    
     makeFormPretty Me, m_ToolTip, , useDoEvents
 End Sub
 
@@ -4025,3 +4087,9 @@ Private Sub updateSelectionsValuesViaText()
         End If
     End If
 End Sub
+
+'This beautiful little function comes courtesy of coder Merri:
+' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
+Private Function InControlArray(Ctl As Object) As Boolean
+    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+End Function

@@ -199,8 +199,8 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (By
                                                                               ByVal lpClassName As String, _
                                                                               ByVal lpWindowName As String, _
                                                                               ByVal dwStyle As Long, _
-                                                                              ByVal x As Long, _
-                                                                              ByVal y As Long, _
+                                                                              ByVal X As Long, _
+                                                                              ByVal Y As Long, _
                                                                               ByVal nWidth As Long, _
                                                                               ByVal nHeight As Long, _
                                                                               ByVal hWndParent As Long, _
@@ -265,7 +265,7 @@ Public Function AddTool(ByRef ctrl As Control, _
 
 End Function
 
-Public Property Get backColor() As OLE_COLOR
+Public Property Get BackColor() As OLE_COLOR
 
   If (mnlgHwndTT = 0) Then
     Exit Property
@@ -273,11 +273,11 @@ Public Property Get backColor() As OLE_COLOR
 '
 ' OLE_COLOR is defined in stdole2.tlb
 '
-  backColor = SendMessageT(mnlgHwndTT, TTM_GETTIPBKCOLOR, 0, 0)
+  BackColor = SendMessageT(mnlgHwndTT, TTM_GETTIPBKCOLOR, 0, 0)
 
 End Property
 
-Public Property Let backColor(clr As OLE_COLOR)
+Public Property Let BackColor(clr As OLE_COLOR)
 
   If (mnlgHwndTT = 0) Then
     Exit Property

@@ -209,7 +209,6 @@ Public Sub LoadTheProgram()
         
         'Selection smoothing (currently none, antialiased, fully feathered)
         FormMain.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
-        FormMain.sltSelectionFeathering.ToolTipText = g_Language.TranslateMessage("This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.")
         FormMain.cmbSelSmoothing(0).AddItem "None", 0
         FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
         
@@ -225,8 +224,10 @@ Public Sub LoadTheProgram()
         FormMain.cmbSelType(0).AddItem "Border", 2
         FormMain.cmbSelType(0).ListIndex = 0
         
-        FormMain.sltCornerRounding.ToolTipText = g_Language.TranslateMessage("This option adjusts the roundness of a rectangular selection's corners.")
-        FormMain.sltSelectionLineWidth.ToolTipText = g_Language.TranslateMessage("This option adjusts the width of a line selection.")
+        FormMain.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        FormMain.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+        FormMain.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+        FormMain.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
             
         
         

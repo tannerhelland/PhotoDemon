@@ -327,7 +327,7 @@ Private Sub UserControl_Initialize()
     'Prepare a font object for use
     Set mFont = New StdFont
     Set UserControl.Font = mFont
-                
+                    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -382,21 +382,35 @@ Private Sub UserControl_Show()
     
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
-    m_ToolString = Extender.ToolTipText
-    
-    If m_ToolString <> "" Then
-    
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
+    If Len(Extender.ToolTipText) > 0 Then assignTooltip Extender.ToolTipText
         
-            .Create Me
-            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool hsPrimary, m_ToolString
-            .AddTool txtPrimary, m_ToolString
-            
-        End With
-        
+End Sub
+
+'To workaround a translation issue, the control's original English text can be manually backed up; this allows us
+' to change the language at run-time and still have translations work as expected.
+Public Sub assignTooltip(ByVal newTooltip As String)
+    m_ToolString = newTooltip
+    If Len(m_ToolString) > 0 Then refreshTooltipObject
+End Sub
+
+'When the program language is changed, the object's tooltip must be retranslated to match.  External functions can
+' call this sub to have it automatically fixed.
+Public Sub refreshTooltipObject()
+    
+    If Not (m_ToolTip Is Nothing) Then
+        m_ToolTip.RemoveTool hsPrimary
     End If
+    
+    Set m_ToolTip = New clsToolTip
+    With m_ToolTip
+        .Create Me
+        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+        If g_Language.translationActive Then
+            .AddTool hsPrimary, g_Language.TranslateMessage(m_ToolString)
+        Else
+            .AddTool hsPrimary, m_ToolString
+        End If
+    End With
         
 End Sub
 
