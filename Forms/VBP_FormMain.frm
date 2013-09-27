@@ -3716,6 +3716,11 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
     ' action is in the middle of execution)
     If Not FormMain.Enabled Then Exit Sub
+    
+    'Don't process accelerators if the Language Editor is active
+    If Not (FormLanguageEditor Is Nothing) Then
+        If FormLanguageEditor.Visible Then Exit Sub
+    End If
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
     ' faster than one quarter-second apart.  (Ideally, the key repeat delay should be pulled from the OS - not sure how
@@ -3792,9 +3797,6 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'If no images are loaded, or another form is active, exit.
     If NumOfWindows = 0 Then Exit Sub
-    If Not (FormLanguageEditor Is Nothing) Then
-        If FormLanguageEditor.Visible Then Exit Sub
-    End If
     
     'Fit on screen
     If ctlAccelerator.Key(nIndex) = "FitOnScreen" Then FitOnScreen

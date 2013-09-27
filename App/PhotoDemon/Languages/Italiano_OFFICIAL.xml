@@ -26,8 +26,8 @@
 </phrase>
 
 <phrase>
-<original>a free, portable, powerful photo editor</original>
-<translation>un gratuito, portatile e potente modificatore fotografico</translation>
+<original>the fast, free, portable photo editor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -41,8 +41,8 @@
 </phrase>
 
 <phrase>
-<original>for more information on licensing, visit tannerhelland.com/photodemon/#license</original>
-<translation>per ulteriori informazioni sulla licenza, visita tannerhelland.com/photodemon/#license</translation>
+<original>for more information on licensing, visit photodemon.org/about/license/</original>
+<translation>per ulteriori informazioni sulla licenza, visita photodemon.org/about/license/</translation>
 </phrase>
 
 <phrase>
@@ -184,11 +184,6 @@
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Questo cursore della sfumatura, consente aggiustamenti immediati. Per motivi di prestazioni, viene limitata a piccoli raggi. Per raggi più grandi di sfumatura, si prega di utilizzare il menù Seleziona -> Sfumatura.</translation>
-</phrase>
-
-<phrase>
 <original>None</original>
 <translation>Nessuna</translation>
 </phrase>
@@ -224,6 +219,11 @@
 </phrase>
 
 <phrase>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<translation>Questo cursore della sfumatura, consente aggiustamenti immediati. Per motivi di prestazioni, viene limitata a piccoli raggi. Per raggi più grandi di sfumatura, si prega di utilizzare il menù Seleziona -> Sfumatura.</translation>
+</phrase>
+
+<phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
 <translation>Questa opzione consente di regolare la rotondità degli angoli di una selezione rettangolare.</translation>
 </phrase>
@@ -231,6 +231,11 @@
 <phrase>
 <original>This option adjusts the width of a line selection.</original>
 <translation>Questa opzione consente di regolare la larghezza di una linea di selezione.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of the selection border.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -506,6 +511,11 @@ Per favore, utilizza un altro programma per salvarla in un formato generico (com
 </phrase>
 
 <phrase>
+<original>Redo restored successfully.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Undo restored successfully.</original>
 <translation>Annullamento ripristinato con successo.</translation>
 </phrase>
@@ -535,7 +545,7 @@ Per favore, utilizza un altro programma per salvarla in un formato generico (com
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 96 phrases. 18 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 95 phrases. 15 were duplicates of existing phrases, so only 80 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -587,6 +597,11 @@ Per favore, utilizza un altro programma per salvarla in un formato generico (com
 </phrase>
 
 <phrase>
+<original>Caching current image's metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No %1 encoder found. Save aborted.</original>
 <translation>Nessun codificatore %1 trovato. Salvataggio interrotto.</translation>
 </phrase>
@@ -595,7 +610,6 @@ Per favore, utilizza un altro programma per salvarla in un formato generico (com
 <original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
 
 To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-
 <translation>La libreria di compressione zlib (zlibwapi.dll) è marcata come mancante o è disabilitata durante l'inizializzazione del programma.
 
 Per abilitare il salvataggio PDI, per favore permetti a %1 di scaricare gli aggiornamenti andando nel menù Utilità -> Opzioni e selezionando la casella di spunta "offri di scaricare i plugin base".</translation>
@@ -609,11 +623,6 @@ Per abilitare il salvataggio PDI, per favore permetti a %1 di scaricare gli aggi
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
 <translation>Formato d'uscita non riconosciuto. Salvataggio interrotto. Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
-</phrase>
-
-<phrase>
-<original>Preparing to write metadata</original>
-<translation>Preparazione alla scrittura dei metadati</translation>
 </phrase>
 
 <phrase>
@@ -1438,18 +1447,13 @@ Quando hai finito, clicca il pulsante Submit New Issue. Grazie!</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Additional Details box, please describe the steps that led to this error.
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
 
-In the bottom box of that page, please enter the following error number: 
+Also in that box, please include the following error number: 
 %1
 
 When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon ha automaticamente aperto una pagina sul rapporto del bug per voi. Nella casella Additional Details, per favore descrivi i passi che hanno portato a questo errore.
-
- Nella casella in fondo alla pagina, per favore inserisci il numero di errore seguente: 
-%1
-
-Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1650,11 +1654,6 @@ Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
 </phrase>
 
 <phrase>
-<original>&Export Histogram to File</original>
-<translation>&Esporta l'istogramma in un file</translation>
-</phrase>
-
-<phrase>
 <original>Close Histogram</original>
 <translation>Chiudi l'istogramma</translation>
 </phrase>
@@ -1662,6 +1661,16 @@ Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
 <phrase>
 <original>luminance</original>
 <translation>luminanza</translation>
+</phrase>
+
+<phrase>
+<original>fill histogram curves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>visible channels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1695,13 +1704,13 @@ Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
 </phrase>
 
 <phrase>
-<original>Saving histogram to file</original>
-<translation>Salvataggio dell'istogramma in un file</translation>
+<original>max count</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Histogram save complete.</original>
-<translation>Salvataggio dell'istogramma completo.</translation>
+<original>Please wait while the histogram is updated</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1719,7 +1728,7 @@ Quando hai finito, clicca il pulsante Submit. Grazie!</translation>
 <translation>Elasticizzazione dell'istogramma</translation>
 </phrase>
 
-<!-- VBP_FormHistogram.frm contains 47 phrases. 30 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_FormHistogram.frm contains 46 phrases. 28 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_FormHistogram.frm-->
 
@@ -2420,13 +2429,18 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Curves</original>
-<translation>Curve</translation>
+<original>Black and white</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Esposizione</translation>
+<original>Color balance</original>
+<translation>Bilanciamento del colore</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Curve</translation>
 </phrase>
 
 <phrase>
@@ -2435,8 +2449,8 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Shadows and highlights</original>
-<translation>Ombre ed evidenziatori</translation>
+<original>Vibrance</original>
+<translation>Vividezza</translation>
 </phrase>
 
 <phrase>
@@ -2445,8 +2459,43 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Color balance</original>
-<translation>Bilanciamento del colore</translation>
+<original>Channels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Canale del miscelatore</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Incanala</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Canale massimo</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Canale minimo</translation>
+</phrase>
+
+<phrase>
+<original>Shift channels left</original>
+<translation>Sposta i canali a sinistra</translation>
+</phrase>
+
+<phrase>
+<original>Shift channels right</original>
+<translation>Sposta i canali a destra</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2460,23 +2509,28 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Temperature</original>
-<translation>Temperatura</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vividezza</translation>
-</phrase>
-
-<phrase>
 <original>Colorize</original>
 <translation>Colora</translation>
 </phrase>
 
 <phrase>
-<original>Grayscale</original>
-<translation>Scala di grigi</translation>
+<original>Sepia</original>
+<translation>Seppia</translation>
+</phrase>
+
+<phrase>
+<original>Display histogram</original>
+<translation>Mostra l'istogramma</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>Equalizza</translation>
+</phrase>
+
+<phrase>
+<original>Stretch</original>
+<translation>Elasticizza</translation>
 </phrase>
 
 <phrase>
@@ -2500,6 +2554,26 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
+<original>Lighting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Esposizione</translation>
+</phrase>
+
+<phrase>
+<original>Shadows and highlights</original>
+<translation>Ombre ed evidenziatori</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Temperatura</translation>
+</phrase>
+
+<phrase>
 <original>Monochrome</original>
 <translation>Monocromia</translation>
 </phrase>
@@ -2512,61 +2586,6 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <phrase>
 <original>Monochrome to grayscale</original>
 <translation>Monocromia in Scala di grigi</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Seppia</translation>
-</phrase>
-
-<phrase>
-<original>Components</original>
-<translation>Componenti</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Canale del miscelatore</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Incanala</translation>
-</phrase>
-
-<phrase>
-<original>Shift channels right</original>
-<translation>Sposta i canali a destra</translation>
-</phrase>
-
-<phrase>
-<original>Shift channels left</original>
-<translation>Sposta i canali a sinistra</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Canale massimo</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Canale minimo</translation>
-</phrase>
-
-<phrase>
-<original>Display histogram</original>
-<translation>Mostra l'istogramma</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>Equalizza</translation>
-</phrase>
-
-<phrase>
-<original>Stretch</original>
-<translation>Elasticizza</translation>
 </phrase>
 
 <phrase>
@@ -3100,13 +3119,13 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Shift colors (right)</original>
-<translation>Sposta il colore (Destra)</translation>
+<original>Shift colors (left)</original>
+<translation>Sposta il colore (Sinistra)</translation>
 </phrase>
 
 <phrase>
-<original>Shift colors (left)</original>
-<translation>Sposta il colore (Sinistra)</translation>
+<original>Shift colors (right)</original>
+<translation>Sposta il colore (Destra)</translation>
 </phrase>
 
 <phrase>
@@ -3122,6 +3141,41 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <phrase>
 <original>Edge enhance</original>
 <translation>Miglioramento dei contorni</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Ripeti l'ultima azione</translation>
+</phrase>
+
+<phrase>
+<original>Copy to clipboard</original>
+<translation>Copia negli appunti</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Incolla come nuova immagine</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>Pulisci gli appunti</translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3159,6 +3213,11 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>Duplicate image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crop</original>
 <translation>Ritaglia</translation>
 </phrase>
@@ -3169,8 +3228,8 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>Paste as new image</original>
-<translation>Incolla come nuova immagine</translation>
+<original>Internet import</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3194,6 +3253,36 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>No metadata available.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any metadata.</original>
+<translation>Questa immagine non contiene metadati.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>Nessu metadato disponibile</translation>
+</phrase>
+
+<phrase>
+<original>Loading metadata for this image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Water</original>
 <translation>Acqua</translation>
 </phrase>
@@ -3201,16 +3290,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <phrase>
 <original>Film negative</original>
 <translation>Negativo pellicola</translation>
-</phrase>
-
-<phrase>
-<original>Copy to clipboard</original>
-<translation>Copia negli appunti</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>Pulisci gli appunti</translation>
 </phrase>
 
 <phrase>
@@ -3224,17 +3303,12 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>Repeat last action</original>
-<translation>Ripeti l'ultima azione</translation>
-</phrase>
-
-<phrase>
 <original>Rotate 90° clockwise</original>
 <translation>Ruota di 90° in senso orario</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° Counter-Clockwise</original>
+<original>Rotate 90° counter-clockwise</original>
 <translation>Ruota di 90° in senso antiorario</translation>
 </phrase>
 
@@ -3343,7 +3417,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 420 phrases. 143 were duplicates of existing phrases, so only 277 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 439 phrases. 149 were duplicates of existing phrases, so only 290 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -3469,8 +3543,8 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>grayscale method</original>
-<translation>modalità scala di grigi</translation>
+<original>style</original>
+<translation>stile</translation>
 </phrase>
 
 <phrase>
@@ -3489,41 +3563,6 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>Grayscale (average)</original>
-<translation>Scala di grigi (Media)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (ITU standard)</original>
-<translation>Scala di grigi (UIT predefinita)</translation>
-</phrase>
-
-<phrase>
-<original>Desaturate</original>
-<translation>Desaturazione</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (decomposition)</original>
-<translation>Scala di grigi (Scomposizione)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (single channel)</original>
-<translation>Scala di grigi (Canale unico)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (custom # of colors)</original>
-<translation>Scala di grigi (personalizzazione # dei Colori)</translation>
-</phrase>
-
-<phrase>
-<original>Grayscale (custom dither)</original>
-<translation>Scala di grigi (Retinatura personalizzata)</translation>
-</phrase>
-
-<phrase>
 <original>Converting image to %1 shades of gray</original>
 <translation>Conversione dell'immagine a %1 tonalità di grigio</translation>
 </phrase>
@@ -3534,28 +3573,13 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>Converting image to grayscale</original>
-<translation>Conversione dell'immagine in scala di grigi</translation>
+<original>Converting image to black and white</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Generating ITU-R compatible grayscale image</original>
-<translation>Generazione dell'ITU-R compatibile con la scala di grigi</translation>
-</phrase>
-
-<phrase>
-<original>Desaturating image</original>
-<translation>Desaturazione dell'immagine</translation>
-</phrase>
-
-<phrase>
-<original>Decomposing image</original>
-<translation>Scomposizione dell'immagine</translation>
-</phrase>
-
-<phrase>
-<original>Converting image to grayscale using %1 values</original>
-<translation>Conversione dell'immagine in scala di grigi usando %1 valori</translation>
+<original>Converting image to black and white using %1 values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3566,6 +3590,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>Highest Quality (ITU Standard)</original>
 <translation>Altissima qualità (ITU predefinito)</translation>
+</phrase>
+
+<phrase>
+<original>Desaturate</original>
+<translation>Desaturazione</translation>
 </phrase>
 
 <phrase>
@@ -3588,7 +3617,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <translation>Specifica il # dei colori (retinato)</translation>
 </phrase>
 
-<!-- VBP_FormGrayscale.frm contains 45 phrases. 18 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- VBP_FormGrayscale.frm contains 37 phrases. 19 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGrayscale.frm-->
 
@@ -3851,7 +3880,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <!-- END text for VBP_CompressionUtility.bas-->
 
-<!-- BEGIN text for VBP_FormBlackAndWhite.frm (FormBlackAndWhite) -->
+<!-- BEGIN text for VBP_FormBlackAndWhite.frm (FormMonochrome) -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -4032,6 +4061,26 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>File Format Options</original>
 <translation>Opzioni del formato file</translation>
+</phrase>
+
+<phrase>
+<original>if core plugins cannot be located, offer to download them</original>
+<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for software updates every 10 days</original>
+<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
+</phrase>
+
+<phrase>
+<original>If this is disabled, you can visit photodemon.org to manually download the latest version of PhotoDemon</original>
+<translation>Se questo è disabilitato, potete visitare photodemon.org per scaricare l'ultima versione di PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(clausole elencate in esecuzione)</translation>
 </phrase>
 
 <phrase>
@@ -4347,26 +4396,6 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>debugging</original>
 <translation>debuggamento</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
-</phrase>
-
-<phrase>
-<original>If this is disabled, you can visit tannerhelland.com/photodemon to manually download the latest version of PhotoDemon</original>
-<translation>Se questo è disabilitato, potete visitare tannerhelland.com/photodemon per scaricare l'ultima versione di PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(clausole elencate in esecuzione)</translation>
 </phrase>
 
 <phrase>
@@ -4778,12 +4807,12 @@ Questa opzione permette a PhotoDemon di aggiornare automaticamente la barra dell
 
 The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
 
-If you choose to disable these features, you can always visit tannerhelland.com/photodemon to manually download the most recent version of the program.</original>
+If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.</original>
 <translation>PhotoDemon fornisce due funzioni non essenziali che richiedono l'accesso a Internet: il controllo degli aggiornamenti software, e la possibilità di scaricare i plugin indispensabili se non sono presenti nella cartella\app\PhotoDemon\Plugins.
 
 Gli sviluppatori di PhotoDemon prendono molto sul serio la privacy, in modo che nessuna informazione - statistica o altro - è stato caricato da queste caratteristiche. La verifica degli aggiornamenti software prevede il download di un singolo file "updates.txt" contenente l'ultima versione del software. Allo stesso modo, il download di plugin mancanti comporta semplicemente il download di uno o più file dei plugin compressi dal server PhotoDemon.
 
-Se si sceglie di disattivare queste funzioni, potete sempre visitare tannerhelland.com/photodemon per scaricare manualmente la versione più recente del programma.</translation>
+Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.org per scaricare manualmente la versione più recente del programma.</translation>
 </phrase>
 
 <phrase>
@@ -5114,11 +5143,6 @@ Questo incrementerà il tempo del processo, così spunta questa opzione solo se de
 </phrase>
 
 <phrase>
-<original>style</original>
-<translation>stile</translation>
-</phrase>
-
-<phrase>
 <original>Embossing image</original>
 <translation>Goffratura dell'immagine</translation>
 </phrase>
@@ -5128,7 +5152,7 @@ Questo incrementerà il tempo del processo, così spunta questa opzione solo se de
 <translation>Incisione dell'immagine</translation>
 </phrase>
 
-<!-- VBP_FormEmbossEngrave.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_FormEmbossEngrave.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -5875,10 +5899,10 @@ To improve your user experience, please allow the program to automatically downl
 <phrase>
 <original>The next time you launch the program, it will remind you about this software update.
 
-Note: you can always manually download the latest version by visiting tannerhelland.com/photodemon.</original>
+Note: you can always manually download the latest version by visiting photodemon.org.</original>
 <translation>La prossima volta che lancerai il programma, ti ricorderà questo aggiornamento del software.
 
-Nota: puoi sempre scaricare manualmente l'ultima versione visitando il sito tannerhelland.com/photodemon.</translation>
+Nota: puoi sempre scaricare manualmente l'ultima versione visitando il sito photodemon.org.</translation>
 </phrase>
 
 <phrase>
@@ -7071,81 +7095,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 </phrase>
 
 <phrase>
-<original>FreeImage plugin information</original>
-<translation>informazione sul plugin FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>expected version</original>
-<translation>versione prevista</translation>
-</phrase>
-
-<phrase>
-<original>version found</original>
-<translation>versione trovata</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage homepage</original>
-<translation>sito di FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage license</original>
-<translation>licenza di FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>FreeImage Public License (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>Disabilita ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>installato, abilitato ed aggiornato</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>stato</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>stato corrente dei plugin</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>BUONO</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>Disattiva FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Disattiva zLib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>Disattiva EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable pngnq-s9</original>
-<translation>DIsattiva pngnq-s9</translation>
-</phrase>
-
-<phrase>
 <original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
 <translation>analizza i colori usando YUV al posto di RGB (lenta, ma di alta qualità)</translation>
 </phrase>
@@ -7198,6 +7147,16 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 <phrase>
 <original>pngnq-s9 homepage</original>
 <translation>pagina iniziale pngnq-s9</translation>
+</phrase>
+
+<phrase>
+<original>version found</original>
+<translation>versione trovata</translation>
+</phrase>
+
+<phrase>
+<original>expected version</original>
+<translation>versione prevista</translation>
 </phrase>
 
 <phrase>
@@ -7258,6 +7217,71 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 <phrase>
 <original>zLib plugin information</original>
 <translation>informazione sul plugin zLib</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage plugin information</original>
+<translation>informazione sul plugin FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage homepage</original>
+<translation>sito di FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage license</original>
+<translation>licenza di FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>FreeImage Public License (FIPL)</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>Disabilita ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>installato, abilitato ed aggiornato</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>stato</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>stato corrente dei plugin</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>BUONO</translation>
+</phrase>
+
+<phrase>
+<original>Disable FreeImage</original>
+<translation>Disattiva FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Disattiva zLib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>Disattiva EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable pngnq-s9</original>
+<translation>DIsattiva pngnq-s9</translation>
 </phrase>
 
 <phrase>
@@ -7532,6 +7556,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 </phrase>
 
 <phrase>
+<original>swap x and y coordinates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>conversion technique</original>
 <translation>tecnica di conversione</translation>
 </phrase>
@@ -7556,11 +7585,21 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 <translation>inversione polare</translation>
 </phrase>
 
-<!-- VBP_FormPolar.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormPolar.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPolar.frm-->
 
 <!-- BEGIN text for VBP_FormGaussianBlur.frm (FormGaussianBlur) -->
+
+<phrase>
+<original>better</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>best</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>blur radius</original>
@@ -7577,7 +7616,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 <translation>ATTENZIONE! Questo strumento è molto lento quando viene utilizzato all'interno dell'IDE. Si prega di compilare per ottenere risultati migliori.</translation>
 </phrase>
 
-<!-- VBP_FormGaussianBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormGaussianBlur.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGaussianBlur.frm-->
 
@@ -8179,6 +8218,16 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>Batch Image List</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Load a list of images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This is not a valid list of images. Please try a different file.</original>
 <translation>Questa non è una lista di immagini valida. Per favore prova un file differente.</translation>
 </phrase>
@@ -8339,6 +8388,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>Save the current list of images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
 <translation>Se non hai selezionato alcun file d'immagine. Per favore aggiungi uno o più file alla lista da processare pima del salvataggio.</translation>
 </phrase>
@@ -8467,7 +8521,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <translation>processata(e) prima della cancellazione. L'ultima immagine processata è stata "%1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 244 phrases. 136 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 258 phrases. 147 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -8504,11 +8558,6 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <!-- END text for VBP_FormPerspective.frm-->
 
 <!-- BEGIN text for VBP_FormTruePerspective.frm (FormPerspective) -->
-
-<phrase>
-<original>Perspective Correction</original>
-<translation>Correzione della Prospettiva</translation>
-</phrase>
 
 <phrase>
 <original>transformation type</original>
@@ -8550,7 +8599,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <translation>in basso a sinistra</translation>
 </phrase>
 
-<!-- VBP_FormTruePerspective.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_FormTruePerspective.frm contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTruePerspective.frm-->
 
@@ -8629,7 +8678,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <translation>Rimozione di metadati con potenziali problemi di privacy</translation>
 </phrase>
 
-<!-- pdMetadata.cls contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 29 phrases. 18 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -8671,17 +8720,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <translation>utilizza valori leggibili</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any metadata.</original>
-<translation>Questa immagine non contiene metadati.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>Nessu metadato disponibile</translation>
-</phrase>
-
-<!-- VBP_FormMetadata.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormMetadata.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMetadata.frm-->
 
@@ -9750,11 +9789,21 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <!-- BEGIN text for VBP_FormZoomBlur.frm (FormZoomBlur) -->
 
 <phrase>
+<original>modern</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>traditional</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying zoom blur</original>
 <translation>Applicazione dello zoom alla sfocatura</translation>
 </phrase>
 
-<!-- VBP_FormZoomBlur.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormZoomBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormZoomBlur.frm-->
 
@@ -9941,10 +9990,10 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <phrase>
 <original>Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
-To start a new translation, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.</original>
+To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Purtroppo, il file della lingua principale non è stato trovato su questo PC. Questo file è incluso con il rilascio ufficiale di PhotoDemon, ma potrebbe non essere incluso con lo sviluppo o versioni beta.
 
-Per iniziare una nuova traduzione, si prega di scaricare una nuova copia di PhotoDemon da tannerhelland.com/photodemon.</translation>
+Per iniziare una nuova traduzione, si prega di scaricare una nuova copia di PhotoDemon da photodemon.org.</translation>
 </phrase>
 
 <phrase>
@@ -9955,15 +10004,20 @@ Per iniziare una nuova traduzione, si prega di scaricare una nuova copia di Phot
 <phrase>
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
-To continue, please download a fresh copy of PhotoDemon from tannerhelland.com/photodemon.</original>
+To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Purtroppo, questo file della lingua non può essere caricato. E' possibile che la copia su questo PC sia obsoleta.
 
-Per continuare, si prega di scaricare una nuova copia di PhotoDemon da tannerhelland.com/photodemon.</translation>
+Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemon.org.</translation>
 </phrase>
 
 <phrase>
 <original>Language file could not be loaded</original>
 <translation>Il file della lingua non può essere caricato</translation>
+</phrase>
+
+<phrase>
+<original>XML file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10131,7 +10185,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da tannerhel
 <translation>salvato automaticamente su</translation>
 </phrase>
 
-<!-- VBP_FormLanguageEditor.frm contains 124 phrases. 53 were duplicates of existing phrases, so only 71 new phrases were written to file. -->
+<!-- VBP_FormLanguageEditor.frm contains 128 phrases. 56 were duplicates of existing phrases, so only 72 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLanguageEditor.frm-->
 
@@ -10158,15 +10212,24 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da tannerhel
 
 <!-- END text for cGoogleTranslate.cls-->
 
+<!-- BEGIN text for pdLastUsedSettings.cls -->
+
+<phrase>
+<original>This form's preset file may be corrupted.  A new preset file has been created.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLastUsedSettings.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for pdLastUsedSettings.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>1791</phrasecount>
+<phrasecount>1804</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3017 phrases. -->
-<!-- 1226 are duplicates, so only 1791 unique phrases have been written to file. -->
-<!-- These 1791 phrases contain approximately 11017 total words. -->
+<!-- As of this build, PhotoDemon contains 3055 phrases. -->
+<!-- 1251 are duplicates, so only 1804 unique phrases have been written to file. -->
+<!-- These 1804 phrases contain approximately 11078 total words. -->
 
 </pdData>
-
-
 
