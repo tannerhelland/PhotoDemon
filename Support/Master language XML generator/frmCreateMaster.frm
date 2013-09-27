@@ -233,9 +233,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Master English Language File (XML) Generator
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/January/13
-'Last updated: 09/September/13
-'Last update: many small changes to improve output accuracy and speed.  Also, a new "merge all old language files" option,
-'             which saves me a lot of time when all language files need to be re-merged.
+'Last updated: 27/September/13
+'Last update: add detection code for new
 '
 'This project is designed to scan through all project files in PhotoDemon, extract any user-facing English text, and compile
 ' it into an XML file which can be used as the basis for translations into other languages.  It reads the master PhotoDemon.vbp
@@ -780,6 +779,8 @@ Private Sub processFile(ByVal srcFile As String)
         ' 6) As message box text, specifically pdMsgBox (e.g. one of either pdMsgBox("xyz"...) or pdMsgBox "xyz"...)
         ' 7) As a message box title caption (more convoluted to find - basically the 3rd parameter of a pdMsgBox call)
         ' 8) As miscellaneous text manually marked for translation (e.g. g_Language.translateMessage("xyz"))
+        ' 9) As miscellaneous tooltip text manually marked for translation by the assignTooltip function.
+        ' 10) Process calls, which are relayed to the user in the Undo / Redo menus (e.g. "Undo Blur")
         ' (in some rare cases, text may appear that doesn't fit any of these cases - such text must be added manually)
         
         'Every one of these requires a unique mechanism for checking the text.
@@ -829,8 +830,12 @@ Private Sub processFile(ByVal srcFile As String)
         ElseIf InStr(1, curLineText, "g_Language.TranslateMessage(""") Then
             processedText = findMessage(fileLines, curLineNumber)
             processedTextSecondary = findMessage(fileLines, curLineNumber, True)
+        
+        '9) Check for tooltip text that has been manually assigned to a custom PhotoDemon object
+        ElseIf InStr(1, curLineText, ".assignTooltip """) Then
+            processedText = findTooltipMessage(fileLines, curLineNumber)
             
-        '9) And finally, specific to PhotoDemon - check for action names that may not be present elsewhere
+        '10) And finally, specific to PhotoDemon - check for action names that may not be present elsewhere
         'ElseIf InStr(1, curLineText, "GetNameOfProcess =") Then
         ElseIf InStr(1, curLineText, "Process """) Then
             processedText = findCaptionInQuotes(fileLines, curLineNumber, InStr(1, curLineText, "Process """))
@@ -973,7 +978,7 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
     
 End Function
 
-'Given a line number and the original file contents, search for a message box title
+'Given a line number and the original file contents, search for a custom PhotoDemon translation request
 Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
     
     'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
@@ -1004,7 +1009,7 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     
         If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
-        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")")) And Not insideQuotes Then
+        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")") Or (i = Len(srcLines(lineNumber)))) And (Not insideQuotes) Then
             endQuote = i - 1
             Exit For
         End If
@@ -1024,6 +1029,66 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     If InStr(1, findMessage, lineBreak) Then findMessage = Replace(findMessage, lineBreak, vbCrLf)
     lineBreak = """ & vbCrLf & vbCrLf & """
     If InStr(1, findMessage, lineBreak) Then findMessage = Replace(findMessage, lineBreak, vbCrLf & vbCrLf)
+
+    
+End Function
+
+'Given a line number and the original file contents, search for a custom PhotoDemon tooltip assignment
+Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
+    
+    'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
+    ' add manual line breaks to messages via " & vbCrLf & " - these need to be checked for and replaced.
+    
+    'The scan will work by looping through the string, and tracking whether or not we are currently inside quotation marks.
+    'If we are outside a set of quotes, and we encounter a comma or closing parentheses, we know that we have reached the end of the
+    ' first (and/or only) parameter.
+    
+    Dim initPosition As Long
+    If inReverse Then
+        initPosition = InStrRev(srcLines(lineNumber), ".assignTooltip """)
+    Else
+        initPosition = InStr(1, srcLines(lineNumber), ".assignTooltip """)
+    End If
+    
+    Dim startQuote As Long
+    startQuote = InStr(initPosition, srcLines(lineNumber), """")
+    
+    Dim endQuote As Long
+    endQuote = -1
+    
+    Dim insideQuotes As Boolean
+    insideQuotes = True
+    
+    Dim i As Long
+    For i = startQuote + 1 To Len(srcLines(lineNumber))
+    
+        If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+        
+        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
+            endQuote = i - 1
+            Exit For
+        End If
+        
+        If (i = Len(srcLines(lineNumber))) And (Not insideQuotes) Then
+            endQuote = i
+            Exit For
+        End If
+    
+    Next i
+    
+    'If endQuote = -1, something went horribly wrong
+    If endQuote = -1 Then
+        findTooltipMessage = "MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
+    Else
+        findTooltipMessage = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+    End If
+    
+    'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
+    Dim lineBreak As String
+    lineBreak = """ & vbCrLf & """
+    If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf)
+    lineBreak = """ & vbCrLf & vbCrLf & """
+    If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf & vbCrLf)
 
     
 End Function
