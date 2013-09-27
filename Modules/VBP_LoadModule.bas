@@ -1237,7 +1237,7 @@ Public Sub LoadAccelerators()
             .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(3), True, True, True, False
             .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", FormMain.MnuColor(4), True, True, True, False
             .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuColor(5), True, True, True, False
-            .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Grayscale", FormMain.MnuColor(8), True, True, True, False
+            .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Grayscale", FormMain.MnuColor(7), True, True, True, False
             
             'Lighting adjustments
             .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuLighting(0), True, True, True, False
