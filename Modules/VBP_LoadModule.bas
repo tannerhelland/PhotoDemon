@@ -1231,20 +1231,22 @@ Public Sub LoadAccelerators()
         
         'Adjustments Menu
         
+        'Adjustments top shortcut menu
+        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", FormMain.MnuAdjustments(0), True, True, True, False
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuAdjustments(1), True, True, True, False
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuAdjustments(2), True, True, True, False
+        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", FormMain.MnuAdjustments(3), True, True, True, False
+        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuAdjustments(4), True, True, True, False
+        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuAdjustments(5), True, True, True, False
+        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuAdjustments(6), True, True, True, False
+        
             'Color adjustments
-            .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuColor(0), True, True, True, False
-            .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuColor(1), True, True, True, False
             .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(3), True, True, True, False
             .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", FormMain.MnuColor(4), True, True, True, False
-            .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuColor(5), True, True, True, False
-            .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Grayscale", FormMain.MnuColor(7), True, True, True, False
             
             'Lighting adjustments
-            .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuLighting(0), True, True, True, False
-            .AddAccelerator vbKeyM, vbCtrlMask, "Curves", FormMain.MnuLighting(1), True, True, True, False
             .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", FormMain.MnuLighting(2), True, True, True, False
             .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuLighting(3), True, True, True, False
-            .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuLighting(4), True, True, True, False
             .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuLighting(5), True, True, True, False
             .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuLighting(6), True, True, True, False
             
