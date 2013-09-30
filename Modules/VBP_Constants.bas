@@ -2,7 +2,7 @@ Attribute VB_Name = "Public_Constants"
 Option Explicit
 
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
-Public Const DISPLAY_TIMINGS As Boolean = True
+Public Const DISPLAY_TIMINGS As Boolean = False
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
