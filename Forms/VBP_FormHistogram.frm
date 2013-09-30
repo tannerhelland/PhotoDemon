@@ -603,9 +603,8 @@ Attribute VB_Exposed = False
 'Histogram Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 16/September/13
-'Last update: added a "filled" method for histogram rendering; our newest GDI+ interface made this trivial.
-'              Also, general code cleanup, including removal of a bunch of old, unused code.
+'Last updated: 30/September/13
+'Last update: when drawing cubic spline histograms, cache various GDI+ handles to improve performance.
 '
 'This form runs the basic code for calculating and displaying an image's histogram. Throughout the code, the
 ' following array locations refer to a type of histogram:
@@ -1015,16 +1014,31 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     Dim needToFill As Boolean
     If (histogramChannel < 3) And fillCurve Then needToFill = True Else needToFill = False
     
+    'For performance reasons, cache the handle to the GDI+ image container and GDI+ pens we will be using.  This is faster than recreating
+    ' them for every line, especially if the histogram window has been resized to something large.
+    Dim gdiHistogram As Long
+    gdiHistogram = getGDIPlusImageHandleFromDC(picH.hDC)
+    
+    Dim gdiPenSolid As Long, gdiPenTranslucent As Long
+    gdiPenSolid = getGDIPlusPenHandle(curHistColor)
+    gdiPenTranslucent = getGDIPlusPenHandle(curHistColor, 64)
+        
     'If "Fill curve" is selected, we need to manually draw the left-most column (as the draw loop starts at 1)
     ' Note that the luminance curve is never filled.
-    If needToFill Then GDIPlusDrawLineToDC picH.hDC, 0, results(0), 0, histHeight, curHistColor, 64, 1, False
+    If needToFill Then GDIPlusDrawLine_Fast gdiHistogram, gdiPenTranslucent, 0, results(0), 0, histHeight
     
     'Draw the finished spline, using GDI+ for antialiasing
     For i = 1 To histWidth
-        GDIPlusDrawLineToDC picH.hDC, i, results(i), i - 1, results(i - 1), curHistColor
-        If needToFill Then GDIPlusDrawLineToDC picH.hDC, i, results(i), i, histHeight, curHistColor, 64, 1, False
+        GDIPlusDrawLine_Fast gdiHistogram, gdiPenSolid, i, results(i), i - 1, results(i - 1)
+        If needToFill Then GDIPlusDrawLine_Fast gdiHistogram, gdiPenTranslucent, i, results(i), i, histHeight
     Next i
     
+    'Free the GDI+ handles
+    releaseGDIPlusImageHandle gdiHistogram
+    releaseGDIPlusPen gdiPenSolid
+    releaseGDIPlusPen gdiPenTranslucent
+    
+    'Refresh the picture
     picH.Picture = picH.Image
     
 End Sub
