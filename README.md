@@ -1,6 +1,6 @@
-# PhotoDemon (currently v6.0 beta)
+# PhotoDemon 6.0
 
-![PhotoDemon Screenshot] (http://tannerhelland.com/wp-content/uploads/PhotoDemon_curves.jpg)
+![PhotoDemon Screenshot] (http://photodemon.org/images/screenshot.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
@@ -8,11 +8,11 @@ It provides a comprehensive selection of photo editing tools - including a full-
 
 PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its performance will surprise you!)  Outside contributions from both coders and translators are always welcome.
 
-For information on the forthcoming 6.0 release, please visit:
-http://www.tannerhelland.com/4996/photodemon-60-preview/
+For information on the most recent release, please visit:
+http://photodemon.org
 
-Finally, note that this GitHub repository *does not contain a compiled EXE.*  If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and plugins), updated nightly, from:
-www.tannerhelland.com/photodemon_files/nightly/PhotoDemon_nightly.zip.
+Finally, note that PhotoDemon's GitHub repository *does not contain a compiled EXE.*  If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and plugins), updated nightly, from:
+http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
 
 ***
 
@@ -46,15 +46,15 @@ PhotoDemon is written and maintained by a single individual with a family to sup
 
 That said, donations go a long way toward supporting the development of this powerful photo editing tool. If you would like to donate and support development, please visit:
 
-http://www.tannerhelland.com/donate/
+http://photodemon.org/donate/
 
 While I can't make any promises, I have been known to give extra attention to feature requests from individuals who donate. 
 
 If you can't contribute monetarily to the project, here are other ways to help:
-* Let me know if you find any bugs. Issues can be submitted via PhotoDemon's github page: https://github.com/tannerhelland/PhotoDemon, or this dedicated PhotoDemon feedback form: http://www.tannerhelland.com/photodemon-contact/
+* Let me know if you find any bugs. Issues can be submitted via PhotoDemon's github page: https://github.com/tannerhelland/PhotoDemon, or this dedicated PhotoDemon feedback form: http://photodemon.org/about/contact/
 * Are you a VB6 coder? I'm always open to outside bug fixes and feature implementations from fellow programmers.
 * Tell friends, family, and other websites about PhotoDemon. If you know a site that tests or reviews image processing tools, email and ask if they've tried it.
-* Send me an email and let me know how you use PhotoDemon. I love to hear from users. Get in touch at http://tannerhelland.com/contact
+* Send me an email and let me know how you use PhotoDemon. I love to hear from users. Get in touch at http://photodemon.org/about/contact/
 
 ### How is PhotoDemon and its source code licensed?
 
@@ -62,7 +62,7 @@ PhotoDemon is released under a BSD license. You may read more about this license
 
 Sections of this source code were written by third-parties and may be subject to additional licenses. Documentation within a specific source code file supercedes the BSD license governing this project as a whole.
 
-Questions regarding licensing should be directed to: http://tannerhelland.com/contact
+Questions regarding licensing should be directed to: http://photodemon.org/about/contact/
 
 Full text of BSD license follows.
 
