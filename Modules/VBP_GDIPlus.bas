@@ -1,15 +1,17 @@
 Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 'GDI+ Interface
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 4/September/12
-'Last update: full support for image saving (GIF, JPEG, PNG, TIFF) via GDI+.  These are all considered fallbacks; if FreeImage
-'              is found, it will be given first priority, but at least this will allow PSC users to export four additional
-'              file formats even if they don't download the FreeImage plugin.
+'Last updated: 30/September/13
+'Last update: added new functions for caching GDI+ graphics containers and pens.  This was used to test line draw performance
+'              in the histogram module - performance is still hideous on XP, so it must be the line function itself that's the
+'              problem.  Argh!
 '
-'This interface provides a means for interacting with the unnecessarily complex (and overwrought) GDI+ module.  GDI+ is
-' primarily used as a fallback for image loading and saving if the FreeImage DLL cannot be found.
+'This interface provides a means for interacting with the unnecessarily complex (and overwrought) GDI+ module.  GDI+ was
+' originally used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time it has become
+' more and more integrated into PD.  As of version 6.0, GDI+ is used for a number of specialized tasks, including viewport
+' rendering of 32bpp images, regional blur of selection masks, antialiased lines and circles on various dialogs, and more.
 '
 'These routines are adapted from the work of a number of other talented VB programmers.  Since GDI+ is not well-documented
 ' for VB users, I have pieced this module together from the following pieces of code:
@@ -488,6 +490,51 @@ Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single,
     GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(255, 255, 255), 220, 1, True
     
 End Function
+
+'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
+' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
+Public Function getGDIPlusImageHandleFromDC(ByVal srcDC As Long, Optional ByVal useAA As Boolean = True) As Long
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC srcDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+
+    getGDIPlusImageHandleFromDC = iGraphics
+
+End Function
+
+Public Sub releaseGDIPlusImageHandle(ByVal srcHandle As Long)
+    GdipDeleteGraphics srcHandle
+End Sub
+
+'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
+Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLinecap As LineCap = 0) As Long
+
+    'Create the requested pen
+    Dim iPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    
+    'If a custom line cap was specified, apply it now
+    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    
+    'Return the handle
+    getGDIPlusPenHandle = iPen
+
+End Function
+
+Public Sub releaseGDIPlusPen(ByVal srcPen As Long)
+    GdipDeletePen srcPen
+End Sub
+
+'Assuming the client has already obtained a GDI+ graphics handle and a GDI+ pen handle, they can use this function to quickly draw a line using
+' the associated objects.
+Public Sub GDIPlusDrawLine_Fast(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+
+    'This function is just a thin wrapper to the GdipDrawLine function!
+    GdipDrawLine dstGraphics, srcPen, x1, y1, x2, y2
+
+End Sub
 
 'Use GDI+ to render a line, with optional color, opacity, and antialiasing
 Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinecap As LineCap = 0) As Boolean
