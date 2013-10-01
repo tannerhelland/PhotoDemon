@@ -33,6 +33,7 @@ Begin VB.Form FormBlackLight
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   1
+      SigDigits       =   2
       Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -103,8 +104,8 @@ Attribute VB_Exposed = False
 'Blacklight Form
 'Copyright ©2001-2013 by Tanner Helland
 'Created: some time 2001
-'Last updated: 23/April/13
-'Last update: used as a guinea pig to test the new combination slider/text control
+'Last updated: 01/October/13
+'Last update: use a floating-point slider for more precise results
 '
 'I found this effect on accident, and it has gradually become one of my favorite effects.
 ' Visually stunning on many photographs.
@@ -121,9 +122,9 @@ Dim m_ToolTip As clsToolTip
 
 'Perform a blacklight filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Illuminating image with imaginary blacklight..."
+    If Not toPreview Then Message "Illuminating image with imaginary blacklight..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -133,7 +134,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -155,19 +156,19 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
     Dim grayLookUp(0 To 765) As Byte
-    For X = 0 To 765
-        grayLookUp(X) = X \ 3
-    Next X
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
@@ -182,18 +183,18 @@ Public Sub fxBlackLight(Optional ByVal Weight As Long = 2, Optional ByVal toPrev
         If b > 255 Then b = 255
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal + 2, Y) = b
+        ImageData(QuickVal, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal + 2, y) = b
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -213,7 +214,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltIntensity.Value = 2
+    sltIntensity.Value = 2#
 End Sub
 
 Private Sub Form_Activate()
