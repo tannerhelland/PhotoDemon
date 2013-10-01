@@ -932,7 +932,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormBlackLight.Show vbModal, FormMain
             Else
-                FormBlackLight.fxBlackLight cParams.GetLong(1)
+                FormBlackLight.fxBlackLight cParams.GetDouble(1)
             End If
             
         Case "Dream"
