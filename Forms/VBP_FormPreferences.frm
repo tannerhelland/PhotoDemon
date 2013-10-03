@@ -2509,9 +2509,9 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
             If g_ConfirmClosingUnsaved Then
-                FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
+                toolbar_Main.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
             Else
-                FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.")
+                toolbar_Main.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.")
             End If
         'END prompt on unsaved images
     

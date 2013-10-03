@@ -822,10 +822,10 @@ Public Sub updateViaTextBox()
     isMaskReady = False
 
     'Check all text box entries for validity, then update the corresponding selection values
-    If FormMain.tudSel(0).IsValid(False) Then selLeft = FormMain.tudSel(0)
-    If FormMain.tudSel(1).IsValid(False) Then selTop = FormMain.tudSel(1)
-    If FormMain.tudSel(2).IsValid(False) Then selWidth = FormMain.tudSel(2)
-    If FormMain.tudSel(3).IsValid(False) Then selHeight = FormMain.tudSel(3)
+    If toolbar_Selections.tudSel(0).IsValid(False) Then selLeft = toolbar_Selections.tudSel(0)
+    If toolbar_Selections.tudSel(1).IsValid(False) Then selTop = toolbar_Selections.tudSel(1)
+    If toolbar_Selections.tudSel(2).IsValid(False) Then selWidth = toolbar_Selections.tudSel(2)
+    If toolbar_Selections.tudSel(3).IsValid(False) Then selHeight = toolbar_Selections.tudSel(3)
     
     'Adjust the x1, y1, x2, y2 values to match these new ones
     Select Case sShape

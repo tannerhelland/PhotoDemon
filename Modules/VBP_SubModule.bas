@@ -149,8 +149,8 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     If copyX Then copyX = x1
     If copyY Then copyY = y1
     
-    FormMain.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-    FormMain.lblCoordinates.Refresh
+    toolbar_Main.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+    toolbar_Main.lblCoordinates.Refresh
     
 End Sub
 
@@ -173,3 +173,8 @@ Public Sub findNearestImageCoordinates(ByRef x1 As Double, ByRef y1 As Double, B
 
 End Sub
 
+'This beautiful little function comes courtesy of coder Merri:
+' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
+Public Function InControlArray(Ctl As Object) As Boolean
+    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+End Function

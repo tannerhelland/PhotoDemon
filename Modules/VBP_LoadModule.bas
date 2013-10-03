@@ -187,6 +187,10 @@ Public Sub LoadTheProgram()
     initializeViewportEngine
     
     
+    'While we're here, initiate our window manager as well
+    Set g_WindowManager = New pdWindowManager
+    g_WindowManager.registerParentHwnd FormMain.hWnd
+    
         
     '*************************************************************************************************************************************
     ' Set all default tool values
@@ -194,40 +198,44 @@ Public Sub LoadTheProgram()
         
     LoadMessage "Initializing image tools..."
     
+    'Even though the user can hide toolbars, we still want them loaded, so we can interact with them as necessary.
+    Load toolbar_Main
+    Load toolbar_Selections
+    
     Dim i As Long
     
     'INITIALIZE ALL SELECTION TOOLS
     
         'Selection visual styles (currently lightbox or highlight)
-        FormMain.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
-        For i = 0 To FormMain.cmbSelRender.Count - 1
-            FormMain.cmbSelRender(i).AddItem "Lightbox", 0
-            FormMain.cmbSelRender(i).AddItem "Highlight (Blue)", 1
-            FormMain.cmbSelRender(i).AddItem "Highlight (Red)", 2
-            FormMain.cmbSelRender(i).ListIndex = 0
+        toolbar_Selections.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
+        For i = 0 To toolbar_Selections.cmbSelRender.Count - 1
+            toolbar_Selections.cmbSelRender(i).AddItem "Lightbox", 0
+            toolbar_Selections.cmbSelRender(i).AddItem "Highlight (Blue)", 1
+            toolbar_Selections.cmbSelRender(i).AddItem "Highlight (Red)", 2
+            toolbar_Selections.cmbSelRender(i).ListIndex = 0
         Next i
         
         'Selection smoothing (currently none, antialiased, fully feathered)
-        FormMain.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
-        FormMain.cmbSelSmoothing(0).AddItem "None", 0
-        FormMain.cmbSelSmoothing(0).AddItem "Antialiased", 1
+        toolbar_Selections.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
+        toolbar_Selections.cmbSelSmoothing(0).AddItem "None", 0
+        toolbar_Selections.cmbSelSmoothing(0).AddItem "Antialiased", 1
         
         'Live feathering is not allowed on XP or Vista for performance reasons (GDI+ can't be used).
         ' On these OSes, feathering must be applied via the Selection -> Feathering menu.
-        If g_GDIPlusFXAvailable Then FormMain.cmbSelSmoothing(0).AddItem "Feathered", 2
-        FormMain.cmbSelSmoothing(0).ListIndex = 1
+        If g_GDIPlusFXAvailable Then toolbar_Selections.cmbSelSmoothing(0).AddItem "Feathered", 2
+        toolbar_Selections.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
-        FormMain.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
-        FormMain.cmbSelType(0).AddItem "Interior", 0
-        FormMain.cmbSelType(0).AddItem "Exterior", 1
-        FormMain.cmbSelType(0).AddItem "Border", 2
-        FormMain.cmbSelType(0).ListIndex = 0
+        toolbar_Selections.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
+        toolbar_Selections.cmbSelType(0).AddItem "Interior", 0
+        toolbar_Selections.cmbSelType(0).AddItem "Exterior", 1
+        toolbar_Selections.cmbSelType(0).AddItem "Border", 2
+        toolbar_Selections.cmbSelType(0).ListIndex = 0
         
-        FormMain.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
-        FormMain.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-        FormMain.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
-        FormMain.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
+        toolbar_Selections.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        toolbar_Selections.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+        toolbar_Selections.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+        toolbar_Selections.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
             
         
         
@@ -263,14 +271,14 @@ Public Sub LoadTheProgram()
     End If
                 
     'Manually create multi-line tooltips for some command buttons
-    FormMain.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
+    toolbar_Main.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
     If g_ConfirmClosingUnsaved Then
-        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
+        toolbar_Main.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
     Else
-        FormMain.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
+        toolbar_Main.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
     End If
-    FormMain.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
-    FormMain.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
+    toolbar_Main.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
+    toolbar_Main.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
                         
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     SetIcon FormMain.hWnd, "AAA", True
@@ -298,8 +306,8 @@ Public Sub LoadTheProgram()
         
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
     If g_UseFancyFonts Then
-        FormMain.cmdZoomIn.Height = FormMain.cmdZoomIn.Height + 1
-        FormMain.cmdZoomOut.Height = FormMain.cmdZoomOut.Height + 1
+        toolbar_Main.cmdZoomIn.Height = toolbar_Main.cmdZoomIn.Height + 1
+        toolbar_Main.cmdZoomOut.Height = toolbar_Main.cmdZoomOut.Height + 1
     End If
     
     'Allow drag-and-drop operations
@@ -883,7 +891,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
             g_FixScrolling = False
-            FormMain.CmbZoom.ListIndex = targetImage.CurrentZoomValue
+            toolbar_Main.CmbZoom.ListIndex = targetImage.CurrentZoomValue
         
             'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
             g_FixScrolling = True
@@ -1566,7 +1574,7 @@ Public Sub DuplicateCurrentImage()
         
     'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
     g_FixScrolling = False
-    FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+    toolbar_Main.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
         
     Message "Image duplication complete."
     

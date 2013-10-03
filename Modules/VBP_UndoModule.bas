@@ -3,8 +3,8 @@ Attribute VB_Name = "Undo_Handler"
 'Undo/Redo Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 21/August/13
-'Last update: new function to roll back the last created Undo.  This is necessary when the user cancels an action mid-processing.
+'Last updated: 02/October/13
+'Last update: do not display messages when saving/restoring Undo data.
 '
 'Handles all "Undo"/"Redo" operations.  I currently have it programmed to use the hard
 ' drive for all backups in order to free up RAM; this could be changed with in-memory images,
@@ -28,7 +28,7 @@ Option Explicit
 Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As Long = 1, Optional ByVal relevantTool As Long = -1)
     
     'All undo work is handled internally in the pdImage class
-    Message "Saving Undo data..."
+    'Message "Saving Undo data..."
     pdImages(CurrentImage).BuildUndo processID, undoType, relevantTool
     
     'Since an undo exists, enable the Undo button and disable the Redo button
@@ -37,6 +37,7 @@ Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As 
     
     '"Fade last effect" is reserved for filters and effects only
     If (undoType = 0) Or (undoType = 1) Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
+    'Message ""
 
 End Sub
 
@@ -46,12 +47,12 @@ Public Sub RestoreUndoData()
     g_UndoRedoActive = True
     
     'Let the internal pdImage Undo handler take care of any changes
-    Message "Restoring Undo data..."
+    'Message "Restoring Undo data..."
     pdImages(CurrentImage).Undo
     
     'Select the relevant tool for this action, if relevant
     If pdImages(CurrentImage).getUndoTool > -1 Then
-        FormMain.selectNewTool pdImages(CurrentImage).getUndoTool
+        toolbar_Selections.selectNewTool pdImages(CurrentImage).getUndoTool
     End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
@@ -137,7 +138,7 @@ Public Sub RestoreRedoData()
     
     'Select the relevant tool for this action, if relevant
     If pdImages(CurrentImage).getUndoTool > -1 Then
-        FormMain.selectNewTool pdImages(CurrentImage).getUndoTool
+        toolbar_Selections.selectNewTool pdImages(CurrentImage).getUndoTool
     End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
