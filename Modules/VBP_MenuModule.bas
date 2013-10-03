@@ -268,7 +268,7 @@ Public Sub MenuClose()
     'Make sure the correct flag is set so that the MDI Child QueryUnload behaves properly (e.g. note that we
     ' are not closing ALL images - just this one.)
     g_ClosingAllImages = False
-    Unload FormMain.ActiveForm
+    Unload pdImages(CurrentImage).containingForm
     
 End Sub
 

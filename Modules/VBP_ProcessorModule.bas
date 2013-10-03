@@ -85,7 +85,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If we need to display an additional dialog, restore the default mouse cursor.  Otherwise, set the cursor to busy.
     If showDialog Then
-        If Not (FormMain.ActiveForm Is Nothing) Then setArrowCursor FormMain.ActiveForm
+        If Not (pdImages(CurrentImage).containingForm Is Nothing) Then setArrowCursor pdImages(CurrentImage).containingForm
     Else
         Screen.MousePointer = vbHourglass
     End If
@@ -256,7 +256,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 RestoreUndoData
             
                 'Also, redraw the current child form icon
-                CreateCustomFormIcon FormMain.ActiveForm
+                CreateCustomFormIcon pdImages(CurrentImage).containingForm
             End If
             
         Case "Redo"
@@ -264,7 +264,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 RestoreRedoData
             
                 'Also, redraw the current child form icon
-                CreateCustomFormIcon FormMain.ActiveForm
+                CreateCustomFormIcon pdImages(CurrentImage).containingForm
             End If
         
         Case "Copy to clipboard"
@@ -1110,7 +1110,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         If NumOfWindows > 0 Then
             
             'Note that the histogram is automatically drawn when an MDI child form receives focus.  This happens below
-            ' (look for FormMain.ActiveForm.SetFocus), so we do not need to manually redraw the histogram here.
+            ' (look for pdImages(CurrentImage).containingForm.SetFocus), so we do not need to manually redraw the histogram here.
             'FormHistogram.TallyHistogramValues
             'FormHistogram.DrawHistogram
         Else
@@ -1120,7 +1120,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     End If
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw the form icon to match.
-    If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then CreateCustomFormIcon FormMain.ActiveForm
+    If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then CreateCustomFormIcon pdImages(CurrentImage).containingForm
     
     'Unlock the main form
     FormMain.Enabled = True
@@ -1142,7 +1142,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo > 0) Then
-        If NumOfWindows > 0 Then FormMain.ActiveForm.ActivateWorkaround
+        If NumOfWindows > 0 Then pdImages(CurrentImage).containingForm.ActivateWorkaround
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
@@ -1195,7 +1195,7 @@ MainErrHandler:
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
         pdImages(CurrentImage).deactivateImage
-        Unload FormMain.ActiveForm
+        Unload pdImages(CurrentImage).containingForm
         Exit Sub
     
     'File not found error

@@ -80,7 +80,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
     convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
-    'Normally this will draw a preview of FormMain.ActiveForm's relevant image.  However, another picture source can be specified.
+    'Normally this will draw a preview of pdImages(CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
     If Not useOtherPictureSrc Then
         
         'Check to see if a selection is active; if it isn't, simply render the full form

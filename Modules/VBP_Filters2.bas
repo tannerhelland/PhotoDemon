@@ -159,7 +159,7 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     Message "Finished."
     
     'Redraw the main window
-    ScrollViewport FormMain.ActiveForm
+    ScrollViewport pdImages(CurrentImage).containingForm
 
 End Sub
 

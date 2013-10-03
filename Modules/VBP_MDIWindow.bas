@@ -19,7 +19,7 @@ Option Explicit
 'The image number PhotoDemon is currently at (always goes up, never down; starts at zero when the program is loaded)
 Public NumOfImagesLoaded As Long
 
-'The current image we are working with (generally FormMain.ActiveForm.Tag)
+'The current image we are working with (generally CurrentImage)
 Public CurrentImage As Long
 
 'Number of existing windows (goes up or down as images are opened or closed)
@@ -98,7 +98,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
     If NumOfWindows = 0 Then Exit Sub
         
     'Make sure the window isn't minimized or maximized
-    If FormMain.ActiveForm.WindowState = 0 Then
+    If pdImages(CurrentImage).containingForm.WindowState = 0 Then
     
         'Disable AutoScroll, because that messes with our calculations
         g_FixScrolling = False
@@ -115,14 +115,14 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         forceMaxHeight = False
     
         'Change the scalemode to twips to match the MDI form
-        FormMain.ActiveForm.ScaleMode = vbTwips
+        pdImages(CurrentImage).containingForm.ScaleMode = vbTwips
     
         'Now let's get some dimensions for our calculations
         Dim wDif As Long, hDif As Long
         'This variable determines the difference between scalewidth and width...
-        wDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
+        wDif = pdImages(CurrentImage).containingForm.Width - pdImages(CurrentImage).containingForm.ScaleWidth
         '...while this variable does the same thing for scaleheight and height
-        hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
+        hDif = pdImages(CurrentImage).containingForm.Height - pdImages(CurrentImage).containingForm.ScaleHeight
         
         'Now we set the form dimensions to match the image's
         curWidth = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
@@ -135,8 +135,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             curLeft = pdImages(CurrentImage).WindowLeft
             curTop = pdImages(CurrentImage).WindowTop
         Else
-            curLeft = FormMain.ActiveForm.Left
-            curTop = FormMain.ActiveForm.Top
+            curLeft = pdImages(CurrentImage).containingForm.Left
+            curTop = pdImages(CurrentImage).containingForm.Top
         End If
                 
         ' Check for the image being off-viewport, starting with the vertical measurement.
@@ -176,7 +176,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         'If the image does not fill the entire viewport, but one dimension is maxed out, add a little extra space for
         ' the scroll bar that will necessarily appear.
         If forceMaxHeight And (Not forceMaxWidth) Then
-            curWidth = curWidth + FormMain.ActiveForm.VScroll.Width
+            curWidth = curWidth + pdImages(CurrentImage).containingForm.VScroll.Width
             
             'If this addition pushes the image off-screen, nudge it slightly left
             If curLeft + curWidth > FormMain.ScaleWidth Then curLeft = FormMain.ScaleWidth - curWidth
@@ -184,7 +184,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         End If
         
         If forceMaxWidth And (Not forceMaxHeight) Then
-            curHeight = curHeight + FormMain.ActiveForm.HScroll.Height
+            curHeight = curHeight + pdImages(CurrentImage).containingForm.HScroll.Height
             
             'If this addition pushes the image off-screen, nudge it slightly up
             If curTop + curHeight > FormMain.ScaleHeight Then curTop = FormMain.ScaleHeight - curHeight
@@ -195,14 +195,14 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         If isImageLoading Then
             pdImages(CurrentImage).WindowLeft = curLeft
             pdImages(CurrentImage).WindowTop = curTop
-            FormMain.ActiveForm.Width = curWidth
-            FormMain.ActiveForm.Height = curHeight
+            pdImages(CurrentImage).containingForm.Width = curWidth
+            pdImages(CurrentImage).containingForm.Height = curHeight
         Else
-            FormMain.ActiveForm.Move curLeft, curTop, curWidth, curHeight
+            pdImages(CurrentImage).containingForm.Move curLeft, curTop, curWidth, curHeight
         End If
         
         'Set the scalemode back to pixels
-        FormMain.ActiveForm.ScaleMode = vbPixels
+        pdImages(CurrentImage).containingForm.ScaleMode = vbPixels
     
         'Re-enable scrolling
         g_FixScrolling = True
@@ -211,7 +211,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
     ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
-    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitWindowToImage"
+    If suppressRendering = False Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToImage"
     
 End Sub
 
@@ -224,33 +224,33 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
     resizeNeeded = False
         
     'Make sure the window isn't minimized or maximized
-    If FormMain.ActiveForm.WindowState = 0 Then
+    If pdImages(CurrentImage).containingForm.WindowState = 0 Then
     
         'Prevent automatic recalculation of the viewport scroll bars until we finish our calculations here
         g_FixScrolling = False
         
         'Start by determining if the image's canvas falls outside the viewport area.  Note that we will repeat this process
         ' twice: once for horizontal, and again for vertical.
-        If FormMain.ActiveForm.Left + FormMain.ActiveForm.Width > FormMain.ScaleWidth Then
+        If pdImages(CurrentImage).containingForm.Left + pdImages(CurrentImage).containingForm.Width > FormMain.ScaleWidth Then
             
             resizeNeeded = True
             
             'This variable determines the difference between the MDI client area's available width and the current child form's
             ' width, taking into account the .Left position and an arbitrary offset (currently 12 pixels)
             Dim newWidth As Long
-            newWidth = FormMain.ScaleWidth - FormMain.ActiveForm.Left - (12 * Screen.TwipsPerPixelX)
-            FormMain.ActiveForm.Width = newWidth
+            newWidth = FormMain.ScaleWidth - pdImages(CurrentImage).containingForm.Left - (12 * Screen.TwipsPerPixelX)
+            pdImages(CurrentImage).containingForm.Width = newWidth
             
         End If
         
         'Now repeat the process for the vertical measurement
-        If FormMain.ActiveForm.Top + FormMain.ActiveForm.Height > FormMain.ScaleHeight Then
+        If pdImages(CurrentImage).containingForm.Top + pdImages(CurrentImage).containingForm.Height > FormMain.ScaleHeight Then
         
             resizeNeeded = True
         
             Dim newHeight As Long
-            newHeight = FormMain.ScaleHeight - FormMain.ActiveForm.Top - (12 * Screen.TwipsPerPixelY)
-            FormMain.ActiveForm.Height = newHeight
+            newHeight = FormMain.ScaleHeight - pdImages(CurrentImage).containingForm.Top - (12 * Screen.TwipsPerPixelY)
+            pdImages(CurrentImage).containingForm.Height = newHeight
             
         End If
             
@@ -261,7 +261,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
     ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
-    If (suppressRendering = False) And resizeNeeded Then PrepareViewport FormMain.ActiveForm, "FitWindowToViewport"
+    If (suppressRendering = False) And resizeNeeded Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToViewport"
     
 End Sub
 
@@ -274,17 +274,17 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     g_FixScrolling = False
     
     'Gotta change the scalemode to twips to match the MDI form
-    FormMain.ActiveForm.ScaleMode = 1
+    pdImages(CurrentImage).containingForm.ScaleMode = 1
     
     'Make sure the window isn't minimized
-    If FormMain.ActiveForm.WindowState = vbMinimized Then Exit Sub
+    If pdImages(CurrentImage).containingForm.WindowState = vbMinimized Then Exit Sub
     
     'Now let's get some dimensions for our calculations
     Dim tDif As Long, hDif As Long
     'This variable determines the difference between scalewidth and width...
-    tDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
+    tDif = pdImages(CurrentImage).containingForm.Width - pdImages(CurrentImage).containingForm.ScaleWidth
     '...while this variable does the same thing for scaleheight and height
-    hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
+    hDif = pdImages(CurrentImage).containingForm.Height - pdImages(CurrentImage).containingForm.ScaleHeight
     
     'Use this to track zpp,
     Dim zVal As Long
@@ -323,13 +323,13 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     pdImages(CurrentImage).CurrentZoomValue = zVal
     
     'Set the scalemode back to a decent value
-    FormMain.ActiveForm.ScaleMode = 3
+    pdImages(CurrentImage).containingForm.ScaleMode = 3
     
     'Re-enable scrolling
     g_FixScrolling = True
     
     'Now fix scrollbars and everything
-    If suppressRendering = False Then PrepareViewport FormMain.ActiveForm, "FitImageToViewport"
+    If suppressRendering = False Then PrepareViewport pdImages(CurrentImage).containingForm, "FitImageToViewport"
     
 End Sub
 
@@ -339,20 +339,20 @@ Public Sub FitOnScreen()
     If NumOfWindows = 0 Then Exit Sub
     
     'Gotta change the scalemode to twips to match the MDI form
-    FormMain.ActiveForm.ScaleMode = 1
+    pdImages(CurrentImage).containingForm.ScaleMode = 1
         
     'Disable AutoScroll, because that messes with our calculations
     g_FixScrolling = False
     
     'If the image is minimized, restore it
-    If FormMain.ActiveForm.WindowState = vbMinimized Then FormMain.ActiveForm.WindowState = 0
+    If pdImages(CurrentImage).containingForm.WindowState = vbMinimized Then pdImages(CurrentImage).containingForm.WindowState = 0
     
     'Now let's get some dimensions for our calculations
     Dim tDif As Long, hDif As Long
     'This variable determines the difference between scalewidth and width...
-    tDif = FormMain.ActiveForm.Width - FormMain.ActiveForm.ScaleWidth
+    tDif = pdImages(CurrentImage).containingForm.Width - pdImages(CurrentImage).containingForm.ScaleWidth
     '...while this variable does the same thing for scaleheight and height
-    hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
+    hDif = pdImages(CurrentImage).containingForm.Height - pdImages(CurrentImage).containingForm.ScaleHeight
 
     'Use this to track zoom
     Dim zVal As Long
@@ -380,16 +380,16 @@ Public Sub FitOnScreen()
     pdImages(CurrentImage).CurrentZoomValue = zVal
     
     'Set the scalemode back to pixels
-    FormMain.ActiveForm.ScaleMode = 3
+    pdImages(CurrentImage).containingForm.ScaleMode = 3
     
     'Re-enable scrolling
     g_FixScrolling = True
     
     'If the window is not maximized or minimized, fit the window to it
-    If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+    If pdImages(CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
     
     'Now fix scrollbars and everything
-    PrepareViewport FormMain.ActiveForm, "FitOnScreen"
+    PrepareViewport pdImages(CurrentImage).containingForm, "FitOnScreen"
     
 End Sub
 

@@ -40,9 +40,9 @@ Begin VB.MDIForm FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1824,7 +1824,7 @@ Private Sub MnuFitOnScreen_Click()
 End Sub
 
 Private Sub MnuFitWindowToImage_Click()
-    If (FormMain.ActiveForm.WindowState = vbMaximized) Or (FormMain.ActiveForm.WindowState = vbMinimized) Then FormMain.ActiveForm.WindowState = vbNormal
+    If (pdImages(CurrentImage).containingForm.WindowState = vbMaximized) Or (pdImages(CurrentImage).containingForm.WindowState = vbMinimized) Then pdImages(CurrentImage).containingForm.WindowState = vbNormal
     FitWindowToImage
 End Sub
 

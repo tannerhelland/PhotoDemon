@@ -224,7 +224,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         SetProgBarVal 0
         
         'Redraw the image
-        PrepareViewport FormMain.ActiveForm, "Autocrop image"
+        PrepareViewport pdImages(CurrentImage).containingForm, "Autocrop image"
     
     End If
 
@@ -292,7 +292,7 @@ Public Sub MenuCropToSelection()
     End If
     
     'Redraw the image
-    PrepareViewport FormMain.ActiveForm, "Crop to selection"
+    PrepareViewport pdImages(CurrentImage).containingForm, "Crop to selection"
 
 End Sub
 
@@ -310,7 +310,7 @@ Public Sub MenuFlip()
     StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, 0, pdImages(CurrentImage).Height - 1, pdImages(CurrentImage).Width, -pdImages(CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
-    ScrollViewport FormMain.ActiveForm
+    ScrollViewport pdImages(CurrentImage).containingForm
     
 End Sub
 
@@ -328,7 +328,7 @@ Public Sub MenuMirror()
     StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).Width - 1, 0, -pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
-    ScrollViewport FormMain.ActiveForm
+    ScrollViewport pdImages(CurrentImage).containingForm
     
 End Sub
 
@@ -442,7 +442,7 @@ Public Sub MenuRotate180()
         
     Message "Finished. "
     
-    ScrollViewport FormMain.ActiveForm
+    ScrollViewport pdImages(CurrentImage).containingForm
     
 End Sub
 

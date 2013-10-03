@@ -3744,9 +3744,9 @@ Private Sub prepareForBatchConversion()
                 'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
                 ' any extra information for the requested format (JPEG quality, etc)
                 If Len(m_FormatParams) > 0 Then
-                    PhotoDemon_SaveImage pdImages(CLng(FormMain.ActiveForm.Tag)), tmpFilename, CLng(FormMain.ActiveForm.Tag), False, m_FormatParams
+                    PhotoDemon_SaveImage pdImages(CLng(CurrentImage)), tmpFilename, CLng(CurrentImage), False, m_FormatParams
                 Else
-                    PhotoDemon_SaveImage pdImages(CLng(FormMain.ActiveForm.Tag)), tmpFilename, CLng(FormMain.ActiveForm.Tag), False
+                    PhotoDemon_SaveImage pdImages(CLng(CurrentImage)), tmpFilename, CLng(CurrentImage), False
                 End If
             
                 'Kill the next-to-last form (better than killing the current one, because of the constant GD flickering)
@@ -3809,7 +3809,7 @@ Private Sub prepareForBatchConversion()
     Next curBatchFile
     
     'Unload the last form we processed
-    If Not FormMain.ActiveForm Is Nothing Then Unload FormMain.ActiveForm
+    If Not pdImages(CurrentImage).containingForm Is Nothing Then Unload pdImages(CurrentImage).containingForm
     
     MacroStatus = MacroSTOP
     

@@ -274,7 +274,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             If toPreview Then
                 finalizeImageData toPreview, dstPic
             Else
-                ScrollViewport FormMain.ActiveForm
+                ScrollViewport pdImages(CurrentImage).containingForm
                 Message "Image successfully quantized to %1 unique colors. ", 256
             End If
             

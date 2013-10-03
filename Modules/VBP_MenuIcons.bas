@@ -484,7 +484,7 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     posModifier = 0
 
     If NumOfWindows > 0 Then
-        If FormMain.ActiveForm.WindowState = vbMaximized Then posModifier = 1
+        If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
     End If
     
     'Place the icon onto the requested menu
@@ -543,7 +543,7 @@ Public Sub ResetMenuIcons()
         posModifier = 0
     
         If NumOfWindows > 0 Then
-            If FormMain.ActiveForm.WindowState = vbMaximized Then posModifier = 1
+            If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
         End If
     
         cMRUIcons.Clear
