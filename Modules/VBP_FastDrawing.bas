@@ -404,7 +404,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         SetProgBarVal 0
         
         'Pass control to the viewport renderer, which will perform the actual rendering
-        ScrollViewport FormMain.ActiveForm
+        ScrollViewport pdImages(CurrentImage).containingForm
         
         Message "Finished."
         

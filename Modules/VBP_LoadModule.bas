@@ -564,8 +564,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             g_FixScrolling = False
         
-            FormMain.ActiveForm.HScroll.Value = 0
-            FormMain.ActiveForm.VScroll.Value = 0
+            pdImages(CurrentImage).containingForm.HScroll.Value = 0
+            pdImages(CurrentImage).containingForm.VScroll.Value = 0
         
             'Prepare the user interface for a new image
             metaToggle tSaveAs, True
@@ -676,7 +676,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
             targetImage.deactivateImage
-            If isThisPrimaryImage Then Unload FormMain.ActiveForm
+            If isThisPrimaryImage Then Unload pdImages(CurrentImage).containingForm
             GoTo PreloadMoreImages
             
         Else
@@ -871,19 +871,19 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If g_AutosizeLargeImages = 0 Then FitImageToViewport True
                     
             'If the window is not maximized or minimized, fit the form around the picture box
-            If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True, True
+            If pdImages(CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True, True
             
             'Update relevant user interface controls
             DisplaySize targetImage.Width, targetImage.Height
             
             If imgFormTitle = "" Then
                 If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                    FormMain.ActiveForm.Caption = getFilename(sFile(thisImage))
+                    pdImages(CurrentImage).containingForm.Caption = getFilename(sFile(thisImage))
                 Else
-                    FormMain.ActiveForm.Caption = sFile(thisImage)
+                    pdImages(CurrentImage).containingForm.Caption = sFile(thisImage)
                 End If
             Else
-                FormMain.ActiveForm.Caption = imgFormTitle
+                pdImages(CurrentImage).containingForm.Caption = imgFormTitle
             End If
             
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
@@ -896,18 +896,18 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
             g_FixScrolling = True
         
-            PrepareViewport FormMain.ActiveForm, "PreLoadImage"
+            PrepareViewport pdImages(CurrentImage).containingForm, "PreLoadImage"
             
             'Render an icon-sized version of this image as the MDI child form's icon
-            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon FormMain.ActiveForm
+            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon pdImages(CurrentImage).containingForm
             
             'Note the window state, as it may be important in the future
-            targetImage.WindowState = FormMain.ActiveForm.WindowState
+            targetImage.WindowState = pdImages(CurrentImage).containingForm.WindowState
             
             'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
-            If FormMain.ActiveForm.WindowState = 0 Then
-                FormMain.ActiveForm.Left = targetImage.WindowLeft
-                FormMain.ActiveForm.Top = targetImage.WindowTop
+            If pdImages(CurrentImage).containingForm.WindowState = 0 Then
+                pdImages(CurrentImage).containingForm.Left = targetImage.WindowLeft
+                pdImages(CurrentImage).containingForm.Top = targetImage.WindowTop
             End If
             
             'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
@@ -1120,12 +1120,12 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
     metaToggle tSelection, pdImages(CurrentImage).selectionActive
         
     'Render the image to the screen
-    PrepareViewport FormMain.ActiveForm, "LoadUndo"
+    PrepareViewport pdImages(CurrentImage).containingForm, "LoadUndo"
         
     If isRedoData Then
-        Message "Redo restored successfully."
+        'Message "Redo restored successfully."
     Else
-        Message "Undo restored successfully."
+        'Message "Undo restored successfully."
     End If
     
 End Sub
@@ -1517,8 +1517,8 @@ Public Sub DuplicateCurrentImage()
         
     g_FixScrolling = False
         
-    FormMain.ActiveForm.HScroll.Value = 0
-    FormMain.ActiveForm.VScroll.Value = 0
+    pdImages(CurrentImage).containingForm.HScroll.Value = 0
+    pdImages(CurrentImage).containingForm.VScroll.Value = 0
         
     'Prepare the user interface for a new image
     metaToggle tSaveAs, True
@@ -1564,13 +1564,13 @@ Public Sub DuplicateCurrentImage()
     End If
                 
     'If the window is not maximized or minimized, fit the form around the picture box
-    If FormMain.ActiveForm.WindowState = 0 Then FitWindowToImage True
+    If pdImages(CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
         
     'Note the image dimensions and display them on the left-hand pane
     DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
     
     'Update the current caption to match
-    FormMain.ActiveForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
+    pdImages(CurrentImage).containingForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
         
     'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
     g_FixScrolling = False
@@ -1581,18 +1581,18 @@ Public Sub DuplicateCurrentImage()
     'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
     g_FixScrolling = True
     
-    PrepareViewport FormMain.ActiveForm, "DuplicateImage"
+    PrepareViewport pdImages(CurrentImage).containingForm, "DuplicateImage"
         
     'Render an icon-sized version of this image as the MDI child form's icon
-    CreateCustomFormIcon FormMain.ActiveForm
+    CreateCustomFormIcon pdImages(CurrentImage).containingForm
         
     'Note the window state, as it may be important in the future
-    pdImages(CurrentImage).WindowState = FormMain.ActiveForm.WindowState
+    pdImages(CurrentImage).WindowState = pdImages(CurrentImage).containingForm.WindowState
         
     'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
-    If FormMain.ActiveForm.WindowState = 0 Then
-        FormMain.ActiveForm.Left = pdImages(CurrentImage).WindowLeft
-        FormMain.ActiveForm.Top = pdImages(CurrentImage).WindowTop
+    If pdImages(CurrentImage).containingForm.WindowState = 0 Then
+        pdImages(CurrentImage).containingForm.Left = pdImages(CurrentImage).WindowLeft
+        pdImages(CurrentImage).containingForm.Top = pdImages(CurrentImage).WindowTop
     End If
     
     'If we made it all the way here, the image was successfully duplicated.

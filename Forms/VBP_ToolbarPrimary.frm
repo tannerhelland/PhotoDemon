@@ -353,7 +353,7 @@ Private Sub CmbZoom_Click()
     
     'Track the current zoom value
     If NumOfWindows > 0 Then
-        pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = toolbar_Main.CmbZoom.ListIndex
+        pdImages(CurrentImage).CurrentZoomValue = toolbar_Main.CmbZoom.ListIndex
         If toolbar_Main.CmbZoom.ListIndex = 0 Then
             toolbar_Main.cmdZoomIn.Enabled = False
         Else
@@ -364,13 +364,13 @@ Private Sub CmbZoom_Click()
         Else
             If Not toolbar_Main.cmdZoomOut.Enabled Then toolbar_Main.cmdZoomOut.Enabled = True
         End If
-        PrepareViewport FormMain.ActiveForm, "zoom changed by user"
+        PrepareViewport pdImages(CurrentImage).containingForm, "zoom changed by user"
     End If
     
 End Sub
 
 Private Sub cmdClose_Click()
-    Unload FormMain.ActiveForm
+    Unload pdImages(CurrentImage).containingForm
 End Sub
 
 Private Sub cmdOpen_Click()

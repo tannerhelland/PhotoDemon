@@ -296,7 +296,7 @@ End Sub
 
 'Note that specific zoom values are calculated in other routines; they are only USED here.
 
-'This routine requires a target form as a parameter.  This form will almost always be FormMain.ActiveForm, but in
+'This routine requires a target form as a parameter.  This form will almost always be pdImages(CurrentImage).containingForm, but in
 ' certain rare cases (cascading windows, for example), it may be necessary to recalculate the viewport and scroll bars
 ' in non-active windows - in those cases, the calling routine must specify which viewport it wants rebuilt.
 Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)

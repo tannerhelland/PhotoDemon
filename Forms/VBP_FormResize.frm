@@ -1018,7 +1018,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport FormMain.ActiveForm, "Image resize"
+    PrepareViewport pdImages(CurrentImage).containingForm, "Image resize"
     
     Message "Finished."
     
