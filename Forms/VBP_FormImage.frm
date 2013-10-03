@@ -188,7 +188,7 @@ Public Sub ActivateWorkaround()
     If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(CurrentImage).Width <> 0 Then FormMain.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+    If pdImages(CurrentImage).Width <> 0 Then toolbar_Main.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
     
     'If a selection is active on this image, update the text boxes to match
     If pdImages(CurrentImage).selectionActive Then
@@ -293,16 +293,16 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
       
         If LinesScrolled > 0 Then
             
-            If FormMain.CmbZoom.ListIndex > 0 Then
-                FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+            If toolbar_Main.CmbZoom.ListIndex > 0 Then
+                toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
                 'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
                 'PrepareViewport Me, "Ctrl+Mousewheel"
             End If
         
         ElseIf LinesScrolled < 0 Then
             
-            If FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then
-                FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+            If toolbar_Main.CmbZoom.ListIndex < (toolbar_Main.CmbZoom.ListCount - 1) Then
+                toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
                 'PrepareViewport Me, "Ctrl+Mousewheel"
         End If
             
@@ -419,7 +419,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
                         ' the selection.
                         Else
                         
-                            FormMain.selectNewTool pdImages(Me.Tag).mainSelection.getSelectionShape
+                            toolbar_Selections.selectNewTool pdImages(Me.Tag).mainSelection.getSelectionShape
                             
                             'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                             pdImages(Me.Tag).mainSelection.setBackupParamString
@@ -982,7 +982,7 @@ Private Sub initSelectionByPoint(ByVal X As Double, ByVal Y As Double)
     
     'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
     ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, FormMain.cmbSelType(0).ListIndex, FormMain.cmbSelSmoothing(0).ListIndex, FormMain.sltSelectionFeathering.Value, FormMain.sltSelectionBorder.Value, FormMain.sltCornerRounding.Value, FormMain.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+    pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, toolbar_Selections.cmbSelType(0).ListIndex, toolbar_Selections.cmbSelSmoothing(0).ListIndex, toolbar_Selections.sltSelectionFeathering.Value, toolbar_Selections.sltSelectionBorder.Value, toolbar_Selections.sltCornerRounding.Value, toolbar_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
     
     'Set the first two coordinates of this selection to this mouseclick's location
     pdImages(Me.Tag).mainSelection.setInitialCoordinates X, Y

@@ -74,7 +74,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(curImage).selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        pdImages(curImage).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, FormMain.cmbSelRender(0).ListIndex
+        pdImages(curImage).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, toolbar_Selections.cmbSelRender(0).ListIndex
     
     End If
         
@@ -535,111 +535,111 @@ Public Sub initializeViewportEngine()
     ReDim g_Zoom.ZoomFactor(0 To g_Zoom.ZoomCount) As Double
     
     'Manually create a list of user-friendly zoom values
-    FormMain.CmbZoom.AddItem "3200%", 0
+    toolbar_Main.CmbZoom.AddItem "3200%", 0
         g_Zoom.ZoomArray(0) = 32
         g_Zoom.ZoomFactor(0) = 32
         
-    FormMain.CmbZoom.AddItem "2400%", 1
+    toolbar_Main.CmbZoom.AddItem "2400%", 1
         g_Zoom.ZoomArray(1) = 24
         g_Zoom.ZoomFactor(1) = 24
         
-    FormMain.CmbZoom.AddItem "1600%", 2
+    toolbar_Main.CmbZoom.AddItem "1600%", 2
         g_Zoom.ZoomArray(2) = 16
         g_Zoom.ZoomFactor(2) = 16
         
-    FormMain.CmbZoom.AddItem "1200%", 3
+    toolbar_Main.CmbZoom.AddItem "1200%", 3
         g_Zoom.ZoomArray(3) = 12
         g_Zoom.ZoomFactor(3) = 12
         
-    FormMain.CmbZoom.AddItem "800%", 4
+    toolbar_Main.CmbZoom.AddItem "800%", 4
         g_Zoom.ZoomArray(4) = 8
         g_Zoom.ZoomFactor(4) = 8
         
-    FormMain.CmbZoom.AddItem "700%", 5
+    toolbar_Main.CmbZoom.AddItem "700%", 5
         g_Zoom.ZoomArray(5) = 7
         g_Zoom.ZoomFactor(5) = 7
         
-    FormMain.CmbZoom.AddItem "600%", 6
+    toolbar_Main.CmbZoom.AddItem "600%", 6
         g_Zoom.ZoomArray(6) = 6
         g_Zoom.ZoomFactor(6) = 6
         
-    FormMain.CmbZoom.AddItem "500%", 7
+    toolbar_Main.CmbZoom.AddItem "500%", 7
         g_Zoom.ZoomArray(7) = 5
         g_Zoom.ZoomFactor(7) = 5
         
-    FormMain.CmbZoom.AddItem "400%", 8
+    toolbar_Main.CmbZoom.AddItem "400%", 8
         g_Zoom.ZoomArray(8) = 4
         g_Zoom.ZoomFactor(8) = 4
         
-    FormMain.CmbZoom.AddItem "300%", 9
+    toolbar_Main.CmbZoom.AddItem "300%", 9
         g_Zoom.ZoomArray(9) = 3
         g_Zoom.ZoomFactor(9) = 3
         
-    FormMain.CmbZoom.AddItem "200%", 10
+    toolbar_Main.CmbZoom.AddItem "200%", 10
         g_Zoom.ZoomArray(10) = 2
         g_Zoom.ZoomFactor(10) = 2
         
-    FormMain.CmbZoom.AddItem "100%", 11
+    toolbar_Main.CmbZoom.AddItem "100%", 11
         g_Zoom.ZoomArray(11) = 1
         g_Zoom.ZoomFactor(11) = 1
         
-    FormMain.CmbZoom.AddItem "75%", 12
+    toolbar_Main.CmbZoom.AddItem "75%", 12
         g_Zoom.ZoomArray(12) = 3 / 4
         g_Zoom.ZoomFactor(12) = 4 / 3
         
-    FormMain.CmbZoom.AddItem "67%", 13
+    toolbar_Main.CmbZoom.AddItem "67%", 13
         g_Zoom.ZoomArray(13) = 2 / 3
         g_Zoom.ZoomFactor(13) = 3 / 2
         
-    FormMain.CmbZoom.AddItem "50%", 14
+    toolbar_Main.CmbZoom.AddItem "50%", 14
         g_Zoom.ZoomArray(14) = 0.5
         g_Zoom.ZoomFactor(14) = 2
         
-    FormMain.CmbZoom.AddItem "33%", 15
+    toolbar_Main.CmbZoom.AddItem "33%", 15
         g_Zoom.ZoomArray(15) = 1 / 3
         g_Zoom.ZoomFactor(15) = 3
         
-    FormMain.CmbZoom.AddItem "25%", 16
+    toolbar_Main.CmbZoom.AddItem "25%", 16
         g_Zoom.ZoomArray(16) = 0.25
         g_Zoom.ZoomFactor(16) = 4
         
-    FormMain.CmbZoom.AddItem "20%", 17
+    toolbar_Main.CmbZoom.AddItem "20%", 17
         g_Zoom.ZoomArray(17) = 0.2
         g_Zoom.ZoomFactor(17) = 5
         
-    FormMain.CmbZoom.AddItem "16%", 18
+    toolbar_Main.CmbZoom.AddItem "16%", 18
         g_Zoom.ZoomArray(18) = 0.16
         g_Zoom.ZoomFactor(18) = 100 / 16
         
-    FormMain.CmbZoom.AddItem "12%", 19
+    toolbar_Main.CmbZoom.AddItem "12%", 19
         g_Zoom.ZoomArray(19) = 0.12
         g_Zoom.ZoomFactor(19) = 100 / 12
         
-    FormMain.CmbZoom.AddItem "8%", 20
+    toolbar_Main.CmbZoom.AddItem "8%", 20
         g_Zoom.ZoomArray(20) = 0.08
         g_Zoom.ZoomFactor(20) = 100 / 8
         
-    FormMain.CmbZoom.AddItem "6%", 21
+    toolbar_Main.CmbZoom.AddItem "6%", 21
         g_Zoom.ZoomArray(21) = 0.06
         g_Zoom.ZoomFactor(21) = 100 / 6
         
-    FormMain.CmbZoom.AddItem "4%", 22
+    toolbar_Main.CmbZoom.AddItem "4%", 22
         g_Zoom.ZoomArray(22) = 0.04
         g_Zoom.ZoomFactor(22) = 25
         
-    FormMain.CmbZoom.AddItem "3%", 23
+    toolbar_Main.CmbZoom.AddItem "3%", 23
         g_Zoom.ZoomArray(23) = 0.03
         g_Zoom.ZoomFactor(23) = 100 / 0.03
         
-    FormMain.CmbZoom.AddItem "2%", 24
+    toolbar_Main.CmbZoom.AddItem "2%", 24
         g_Zoom.ZoomArray(24) = 0.02
         g_Zoom.ZoomFactor(24) = 50
         
-    FormMain.CmbZoom.AddItem "1%", 25
+    toolbar_Main.CmbZoom.AddItem "1%", 25
         g_Zoom.ZoomArray(25) = 0.01
         g_Zoom.ZoomFactor(25) = 100
     
     'Set the main form's zoom combo box to display "100%"
-    FormMain.CmbZoom.ListIndex = ZoomIndex100
+    toolbar_Main.CmbZoom.ListIndex = ZoomIndex100
 
 End Sub

@@ -3,530 +3,15 @@ Begin VB.MDIForm FormMain
    AutoShowChildren=   0   'False
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   9480
+   ClientHeight    =   10590
    ClientLeft      =   225
    ClientTop       =   855
-   ClientWidth     =   16065
+   ClientWidth     =   17205
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
    ScrollBars      =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin VB.PictureBox picRightPane 
-      Align           =   4  'Align Right
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   9105
-      Left            =   13095
-      ScaleHeight     =   607
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   198
-      TabIndex        =   14
-      Top             =   0
-      Width           =   2970
-      Begin VB.CommandButton cmdTools 
-         Caption         =   "Select (Line)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   600
-         Index           =   2
-         Left            =   1995
-         TabIndex        =   35
-         ToolTipText     =   "Line Selection tool"
-         Top             =   465
-         Width           =   900
-      End
-      Begin VB.CommandButton cmdTools 
-         Caption         =   "Select (Rect)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   600
-         Index           =   0
-         Left            =   75
-         TabIndex        =   25
-         ToolTipText     =   "Rectangular Selection tool"
-         Top             =   465
-         Width           =   900
-      End
-      Begin VB.CommandButton cmdTools 
-         Caption         =   "Select (Ellipse)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   600
-         Index           =   1
-         Left            =   1035
-         TabIndex        =   24
-         ToolTipText     =   "Elliptical (Oval) Selection tool"
-         Top             =   465
-         Width           =   900
-      End
-      Begin VB.PictureBox picTools 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   6135
-         Index           =   0
-         Left            =   0
-         ScaleHeight     =   409
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   198
-         TabIndex        =   15
-         Top             =   1440
-         Visible         =   0   'False
-         Width           =   2970
-         Begin VB.ComboBox cmbSelSmoothing 
-            Appearance      =   0  'Flat
-            CausesValidation=   0   'False
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   360
-            Index           =   0
-            ItemData        =   "VBP_FormMain.frx":000C
-            Left            =   120
-            List            =   "VBP_FormMain.frx":000E
-            Style           =   2  'Dropdown List
-            TabIndex        =   34
-            TabStop         =   0   'False
-            ToolTipText     =   "Use this option to change the way selections blend with their surroundings."
-            Top             =   3000
-            Width           =   2685
-         End
-         Begin VB.ComboBox cmbSelType 
-            Appearance      =   0  'Flat
-            CausesValidation=   0   'False
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   360
-            Index           =   0
-            ItemData        =   "VBP_FormMain.frx":0010
-            Left            =   120
-            List            =   "VBP_FormMain.frx":0012
-            Style           =   2  'Dropdown List
-            TabIndex        =   30
-            TabStop         =   0   'False
-            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
-            Top             =   4320
-            Width           =   2685
-         End
-         Begin PhotoDemon.sliderTextCombo sltCornerRounding 
-            CausesValidation=   0   'False
-            Height          =   495
-            Left            =   0
-            TabIndex        =   27
-            Top             =   5640
-            Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Max             =   10000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.ComboBox cmbSelRender 
-            Appearance      =   0  'Flat
-            CausesValidation=   0   'False
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   360
-            Index           =   0
-            ItemData        =   "VBP_FormMain.frx":0014
-            Left            =   180
-            List            =   "VBP_FormMain.frx":0016
-            Style           =   2  'Dropdown List
-            TabIndex        =   16
-            TabStop         =   0   'False
-            Top             =   540
-            Width           =   2685
-         End
-         Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
-            Index           =   0
-            Left            =   120
-            TabIndex        =   17
-            Top             =   1320
-            Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
-            Index           =   1
-            Left            =   1560
-            TabIndex        =   18
-            Top             =   1320
-            Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
-            Index           =   2
-            Left            =   120
-            TabIndex        =   19
-            Top             =   2160
-            Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
-            Index           =   3
-            Left            =   1560
-            TabIndex        =   20
-            Top             =   2160
-            Width           =   1320
-            _ExtentX        =   2328
-            _ExtentY        =   714
-            Min             =   -30000
-            Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
-            CausesValidation=   0   'False
-            Height          =   495
-            Left            =   0
-            TabIndex        =   31
-            Top             =   4710
-            Visible         =   0   'False
-            Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Min             =   1
-            Max             =   10000
-            Value           =   1
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
-            CausesValidation=   0   'False
-            Height          =   495
-            Left            =   0
-            TabIndex        =   33
-            Top             =   3390
-            Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Max             =   100
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
-            CausesValidation=   0   'False
-            Height          =   495
-            Left            =   0
-            TabIndex        =   36
-            Top             =   5640
-            Width           =   3000
-            _ExtentX        =   5318
-            _ExtentY        =   873
-            Min             =   1
-            Max             =   10000
-            Value           =   10
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-         End
-         Begin VB.Label lblSelection 
-            Appearance      =   0  'Flat
-            AutoSize        =   -1  'True
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "smoothing"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00606060&
-            Height          =   285
-            Index           =   3
-            Left            =   120
-            TabIndex        =   32
-            Top             =   2640
-            Width           =   1125
-         End
-         Begin VB.Label lblSelection 
-            Appearance      =   0  'Flat
-            AutoSize        =   -1  'True
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "selection type"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00606060&
-            Height          =   285
-            Index           =   4
-            Left            =   120
-            TabIndex        =   29
-            Top             =   3960
-            Width           =   1440
-         End
-         Begin VB.Label lblSelection 
-            Appearance      =   0  'Flat
-            AutoSize        =   -1  'True
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "corner rounding"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00606060&
-            Height          =   285
-            Index           =   5
-            Left            =   120
-            TabIndex        =   28
-            Top             =   5280
-            Width           =   1710
-         End
-         Begin VB.Label lblSelection 
-            Appearance      =   0  'Flat
-            AutoSize        =   -1  'True
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "visual style"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00606060&
-            Height          =   285
-            Index           =   0
-            Left            =   120
-            TabIndex        =   23
-            Top             =   120
-            Width           =   1155
-         End
-         Begin VB.Label lblSelection 
-            Appearance      =   0  'Flat
-            AutoSize        =   -1  'True
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "selection position"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00606060&
-            Height          =   285
-            Index           =   1
-            Left            =   120
-            TabIndex        =   22
-            Top             =   960
-            Width           =   1830
-         End
-         Begin VB.Label lblSelection 
-            Appearance      =   0  'Flat
-            AutoSize        =   -1  'True
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "selection size"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00606060&
-            Height          =   285
-            Index           =   2
-            Left            =   120
-            TabIndex        =   21
-            Top             =   1800
-            Width           =   1380
-         End
-      End
-      Begin VB.Line lineMain 
-         BorderColor     =   &H80000002&
-         Index           =   1
-         X1              =   5
-         X2              =   192
-         Y1              =   92
-         Y2              =   92
-      End
-      Begin VB.Label lblTools 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "selection tools"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   285
-         Left            =   120
-         TabIndex        =   26
-         Top             =   90
-         Width           =   1500
-      End
-   End
    Begin VB.PictureBox picProgBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -546,351 +31,18 @@ Begin VB.MDIForm FormMain
       Left            =   0
       ScaleHeight     =   25
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1071
-      TabIndex        =   6
+      ScaleWidth      =   1147
+      TabIndex        =   0
       TabStop         =   0   'False
-      Top             =   9105
-      Width           =   16065
+      Top             =   10215
+      Width           =   17205
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   12000
       Top             =   7560
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
-   End
-   Begin VB.PictureBox picLeftPane 
-      Align           =   3  'Align Left
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   9105
-      Left            =   0
-      ScaleHeight     =   607
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   70
-      TabIndex        =   0
-      TabStop         =   0   'False
-      Top             =   0
-      Width           =   1050
-      Begin VB.ComboBox CmbZoom 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   360
-         ItemData        =   "VBP_FormMain.frx":0018
-         Left            =   60
-         List            =   "VBP_FormMain.frx":001A
-         Style           =   2  'Dropdown List
-         TabIndex        =   5
-         ToolTipText     =   "Click to adjust image zoom"
-         Top             =   4320
-         Width           =   930
-      End
-      Begin PhotoDemon.jcbutton cmdOpen 
-         Height          =   615
-         Left            =   60
-         TabIndex        =   1
-         Top             =   60
-         Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":001C
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
-      End
-      Begin PhotoDemon.jcbutton cmdSave 
-         Height          =   615
-         Left            =   60
-         TabIndex        =   2
-         Top             =   1440
-         Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":146E
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Save"
-      End
-      Begin PhotoDemon.jcbutton cmdUndo 
-         Height          =   615
-         Left            =   60
-         TabIndex        =   3
-         Top             =   2820
-         Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":26D0
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Undo"
-         TooltipBackColor=   -2147483643
-      End
-      Begin PhotoDemon.jcbutton cmdRedo 
-         Height          =   615
-         Left            =   60
-         TabIndex        =   4
-         Top             =   3450
-         Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":3722
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Redo"
-         TooltipBackColor=   -2147483643
-      End
-      Begin PhotoDemon.jcbutton cmdClose 
-         Height          =   615
-         Left            =   60
-         TabIndex        =   10
-         Top             =   690
-         Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":4774
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Close"
-      End
-      Begin PhotoDemon.jcbutton cmdSaveAs 
-         Height          =   615
-         Left            =   60
-         TabIndex        =   11
-         Top             =   2070
-         Width           =   930
-         _ExtentX        =   1640
-         _ExtentY        =   1085
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":57C6
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Save As"
-      End
-      Begin PhotoDemon.jcbutton cmdZoomIn 
-         Height          =   450
-         Left            =   525
-         TabIndex        =   12
-         Top             =   4800
-         Width           =   480
-         _ExtentX        =   847
-         _ExtentY        =   794
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":6A28
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   "Use this button to increase image zoom."
-         TooltipTitle    =   "Zoom In"
-      End
-      Begin PhotoDemon.jcbutton cmdZoomOut 
-         Height          =   450
-         Left            =   45
-         TabIndex        =   13
-         Top             =   4800
-         Width           =   480
-         _ExtentX        =   847
-         _ExtentY        =   794
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_FormMain.frx":6E7A
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         ToolTip         =   "Use this button to decrease image zoom."
-         TooltipTitle    =   "Zoom Out"
-      End
-      Begin VB.Line lineMain 
-         BorderColor     =   &H80000002&
-         Index           =   0
-         X1              =   2
-         X2              =   68
-         Y1              =   279
-         Y2              =   279
-      End
-      Begin VB.Label lblRecording 
-         Alignment       =   2  'Center
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "macro recording in progress..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H000000FF&
-         Height          =   1620
-         Left            =   30
-         TabIndex        =   9
-         Top             =   6840
-         Visible         =   0   'False
-         Width           =   960
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label lblCoordinates 
-         Alignment       =   2  'Center
-         BackStyle       =   0  'Transparent
-         Caption         =   "(X, Y)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00808080&
-         Height          =   195
-         Left            =   0
-         TabIndex        =   8
-         Top             =   6240
-         Width           =   990
-      End
-      Begin VB.Label lblImgSize 
-         Alignment       =   2  'Center
-         BackStyle       =   0  'Transparent
-         Caption         =   "size:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00D1B499&
-         Height          =   675
-         Left            =   0
-         TabIndex        =   7
-         Top             =   5460
-         Width           =   990
-         WordWrap        =   -1  'True
-      End
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1933,20 +1085,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to toggle the command button state of the toolbox buttons
-Private Const BM_SETSTATE = &HF3
-Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-
-'Used to render images onto the tool buttons at run-time
-' NOTE: TOOLBOX IMAGES WILL NOT APPEAR IN THE IDE.  YOU MUST COMPILE FIRST.
-Private cImgCtl As clsControlImage
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Private m_ToolTip As clsToolTip
-
-'The value of all controls on this form are saved and loaded to file by this class
-Private WithEvents lastUsedSettings As pdLastUsedSettings
-Attribute lastUsedSettings.VB_VarHelpID = -1
 
 'A weird situation arises on the main form if the language is changed at run-time.  All tooltips will have already been moved to
 ' a custom tooltip class, so the controls themselves will not contain any tooltips.  Thus they will also not be re-translated to
@@ -1954,302 +1094,6 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 ' collection whenever we need tooltips replaced.
 Private tooltipBackup As Collection
 
-'When the selection type is changed, update the corresponding preference and redraw all selections
-Private Sub cmbSelRender_Click(Index As Integer)
-            
-    If NumOfWindows > 0 Then
-    
-        Dim i As Long
-        For i = 0 To NumOfImagesLoaded
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
-            End If
-        Next i
-    
-    End If
-    
-End Sub
-
-'Change selection smoothing (e.g. none, antialiased, fully feathered)
-Private Sub cmbSelSmoothing_Click(Index As Integer)
-    
-    updateSelectionPanelLayout
-    
-    'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed(False) Then
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setSmoothingType cmbSelSmoothing(Index).ListIndex
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
-        RenderViewport FormMain.ActiveForm
-    End If
-    
-End Sub
-
-'Change selection type (e.g. interior, exterior, bordered)
-Private Sub cmbSelType_Click(Index As Integer)
-
-    updateSelectionPanelLayout
-    
-    'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed(False) Then
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionType cmbSelType(Index).ListIndex
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
-        RenderViewport FormMain.ActiveForm
-    End If
-    
-End Sub
-
-'When the zoom combo box is changed, redraw the image using the new zoom value
-Private Sub CmbZoom_Click()
-    
-    'Track the current zoom value
-    If NumOfWindows > 0 Then
-        pdImages(FormMain.ActiveForm.Tag).CurrentZoomValue = FormMain.CmbZoom.ListIndex
-        If FormMain.CmbZoom.ListIndex = 0 Then
-            FormMain.cmdZoomIn.Enabled = False
-        Else
-            If Not FormMain.cmdZoomIn.Enabled Then FormMain.cmdZoomIn.Enabled = True
-        End If
-        If FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListCount - 1 Then
-            FormMain.cmdZoomOut.Enabled = False
-        Else
-            If Not FormMain.cmdZoomOut.Enabled Then FormMain.cmdZoomOut.Enabled = True
-        End If
-        PrepareViewport FormMain.ActiveForm, "zoom changed by user"
-    End If
-    
-End Sub
-
-Private Sub cmdClose_Click()
-    Unload Me.ActiveForm
-End Sub
-
-Private Sub cmdOpen_Click()
-    Process "Open", True
-End Sub
-
-Private Sub cmdRedo_Click()
-    Process "Redo", , , False
-End Sub
-
-Private Sub cmdSave_Click()
-    Process "Save", , , False
-End Sub
-
-Private Sub cmdSaveAs_Click()
-    Process "Save as", True, , False
-End Sub
-
-'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
-' rectangular tool selector as the current tool)
-Public Sub selectNewTool(ByVal newToolID As Long)
-    g_PreviousTool = g_CurrentTool
-    g_CurrentTool = newToolID
-    resetToolButtonStates
-End Sub
-
-Private Sub cmdTools_Click(Index As Integer)
-    g_PreviousTool = g_CurrentTool
-    g_CurrentTool = Index
-    resetToolButtonStates
-End Sub
-
-'Private Sub cmdTools_LostFocus(Index As Integer)
-    'g_CurrentTool = Index
-    'resetToolButtonStates
-'End Sub
-
-Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    g_CurrentTool = Index
-    resetToolButtonStates
-End Sub
-
-'When a new tool button is selected, we need to raise all the others and display the proper options box
-Public Sub resetToolButtonStates()
-    
-    'Start by depressing the selected button and raising all unselected ones
-    Dim i As Long
-    For i = 0 To cmdTools.Count - 1
-        SendMessageA cmdTools(i).hWnd, BM_SETSTATE, False, 0
-    Next i
-    SendMessageA cmdTools(g_CurrentTool).hWnd, BM_SETSTATE, True, 0
-    
-    'Next, we need to display the correct tool options panel.  There is no set pattern to this; some tools share
-    ' panels, but show/hide certain controls as necessary.  Other tools require their own unique panel.  I've tried
-    ' to strike a balance between "as few panels as possible" without going overboard.
-    Dim activeToolPanel As Long
-    
-    Select Case g_CurrentTool
-        
-        'Rectangular, Elliptical selections
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
-            activeToolPanel = 0
-        
-        Case Else
-        
-    End Select
-    
-    'If tools share the same panel, they may need to show or hide a few additional controls.  (For example,
-    ' "corner rounding", which is needed for rectangular selections but not elliptical ones, despite the two
-    ' sharing the same tool panel.)  Do this before showing or hiding the tool panel.
-    Select Case g_CurrentTool
-    
-        'For rectangular selections, show the rounded corners option
-        Case SELECT_RECT
-            FormMain.lblSelection(5).Visible = True
-            FormMain.sltCornerRounding.Visible = True
-            FormMain.sltSelectionLineWidth.Visible = False
-            
-        'For elliptical selections, hide the rounded corners option
-        Case SELECT_CIRC
-            FormMain.lblSelection(5).Visible = False
-            FormMain.sltCornerRounding.Visible = False
-            FormMain.sltSelectionLineWidth.Visible = False
-            
-        'Line selections also show the rounded corners slider, though they repurpose it for line width
-        Case SELECT_LINE
-            FormMain.lblSelection(5).Visible = True
-            FormMain.sltCornerRounding.Visible = False
-            FormMain.sltSelectionLineWidth.Visible = True
-        
-    End Select
-    
-    'Even if tools share the same panel, they may name controls differently, or use different max/min values.
-    ' Check for this, and apply new text and max/min settings as necessary.
-    Select Case g_CurrentTool
-    
-        'Rectangular and elliptical selections use rectangular bounding boxes and potential corner rounding
-        Case SELECT_RECT, SELECT_CIRC
-            lblSelection(1).Caption = g_Language.TranslateMessage("selection position")
-            lblSelection(2).Caption = g_Language.TranslateMessage("selection size")
-            lblSelection(5).Caption = g_Language.TranslateMessage("corner rounding")
-            'If (g_PreviousTool <> SELECT_RECT) And (g_PreviousTool <> SELECT_CIRC) Then
-                'If selectionsAllowed And (Not g_UndoRedoActive) Then Process "Remove selection", , , 2, g_PreviousTool
-                'If g_CurrentTool = SELECT_RECT Then sltCornerRounding.Value = 0
-            'End If
-            
-        'Line selections use two points, and the corner rounding slider gets repurposed as line width.
-        Case SELECT_LINE
-            'If selectionsAllowed And (Not g_UndoRedoActive) Then Process "Remove selection", , , 2, g_PreviousTool
-            lblSelection(1).Caption = g_Language.TranslateMessage("first point (x, y)")
-            lblSelection(2).Caption = g_Language.TranslateMessage("second point (x, y)")
-            lblSelection(5).Caption = g_Language.TranslateMessage("line width")
-            
-    End Select
-    
-    'Display the current tool options panel, while hiding all inactive ones
-    For i = 0 To picTools.Count - 1
-        If i = activeToolPanel Then
-            If Not picTools(i).Visible Then
-                picTools(i).Visible = True
-                setArrowCursorToObject picTools(i)
-            End If
-        Else
-            If picTools(i).Visible Then picTools(i).Visible = False
-        End If
-    Next i
-    
-    newToolSelected
-        
-End Sub
-
-'When a new tool is selected, we may need to initialize certain values
-Private Sub newToolSelected()
-    
-    Select Case g_CurrentTool
-    
-        'Rectangular, elliptical selections
-        Case SELECT_RECT
-                
-            'If a similar selection is already active, change its shape to match the current tool, then redraw it
-            If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
-                If (g_PreviousTool = SELECT_CIRC) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle) Then
-                    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
-                    RenderViewport FormMain.ActiveForm
-                Else
-                    If pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle Then
-                        metaToggle tSelectionTransform, True
-                    Else
-                        metaToggle tSelectionTransform, False
-                    End If
-                End If
-            End If
-            
-        Case SELECT_CIRC
-        
-            'If a similar selection is already active, change its shape to match the current tool, then redraw it
-            If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
-                If (g_PreviousTool = SELECT_RECT) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
-                    pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionShape g_CurrentTool
-                    RenderViewport FormMain.ActiveForm
-                Else
-                    If pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle Then
-                        metaToggle tSelectionTransform, True
-                    Else
-                        metaToggle tSelectionTransform, False
-                    End If
-                End If
-            End If
-            
-        'Line selections
-        Case SELECT_LINE
-        
-            'Deactivate the position text boxes - those shouldn't be accessible unless a line selection is presently active
-            If selectionsAllowed(True) Then
-                If pdImages(CurrentImage).mainSelection.getSelectionShape = sLine Then
-                    metaToggle tSelectionTransform, True
-                Else
-                    metaToggle tSelectionTransform, False
-                End If
-            Else
-                metaToggle tSelectionTransform, False
-            End If
-            
-        Case Else
-        
-    End Select
-    
-End Sub
-
-Private Sub cmdUndo_Click()
-    Process "Undo", , , False
-End Sub
-
-Private Sub cmdZoomIn_Click()
-    FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
-End Sub
-
-Private Sub cmdZoomOut_Click()
-    FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
-End Sub
-
-Private Sub lastUsedSettings_AddCustomPresetData()
-    
-    'Write the currently selected selection tool to file
-    lastUsedSettings.addPresetData "ActiveSelectionTool", g_CurrentTool
-    
-End Sub
-
-Private Sub lastUsedSettings_ReadCustomPresetData()
-
-    'Restore the last-used selection tool (which will be saved in the main form's preset file, if it exists)
-    g_PreviousTool = -1
-    If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) > 0 Then
-        g_CurrentTool = CLng(lastUsedSettings.retrievePresetData("ActiveSelectionTool"))
-    Else
-        g_CurrentTool = SELECT_RECT
-    End If
-    cmdTools_Click CInt(g_CurrentTool)
-    
-    'The save/load preset control will save/load values of a number of controls that don't need to be saved.
-    ' Reset those controls now.
-    CmbZoom.ListIndex = ZoomIndex100
-    
-    Dim i As Long
-    For i = 0 To tudSel.Count - 1
-        tudSel(i) = 0
-    Next i
-
-End Sub
 
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
@@ -2267,43 +1111,43 @@ Private Sub MDIForm_Load()
     'Hide the selection tools
     metaToggle tSelection, False
     
-    'Render images to the toolbox command buttons
-    Dim i As Long
-    
-    'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
-    Set cImgCtl = New clsControlImage
-    If g_IsProgramCompiled Then
-        
-        'Remove all tool button captions
-        For i = 0 To cmdTools.Count - 1
-            cmdTools(i).Caption = ""
-        Next i
-        
-        With cImgCtl
-            
-            'Load the tool images (in PNG format) from the resource file
-            .LoadImageFromStream cmdTools(0).hWnd, LoadResData("T_SELRECT", "CUSTOM"), 22, 22
-            .LoadImageFromStream cmdTools(1).hWnd, LoadResData("T_SELCIRCLE", "CUSTOM"), 22, 22
-            .LoadImageFromStream cmdTools(2).hWnd, LoadResData("T_SELLINE", "CUSTOM"), 22, 22
-            
-            'Center-align the images in their respective buttons
-            For i = 0 To cmdTools.Count - 1
-                .SetMargins cmdTools(i).hWnd, 0
-                .Align(cmdTools(i).hWnd) = Icon_Center
-                
-                'On XP, the tool command button images aren't aligned properly until the buttons are hovered.  No one
-                ' knows why.  We can imitate a hover with a click - do so now.
-                If Not g_IsVistaOrLater Then cmdTools_Click CInt(i)
-            Next i
-            
-        End With
-    End If
+
             
     'After the program has been successfully loaded, change the focus to the Open Image button
     Me.Visible = True
-    If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
+    'If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
+    
+    'Now that the main form is visible, we can load all tool windows.
+    
+    'If this is the first time the program is being run, manually position the tool windows in usable places
+    If g_IsFirstRun Or (Not g_UserPreferences.doesValueExist("Tools", toolbar_Main.Name & "_Visible")) Then
+    
+        'By default, set the primary toolbar to immediately inside the MDI client area, in the top-left corner
+        g_WindowManager.requestIdealPosition toolbar_Main.hWnd, 0
+        toolbar_Main.Show vbModeless, Me
         
+        'By default, set the selection toolbar to immediately inside the MDI client area, in the top-right corner
+        g_WindowManager.requestIdealPosition toolbar_Selections.hWnd, 1
+        toolbar_Selections.Show vbModeless, Me
+        
+    'If this is not first-run, check each tool window, and if it was previously visible, load and position it accordingly.
+    Else
+    
+        'Main toolbar
+        'If g_UserPreferences.GetPref_Boolean("Tools", toolbar_Main.Name & "_Visible", True) Then
+        
+        'End If
+    
+    End If
+    
+    'Now that all toolbars are properly positioned, register them with the window manager
+    g_WindowManager.registerToolbarHwnd toolbar_Main.hWnd
+    g_WindowManager.registerToolbarHwnd toolbar_Selections.hWnd
+    
+    
+    
+    
+    
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
     
@@ -2416,12 +1260,7 @@ Private Sub MDIForm_Load()
         End If
     
     End If
-    
-    'Load the last-used settings for the main form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
-    
+        
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
     'Render the main form with any extra visual styles we've decided to apply
@@ -2491,10 +1330,7 @@ End Sub
 'If the user is attempting to close the program, run some checks
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
 Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-    
-    'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    
+        
     'If the histogram form is open, close it
     Unload FormHistogram
     
@@ -3221,11 +2057,6 @@ Private Sub mnuLanguages_Click(Index As Integer)
     
 End Sub
 
-'The user can toggle the appearance of the left-hand panel from this menu.  This toggle is also stored in the preferences file.
-Private Sub MnuLeftPanel_Click()
-    ChangeLeftPane VISIBILITY_TOGGLE
-End Sub
-
 Private Sub MnuLighting_Click(Index As Integer)
 
     Select Case Index
@@ -3430,7 +2261,6 @@ Private Sub MnuNoise_Click(Index As Integer)
         
 End Sub
 
-
 Private Sub MnuPlayMacroRecording_Click()
     Process "Play macro", True
 End Sub
@@ -3458,10 +2288,6 @@ Public Sub mnuRecDocs_Click(Index As Integer)
         PreLoadImage sFile
     End If
     
-End Sub
-
-Private Sub MnuRightPanel_Click()
-    ChangeRightPane VISIBILITY_TOGGLE
 End Sub
 
 'All rotation actions are initiated here
@@ -3579,23 +2405,23 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
     Select Case Index
     
         Case 0
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 2
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 2
         Case 1
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 4
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 4
         Case 2
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 8
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 8
         Case 3
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 10
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 10
         Case 4
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = ZoomIndex100
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZoomIndex100
         Case 5
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 14
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 14
         Case 6
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 16
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 16
         Case 7
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 19
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 19
         Case 8
-            If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 21
     End Select
 
 End Sub
@@ -3803,50 +2629,50 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Zoom in
     If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
-        If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+        If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex > 0 Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
     End If
     
     'Zoom out
     If ctlAccelerator.Key(nIndex) = "Zoom_Out" Then
-        If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+        If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex < (toolbar_Main.CmbZoom.ListCount - 1) Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
     End If
     
     'Actual size
     If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = ZoomIndex100
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZoomIndex100
     End If
     
     'Various zoom values
     If ctlAccelerator.Key(nIndex) = "Zoom_161" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 2
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 2
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_81" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 4
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 4
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_41" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 8
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 8
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_21" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 10
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 10
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_12" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 14
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 14
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_14" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 16
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 16
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_18" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 19
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 19
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
-        If FormMain.CmbZoom.Enabled Then FormMain.CmbZoom.ListIndex = 21
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 21
     End If
     
     'Remove selection
@@ -3980,22 +2806,12 @@ Private Sub MnuWindow_Click(Index As Integer)
 End Sub
 
 Private Sub MnuZoomIn_Click()
-    If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex > 0 Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex - 1
+    If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex > 0 Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.CmbZoom.Enabled And FormMain.CmbZoom.ListIndex < (FormMain.CmbZoom.ListCount - 1) Then FormMain.CmbZoom.ListIndex = FormMain.CmbZoom.ListIndex + 1
+    If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex < (toolbar_Main.CmbZoom.ListCount - 1) Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
 End Sub
-
-'When the form is resized, the left-hand bar needs to be manually redrawn.  Unfortunately, VB doesn't trigger
-' the Resize() event properly for MDI parent forms, so we use the picLeftPane resize event instead.
-Private Sub picLeftPane_Resize()
-    
-    'When this main form is resized, reapply any custom visual styles
-    If FormMain.Visible Then RedrawMainForm
-    
-End Sub
-
 
 'When the form is resized, the progress bar at bottom needs to be manually redrawn.  Unfortunately, VB doesn't trigger
 ' the Resize() event properly for MDI parent forms, so we use the pic_ProgBar resize event instead.
@@ -4005,56 +2821,6 @@ Private Sub picProgBar_Resize()
     If FormMain.Visible Then RedrawMainForm
     
 End Sub
-
-Private Sub sltCornerRounding_Change()
-    If selectionsAllowed(True) Then
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
-        RenderViewport FormMain.ActiveForm
-    End If
-End Sub
-
-Private Sub sltSelectionBorder_Change()
-    If selectionsAllowed(False) Then
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setBorderSize sltSelectionBorder.Value
-        RenderViewport FormMain.ActiveForm
-    End If
-End Sub
-
-Private Sub sltSelectionFeathering_Change()
-    If selectionsAllowed(False) Then
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
-        RenderViewport FormMain.ActiveForm
-    End If
-End Sub
-
-Private Sub sltSelectionLineWidth_Change()
-    If selectionsAllowed(True) Then
-        pdImages(FormMain.ActiveForm.Tag).mainSelection.setSelectionLineWidth sltSelectionLineWidth.Value
-        RenderViewport FormMain.ActiveForm
-    End If
-End Sub
-
-Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
-    If NumOfWindows > 0 Then
-        If pdImages(FormMain.ActiveForm.Tag).selectionActive And (Not pdImages(FormMain.ActiveForm.Tag).mainSelection Is Nothing) And (Not pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests) Then
-            
-            If transformableMatters Then
-                If pdImages(FormMain.ActiveForm.Tag).mainSelection.isTransformable Then
-                    selectionsAllowed = True
-                Else
-                    selectionsAllowed = False
-                End If
-            Else
-                selectionsAllowed = True
-            End If
-            
-        Else
-            selectionsAllowed = False
-        End If
-    Else
-        selectionsAllowed = False
-    End If
-End Function
 
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
 Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
@@ -4116,51 +2882,3 @@ Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
     
     makeFormPretty Me, m_ToolTip, , useDoEvents
 End Sub
-
-'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the
-' panel concise and clean, we move other controls up or down depending on what controls are visible.
-Private Sub updateSelectionPanelLayout()
-
-    'Display the feathering slider as necessary
-    If cmbSelSmoothing(0).ListIndex = sFullyFeathered Then
-        sltSelectionFeathering.Visible = True
-        lblSelection(4).Top = sltSelectionFeathering.Top + fixDPI(38)
-    Else
-        sltSelectionFeathering.Visible = False
-        lblSelection(4).Top = cmbSelSmoothing(0).Top + fixDPI(34)
-    End If
-    cmbSelType(0).Top = lblSelection(4).Top + fixDPI(24)
-    sltSelectionBorder.Top = cmbSelType(0).Top + fixDPI(26)
-
-    'Display the border slider as necessary
-    If cmbSelType(0).ListIndex = sBorder Then
-        sltSelectionBorder.Visible = True
-        lblSelection(5).Top = sltSelectionBorder.Top + fixDPI(38)
-    Else
-        sltSelectionBorder.Visible = False
-        lblSelection(5).Top = cmbSelType(0).Top + fixDPI(34)
-    End If
-    sltCornerRounding.Top = lblSelection(5).Top + fixDPI(24)
-    sltSelectionLineWidth.Top = lblSelection(5).Top + fixDPI(24)
-
-End Sub
-
-'When the selection text boxes are updated, change the scrollbars to match
-Private Sub tudSel_Change(Index As Integer)
-    updateSelectionsValuesViaText
-End Sub
-
-Private Sub updateSelectionsValuesViaText()
-    If selectionsAllowed(True) Then
-        If Not pdImages(FormMain.ActiveForm.Tag).mainSelection.rejectRefreshRequests Then
-            pdImages(FormMain.ActiveForm.Tag).mainSelection.updateViaTextBox
-            RenderViewport FormMain.ActiveForm
-        End If
-    End If
-End Sub
-
-'This beautiful little function comes courtesy of coder Merri:
-' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
-Private Function InControlArray(Ctl As Object) As Boolean
-    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
-End Function

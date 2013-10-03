@@ -217,3 +217,5 @@ End Type
 ' it can't be initialized!
 Public g_GDIPlusAvailable As Boolean
 
+'PhotoDemon's primary window manager. This handles things like positioning of tool windows.
+Public g_WindowManager As pdWindowManager

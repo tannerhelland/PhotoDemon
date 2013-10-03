@@ -152,21 +152,21 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Open (left-hand panel button AND menu item)
         Case tOpen
             If FormMain.MnuFile(0).Enabled <> newState Then
-                FormMain.cmdOpen.Enabled = newState
+                toolbar_Main.cmdOpen.Enabled = newState
                 FormMain.MnuFile(0).Enabled = newState
             End If
             
         'Save (left-hand panel button AND menu item)
         Case tSave
             If FormMain.MnuFile(4).Enabled <> newState Then
-                FormMain.cmdSave.Enabled = newState
+                toolbar_Main.cmdSave.Enabled = newState
                 FormMain.MnuFile(4).Enabled = newState
             End If
             
         'Save As (menu item only)
         Case tSaveAs
             If FormMain.MnuFile(5).Enabled <> newState Then
-                FormMain.cmdSaveAs.Enabled = newState
+                toolbar_Main.cmdSaveAs.Enabled = newState
                 FormMain.MnuFile(5).Enabled = newState
             End If
         
@@ -181,16 +181,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Undo (left-hand panel button AND menu item)
         Case tUndo
             If FormMain.MnuEdit(0).Enabled <> newState Then
-                FormMain.cmdUndo.Enabled = newState
+                toolbar_Main.cmdUndo.Enabled = newState
                 FormMain.MnuEdit(0).Enabled = newState
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                FormMain.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID
+                toolbar_Main.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             Else
-                FormMain.cmdUndo.ToolTip = ""
+                toolbar_Main.cmdUndo.ToolTip = ""
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             End If
@@ -222,17 +222,17 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Redo (left-hand panel button AND menu item)
         Case tRedo
             If FormMain.MnuEdit(1).Enabled <> newState Then
-                FormMain.cmdRedo.Enabled = newState
+                toolbar_Main.cmdRedo.Enabled = newState
                 FormMain.MnuEdit(1).Enabled = newState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                FormMain.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID
+                toolbar_Main.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             Else
-                FormMain.cmdRedo.ToolTip = ""
+                toolbar_Main.cmdRedo.ToolTip = ""
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             End If
@@ -254,16 +254,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'If selections are not active, clear all the selection value textboxes
             If Not newState Then
-                For i = 0 To FormMain.tudSel.Count - 1
-                    FormMain.tudSel(i).Value = 0
+                For i = 0 To toolbar_Selections.tudSel.Count - 1
+                    toolbar_Selections.tudSel(i).Value = 0
                 Next i
             End If
             
             'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
             ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
             ' actually draw a selection, it already has the attributes they want.
-            For i = 0 To FormMain.tudSel.Count - 1
-                FormMain.tudSel(i).Enabled = newState
+            For i = 0 To toolbar_Selections.tudSel.Count - 1
+                toolbar_Selections.tudSel(i).Enabled = newState
             Next i
                                     
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -290,8 +290,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To FormMain.tudSel.Count - 1
-                FormMain.tudSel(i).Enabled = newState
+            For i = 0 To toolbar_Selections.tudSel.Count - 1
+                toolbar_Selections.tudSel(i).Enabled = newState
             Next i
         
         '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
@@ -613,10 +613,10 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
             'Toggle the text and picture box accordingly
             If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
                 FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
-                FormMain.picLeftPane.Visible = False
+                'FormMain.picLeftPane.Visible = False
             Else
                 FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
-                FormMain.picLeftPane.Visible = True
+                'FormMain.picLeftPane.Visible = True
             End If
     
             'Ask the menu icon handler to redraw the menu image with the new icon
@@ -624,11 +624,11 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
         
         Case VISIBILITY_FORCEDISPLAY
             FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
-            FormMain.picLeftPane.Visible = True
+            'FormMain.picLeftPane.Visible = True
             
         Case VISIBILITY_FORCEHIDE
             FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
-            FormMain.picLeftPane.Visible = False
+            'FormMain.picLeftPane.Visible = False
             
     End Select
 
@@ -646,10 +646,10 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
             'Toggle the text and picture box accordingly
             If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
                 FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
-                FormMain.picRightPane.Visible = False
+                'FormMain.picRightPane.Visible = False
             Else
                 FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
-                FormMain.picRightPane.Visible = True
+                'FormMain.picRightPane.Visible = True
             End If
     
             'Ask the menu icon handler to redraw the menu image with the new icon
@@ -657,11 +657,11 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
         
         Case VISIBILITY_FORCEDISPLAY
             FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
-            FormMain.picRightPane.Visible = True
+            'FormMain.picRightPane.Visible = True
             
         Case VISIBILITY_FORCEHIDE
             FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
-            FormMain.picRightPane.Visible = False
+            'FormMain.picRightPane.Visible = False
             
     End Select
 
@@ -679,15 +679,15 @@ Public Sub RedrawMainForm()
 
     'Draw a subtle gradient on either pane if visible.
     ' NOTE: this is momentarily disabled as part of tool implementation.  I may revisit it in the future.
-    If FormMain.picLeftPane.Visible Then
-        FormMain.picLeftPane.Refresh
+    'If FormMain.picLeftPane.Visible Then
+        'FormMain.picLeftPane.Refresh
         'DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
-    End If
+    'End If
     
-    If FormMain.picRightPane.Visible Then
-        FormMain.picRightPane.Refresh
+    'If FormMain.picRightPane.Visible Then
+        'FormMain.picRightPane.Refresh
         'DrawGradient FormMain.picRightPane, RGB(201, 211, 226), RGB(240, 240, 240), True
-    End If
+    'End If
     
     'Redraw the progress bar
     FormMain.picProgBar.Refresh
@@ -698,19 +698,19 @@ End Sub
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     
-    FormMain.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
-    FormMain.lblImgSize.Refresh
+    toolbar_Main.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
+    toolbar_Main.lblImgSize.Refresh
     
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
     ' now is an excellent time to update them.
     If iWidth < iHeight Then
-        FormMain.sltSelectionBorder.Max = iWidth
-        FormMain.sltCornerRounding.Max = iWidth
-        FormMain.sltSelectionLineWidth.Max = iHeight
+        toolbar_Selections.sltSelectionBorder.Max = iWidth
+        toolbar_Selections.sltCornerRounding.Max = iWidth
+        toolbar_Selections.sltSelectionLineWidth.Max = iHeight
     Else
-        FormMain.sltSelectionBorder.Max = iHeight
-        FormMain.sltCornerRounding.Max = iHeight
-        FormMain.sltSelectionLineWidth.Max = iWidth
+        toolbar_Selections.sltSelectionBorder.Max = iHeight
+        toolbar_Selections.sltCornerRounding.Max = iHeight
+        toolbar_Selections.sltSelectionLineWidth.Max = iWidth
     End If
     
 End Sub
@@ -825,8 +825,8 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    FormMain.lblCoordinates.Caption = ""
-    FormMain.lblCoordinates.Refresh
+    toolbar_Main.lblCoordinates.Caption = ""
+    toolbar_Main.lblCoordinates.Refresh
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.

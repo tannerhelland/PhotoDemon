@@ -125,8 +125,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         hDif = FormMain.ActiveForm.Height - FormMain.ActiveForm.ScaleHeight
         
         'Now we set the form dimensions to match the image's
-        curWidth = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * g_Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
-        curHeight = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * g_Zoom.ZoomArray(FormMain.CmbZoom.ListIndex))
+        curWidth = wDif + ((Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
+        curHeight = hDif + ((Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
         
         'There is a possibility that after a transformation (such as a rotation), part of the image may be off the screen.
         ' Start by populating some coordinate variables, which will be generated differently contingent on the image
@@ -319,7 +319,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     End If
     
     'Change the zoom combo box to reflect the new zoom value (or the default, if no changes were made)
-    FormMain.CmbZoom.ListIndex = zVal
+    toolbar_Main.CmbZoom.ListIndex = zVal
     pdImages(CurrentImage).CurrentZoomValue = zVal
     
     'Set the scalemode back to a decent value
@@ -376,7 +376,7 @@ Public Sub FitOnScreen()
             Exit For
         End If
     Next X
-    FormMain.CmbZoom.ListIndex = zVal
+    toolbar_Main.CmbZoom.ListIndex = zVal
     pdImages(CurrentImage).CurrentZoomValue = zVal
     
     'Set the scalemode back to pixels
@@ -420,23 +420,23 @@ Public Sub UpdateMDIStatus()
         metaToggle tSelection, False
         FormMain.MnuFile(7).Enabled = False
         FormMain.MnuFile(8).Enabled = False
-        FormMain.cmdClose.Enabled = False
+        toolbar_Main.cmdClose.Enabled = False
         FormMain.MnuFitWindowToImage.Enabled = False
         FormMain.MnuFitOnScreen.Enabled = False
-        If FormMain.CmbZoom.Enabled = True Then
-            FormMain.CmbZoom.Enabled = False
+        If toolbar_Main.CmbZoom.Enabled And toolbar_Main.Visible Then
+            toolbar_Main.CmbZoom.Enabled = False
             'FormMain.lblLeftToolBox(3).ForeColor = &H606060
-            FormMain.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
-            FormMain.cmdZoomIn.Enabled = False
-            FormMain.cmdZoomOut.Enabled = False
+            toolbar_Main.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
+            toolbar_Main.cmdZoomIn.Enabled = False
+            toolbar_Main.cmdZoomOut.Enabled = False
         End If
         
-        FormMain.lblImgSize.ForeColor = &HD1B499
-        FormMain.lblCoordinates.ForeColor = &HD1B499
+        toolbar_Main.lblImgSize.ForeColor = &HD1B499
+        toolbar_Main.lblCoordinates.ForeColor = &HD1B499
         
-        FormMain.lblImgSize.Caption = ""
+        toolbar_Main.lblImgSize.Caption = ""
         
-        FormMain.lblCoordinates.Caption = ""
+        toolbar_Main.lblCoordinates.Caption = ""
         
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
@@ -486,17 +486,17 @@ Public Sub UpdateMDIStatus()
         metaToggle tMacro, True
         metaToggle tRepeatLast, pdImages(CurrentImage).RedoState
         FormMain.MnuFile(7).Enabled = True
-        FormMain.cmdClose.Enabled = True
+        toolbar_Main.cmdClose.Enabled = True
         FormMain.MnuFile(8).Enabled = True
         FormMain.MnuFitWindowToImage.Enabled = True
         FormMain.MnuFitOnScreen.Enabled = True
-        FormMain.lblImgSize.ForeColor = &H544E43
-        FormMain.lblCoordinates.ForeColor = &H544E43
-        If FormMain.CmbZoom.Enabled = False Then
-            FormMain.CmbZoom.Enabled = True
+        toolbar_Main.lblImgSize.ForeColor = &H544E43
+        toolbar_Main.lblCoordinates.ForeColor = &H544E43
+        If toolbar_Main.CmbZoom.Enabled = False Then
+            toolbar_Main.CmbZoom.Enabled = True
             'FormMain.lblLeftToolBox(3).ForeColor = &H544E43
-            FormMain.cmdZoomIn.Enabled = True
-            FormMain.cmdZoomOut.Enabled = True
+            toolbar_Main.cmdZoomIn.Enabled = True
+            toolbar_Main.cmdZoomOut.Enabled = True
         End If
     End If
     
