@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   11760
       Top             =   600
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1253,7 +1253,9 @@ Private Sub Form_Load()
     
     'Render the main form with any extra visual styles we've decided to apply
     RedrawMainForm
-        
+    
+    MsgBox "WARNING!  PhotoDemon's current interface is undergoing a huge overhaul.  As long as this message remains, the program may not work as expected.  I've suspended nightly builds for now, but if you've downloaded this from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the 6.0 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.2 Development Warning"
+    
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
     
