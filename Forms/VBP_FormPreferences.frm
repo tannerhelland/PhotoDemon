@@ -2461,7 +2461,7 @@ Private Sub CmdOK_Click()
         
             'If the dynamic taskbar icon preference has changed, reset the main form icon now
             If Not CBool(chkTaskBarIcon) And g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
-                setNewTaskbarIcon origIcon32
+                setNewTaskbarIcon origIcon32, FormMain.hWnd
                 setNewAppIcon origIcon16
             End If
             g_UserPreferences.SetPref_Boolean "Interface", "Dynamic Taskbar Icon", CBool(chkTaskBarIcon)

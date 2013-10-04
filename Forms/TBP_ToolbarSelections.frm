@@ -530,7 +530,7 @@ Private Sub Form_Activate()
         'Load any last-used settings for this form
         Set lastUsedSettings = New pdLastUsedSettings
         lastUsedSettings.setParentForm Me
-        lastUsedSettings.loadAllControlValues
+        'lastUsedSettings.loadAllControlValues
         
     End If
 
@@ -539,7 +539,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
+    'lastUsedSettings.saveAllControlValues
 
 End Sub
 
@@ -631,7 +631,7 @@ End Sub
     'resetToolButtonStates
 'End Sub
 
-Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     g_CurrentTool = Index
     resetToolButtonStates
 End Sub
@@ -826,6 +826,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+    g_WindowManager.unregisterChildHwnd Me.hWnd
 End Sub
 
 Private Sub sltCornerRounding_Change()

@@ -40,10 +40,6 @@ ZOOMOUT      CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_out.png
 ZOOMACTUAL   CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_actual_equal.png
 FITWINIMG    CUSTOM  MOVEABLE        LOADONCALL      layer_resize_actual.png
 FITONSCREEN  CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_fit.png
-LEFTPANHIDE  CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_collapse.png
-LEFTPANSHOW  CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_expand.png
-RIGHTPANHIDE CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_collapse_right.png
-RIGHTPANSHOW CUSTOM  MOVEABLE        LOADONCALL      application_sidebar_expand_right.png
 
 
 //Image menu
@@ -249,7 +245,6 @@ PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
 TILEHOR      CUSTOM  MOVEABLE        LOADONCALL      application_tile_horizontal.png
 TILEVER      CUSTOM  MOVEABLE        LOADONCALL      application_tile_vertical.png
 CASCADE      CUSTOM  MOVEABLE        LOADONCALL      application_cascade.png
-ARNGICONS    CUSTOM  MOVEABLE        LOADONCALL      application_view_tile.png
 MINALL       CUSTOM  MOVEABLE        LOADONCALL      minimize_all.png
 RESTOREALL   CUSTOM  MOVEABLE        LOADONCALL      restore_all.png
 NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png

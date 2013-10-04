@@ -430,10 +430,10 @@ Private Sub LoadImagesFromCommandLine()
         Dim tChar As String
         
         'Scan the command line one character at a time
-        Dim X As Long
-        For X = 1 To Len(g_CommandLine)
+        Dim x As Long
+        For x = 1 To Len(g_CommandLine)
             
-            tChar = Mid(g_CommandLine, X, 1)
+            tChar = Mid(g_CommandLine, x, 1)
                 
             'If the current character is a quotation mark, change inQuotes to specify that we are either inside
             ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -445,11 +445,11 @@ Private Sub LoadImagesFromCommandLine()
                     
                 '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                 ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, X - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - X)
+                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, x - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - x)
                     
             End If
             
-        Next X
+        Next x
             
         'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
         ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -458,10 +458,10 @@ Private Sub LoadImagesFromCommandLine()
             
         'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
         ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-        For X = 0 To UBound(sFile)
-            sFile(X) = Replace$(sFile(X), Chr(42), Chr(32))
-            sFile(X) = Replace$(sFile(X), Chr(34), "")
-        Next X
+        For x = 0 To UBound(sFile)
+            sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
+            sFile(x) = Replace$(sFile(x), Chr(34), "")
+        Next x
         
     End If
         
@@ -908,13 +908,17 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If pdImages(CurrentImage).containingForm.WindowState = 0 Then
                 pdImages(CurrentImage).containingForm.Left = targetImage.WindowLeft
                 pdImages(CurrentImage).containingForm.Top = targetImage.WindowTop
+                'MsgBox targetImage.WindowLeft & "," & targetImage.WindowTop
             End If
             
             'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
             ' bottom edges don't fall outside the MDI client area
             'If the user wants us to resize the image to fit on-screen, do that now
             If g_AutosizeLargeImages = 1 Then FitWindowToViewport
-        
+            
+            'Register this window with PhotoDemon's window manager
+            g_WindowManager.registerChildHwnd pdImages(CurrentImage).containingForm.hWnd, IMAGE_WINDOW
+                        
             'Finally, add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
         
