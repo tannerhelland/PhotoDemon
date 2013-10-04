@@ -34,7 +34,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -220,8 +220,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "ZOOMIN", 2, 3         'Zoom In
     AddMenuIcon "ZOOMOUT", 2, 4        'Zoom Out
     AddMenuIcon "ZOOMACTUAL", 2, 10    'Zoom 100%
-    AddMenuIcon "LEFTPANSHOW", 2, 16   'Show/Hide the left-hand panel
-    AddMenuIcon "RIGHTPANSHOW", 2, 17  'Show/Hide the right-hand panel
     
     'Image Menu
     AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
@@ -424,12 +422,11 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Window Menu
     AddMenuIcon "NEXTIMAGE", 8, 0       'Next image
     AddMenuIcon "PREVIMAGE", 8, 1       'Previous image
-    AddMenuIcon "ARNGICONS", 8, 3       'Arrange Icons
-    AddMenuIcon "CASCADE", 8, 4         'Cascade
-    AddMenuIcon "TILEVER", 8, 5         'Tile Horizontally
-    AddMenuIcon "TILEHOR", 8, 6         'Tile Vertically
-    AddMenuIcon "MINALL", 8, 8          'Minimize All
-    AddMenuIcon "RESTOREALL", 8, 9      'Restore All
+    AddMenuIcon "CASCADE", 8, 3         'Cascade
+    AddMenuIcon "TILEVER", 8, 4         'Tile Horizontally
+    AddMenuIcon "TILEHOR", 8, 5         'Tile Vertically
+    AddMenuIcon "MINALL", 8, 7          'Minimize All
+    AddMenuIcon "RESTOREALL", 8, 8      'Restore All
     
     'Help Menu
     AddMenuIcon "FAVORITE", 9, 0        'Donate
@@ -484,7 +481,9 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     posModifier = 0
 
     If NumOfWindows > 0 Then
-        If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
+        If Not (pdImages(CurrentImage).containingForm Is Nothing) Then
+            If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
+        End If
     End If
     
     'Place the icon onto the requested menu
@@ -543,7 +542,9 @@ Public Sub ResetMenuIcons()
         posModifier = 0
     
         If NumOfWindows > 0 Then
-            If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
+            If Not (pdImages(CurrentImage).containingForm Is Nothing) Then
+                If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
+            End If
         End If
     
         cMRUIcons.Clear
@@ -696,7 +697,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
             generatedIcon = CreateIconIndirect(icoInfo)
             
             'Assign it to the taskbar
-            setNewTaskbarIcon generatedIcon
+            setNewTaskbarIcon generatedIcon, imgForm.hWnd
             
             '...and remember it in our current icon collection
             addIconToList generatedIcon

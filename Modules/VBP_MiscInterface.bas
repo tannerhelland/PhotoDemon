@@ -610,24 +610,18 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
             'Write the new value to the preferences files
             g_UserPreferences.SetPref_Boolean "Core", "Hide Left Panel", Not g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False)
 
-            'Toggle the text and picture box accordingly
-            If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
-                FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
-                'FormMain.picLeftPane.Visible = False
-            Else
-                FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
-                'FormMain.picLeftPane.Visible = True
-            End If
+            'Toggle the text and picture box accordingly, using the preference we just stored
+            
     
             'Ask the menu icon handler to redraw the menu image with the new icon
             ResetMenuIcons
         
         Case VISIBILITY_FORCEDISPLAY
-            FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
+            'FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
             'FormMain.picLeftPane.Visible = True
             
         Case VISIBILITY_FORCEHIDE
-            FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
+            'FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
             'FormMain.picLeftPane.Visible = False
             
     End Select
@@ -643,24 +637,17 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
             'Write the new value to the preferences file
             g_UserPreferences.SetPref_Boolean "Core", "Hide Right Panel", Not g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False)
 
-            'Toggle the text and picture box accordingly
-            If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
-                FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
-                'FormMain.picRightPane.Visible = False
-            Else
-                FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
-                'FormMain.picRightPane.Visible = True
-            End If
+            'Toggle the text and picture box accordingly, using the preference we just stored
     
             'Ask the menu icon handler to redraw the menu image with the new icon
             ResetMenuIcons
         
         Case VISIBILITY_FORCEDISPLAY
-            FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
+            'FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
             'FormMain.picRightPane.Visible = True
             
         Case VISIBILITY_FORCEHIDE
-            FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
+            'FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
             'FormMain.picRightPane.Visible = False
             
     End Select
@@ -846,7 +833,7 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.X
+    getPixelWidthOfString = txtSize.x
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long

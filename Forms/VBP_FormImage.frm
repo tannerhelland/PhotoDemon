@@ -19,12 +19,10 @@ Begin VB.Form FormImage
    EndProperty
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
-   MDIChild        =   -1  'True
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   153
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   362
-   ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.HScrollBar HScroll 
       Height          =   255
@@ -126,6 +124,8 @@ Public Sub ActivateWorkaround()
     'Update the current form variable
     CurrentImage = Val(Me.Tag)
     
+    g_WindowManager.notifyChildReceivedFocus Me.hWnd
+    
     'If possible, set focus to this window
     'NOTE: this throws inexplicable RTEs, so leave it uncommented until debugged.
     'If Me.Visible Then Me.SetFocus
@@ -138,9 +138,9 @@ Public Sub ActivateWorkaround()
     'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
     If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) And (MacroStatus <> MacroBATCH) Then
         If pdImages(CurrentImage).curFormIcon32 <> 0 Then
-            setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32
+            setNewTaskbarIcon pdImages(CurrentImage).curFormIcon32, pdImages(CurrentImage).containingForm.hWnd
         Else
-            setNewTaskbarIcon origIcon32
+            setNewTaskbarIcon origIcon32, FormMain.hWnd
             setNewAppIcon origIcon16
         End If
         If pdImages(CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(CurrentImage).curFormIcon16
@@ -206,20 +206,20 @@ Public Sub ActivateWorkaround()
 End Sub
 
 'Mousekey back triggers the same thing as clicking Undo
-Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     If pdImages(Me.Tag).IsActive Then
         If pdImages(Me.Tag).UndoState Then Process "Undo", , , False
     End If
 End Sub
 
 'Mousekey forward triggers the same thing as clicking Redo
-Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     If pdImages(Me.Tag).IsActive Then
         If pdImages(Me.Tag).RedoState Then Process "Redo", , , False
     End If
 End Sub
 
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
     If HScroll.Visible And (Not CtrlDown) Then
@@ -256,7 +256,7 @@ Private Sub cMouseEvents_MouseOut()
     If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
   
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If VScroll.Visible And (Not CtrlDown) Then
@@ -349,7 +349,7 @@ Private Sub Form_Load()
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
     Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach Me.hWnd, FormMain.hWnd
+    cMouseEvents.Attach Me.hWnd
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -358,7 +358,7 @@ Private Sub Form_Load()
 End Sub
 
 'Track which mouse buttons are pressed
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
@@ -380,11 +380,11 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
         hasMouseMoved = 0
             
         'Remember this location
-        m_initMouseX = X
-        m_initMouseY = Y
+        m_initMouseX = x
+        m_initMouseY = y
             
         'Display the image coordinates under the mouse pointer
-        displayImageCoordinates X, Y, Me, imgX, imgY
+        displayImageCoordinates x, y, Me, imgX, imgY
         
         'Any further processing depends on which tool is currently active
         
@@ -398,7 +398,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
                 
                     'Check the mouse coordinates of this click.
                     Dim sCheck As Long
-                    sCheck = findNearestSelectionCoordinates(X, Y, Me)
+                    sCheck = findNearestSelectionCoordinates(x, y, Me)
                     
                     'If that function did not return zero, notify the selection and exit
                     If (sCheck <> 0) And pdImages(Me.Tag).mainSelection.isTransformable Then
@@ -456,7 +456,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
         
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
@@ -482,7 +482,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
                 If pdImages(Me.Tag).selectionActive And pdImages(Me.Tag).mainSelection.isTransformable Then
                                         
                     'Display the image coordinates under the mouse pointer
-                    displayImageCoordinates X, Y, Me, imgX, imgY
+                    displayImageCoordinates x, y, Me, imgX, imgY
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
                     pdImages(Me.Tag).mainSelection.requestSquare ShiftDown
@@ -512,7 +512,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
                     'This routine will return a best estimate for the location of the mouse.  We then pass its value
                     ' to a sub that will use it to select the most appropriate mouse cursor.
                     Dim sCheck As Long
-                    sCheck = findNearestSelectionCoordinates(X, Y, Me)
+                    sCheck = findNearestSelectionCoordinates(x, y, Me)
                     
                     'Based on that return value, assign a new mouse cursor to the form
                     setSelectionCursor sCheck
@@ -524,7 +524,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
                 
                     'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                     ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                    If isMouseOverImage(X, Y, Me) Then
+                    If isMouseOverImage(x, y, Me) Then
                         setArrowCursor Me
                     Else
                         setArrowCursor Me
@@ -536,7 +536,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
         
                 'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                 ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                If isMouseOverImage(X, Y, Me) Then
+                If isMouseOverImage(x, y, Me) Then
                     setArrowCursor Me
                 Else
                     setArrowCursor Me
@@ -547,12 +547,12 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
     End If
         
     'Display the image coordinates under the mouse pointer (but only if this is the currently active image)
-    If Me.Tag = CurrentImage Then displayImageCoordinates X, Y, Me
+    If Me.Tag = CurrentImage Then displayImageCoordinates x, y, Me
     
 End Sub
 
 'Track which mouse buttons are released
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the image has not yet been loaded, exit
     If Not pdImages(Me.Tag).loadedSuccessfully Then Exit Sub
@@ -571,7 +571,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As 
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((X = m_initMouseX) And (Y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(X, Y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
+                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, Me) = 0)) Or ((pdImages(Me.Tag).mainSelection.selWidth <= 0) And (pdImages(Me.Tag).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , pdImages(Me.Tag).mainSelection.getSelectionParamString, 2, g_CurrentTool
                     Else
                     
@@ -630,7 +630,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As 
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -667,7 +667,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -708,6 +708,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                         End If
                     Next i
                 End If
+            
+                'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
+                If FormMain.Enabled Then Me.SetFocus
             
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
@@ -859,8 +862,11 @@ Private Sub Form_Unload(Cancel As Integer)
     UpdateMDIStatus
     
     ReleaseFormTheming Me
-        
-    'Before exiting, restore focus to some other MDI child. If we don't, Windows won't do it for us. This is a known
+    
+    'Notify the window manager that this hWnd will soon be dead - so stop subclassing it!
+    g_WindowManager.unregisterChildHwnd Me.hWnd
+    
+    'Before exiting, restore focus to some other child window. If we don't, Windows won't do it for us. This is a known
     ' problem - see http://support.microsoft.com/kb/190634
     If NumOfWindows > 0 Then
     
@@ -874,6 +880,9 @@ Private Sub Form_Unload(Cancel As Integer)
             End If
         Next i
     
+    'If this is the last window, we need to make the toolboxes children of the main form again.  Otherwise, they will be mistakenly unloaded.
+    Else
+        g_WindowManager.allImageWindowsUnloaded
     End If
     
     Message "Finished."
@@ -969,7 +978,7 @@ End Sub
 
 'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances for this form are referred
 ' to this function.  Initial X/Y values are required.
-Private Sub initSelectionByPoint(ByVal X As Double, ByVal Y As Double)
+Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
 
     'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
     ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
@@ -985,7 +994,7 @@ Private Sub initSelectionByPoint(ByVal X As Double, ByVal Y As Double)
     pdImages(Me.Tag).mainSelection.initFromParamString buildParams(g_CurrentTool, toolbar_Selections.cmbSelType(0).ListIndex, toolbar_Selections.cmbSelSmoothing(0).ListIndex, toolbar_Selections.sltSelectionFeathering.Value, toolbar_Selections.sltSelectionBorder.Value, toolbar_Selections.sltCornerRounding.Value, toolbar_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
     
     'Set the first two coordinates of this selection to this mouseclick's location
-    pdImages(Me.Tag).mainSelection.setInitialCoordinates X, Y
+    pdImages(Me.Tag).mainSelection.setInitialCoordinates x, y
     syncTextToCurrentSelection Me.Tag
     pdImages(Me.Tag).mainSelection.requestNewMask
         

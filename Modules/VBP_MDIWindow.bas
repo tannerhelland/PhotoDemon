@@ -66,12 +66,12 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     pdImages(NumOfImagesLoaded).CurrentZoomValue = ZoomIndex100   'Default zoom is 100%
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
-    pdImages(NumOfImagesLoaded).WindowLeft = newImageForm.Left
-    pdImages(NumOfImagesLoaded).WindowTop = newImageForm.Top
-    newImageForm.Left = FormMain.ScaleWidth
-    newImageForm.Top = FormMain.ScaleHeight
+    pdImages(NumOfImagesLoaded).WindowLeft = FormMain.Left + toolbar_Main.Width  'newImageForm.Left
+    pdImages(NumOfImagesLoaded).WindowTop = FormMain.Top + (FormMain.Height - FormMain.ScaleHeight)  'newImageForm.Top
+    newImageForm.Left = 0
+    newImageForm.Top = Screen.Height
     
-    newImageForm.Show
+    newImageForm.Show vbModeless, FormMain
     newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
     If FormMain.Enabled Then newImageForm.SetFocus
     
@@ -144,13 +144,13 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         
             'If we can solve the problem by simply moving the form upward, do that.
             If curHeight < FormMain.ScaleHeight Then
-                curTop = FormMain.ScaleHeight - curHeight
+                curTop = FormMain.Top + (FormMain.Height - FormMain.ScaleHeight)
         
             'If the image is taller than the MDI client area, we have a problem.  Move the image to the top of the
             ' MDI client area, then shrink the window vertically to force a scroll bar appearance.
             Else
-                curTop = 0
-                curHeight = FormMain.ScaleHeight
+                curTop = FormMain.Top - FormMain.ScaleHeight
+                curHeight = FormMain.ScaleHeight - FormMain.picProgBar.Height
                 forceMaxHeight = True
             End If
         
@@ -166,8 +166,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             'If the image is wider than the MDI client area, we have a problem.  Move the image to the far left of the
             ' MDI client area, then shrink the window horizontally to force a scroll bar appearance.
             Else
-                curLeft = 0
-                curWidth = FormMain.ScaleWidth
+                curLeft = FormMain.Left
+                curWidth = FormMain.ScaleWidth - (curLeft - FormMain.Left)
                 forceMaxWidth = True
             End If
        
@@ -187,7 +187,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             curHeight = curHeight + pdImages(CurrentImage).containingForm.HScroll.Height
             
             'If this addition pushes the image off-screen, nudge it slightly up
-            If curTop + curHeight > FormMain.ScaleHeight Then curTop = FormMain.ScaleHeight - curHeight
+            'If curTop + curHeight > FormMain.ScaleHeight Then curTop = FormMain.ScaleHeight - curHeight
             
         End If
         
@@ -211,7 +211,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
     ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
-    If suppressRendering = False Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToImage"
+    If Not suppressRendering Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToImage"
     
 End Sub
 
@@ -238,7 +238,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
             'This variable determines the difference between the MDI client area's available width and the current child form's
             ' width, taking into account the .Left position and an arbitrary offset (currently 12 pixels)
             Dim newWidth As Long
-            newWidth = FormMain.ScaleWidth - pdImages(CurrentImage).containingForm.Left - (12 * Screen.TwipsPerPixelX)
+            newWidth = FormMain.ScaleWidth - pdImages(CurrentImage).containingForm.Left - fixDPI(12) * Screen.TwipsPerPixelX
             pdImages(CurrentImage).containingForm.Width = newWidth
             
         End If
@@ -249,7 +249,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
             resizeNeeded = True
         
             Dim newHeight As Long
-            newHeight = FormMain.ScaleHeight - pdImages(CurrentImage).containingForm.Top - (12 * Screen.TwipsPerPixelY)
+            newHeight = FormMain.ScaleHeight - pdImages(CurrentImage).containingForm.Top - fixDPI(12) * Screen.TwipsPerPixelY
             pdImages(CurrentImage).containingForm.Height = newHeight
             
         End If
@@ -261,7 +261,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
     ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
-    If (suppressRendering = False) And resizeNeeded Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToViewport"
+    If (Not suppressRendering) And resizeNeeded Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToViewport"
     
 End Sub
 
@@ -290,18 +290,18 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     Dim zVal As Long
     zVal = ZoomIndex100
     
-    Dim X As Long
+    Dim x As Long
     
-    'First, let's check to see if we need to adjust zppm because the width is too big
+    'First, let's check to see if we need to adjust zoom because the width is too big
     If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width) > (FormMain.ScaleWidth - tDif) Then
         'If it is too big, run a loop backwards through the possible zoom values to see
         'if one will make it fit
-        For X = ZoomIndex100 To g_Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(X)) < (FormMain.ScaleWidth - tDif) Then
-                zVal = X
+        For x = ZoomIndex100 To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < (FormMain.ScaleWidth - tDif) Then
+                zVal = x
                 Exit For
             End If
-        Next X
+        Next x
         
     End If
     
@@ -309,12 +309,12 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height) > (FormMain.ScaleHeight - hDif) Then
         'If the image's height is too big for the form, run a loop backwards through all
         ' possible zoom values to see if one will make it fit
-        For X = zVal To g_Zoom.ZoomCount Step 1
-            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(X)) < FormMain.ScaleHeight - hDif Then
-                zVal = X
+        For x = zVal To g_Zoom.ZoomCount Step 1
+            If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+                zVal = x
                 Exit For
             End If
-        Next X
+        Next x
         
     End If
     
@@ -358,24 +358,24 @@ Public Sub FitOnScreen()
     Dim zVal As Long
     zVal = 0
     
-    Dim X As Long
+    Dim x As Long
     
     'Run a loop backwards through the possible zoom values to see
     'if one will make it fit at the maximum possible size
-    For X = 0 To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(X)) < FormMain.ScaleWidth - tDif Then
-            zVal = X
+    For x = 0 To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
+            zVal = x
             Exit For
         End If
-    Next X
+    Next x
     
     'Now we do the same thing for the height
-    For X = zVal To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(X)) < FormMain.ScaleHeight - hDif Then
-            zVal = X
+    For x = zVal To g_Zoom.ZoomCount Step 1
+        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
+            zVal = x
             Exit For
         End If
-    Next X
+    Next x
     toolbar_Main.CmbZoom.ListIndex = zVal
     pdImages(CurrentImage).CurrentZoomValue = zVal
     
@@ -443,7 +443,7 @@ Public Sub UpdateMDIStatus()
         'Finally, if dynamic icons are enabled, restore the main program icon and clear the icon cache
         If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
             destroyAllIcons
-            setNewTaskbarIcon origIcon32
+            setNewTaskbarIcon origIcon32, FormMain.hWnd
             setNewAppIcon origIcon16
         End If
         
@@ -552,7 +552,7 @@ Public Sub restoreMainWindowLocation()
                 
             'Perform a similar sanity check for width and height using arbitrary values (200 pixels at present)
             If lWindowWidth < 200 Then lWindowWidth = 200
-            If lWindowHeight < 200 Then lWindowHeight = 200
+            'If lWindowHeight < 200 Then lWindowHeight = 200
                 
             'With all values now set to guaranteed-safe values, set the main window's location
             FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX

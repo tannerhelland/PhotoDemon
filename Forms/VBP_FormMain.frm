@@ -1,48 +1,49 @@
 VERSION 5.00
-Begin VB.MDIForm FormMain 
-   AutoShowChildren=   0   'False
+Begin VB.Form FormMain 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   10590
+   ClientHeight    =   10455
    ClientLeft      =   225
    ClientTop       =   855
    ClientWidth     =   17205
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScrollBars      =   0   'False
+   ScaleHeight     =   10455
+   ScaleWidth      =   17205
    StartUpPosition =   3  'Windows Default
    Begin VB.PictureBox picProgBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BorderStyle     =   0  'None
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   &H80000008&
-      Height          =   375
+      Height          =   495
       Left            =   0
-      ScaleHeight     =   25
+      ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   1147
       TabIndex        =   0
       TabStop         =   0   'False
-      Top             =   10215
+      Top             =   9960
       Width           =   17205
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
-      Left            =   12000
-      Top             =   7560
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      Left            =   11760
+      Top             =   600
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -229,15 +230,6 @@ Begin VB.MDIForm FormMain
       Begin VB.Menu MnuSpecificZoom 
          Caption         =   "1:16 (6.25%)"
          Index           =   8
-      End
-      Begin VB.Menu MnuViewSepBar2 
-         Caption         =   "-"
-      End
-      Begin VB.Menu MnuLeftPanel 
-         Caption         =   "Hide left panel (file tools)"
-      End
-      Begin VB.Menu MnuRightPanel 
-         Caption         =   "Hide right panel (image tools)"
       End
    End
    Begin VB.Menu MnuImageTop 
@@ -981,32 +973,28 @@ Begin VB.MDIForm FormMain
          Index           =   2
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Arrange icons"
+         Caption         =   "&Cascade"
          Index           =   3
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Cascade"
+         Caption         =   "Tile &horizontally"
          Index           =   4
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &horizontally"
+         Caption         =   "Tile &vertically"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &vertically"
+         Caption         =   "-"
          Index           =   6
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
+         Caption         =   "&Minimize all windows"
          Index           =   7
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Minimize all windows"
-         Index           =   8
-      End
-      Begin VB.Menu MnuWindow 
          Caption         =   "&Restore all windows"
-         Index           =   9
+         Index           =   8
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -1069,7 +1057,7 @@ Attribute VB_Exposed = False
 'Please visit photodemon.org for updates and additional downloads
 
 '***************************************************************************
-'Main Program MDI Form
+'Main Program Form
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 04/July/13
@@ -1097,7 +1085,7 @@ Private tooltipBackup As Collection
 
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
-Private Sub MDIForm_Load()
+Private Sub Form_Load()
 
     'Use a global variable to store any command line parameters we may have been passed
     g_CommandLine = Command$
@@ -1122,11 +1110,11 @@ Private Sub MDIForm_Load()
     'If this is the first time the program is being run, manually position the tool windows in usable places
     If g_IsFirstRun Or (Not g_UserPreferences.doesValueExist("Tools", toolbar_Main.Name & "_Visible")) Then
     
-        'By default, set the primary toolbar to immediately inside the MDI client area, in the top-left corner
+        'By default, set the primary toolbar to immediately inside the client area, in the top-left corner
         g_WindowManager.requestIdealPosition toolbar_Main.hWnd, 0
         toolbar_Main.Show vbModeless, Me
         
-        'By default, set the selection toolbar to immediately inside the MDI client area, in the top-right corner
+        'By default, set the selection toolbar to immediately inside the client area, in the top-right corner
         g_WindowManager.requestIdealPosition toolbar_Selections.hWnd, 1
         toolbar_Selections.Show vbModeless, Me
         
@@ -1141,8 +1129,8 @@ Private Sub MDIForm_Load()
     End If
     
     'Now that all toolbars are properly positioned, register them with the window manager
-    g_WindowManager.registerToolbarHwnd toolbar_Main.hWnd
-    g_WindowManager.registerToolbarHwnd toolbar_Selections.hWnd
+    g_WindowManager.registerChildHwnd toolbar_Main.hWnd, TOOLBOX_WINDOW
+    g_WindowManager.registerChildHwnd toolbar_Selections.hWnd, TOOLBOX_WINDOW
     
     
     
@@ -1274,8 +1262,8 @@ Private Sub MDIForm_Load()
      
 End Sub
 
-'Allow the user to drag-and-drop files from Windows Explorer onto the main MDI form
-Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+'Allow the user to drag-and-drop files from Windows Explorer onto the main form
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1311,7 +1299,7 @@ Private Sub MDIForm_OLEDragDrop(Data As DataObject, Effect As Long, Button As In
     
 End Sub
 
-Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1327,9 +1315,9 @@ Private Sub MDIForm_OLEDragOver(Data As DataObject, Effect As Long, Button As In
 
 End Sub
 
-'If the user is attempting to close the program, run some checks
+'If the user is attempting to close the program, run some checks.  Specifically, we want to make sure all child forms have been saved.
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
-Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
     'If the histogram form is open, close it
     Unload FormHistogram
@@ -1348,10 +1336,34 @@ Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
     g_ProgramShuttingDown = True
     
+    'Before exiting QueryUnload, attempt to unload all children forms.  If any of them cancel shutdown, postpone the program-wide
+    ' shutdown as well
+    Dim i As Long
+    If NumOfImagesLoaded > 0 Then
+    
+        For i = 0 To NumOfImagesLoaded
+            If (Not pdImages(i) Is Nothing) Then
+                If pdImages(i).IsActive Then
+                
+                    'This image is active and so is its parent form.  Unload both now.
+                    Unload pdImages(i).containingForm
+                    
+                    'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
+                    If Not g_ProgramShuttingDown Then
+                        Cancel = True
+                        Exit Sub
+                    End If
+                    
+                End If
+            End If
+        Next i
+        
+    End If
+    
 End Sub
 
 'UNLOAD EVERYTHING
-Private Sub MDIForm_Unload(Cancel As Integer)
+Private Sub Form_Unload(Cancel As Integer)
         
     'By this point, all the child forms should have taken care of their Undo clearing-out.
     ' Just in case, however, prompt a final cleaning.
@@ -2736,13 +2748,9 @@ Private Sub MnuWindow_Click(Index As Integer)
         '<separator>
         Case 2
         
-        'Arrange icons
-        Case 3
-            Me.Arrange vbArrangeIcons
-        
         'Cascade
-        Case 4
-            Me.Arrange vbCascade
+        Case 3
+            'Me.Arrange vbCascade
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
@@ -2753,20 +2761,20 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
         
         'Tile horizontally
-        Case 5
-            Me.Arrange vbTileHorizontal
+        Case 4
+            'Me.Arrange vbTileHorizontal
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
                 End If
             Next i
     
         'Tile vertically
-        Case 6
-            Me.Arrange vbTileVertical
+        Case 5
+            'Me.Arrange vbTileVertical
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
@@ -2777,18 +2785,22 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
     
         '<separator>
-        Case 7
+        Case 6
         
         'Minimize all windows
-        Case 8
+        Case 7
+        
             'Run a loop through every child form and minimize it
-            Dim tForm As Form
-            For Each tForm In VB.Forms
-                If tForm.Name = "FormImage" Then tForm.WindowState = vbMinimized
-            Next
+            For i = 0 To NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then
+                        pdImages(i).containingForm.WindowState = vbMinimized
+                    End If
+                End If
+            Next i
         
         'Restore all windows
-        Case 9
+        Case 8
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To NumOfImagesLoaded

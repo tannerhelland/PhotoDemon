@@ -148,43 +148,43 @@ Public Function distanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, 
 End Function
 
 'Return the arctangent of two values (rise / run)
-Public Function Atan2(ByVal Y As Double, ByVal X As Double) As Double
+Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
  
-    If (Y = 0) And (X = 0) Then
+    If (y = 0) And (x = 0) Then
         Atan2 = 0
         Exit Function
     End If
  
-    If Y > 0 Then
-        If X >= Y Then
-            Atan2 = Atn(Y / X)
-        ElseIf X <= -Y Then
-            Atan2 = Atn(Y / X) + PI
+    If y > 0 Then
+        If x >= y Then
+            Atan2 = Atn(y / x)
+        ElseIf x <= -y Then
+            Atan2 = Atn(y / x) + PI
         Else
-            Atan2 = PI_HALF - Atn(X / Y)
+            Atan2 = PI_HALF - Atn(x / y)
         End If
     Else
-        If X >= -Y Then
-            Atan2 = Atn(Y / X)
-        ElseIf X <= Y Then
-            Atan2 = Atn(Y / X) - PI
+        If x >= -y Then
+            Atan2 = Atn(y / x)
+        ElseIf x <= y Then
+            Atan2 = Atn(y / x) - PI
         Else
-            Atan2 = -Atn(X / Y) - PI_HALF
+            Atan2 = -Atn(x / y) - PI_HALF
         End If
     End If
  
 End Function
 
 'Arcsine function
-Public Function Asin(ByVal X As Double) As Double
-    If (X > 1) Or (X < -1) Then X = 1
-    Asin = Atan2(X, Sqr(1 - X * X))
+Public Function Asin(ByVal x As Double) As Double
+    If (x > 1) Or (x < -1) Then x = 1
+    Asin = Atan2(x, Sqr(1 - x * x))
 End Function
 
 'Arccosine function
-Public Function Acos(ByVal X As Double) As Double
-    If (X > 1) Or (X < -1) Then X = 1
-    Acos = Atan2(Sqr(1 - X * X), X)
+Public Function Acos(ByVal x As Double) As Double
+    If (x > 1) Or (x < -1) Then x = 1
+    Acos = Atan2(Sqr(1 - x * x), x)
 End Function
 
 
@@ -260,4 +260,13 @@ End Function
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
     If Modulo < 0 Then Modulo = Modulo + Divisor
+End Function
+
+'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
+Public Function LoWord(dw As Long) As Integer
+   If dw And &H8000& Then
+      LoWord = &H8000& Or (dw And &H7FFF&)
+   Else
+      LoWord = dw And &HFFFF&
+   End If
 End Function

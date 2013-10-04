@@ -85,7 +85,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If we need to display an additional dialog, restore the default mouse cursor.  Otherwise, set the cursor to busy.
     If showDialog Then
-        If Not (pdImages(CurrentImage).containingForm Is Nothing) Then setArrowCursor pdImages(CurrentImage).containingForm
+        If NumOfWindows > 0 Then
+            If Not (pdImages(CurrentImage).containingForm Is Nothing) Then setArrowCursor pdImages(CurrentImage).containingForm
+        End If
     Else
         Screen.MousePointer = vbHourglass
     End If

@@ -49,7 +49,7 @@ Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd 
 Private Const GW_OWNER = 4
 
 'This variable will hold the hWnd of the hidden top-most parent of the program (created by VB)
-Dim lHwndTop As Long
+Private lHwndTop As Long
 
 'Rather than constantly re-load the original icons from file, store them once generated
 Public origIcon32 As Long, origIcon16 As Long
@@ -57,8 +57,8 @@ Public origIcon32 As Long, origIcon16 As Long
 Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
 
     Dim lHwnd As Long
-    Dim cx As Long
-    Dim cy As Long
+    Dim cX As Long
+    Dim cY As Long
     Dim hIconLarge As Long
     Dim hIconSmall As Long
       
@@ -74,17 +74,17 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
         Loop
     End If
        
-    cx = GetSystemMetrics(SM_CXICON)
-    cy = GetSystemMetrics(SM_CYICON)
-    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cx, cy, LR_SHARED)
+    cX = GetSystemMetrics(SM_CXICON)
+    cY = GetSystemMetrics(SM_CYICON)
+    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
     origIcon32 = hIconLarge
     
     If bSetAsAppIcon Then SendMessageLong lHwndTop, WM_SETICON, ICON_BIG, hIconLarge
     SendMessageLong hWnd, WM_SETICON, ICON_BIG, hIconLarge
        
-    cx = GetSystemMetrics(SM_CXSMICON)
-    cy = GetSystemMetrics(SM_CYSMICON)
-    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cx, cy, LR_SHARED)
+    cX = GetSystemMetrics(SM_CXSMICON)
+    cY = GetSystemMetrics(SM_CYSMICON)
+    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
     origIcon16 = hIconSmall
     
     If bSetAsAppIcon Then SendMessageLong lHwndTop, WM_SETICON, ICON_SMALL, hIconSmall
@@ -93,13 +93,14 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
 End Sub
 
 'During run-time, the user has an option to use the current MDI child window's icon as the task bar icon as well.
-Public Sub setNewTaskbarIcon(ByVal iconhWnd32 As Long)
+Public Sub setNewTaskbarIcon(ByVal iconhWnd32 As Long, ByVal targetHwnd As Long)
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
-    SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, iconhWnd32
+    SendMessageLong targetHwnd, WM_SETICON, ICON_BIG, iconhWnd32
 End Sub
 
 Public Sub setNewAppIcon(ByVal iconhWnd16 As Long)
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
-    SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconhWnd16
+    'SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconhWnd16
+    'SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, origIcon32
 End Sub
 
