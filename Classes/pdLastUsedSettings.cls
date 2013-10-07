@@ -317,3 +317,4 @@ End Function
 Private Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
+

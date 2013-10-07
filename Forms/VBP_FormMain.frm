@@ -1111,12 +1111,12 @@ Private Sub Form_Load()
     If g_IsFirstRun Or (Not g_UserPreferences.doesValueExist("Tools", toolbar_Main.Name & "_Visible")) Then
     
         'By default, set the primary toolbar to immediately inside the client area, in the top-left corner
-        g_WindowManager.requestIdealPosition toolbar_Main.hWnd, 0
-        toolbar_Main.Show vbModeless, Me
+        'g_WindowManager.requestIdealPosition toolbar_Main.hWnd, 0
+        
         
         'By default, set the selection toolbar to immediately inside the client area, in the top-right corner
-        g_WindowManager.requestIdealPosition toolbar_Selections.hWnd, 1
-        toolbar_Selections.Show vbModeless, Me
+        'g_WindowManager.requestIdealPosition toolbar_Selections.hWnd, 1
+        
         
     'If this is not first-run, check each tool window, and if it was previously visible, load and position it accordingly.
     Else
@@ -1129,8 +1129,10 @@ Private Sub Form_Load()
     End If
     
     'Now that all toolbars are properly positioned, register them with the window manager
-    g_WindowManager.registerChildHwnd toolbar_Main.hWnd, TOOLBOX_WINDOW
-    g_WindowManager.registerChildHwnd toolbar_Selections.hWnd, TOOLBOX_WINDOW
+    g_WindowManager.registerChildForm toolbar_Main, TOOLBOX_WINDOW, 1
+    toolbar_Main.Show vbModeless, Me
+    g_WindowManager.registerChildForm toolbar_Selections, TOOLBOX_WINDOW, 2
+    toolbar_Selections.Show vbModeless, Me
     
     
     
@@ -1392,6 +1394,11 @@ Private Sub Form_Unload(Cancel As Integer)
     handleClearType False
     
     ReleaseFormTheming Me
+    
+    'Release the window manager
+    g_WindowManager.unregisterForm Me
+    g_WindowManager.saveAllWindowLocations
+    Set g_WindowManager = Nothing
     
     'As a final failsafe, forcibly unload any remaining forms
     Dim tmpForm As Form

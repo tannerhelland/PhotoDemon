@@ -826,7 +826,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    g_WindowManager.unregisterChildHwnd Me.hWnd
+    g_WindowManager.unregisterForm Me
 End Sub
 
 Private Sub sltCornerRounding_Change()

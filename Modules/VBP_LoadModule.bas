@@ -189,7 +189,7 @@ Public Sub LoadTheProgram()
     
     'While we're here, initiate our window manager as well
     Set g_WindowManager = New pdWindowManager
-    g_WindowManager.registerParentHwnd FormMain.hWnd
+    g_WindowManager.registerParentForm FormMain
     
         
     '*************************************************************************************************************************************
@@ -917,7 +917,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If g_AutosizeLargeImages = 1 Then FitWindowToViewport
             
             'Register this window with PhotoDemon's window manager
-            g_WindowManager.registerChildHwnd pdImages(CurrentImage).containingForm.hWnd, IMAGE_WINDOW
+            g_WindowManager.registerChildForm pdImages(CurrentImage).containingForm, IMAGE_WINDOW
                         
             'Finally, add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
