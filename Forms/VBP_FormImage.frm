@@ -124,7 +124,7 @@ Public Sub ActivateWorkaround()
     'Update the current form variable
     CurrentImage = Val(Me.Tag)
     
-    g_WindowManager.notifyChildReceivedFocus Me.hWnd
+    g_WindowManager.notifyChildReceivedFocus Me
     
     'If possible, set focus to this window
     'NOTE: this throws inexplicable RTEs, so leave it uncommented until debugged.
@@ -864,16 +864,15 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
     
     'Notify the window manager that this hWnd will soon be dead - so stop subclassing it!
-    g_WindowManager.unregisterChildHwnd Me.hWnd
+    g_WindowManager.unregisterForm Me
     
-    'Before exiting, restore focus to some other child window. If we don't, Windows won't do it for us. This is a known
-    ' problem - see http://support.microsoft.com/kb/190634
+    'Before exiting, restore focus to the next child window in line.
     If NumOfWindows > 0 Then
     
         Dim i As Long
         For i = NumOfImagesLoaded To 0 Step -1
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive = True Then
+                If pdImages(i).IsActive Then
                     pdImages(i).containingForm.ActivateWorkaround
                     Exit For
                 End If

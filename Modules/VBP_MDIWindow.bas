@@ -505,6 +505,8 @@ End Sub
 'Restore the main form to the window coordinates saved in the preferences file
 Public Sub restoreMainWindowLocation()
 
+    Exit Sub
+
     'First, check which state the window was in previously.
     Dim lWindowState As Long
     lWindowState = g_UserPreferences.GetPref_Long("Core", "Last Window State", 0)

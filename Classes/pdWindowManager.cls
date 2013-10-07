@@ -44,6 +44,7 @@ Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOVING As Long = &H216
 Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_NCMOUSEMOVE As Long = &HA0
+Private Const WM_SIZING As Long = &H214
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WM_ACTIVATE      As Long = &H6
@@ -83,12 +84,17 @@ End Type
 
 'Each window that the manager tracks stores some basic metadata in a variable of this type.
 Private Type pdWindowData
-    hasBeenMadeTransparent As Boolean
+    formReference As Form
     hWnd As Long
+    hasBeenMadeTransparent As Boolean
     offsetX As Long
     offsetY As Long
     subclassingReleased As Boolean
     typeOfWindow As pdWindowType
+    windowName As String
+    lastPosition As winRect
+    lastWindowState As Long
+    lastWindowBorder As Long
 End Type
 
 'This class tracks a lot of different window types.  Each gets special treatment, so we track their type as follows:
@@ -102,19 +108,11 @@ End Enum
     Private Const MAIN_WINDOW = 0, TOOLBOX_WINDOW = 1, IMAGE_WINDOW = 2
 #End If
 
-Private Type tMouseEvent
-    SizeOfMe        As Long
-    Flags           As Long
-    hndTrack        As Long
-    HoverTime       As Long
-End Type
-
 'API calls for window positioning and tracking
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function TRACKMOUSEEVENT Lib "user32" Alias "TrackMouseEvent" (ByRef mEventsWanted As tMouseEvent) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
       
 'API calls for changing toolbar window opacity
@@ -132,7 +130,7 @@ Private pdWindows() As pdWindowData
 Private numOfPDWindows As Long
 
 'Primary window tracking
-Private mainWindowHwnd As Long
+Private mainWindowHwnd As Long, mainWindowIndex As Long
 
 'When PD loses focus, we automatically revert all top-level toolbox windows to normal style.  When PD regains focus, we restore them as top-most.
 ' Activation/deactivation messages are received multiple times, but we only want to do activation/deactivation stuff once, so our current state
@@ -142,9 +140,124 @@ Private isPDDeactivated As Boolean
 'We must subclass various window types in order to manage them properly
 Private cSubclass As cSelfSubHookCallback
 
+'XML handling (used to save/load window locations) is handled through a specialized class
+Private xmlEngine As pdXML
+Private windowDataPath As String
+
+'If a window had location data previously stored, this function will retrieve that data and move the window into place.
+' If window data cannot be found, the form will be moved to the requested pseudo-location supplied by the second parameter.
+Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferredLocationIfNecessary As Long) As Boolean
+
+    'Start by looking for this form's location data in the XML engine.
+    
+    'If an entry is found, restore the window to that location.
+    If xmlEngine.doesTagExist("windowEntry", "id", pdWindows(windowIndex).windowName) Then
+    
+        'Retrieve this window's location data from the XML file.
+        With pdWindows(windowIndex)
+        
+            'Window rect values
+            .lastPosition.x1 = CLng(xmlEngine.getUniqueTag_String("windowLeft", 0, , "windowEntry", "id", .windowName))
+            .lastPosition.y1 = CLng(xmlEngine.getUniqueTag_String("windowTop", 0, , "windowEntry", "id", .windowName))
+            .lastPosition.x2 = CLng(xmlEngine.getUniqueTag_String("windowRight", 0, , "windowEntry", "id", .windowName))
+            .lastPosition.y2 = CLng(xmlEngine.getUniqueTag_String("windowBottom", 0, , "windowEntry", "id", .windowName))
+            
+            'Window and border state
+            .lastWindowState = CLng(xmlEngine.getUniqueTag_String("windowState", 0, , "windowEntry", "id", .windowName))
+            .lastWindowBorder = CLng(xmlEngine.getUniqueTag_String("windowStyle", 0, , "windowEntry", "id", .windowName))
+            
+            'Apply those values to the window, starting with border style, then state, then coordinates
+            .formReference.BorderStyle = .lastWindowBorder
+            .formReference.WindowState = .lastWindowState
+            
+            MoveWindow .hWnd, .lastPosition.x1, .lastPosition.y1, .lastPosition.x2 - .lastPosition.x1, .lastPosition.y2 - .lastPosition.y1, 1
+            
+        End With
+        
+    'Window data was not found.  Move the window to a new location using the preferred location param.
+    Else
+    
+        requestIdealPosition pdWindows(windowIndex).hWnd, preferredLocationIfNecessary
+    
+    End If
+
+End Function
+
+'Load previous window locations from file.
+Public Function loadAllWindowLocations() As Boolean
+    
+    If FileExist(windowDataPath) Then
+            
+        'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
+        If (Not xmlEngine.loadXMLFile(windowDataPath)) Or Not (xmlEngine.isPDDataType("Window locations")) Then
+            Debug.Print "No window location data found.  A new window location file has been created."
+            resetXMLData
+        End If
+            
+    Else
+        resetXMLData
+    End If
+    
+    'We don't actually load window locations now.  Now that the XML data is happily inside our XML engine, we load window data from it
+    ' on-demand as windows are added to the window manager.
+
+End Function
+
+'Write the current locations of all windows to the XML engine.  (These will be used to restore the window location on subsequent loads.)
+Public Function saveAllWindowLocations() As Boolean
+    
+    Dim i As Long
+    For i = 0 To numOfPDWindows - 1
+    
+        'We only save locations for the main window and toolbox windows - not image windows!
+        If (pdWindows(i).typeOfWindow = MAIN_WINDOW) Or (pdWindows(i).typeOfWindow = TOOLBOX_WINDOW) Then
+    
+            'Check for this window preset in the file.  If it does not exist, add it now.
+            If Not xmlEngine.doesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
+            
+                xmlEngine.writeTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
+                xmlEngine.closeTag "windowEntry"
+                xmlEngine.writeBlankLine
+            
+            End If
+            
+            'Write this window's location data into the XML file.
+            With pdWindows(i)
+            
+                'Window rect values
+                xmlEngine.updateTag "windowLeft", .lastPosition.x1, "windowEntry", "id", .windowName
+                xmlEngine.updateTag "windowTop", .lastPosition.y1, "windowEntry", "id", .windowName
+                xmlEngine.updateTag "windowRight", .lastPosition.x2, "windowEntry", "id", .windowName
+                xmlEngine.updateTag "windowBottom", .lastPosition.y2, "windowEntry", "id", .windowName
+                
+                'Window and border state
+                xmlEngine.updateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
+                xmlEngine.updateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
+                
+            End With
+        
+        End If
+    
+    Next i
+    
+    'Write the data out to file
+    xmlEngine.writeXMLToFile windowDataPath
+
+End Function
+
+'Reset the XML engine.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
+Private Function resetXMLData()
+
+    xmlEngine.prepareNewXML "Window locations"
+    xmlEngine.writeBlankLine
+    xmlEngine.writeComment "Everything past this point is window location data for various PhotoDemon dialogs."
+    xmlEngine.writeBlankLine
+    
+End Function
+
 'This class provides some helper functions to intelligently position child windows, typically when the program is run for the
 ' first time and custom positions have not yet been established.  Constants are used to specify where the window should be placed.
-Public Sub requestIdealPosition(ByVal childHwnd As Long, Optional ByVal desiredPosition As Long = 0)
+Public Sub requestIdealPosition(ByVal childHwnd As Long, Optional ByVal desiredPosition As Long = 1)
 
     'Before doing anything else, get the current size and location of child and parent windows
     Dim childRect As winRect, parentRect As winRect, parentClientRect As winRect
@@ -160,46 +273,91 @@ Public Sub requestIdealPosition(ByVal childHwnd As Long, Optional ByVal desiredP
     'Right now, we only support two "desired positions": top-left and top-right corners.  I may add more after additional testing.
     Select Case desiredPosition
     
-        'Top-left
+        'Do nothing
         Case 0
+    
+        'Top-left
+        Case 1
             MoveWindow childHwnd, parentRect.x1 + parentChromeWidth \ 2, parentRect.y1 + parentChromeHeight, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
             
         'Top-right
-        Case 1
+        Case 2
             MoveWindow childHwnd, parentRect.x2 - parentChromeWidth \ 2 - (childRect.x2 - childRect.x1), parentRect.y1 + parentChromeHeight, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
     
     End Select
 
 End Sub
 
-'The primary PhotoDemon form must register its hWnd, so we can track its movement and move any children windows accordingly.
-Public Sub registerParentHwnd(ByVal parentHwnd As Long)
+'The window manager keeps a persistent list of last-known locations for every window it accesses.  Window locations are updated when:
+' - They're first loaded (and no previous position has been stored)
+' - They're moved
+' - They're closed
+'Any of those actions just need to send a request to this sub, which will handle the actual location storage process.
+Private Sub updateStoredWindowLocation(ByVal indexInWindowArray As Long)
 
-    mainWindowHwnd = parentHwnd
-    cSubclass.ssc_Subclass parentHwnd, , , Me
-    cSubclass.ssc_AddMsg parentHwnd, MSG_AFTER, WM_MOVING, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE
+    Dim newWindowRect As winRect
+    
+    With pdWindows(indexInWindowArray)
+    
+        GetWindowRect .hWnd, newWindowRect
+        .lastPosition = newWindowRect
+        .lastWindowBorder = .formReference.BorderStyle
+        .lastWindowState = .formReference.WindowState
+    
+    End With
+
+End Sub
+
+'The primary PhotoDemon form must register its hWnd, so we can track its movement and move any children windows accordingly.
+Public Sub registerParentForm(ByRef parentForm As Form)
+
+    'Has this window already been registered?  If so, don't re-register it.
+    Dim i As Long
+    For i = 0 To numOfPDWindows
+        If pdWindows(i).hWnd = parentForm.hWnd Then Exit Sub
+    Next i
+    
+    'Add this window to the collection, and cache its hWnd (because we reference the main window handle frequently)
+    Set pdWindows(numOfPDWindows).formReference = parentForm
+    pdWindows(numOfPDWindows).hWnd = parentForm.hWnd
+    mainWindowHwnd = parentForm.hWnd
+    mainWindowIndex = numOfPDWindows
+    pdWindows(numOfPDWindows).typeOfWindow = MAIN_WINDOW
+    pdWindows(numOfPDWindows).windowName = parentForm.Name
+    
+    'Resize the window array for future additions
+    numOfPDWindows = numOfPDWindows + 1
+    ReDim Preserve pdWindows(0 To numOfPDWindows) As pdWindowData
+
+    'Subclass the main window
+    cSubclass.ssc_Subclass mainWindowHwnd, , , Me
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_MOVING, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING
     
     'In the future, it may be helpful to know when PD loses focus.  I am leaving this code here "just in case"
     'cSubclass.ssc_AddMsg parentHwnd, MSG_AFTER, WM_ACTIVATEAPP, WM_ACTIVATE
+    
+    'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
+    restoreWindowLocation numOfPDWindows - 1, 0
     
 End Sub
 
 'Each child window must be registered through this class, using its hWnd.  This class will then use that hWnd to do things
 ' like move child windows proportionally to their parent.
-Public Sub registerChildHwnd(ByVal childHwnd As Long, ByVal whatWindowType As pdWindowType)
+Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pdWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1)
 
     'Has this window already been registered?  If so, don't re-register it.
     Dim i As Long
     For i = 0 To numOfPDWindows
-        If pdWindows(i).hWnd = childHwnd Then Exit Sub
+        If pdWindows(i).hWnd = childForm.hWnd Then Exit Sub
     Next i
     
     'Add this window to the collection
-    pdWindows(numOfPDWindows).hWnd = childHwnd
+    Set pdWindows(numOfPDWindows).formReference = childForm
+    pdWindows(numOfPDWindows).hWnd = childForm.hWnd
     
     'Calculate the initial offset between this window and the main window, and store that offset
     Dim childRect As winRect, parentRect As winRect
-    GetWindowRect childHwnd, childRect
+    GetWindowRect pdWindows(numOfPDWindows).hWnd, childRect
     GetWindowRect mainWindowHwnd, parentRect
     
     With pdWindows(numOfPDWindows)
@@ -207,6 +365,7 @@ Public Sub registerChildHwnd(ByVal childHwnd As Long, ByVal whatWindowType As pd
         .offsetY = childRect.y1 - parentRect.y1
         .hasBeenMadeTransparent = False
         .typeOfWindow = whatWindowType
+        .windowName = childForm.Name
     End With
     
     'Resize the window array for future additions
@@ -215,20 +374,41 @@ Public Sub registerChildHwnd(ByVal childHwnd As Long, ByVal whatWindowType As pd
     
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
-    cSubclass.ssc_Subclass childHwnd, 64 + (numOfPDWindows - 1), , Me
-    cSubclass.ssc_AddMsg childHwnd, MSG_AFTER, WM_MOVING, WM_MOUSEMOVE, WM_NCMOUSEMOVE
+    cSubclass.ssc_Subclass pdWindows(numOfPDWindows - 1).hWnd, 64 + (numOfPDWindows - 1), , Me
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows - 1).hWnd, MSG_AFTER, WM_MOVING, WM_MOUSEMOVE, WM_NCMOUSEMOVE
+    
+    'Move the window into place using either last-known location data, or the supplied "preferred location"
+    restoreWindowLocation numOfPDWindows - 1, preferredLocationIfNecessary
+    
+    'Finally, update this window's offset (because it may have been moved by the above function)
+    With pdWindows(numOfPDWindows - 1)
+        GetWindowRect .hWnd, childRect
+        .offsetX = childRect.x1 - parentRect.x1
+        .offsetY = childRect.y1 - parentRect.y1
+    End With
     
 End Sub
 
-'When a child window is unloaded, call this function so that we can stop subclassing in a safe and predictable way
-Public Sub unregisterChildHwnd(ByVal childHwnd As Long)
+'When a window is unloaded, call this function so that we can stop subclassing in a safe and predictable way, and also track the
+' last-known location of this window.
+Public Sub unregisterForm(ByRef srcForm As Form)
 
-    'Has this window already been registered?  If so, don't re-register it.
+    'Find this window in the array.  (Note that if it cannot be found, nothing will happen.)
     Dim i As Long
     For i = 0 To numOfPDWindows
-        If pdWindows(i).hWnd = childHwnd Then
-            cSubclass.ssc_UnSubclass childHwnd
+        If pdWindows(i).hWnd = srcForm.hWnd Then
+            
+            'Update the last-known window location before the form closes
+            updateStoredWindowLocation i
+            
+            'Release this window's subclassing
             pdWindows(i).subclassingReleased = True
+            cSubclass.ssc_UnSubclass pdWindows(i).hWnd
+            pdWindows(i).hWnd = 0
+            
+            'Remove our reference to this form (if we don't, it will remain in memory)
+            Set pdWindows(i).formReference = Nothing
+            
         End If
     Next i
 
@@ -248,19 +428,19 @@ Public Sub allImageWindowsUnloaded()
 End Sub
 
 'When an image window receives focus, we dynamically reassign the toolboxes as children of that window, so that they stay on top of it.
-Public Sub notifyChildReceivedFocus(ByVal childHwnd As Long)
+Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
 
     'Make all toolboxes a child of this form - this keeps them on top!  Clever, but not necessarily advisable...
     Dim i As Long
     For i = 0 To numOfPDWindows - 1
         If pdWindows(i).typeOfWindow = TOOLBOX_WINDOW Then
-            SetWindowLong pdWindows(i).hWnd, -8, childHwnd
+            SetWindowLong pdWindows(i).hWnd, -8, childForm.hWnd
             SetWindowPos pdWindows(i).hWnd, -2, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
         End If
     Next i
     
     'Redraw the child as well
-    SetWindowPos childHwnd, -2, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+    SetWindowPos childForm.hWnd, -2, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
 
 End Sub
 
@@ -272,6 +452,11 @@ Private Sub Class_Initialize()
         
     'Prepare the subclasser
     Set cSubclass = New cSelfSubHookCallback
+    
+    'Prepare the XML handler, and retrieve window location data from file (if it exists)
+    Set xmlEngine = New pdXML
+    windowDataPath = g_UserPreferences.getPresetPath & "Program_WindowLocations.xml"
+    loadAllWindowLocations
 
 End Sub
 
@@ -279,6 +464,9 @@ Private Sub Class_Terminate()
 
     'Release all subclassing
     cSubclass.ssc_Terminate
+    
+    'Write window location data out to file.
+    saveAllWindowLocations
 
 End Sub
 
@@ -327,7 +515,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     
     Dim curWinRect As winRect
     Dim curWinPoint As POINTAPI
-    Dim tmpMouseTracker As tMouseEvent
     
     Dim i As Long
     
@@ -389,8 +576,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Check parent window messages
         Select Case uMsg
         
-            'The parent window is currently being moved
-            Case WM_MOVING
+            'The parent window is currently being moved or resized
+            Case WM_MOVING, WM_SIZING
                 
                 'lParam contains a pointer to the window's rect location.  Retrieve it now.
                 Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
@@ -400,6 +587,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     GetWindowRect pdWindows(i).hWnd, childRect
                     MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
                 Next i
+                
+                'Remember the main window's location
+                updateStoredWindowLocation mainWindowIndex
             
             'The parent window has just been maximized
             Case WM_SYSCOMMAND
@@ -417,8 +607,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 End If
                 
-            'Mouse has been moved.  (NOTE: MDI forms do not receive mouse move events.  ARGH.  I am leaving this so I can fix it
-            ' once we have removed all MDI code from the program.)
+            'Mouse has been moved.  If toolboxes are floating, make them translucent.
             Case WM_MOUSEMOVE, WM_NCMOUSEMOVE
                 For i = 0 To numOfPDWindows - 1
                     If (pdWindows(i).typeOfWindow = TOOLBOX_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) Then
