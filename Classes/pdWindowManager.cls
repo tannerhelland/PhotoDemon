@@ -55,6 +55,7 @@ Private Const WA_CLICKACTIVE   As Long = 2
 
 'System message that show up as additional params when subclassing WM_SYSCOMMAND
 Private Const SC_MAXIMIZE As Long = &HF030&
+Private Const SC_MINIMIZE As Long = &HF020&
 Private Const SC_RESTORE As Long = &HF120&
 
 'Constant for tracking MouseLeave events
@@ -84,17 +85,18 @@ End Type
 
 'Each window that the manager tracks stores some basic metadata in a variable of this type.
 Private Type pdWindowData
+    forciblyMinimized As Boolean
     formReference As Form
     hWnd As Long
     hasBeenMadeTransparent As Boolean
+    lastPosition As winRect
+    lastWindowState As Long
+    lastWindowBorder As Long
     offsetX As Long
     offsetY As Long
     subclassingReleased As Boolean
     typeOfWindow As pdWindowType
     windowName As String
-    lastPosition As winRect
-    lastWindowState As Long
-    lastWindowBorder As Long
 End Type
 
 'This class tracks a lot of different window types.  Each gets special treatment, so we track their type as follows:
@@ -110,7 +112,7 @@ End Enum
 
 'API calls for window positioning and tracking
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
@@ -119,10 +121,10 @@ Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 'Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 
 'Child window tracking
@@ -591,10 +593,18 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Remember the main window's location
                 updateStoredWindowLocation mainWindowIndex
             
-            'The parent window has just been maximized
+            'The parent window has just been maximized, minimized, or restored
             Case WM_SYSCOMMAND
             
                 If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Then
+                
+                    'If the window was previously minimized, restore any child windows now
+                    For i = 0 To numOfPDWindows - 1
+                        If pdWindows(i).forciblyMinimized Then
+                            pdWindows(i).forciblyMinimized = False
+                            pdWindows(i).formReference.WindowState = vbNormal
+                        End If
+                    Next i
                 
                     'Manually retrieve the new window position.
                     GetWindowRect lng_hWnd, curWinRect
@@ -605,6 +615,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
                     Next i
                     
+                'When minimizing, check all windows, and if one has not been minimized, minimize it now
+                ElseIf wParam = SC_MINIMIZE Then
+                
+                    For i = 0 To numOfPDWindows - 1
+                        If pdWindows(i).formReference.WindowState <> vbMinimized Then
+                            pdWindows(i).forciblyMinimized = True
+                            pdWindows(i).formReference.WindowState = vbMinimized
+                        End If
+                    Next i
+                
                 End If
                 
             'Mouse has been moved.  If toolboxes are floating, make them translucent.
