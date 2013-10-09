@@ -1,10 +1,12 @@
 VERSION 5.00
 Begin VB.UserControl sliderTextCombo 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   495
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   6000
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

@@ -1,10 +1,12 @@
 VERSION 5.00
 Begin VB.UserControl smartCheckBox 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   375
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   2520
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -133,7 +135,7 @@ Private Sub chkBox_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -230,7 +232,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked

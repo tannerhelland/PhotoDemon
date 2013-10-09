@@ -1,12 +1,14 @@
 VERSION 5.00
 Begin VB.Form toolbar_Selections 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Selections"
    ClientHeight    =   7815
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   3150
+   ClientWidth     =   3045
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,16 +23,18 @@ Begin VB.Form toolbar_Selections
    MinButton       =   0   'False
    ScaleHeight     =   521
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   210
+   ScaleWidth      =   203
    ShowInTaskbar   =   0   'False
    Begin VB.PictureBox picTools 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      ClipControls    =   0   'False
       ForeColor       =   &H80000008&
       Height          =   6135
       Index           =   0
-      Left            =   120
+      Left            =   0
       ScaleHeight     =   409
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   198

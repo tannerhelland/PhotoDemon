@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form toolbar_Main 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Main"
