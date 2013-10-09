@@ -39,8 +39,8 @@ Begin VB.Form FormMain
       Width           =   17205
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
-      Left            =   11760
-      Top             =   600
+      Left            =   120
+      Top             =   120
       _ExtentX        =   1191
       _ExtentY        =   1058
       Enabled         =   0   'False
@@ -961,11 +961,13 @@ Begin VB.Form FormMain
       Caption         =   "&Window"
       WindowList      =   -1  'True
       Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
+         Caption         =   "Floating toolboxes"
+         Checked         =   -1  'True
          Index           =   0
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Previous image"
+         Caption         =   "Floating image windows"
+         Checked         =   -1  'True
          Index           =   1
       End
       Begin VB.Menu MnuWindow 
@@ -973,28 +975,40 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Cascade"
+         Caption         =   "Next image"
          Index           =   3
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &horizontally"
+         Caption         =   "Previous image"
          Index           =   4
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &vertically"
+         Caption         =   "-"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
+         Caption         =   "&Cascade"
          Index           =   6
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Minimize all windows"
+         Caption         =   "Tile &horizontally"
          Index           =   7
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Restore all windows"
+         Caption         =   "Tile &vertically"
          Index           =   8
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "-"
+         Index           =   9
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "&Minimize all windows"
+         Index           =   10
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "&Restore all windows"
+         Index           =   11
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -2732,8 +2746,27 @@ Private Sub MnuWindow_Click(Index As Integer)
 
     Select Case Index
     
-        'Next image
+        'Floating toolboxes
         Case 0
+        
+            'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
+            FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolboxes", FormMain.MnuWindow(0).Checked
+            g_WindowManager.setFloatState TOOLBOX_WINDOW, FormMain.MnuWindow(0).Checked
+            
+        'Floating image windows
+        Case 1
+        
+            'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
+            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", FormMain.MnuWindow(1).Checked
+            g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(1).Checked
+        
+        '<separator>
+        Case 2
+        
+        'Next image
+        Case 3
             'If one (or zero) images are loaded, ignore this option
             If NumOfWindows <= 1 Then Exit Sub
             
@@ -2744,7 +2777,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
     
         'Previous image
-        Case 1
+        Case 4
             'If one (or zero) images are loaded, ignore this command
             If NumOfWindows <= 1 Then Exit Sub
             
@@ -2755,10 +2788,10 @@ Private Sub MnuWindow_Click(Index As Integer)
             SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
     
         '<separator>
-        Case 2
+        Case 5
         
         'Cascade
-        Case 3
+        Case 6
             'Me.Arrange vbCascade
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
@@ -2770,7 +2803,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
         
         'Tile horizontally
-        Case 4
+        Case 7
             'Me.Arrange vbTileHorizontal
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
@@ -2782,7 +2815,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
     
         'Tile vertically
-        Case 5
+        Case 8
             'Me.Arrange vbTileVertical
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
@@ -2794,10 +2827,10 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
     
         '<separator>
-        Case 6
+        Case 9
         
         'Minimize all windows
-        Case 7
+        Case 10
         
             'Run a loop through every child form and minimize it
             For i = 0 To NumOfImagesLoaded
@@ -2809,7 +2842,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
         
         'Restore all windows
-        Case 8
+        Case 11
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To NumOfImagesLoaded

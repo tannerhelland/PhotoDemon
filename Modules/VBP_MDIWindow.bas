@@ -398,11 +398,11 @@ Public Sub UpdateMDIStatus()
 
     'If two or more windows are open, enable the Next/Previous image menu items
     If NumOfWindows >= 2 Then
-        FormMain.MnuWindow(0).Enabled = True
-        FormMain.MnuWindow(1).Enabled = True
+        FormMain.MnuWindow(3).Enabled = True
+        FormMain.MnuWindow(4).Enabled = True
     Else
-        FormMain.MnuWindow(0).Enabled = False
-        FormMain.MnuWindow(1).Enabled = False
+        FormMain.MnuWindow(3).Enabled = False
+        FormMain.MnuWindow(4).Enabled = False
     End If
 
     'If every window has been closed, disable all toolbar and menu options that are no longer applicable

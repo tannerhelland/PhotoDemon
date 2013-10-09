@@ -34,7 +34,7 @@ Private Const SWP_FRAMECHANGED = &H20
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -420,13 +420,13 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "PLUGIN", 7, 6          'Plugin Manager
     
     'Window Menu
-    AddMenuIcon "NEXTIMAGE", 8, 0       'Next image
-    AddMenuIcon "PREVIMAGE", 8, 1       'Previous image
-    AddMenuIcon "CASCADE", 8, 3         'Cascade
-    AddMenuIcon "TILEVER", 8, 4         'Tile Horizontally
-    AddMenuIcon "TILEHOR", 8, 5         'Tile Vertically
-    AddMenuIcon "MINALL", 8, 7          'Minimize All
-    AddMenuIcon "RESTOREALL", 8, 8      'Restore All
+    AddMenuIcon "NEXTIMAGE", 8, 3       'Next image
+    AddMenuIcon "PREVIMAGE", 8, 4       'Previous image
+    AddMenuIcon "CASCADE", 8, 6         'Cascade
+    AddMenuIcon "TILEVER", 8, 7         'Tile Horizontally
+    AddMenuIcon "TILEHOR", 8, 8         'Tile Vertically
+    AddMenuIcon "MINALL", 8, 10         'Minimize All
+    AddMenuIcon "RESTOREALL", 8, 11     'Restore All
     
     'Help Menu
     AddMenuIcon "FAVORITE", 9, 0        'Donate

@@ -189,6 +189,19 @@ Public Sub LoadTheProgram()
     
     'While we're here, initiate our window manager as well
     Set g_WindowManager = New pdWindowManager
+    
+    'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
+    Dim tBoxFloating As Boolean, imgWinFloating As Boolean
+    tBoxFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Toolboxes", False)
+    imgWinFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False)
+    
+    FormMain.MnuWindow(0).Checked = tBoxFloating
+    FormMain.MnuWindow(1).Checked = imgWinFloating
+    
+    g_WindowManager.setFloatState TOOLBOX_WINDOW, tBoxFloating
+    g_WindowManager.setFloatState IMAGE_WINDOW, imgWinFloating
+    
+    'Register the main form
     g_WindowManager.registerParentForm FormMain
     
         
@@ -1281,8 +1294,8 @@ Public Sub LoadAccelerators()
         .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuPlayMacroRecording, True, True, True, False
         
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(0), False, True, False, False
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(1), False, True, False, False
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(3), False, True, False, False
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(4), False, True, False, False
                 
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"

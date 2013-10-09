@@ -112,7 +112,7 @@ End Enum
 
 'API calls for window positioning and tracking
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
@@ -121,10 +121,10 @@ Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 'Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 
 'Child window tracking
@@ -145,6 +145,46 @@ Private cSubclass As cSelfSubHookCallback
 'XML handling (used to save/load window locations) is handled through a specialized class
 Private xmlEngine As pdXML
 Private windowDataPath As String
+
+'Toolboxes and child windows can be floated or docked (as a group - not individually!  e.g. all toolboxes can be docked, or all can be floated)
+' These variables track the floating/docked state.
+Private toolboxesFloating As Boolean, imagesFloating As Boolean
+
+
+'Set floating/docked state of toolboxes or image windows
+Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Boolean)
+
+    Select Case winType
+    
+        'Toolboxes
+        Case TOOLBOX_WINDOW
+                    
+            'Set the main tracking variable
+            toolboxesFloating = isFloating
+                    
+            'If toolboxes have been loaded, reset their position accordingly
+            If (numOfPDWindows > 0) Then
+            
+                
+            
+            End If
+        
+        'Image windows
+        Case IMAGE_WINDOW
+        
+            'Set the main tracking variable
+            imagesFloating = isFloating
+        
+            'If images have been loaded, reset their position accordingly
+            If (numOfPDWindows > 0) Then
+        
+                
+                
+            End If
+    
+    End Select
+    
+End Sub
 
 'If a window had location data previously stored, this function will retrieve that data and move the window into place.
 ' If window data cannot be found, the form will be moved to the requested pseudo-location supplied by the second parameter.
@@ -459,7 +499,7 @@ Private Sub Class_Initialize()
     Set xmlEngine = New pdXML
     windowDataPath = g_UserPreferences.getPresetPath & "Program_WindowLocations.xml"
     loadAllWindowLocations
-
+        
 End Sub
 
 Private Sub Class_Terminate()
