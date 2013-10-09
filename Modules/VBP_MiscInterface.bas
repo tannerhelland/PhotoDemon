@@ -207,7 +207,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.MnuZoomOut.Enabled = newState
                 FormMain.MnuSelectTop.Enabled = newState
                 FormMain.MnuAdjustmentsTop.Enabled = newState
-                FormMain.MnuWindowTop.Enabled = newState
+                'FormMain.MnuWindowTop.Enabled = newState
                 
                 For i = 0 To FormMain.MnuSpecificZoom.Count - 1
                     FormMain.MnuSpecificZoom(i).Enabled = newState
@@ -839,5 +839,5 @@ End Function
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.Y
+    getPixelHeightOfString = txtSize.y
 End Function

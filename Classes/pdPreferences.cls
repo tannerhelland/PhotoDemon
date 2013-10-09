@@ -357,6 +357,8 @@ Private Sub createNewPreferencesFile()
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
     xmlEngine.writeTag "Core", "", True
         xmlEngine.writeTag "DisplayIDEWarning", "True"
+        xmlEngine.writeTag "FloatingToolboxes", "False"
+        xmlEngine.writeTag "FloatingImageWindows", "False"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "HideLeftPanel", "False"
         xmlEngine.writeTag "HideRightPanel", "False"
