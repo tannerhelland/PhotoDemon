@@ -1121,37 +1121,12 @@ Private Sub Form_Load()
     
     'Now that the main form is visible, we can load all tool windows.
     
-    'If this is the first time the program is being run, manually position the tool windows in usable places
-    If g_IsFirstRun Or (Not g_UserPreferences.doesValueExist("Tools", toolbar_Main.Name & "_Visible")) Then
-    
-        'By default, set the primary toolbar to immediately inside the client area, in the top-left corner
-        'g_WindowManager.requestIdealPosition toolbar_Main.hWnd, 0
-        
-        
-        'By default, set the selection toolbar to immediately inside the client area, in the top-right corner
-        'g_WindowManager.requestIdealPosition toolbar_Selections.hWnd, 1
-        
-        
-    'If this is not first-run, check each tool window, and if it was previously visible, load and position it accordingly.
-    Else
-    
-        'Main toolbar
-        'If g_UserPreferences.GetPref_Boolean("Tools", toolbar_Main.Name & "_Visible", True) Then
-        
-        'End If
-    
-    End If
-    
-    'Now that all toolbars are properly positioned, register them with the window manager
-    g_WindowManager.registerChildForm toolbar_Main, TOOLBOX_WINDOW, 1
+    'Register each toolbar with the window manager, then display it
+    g_WindowManager.registerChildForm toolbar_Main, TOOLBOX_WINDOW, 1, MAIN_TOOLBOX
     toolbar_Main.Show vbModeless, Me
-    g_WindowManager.registerChildForm toolbar_Selections, TOOLBOX_WINDOW, 2
+    g_WindowManager.registerChildForm toolbar_Selections, TOOLBOX_WINDOW, 2, SELECTION_TOOLBOX
     toolbar_Selections.Show vbModeless, Me
-    
-    
-    
-    
-    
+            
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
     

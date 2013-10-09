@@ -7,6 +7,7 @@ Begin VB.UserControl colorSelector
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4680
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

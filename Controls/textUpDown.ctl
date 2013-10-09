@@ -1,11 +1,13 @@
 VERSION 5.00
 Begin VB.UserControl textUpDown 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BackStyle       =   0  'Transparent
    ClientHeight    =   420
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   1125
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

@@ -1,11 +1,13 @@
 VERSION 5.00
 Begin VB.UserControl fxPreviewCtl 
    AccessKeys      =   "T"
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   5685
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5760
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -103,7 +105,7 @@ Private originalImage As pdLayer, fxImage As pdLayer
 Private curImageState As Boolean
 
 'GetPixel is used to retrieve colors from the image
-Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'Mouse events are raised with the help of a bluMouseEvents class
 Private WithEvents cMouseEvents As bluMouseEvents
@@ -243,9 +245,9 @@ Private Sub lblBeforeToggle_Click()
 End Sub
 
 'If color selection is allowed, raise that event now
-Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If isColorSelectionAllowed Then
-        curColor = GetPixel(picPreview.hDC, X, Y)
+        curColor = GetPixel(picPreview.hDC, x, y)
         If AllowColorSelection Then colorJustClicked = 1
         RaiseEvent ColorSelected
     End If
@@ -254,7 +256,7 @@ End Sub
 'When the user is selecting a color, we want to give them a preview of how that color will affect the previewed image.
 ' This is handled in the _MouseDown event above.  After the color has been selected, we want to restore the original
 ' image on a subsequent mouse move, in case the user wants to select a different color.
-Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     If colorJustClicked > 0 Then
     

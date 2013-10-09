@@ -1,11 +1,13 @@
 VERSION 5.00
 Begin VB.UserControl smartOptionButton 
    Appearance      =   0  'Flat
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   390
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3270
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   12
@@ -218,11 +220,11 @@ Private Sub chkFirst_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
-Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub optButton_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
@@ -288,7 +290,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Value = True
 End Sub
 
