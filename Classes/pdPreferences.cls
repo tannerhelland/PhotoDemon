@@ -358,7 +358,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Core", "", True
         xmlEngine.writeTag "DisplayIDEWarning", "True"
         xmlEngine.writeTag "FloatingToolbars", "False"
-        xmlEngine.writeTag "FloatingImageWindows", "False"
+        xmlEngine.writeTag "FloatingImageWindows", "True"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "HideLeftPanel", "False"
         xmlEngine.writeTag "HideRightPanel", "False"
