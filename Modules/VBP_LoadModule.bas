@@ -921,7 +921,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_FixScrolling = True
-        
             PrepareViewport pdImages(CurrentImage).containingForm, "PreLoadImage"
             
             'Note the window state, as it may be important in the future
@@ -930,15 +929,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
             If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
                 pdImages(CurrentImage).containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
+                g_WindowManager.requestWindowResync pdImages(CurrentImage).indexInWindowManager
                 
-            'Otherwise, ask the window manager to position the window for us
+            'If image windows are docked, the window manager will have already positioned the window for us.
             Else
-                
             
             End If
-                'pdImages(CurrentImage).containingForm.Left = targetImage.WindowLeft
-                'pdImages(CurrentImage).containingForm.Top = targetImage.WindowTop
-                'MsgBox targetImage.WindowLeft & "," & targetImage.WindowTop
             
             'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
             ' bottom edges don't fall outside the MDI client area

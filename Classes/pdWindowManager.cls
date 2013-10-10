@@ -239,9 +239,25 @@ Private windowDataPath As String
 Private toolbarsFloating As Boolean, imagesFloating As Boolean
 
 'When the main form is being moved or resized, it will trigger the movement of all child forms to match.  We set this variable to TRUE
-' so that child forms don't waste time and energy ...
+' so that child forms don't waste time and energy handling window move messages that have already been handled.
 Private mainFormTriggeredChange As Boolean
 
+'If external (or internal) functions move windows around on their own, they can manually request resyncing the window's offset.
+Public Sub requestWindowResync(ByVal winIndex As Long)
+    
+    'Get the parent's window rect
+    Dim parentRect As winRect
+    GetWindowRect mainWindowHwnd, parentRect
+    
+    'Get the child's window rect
+    Dim childRect As winRect
+    GetWindowRect pdWindows(winIndex).hWnd, childRect
+    
+    'Store the new offset values
+    pdWindows(winIndex).offsetX = childRect.x1 - parentRect.x1
+    pdWindows(winIndex).offsetY = childRect.y1 - parentRect.y1
+    
+End Sub
 
 'External functions can have us retrieve a window rect for them
 Friend Sub getWindowRectByIndex(ByVal winIndex As Long, ByRef srcRect As winRect)
@@ -369,13 +385,8 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long)
     'Move the window into place
     MoveWindow pdWindows(winIndex).hWnd, newPositionRect.x1, newPositionRect.y1, newPositionRect.x2 - newPositionRect.x1, newPositionRect.y2 - newPositionRect.y1, 1
     
-    'Update the window's stored offset
-    Dim parentRect As winRect
-    GetWindowRect mainWindowHwnd, parentRect
-    
-    'Store the new offset values
-    pdWindows(winIndex).offsetX = newPositionRect.x1 - parentRect.x1
-    pdWindows(winIndex).offsetY = newPositionRect.y1 - parentRect.y1
+    'Resync the window's offset
+    requestWindowResync winIndex
 
 End Sub
 
@@ -637,10 +648,8 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             
     End Select
     
-    'Finallly, update this window's rect, and store its offset (so that the children windows will stay in their proper location)
-    GetWindowRect pdWindows(winIndex).hWnd, childRect
-    pdWindows(winIndex).offsetX = childRect.x1 - mainFormRect.x1
-    pdWindows(winIndex).offsetY = childRect.y1 - mainFormRect.y1
+    'Finally, update this window's rect, and store its offset (so that the children windows will stay in their proper location)
+    requestWindowResync winIndex
 
 End Sub
 
@@ -902,7 +911,8 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING, WM_MOVING
     
-    'In the future, it may be helpful to know when PD loses focus.  I am leaving this code here "just in case"
+    'In the future, it may be helpful to know when PD loses focus (e.g. to dump images from RAM to the hard drive).
+    ' Thus I am leaving this code here "just in case".
     'cSubclass.ssc_AddMsg parentHwnd, MSG_AFTER, WM_ACTIVATEAPP, WM_ACTIVATE
     
     'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
@@ -956,11 +966,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     updateWindowStyle numOfPDWindows, True
         
     'Update this window's offset (because it may have been moved by the above function)
-    With pdWindows(numOfPDWindows)
-        GetWindowRect .hWnd, childRect
-        .offsetX = childRect.x1 - parentRect.x1
-        .offsetY = childRect.y1 - parentRect.y1
-    End With
+    requestWindowResync numOfPDWindows
     
     'If this is an image window, notify the corresponding pdImages() entry of this window's location in the window manager.
     If pdWindows(numOfPDWindows).typeOfWindow = IMAGE_WINDOW Then pdImages(imageWindowIndex).indexInWindowManager = numOfPDWindows
