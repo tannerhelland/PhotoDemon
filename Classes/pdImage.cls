@@ -170,8 +170,11 @@ Option Explicit
     Public selectionActive As Boolean
     
     'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
-    ' NOTE: FREEIMAGE IS REQUIRED FOR METADATA HANDLING.
+    ' NOTE: EXIFTOOL IS REQUIRED FOR METADATA HANDLING.
     Public imgMetadata As pdMetadata
+    
+    'This image's location in the window manager.  We cache this value so we can quickly access information about this image's window.
+    Public indexInWindowManager As Long
     
 'When this layer is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
@@ -420,13 +423,13 @@ Public Sub ClearUndos()
     'Using a temporary string, destroy every possible Undo file
     Dim tempFile As String
     
-    Dim X As Long
-    For X = 0 To UndoTotal
-        tempFile = GenerateUndoFile(X)
+    Dim x As Long
+    For x = 0 To UndoTotal
+        tempFile = GenerateUndoFile(x)
         If FileExist(tempFile) Then Kill tempFile
-        tempFile = GenerateUndoFile(X) & ".selection"
+        tempFile = GenerateUndoFile(x) & ".selection"
         If FileExist(tempFile) Then Kill tempFile
-    Next X
+    Next x
     
     'Set the current and maximum Undo number to 0
     UndoNum = 0
@@ -573,7 +576,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     leftOffset = mainSelection.boundLeft
     topOffset = mainSelection.boundTop
     
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     Dim thisAlpha As Long
     Dim blendAlpha As Double
     
@@ -583,26 +586,26 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     Dim dstLayerCD As Long, dstQuickX As Long
     dstLayerCD = dstLayer.getLayerColorDepth \ 8
             
-    For X = 0 To dstLayer.getLayerWidth - 1
-        dstQuickX = X * dstLayerCD
-        srcQuickX = (leftOffset + X) * srcLayerCD
-    For Y = 0 To dstLayer.getLayerHeight - 1
+    For x = 0 To dstLayer.getLayerWidth - 1
+        dstQuickX = x * dstLayerCD
+        srcQuickX = (leftOffset + x) * srcLayerCD
+    For y = 0 To dstLayer.getLayerHeight - 1
     
-        srcQuickY = topOffset + Y
-        thisAlpha = selData((leftOffset + X) * 3, srcQuickY)
+        srcQuickY = topOffset + y
+        thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
         
-        dstImageData(dstQuickX, Y) = srcImageData(srcQuickX, srcQuickY)
-        dstImageData(dstQuickX + 1, Y) = srcImageData(srcQuickX + 1, srcQuickY)
-        dstImageData(dstQuickX + 2, Y) = srcImageData(srcQuickX + 2, srcQuickY)
+        dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
+        dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
+        dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
         If srcLayerCD = 4 Then
             blendAlpha = thisAlpha / 255
-            dstImageData(dstQuickX + 3, Y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
+            dstImageData(dstQuickX + 3, y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
         Else
-            dstImageData(dstQuickX + 3, Y) = thisAlpha
+            dstImageData(dstQuickX + 3, y) = thisAlpha
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'Clear all array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

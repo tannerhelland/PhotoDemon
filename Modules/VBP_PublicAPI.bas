@@ -19,6 +19,14 @@ Public Type RECT
     Bottom  As Long
 End Type
 
+'Most API calls handle window position and movement in terms of a rect-type variable
+Public Type winRect
+    x1 As Long
+    y1 As Long
+    x2 As Long
+    y2 As Long
+End Type
+
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)

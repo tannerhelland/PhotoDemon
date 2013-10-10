@@ -504,7 +504,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to toggle the command button state of the toolbox buttons
+'Used to toggle the command button state of the toolbar buttons
 Private Const BM_SETSTATE = &HF3
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
@@ -789,7 +789,7 @@ End Sub
 
 Private Sub Form_Load()
 
-    'Render images to the toolbox command buttons
+    'Render images to the toolbar command buttons
     Dim i As Long
     
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.

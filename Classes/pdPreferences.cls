@@ -285,7 +285,7 @@ Public Sub loadUserSettings()
     g_UseFancyFonts = GetPref_Boolean("Interface", "UseFancyFonts", False)
     
     'Check if the user wants large images automatically zoomed when loaded
-    g_AutosizeLargeImages = GetPref_Long("Loading", "InitialImageZoom", 0)
+    g_AutozoomLargeImages = GetPref_Long("Loading", "InitialImageZoom", 0)
     
     'Grab the last-used common dialog filters
     g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
@@ -357,7 +357,7 @@ Private Sub createNewPreferencesFile()
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
     xmlEngine.writeTag "Core", "", True
         xmlEngine.writeTag "DisplayIDEWarning", "True"
-        xmlEngine.writeTag "FloatingToolboxes", "False"
+        xmlEngine.writeTag "FloatingToolbars", "False"
         xmlEngine.writeTag "FloatingImageWindows", "False"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "HideLeftPanel", "False"

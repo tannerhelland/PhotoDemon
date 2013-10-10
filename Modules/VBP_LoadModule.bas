@@ -192,13 +192,13 @@ Public Sub LoadTheProgram()
     
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
     Dim tBoxFloating As Boolean, imgWinFloating As Boolean
-    tBoxFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Toolboxes", False)
+    tBoxFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False)
     imgWinFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False)
     
     FormMain.MnuWindow(0).Checked = tBoxFloating
     FormMain.MnuWindow(1).Checked = imgWinFloating
     
-    g_WindowManager.setFloatState TOOLBOX_WINDOW, tBoxFloating
+    g_WindowManager.setFloatState TOOLBAR_WINDOW, tBoxFloating
     g_WindowManager.setFloatState IMAGE_WINDOW, imgWinFloating
     
     'Register the main form
@@ -745,7 +745,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
                 'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
-                If targetImage.mainLayer.verifyAlphaChannel = False Then
+                If Not targetImage.mainLayer.verifyAlphaChannel Then
                 
                     If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
                 
@@ -871,20 +871,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If this is a primary image, render it to the screen and update all relevant interface elements
+        ' If this is a primary image, update all relevant interface elements (image size display, 24/32bpp options, custom form icon, etc)
         '*************************************************************************************************************************************
                 
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
-            
-            'If the form isn't maximized or minimized then set its dimensions to just slightly bigger than the image size
-            Message "Resizing image to fit screen..."
-    
-            'If the user wants us to resize the image to fit on-screen, do that now
-            If g_AutosizeLargeImages = 0 Then FitImageToViewport True
-                    
-            'If the window is not maximized or minimized, fit the form around the picture box
-            If pdImages(CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True, True
             
             'Update relevant user interface controls
             DisplaySize targetImage.Width, targetImage.Height
@@ -902,35 +893,59 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             If targetImage.mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
             
-            'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
+            'Render an icon-sized version of this image as the MDI child form's icon
+            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon pdImages(CurrentImage).containingForm
+            
+        
+        '*************************************************************************************************************************************
+        ' If this is a primary image, register the new window with the window manager, then display the image on-screen
+        '*************************************************************************************************************************************
+            
+            
+            'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
+            ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
+            g_WindowManager.registerChildForm pdImages(CurrentImage).containingForm, IMAGE_WINDOW, , , CurrentImage
+            
+            Message "Resizing image to fit screen..."
+    
+            'If the user wants us to resize the image to fit on-screen, do that now
+            If g_AutozoomLargeImages = 0 Then FitImageToViewport True
+                    
+            'If image windows are not docked, fit the window around the (now properly-zoomed) image
+            If g_WindowManager.getFloatState(IMAGE_WINDOW) Then FitWindowToImage True, True
+            
+            'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
+            ' update the zoom combo box to match the zoom assigned by the window-fit function.
             g_FixScrolling = False
             toolbar_Main.CmbZoom.ListIndex = targetImage.CurrentZoomValue
         
-            'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
+            'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_FixScrolling = True
         
             PrepareViewport pdImages(CurrentImage).containingForm, "PreLoadImage"
             
-            'Render an icon-sized version of this image as the MDI child form's icon
-            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon pdImages(CurrentImage).containingForm
-            
             'Note the window state, as it may be important in the future
             targetImage.WindowState = pdImages(CurrentImage).containingForm.WindowState
             
-            'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
-            If pdImages(CurrentImage).containingForm.WindowState = 0 Then
-                pdImages(CurrentImage).containingForm.Left = targetImage.WindowLeft
-                pdImages(CurrentImage).containingForm.Top = targetImage.WindowTop
-                'MsgBox targetImage.WindowLeft & "," & targetImage.WindowTop
+            'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
+            If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+                pdImages(CurrentImage).containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
+                
+            'Otherwise, ask the window manager to position the window for us
+            Else
+                
+            
             End If
+                'pdImages(CurrentImage).containingForm.Left = targetImage.WindowLeft
+                'pdImages(CurrentImage).containingForm.Top = targetImage.WindowTop
+                'MsgBox targetImage.WindowLeft & "," & targetImage.WindowTop
             
             'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
             ' bottom edges don't fall outside the MDI client area
             'If the user wants us to resize the image to fit on-screen, do that now
-            If g_AutosizeLargeImages = 1 Then FitWindowToViewport
+            If g_AutozoomLargeImages = 1 Then FitWindowToViewport
             
-            'Register this window with PhotoDemon's window manager
-            g_WindowManager.registerChildForm pdImages(CurrentImage).containingForm, IMAGE_WINDOW
+            
                         
             'Finally, add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
@@ -1574,7 +1589,7 @@ Public Sub DuplicateCurrentImage()
     Message "Resizing image to fit screen..."
     
     'If the user wants us to resize the image to fit on-screen, do that now
-    If g_AutosizeLargeImages = 0 Then
+    If g_AutozoomLargeImages = 0 Then
         FitImageToViewport True
     Else
         FitWindowToViewport True

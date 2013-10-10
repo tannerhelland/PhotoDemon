@@ -2493,8 +2493,8 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Long "Loading", "Multipage Image Prompt", cmbMultiImage.ListIndex
     
         'START initial zoom
-            g_AutosizeLargeImages = cmbLargeImages.ListIndex
-            g_UserPreferences.SetPref_Long "Loading", "Initial Image Zoom", g_AutosizeLargeImages
+            g_AutozoomLargeImages = cmbLargeImages.ListIndex
+            g_UserPreferences.SetPref_Long "Loading", "Initial Image Zoom", g_AutozoomLargeImages
         'END initial zoom
     
     
