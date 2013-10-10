@@ -1,12 +1,12 @@
 VERSION 5.00
 Begin VB.Form FormMain 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   10455
    ClientLeft      =   225
    ClientTop       =   855
    ClientWidth     =   17205
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -2727,11 +2727,13 @@ Private Sub MnuWindow_Click(Index As Integer)
             
             'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
             If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                For i = 0 To NumOfWindows
-                    If (Not pdImages(i) Is Nothing) Then
-                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
-                    End If
-                Next i
+                If NumOfImagesLoaded > 0 Then
+                    For i = 0 To NumOfImagesLoaded
+                        If (Not pdImages(i) Is Nothing) Then
+                            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
+                        End If
+                    Next i
+                End If
             End If
             
         'Floating image windows
@@ -2743,11 +2745,13 @@ Private Sub MnuWindow_Click(Index As Integer)
             g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(1).Checked
             
             'All image windows need to be redrawn, because the available client area will have changed.
-            For i = 0 To NumOfWindows
-                If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
-                End If
-            Next i
+            If NumOfImagesLoaded > 0 Then
+                For i = 0 To NumOfImagesLoaded
+                    If (Not pdImages(i) Is Nothing) Then
+                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
+                    End If
+                Next i
+            End If
             
         '<separator>
         Case 2

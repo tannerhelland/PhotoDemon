@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormImage 
    AutoRedraw      =   -1  'True
-   BackColor       =   &H00FFFFFF&
+   BackColor       =   &H80000005&
    Caption         =   "Image Window"
    ClientHeight    =   2295
    ClientLeft      =   120
@@ -782,7 +782,7 @@ End Sub
 Private Sub Form_Resize()
     
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
-    If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) Then
+    If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(Me.hWnd) > 0) Then
         PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
@@ -790,10 +790,15 @@ Private Sub Form_Resize()
     ' resized to fit on screen, but if an image is loaded into a maximized window, the height value will remain
     ' at 1. If the user ever un-maximized the window, it will leave a bare title bar behind, which looks
     ' terrible. Thus, let's check for a height of 1, and if found resize the form to a larger (arbitrary) value.
-    If (Me.WindowState = vbNormal) And (Me.ScaleHeight <= 1) Then
-        Me.Height = 6000
-        Me.Width = 8000
-    End If
+    'If (Me.WindowState = vbNormal) And (Me.ScaleHeight <= 1) Then
+    '    Me.Height = 6000
+    '    Me.Width = 8000
+    'End If
+    
+    'Remember this window state in the relevant pdImages object
+    pdImages(Me.Tag).WindowState = Me.WindowState
+    
+    Exit Sub
     
     Dim i As Long
     
@@ -832,10 +837,7 @@ Private Sub Form_Resize()
         End If
         
     End If
-    
-    'Remember this window state in the relevant pdImages object
-    pdImages(Me.Tag).WindowState = Me.WindowState
-        
+            
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

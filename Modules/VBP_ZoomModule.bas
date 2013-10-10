@@ -69,7 +69,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'Copy the current back buffer into the front buffer
     frontBuffer.createFromExistingLayer pdImages(curImage).backBuffer
-
+    
     'Check to see if a selection is active.
     If pdImages(curImage).selectionActive Then
     
@@ -288,17 +288,22 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 
 End Sub
 
-'PrepareViewport is responsible for calculating the position and size of the main viewport picture box, as well as the maximum values
-' and positions of the viewport scroll bars.  It needs to be executed when:
+'Per its name, PrepareViewport is responsible for calculating the maximum values and positions of the viewport scroll bars
+' based on an image form's size and position.  It needs to be executed when:
     '1) an image is first loaded
     '2) an image's zoom value is changed
-    '3) other special cases (resizing an image, rotating an image - basically anything that changes the size of the back buffer)
+    '3) an image's container form is resized
+    '4) other special cases (resizing an image, rotating an image - basically anything that changes the size of the back buffer)
 
 'Note that specific zoom values are calculated in other routines; they are only USED here.
 
 'This routine requires a target form as a parameter.  This form will almost always be pdImages(CurrentImage).containingForm, but in
 ' certain rare cases (cascading windows, for example), it may be necessary to recalculate the viewport and scroll bars
 ' in non-active windows - in those cases, the calling routine must specify which viewport it wants rebuilt.
+
+'Because redrawing a viewport from scratch is an expensive operation, this function also takes a "reasonForRedraw" parameter, which
+' is an untranslated string supplied by the caller.  I use this to track when viewport redraws are requested, and to try and keep
+' such requests as infrequent as possible.
 Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
 
     'Don't attempt to resize the scroll bars if g_FixScrolling is disabled. This is used to provide a smoother user experience,
@@ -325,14 +330,14 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
     
-    'Calculate the width and height of the full-size viewport based on the current zoom value
+    'Calculate the width and height of a full-size viewport based on the current zoom value
     zWidth = (pdImages(curImage).Width * ZoomVal)
     zHeight = (pdImages(curImage).Height * ZoomVal)
     
     'Grab the form dimensions; these are necessary for rendering the scroll bars
     Dim FormWidth As Long, FormHeight As Long
-    FormWidth = formToBuffer.ScaleWidth
-    FormHeight = formToBuffer.ScaleHeight
+    FormWidth = g_WindowManager.getClientWidth(formToBuffer.hWnd)  'formToBuffer.ScaleWidth
+    FormHeight = g_WindowManager.getClientHeight(formToBuffer.hWnd)  'formToBuffer.ScaleHeight
     
     'These variables will reflect whether or not scroll bars are enabled; this is used rather than the .Enabled property so we
     ' can defer rendering the scroll bars until the last possible instant (rather than turning them on-and-off mid-subroutine)
