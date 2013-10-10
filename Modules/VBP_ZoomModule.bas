@@ -336,8 +336,8 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'Grab the form dimensions; these are necessary for rendering the scroll bars
     Dim FormWidth As Long, FormHeight As Long
-    FormWidth = g_WindowManager.getClientWidth(formToBuffer.hWnd)  'formToBuffer.ScaleWidth
-    FormHeight = g_WindowManager.getClientHeight(formToBuffer.hWnd)  'formToBuffer.ScaleHeight
+    FormWidth = g_WindowManager.getClientWidth(formToBuffer.hWnd)
+    FormHeight = g_WindowManager.getClientHeight(formToBuffer.hWnd)
     
     'These variables will reflect whether or not scroll bars are enabled; this is used rather than the .Enabled property so we
     ' can defer rendering the scroll bars until the last possible instant (rather than turning them on-and-off mid-subroutine)
