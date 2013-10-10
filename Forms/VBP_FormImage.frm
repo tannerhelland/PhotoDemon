@@ -782,7 +782,7 @@ End Sub
 Private Sub Form_Resize()
     
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
-    If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And (Me.Visible = True) And (FormMain.WindowState <> vbMinimized) Then
+    If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) Then
         PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
@@ -879,7 +879,7 @@ Private Sub Form_Unload(Cancel As Integer)
             End If
         Next i
     
-    'If this is the last window, we need to make the toolboxes children of the main form again.  Otherwise, they will be mistakenly unloaded.
+    'If this is the last window, we need to make the toolbars children of the main form again.  Otherwise, they will be mistakenly unloaded.
     Else
         g_WindowManager.allImageWindowsUnloaded
     End If

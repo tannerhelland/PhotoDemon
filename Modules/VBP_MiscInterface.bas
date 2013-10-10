@@ -142,7 +142,7 @@ Public Sub hideWaitScreen()
 End Sub
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
-' and toolbox buttons)
+' and toolbar buttons)
 Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
     
     Dim i As Long

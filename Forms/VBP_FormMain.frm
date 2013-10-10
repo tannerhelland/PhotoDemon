@@ -1113,18 +1113,14 @@ Private Sub Form_Load()
     'Hide the selection tools
     metaToggle tSelection, False
     
-
-            
-    'After the program has been successfully loaded, change the focus to the Open Image button
+    'We can now display the main form
     Me.Visible = True
     'If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
     
-    'Now that the main form is visible, we can load all tool windows.
-    
-    'Register each toolbar with the window manager, then display it
-    g_WindowManager.registerChildForm toolbar_Main, TOOLBOX_WINDOW, 1, MAIN_TOOLBOX
+    'Now that the main form is visible, we can load all tool windows.  Register each toolbar with the window manager, then display it.
+    g_WindowManager.registerChildForm toolbar_Main, TOOLBAR_WINDOW, 1, MAIN_TOOLBOX
     toolbar_Main.Show vbModeless, Me
-    g_WindowManager.registerChildForm toolbar_Selections, TOOLBOX_WINDOW, 2, SELECTION_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Selections, TOOLBAR_WINDOW, 2, SELECTION_TOOLBOX
     toolbar_Selections.Show vbModeless, Me
             
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
@@ -2721,13 +2717,22 @@ Private Sub MnuWindow_Click(Index As Integer)
 
     Select Case Index
     
-        'Floating toolboxes
+        'Floating toolbars
         Case 0
         
             'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
             FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolboxes", FormMain.MnuWindow(0).Checked
-            g_WindowManager.setFloatState TOOLBOX_WINDOW, FormMain.MnuWindow(0).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", FormMain.MnuWindow(0).Checked
+            g_WindowManager.setFloatState TOOLBAR_WINDOW, FormMain.MnuWindow(0).Checked
+            
+            'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
+            If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+                For i = 0 To NumOfWindows
+                    If (Not pdImages(i) Is Nothing) Then
+                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
+                    End If
+                Next i
+            End If
             
         'Floating image windows
         Case 1
@@ -2736,7 +2741,14 @@ Private Sub MnuWindow_Click(Index As Integer)
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", FormMain.MnuWindow(1).Checked
             g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(1).Checked
-        
+            
+            'All image windows need to be redrawn, because the available client area will have changed.
+            For i = 0 To NumOfWindows
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
+                End If
+            Next i
+            
         '<separator>
         Case 2
         

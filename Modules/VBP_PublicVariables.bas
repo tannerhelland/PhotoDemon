@@ -56,7 +56,7 @@ End Type
 Public g_Zoom As ZoomData
 
 'Whether or not to resize large images to fit on-screen (0 means "yes," 1 means "no")
-Public g_AutosizeLargeImages As Long
+Public g_AutozoomLargeImages As Long
 
 'The path where DLLs and related support libraries are kept, currently "ProgramPath\App\PhotoDemon\Plugins\"
 Public g_PluginPath As String
