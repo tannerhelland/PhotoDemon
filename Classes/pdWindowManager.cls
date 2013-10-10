@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 10/October/13
-'Last update: image windows are now dockable
+'Last update: many minor fixes to improve performance and reliability
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2013, it became time to rewrite its window method once again - this time, to a true multi-window project, separate from
@@ -238,10 +238,10 @@ Private windowDataPath As String
 ' These variables track the floating/docked state.
 Private toolbarsFloating As Boolean, imagesFloating As Boolean
 
-'When image windows are docked, this function can be used to properly set the window's initial position.
-'Public Sub setInitialPositionOfDockedChild()
-'
-'End Sub
+'When the main form is being moved or resized, it will trigger the movement of all child forms to match.  We set this variable to TRUE
+' so that child forms don't waste time and energy ...
+Private mainFormTriggeredChange As Boolean
+
 
 'External functions can have us retrieve a window rect for them
 Friend Sub getWindowRectByIndex(ByVal winIndex As Long, ByRef srcRect As winRect)
@@ -282,9 +282,9 @@ Friend Sub getActualMainFormClientRect(ByRef modifiedRect As winRect)
     
     'Provide a 1px border around the image
     clientRect.x1 = clientRect.x1 + 1
-    'clientRect.x2 = clientRect.x2 + 1
+    clientRect.x2 = clientRect.x2 - 1
     clientRect.y1 = clientRect.y1 + 1
-    'clientRect.y2 = clientRect.y2 - 1
+    clientRect.y2 = clientRect.y2 - 1
     
     modifiedRect = clientRect
 
@@ -338,7 +338,7 @@ End Function
 Private Sub setWindowPosByAlignment(ByVal winIndex As Long)
 
     Dim newPositionRect As winRect
-    
+        
     'Retrieve the window's current size
     Dim curWinRect As winRect
     GetWindowRect pdWindows(winIndex).hWnd, curWinRect
@@ -346,7 +346,7 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long)
     'Retrieve the client area of the main form
     Dim mainClientRect As winRect
     getClientCoordsRelativeToScreen mainWindowHwnd, mainClientRect
-    
+        
     'At present, we assume that a window is either aligned top or bottom, right or left.  (e.g. it must be aligned to a corner)
     ' This makes positioning much simpler.
     
@@ -420,13 +420,13 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
 End Sub
 
 'Given a window, return its horizontal (or vertical) client size, in pixels.
-Private Function getClientWidth(ByVal targetHwnd As Long) As Long
+Public Function getClientWidth(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
     GetClientRect targetHwnd, tmpRect
     getClientWidth = tmpRect.x2
 End Function
 
-Private Function getClientHeight(ByVal targetHwnd As Long) As Long
+Public Function getClientHeight(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
     GetClientRect targetHwnd, tmpRect
     getClientHeight = tmpRect.y2
@@ -450,22 +450,22 @@ End Function
 Public Function getHorizontalChromeSize(ByVal targetHwnd As Long) As Long
 
     'Ask the OS to report window and client size
-    Dim windowRect As winRect, clientRect As winRect
-    GetWindowRect targetHwnd, windowRect
+    Dim WindowRECT As winRect, clientRect As winRect
+    GetWindowRect targetHwnd, WindowRECT
     GetClientRect targetHwnd, clientRect
     
-    getHorizontalChromeSize = (windowRect.x2 - windowRect.x1) - clientRect.x2
+    getHorizontalChromeSize = (WindowRECT.x2 - WindowRECT.x1) - clientRect.x2
     
 End Function
 
 Public Function getVerticalChromeSize(ByVal targetHwnd As Long) As Long
 
     'Ask the OS to report window and client size
-    Dim windowRect As winRect, clientRect As winRect
-    GetWindowRect targetHwnd, windowRect
+    Dim WindowRECT As winRect, clientRect As winRect
+    GetWindowRect targetHwnd, WindowRECT
     GetClientRect targetHwnd, clientRect
     
-    getVerticalChromeSize = (windowRect.y2 - windowRect.y1) - clientRect.y2
+    getVerticalChromeSize = (WindowRECT.y2 - WindowRECT.y1) - clientRect.y2
     
 End Function
 
@@ -521,7 +521,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetWindowRect pdWindows(winIndex).hWnd, childRect
                 
                 'Set the border style to fixed toolbar
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_BORDER Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_BORDER Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
                 
                 'Using this new border style, calculate a desired window rectangle while forcing the client size to the window's
                 ' original dimensions.  (Note that this does not matter the *first* time a floating window is rendered, because
@@ -552,7 +552,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetClientRect pdWindows(winIndex).hWnd, clientDimensions
                 
                 'Remove the window border
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CHILD
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CHILD 'Or WS_CLIPCHILDREN
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE
                 SetWindowPos pdWindows(winIndex).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
                 
@@ -596,7 +596,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetWindowRect pdWindows(winIndex).hWnd, childRect
                 
                 'Set the border style to sizable dialog
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
                 
                 'Using this new border style, calculate a desired window rectangle while forcing the client size to the window's
                 ' original dimensions.  (Note that this does not matter the *first* time a floating window is rendered, because
@@ -623,7 +623,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             Else
             
                 'Remove the window border
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CLIPCHILDREN
                 SetWindowPos pdWindows(winIndex).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
                 
                 'Force the window to take up the full client area of the parent
@@ -900,8 +900,7 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_MOVING, WM_SIZING
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING, WM_MOVING
     
     'In the future, it may be helpful to know when PD loses focus.  I am leaving this code here "just in case"
     'cSubclass.ssc_AddMsg parentHwnd, MSG_AFTER, WM_ACTIVATEAPP, WM_ACTIVATE
@@ -1106,6 +1105,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     Dim i As Long
     
     'Before doing anything else, check the user-supplied param.  If it is >= 64, we know this is a child (toolbar or image) window.
+    ' (We know this because we add the user parameter when subclassing starts, and we add it using the system 64 + "index in array").
     If lParamUser >= 64 Then
     
         'Retrieve the window's index in our master tracking array
@@ -1117,6 +1117,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
+                
+                If mainFormTriggeredChange Then Exit Sub
                 
                 'lParam contains a pointer to this window's rect location.  Retrieve it now.
                 Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
@@ -1169,11 +1171,15 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'lParam contains a pointer to the window's rect location.  Retrieve it now.
                 Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
                 
+                mainFormTriggeredChange = True
+                
                 'Move each child window, while retaining the current offset
                 For i = 0 To numOfPDWindows - 1
                     GetWindowRect pdWindows(i).hWnd, childRect
                     MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
                 Next i
+                
+                mainFormTriggeredChange = False
                 
                 'Remember the main window's location
                 updateStoredWindowLocation mainWindowIndex
@@ -1184,8 +1190,26 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Note that in the case of sizing, wParam contains a value that identifies the edge being used for the resize.
                 ' Determine this via use of the winResizeEdge Enum.
                 
+                mainFormTriggeredChange = True
+                
                 'lParam contains a pointer to the window's rect location.  Retrieve it now.
-                Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
+                CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
+                
+                'If the user has set the window size too small, force the window to a minimum size (640x480).
+                If (curWinRect.x2 - curWinRect.x1) < 640 Then
+                    curWinRect.x2 = curWinRect.x1 + 640
+                    CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
+                End If
+                
+                If (curWinRect.y2 - curWinRect.y1) < 480 Then
+                    curWinRect.y2 = curWinRect.y1 + 480
+                    CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
+                End If
+                
+                'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
+                ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
+                ' window changes causing more window changes).
+                SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOSENDCHANGING Or SWP_NOACTIVATE
                 
                 'Move each child window, while retaining the current offset
                 For i = 0 To numOfPDWindows - 1
@@ -1224,6 +1248,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                     End Select
                     
+                    mainFormTriggeredChange = False
+                    
                 Next i
                 
                 'Remember the main window's location
@@ -1248,6 +1274,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'Move each child window, while retaining the current offset
                     For i = 0 To numOfPDWindows - 1
                         
+                        GetWindowRect pdWindows(i).hWnd, childRect
+                        
                         Select Case pdWindows(i).typeOfWindow
                     
                             'Toolbars
@@ -1266,7 +1294,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                             'Images
                             Case IMAGE_WINDOW
-                                MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
+                                If imagesFloating Then
+                                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
+                                Else
+                                    'Force the window to take up the full client area of the parent
+                                    getActualMainFormClientRect childRect
+                                    MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
+                                End If
                         
                         End Select
                         
@@ -1276,9 +1310,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ElseIf wParam = SC_MINIMIZE Then
                 
                     For i = 0 To numOfPDWindows - 1
-                        If pdWindows(i).formReference.WindowState <> vbMinimized Then
-                            pdWindows(i).forciblyMinimized = True
-                            pdWindows(i).formReference.WindowState = vbMinimized
+                        If Not (pdWindows(i).formReference Is Nothing) Then
+                            If pdWindows(i).formReference.WindowState <> vbMinimized Then
+                                pdWindows(i).forciblyMinimized = True
+                                pdWindows(i).formReference.WindowState = vbMinimized
+                            End If
                         End If
                     Next i
                 
