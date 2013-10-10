@@ -78,6 +78,7 @@ Private Const SWP_NOSENDCHANGING As Long = &H400
 Private Const SWP_NOSIZE As Long = &H1
 Private Const SWP_HIDEWINDOW As Long = &H80
 Private Const SWP_SHOWWINDOW As Long = &H40
+Private Const SWP_NOZORDER As Long = &H4
 
 Public Enum enWindowStyles
     WS_BORDER = &H800000
@@ -424,7 +425,7 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
         'Change the height, then resize the window
         childRect.y1 = curMainFormClient.y1
         childRect.y2 = curMainFormClient.y1 + modifiedClientHeight
-        SetWindowPos pdWindows(winIndex).hWnd, 0, childRect.x1, curMainFormClient.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 0
+        SetWindowPos pdWindows(winIndex).hWnd, 0, childRect.x1, curMainFormClient.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
         
     End If
 
@@ -1233,8 +1234,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                 ' position instead.
                                 setWindowPosByAlignment i
                                 
-                                'MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
+                                'Stretch the toolbars to fit the full width/height of the main form (as applicable)
                                 fixDockedToolbarSize i
+                                
                             End If
                     
                         'Images
@@ -1246,9 +1248,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                 'Force all child windows to the new size of the parent
                                 getActualMainFormClientRect childRect
                                 MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                
-                                'Force a full repaint (to make sure children controls are also repainted)
-                                'forceFullWindowRefresh winIndex
                             
                             End If
                         
