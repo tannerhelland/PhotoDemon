@@ -410,7 +410,7 @@ Private Sub createNewPreferencesFile()
     
     'Write out the "loading" block of preferences:
     xmlEngine.writeTag "Loading", "", True
-        xmlEngine.writeTag "AutomaticallyLoadMetadata", "True"
+        xmlEngine.writeTag "AutomaticallyLoadMetadata", "False"
         xmlEngine.writeTag "InitialImageZoom", "0"
         xmlEngine.writeTag "MultipageImagePrompt", "0"
         xmlEngine.writeTag "HDRToneMapping", "True"
