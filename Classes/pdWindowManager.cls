@@ -533,7 +533,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetWindowRect pdWindows(winIndex).hWnd, childRect
                 
                 'Set the border style to fixed toolbar
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_BORDER Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_BORDER Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU 'Or WS_CLIPCHILDREN
                 
                 'Using this new border style, calculate a desired window rectangle while forcing the client size to the window's
                 ' original dimensions.  (Note that this does not matter the *first* time a floating window is rendered, because
@@ -752,6 +752,35 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
             'Apply those values to the window, starting with border style, then state, then coordinates
             .formReference.BorderStyle = .lastWindowBorder
             .formReference.WindowState = .lastWindowState
+            
+            'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
+            ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
+            
+            'Note that this check relies on access to PD's g_cMonitors class, which returns the full virtual desktop dimensions, and
+            ' not just the primary monitor's (as VB's Screen object does).
+            Dim winWidth As Long, winHeight As Long
+            winWidth = .lastPosition.x2 - .lastPosition.x1
+            winHeight = .lastPosition.y2 - .lastPosition.y1
+            
+            If (.lastPosition.x1 + winWidth) < g_cMonitors.DesktopLeft Then
+                .lastPosition.x1 = g_cMonitors.DesktopLeft
+                .lastPosition.x2 = .lastPosition.x1 + winWidth
+            End If
+            
+            If .lastPosition.x1 > (g_cMonitors.DesktopLeft + g_cMonitors.DesktopWidth) Then
+                .lastPosition.x1 = (g_cMonitors.DesktopWidth - winWidth)
+                .lastPosition.x2 = .lastPosition.x1 + winWidth
+            End If
+            
+            If .lastPosition.y1 < g_cMonitors.DesktopTop Then
+                .lastPosition.y1 = g_cMonitors.DesktopTop
+                .lastPosition.y2 = .lastPosition.y1 + winHeight
+            End If
+            
+            If .lastPosition.y1 > g_cMonitors.DesktopHeight Then
+                .lastPosition.y1 = (g_cMonitors.DesktopHeight - winHeight)
+                .lastPosition.y2 = .lastPosition.y1 + winHeight
+            End If
             
             MoveWindow .hWnd, .lastPosition.x1, .lastPosition.y1, .lastPosition.x2 - .lastPosition.x1, .lastPosition.y2 - .lastPosition.y1, 1
             
