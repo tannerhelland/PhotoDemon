@@ -314,8 +314,8 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     'Make sure the window isn't minimized
     If pdImages(CurrentImage).containingForm.WindowState = vbMinimized Then Exit Sub
     
-    'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with.
-    ' Ask the window manager for that value now (which is calculated based on the main form's area, plus toolbar sizes).
+    'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with. Ask the window manager
+    ' for that value now (which is calculated based on the main form's area, minus toolbar sizes if docked).
     Dim maxWidth As Long, maxHeight As Long
     maxWidth = g_WindowManager.requestActualMainFormClientWidth
     maxHeight = g_WindowManager.requestActualMainFormClientHeight
@@ -374,50 +374,52 @@ End Sub
 Public Sub FitOnScreen()
     
     If NumOfWindows = 0 Then Exit Sub
-    
-    'Gotta change the scalemode to twips to match the MDI form
-    pdImages(CurrentImage).containingForm.ScaleMode = 1
         
     'Disable AutoScroll, because that messes with our calculations
     g_FixScrolling = False
     
+    'Note that all window dimension and position information comes from PD's window manager.  Because we modify window borders on-the-fly,
+    ' VB's internal measurements are not accurate, so we must rely on the window manager's measurements.
+    
     'If the image is minimized, restore it
     If pdImages(CurrentImage).containingForm.WindowState = vbMinimized Then pdImages(CurrentImage).containingForm.WindowState = 0
     
-    'Now let's get some dimensions for our calculations
-    Dim tDif As Long, hDif As Long
-    'This variable determines the difference between scalewidth and width...
-    tDif = pdImages(CurrentImage).containingForm.Width - pdImages(CurrentImage).containingForm.ScaleWidth
-    '...while this variable does the same thing for scaleheight and height
-    hDif = pdImages(CurrentImage).containingForm.Height - pdImages(CurrentImage).containingForm.ScaleHeight
-
+    'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with. Ask the window manager
+    ' for that value now (which is calculated based on the main form's area, minus toolbar sizes if docked).
+    Dim maxWidth As Long, maxHeight As Long
+    maxWidth = g_WindowManager.requestActualMainFormClientWidth
+    maxHeight = g_WindowManager.requestActualMainFormClientHeight
+    
+    'If image windows are floating, we need to factor window chrome (borders) into the maximum available size
+    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+        maxWidth = maxWidth - g_WindowManager.getHorizontalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
+        maxHeight = maxHeight - g_WindowManager.getVerticalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
+    End If
+    
     'Use this to track zoom
     Dim zVal As Long
     zVal = 0
     
-    Dim x As Long
+    Dim i As Long
     
-    'Run a loop backwards through the possible zoom values to see
-    'if one will make it fit at the maximum possible size
-    For x = 0 To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelX * pdImages(CurrentImage).Width * g_Zoom.ZoomArray(x)) < FormMain.ScaleWidth - tDif Then
-            zVal = x
+    'Run a loop backwards through the possible zoom values, until we find one that fits the current image
+    For i = 0 To g_Zoom.ZoomCount Step 1
+        If (pdImages(CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
+            zVal = i
             Exit For
         End If
-    Next x
+    Next i
     
-    'Now we do the same thing for the height
-    For x = zVal To g_Zoom.ZoomCount Step 1
-        If (Screen.TwipsPerPixelY * pdImages(CurrentImage).Height * g_Zoom.ZoomArray(x)) < FormMain.ScaleHeight - hDif Then
-            zVal = x
+    'Now do the same thing for the height, starting at whatever zoom value we previously found
+    For i = zVal To g_Zoom.ZoomCount Step 1
+        If (pdImages(CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
+            zVal = i
             Exit For
         End If
-    Next x
+    Next i
+    
     toolbar_Main.CmbZoom.ListIndex = zVal
     pdImages(CurrentImage).CurrentZoomValue = zVal
-    
-    'Set the scalemode back to pixels
-    pdImages(CurrentImage).containingForm.ScaleMode = 3
     
     'Re-enable scrolling
     g_FixScrolling = True
