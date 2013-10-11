@@ -959,7 +959,6 @@ Begin VB.Form FormMain
    End
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
-      WindowList      =   -1  'True
       Begin VB.Menu MnuWindow 
          Caption         =   "Floating toolboxes"
          Checked         =   -1  'True
@@ -2687,23 +2686,8 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
-    If ctlAccelerator.Key(nIndex) = "Prev_Image" Or ctlAccelerator.Key(nIndex) = "Next_Image" Then
-    
-        'If one (or zero) images are loaded, ignore this accelerator
-        If NumOfWindows <= 1 Then Exit Sub
-    
-        'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
-        Dim MDIClient As Long
-        MDIClient = GetWindow(FormMain.hWnd, 5)
-        
-        'Use the API to instruct the MDI window to move one window forward or back
-        If ctlAccelerator.Key(nIndex) = "Prev_Image" Then
-            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
-        Else
-            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
-        End If
-    
-    End If
+    If ctlAccelerator.Key(nIndex) = "Next_Image" Then moveToNextChildWindow True
+    If ctlAccelerator.Key(nIndex) = "Prev_Image" Then moveToNextChildWindow False
     
     lastAccelerator = Timer
     
@@ -2758,25 +2742,11 @@ Private Sub MnuWindow_Click(Index As Integer)
         
         'Next image
         Case 3
-            'If one (or zero) images are loaded, ignore this option
-            If NumOfWindows <= 1 Then Exit Sub
+            moveToNextChildWindow True
             
-            'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
-            MDIClient = GetWindow(FormMain.hWnd, 5)
-                
-            'Use the API to instruct the MDI window to move one window forward or back
-            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 1&
-    
         'Previous image
         Case 4
-            'If one (or zero) images are loaded, ignore this command
-            If NumOfWindows <= 1 Then Exit Sub
-            
-            'Get the handle to the MDIClient area of FormMain; note that the "5" used is GW_CHILD per MSDN documentation
-            MDIClient = GetWindow(FormMain.hWnd, 5)
-                
-            'Use the API to instruct the MDI window to move one window forward or back
-            SendMessage MDIClient, ByVal &H224, vbNullString, ByVal 0&
+            moveToNextChildWindow False
     
         '<separator>
         Case 5
@@ -2847,6 +2817,47 @@ Private Sub MnuWindow_Click(Index As Integer)
     
     End Select
     
+
+End Sub
+
+'The "Next Image" and "Previous Image" options simply wrap this function.
+Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
+
+    'If one (or zero) images are loaded, ignore this option
+    If NumOfWindows <= 1 Then Exit Sub
+    
+    Dim i As Long
+    
+    'Loop through all available images, and when we find one that is not this image, activate it and exit
+    If moveForward Then
+        i = CurrentImage + 1
+    Else
+        i = CurrentImage - 1
+    End If
+    
+    Do While i <> CurrentImage
+            
+        'Loop back to the start of the window collection
+        If moveForward Then
+            If i > NumOfImagesLoaded Then i = 0
+        Else
+            If i < 0 Then i = NumOfImagesLoaded
+        End If
+                
+        If Not pdImages(i) Is Nothing Then
+            If pdImages(i).IsActive Then
+                pdImages(i).containingForm.SetFocus
+                Exit Do
+            End If
+        End If
+                
+        If moveForward Then
+            i = i + 1
+        Else
+            i = i - 1
+        End If
+                
+    Loop
 
 End Sub
 
