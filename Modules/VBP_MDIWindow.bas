@@ -257,28 +257,35 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
         'Prevent automatic recalculation of the viewport scroll bars until we finish our calculations here
         g_FixScrolling = False
         
+        'We need a copy of two rects handled by the window manager:
+        ' 1) the main form's client area, which we will use to reposition the window if an image is being loaded for the first time.
+        ' 2) the current image window's rect, which we need if this action is happening at some time other than image load.
+        Dim mainClientRect As winRect, curWindowRect As winRect
+        g_WindowManager.getActualMainFormClientRect mainClientRect
+        g_WindowManager.getWindowRectByIndex pdImages(CurrentImage).indexInWindowManager, curWindowRect
+        
         'Start by determining if the image's canvas falls outside the viewport area.  Note that we will repeat this process
         ' twice: once for horizontal, and again for vertical.
-        If pdImages(CurrentImage).containingForm.Left + pdImages(CurrentImage).containingForm.Width > FormMain.ScaleWidth Then
+        If curWindowRect.x2 > mainClientRect.x2 Then
             
             resizeNeeded = True
             
             'This variable determines the difference between the MDI client area's available width and the current child form's
             ' width, taking into account the .Left position and an arbitrary offset (currently 12 pixels)
             Dim newWidth As Long
-            newWidth = FormMain.ScaleWidth - pdImages(CurrentImage).containingForm.Left - fixDPI(12) * Screen.TwipsPerPixelX
-            pdImages(CurrentImage).containingForm.Width = newWidth
+            newWidth = mainClientRect.x2 - curWindowRect.x1
+            pdImages(CurrentImage).containingForm.Width = Screen.TwipsPerPixelX * newWidth
             
         End If
         
         'Now repeat the process for the vertical measurement
-        If pdImages(CurrentImage).containingForm.Top + pdImages(CurrentImage).containingForm.Height > FormMain.ScaleHeight Then
+        If curWindowRect.y2 > mainClientRect.y2 Then
         
             resizeNeeded = True
         
             Dim newHeight As Long
-            newHeight = FormMain.ScaleHeight - pdImages(CurrentImage).containingForm.Top - fixDPI(12) * Screen.TwipsPerPixelY
-            pdImages(CurrentImage).containingForm.Height = newHeight
+            newHeight = mainClientRect.y2 - curWindowRect.y1
+            pdImages(CurrentImage).containingForm.Height = Screen.TwipsPerPixelY * newHeight
             
         End If
             
