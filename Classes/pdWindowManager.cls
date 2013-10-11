@@ -533,7 +533,8 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetWindowRect pdWindows(winIndex).hWnd, childRect
                 
                 'Set the border style to fixed toolbar
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_BORDER Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU 'Or WS_CLIPCHILDREN
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_BORDER Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU 'Or WS_CHILD 'Or WS_CLIPCHILDREN
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
                 
                 'Using this new border style, calculate a desired window rectangle while forcing the client size to the window's
                 ' original dimensions.  (Note that this does not matter the *first* time a floating window is rendered, because
@@ -564,7 +565,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetClientRect pdWindows(winIndex).hWnd, clientDimensions
                 
                 'Remove the window border
-                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CHILD 'Or WS_CLIPCHILDREN
+                SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE 'Or WS_CHILD Or WS_CLIPCHILDREN
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE
                 SetWindowPos pdWindows(winIndex).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
                 
@@ -1079,7 +1080,9 @@ Private Sub Class_Initialize()
     Set xmlEngine = New pdXML
     windowDataPath = g_UserPreferences.getPresetPath & "Program_WindowLocations.xml"
     loadAllWindowLocations
-        
+    
+    mainFormTriggeredChange = False
+    
 End Sub
 
 Private Sub Class_Terminate()
