@@ -186,8 +186,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Main.cmdUndo.ToolTip = pdImages(CurrentImage).getUndoProcessID
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
+                toolbar_Main.cmdUndo.ToolTip = pdImages(g_CurrentImage).getUndoProcessID
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             Else
                 toolbar_Main.cmdUndo.ToolTip = ""
@@ -228,8 +228,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Main.cmdRedo.ToolTip = pdImages(CurrentImage).getRedoProcessID
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
+                toolbar_Main.cmdRedo.ToolTip = pdImages(g_CurrentImage).getRedoProcessID
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             Else
                 toolbar_Main.cmdRedo.ToolTip = ""
@@ -333,8 +333,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                     
                     'If an on-demand model is being used, check to see if the user has attempted to load metadata for this image.
                     ' If they have, set the toggle to match the GPS metadata's state.
-                    If pdImages(CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-                        If FormMain.MnuMetadata(3).Enabled <> pdImages(CurrentImage).imgMetadata.hasGPSMetadata Then FormMain.MnuMetadata(3).Enabled = pdImages(CurrentImage).imgMetadata.hasGPSMetadata
+                    If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+                        If FormMain.MnuMetadata(3).Enabled <> pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then FormMain.MnuMetadata(3).Enabled = pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
                     Else
                         If Not FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = True
                     End If

@@ -29,11 +29,11 @@ Public Sub CreateUndoData(ByVal processID As String, Optional ByVal undoType As 
     
     'All undo work is handled internally in the pdImage class
     'Message "Saving Undo data..."
-    pdImages(CurrentImage).BuildUndo processID, undoType, relevantTool
+    pdImages(g_CurrentImage).BuildUndo processID, undoType, relevantTool
     
     'Since an undo exists, enable the Undo button and disable the Redo button
-    metaToggle tUndo, pdImages(CurrentImage).UndoState
-    metaToggle tRedo, pdImages(CurrentImage).RedoState
+    metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+    metaToggle tRedo, pdImages(g_CurrentImage).RedoState
     
     '"Fade last effect" is reserved for filters and effects only
     If (undoType = 0) Or (undoType = 1) Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
@@ -48,23 +48,23 @@ Public Sub RestoreUndoData()
     
     'Let the internal pdImage Undo handler take care of any changes
     'Message "Restoring Undo data..."
-    pdImages(CurrentImage).Undo
+    pdImages(g_CurrentImage).Undo
     
     'Select the relevant tool for this action, if relevant
-    If pdImages(CurrentImage).getUndoTool > -1 Then
-        toolbar_Selections.selectNewTool pdImages(CurrentImage).getUndoTool
+    If pdImages(g_CurrentImage).getUndoTool > -1 Then
+        toolbar_Selections.selectNewTool pdImages(g_CurrentImage).getUndoTool
     End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
-    metaToggle tUndo, pdImages(CurrentImage).UndoState
-    metaToggle tRedo, pdImages(CurrentImage).RedoState
-    FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+    metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+    metaToggle tRedo, pdImages(g_CurrentImage).RedoState
+    FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
         
     'Launch the undo bitmap loading routine
-    LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType
+    LoadUndo pdImages(g_CurrentImage).GetUndoFile, pdImages(g_CurrentImage).getUndoProcessType
     
     'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     g_UndoRedoActive = False
     
@@ -77,15 +77,15 @@ Public Sub rollBackLastUndo()
     
     'Let the internal pdImage Undo handler take care of any changes
     Message "Removing unneeded undo data..."
-    pdImages(CurrentImage).rollBackUndo
+    pdImages(g_CurrentImage).rollBackUndo
     
     'Set the undo, redo, Fade last effect buttons to their proper state
-    metaToggle tUndo, pdImages(CurrentImage).UndoState
-    metaToggle tRedo, pdImages(CurrentImage).RedoState
-    FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+    metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+    metaToggle tRedo, pdImages(g_CurrentImage).RedoState
+    FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
     
     'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     g_UndoRedoActive = False
 
@@ -118,11 +118,11 @@ Public Sub ClearUndo(ByVal imageID As Long)
     pdImages(imageID).ClearUndos
     
     'If the active form is requesting the clear, adjust the Undo button/menu to match
-    If imageID = CurrentImage Then
-        metaToggle tUndo, pdImages(CurrentImage).UndoState
+    If imageID = g_CurrentImage Then
+        metaToggle tUndo, pdImages(g_CurrentImage).UndoState
     
         'Also, disable fading any previous effects on this image (since there is no longer an image to use for the function)
-        FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+        FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
     End If
 
 End Sub
@@ -134,23 +134,23 @@ Public Sub RestoreRedoData()
     
     'Let pdImage handle the Redo by itself
     Message "Restoring Redo data..."
-    pdImages(CurrentImage).Redo
+    pdImages(g_CurrentImage).Redo
     
     'Select the relevant tool for this action, if relevant
-    If pdImages(CurrentImage).getUndoTool > -1 Then
-        toolbar_Selections.selectNewTool pdImages(CurrentImage).getUndoTool
+    If pdImages(g_CurrentImage).getUndoTool > -1 Then
+        toolbar_Selections.selectNewTool pdImages(g_CurrentImage).getUndoTool
     End If
     
     'Set the undo, redo, Fade last effect buttons to their proper state
-    metaToggle tUndo, pdImages(CurrentImage).UndoState
-    metaToggle tRedo, pdImages(CurrentImage).RedoState
-    FormMain.MnuFadeLastEffect.Enabled = pdImages(CurrentImage).UndoState
+    metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+    metaToggle tRedo, pdImages(g_CurrentImage).RedoState
+    FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
         
     'Load the Redo bitmap file
-    LoadUndo pdImages(CurrentImage).GetUndoFile, pdImages(CurrentImage).getUndoProcessType, True
+    LoadUndo pdImages(g_CurrentImage).GetUndoFile, pdImages(g_CurrentImage).getUndoProcessType, True
     
     'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     g_UndoRedoActive = False
     
@@ -158,11 +158,11 @@ End Sub
 
 'Subroutine for generating an Undo filename
 Private Function GenerateUndoFile(ByVal uIndex As Integer) As String
-    GenerateUndoFile = g_UserPreferences.getTempPath & "~cPDU" & CurrentImage & "_" & uIndex & ".tmp"
+    GenerateUndoFile = g_UserPreferences.getTempPath & "~cPDU" & g_CurrentImage & "_" & uIndex & ".tmp"
 End Function
 
 'Subroutine for returning the path of the last Undo file (used for fading last effect)
 Public Function GetLastUndoFile() As String
     'Launch the undo loading routine
-    GetLastUndoFile = GenerateUndoFile(pdImages(CurrentImage).UndoNum - 2)
+    GetLastUndoFile = GenerateUndoFile(pdImages(g_CurrentImage).UndoNum - 2)
 End Function

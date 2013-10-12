@@ -507,7 +507,7 @@ Private Sub updateAnchorButtons()
 
 End Sub
 
-Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub
@@ -525,8 +525,8 @@ End Sub
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
-    tudWidth = (pdImages(CurrentImage).Width / 2) + (Rnd * pdImages(CurrentImage).Width)
-    tudHeight = (pdImages(CurrentImage).Height / 2) + (Rnd * pdImages(CurrentImage).Height)
+    tudWidth = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    tudHeight = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
 End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
@@ -541,8 +541,8 @@ End Sub
 Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(CurrentImage).Width
-    tudHeight.Value = pdImages(CurrentImage).Height
+    tudWidth.Value = pdImages(g_CurrentImage).Width
+    tudHeight.Value = pdImages(g_CurrentImage).Height
     
     'Make borders fill with black by default
     colorPicker.Color = RGB(0, 0, 0)
@@ -566,7 +566,7 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
     
         'Hide the background color selectors
         colorPicker.Visible = False
@@ -587,15 +587,15 @@ Private Sub Form_Load()
     allowedToUpdateHeight = True
     
     'Establish ratios
-    wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
-    hRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
+    wRatio = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
+    hRatio = pdImages(g_CurrentImage).Height / pdImages(g_CurrentImage).Width
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(CurrentImage).Width
-    tudHeight.Value = pdImages(CurrentImage).Height
+    tudWidth.Value = pdImages(g_CurrentImage).Width
+    tudHeight.Value = pdImages(g_CurrentImage).Height
     
     'If the source image is 32bpp, hide the color selection box and change the text to match
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
         lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
     Else
         lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")
@@ -614,13 +614,13 @@ End Sub
 Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite)
 
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = pdImages(CurrentImage).Width
-    srcHeight = pdImages(CurrentImage).Height
+    srcWidth = pdImages(g_CurrentImage).Width
+    srcHeight = pdImages(g_CurrentImage).Height
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
     
@@ -679,21 +679,21 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     'Create a temporary layer to hold the new canvas
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+    tmpLayer.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth, newBackColor
 
     'Bitblt the old image into its new position on the canvas
-    BitBlt tmpLayer.getLayerDC, dstX, dstY, srcWidth, srcHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt tmpLayer.getLayerDC, dstX, dstY, srcWidth, srcHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
     
     'The temporary layer now holds the new canvas and image.  Copy it back into the main image.
-    pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
     Set tmpLayer = Nothing
     
     'Update the main image's size values
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    pdImages(g_CurrentImage).updateSize
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(CurrentImage).containingForm, "Canvas resize"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "Canvas resize"
     
     Message "Finished."
     

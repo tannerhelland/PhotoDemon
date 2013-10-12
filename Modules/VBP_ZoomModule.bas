@@ -24,7 +24,7 @@ Attribute VB_Name = "Viewport_Handler"
 Option Explicit
 
 'This is the ListIndex of the FormMain zoom combo box that corresponds to 100%
-Public Const ZoomIndex100 As Long = 11
+Public Const ZOOM_100_PERCENT As Long = 11
 
 'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
 ' and the zoom value is 200%, zWidth and zHeight will be 200.)
@@ -34,7 +34,7 @@ Private zWidth As Double, zHeight As Double
 Private srcWidth As Double, srcHeight As Double
 
 'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-Private ZoomVal As Double
+Private zoomVal As Double
 
 'These variables are the offset, as determined by the scroll bar values
 Private srcX As Long, srcY As Long
@@ -174,11 +174,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     curImage = CLng(formToBuffer.Tag)
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
+    zoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-    srcWidth = pdImages(curImage).targetWidth / ZoomVal
-    srcHeight = pdImages(curImage).targetHeight / ZoomVal
+    srcWidth = pdImages(curImage).targetWidth / zoomVal
+    srcHeight = pdImages(curImage).targetHeight / zoomVal
         
     'These variables are the offset, as determined by the scroll bar values
     If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
@@ -187,7 +187,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
     
-    If ZoomVal < 1 Then
+    If zoomVal < 1 Then
         
         'ZOOMED OUT
         
@@ -265,9 +265,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
         Dim bltWidth As Long, bltHeight As Long
         bltWidth = pdImages(curImage).targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue)) - (pdImages(curImage).targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue))))
-        srcWidth = bltWidth / ZoomVal
+        srcWidth = bltWidth / zoomVal
         bltHeight = pdImages(curImage).targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue)) - (pdImages(curImage).targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue))))
-        srcHeight = bltHeight / ZoomVal
+        srcHeight = bltHeight / zoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
         If pdImages(curImage).mainLayer.getLayerColorDepth = 32 Then
@@ -297,7 +297,7 @@ End Sub
 
 'Note that specific zoom values are calculated in other routines; they are only USED here.
 
-'This routine requires a target form as a parameter.  This form will almost always be pdImages(CurrentImage).containingForm, but in
+'This routine requires a target form as a parameter.  This form will almost always be pdImages(g_CurrentImage).containingForm, but in
 ' certain rare cases (cascading windows, for example), it may be necessary to recalculate the viewport and scroll bars
 ' in non-active windows - in those cases, the calling routine must specify which viewport it wants rebuilt.
 
@@ -306,10 +306,10 @@ End Sub
 ' such requests as infrequent as possible.
 Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
 
-    'Don't attempt to resize the scroll bars if g_FixScrolling is disabled. This is used to provide a smoother user experience,
+    'Don't attempt to resize the scroll bars if g_AllowViewportRendering is disabled. This is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
-    ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, g_FixScrolling is utilized.)
-    If Not g_FixScrolling Then Exit Sub
+    ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, g_AllowViewportRendering is utilized.)
+    If Not g_AllowViewportRendering Then Exit Sub
     
     'Make sure the form is valid
     If formToBuffer Is Nothing Then Exit Sub
@@ -327,12 +327,12 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     On Error GoTo ZoomErrorHandler
     
     'Get the mathematical zoom multiplier (based on the current combo box setting - for example, 0.50 for "50% zoom")
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
     
     'Calculate the width and height of a full-size viewport based on the current zoom value
-    zWidth = (pdImages(curImage).Width * ZoomVal)
-    zHeight = (pdImages(curImage).Height * ZoomVal)
+    zWidth = (pdImages(curImage).Width * zoomVal)
+    zHeight = (pdImages(curImage).Height * zoomVal)
     
     'Grab the form dimensions; these are necessary for rendering the scroll bars
     Dim FormWidth As Long, FormHeight As Long
@@ -428,7 +428,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If hScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
-        If ZoomVal <= 1 Then
+        If zoomVal <= 1 Then
             newScrollMax = pdImages(curImage).Width - Int(viewportWidth * g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
@@ -447,7 +447,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If vScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
-        If ZoomVal <= 1 Then
+        If zoomVal <= 1 Then
             newScrollMax = pdImages(curImage).Height - Int(viewportHeight * g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
@@ -645,6 +645,6 @@ Public Sub initializeViewportEngine()
         g_Zoom.ZoomFactor(25) = 100
     
     'Set the main form's zoom combo box to display "100%"
-    toolbar_Main.CmbZoom.ListIndex = ZoomIndex100
+    toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT
 
 End Sub

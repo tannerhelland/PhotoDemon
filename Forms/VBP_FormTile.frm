@@ -288,8 +288,8 @@ Private Sub cboTarget_Click()
     cmdBar.markPreviewStatus False
 
     Dim iWidth As Long, iHeight As Long
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    iWidth = pdImages(g_CurrentImage).Width
+    iHeight = pdImages(g_CurrentImage).Height
 
     Select Case cboTarget.ListIndex
     
@@ -363,9 +363,9 @@ End Sub
 Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional yTarget As Long, Optional ByVal isPreview As Boolean = False)
         
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
     
@@ -379,8 +379,8 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     Dim targetWidth As Long, targetHeight As Long
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    iWidth = pdImages(g_CurrentImage).Width
+    iHeight = pdImages(g_CurrentImage).Height
         
     Select Case tType
         Case 0
@@ -406,7 +406,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If targetHeight > MaxSize Then targetHeight = MaxSize
     
     'Resize the target picture box to this new size
-    tmpLayer.createBlank targetWidth, targetHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    tmpLayer.createBlank targetWidth, targetHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
         
     'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
     Dim xLoop As Long, yLoop As Long
@@ -416,29 +416,29 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If isPreview = False Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
-    For X = 0 To xLoop
-    For Y = 0 To yLoop
-        BitBlt tmpLayer.getLayerDC, X * iWidth, Y * iHeight, iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
-    Next Y
-        If isPreview = False Then SetProgBarVal X
-    Next X
+    For x = 0 To xLoop
+    For y = 0 To yLoop
+        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
+    Next y
+        If isPreview = False Then SetProgBarVal x
+    Next x
     
     If Not isPreview Then
     
         SetProgBarVal xLoop
     
         'With the tiling complete, copy the temporary layer over the existing layer
-        pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+        pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
         
         'Erase the temporary layer to save on memory
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing
         
         'Display the new size
-        pdImages(CurrentImage).updateSize
-        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        pdImages(g_CurrentImage).updateSize
+        DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         SetProgBarVal 0
         
@@ -491,7 +491,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage pdImages(CurrentImage).mainLayer
+    fxPreview.setOriginalImage pdImages(g_CurrentImage).mainLayer
     
     'Populate the combo box
     cboTarget.AddItem " current screen size", 0
@@ -510,8 +510,8 @@ Private Sub updateDescription()
 
     Dim iWidth As Long, iHeight As Long
     
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    iWidth = pdImages(g_CurrentImage).Width
+    iHeight = pdImages(g_CurrentImage).Height
 
     Dim xVal As Double, yVal As Double
     Dim xText As String, yText As String

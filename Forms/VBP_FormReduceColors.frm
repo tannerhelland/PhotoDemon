@@ -160,7 +160,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'SetDIBitsToDevice is used to interact with the FreeImage DLL
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -218,9 +218,9 @@ End Sub
 Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     'If a selection is active, remove it.
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
@@ -246,8 +246,8 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor 255, 255, 255
             fi_DIB = FreeImage_CreateFromDC(workingLayer.getLayerDC)
         Else
-            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then pdImages(CurrentImage).mainLayer.compositeBackgroundColor 255, 255, 255
-            fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).mainLayer.compositeBackgroundColor 255, 255, 255
+            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
         End If
         
         'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
@@ -262,8 +262,8 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
                 workingLayer.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight, 24
                 SetDIBitsToDevice workingLayer.getLayerDC, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, 0, 0, 0, workingLayer.getLayerHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             Else
-                pdImages(CurrentImage).mainLayer.createBlank pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, 24
-                SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, 0, 0, 0, pdImages(CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                pdImages(g_CurrentImage).mainLayer.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 24
+                SetDIBitsToDevice pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 0, 0, 0, pdImages(g_CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library
@@ -274,7 +274,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             If toPreview Then
                 finalizeImageData toPreview, dstPic
             Else
-                ScrollViewport pdImages(CurrentImage).containingForm
+                ScrollViewport pdImages(g_CurrentImage).containingForm
                 Message "Image successfully quantized to %1 unique colors. ", 256
             End If
             

@@ -57,8 +57,8 @@ Public origIcon32 As Long, origIcon16 As Long
 Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional ByVal bSetAsAppIcon As Boolean = True)
 
     Dim lHwnd As Long
-    Dim cX As Long
-    Dim cY As Long
+    Dim cx As Long
+    Dim cy As Long
     Dim hIconLarge As Long
     Dim hIconSmall As Long
       
@@ -74,17 +74,17 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
         Loop
     End If
        
-    cX = GetSystemMetrics(SM_CXICON)
-    cY = GetSystemMetrics(SM_CYICON)
-    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    cx = GetSystemMetrics(SM_CXICON)
+    cy = GetSystemMetrics(SM_CYICON)
+    hIconLarge = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cx, cy, LR_SHARED)
     origIcon32 = hIconLarge
     
     If bSetAsAppIcon Then SendMessageLong lHwndTop, WM_SETICON, ICON_BIG, hIconLarge
     SendMessageLong hWnd, WM_SETICON, ICON_BIG, hIconLarge
        
-    cX = GetSystemMetrics(SM_CXSMICON)
-    cY = GetSystemMetrics(SM_CYSMICON)
-    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cX, cY, LR_SHARED)
+    cx = GetSystemMetrics(SM_CXSMICON)
+    cy = GetSystemMetrics(SM_CYSMICON)
+    hIconSmall = LoadImageAsString(App.hInstance, sIconResName, IMAGE_ICON, cx, cy, LR_SHARED)
     origIcon16 = hIconSmall
     
     If bSetAsAppIcon Then SendMessageLong lHwndTop, WM_SETICON, ICON_SMALL, hIconSmall

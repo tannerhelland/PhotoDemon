@@ -1,13 +1,20 @@
-Attribute VB_Name = "MDI_Handler"
+Attribute VB_Name = "Image_Window_Handler"
 '***************************************************************************
-'MDI Window Handler
+'Image Window Handler
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 10/September/12
-'Last update: when calling FitOnScreen, maximized forms are now left maximized (previously they were forceably un-maximized)
+'Last updated: 12/October/13
+'Last update: all functions have been rewritten to interact properly with the new window manager class.
 '
-'Interfaces with the main MDI active form; this module handles determining
-'form size in relation to image size, etc.
+'This module contains functions relating to the creation, sizing, and maintenance of the windows (forms) associated with
+' each image loaded by the user.  Even in single-window mode, each loaded image receives its own form.  This form is
+' used to display the image on-screen, and its size is used to determine a number of viewport characteristics (such as
+' whether or not scroll bars are needed to move around the image).
+'
+'Previously this module relied on internal VB measurements (like Form.ScaleWidth) when making viewport decisions.  With
+' the fall '13 addition of floatable/dockable windows, and the full removal of MDI, it became necessary to rewrite much
+' of this code against the program's new window manager (pdWindowManager class).  All calls to g_WindowManager relate
+' to that class, which instead uses WAPI to return various window measurements.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -16,41 +23,29 @@ Attribute VB_Name = "MDI_Handler"
 
 Option Explicit
 
-'The image number PhotoDemon is currently at (always goes up, never down; starts at zero when the program is loaded)
-Public NumOfImagesLoaded As Long
-
-'The current image we are working with (generally CurrentImage)
-Public CurrentImage As Long
-
-'Number of existing windows (goes up or down as images are opened or closed)
-Public NumOfWindows As Long
-
-'This array holds ALL IMPORTANT IMAGE INFORMATION for every loaded image.
-'Undo functionality also exists only within these classes.
-Public pdImages() As pdImage
-
 'Create a new, blank MDI child
 Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
 
-    'Disable viewport adjustments
-    g_FixScrolling = False
+    'The viewport will automatically attempt to update whenever a form is resized.  We forcibly disable such updating by setting
+    ' this value to FALSE prior to working with the viewport.  When we are finished, we must set it to TRUE for the viewport to work!
+    g_AllowViewportRendering = False
 
     'Increase the number of images we're tracking
-    NumOfImagesLoaded = NumOfImagesLoaded + 1
-    ReDim Preserve pdImages(0 To NumOfImagesLoaded) As pdImage
+    g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
+    ReDim Preserve pdImages(0 To g_NumOfImagesLoaded) As pdImage
     
-    Set pdImages(NumOfImagesLoaded) = New pdImage
+    Set pdImages(g_NumOfImagesLoaded) = New pdImage
 
     'This is the actual, physical form object on which an image will reside
     Dim newImageForm As New FormImage
     
     'IMPORTANT: the form tag is the only way we can keep track of separate forms
     'DO NOT CHANGE THIS TAG VALUE!
-    newImageForm.Tag = NumOfImagesLoaded
+    newImageForm.Tag = g_NumOfImagesLoaded
     
     'Remember this ID in the associated image class
-    pdImages(NumOfImagesLoaded).IsActive = True
-    pdImages(NumOfImagesLoaded).imageID = NumOfImagesLoaded
+    pdImages(g_NumOfImagesLoaded).IsActive = True
+    pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
         
     'Set a default window size (in twips)
     newImageForm.Width = 4500
@@ -58,18 +53,18 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     newImageForm.Height = 1
     
     'Default image values
-    Set pdImages(NumOfImagesLoaded).containingForm = newImageForm
-    pdImages(NumOfImagesLoaded).UndoNum = 0
-    pdImages(NumOfImagesLoaded).UndoMax = 0
-    pdImages(NumOfImagesLoaded).UndoState = False
-    pdImages(NumOfImagesLoaded).RedoState = False
-    pdImages(NumOfImagesLoaded).CurrentZoomValue = ZoomIndex100   'Default zoom is 100%
+    Set pdImages(g_NumOfImagesLoaded).containingForm = newImageForm
+    pdImages(g_NumOfImagesLoaded).UndoNum = 0
+    pdImages(g_NumOfImagesLoaded).UndoMax = 0
+    pdImages(g_NumOfImagesLoaded).UndoState = False
+    pdImages(g_NumOfImagesLoaded).RedoState = False
+    pdImages(g_NumOfImagesLoaded).CurrentZoomValue = ZOOM_100_PERCENT   'Default zoom is 100%
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
     Dim mainClientRect As winRect
     g_WindowManager.getActualMainFormClientRect mainClientRect
-    pdImages(NumOfImagesLoaded).WindowLeft = mainClientRect.x1
-    pdImages(NumOfImagesLoaded).WindowTop = mainClientRect.y1
+    pdImages(g_NumOfImagesLoaded).WindowLeft = mainClientRect.x1
+    pdImages(g_NumOfImagesLoaded).WindowTop = mainClientRect.y1
     newImageForm.Left = 0
     newImageForm.Top = g_cMonitors.DesktopHeight
     
@@ -78,19 +73,19 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     If FormMain.Enabled Then newImageForm.SetFocus
     
     'Set this image as the current one
-    CurrentImage = NumOfImagesLoaded
+    g_CurrentImage = g_NumOfImagesLoaded
     
     'Track how many windows we currently have open
-    NumOfWindows = NumOfWindows + 1
+    g_OpenImageCount = g_OpenImageCount + 1
     
     'Run a separate subroutine (see bottom of this page) to enable/disable menus and such if this is the first image to be loaded
     UpdateMDIStatus
     
     'Re-enable viewport adjustments
-    g_FixScrolling = True
+    g_AllowViewportRendering = True
     
     'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
-    pdImages(NumOfImagesLoaded).forInternalUseOnly = forInternalUse
+    pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
     
 End Sub
 
@@ -98,17 +93,17 @@ End Sub
 ' reasonable zoom value at this point (preferably by FitImageToViewport); otherwise, this function may result in a very large form.
 Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False, Optional ByVal isImageLoading As Boolean = False)
         
-    If NumOfWindows = 0 Then Exit Sub
+    If g_OpenImageCount = 0 Then Exit Sub
     
     'If image windows are docked, we don't need to perform this function, as the window manager will automatically handle all
     ' image window positioning.
     If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then Exit Sub
         
     'Make sure the window isn't minimized or maximized
-    If pdImages(CurrentImage).containingForm.WindowState = 0 Then
+    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then
     
         'Disable AutoScroll, because that messes with our calculations
-        g_FixScrolling = False
+        g_AllowViewportRendering = False
     
         'To minimize flickering, we will only apply width/height and top/left changes once.
         ' While calculations are being run, store all changes to variables.
@@ -126,7 +121,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         ' 2) the current image window's rect, which we need if this action is happening at some time other than image load.
         Dim mainClientRect As winRect, curWindowRect As winRect
         g_WindowManager.getActualMainFormClientRect mainClientRect
-        g_WindowManager.getWindowRectByIndex pdImages(CurrentImage).indexInWindowManager, curWindowRect
+        g_WindowManager.getWindowRectByIndex pdImages(g_CurrentImage).indexInWindowManager, curWindowRect
         
         'As a convenience to the caller, we will never allow the form to be larger than...
         '1) the main form's client area, if this function is called when an image is first loaded
@@ -148,12 +143,12 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         
         'Now let's get some dimensions for our calculations.  These values hold chrome (window border) size in both directions
         Dim wDif As Long, hDif As Long
-        wDif = g_WindowManager.getHorizontalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
-        hDif = g_WindowManager.getVerticalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
+        wDif = g_WindowManager.getHorizontalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
+        hDif = g_WindowManager.getVerticalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
         
         'Start our calculations by setting the new width/height to equal the image's current size (while accounting for zoom)
-        curWidth = wDif + (pdImages(CurrentImage).Width * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
-        curHeight = hDif + (pdImages(CurrentImage).Height * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
+        curWidth = wDif + (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
+        curHeight = hDif + (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
         
         'We now handle the fit operation in two possible ways:
         ' 1) If the image is being loaded for the first time, constrain its location to the main form's client area.
@@ -206,7 +201,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         ' the scroll bar that must appear.
         If forceMaxHeight And (Not forceMaxWidth) Then
             
-            curWidth = curWidth + pdImages(CurrentImage).containingForm.VScroll.Width
+            curWidth = curWidth + pdImages(g_CurrentImage).containingForm.VScroll.Width
             
             'If this addition pushes the image off-screen, nudge it slightly left
             If curLeft + curWidth > maxRight Then curLeft = maxRight - curWidth
@@ -214,7 +209,7 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         End If
         
         If forceMaxWidth And (Not forceMaxHeight) Then
-            curHeight = curHeight + pdImages(CurrentImage).containingForm.HScroll.Height
+            curHeight = curHeight + pdImages(g_CurrentImage).containingForm.HScroll.Height
             
             'If this addition pushes the image off-screen, nudge it slightly up
             If curTop + curHeight > maxBottom Then curTop = maxBottom - curHeight
@@ -224,45 +219,45 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         'Apply the changes in whatever manner appropriate (again, this is handled differently if the image is newly loaded; in that case
         ' we want to delay positioning until all prep work is done, to prevent unsightly flickering and jitters)
         If isImageLoading Then
-            pdImages(CurrentImage).WindowLeft = curLeft
-            pdImages(CurrentImage).WindowTop = curTop
-            pdImages(CurrentImage).containingForm.Width = Screen.TwipsPerPixelX * curWidth
-            pdImages(CurrentImage).containingForm.Height = Screen.TwipsPerPixelY * curHeight
+            pdImages(g_CurrentImage).WindowLeft = curLeft
+            pdImages(g_CurrentImage).WindowTop = curTop
+            pdImages(g_CurrentImage).containingForm.Width = Screen.TwipsPerPixelX * curWidth
+            pdImages(g_CurrentImage).containingForm.Height = Screen.TwipsPerPixelY * curHeight
         Else
-            pdImages(CurrentImage).containingForm.Move curLeft * Screen.TwipsPerPixelX, curTop * Screen.TwipsPerPixelY, curWidth * Screen.TwipsPerPixelX, curHeight * Screen.TwipsPerPixelY
+            pdImages(g_CurrentImage).containingForm.Move curLeft * Screen.TwipsPerPixelX, curTop * Screen.TwipsPerPixelY, curWidth * Screen.TwipsPerPixelX, curHeight * Screen.TwipsPerPixelY
         End If
         
         'Re-enable scrolling
-        g_FixScrolling = True
+        g_AllowViewportRendering = True
         
     End If
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
     ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
-    If Not suppressRendering Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToImage"
+    If Not suppressRendering Then PrepareViewport pdImages(g_CurrentImage).containingForm, "FitWindowToImage"
     
 End Sub
 
 'Resize the window so that all four edges are within the current viewport.
 Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = False)
         
-    If NumOfWindows = 0 Then Exit Sub
+    If g_OpenImageCount = 0 Then Exit Sub
     
     Dim resizeNeeded As Boolean
     resizeNeeded = False
         
     'Make sure the window isn't minimized or maximized
-    If pdImages(CurrentImage).containingForm.WindowState = 0 Then
+    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then
     
         'Prevent automatic recalculation of the viewport scroll bars until we finish our calculations here
-        g_FixScrolling = False
+        g_AllowViewportRendering = False
         
         'We need a copy of two rects handled by the window manager:
         ' 1) the main form's client area, which we will use to reposition the window if an image is being loaded for the first time.
         ' 2) the current image window's rect, which we need if this action is happening at some time other than image load.
         Dim mainClientRect As winRect, curWindowRect As winRect
         g_WindowManager.getActualMainFormClientRect mainClientRect
-        g_WindowManager.getWindowRectByIndex pdImages(CurrentImage).indexInWindowManager, curWindowRect
+        g_WindowManager.getWindowRectByIndex pdImages(g_CurrentImage).indexInWindowManager, curWindowRect
         
         'Start by determining if the image's canvas falls outside the viewport area.  Note that we will repeat this process
         ' twice: once for horizontal, and again for vertical.
@@ -274,7 +269,7 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
             ' width, taking into account the .Left position and an arbitrary offset (currently 12 pixels)
             Dim newWidth As Long
             newWidth = mainClientRect.x2 - curWindowRect.x1
-            pdImages(CurrentImage).containingForm.Width = Screen.TwipsPerPixelX * newWidth
+            pdImages(g_CurrentImage).containingForm.Width = Screen.TwipsPerPixelX * newWidth
             
         End If
         
@@ -285,34 +280,34 @@ Public Sub FitWindowToViewport(Optional ByVal suppressRendering As Boolean = Fal
         
             Dim newHeight As Long
             newHeight = mainClientRect.y2 - curWindowRect.y1
-            pdImages(CurrentImage).containingForm.Height = Screen.TwipsPerPixelY * newHeight
+            pdImages(g_CurrentImage).containingForm.Height = Screen.TwipsPerPixelY * newHeight
             
         End If
             
         'Re-enable scrolling
-        g_FixScrolling = True
+        g_AllowViewportRendering = True
         
     End If
     
     'Because external functions may rely on this to redraw the viewport, force a redraw regardless of whether or not
     ' the window was actually fit to the image (unless suppressRendering is specified, obviously)
-    If (Not suppressRendering) And resizeNeeded Then PrepareViewport pdImages(CurrentImage).containingForm, "FitWindowToViewport"
+    If (Not suppressRendering) And resizeNeeded Then PrepareViewport pdImages(g_CurrentImage).containingForm, "FitWindowToViewport"
     
 End Sub
 
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
     
-    If NumOfWindows = 0 Then Exit Sub
+    If g_OpenImageCount = 0 Then Exit Sub
     
     'Disable AutoScroll, because that messes with our calculations
-    g_FixScrolling = False
+    g_AllowViewportRendering = False
     
     'Note that all window dimension and position information comes from PD's window manager.  Because we modify window borders on-the-fly,
     ' VB's internal measurements are not accurate, so we must rely on the window manager's measurements.
     
     'Make sure the window isn't minimized
-    If pdImages(CurrentImage).containingForm.WindowState = vbMinimized Then Exit Sub
+    If pdImages(g_CurrentImage).containingForm.WindowState = vbMinimized Then Exit Sub
     
     'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with. Ask the window manager
     ' for that value now (which is calculated based on the main form's area, minus toolbar sizes if docked).
@@ -322,23 +317,23 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     'If image windows are floating, we need to factor window chrome (borders) into the maximum available size
     If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-        maxWidth = maxWidth - g_WindowManager.getHorizontalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
-        maxHeight = maxHeight - g_WindowManager.getVerticalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
+        maxWidth = maxWidth - g_WindowManager.getHorizontalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
+        maxHeight = maxHeight - g_WindowManager.getVerticalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
     End If
     
     'Use this to track the zoom value required to fit the image on-screen; we will start at 100%, then move downward until we find an ideal zoom.
     Dim zVal As Long
-    zVal = ZoomIndex100
+    zVal = ZOOM_100_PERCENT
     
     Dim i As Long
     
     'First, let's check to see if we need to adjust zoom because the width is too big
-    If pdImages(CurrentImage).Width > maxWidth Then
+    If pdImages(g_CurrentImage).Width > maxWidth Then
         
         'The image is larger than the maximum available area.  Loop backwards through all possible zoom values until we find one that fits.
-        For i = ZoomIndex100 To g_Zoom.ZoomCount Step 1
+        For i = ZOOM_100_PERCENT To g_Zoom.ZoomCount Step 1
         
-            If (pdImages(CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
+            If (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
                 zVal = i
                 Exit For
             End If
@@ -347,10 +342,10 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     End If
     
     'Repeat the above step, but for height.  Note that we start our "find best zoom" search from whatever zoom the horizontal search found.
-    If (pdImages(CurrentImage).Height * g_Zoom.ZoomArray(zVal)) > maxHeight Then
+    If (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(zVal)) > maxHeight Then
     
         For i = zVal To g_Zoom.ZoomCount Step 1
-            If (pdImages(CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
+            If (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
                 zVal = i
                 Exit For
             End If
@@ -360,29 +355,29 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     'Change the zoom combo box to reflect the new zoom value
     toolbar_Main.CmbZoom.ListIndex = zVal
-    pdImages(CurrentImage).CurrentZoomValue = zVal
+    pdImages(g_CurrentImage).CurrentZoomValue = zVal
     
     'Re-enable scrolling
-    g_FixScrolling = True
+    g_AllowViewportRendering = True
     
     'Now fix scrollbars and everything
-    If Not suppressRendering Then PrepareViewport pdImages(CurrentImage).containingForm, "FitImageToViewport"
+    If Not suppressRendering Then PrepareViewport pdImages(g_CurrentImage).containingForm, "FitImageToViewport"
     
 End Sub
 
 'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
 Public Sub FitOnScreen()
     
-    If NumOfWindows = 0 Then Exit Sub
+    If g_OpenImageCount = 0 Then Exit Sub
         
     'Disable AutoScroll, because that messes with our calculations
-    g_FixScrolling = False
+    g_AllowViewportRendering = False
     
     'Note that all window dimension and position information comes from PD's window manager.  Because we modify window borders on-the-fly,
     ' VB's internal measurements are not accurate, so we must rely on the window manager's measurements.
     
     'If the image is minimized, restore it
-    If pdImages(CurrentImage).containingForm.WindowState = vbMinimized Then pdImages(CurrentImage).containingForm.WindowState = 0
+    If pdImages(g_CurrentImage).containingForm.WindowState = vbMinimized Then pdImages(g_CurrentImage).containingForm.WindowState = 0
     
     'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with. Ask the window manager
     ' for that value now (which is calculated based on the main form's area, minus toolbar sizes if docked).
@@ -392,8 +387,8 @@ Public Sub FitOnScreen()
     
     'If image windows are floating, we need to factor window chrome (borders) into the maximum available size
     If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-        maxWidth = maxWidth - g_WindowManager.getHorizontalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
-        maxHeight = maxHeight - g_WindowManager.getVerticalChromeSize(pdImages(CurrentImage).containingForm.hWnd)
+        maxWidth = maxWidth - g_WindowManager.getHorizontalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
+        maxHeight = maxHeight - g_WindowManager.getVerticalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
     End If
     
     'Use this to track zoom
@@ -404,7 +399,7 @@ Public Sub FitOnScreen()
     
     'Run a loop backwards through the possible zoom values, until we find one that fits the current image
     For i = 0 To g_Zoom.ZoomCount Step 1
-        If (pdImages(CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
+        If (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
             zVal = i
             Exit For
         End If
@@ -412,23 +407,23 @@ Public Sub FitOnScreen()
     
     'Now do the same thing for the height, starting at whatever zoom value we previously found
     For i = zVal To g_Zoom.ZoomCount Step 1
-        If (pdImages(CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
+        If (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
             zVal = i
             Exit For
         End If
     Next i
     
     toolbar_Main.CmbZoom.ListIndex = zVal
-    pdImages(CurrentImage).CurrentZoomValue = zVal
+    pdImages(g_CurrentImage).CurrentZoomValue = zVal
     
     'Re-enable scrolling
-    g_FixScrolling = True
+    g_AllowViewportRendering = True
     
     'If the window is not maximized or minimized, fit the window to it
-    If pdImages(CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
+    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
     
     'Now fix scrollbars and everything
-    PrepareViewport pdImages(CurrentImage).containingForm, "FitOnScreen"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "FitOnScreen"
     
 End Sub
 
@@ -436,7 +431,7 @@ End Sub
 Public Sub UpdateMDIStatus()
 
     'If two or more windows are open, enable the Next/Previous image menu items
-    If NumOfWindows >= 2 Then
+    If g_OpenImageCount >= 2 Then
         FormMain.MnuWindow(3).Enabled = True
         FormMain.MnuWindow(4).Enabled = True
     Else
@@ -445,7 +440,7 @@ Public Sub UpdateMDIStatus()
     End If
 
     'If every window has been closed, disable all toolbar and menu options that are no longer applicable
-    If NumOfWindows < 1 Then
+    If g_OpenImageCount < 1 Then
         metaToggle tFilter, False
         metaToggle tSave, False
         metaToggle tSaveAs, False
@@ -465,7 +460,7 @@ Public Sub UpdateMDIStatus()
         If toolbar_Main.CmbZoom.Enabled And toolbar_Main.Visible Then
             toolbar_Main.CmbZoom.Enabled = False
             'FormMain.lblLeftToolBox(3).ForeColor = &H606060
-            toolbar_Main.CmbZoom.ListIndex = ZoomIndex100   'Reset zoom to 100%
+            toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT   'Reset zoom to 100%
             toolbar_Main.cmdZoomIn.Enabled = False
             toolbar_Main.cmdZoomOut.Enabled = False
         End If
@@ -487,12 +482,12 @@ Public Sub UpdateMDIStatus()
         End If
         
         'New addition: destroy all inactive pdImage objects.  This helps keep memory usage at a bare minimum.
-        If NumOfImagesLoaded > 1 Then
+        If g_NumOfImagesLoaded > 1 Then
         
             Dim i As Long
             
             'Loop through all pdImage objects and make sure they've been deactivated
-            For i = 0 To NumOfImagesLoaded
+            For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
                     pdImages(i).deactivateImage
                     Set pdImages(i) = Nothing
@@ -503,9 +498,9 @@ Public Sub UpdateMDIStatus()
             'Erase pdImages
         
             'Reset all window tracking variables
-            NumOfImagesLoaded = 0
-            CurrentImage = 0
-            NumOfWindows = 0
+            g_NumOfImagesLoaded = 0
+            g_CurrentImage = 0
+            g_OpenImageCount = 0
                         
         End If
         
@@ -518,12 +513,12 @@ Public Sub UpdateMDIStatus()
         metaToggle tSave, True
         metaToggle tSaveAs, True
         metaToggle tCopy, True
-        metaToggle tUndo, pdImages(CurrentImage).UndoState
-        metaToggle tRedo, pdImages(CurrentImage).RedoState
+        metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+        metaToggle tRedo, pdImages(g_CurrentImage).RedoState
         metaToggle tImageOps, True
         metaToggle tFilter, True
         metaToggle tMacro, True
-        metaToggle tRepeatLast, pdImages(CurrentImage).RedoState
+        metaToggle tRepeatLast, pdImages(g_CurrentImage).RedoState
         FormMain.MnuFile(7).Enabled = True
         toolbar_Main.cmdClose.Enabled = True
         FormMain.MnuFile(8).Enabled = True

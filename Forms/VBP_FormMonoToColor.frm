@@ -201,7 +201,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -249,27 +249,27 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     NumOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
-    For X = initX To initX + mRadius - 1
-        QuickVal = X * qvDepth
-    For Y = initY To initY + mRadius
+    For x = initX To initX + mRadius - 1
+        QuickVal = x * qvDepth
+    For y = initY To initY + mRadius
     
-        If srcImageData(QuickVal, Y) > 127 Then highValues = highValues + 1
+        If srcImageData(QuickVal, y) > 127 Then highValues = highValues + 1
         
         'Increase the pixel tally
         NumOfPixels = NumOfPixels + 1
         
-    Next Y
-    Next X
+    Next y
+    Next x
                 
     'Loop through each pixel in the image, tallying median values as we go
-    For X = initX To finalX
+    For x = initX To finalX
             
-        QuickVal = X * qvDepth
+        QuickVal = x * qvDepth
         
         'Determine the bounds of the current median box in the X direction
-        lbX = X - mRadius
+        lbX = x - mRadius
         If lbX < 0 Then lbX = 0
-        ubX = X + mRadius
+        ubX = x + mRadius
         
         If ubX > finalX Then
             obuX = True
@@ -346,7 +346,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         End If
             
     'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For Y = startY To stopY Step yStep
+    For y = startY To stopY Step yStep
             
         'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
         'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
@@ -354,10 +354,10 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         If atBottom Then
         
             'Calculate bounds
-            lbY = Y - mRadius
+            lbY = y - mRadius
             If lbY < 0 Then lbY = 0
             
-            ubY = Y + mRadius
+            ubY = y + mRadius
             If ubY > finalY Then
                 obuY = True
                 ubY = finalY
@@ -392,7 +392,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         'The exact same code as above, but in the opposite direction
         Else
         
-            lbY = Y - mRadius
+            lbY = y - mRadius
             If lbY < 0 Then
                 oblY = True
                 lbY = 0
@@ -400,7 +400,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
                 oblY = False
             End If
             
-            ubY = Y + mRadius
+            ubY = y + mRadius
             If ubY > finalY Then ubY = finalY
                                 
             If ubY < finalY Then
@@ -431,19 +431,19 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         fGray = (highValues / NumOfPixels) * 255
         
         'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, Y) = fGray
-        dstImageData(QuickVal + 1, Y) = fGray
-        dstImageData(QuickVal, Y) = fGray
+        dstImageData(QuickVal + 2, y) = fGray
+        dstImageData(QuickVal + 1, y) = fGray
+        dstImageData(QuickVal, y) = fGray
         
-    Next Y
+    Next y
         atBottom = Not atBottom
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
         
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -487,8 +487,8 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    iWidth = pdImages(CurrentImage).Width
-    iHeight = pdImages(CurrentImage).Height
+    iWidth = pdImages(g_CurrentImage).Width
+    iHeight = pdImages(g_CurrentImage).Height
 
 End Sub
 

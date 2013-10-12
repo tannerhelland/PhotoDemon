@@ -61,18 +61,18 @@ End Function
 Public Sub CreateNewSelection(ByVal paramString As String)
     
     'Use the passed parameter string to initialize the selection
-    pdImages(CurrentImage).mainSelection.initFromParamString paramString
-    pdImages(CurrentImage).mainSelection.lockIn
-    pdImages(CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).mainSelection.initFromParamString paramString
+    pdImages(g_CurrentImage).mainSelection.lockIn
+    pdImages(g_CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
-    syncTextToCurrentSelection CurrentImage
+    syncTextToCurrentSelection g_CurrentImage
     
     'Change the selection-related menu items to match
     metaToggle tSelection, True
     
     'Draw the new selection to the screen
-    RenderViewport pdImages(CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage).containingForm
 
 End Sub
 
@@ -80,17 +80,17 @@ End Sub
 Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
     
     'Use the passed parameter string to initialize the selection
-    pdImages(CurrentImage).mainSelection.lockRelease
-    pdImages(CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).mainSelection.lockRelease
+    pdImages(g_CurrentImage).selectionActive = False
     
     'Synchronize all user-facing controls to match
-    syncTextToCurrentSelection CurrentImage
+    syncTextToCurrentSelection g_CurrentImage
     
     'Change the selection-related menu items to match
     metaToggle tSelection, False
     
     'Redraw the image (with selection removed)
-    RenderViewport pdImages(CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage).containingForm
 
 End Sub
 
@@ -98,24 +98,24 @@ End Sub
 Public Sub SelectWholeImage()
     
     'Unselect any existing selection
-    pdImages(CurrentImage).mainSelection.lockRelease
-    pdImages(CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).mainSelection.lockRelease
+    pdImages(g_CurrentImage).selectionActive = False
         
     'Create a new selection at the size of the image
-    pdImages(CurrentImage).mainSelection.selectAll
+    pdImages(g_CurrentImage).mainSelection.selectAll
     
     'Lock in this selection
-    pdImages(CurrentImage).mainSelection.lockIn
-    pdImages(CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).mainSelection.lockIn
+    pdImages(g_CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
-    syncTextToCurrentSelection CurrentImage
+    syncTextToCurrentSelection g_CurrentImage
     
     'Change the selection-related menu items to match
     metaToggle tSelection, True
     
     'Draw the new selection to the screen
-    RenderViewport pdImages(CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage).containingForm
 
 End Sub
 
@@ -142,7 +142,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
             Set tmpSelection = New pdSelection
-            Set tmpSelection.containingPDImage = pdImages(CurrentImage)
+            Set tmpSelection.containingPDImage = pdImages(g_CurrentImage)
             
             If tmpSelection.readSelectionFromFile(sFile, True) Then
                 
@@ -165,18 +165,18 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
     Else
     
         Message "Loading selection..."
-        pdImages(CurrentImage).mainSelection.readSelectionFromFile SelectionPath
-        pdImages(CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).mainSelection.readSelectionFromFile SelectionPath
+        pdImages(g_CurrentImage).selectionActive = True
         
         'Synchronize all user-facing controls to match
-        syncTextToCurrentSelection CurrentImage
+        syncTextToCurrentSelection g_CurrentImage
         
         'Change the selection-related menu items to match
         metaToggle tSelection, True
-        metaToggle tSelectionTransform, pdImages(CurrentImage).mainSelection.isTransformable
+        metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage).containingForm
         Message "Selection loaded successfully"
     
     End If
@@ -204,7 +204,7 @@ Public Sub SaveSelectionToFile()
         g_UserPreferences.setSelectionPath sFile
         
         'Write out the selection file
-        If pdImages(CurrentImage).mainSelection.writeSelectionToFile(sFile) Then
+        If pdImages(g_CurrentImage).mainSelection.writeSelectionToFile(sFile) Then
             Message "Selection saved."
         Else
             Message "Unknown error occurred.  Selection was not saved.  Please try again."
@@ -220,7 +220,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
     Dim i As Long
     
     'Only synchronize the text boxes if a selection is active
-    If (NumOfWindows > 0) And pdImages(formID).selectionActive And (Not pdImages(formID).mainSelection Is Nothing) Then
+    If (g_OpenImageCount > 0) And pdImages(formID).selectionActive And (Not pdImages(formID).mainSelection Is Nothing) Then
         
         pdImages(formID).mainSelection.rejectRefreshRequests = True
         
@@ -465,18 +465,18 @@ End Function
 Public Sub invertCurrentSelection()
 
     'Unselect any existing selection
-    pdImages(CurrentImage).mainSelection.lockRelease
-    pdImages(CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).mainSelection.lockRelease
+    pdImages(g_CurrentImage).selectionActive = False
         
     'Ask the selection to invert itself
-    pdImages(CurrentImage).mainSelection.invertSelection
+    pdImages(g_CurrentImage).mainSelection.invertSelection
     
     'Lock in this selection
-    pdImages(CurrentImage).mainSelection.lockIn
-    pdImages(CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).mainSelection.lockIn
+    pdImages(g_CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
-    'syncTextToCurrentSelection CurrentImage
+    'syncTextToCurrentSelection g_CurrentImage
     
     'Change the selection-related menu items to match
     metaToggle tSelection, True
@@ -485,7 +485,7 @@ Public Sub invertCurrentSelection()
     metaToggle tSelectionTransform, False
     
     'Draw the new selection to the screen
-    RenderViewport pdImages(CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage).containingForm
 
 End Sub
 
@@ -505,25 +505,25 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         Message "Feathering selection..."
     
         'Unselect any existing selection
-        pdImages(CurrentImage).mainSelection.lockRelease
-        pdImages(CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
-        CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
+        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
+        CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn
-        pdImages(CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).mainSelection.lockIn
+        pdImages(g_CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
         metaToggle tSelection, True
@@ -536,7 +536,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage).containingForm
     
     End If
 
@@ -558,19 +558,19 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         Message "Sharpening selection..."
     
         'Unselect any existing selection
-        pdImages(CurrentImage).mainSelection.lockRelease
-        pdImages(CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).selectionActive = False
         
         'Ask the selection to sharpen itself
-        pdImages(CurrentImage).mainSelection.sharpenSelection sharpenRadius
+        pdImages(g_CurrentImage).mainSelection.sharpenSelection sharpenRadius
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn
-        pdImages(CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).mainSelection.lockIn
+        pdImages(g_CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
         metaToggle tSelection, True
@@ -583,7 +583,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage).containingForm
     
     End If
 
@@ -605,25 +605,25 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         Message "Growing selection..."
     
         'Unselect any existing selection
-        pdImages(CurrentImage).mainSelection.lockRelease
-        pdImages(CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
-        CreateMedianLayer growSize, 100, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
+        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
+        CreateMedianLayer growSize, 100, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn
-        pdImages(CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).mainSelection.lockIn
+        pdImages(g_CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
         metaToggle tSelection, True
@@ -636,7 +636,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage).containingForm
     
     End If
     
@@ -658,25 +658,25 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         Message "Shrinking selection..."
     
         'Unselect any existing selection
-        pdImages(CurrentImage).mainSelection.lockRelease
-        pdImages(CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainSelection.selMask
-        CreateMedianLayer shrinkSize, 1, tmpLayer, pdImages(CurrentImage).mainSelection.selMask, False
+        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
+        CreateMedianLayer shrinkSize, 1, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn
-        pdImages(CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).mainSelection.lockIn
+        pdImages(g_CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
         metaToggle tSelection, True
@@ -689,7 +689,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage).containingForm
     
     End If
     
@@ -712,19 +712,19 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         Message "Finding selection border..."
     
         'Unselect any existing selection
-        pdImages(CurrentImage).mainSelection.lockRelease
-        pdImages(CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).selectionActive = False
         
         'Ask the layer to border itself
-        pdImages(CurrentImage).mainSelection.borderSelection borderRadius
+        pdImages(g_CurrentImage).mainSelection.borderSelection borderRadius
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(CurrentImage).mainSelection.findNewBoundsManually
+        pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
         
         'Lock in this selection
-        pdImages(CurrentImage).mainSelection.lockIn
-        pdImages(CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).mainSelection.lockIn
+        pdImages(g_CurrentImage).selectionActive = True
         
         'Change the selection-related menu items to match
         metaToggle tSelection, True
@@ -737,7 +737,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage).containingForm
     
     End If
     

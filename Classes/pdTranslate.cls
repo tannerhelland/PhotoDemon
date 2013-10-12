@@ -300,8 +300,8 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         'ResetMenuIcons
         
         'If an image is loaded, we need to redraw the "size" caption on the left
-        If (NumOfWindows > 0) Then
-            If Not pdImages(CurrentImage) Is Nothing Then DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        If (g_OpenImageCount > 0) Then
+            If Not pdImages(g_CurrentImage) Is Nothing Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         End If
         
     End If

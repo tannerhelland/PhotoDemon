@@ -1327,9 +1327,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Before exiting QueryUnload, attempt to unload all children forms.  If any of them cancel shutdown, postpone the program-wide
     ' shutdown as well
     Dim i As Long
-    If NumOfImagesLoaded > 0 Then
+    If g_NumOfImagesLoaded > 0 Then
     
-        For i = 0 To NumOfImagesLoaded
+        For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
                 If pdImages(i).IsActive Then
                 
@@ -1829,7 +1829,7 @@ Private Sub MnuFitOnScreen_Click()
 End Sub
 
 Private Sub MnuFitWindowToImage_Click()
-    If (pdImages(CurrentImage).containingForm.WindowState = vbMaximized) Or (pdImages(CurrentImage).containingForm.WindowState = vbMinimized) Then pdImages(CurrentImage).containingForm.WindowState = vbNormal
+    If (pdImages(g_CurrentImage).containingForm.WindowState = vbMaximized) Or (pdImages(g_CurrentImage).containingForm.WindowState = vbMinimized) Then pdImages(g_CurrentImage).containingForm.WindowState = vbNormal
     FitWindowToImage
 End Sub
 
@@ -2107,15 +2107,15 @@ Private Sub MnuMetadata_Click(Index As Integer)
         Case 0
         
             'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
-            If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
-                pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
+            If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
+                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).LocationOnDisk, pdImages(g_CurrentImage).OriginalFileFormat
                 
                 'If the image contains GPS metadata, enable that option now
-                metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
             End If
             
             'If the image STILL doesn't have metadata, warn the user and exit.
-            If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
+            If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
                 Message "No metadata available."
                 pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
                 Exit Sub
@@ -2135,25 +2135,25 @@ Private Sub MnuMetadata_Click(Index As Integer)
             
             'Note that mapping can only be performed if GPS metadata exists for this image.  If the user clicks this option while
             ' using the on-demand model for metadata caching, we must now attempt to load metadata.
-            If Not pdImages(CurrentImage).imgMetadata.hasXMLMetadata Then
+            If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
             
                 'Attempt to load it now...
                 Message "Loading metadata for this image..."
-                pdImages(CurrentImage).imgMetadata.loadAllMetadata pdImages(CurrentImage).LocationOnDisk, pdImages(CurrentImage).OriginalFileFormat
+                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).LocationOnDisk, pdImages(g_CurrentImage).OriginalFileFormat
                 
                 'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-                metaToggle tMetadata, pdImages(CurrentImage).imgMetadata.hasXMLMetadata
-                metaToggle tGPSMetadata, pdImages(CurrentImage).imgMetadata.hasGPSMetadata()
+                metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
             
             End If
             
-            If Not pdImages(CurrentImage).imgMetadata.hasGPSMetadata Then
+            If Not pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then
                 pdMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"
                 Exit Sub
             End If
             
             Dim gMapsURL As String, latString As String, lonString As String
-            If pdImages(CurrentImage).imgMetadata.fillLatitudeLongitude(latString, lonString) Then
+            If pdImages(g_CurrentImage).imgMetadata.fillLatitudeLongitude(latString, lonString) Then
                 
                 'Build a valid Google maps URL (you can use Google to see what the various parameters mean)
                 
@@ -2339,7 +2339,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Select none
         Case 1
-            Process "Remove selection", , pdImages(CurrentImage).mainSelection.getSelectionParamString, 2
+            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2
         
         'Invert
         Case 2
@@ -2418,7 +2418,7 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
         Case 3
             If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 10
         Case 4
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZoomIndex100
+            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT
         Case 5
             If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 14
         Case 6
@@ -2529,7 +2529,7 @@ Private Sub MnuTransparency_Click(Index As Integer)
         Case 3
 
             'Ignore if the current image is already in 24bpp mode
-            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 24 Then Exit Sub
+            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 24 Then Exit Sub
             Process "Remove alpha channel", True
     
     End Select
@@ -2574,7 +2574,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
             
             'If the action requires an open image, check for that first
             If .imageRequired(nIndex) Then
-                If NumOfWindows = 0 Then Exit Sub
+                If g_OpenImageCount = 0 Then Exit Sub
                 If Not (FormLanguageEditor Is Nothing) Then
                     If FormLanguageEditor.Visible Then Exit Sub
                 End If
@@ -2627,7 +2627,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Accelerators that DO require at least one loaded image, and that require special handling:
     
     'If no images are loaded, or another form is active, exit.
-    If NumOfWindows = 0 Then Exit Sub
+    If g_OpenImageCount = 0 Then Exit Sub
     
     'Fit on screen
     If ctlAccelerator.Key(nIndex) = "FitOnScreen" Then FitOnScreen
@@ -2644,7 +2644,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Actual size
     If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZoomIndex100
+        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT
     End If
     
     'Various zoom values
@@ -2682,7 +2682,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Remove selection
     If ctlAccelerator.Key(nIndex) = "Remove selection" Then
-        Process "Remove selection", , pdImages(CurrentImage).mainSelection.getSelectionParamString, 2
+        Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2
     End If
     
     'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
@@ -2711,8 +2711,8 @@ Private Sub MnuWindow_Click(Index As Integer)
             
             'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
             If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                If NumOfImagesLoaded > 0 Then
-                    For i = 0 To NumOfImagesLoaded
+                If g_NumOfImagesLoaded > 0 Then
+                    For i = 0 To g_NumOfImagesLoaded
                         If (Not pdImages(i) Is Nothing) Then
                             If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
                         End If
@@ -2729,8 +2729,8 @@ Private Sub MnuWindow_Click(Index As Integer)
             g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(1).Checked
             
             'All image windows need to be redrawn, because the available client area will have changed.
-            If NumOfImagesLoaded > 0 Then
-                For i = 0 To NumOfImagesLoaded
+            If g_NumOfImagesLoaded > 0 Then
+                For i = 0 To g_NumOfImagesLoaded
                     If (Not pdImages(i) Is Nothing) Then
                         If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
                     End If
@@ -2757,7 +2757,7 @@ Private Sub MnuWindow_Click(Index As Integer)
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To NumOfImagesLoaded
+            For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
                 End If
@@ -2769,7 +2769,7 @@ Private Sub MnuWindow_Click(Index As Integer)
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To NumOfImagesLoaded
+            For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
                 End If
@@ -2781,7 +2781,7 @@ Private Sub MnuWindow_Click(Index As Integer)
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To NumOfImagesLoaded
+            For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
                 End If
@@ -2794,7 +2794,7 @@ Private Sub MnuWindow_Click(Index As Integer)
         Case 10
         
             'Run a loop through every child form and minimize it
-            For i = 0 To NumOfImagesLoaded
+            For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then
                         pdImages(i).containingForm.WindowState = vbMinimized
@@ -2806,7 +2806,7 @@ Private Sub MnuWindow_Click(Index As Integer)
         Case 11
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To NumOfImagesLoaded
+            For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then
                         pdImages(i).containingForm.WindowState = vbNormal
@@ -2824,24 +2824,24 @@ End Sub
 Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
 
     'If one (or zero) images are loaded, ignore this option
-    If NumOfWindows <= 1 Then Exit Sub
+    If g_OpenImageCount <= 1 Then Exit Sub
     
     Dim i As Long
     
     'Loop through all available images, and when we find one that is not this image, activate it and exit
     If moveForward Then
-        i = CurrentImage + 1
+        i = g_CurrentImage + 1
     Else
-        i = CurrentImage - 1
+        i = g_CurrentImage - 1
     End If
     
-    Do While i <> CurrentImage
+    Do While i <> g_CurrentImage
             
         'Loop back to the start of the window collection
         If moveForward Then
-            If i > NumOfImagesLoaded Then i = 0
+            If i > g_NumOfImagesLoaded Then i = 0
         Else
-            If i < 0 Then i = NumOfImagesLoaded
+            If i < 0 Then i = g_NumOfImagesLoaded
         End If
                 
         If Not pdImages(i) Is Nothing Then

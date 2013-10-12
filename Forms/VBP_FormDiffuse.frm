@@ -209,12 +209,12 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    If pdImages(g_CurrentImage).selectionActive Then
+        iWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
     Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
+        iWidth = pdImages(g_CurrentImage).Width
+        iHeight = pdImages(g_CurrentImage).Height
     End If
     
     'Adjust the scroll bar dimensions to match the current image's width and height
@@ -254,7 +254,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -292,15 +292,15 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     Dim DiffuseX As Long, DiffuseY As Long
     
     'Loop through each pixel in the image, diffusing as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         DiffuseX = Rnd * xDiffuse - hDX
         DiffuseY = Rnd * yDiffuse - hDY
         
         QuickValDiffuseX = (DiffuseX * qvDepth) + QuickVal
-        QuickValDiffuseY = DiffuseY + Y
+        QuickValDiffuseY = DiffuseY + y
             
         'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
         ' "wrapPixels" setting.
@@ -318,18 +318,18 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
             If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
         End If
             
-        dstImageData(QuickVal + 2, Y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
-        dstImageData(QuickVal + 1, Y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
-        dstImageData(QuickVal, Y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
+        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
+        dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
 
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

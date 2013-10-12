@@ -575,10 +575,10 @@ End Sub
 'When the selection type is changed, update the corresponding preference and redraw all selections
 Private Sub cmbSelRender_Click(Index As Integer)
             
-    If NumOfWindows > 0 Then
+    If g_OpenImageCount > 0 Then
     
         Dim i As Long
-        For i = 0 To NumOfImagesLoaded
+        For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
                 If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
             End If
@@ -595,9 +595,9 @@ Private Sub cmbSelSmoothing_Click(Index As Integer)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(CurrentImage).mainSelection.setSmoothingType cmbSelSmoothing(Index).ListIndex
-        pdImages(CurrentImage).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
-        RenderViewport pdImages(CurrentImage).containingForm
+        pdImages(g_CurrentImage).mainSelection.setSmoothingType cmbSelSmoothing(Index).ListIndex
+        pdImages(g_CurrentImage).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
+        RenderViewport pdImages(g_CurrentImage).containingForm
     End If
     
 End Sub
@@ -609,9 +609,9 @@ Private Sub cmbSelType_Click(Index As Integer)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(CurrentImage).mainSelection.setSelectionType cmbSelType(Index).ListIndex
-        pdImages(CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
-        RenderViewport pdImages(CurrentImage).containingForm
+        pdImages(g_CurrentImage).mainSelection.setSelectionType cmbSelType(Index).ListIndex
+        pdImages(g_CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        RenderViewport pdImages(g_CurrentImage).containingForm
     End If
     
 End Sub
@@ -739,11 +739,11 @@ Private Sub newToolSelected()
                 
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
-                If (g_PreviousTool = SELECT_CIRC) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle) Then
-                    pdImages(CurrentImage).mainSelection.setSelectionShape g_CurrentTool
-                    RenderViewport pdImages(CurrentImage).containingForm
+                If (g_PreviousTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
+                    pdImages(g_CurrentImage).mainSelection.setSelectionShape g_CurrentTool
+                    RenderViewport pdImages(g_CurrentImage).containingForm
                 Else
-                    If pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle Then
+                    If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle Then
                         metaToggle tSelectionTransform, True
                     Else
                         metaToggle tSelectionTransform, False
@@ -755,11 +755,11 @@ Private Sub newToolSelected()
         
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
-                If (g_PreviousTool = SELECT_RECT) And (pdImages(CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
-                    pdImages(CurrentImage).mainSelection.setSelectionShape g_CurrentTool
-                    RenderViewport pdImages(CurrentImage).containingForm
+                If (g_PreviousTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
+                    pdImages(g_CurrentImage).mainSelection.setSelectionShape g_CurrentTool
+                    RenderViewport pdImages(g_CurrentImage).containingForm
                 Else
-                    If pdImages(CurrentImage).mainSelection.getSelectionShape = sCircle Then
+                    If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle Then
                         metaToggle tSelectionTransform, True
                     Else
                         metaToggle tSelectionTransform, False
@@ -772,7 +772,7 @@ Private Sub newToolSelected()
         
             'Deactivate the position text boxes - those shouldn't be accessible unless a line selection is presently active
             If selectionsAllowed(True) Then
-                If pdImages(CurrentImage).mainSelection.getSelectionShape = sLine Then
+                If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sLine Then
                     metaToggle tSelectionTransform, True
                 Else
                     metaToggle tSelectionTransform, False
@@ -835,38 +835,38 @@ End Sub
 
 Private Sub sltCornerRounding_Change()
     If selectionsAllowed(True) Then
-        pdImages(CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
-        RenderViewport pdImages(CurrentImage).containingForm
+        pdImages(g_CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
+        RenderViewport pdImages(g_CurrentImage).containingForm
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change()
     If selectionsAllowed(False) Then
-        pdImages(CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
-        RenderViewport pdImages(CurrentImage).containingForm
+        pdImages(g_CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        RenderViewport pdImages(g_CurrentImage).containingForm
     End If
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
     If selectionsAllowed(False) Then
-        pdImages(CurrentImage).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
-        RenderViewport pdImages(CurrentImage).containingForm
+        pdImages(g_CurrentImage).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
+        RenderViewport pdImages(g_CurrentImage).containingForm
     End If
 End Sub
 
 Private Sub sltSelectionLineWidth_Change()
     If selectionsAllowed(True) Then
-        pdImages(CurrentImage).mainSelection.setSelectionLineWidth sltSelectionLineWidth.Value
-        RenderViewport pdImages(CurrentImage).containingForm
+        pdImages(g_CurrentImage).mainSelection.setSelectionLineWidth sltSelectionLineWidth.Value
+        RenderViewport pdImages(g_CurrentImage).containingForm
     End If
 End Sub
 
 Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
-    If NumOfWindows > 0 Then
-        If pdImages(CurrentImage).selectionActive And (Not pdImages(CurrentImage).mainSelection Is Nothing) And (Not pdImages(CurrentImage).mainSelection.rejectRefreshRequests) Then
+    If g_OpenImageCount > 0 Then
+        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) And (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
             
             If transformableMatters Then
-                If pdImages(CurrentImage).mainSelection.isTransformable Then
+                If pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     selectionsAllowed = True
                 Else
                     selectionsAllowed = False
@@ -918,9 +918,9 @@ End Sub
 
 Private Sub updateSelectionsValuesViaText()
     If selectionsAllowed(True) Then
-        If Not pdImages(CurrentImage).mainSelection.rejectRefreshRequests Then
-            pdImages(CurrentImage).mainSelection.updateViaTextBox
-            RenderViewport pdImages(CurrentImage).containingForm
+        If Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests Then
+            pdImages(g_CurrentImage).mainSelection.updateViaTextBox
+            RenderViewport pdImages(g_CurrentImage).containingForm
         End If
     End If
 End Sub
