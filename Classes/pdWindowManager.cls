@@ -44,6 +44,7 @@ Private Const INACTIVE_TOOLBOX_OPACITY As Byte = 170
 
 'Subclassed messages related to window movement
 Private Const WM_SYSCOMMAND As Long = &H112
+Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0
 Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOVING As Long = &H216
 Private Const WM_MOUSELEAVE As Long = &H2A3
@@ -1294,6 +1295,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                 
             'The parent window has just been maximized, minimized, or restored
             Case WM_SYSCOMMAND
+            
+                'Per MSDN (http://msdn.microsoft.com/en-us/library/windows/desktop/ms646360%28v=vs.85%29.aspx):
+                ' In WM_SYSCOMMAND messages, the four low-order bits of the wParam parameter are used internally by the system.
+                ' To obtain the correct result when testing the value of wParam, an application must combine the value 0xFFF0 with
+                ' the wParam value by using the bitwise AND operator.
+                wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
             
                 If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Then
                 
