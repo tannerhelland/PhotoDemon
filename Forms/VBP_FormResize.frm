@@ -670,16 +670,16 @@ End Sub
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
 
-    tudWidth = (pdImages(CurrentImage).Width / 2) + (Rnd * pdImages(CurrentImage).Width)
-    tudHeight = (pdImages(CurrentImage).Height / 2) + (Rnd * pdImages(CurrentImage).Height)
+    tudWidth = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    tudHeight = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
 
 End Sub
 
 Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(CurrentImage).Width
-    tudHeight.Value = pdImages(CurrentImage).Height
+    tudWidth.Value = pdImages(g_CurrentImage).Width
+    tudHeight.Value = pdImages(g_CurrentImage).Height
     
     'Make borders fill with black by default
     colorPicker.Color = RGB(0, 0, 0)
@@ -714,7 +714,7 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
     
         'Hide the background color selectors
         colorPicker.Visible = False
@@ -731,14 +731,14 @@ Private Sub Form_Load()
     allowedToUpdateHeight = True
     
     'Establish ratios
-    wRatio = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
-    hRatio = pdImages(CurrentImage).Height / pdImages(CurrentImage).Width
+    wRatio = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
+    hRatio = pdImages(g_CurrentImage).Height / pdImages(g_CurrentImage).Width
 
     'Populate the number of available resampling algorithms
     refillResampleBox True
     
     'If the source image is 32bpp, change the text of the "fit inclusive" subheading to match
-    If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
         lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be transparent")
     Else
         lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be filled with:")
@@ -801,8 +801,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     Dim fitWidth As Long, fitHeight As Long
     
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = pdImages(CurrentImage).Width
-    srcHeight = pdImages(CurrentImage).Height
+    srcWidth = pdImages(g_CurrentImage).Width
+    srcHeight = pdImages(g_CurrentImage).Height
     
     Select Case fitMethod
     
@@ -825,9 +825,9 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     End Select
     
     'If the image contains an active selection, automatically deactivate it
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
@@ -843,7 +843,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             Message "Resizing image..."
             
             'Copy the current layer into this temporary layer at the new size
-            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, False
+            tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, False
             
         'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
         ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that
@@ -852,7 +852,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             Message "Resizing image..."
             
             'Copy the current layer into this temporary layer at the new size
-            tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, True
+            tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, True
         
         'True bilinear sampling
         Case RESIZE_BILINEAR
@@ -860,7 +860,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
             If g_ImageFormats.FreeImageEnabled Then
             
-                FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BILINEAR
+                FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BILINEAR
             
             'If FreeImage is not enabled, we have to do the resample ourselves.
             Else
@@ -874,7 +874,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
                 'Resize the temporary layer to the target size, and point a second local array at it
-                tmpLayer.createBlank fitWidth, fitHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+                tmpLayer.createBlank fitWidth, fitHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
                 
                 Dim dstImageData() As Byte
                 Dim dstSA As SAFEARRAY2D
@@ -906,28 +906,28 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 yScale = (srcHeight - 1) / fitHeight
                             
                 'Coordinate variables for source and destination
-                Dim X As Long, Y As Long
+                Dim x As Long, y As Long
                 Dim srcX As Double, srcY As Double
                             
-                For X = 0 To fitWidth - 1
+                For x = 0 To fitWidth - 1
                     
                     'Generate the x calculation variables
-                    srcX = X * xScale
+                    srcX = x * xScale
                     
                     'Draw each pixel in the new image
-                    For Y = 0 To fitHeight - 1
+                    For y = 0 To fitHeight - 1
                         
                         'Generate the y calculation variables
-                        srcY = Y * yScale
+                        srcY = y * yScale
                         
                         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-                        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+                        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                                             
-                    Next Y
+                    Next y
                 
-                    If (X And progBarCheck) = 0 Then SetProgBarVal X
+                    If (x And progBarCheck) = 0 Then SetProgBarVal x
                     
-                Next X
+                Next x
                             
                 'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
                 CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -941,16 +941,16 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             End If
         
         Case RESIZE_BSPLINE
-            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BSPLINE
+            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BSPLINE
             
         Case RESIZE_BICUBIC_MITCHELL
-            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BICUBIC
+            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BICUBIC
             
         Case RESIZE_BICUBIC_CATMULL
-            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_CATMULLROM
+            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_CATMULLROM
         
         Case RESIZE_LANCZOS
-            FreeImageResize tmpLayer, pdImages(CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_LANCZOS3
+            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_LANCZOS3
             
     End Select
     
@@ -958,7 +958,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     
     'Calculate the aspect ratio of this layer and the target picture box
     Dim srcAspect As Double, dstAspect As Double
-    srcAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
+    srcAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
     dstAspect = iWidth / iHeight
     
     Dim dstX As Long, dstY As Long
@@ -970,14 +970,14 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
         Case 0
     
             'Very simple - just copy the resized image back into the main layer
-            pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+            pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
     
         'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
         ' blank space - that space is filled by the background color parameter passed in.
         Case 1
         
             'Resize the main layer (destructively!) to fit the new dimensions
-            pdImages(CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+            pdImages(g_CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth, newBackColor
         
             'BitBlt the old image, centered, onto the new layer
             If srcAspect > dstAspect Then
@@ -988,14 +988,14 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 dstY = 0
             End If
             
-            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+            BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
         
         'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
         ' blank space - but parts of the image may get cropped out.
         Case 2
         
             'Resize the main layer (destructively!) to fit the new dimensions
-            pdImages(CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+            pdImages(g_CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth, newBackColor
         
             'BitBlt the old image, centered, onto the new layer
             If srcAspect < dstAspect Then
@@ -1006,7 +1006,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 dstY = 0
             End If
             
-            BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+            BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
         
     End Select
     
@@ -1014,11 +1014,11 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     Set tmpLayer = Nothing
     
     'Update the main image's size values
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    pdImages(g_CurrentImage).updateSize
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(CurrentImage).containingForm, "Image resize"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "Image resize"
     
     Message "Finished."
     
@@ -1109,7 +1109,7 @@ Private Sub updateFormLayout()
         
         'Hide the background color selector only if the image is not 32bpp.  (If it is 32bpp, blank space will
         ' be filled by transparency, not color.)
-        If pdImages(CurrentImage).mainLayer.getLayerColorDepth <> 32 Then colorPicker.Visible = True
+        If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth <> 32 Then colorPicker.Visible = True
         
         'Resize the form to match
         Me.Height = formHeightDifference + (lblSubtext(2).Top + lblSubtext(2).Height + cmdBar.Height + fixDPI(24)) * Screen.TwipsPerPixelY

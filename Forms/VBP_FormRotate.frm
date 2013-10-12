@@ -186,7 +186,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Required for copying rotated image data from a FreeImage object
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
 
 'This temporary layer will be used for rendering the preview
 Dim smallLayer As pdLayer
@@ -197,9 +197,9 @@ Dim m_ToolTip As clsToolTip
 Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal isPreview As Boolean = False)
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
@@ -210,9 +210,9 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
     
-        If pdImages(CurrentImage).selectionActive Then
-            pdImages(CurrentImage).selectionActive = False
-            pdImages(CurrentImage).mainSelection.lockRelease
+        If pdImages(g_CurrentImage).selectionActive Then
+            pdImages(g_CurrentImage).selectionActive = False
+            pdImages(g_CurrentImage).mainSelection.lockRelease
             metaToggle tSelection, False
         End If
         
@@ -228,7 +228,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         If isPreview Then
             fi_DIB = FreeImage_CreateFromDC(smallLayer.getLayerDC)
         Else
-            fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
         End If
         
         'Use that handle to request an image rotation
@@ -259,8 +259,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                         cx = smallLayer.getLayerWidth / 2
                         cy = smallLayer.getLayerHeight / 2
                     Else
-                        cx = pdImages(CurrentImage).Width / 2
-                        cy = pdImages(CurrentImage).Height / 2
+                        cx = pdImages(g_CurrentImage).Width / 2
+                        cy = pdImages(g_CurrentImage).Height / 2
                     End If
                     
                     returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
@@ -275,7 +275,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             
                 Dim tmpLayer As pdLayer
                 Set tmpLayer = New pdLayer
-                tmpLayer.createBlank nWidth, nHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+                tmpLayer.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
             
                 'Copy the bits from the FreeImage DIB to our DIB
                 SetDIBitsToDevice tmpLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
@@ -292,14 +292,14 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             Else
                 
                 'Resize the image's main layer in preparation for the transfer
-                pdImages(CurrentImage).mainLayer.createBlank nWidth, nHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+                pdImages(g_CurrentImage).mainLayer.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
                 
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                SetDIBitsToDevice pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                   
                 'Update the size variables
-                pdImages(CurrentImage).updateSize
-                DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+                pdImages(g_CurrentImage).updateSize
+                DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
                 'Fit the new image on-screen and redraw it
                 FitImageToViewport
@@ -361,13 +361,13 @@ Private Sub Form_Load()
             
     'Determine a new image size that preserves the current aspect ratio
     Dim dWidth As Long, dHeight As Long
-    convertAspectRatio pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
+    convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
             
     'Create a new, smaller image at those dimensions
-    If (dWidth < pdImages(CurrentImage).Width) Or (dHeight < pdImages(CurrentImage).Height) Then
-        smallLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, dWidth, dHeight, True
+    If (dWidth < pdImages(g_CurrentImage).Width) Or (dHeight < pdImages(g_CurrentImage).Height) Then
+        smallLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, dWidth, dHeight, True
     Else
-        smallLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+        smallLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
     End If
         
     'Give the preview object a copy of this image data so it can show it to the user if requested

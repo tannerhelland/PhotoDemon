@@ -601,12 +601,12 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
-    Dim X As Long
+    Dim x As Long
     
     'Load a list of printers into the combo box
-    For X = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(X).DeviceName
-    Next X
+    For x = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(x).DeviceName
+    Next x
 
     'Pre-select the current printer
     cbPrinters = Printer.DeviceName
@@ -623,7 +623,7 @@ Private Sub Form_Load()
     cbOrientation.AddItem "Landscape", 1
     
     Dim imgAspect As Double, paperAspect As Double
-    imgAspect = pdImages(CurrentImage).Width / pdImages(CurrentImage).Height
+    imgAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
     paperAspect = 8.5 / 11
     
     If imgAspect < paperAspect Then
@@ -635,10 +635,10 @@ Private Sub Form_Load()
     UpdatePrintPreview
 
     'Temporarily copy the image into an image box
-    picOut.Width = pdImages(CurrentImage).Width
-    picOut.Height = pdImages(CurrentImage).Height
+    picOut.Width = pdImages(g_CurrentImage).Width
+    picOut.Height = pdImages(g_CurrentImage).Height
     picOut.ScaleMode = vbPixels
-    pdImages(CurrentImage).mainLayer.renderToPictureBox picOut
+    pdImages(g_CurrentImage).mainLayer.renderToPictureBox picOut
     picOut.ScaleMode = vbTwips
     
     'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
@@ -650,8 +650,8 @@ Private Sub Form_Load()
     tPrnPicWidth = Printer.ScaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
     tPrnPicHeight = Printer.ScaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
     Dim dpiX As Double, dpiY As Double
-    dpiX = CSng(pdImages(CurrentImage).Width) / Printer.ScaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
-    dpiY = CSng(pdImages(CurrentImage).Height) / Printer.ScaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
+    dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.ScaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
+    dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.ScaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
     baseDPI = Int((dpiX + dpiY) / 2 + 0.5)
     desiredDPI = baseDPI
     
@@ -807,11 +807,11 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         If cbOrientation.ListIndex = 0 Then
             iSrc.Picture = picThumb.Picture
             iSrc.Refresh
-            UpdateDPI CSng(pdImages(CurrentImage).Width) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
+            UpdateDPI CSng(pdImages(g_CurrentImage).Width) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
         Else
             iSrc.Picture = picThumbFinal.Picture
             iSrc.Refresh
-            UpdateDPI CSng(pdImages(CurrentImage).Height) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
+            UpdateDPI CSng(pdImages(g_CurrentImage).Height) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
         End If
         
         Exit Sub
@@ -849,8 +849,8 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     Dim dpiRatio As Double
     If forceDPI = False Then
         Dim dpiX As Double, dpiY As Double
-        dpiX = CSng(pdImages(CurrentImage).Width) / Printer.ScaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
-        dpiY = CSng(pdImages(CurrentImage).Height) / Printer.ScaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
+        dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.ScaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
+        dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.ScaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
         UpdateDPI ((dpiX + dpiY) / 2)
         dpiRatio = 1
     Else
@@ -888,12 +888,12 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         DrawPreviewImage picThumb, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewWidth, pdImages(CurrentImage).mainLayer.PreviewHeight, vbSrcCopy
+        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(g_CurrentImage).mainLayer.PreviewX, pdImages(g_CurrentImage).mainLayer.PreviewY, pdImages(g_CurrentImage).mainLayer.PreviewWidth, pdImages(g_CurrentImage).mainLayer.PreviewHeight, vbSrcCopy
     Else
         DrawPreviewImage picThumb90, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(CurrentImage).mainLayer.PreviewY, pdImages(CurrentImage).mainLayer.PreviewX, pdImages(CurrentImage).mainLayer.PreviewHeight, pdImages(CurrentImage).mainLayer.PreviewWidth, vbSrcCopy
+        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(g_CurrentImage).mainLayer.PreviewY, pdImages(g_CurrentImage).mainLayer.PreviewX, pdImages(g_CurrentImage).mainLayer.PreviewHeight, pdImages(g_CurrentImage).mainLayer.PreviewWidth, vbSrcCopy
     End If
     
     iSrc.Picture = iSrc.Image

@@ -27,7 +27,7 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
 'Simplified pure-VB function for rendering text to an object.
 Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, ByVal xPos As Long, ByVal yPos As Long, Optional ByVal newFontSize As Long = 12, Optional ByVal newFontColor As Long = 0, Optional ByVal makeFontBold As Boolean = False, Optional ByVal makeFontItalic As Boolean = False)
@@ -43,10 +43,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal X As Long, ByVal Y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, X, Y, hIcon
+    DrawIcon hDC, x, y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -66,12 +66,12 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         srcWidth = otherPictureSrc.getLayerWidth
         srcHeight = otherPictureSrc.getLayerHeight
     Else
-        If pdImages(CurrentImage).selectionActive Then
-            srcWidth = pdImages(CurrentImage).mainSelection.boundWidth
-            srcHeight = pdImages(CurrentImage).mainSelection.boundHeight
+        If pdImages(g_CurrentImage).selectionActive Then
+            srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+            srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
         Else
-            srcWidth = pdImages(CurrentImage).mainLayer.getLayerWidth
-            srcHeight = pdImages(CurrentImage).mainLayer.getLayerHeight
+            srcWidth = pdImages(g_CurrentImage).mainLayer.getLayerWidth
+            srcHeight = pdImages(g_CurrentImage).mainLayer.getLayerHeight
         End If
     End If
             
@@ -80,30 +80,30 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
     convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
-    'Normally this will draw a preview of pdImages(CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
+    'Normally this will draw a preview of pdImages(g_CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
     If Not useOtherPictureSrc Then
         
         'Check to see if a selection is active; if it isn't, simply render the full form
-        If Not pdImages(CurrentImage).selectionActive Then
+        If Not pdImages(g_CurrentImage).selectionActive Then
         
-            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
                 Set tmpLayer = New pdLayer
-                tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer, newWidth, newHeight, True
+                tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, newWidth, newHeight, True
                 If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
                 tmpLayer.renderToPictureBox dstPicture
             Else
-                pdImages(CurrentImage).mainLayer.renderToPictureBox dstPicture
+                pdImages(g_CurrentImage).mainLayer.renderToPictureBox dstPicture
             End If
         
         Else
         
             'Copy the current selection into a temporary layer
             Set tmpLayer = New pdLayer
-            tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-            BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
+            tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+            BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
-            If pdImages(CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
                 If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
             End If
             
@@ -131,7 +131,7 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
 
     'Calculation variables (used to interpolate between the gradient colors)
     Dim VR As Double, VG As Double, VB As Double
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
     Dim r As Long, g As Long, b As Long
@@ -170,19 +170,19 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
-        For X = 0 To tmpWidth
-            r2 = r + VR * X
-            g2 = g + VG * X
-            b2 = b + VB * X
-            DstPicBox.Line (X, 0)-(X, tmpHeight), RGB(r2, g2, b2)
-        Next X
+        For x = 0 To tmpWidth
+            r2 = r + VR * x
+            g2 = g + VG * x
+            b2 = b + VB * x
+            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
+        Next x
     Else
-        For Y = 0 To tmpHeight
-            r2 = r + VR * Y
-            g2 = g + VG * Y
-            b2 = b + VB * Y
-            DstPicBox.Line (0, Y)-(tmpWidth, Y), RGB(r2, g2, b2)
-        Next Y
+        For y = 0 To tmpHeight
+            r2 = r + VR * y
+            g2 = g + VG * y
+            b2 = b + VB * y
+            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
+        Next y
     End If
     
 End Sub

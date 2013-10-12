@@ -209,7 +209,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -251,15 +251,15 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     Dim r As Long, g As Long, b As Long
     
     'Loop through each pixel in the image, diffusing as we go
-    For X = initX To xLoop
-        QuickVal = X * qvDepth
-    For Y = initY To yLoop
+    For x = initX To xLoop
+        QuickVal = x * qvDepth
+    For y = initY To yLoop
         
         'This sub loop is to gather all of the data for the current mosaic tile
-        initXLoop = X * BlockSizeX
-        initYLoop = Y * BlockSizeY
-        dstXLoop = (X + 1) * BlockSizeX - 1
-        dstYLoop = (Y + 1) * BlockSizeY - 1
+        initXLoop = x * BlockSizeX
+        initYLoop = y * BlockSizeY
+        dstXLoop = (x + 1) * BlockSizeX - 1
+        dstYLoop = (y + 1) * BlockSizeY - 1
         
         For i = initXLoop To dstXLoop
             QuickVal = i * qvDepth
@@ -317,14 +317,14 @@ NextPixelatePixel3:
         b = 0
         NumOfPixels = 0
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -370,12 +370,12 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        sltWidth.Max = pdImages(CurrentImage).mainSelection.boundWidth
-        sltHeight.Max = pdImages(CurrentImage).mainSelection.boundHeight
+    If pdImages(g_CurrentImage).selectionActive Then
+        sltWidth.Max = pdImages(g_CurrentImage).mainSelection.boundWidth
+        sltHeight.Max = pdImages(g_CurrentImage).mainSelection.boundHeight
     Else
-        sltWidth.Max = pdImages(CurrentImage).Width
-        sltHeight.Max = pdImages(CurrentImage).Height
+        sltWidth.Max = pdImages(g_CurrentImage).Width
+        sltHeight.Max = pdImages(g_CurrentImage).Height
     End If
     
 End Sub

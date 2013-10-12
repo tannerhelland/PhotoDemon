@@ -20,9 +20,9 @@ Option Explicit
 Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
@@ -33,7 +33,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Make a copy of the current image
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+    tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte
@@ -42,14 +42,14 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    finalX = pdImages(CurrentImage).Width - 1
-    finalY = pdImages(CurrentImage).Height - 1
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    finalX = pdImages(g_CurrentImage).Width - 1
+    finalY = pdImages(g_CurrentImage).Height - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = pdImages(CurrentImage).mainLayer.getLayerColorDepth \ 8
+    qvDepth = pdImages(g_CurrentImage).mainLayer.getLayerColorDepth \ 8
 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -57,9 +57,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Build a grayscale lookup table.  We will only be comparing luminance - not colors - when determining where to crop.
     Dim gLookup(0 To 765) As Long
-    For X = 0 To 765
-        gLookup(X) = CByte(X \ 3)
-    Next X
+    For x = 0 To 765
+        gLookup(x) = CByte(x \ 3)
+    Next x
     
     'The new edges of the image will mark these values for us
     Dim newTop As Long, newBottom As Long, newLeft As Long, newRight As Long
@@ -76,10 +76,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     'Scan the image, starting at the top-left and moving right
-    For Y = 0 To finalY
-    For X = 0 To finalX
-        QuickVal = X * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
+    For y = 0 To finalY
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -87,9 +87,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next X
+    Next x
         If colorFails Then Exit For
-    Next Y
+    Next y
     
     'We have now reached one of two conditions:
     '1) The entire image is one solid color
@@ -106,7 +106,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Next, check for case (2)
     Else
-        newTop = Y
+        newTop = y
     End If
     
     initY = newTop
@@ -119,11 +119,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     initColor = gLookup(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
     SetProgBarVal 1
     
-    For X = 0 To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -131,11 +131,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next Y
+    Next y
         If colorFails Then Exit For
-    Next X
+    Next x
     
-    newLeft = X
+    newLeft = x
     
     'Repeat the above steps, but tracking the right edge instead.  Note also that we will only be scanning from wherever
     ' the top crop failed - this saves processing time.
@@ -146,11 +146,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     initColor = gLookup(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
     SetProgBarVal 2
     
-    For X = finalX To 0 Step -1
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = finalX To 0 Step -1
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -158,11 +158,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next Y
+    Next y
         If colorFails Then Exit For
-    Next X
+    Next x
     
-    newRight = X
+    newRight = x
     
     'Finally, repeat the steps above for the bottom of the image.  Note also that we will only be scanning from wherever
     ' the left and right crops failed - this saves processing time.
@@ -175,10 +175,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
-    For Y = finalY To initY Step -1
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, Y)) + CLng(srcImageData(QuickVal + 1, Y)) + CLng(srcImageData(QuickVal + 2, Y)))
+    For y = finalY To initY Step -1
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -186,11 +186,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         If colorFails Then Exit For
         
-    Next X
+    Next x
         If colorFails Then Exit For
-    Next Y
+    Next y
     
-    newBottom = Y
+    newBottom = y
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -198,7 +198,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'We now know where to crop the image.  Apply the crop.
     
-    If (newTop = 0) And (newBottom = pdImages(CurrentImage).Height - 1) And (newLeft = 0) And (newRight = pdImages(CurrentImage).Width - 1) Then
+    If (newTop = 0) And (newBottom = pdImages(g_CurrentImage).Height - 1) And (newLeft = 0) And (newRight = pdImages(g_CurrentImage).Width - 1) Then
         SetProgBarVal 0
         Message "Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)"
     Else
@@ -207,24 +207,24 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         SetProgBarVal 4
         
         'Resize the current image's main layer
-        pdImages(CurrentImage).mainLayer.createBlank newRight - newLeft, newBottom - newTop, tmpLayer.getLayerColorDepth
+        pdImages(g_CurrentImage).mainLayer.createBlank newRight - newLeft, newBottom - newTop, tmpLayer.getLayerColorDepth
         
         'Copy the autocropped area to the new main layer
-        BitBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight, tmpLayer.getLayerDC, newLeft, newTop, vbSrcCopy
+        BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerHeight, tmpLayer.getLayerDC, newLeft, newTop, vbSrcCopy
     
         'Erase the temporary layer
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing
     
         'Update the current image size
-        pdImages(CurrentImage).updateSize
-        DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+        pdImages(g_CurrentImage).updateSize
+        DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         Message "Finished. "
         SetProgBarVal 0
         
         'Redraw the image
-        PrepareViewport pdImages(CurrentImage).containingForm, "Autocrop image"
+        PrepareViewport pdImages(g_CurrentImage).containingForm, "Autocrop image"
     
     End If
 
@@ -234,7 +234,7 @@ End Sub
 Public Sub MenuCropToSelection()
 
     'First, make sure there is an active selection
-    If Not pdImages(CurrentImage).selectionActive Then
+    If Not pdImages(g_CurrentImage).selectionActive Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -244,7 +244,7 @@ Public Sub MenuCropToSelection()
     'Create a new layer the size of the active selection
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    pdImages(CurrentImage).retrieveProcessedSelection tmpLayer
+    pdImages(g_CurrentImage).retrieveProcessedSelection tmpLayer
     
     'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
     ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square
@@ -254,36 +254,36 @@ Public Sub MenuCropToSelection()
     ' (Note: comment added for the 6.0 release; consider removing by 6.4 if no complaints received.)
     '
     'Copy the selection area to the temporary layer
-    'tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-    'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
+    'tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+    'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
     
     'Transfer the newly cropped image back into the main layer object
-    pdImages(CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
     
     'Erase the temporary layer
     tmpLayer.eraseLayer
     Set tmpLayer = Nothing
     
     'Update the current image size
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    pdImages(g_CurrentImage).updateSize
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     Message "Finished. "
     
     'Deactivate the current selection, as it's no longer needed
     'Clear selections after "Crop to Selection"
     If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
         Message "Crop complete.  (Note: the selected area was automatically unselected.)"
     Else
-        pdImages(CurrentImage).mainSelection.lockRelease
-        pdImages(CurrentImage).mainSelection.selLeft = 0
-        pdImages(CurrentImage).mainSelection.selTop = 0
-        pdImages(CurrentImage).mainSelection.selWidth = pdImages(CurrentImage).Width
-        pdImages(CurrentImage).mainSelection.selHeight = pdImages(CurrentImage).Height
-        pdImages(CurrentImage).mainSelection.lockIn
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.selLeft = 0
+        pdImages(g_CurrentImage).mainSelection.selTop = 0
+        pdImages(g_CurrentImage).mainSelection.selWidth = pdImages(g_CurrentImage).Width
+        pdImages(g_CurrentImage).mainSelection.selHeight = pdImages(g_CurrentImage).Height
+        pdImages(g_CurrentImage).mainSelection.lockIn
         Dim i As Long
         For i = 0 To toolbar_Selections.cmbSelRender.Count - 1
             toolbar_Selections.cmbSelRender(i).ListIndex = sHighlightRed
@@ -292,7 +292,7 @@ Public Sub MenuCropToSelection()
     End If
     
     'Redraw the image
-    PrepareViewport pdImages(CurrentImage).containingForm, "Crop to selection"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "Crop to selection"
 
 End Sub
 
@@ -300,17 +300,17 @@ End Sub
 Public Sub MenuFlip()
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
     
     Message "Flipping image..."
-    StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, 0, pdImages(CurrentImage).Height - 1, pdImages(CurrentImage).Width, -pdImages(CurrentImage).Height, vbSrcCopy
+    StretchBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
-    ScrollViewport pdImages(CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage).containingForm
     
 End Sub
 
@@ -318,17 +318,17 @@ End Sub
 Public Sub MenuMirror()
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
     Message "Mirroring image..."
-    StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).Width - 1, 0, -pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, vbSrcCopy
+    StretchBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
-    ScrollViewport pdImages(CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage).containingForm
     
 End Sub
 
@@ -337,9 +337,9 @@ Public Sub MenuRotate90Clockwise()
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
@@ -357,13 +357,13 @@ Public Sub MenuRotate90Clockwise()
     
     Dim dstLayer As pdLayer
     Set dstLayer = New pdLayer
-    dstLayer.createBlank pdImages(CurrentImage).mainLayer.getLayerHeight, pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    dstLayer.createBlank pdImages(g_CurrentImage).mainLayer.getLayerHeight, pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
     
     prepSafeArray dstSA, dstLayer
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, i As Long
+    Dim x As Long, y As Long, i As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
@@ -385,18 +385,18 @@ Public Sub MenuRotate90Clockwise()
     progBarCheck = findBestProgBarValue()
         
     'Rotate the source image into the destination image, using the arrays provided
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
-        QuickValY = Y * qvDepth
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        QuickValY = y * qvDepth
         
         For i = 0 To qvDepth - 1
-            dstImageData(iHeight - QuickValY + i, finalX - X) = srcImageData(iWidth - QuickVal + i, Y)
+            dstImageData(iHeight - QuickValY + i, finalX - x) = srcImageData(iWidth - QuickVal + i, y)
         Next i
         
-    Next Y
-        If (X And progBarCheck) = 0 Then SetProgBarVal X
-    Next X
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -405,15 +405,15 @@ Public Sub MenuRotate90Clockwise()
     Erase dstImageData
     
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
+    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
     'With that transfer complete, we can erase our temporary layer
     dstLayer.eraseLayer
     Set dstLayer = Nothing
     
     'Update the current image size
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    pdImages(g_CurrentImage).updateSize
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     Message "Finished. "
     
@@ -429,20 +429,20 @@ End Sub
 Public Sub MenuRotate180()
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
         
-    StretchBlt pdImages(CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(CurrentImage).Width, pdImages(CurrentImage).Height, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).Width - 1, pdImages(CurrentImage).Height - 1, -pdImages(CurrentImage).Width, -pdImages(CurrentImage).Height, vbSrcCopy
+    StretchBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).Width - 1, pdImages(g_CurrentImage).Height - 1, -pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
         
     Message "Finished. "
     
-    ScrollViewport pdImages(CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage).containingForm
     
 End Sub
 
@@ -451,9 +451,9 @@ Public Sub MenuRotate270Clockwise()
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
 
@@ -471,13 +471,13 @@ Public Sub MenuRotate270Clockwise()
     
     Dim dstLayer As pdLayer
     Set dstLayer = New pdLayer
-    dstLayer.createBlank pdImages(CurrentImage).mainLayer.getLayerHeight, pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    dstLayer.createBlank pdImages(g_CurrentImage).mainLayer.getLayerHeight, pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
     
     prepSafeArray dstSA, dstLayer
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, i As Long
+    Dim x As Long, y As Long, i As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
@@ -498,18 +498,18 @@ Public Sub MenuRotate270Clockwise()
     progBarCheck = findBestProgBarValue()
         
     'Rotate the source image into the destination image, using the arrays provided
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
-        QuickValY = Y * qvDepth
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        QuickValY = y * qvDepth
         
         For i = 0 To qvDepth - 1
-            dstImageData(QuickValY + i, X) = srcImageData(iWidth - QuickVal + i, Y)
+            dstImageData(QuickValY + i, x) = srcImageData(iWidth - QuickVal + i, y)
         Next i
         
-    Next Y
-        If (X And progBarCheck) = 0 Then SetProgBarVal X
-    Next X
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -518,15 +518,15 @@ Public Sub MenuRotate270Clockwise()
     Erase dstImageData
     
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
+    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
     'With that transfer complete, we can erase our temporary layer
     dstLayer.eraseLayer
     Set dstLayer = Nothing
     
     'Update the current image size
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    pdImages(g_CurrentImage).updateSize
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     Message "Finished. "
     

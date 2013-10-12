@@ -300,13 +300,13 @@ Public Sub loadUserSettings()
     MacroStatus = MacroSTOP
     
     'No images have been loaded yet
-    NumOfImagesLoaded = 0
+    g_NumOfImagesLoaded = 0
     
     'Set the default MDI window index to 0
-    CurrentImage = 0
+    g_CurrentImage = 0
     
     'Set the number of open image windows to 0
-    NumOfWindows = 0
+    g_OpenImageCount = 0
         
 End Sub
 

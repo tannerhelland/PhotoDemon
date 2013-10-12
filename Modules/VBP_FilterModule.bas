@@ -53,7 +53,7 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, x2 As Long, y2 As Long
+    Dim x As Long, y As Long, x2 As Long, y2 As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
@@ -88,11 +88,11 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     FilterBiasA = cParams.GetDouble(4)
     
     Dim iFM(-2 To 2, -2 To 2) As Double
-    For X = -2 To 2
-    For Y = -2 To 2
-        iFM(X, Y) = cParams.GetDouble((X + 2) + (Y + 2) * 5 + 5)
-    Next Y
-    Next X
+    For x = -2 To 2
+    For y = -2 To 2
+        iFM(x, y) = cParams.GetDouble((x + 2) + (y + 2) * 5 + 5)
+    Next y
+    Next x
         
     'FilterWeightTemp will be reset for every pixel, and decremented appropriately when attempting to calculate the value for pixels
     ' outside the image perimeter
@@ -117,9 +117,9 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     Dim QuickValInner As Long
         
     'Apply the filter
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
         r = 0
@@ -128,12 +128,12 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
         FilterWeightTemp = FilterWeightA
         
         'Run a sub-loop around the current pixel
-        For x2 = X - 2 To X + 2
+        For x2 = x - 2 To x + 2
             QuickValInner = x2 * qvDepth
-        For y2 = Y - 2 To Y + 2
+        For y2 = y - 2 To y + 2
         
-            CalcX = x2 - X
-            CalcY = y2 - Y
+            CalcX = x2 - x
+            CalcY = y2 - y
             
             'If no filter value is being applied to this pixel, ignore it (GoTo's aren't generally a part of good programming,
             ' but because VB does not provide a "continue next" type mechanism, GoTo's are all we've got.)
@@ -200,18 +200,18 @@ NextCustomFilterPixel:  Next y2
         End If
         
         'Finally, remember the new value in our tData array
-        ImageData(QuickVal + 2, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal, Y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() and tmpData() away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -241,7 +241,7 @@ Public Sub FilterGridBlur()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -272,48 +272,48 @@ Public Sub FilterGridBlur()
     ReDim ray(0 To iHeight) As Long, gay(0 To iHeight), bay(0 To iHeight)
     
     'Generate the averages for vertical lines
-    For X = initX To finalX
+    For x = initX To finalX
         r = 0
         g = 0
         b = 0
-        QuickVal = X * qvDepth
-        For Y = initY To finalY
-            r = r + ImageData(QuickVal + 2, Y)
-            g = g + ImageData(QuickVal + 1, Y)
-            b = b + ImageData(QuickVal, Y)
-        Next Y
-        rax(X) = r
-        gax(X) = g
-        bax(X) = b
-    Next X
+        QuickVal = x * qvDepth
+        For y = initY To finalY
+            r = r + ImageData(QuickVal + 2, y)
+            g = g + ImageData(QuickVal + 1, y)
+            b = b + ImageData(QuickVal, y)
+        Next y
+        rax(x) = r
+        gax(x) = g
+        bax(x) = b
+    Next x
     
     'Generate the averages for horizontal lines
-    For Y = initY To finalY
+    For y = initY To finalY
         r = 0
         g = 0
         b = 0
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-            r = r + ImageData(QuickVal + 2, Y)
-            g = g + ImageData(QuickVal + 1, Y)
-            b = b + ImageData(QuickVal, Y)
-        Next X
-        ray(Y) = r
-        gay(Y) = g
-        bay(Y) = b
-    Next Y
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+            r = r + ImageData(QuickVal + 2, y)
+            g = g + ImageData(QuickVal + 1, y)
+            b = b + ImageData(QuickVal, y)
+        Next x
+        ray(y) = r
+        gay(y) = g
+        bay(y) = b
+    Next y
     
     Message "Applying grid blur..."
         
     'Apply the filter
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        r = (rax(X) + ray(Y)) \ NumOfPixels
-        g = (gax(X) + gay(Y)) \ NumOfPixels
-        b = (bax(X) + bay(Y)) \ NumOfPixels
+        r = (rax(x) + ray(y)) \ NumOfPixels
+        g = (gax(x) + gay(y)) \ NumOfPixels
+        b = (bax(x) + bay(y)) \ NumOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
         If r > 255 Then r = 255
@@ -321,16 +321,16 @@ Public Sub FilterGridBlur()
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal, Y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
-    Next Y
-        If (X And progBarCheck) = 0 Then
+    Next y
+        If (x And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal X
+            SetProgBarVal x
         End If
-    Next X
+    Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -345,9 +345,9 @@ End Sub
 Public Sub FilterIsometric()
 
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
-    If pdImages(CurrentImage).selectionActive Then
-        pdImages(CurrentImage).selectionActive = False
-        pdImages(CurrentImage).mainSelection.lockRelease
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
         metaToggle tSelection, False
     End If
     
@@ -374,13 +374,13 @@ Public Sub FilterIsometric()
     
     Dim dstLayer As pdLayer
     Set dstLayer = New pdLayer
-    dstLayer.createBlank nWidth + 1, nHeight + 1, pdImages(CurrentImage).mainLayer.getLayerColorDepth
+    dstLayer.createBlank nWidth + 1, nHeight + 1, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
     
     prepSafeArray dstSA, dstLayer
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -405,37 +405,37 @@ Public Sub FilterIsometric()
     Message "Converting image to isometric view..."
         
     'Run through the destination image pixels, converting to isometric as we go
-    For X = 0 To nWidth
-        dstQuickVal = X * qvDepth
-    For Y = 0 To nHeight
+    For x = 0 To nWidth
+        dstQuickVal = x * qvDepth
+    For y = 0 To nHeight
         
-        srcX = getIsometricX(X, Y, hWidth)
-        srcY = getIsometricY(X, Y, hWidth)
+        srcX = getIsometricX(x, y, hWidth)
+        srcY = getIsometricY(x, y, hWidth)
                 
         'If the pixel is inside the image, reverse-map it using bilinear interpolation.
         ' (Note: this will also reverse-map alpha values if they are present in the image.)
         If (srcX >= 0 And srcX < oWidth And srcY >= 0 And srcY < oHeight) Then
             
             For lOffset = 0 To qvDepth - 1
-                dstImageData(dstQuickVal + lOffset, Y) = getInterpolatedVal(srcX, srcY, srcImageData, lOffset, qvDepth)
+                dstImageData(dstQuickVal + lOffset, y) = getInterpolatedVal(srcX, srcY, srcImageData, lOffset, qvDepth)
             Next lOffset
                     
         'Out-of-bound pixels don't need interpolation - just set them manually
         Else
             'If the image is 32bpp, set outlying pixels as fully transparent
-            If qvDepth = 4 Then dstImageData(dstQuickVal + 3, Y) = 0
-            dstImageData(dstQuickVal + 2, Y) = 255
-            dstImageData(dstQuickVal + 1, Y) = 255
-            dstImageData(dstQuickVal, Y) = 255
+            If qvDepth = 4 Then dstImageData(dstQuickVal + 3, y) = 0
+            dstImageData(dstQuickVal + 2, y) = 255
+            dstImageData(dstQuickVal + 1, y) = 255
+            dstImageData(dstQuickVal, y) = 255
         End If
         
     
-    Next Y
-        If (X And progBarCheck) = 0 Then
+    Next y
+        If (x And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal X
+            SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -452,16 +452,16 @@ Public Sub FilterIsometric()
     End If
     
     'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
-    pdImages(CurrentImage).mainLayer.eraseLayer
-    pdImages(CurrentImage).mainLayer.createFromExistingLayer dstLayer
+    pdImages(g_CurrentImage).mainLayer.eraseLayer
+    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
     'With that transfer complete, we can erase our temporary layer
     dstLayer.eraseLayer
     Set dstLayer = Nothing
     
     'Update the current image size
-    pdImages(CurrentImage).updateSize
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    pdImages(g_CurrentImage).updateSize
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     Message "Finished. "
     

@@ -3,9 +3,8 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 15/September/13
-'Last update: "Clear recent items" in the MRU list now gets a large, prettier icon on Vista (to match the size of the
-'               image thumbnails in the menu).
+'Last updated: 12/October/13
+'Last update: remove some MDI-specific code that is no longer needed
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -28,13 +27,6 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 '***************************************************************************
 
 Option Explicit
-
-'SetWindowPos is used to force a repaint of the icon of maximized MDI child forms
-Private Const SWP_FRAMECHANGED = &H20
-Private Const SWP_NOMOVE = &H2
-Private Const SWP_NOSIZE = &H1
-
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
@@ -480,9 +472,9 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     Dim posModifier As Long
     posModifier = 0
 
-    If NumOfWindows > 0 Then
-        If Not (pdImages(CurrentImage).containingForm Is Nothing) Then
-            If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
+    If g_OpenImageCount > 0 Then
+        If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then
+            If pdImages(g_CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
         End If
     End If
     
@@ -541,9 +533,9 @@ Public Sub ResetMenuIcons()
         Dim posModifier As Long
         posModifier = 0
     
-        If NumOfWindows > 0 Then
-            If Not (pdImages(CurrentImage).containingForm Is Nothing) Then
-                If pdImages(CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
+        If g_OpenImageCount > 0 Then
+            If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then
+                If pdImages(g_CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
             End If
         End If
     
@@ -640,7 +632,7 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(CurrentImage).mainLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
     
     'Use that handle to request an image resize
     If fi_DIB <> 0 Then
@@ -745,11 +737,8 @@ Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
         DeleteObject MonoBmp
         DeleteObject icoInfo.hbmColor
         
-        'Use the API to assign this new icon to the specified MDI child form
+        'Use the API to assign this new icon to the specified child form
         SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
-        
-        'When an MDI child form is maximized, the icon is not updated properly - so we must force a manual refresh of the entire window frame.
-        If imgForm.WindowState = vbMaximized Then SetWindowPos FormMain.hWnd, 0&, 0&, 0&, 0&, 0&, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
         
     End If
        

@@ -345,7 +345,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     End If
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -398,28 +398,28 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     tHeight = curLayerValues.Height
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
                             
         'Remap the coordinates around a center point of (0, 0)
-        nX = X - midX
-        nY = Y - midY
+        nX = x - midX
+        nY = y - midY
         
         srcX = midX - hPan + nX * newZoom
         srcY = midY - vPan + nY * newZoom
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -464,12 +464,12 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    If pdImages(g_CurrentImage).selectionActive Then
+        iWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
     Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
+        iWidth = pdImages(g_CurrentImage).Width
+        iHeight = pdImages(g_CurrentImage).Height
     End If
         
     sltHorizontal.Min = -1 * (iWidth \ 2)

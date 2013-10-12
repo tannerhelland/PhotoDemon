@@ -6,6 +6,27 @@ Attribute VB_Name = "Public_Variables"
 
 Option Explicit
 
+
+'The number of images PhotoDemon has loaded this session (always goes up, never down; starts at zero when the program is loaded).
+' This value correlates to the upper bound of the primary pdImages array.  For performance reasons, that array is not dynamically
+' resized when images are loaded - the array stays the same size, and entries are deactivated as needed.  Thus, WHENEVER YOU
+' NEED TO ITERATE THROUGH ALL LOADED IMAGES, USE THIS VALUE INSTEAD OF g_OpenImageCount.
+Public g_NumOfImagesLoaded As Long
+
+'The ID number (e.g. index in the pdImages array) of image the user is currently interacting with (e.g. the currently active image
+' window).  Whenever a function needs to access the current image, use pdImages(g_CurrentImage).
+Public g_CurrentImage As Long
+
+'Number of image windows CURRENTLY OPEN.  This value goes up and down as images are opened or closed.  Use it to test for no open
+' images (e.g. If g_OpenImageCount = 0...).  Note that this value SHOULD NOT BE USED FOR ITERATING OPEN IMAGES.  Instead, use
+' g_NumOfImagesLoaded, which will always match the upper bound of the pdImages() array, and never decrements, even when images
+' are unloaded.
+Public g_OpenImageCount As Long
+
+'This array is the heart and soul of a given PD session.  Every time an image is loaded, all of its relevant data is stored within
+' a new entry in this array.
+Public pdImages() As pdImage
+
 'Main user preferences and settings handler
 Public g_UserPreferences As pdPreferences
 
@@ -95,7 +116,7 @@ Public g_LogProgramMessages As Boolean
 Public g_IsProgramCompiled As Boolean
 
 'Temporary loading variable to disable Autog_Zoom feature
-Public g_FixScrolling As Boolean
+Public g_AllowViewportRendering As Boolean
 
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
 ' the boxes to that.  (Note that these values are stored in the preferences file as well, but that is only accessed

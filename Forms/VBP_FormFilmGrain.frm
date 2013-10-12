@@ -193,7 +193,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     noiseLayer.createFromExistingLayer workingLayer
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -226,26 +226,26 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     Randomize Timer
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
                     
         'Generate monochromatic noise, e.g. the same amount of noise for each color component, based around RGB(127, 127, 127)
         nColor = 127 + (gStrength2 * Rnd) - gStrength
         
         'Assign that noise to each color component
-        dstImageData(QuickVal + 2, Y) = nColor
-        dstImageData(QuickVal + 1, Y) = nColor
-        dstImageData(QuickVal, Y) = nColor
+        dstImageData(QuickVal + 2, y) = nColor
+        dstImageData(QuickVal + 1, y) = nColor
+        dstImageData(QuickVal, y) = nColor
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our noise generation complete, point dstImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -301,17 +301,17 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         Dim r As Long, g As Long, b As Long
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, Y)
-            g = srcImageData(QuickVal + 1, Y)
-            b = srcImageData(QuickVal, Y)
+            r = srcImageData(QuickVal + 2, y)
+            g = srcImageData(QuickVal + 1, y)
+            b = srcImageData(QuickVal, y)
                     
             'Now, retrieve a noise pixel (we only need one, as each color component will be identical)
-            nColor = GaussImageData(QuickVal, Y) - 127
+            nColor = GaussImageData(QuickVal, y) - 127
                     
             'Add the noise to each color component
             r = r + nColor
@@ -325,18 +325,18 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
             If b > 255 Then b = 255
             If b < 0 Then b = 0
             
-            dstImageData(QuickVal + 2, Y) = r
-            dstImageData(QuickVal + 1, Y) = g
-            dstImageData(QuickVal, Y) = b
+            dstImageData(QuickVal + 2, y) = r
+            dstImageData(QuickVal + 1, y) = g
+            dstImageData(QuickVal, y) = b
             
-        Next Y
+        Next y
             If Not toPreview Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal finalX + X + finalY + finalY
+                    SetProgBarVal finalX + x + finalY + finalY
                 End If
             End If
-        Next X
+        Next x
         
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
@@ -383,12 +383,12 @@ End Sub
 Private Sub Form_Load()
         
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(CurrentImage).selectionActive Then
-        iWidth = pdImages(CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(CurrentImage).mainSelection.boundHeight
+    If pdImages(g_CurrentImage).selectionActive Then
+        iWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+        iHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
     Else
-        iWidth = pdImages(CurrentImage).Width
-        iHeight = pdImages(CurrentImage).Height
+        iWidth = pdImages(g_CurrentImage).Width
+        iHeight = pdImages(g_CurrentImage).Height
     End If
     
 End Sub

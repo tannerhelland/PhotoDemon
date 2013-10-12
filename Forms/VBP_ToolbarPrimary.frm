@@ -353,8 +353,8 @@ Dim m_ToolTip As clsToolTip
 Private Sub CmbZoom_Click()
     
     'Track the current zoom value
-    If NumOfWindows > 0 Then
-        pdImages(CurrentImage).CurrentZoomValue = toolbar_Main.CmbZoom.ListIndex
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).CurrentZoomValue = toolbar_Main.CmbZoom.ListIndex
         If toolbar_Main.CmbZoom.ListIndex = 0 Then
             toolbar_Main.cmdZoomIn.Enabled = False
         Else
@@ -365,13 +365,13 @@ Private Sub CmbZoom_Click()
         Else
             If Not toolbar_Main.cmdZoomOut.Enabled Then toolbar_Main.cmdZoomOut.Enabled = True
         End If
-        PrepareViewport pdImages(CurrentImage).containingForm, "zoom changed by user"
+        PrepareViewport pdImages(g_CurrentImage).containingForm, "zoom changed by user"
     End If
     
 End Sub
 
 Private Sub cmdClose_Click()
-    Unload pdImages(CurrentImage).containingForm
+    Unload pdImages(g_CurrentImage).containingForm
 End Sub
 
 Private Sub cmdOpen_Click()

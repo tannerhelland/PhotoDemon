@@ -572,13 +572,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
 
             CreateNewImageForm
         
-            Set targetImage = pdImages(CurrentImage)
-            Set targetLayer = pdImages(CurrentImage).mainLayer
+            Set targetImage = pdImages(g_CurrentImage)
+            Set targetLayer = pdImages(g_CurrentImage).mainLayer
         
-            g_FixScrolling = False
+            g_AllowViewportRendering = False
         
-            pdImages(CurrentImage).containingForm.HScroll.Value = 0
-            pdImages(CurrentImage).containingForm.VScroll.Value = 0
+            pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
+            pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
             'Prepare the user interface for a new image
             metaToggle tSaveAs, True
@@ -689,7 +689,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
             targetImage.deactivateImage
-            If isThisPrimaryImage Then Unload pdImages(CurrentImage).containingForm
+            If isThisPrimaryImage Then Unload pdImages(g_CurrentImage).containingForm
             GoTo PreloadMoreImages
             
         Else
@@ -785,7 +785,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Or mustCountColors) Then
             
-            colorCountCheck = getQuickColorCount(targetImage, CurrentImage)
+            colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
         
             'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
             targetImage.OriginalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
@@ -882,19 +882,19 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             If imgFormTitle = "" Then
                 If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                    pdImages(CurrentImage).containingForm.Caption = getFilename(sFile(thisImage))
+                    pdImages(g_CurrentImage).containingForm.Caption = getFilename(sFile(thisImage))
                 Else
-                    pdImages(CurrentImage).containingForm.Caption = sFile(thisImage)
+                    pdImages(g_CurrentImage).containingForm.Caption = sFile(thisImage)
                 End If
             Else
-                pdImages(CurrentImage).containingForm.Caption = imgFormTitle
+                pdImages(g_CurrentImage).containingForm.Caption = imgFormTitle
             End If
             
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             If targetImage.mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
             
             'Render an icon-sized version of this image as the MDI child form's icon
-            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon pdImages(CurrentImage).containingForm
+            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
             
         
         '*************************************************************************************************************************************
@@ -904,7 +904,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
             ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
-            g_WindowManager.registerChildForm pdImages(CurrentImage).containingForm, IMAGE_WINDOW, , , CurrentImage
+            g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
             
             Message "Resizing image to fit screen..."
     
@@ -914,22 +914,22 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'If image windows are not docked, fit the window around the (now properly-zoomed) image
             If g_WindowManager.getFloatState(IMAGE_WINDOW) Then FitWindowToImage True, True
             
-            'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
+            'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
             ' update the zoom combo box to match the zoom assigned by the window-fit function.
-            g_FixScrolling = False
+            g_AllowViewportRendering = False
             toolbar_Main.CmbZoom.ListIndex = targetImage.CurrentZoomValue
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
-            g_FixScrolling = True
-            PrepareViewport pdImages(CurrentImage).containingForm, "PreLoadImage"
+            g_AllowViewportRendering = True
+            PrepareViewport pdImages(g_CurrentImage).containingForm, "PreLoadImage"
             
             'Note the window state, as it may be important in the future
-            targetImage.WindowState = pdImages(CurrentImage).containingForm.WindowState
+            targetImage.WindowState = pdImages(g_CurrentImage).containingForm.WindowState
             
             'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
             If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                pdImages(CurrentImage).containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
-                g_WindowManager.requestWindowResync pdImages(CurrentImage).indexInWindowManager
+                pdImages(g_CurrentImage).containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
+                g_WindowManager.requestWindowResync pdImages(g_CurrentImage).indexInWindowManager
                 
             'If image windows are docked, the window manager will have already positioned the window for us.
             Else
@@ -1121,34 +1121,34 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
         'Case 1
         
             'The layer handles the actual loading of the undo data
-            pdImages(CurrentImage).mainLayer.createFromFile undoFile
-            pdImages(CurrentImage).updateSize
+            pdImages(g_CurrentImage).mainLayer.createFromFile undoFile
+            pdImages(g_CurrentImage).updateSize
             
         'Selection data
         'Case 2
         
             'Load the previous selection from file
-            pdImages(CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
+            pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
             
             'Activate the selection as necessary
-            pdImages(CurrentImage).selectionActive = pdImages(CurrentImage).mainSelection.isLockedIn
+            pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.isLockedIn
             
             'Synchronize the text boxes as necessary
-            syncTextToCurrentSelection CurrentImage
+            syncTextToCurrentSelection g_CurrentImage
         
     'End Select
     
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
-    If pdImages(CurrentImage).selectionActive Then pdImages(CurrentImage).mainSelection.requestNewMask
+    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
     
     'Display the new size on screen, and activate any selection controls as necessary
-    DisplaySize pdImages(CurrentImage).mainLayer.getLayerWidth, pdImages(CurrentImage).mainLayer.getLayerHeight
-    metaToggle tSelection, pdImages(CurrentImage).selectionActive
+    DisplaySize pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerHeight
+    metaToggle tSelection, pdImages(g_CurrentImage).selectionActive
         
     'Render the image to the screen
-    PrepareViewport pdImages(CurrentImage).containingForm, "LoadUndo"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "LoadUndo"
         
     If isRedoData Then
         'Message "Redo restored successfully."
@@ -1539,14 +1539,14 @@ Public Sub DuplicateCurrentImage()
     
     'First, make a note of the currently active form
     Dim imageToBeDuplicated As Long
-    imageToBeDuplicated = CurrentImage
+    imageToBeDuplicated = g_CurrentImage
     
     CreateNewImageForm
         
-    g_FixScrolling = False
+    g_AllowViewportRendering = False
         
-    pdImages(CurrentImage).containingForm.HScroll.Value = 0
-    pdImages(CurrentImage).containingForm.VScroll.Value = 0
+    pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
+    pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
     'Prepare the user interface for a new image
     metaToggle tSaveAs, True
@@ -1558,12 +1558,12 @@ Public Sub DuplicateCurrentImage()
     metaToggle tFilter, True
         
     'Copy the picture from the previous form to this new one
-    pdImages(CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer
+    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer
 
     'Store important data about the image to the pdImages array
-    pdImages(CurrentImage).updateSize
-    pdImages(CurrentImage).OriginalFileSize = pdImages(imageToBeDuplicated).OriginalFileSize
-    pdImages(CurrentImage).LocationOnDisk = ""
+    pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).OriginalFileSize = pdImages(imageToBeDuplicated).OriginalFileSize
+    pdImages(g_CurrentImage).LocationOnDisk = ""
             
     'Get the original file's extension and filename, then append " - Copy" to it
     Dim originalExtension As String
@@ -1571,15 +1571,15 @@ Public Sub DuplicateCurrentImage()
             
     Dim newFilename As String
     newFilename = pdImages(imageToBeDuplicated).OriginalFileName & " - " & g_Language.TranslateMessage("Copy")
-    pdImages(CurrentImage).OriginalFileName = newFilename
+    pdImages(g_CurrentImage).OriginalFileName = newFilename
     If Len(originalExtension) > 0 Then
-        pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
+        pdImages(g_CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
     Else
-        pdImages(CurrentImage).OriginalFileNameAndExtension = newFilename
+        pdImages(g_CurrentImage).OriginalFileNameAndExtension = newFilename
     End If
             
     'Because this image hasn't been saved to disk, mark its save state as "false"
-    pdImages(CurrentImage).UpdateSaveState False
+    pdImages(g_CurrentImage).UpdateSaveState False
     
     'Fit the window to the newly duplicated image
     Message "Resizing image to fit screen..."
@@ -1592,39 +1592,39 @@ Public Sub DuplicateCurrentImage()
     End If
                 
     'If the window is not maximized or minimized, fit the form around the picture box
-    If pdImages(CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
+    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
         
     'Note the image dimensions and display them on the left-hand pane
-    DisplaySize pdImages(CurrentImage).Width, pdImages(CurrentImage).Height
+    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Update the current caption to match
-    pdImages(CurrentImage).containingForm.Caption = pdImages(CurrentImage).OriginalFileNameAndExtension
+    pdImages(g_CurrentImage).containingForm.Caption = pdImages(g_CurrentImage).OriginalFileNameAndExtension
         
-    'g_FixScrolling may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
-    g_FixScrolling = False
-    toolbar_Main.CmbZoom.ListIndex = pdImages(CurrentImage).CurrentZoomValue
+    'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
+    g_AllowViewportRendering = False
+    toolbar_Main.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
         
     Message "Image duplication complete."
     
     'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
-    g_FixScrolling = True
+    g_AllowViewportRendering = True
     
-    PrepareViewport pdImages(CurrentImage).containingForm, "DuplicateImage"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "DuplicateImage"
         
     'Render an icon-sized version of this image as the MDI child form's icon
-    CreateCustomFormIcon pdImages(CurrentImage).containingForm
+    CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
         
     'Note the window state, as it may be important in the future
-    pdImages(CurrentImage).WindowState = pdImages(CurrentImage).containingForm.WindowState
+    pdImages(g_CurrentImage).WindowState = pdImages(g_CurrentImage).containingForm.WindowState
         
     'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
-    If pdImages(CurrentImage).containingForm.WindowState = 0 Then
-        pdImages(CurrentImage).containingForm.Left = pdImages(CurrentImage).WindowLeft
-        pdImages(CurrentImage).containingForm.Top = pdImages(CurrentImage).WindowTop
+    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then
+        pdImages(g_CurrentImage).containingForm.Left = pdImages(g_CurrentImage).WindowLeft
+        pdImages(g_CurrentImage).containingForm.Top = pdImages(g_CurrentImage).WindowTop
     End If
     
     'If we made it all the way here, the image was successfully duplicated.
-    pdImages(CurrentImage).loadedSuccessfully = True
+    pdImages(g_CurrentImage).loadedSuccessfully = True
         
 End Sub
 

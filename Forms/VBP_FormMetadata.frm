@@ -211,7 +211,7 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsMetadata.Visible Then
@@ -275,12 +275,12 @@ Private Sub Form_Load()
     Dim categoryFound As Boolean
     
     Dim i As Long, j As Long
-    For i = 0 To pdImages(CurrentImage).imgMetadata.getMetadataCount - 1
+    For i = 0 To pdImages(g_CurrentImage).imgMetadata.getMetadataCount - 1
     
         categoryFound = False
     
         'Retrieve the next metadata entry
-        curMetadata = pdImages(CurrentImage).imgMetadata.getMetadataEntry(i)
+        curMetadata = pdImages(g_CurrentImage).imgMetadata.getMetadataEntry(i)
         chkGroup = curMetadata.Group
         
         'Search the current list of known categories for this metadata object's category
@@ -318,10 +318,10 @@ Private Sub Form_Load()
     ReDim allTags(0 To numOfCategories - 1, 0 To highestCategoryCount - 1) As mdItem
     ReDim curTagCount(0 To numOfCategories - 1) As Long
     
-    For i = 0 To pdImages(CurrentImage).imgMetadata.getMetadataCount - 1
+    For i = 0 To pdImages(g_CurrentImage).imgMetadata.getMetadataCount - 1
         
         'As above, retrieve the next metadata entry
-        curMetadata = pdImages(CurrentImage).imgMetadata.getMetadataEntry(i)
+        curMetadata = pdImages(g_CurrentImage).imgMetadata.getMetadataEntry(i)
         chkGroup = curMetadata.Group
         
         'Find the matching group in the Group array, then insert this tag into place
@@ -344,7 +344,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'When the mouse enters the form area, set focus to the vertical scroll bar, so we can automatically mousewheel it (instead of the
     ' left listbox)
@@ -464,7 +464,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
 End Sub
 
 'To solve the problem of "two mouse-scrollable lists on one dialog), we track the mouse's location and handle scroll events accordingly.
-Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     mouseOverMetadataCategoryBox = True
 End Sub
 

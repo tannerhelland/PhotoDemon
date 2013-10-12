@@ -32,17 +32,17 @@ Public Sub ClipboardCopy()
     Set tmpLayer = New pdLayer
     
     'Check for an active selection
-    If pdImages(CurrentImage).selectionActive Then
+    If pdImages(g_CurrentImage).selectionActive Then
     
         'Fill the temporary layer with the selection
-        'tmpLayer.createBlank pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerColorDepth
-        'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(CurrentImage).mainSelection.boundWidth, pdImages(CurrentImage).mainSelection.boundHeight, pdImages(CurrentImage).mainLayer.getLayerDC, pdImages(CurrentImage).mainSelection.boundLeft, pdImages(CurrentImage).mainSelection.boundTop, vbSrcCopy
-        pdImages(CurrentImage).retrieveProcessedSelection tmpLayer
+        'tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+        'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+        pdImages(g_CurrentImage).retrieveProcessedSelection tmpLayer
         
     Else
     
         'If a selection is NOT active, just make a copy of the full image
-        tmpLayer.createFromExistingLayer pdImages(CurrentImage).mainLayer
+        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
         
     End If
     
