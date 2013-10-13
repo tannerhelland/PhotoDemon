@@ -50,6 +50,7 @@ Private Const WM_MOVING As Long = &H216
 Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_NCMOUSEMOVE As Long = &HA0
 Private Const WM_SIZING As Long = &H214
+Private Const WM_SIZE As Long = &H5
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WM_ACTIVATE      As Long = &H6
@@ -941,7 +942,7 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING, WM_MOVING
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE, WM_SIZING, WM_MOVING
     
     'In the future, it may be helpful to know when PD loses focus (e.g. to dump images from RAM to the hard drive).
     ' Thus I am leaving this code here "just in case".
@@ -1225,42 +1226,46 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 updateStoredWindowLocation mainWindowIndex
             
             'The parent window is currently being resized
-            Case WM_SIZING
-                
+            Case WM_SIZING, WM_SIZE
                 
                 mainFormTriggeredChange = True
                 
-                'Note that in the case of sizing, wParam contains a value that identifies the edge being used for the resize.
-                ' Determine this via use of the winResizeEdge Enum.
-                Dim resizeHandle As winResizeEdge
-                resizeHandle = wParam
+                'Note that in the case of WM_SIZING, we want to make sure the user is not stretching the window below an acceptable
+                ' minimum size.  Check that now.
+                If uMsg = WM_SIZING Then
                 
-                'lParam contains a pointer to the window's rect location.  Retrieve it now.
-                CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
-                
-                'If the user has set the window size too small, force the window to a minimum size (640x480).
-                If (curWinRect.x2 - curWinRect.x1) < 640 Then
-                    If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
-                        curWinRect.x1 = curWinRect.x2 - 640
-                    Else
-                        curWinRect.x2 = curWinRect.x1 + 640
+                    'wParam contains a value that identifies the edge being used for the resize.
+                    Dim resizeHandle As winResizeEdge
+                    resizeHandle = wParam
+                    
+                    'lParam contains a pointer to the window's rect location.  Retrieve it now.
+                    CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
+                    
+                    'If the user has set the window size too small, force the window to a minimum size (640x480).
+                    If (curWinRect.x2 - curWinRect.x1) < 640 Then
+                        If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
+                            curWinRect.x1 = curWinRect.x2 - 640
+                        Else
+                            curWinRect.x2 = curWinRect.x1 + 640
+                        End If
+                        CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
                     End If
-                    CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
-                End If
-                
-                If (curWinRect.y2 - curWinRect.y1) < 480 Then
-                    If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
-                        curWinRect.y1 = curWinRect.y2 - 480
-                    Else
-                        curWinRect.y2 = curWinRect.y1 + 480
+                    
+                    If (curWinRect.y2 - curWinRect.y1) < 480 Then
+                        If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
+                            curWinRect.y1 = curWinRect.y2 - 480
+                        Else
+                            curWinRect.y2 = curWinRect.y1 + 480
+                        End If
+                        CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
                     End If
-                    CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
+                    
+                    'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
+                    ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
+                    ' window changes causing more window changes).
+                    SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOSENDCHANGING Or SWP_NOACTIVATE
+                    
                 End If
-                
-                'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
-                ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
-                ' window changes causing more window changes).
-                SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOSENDCHANGING Or SWP_NOACTIVATE
                 
                 'Move each child window, while retaining the current offset
                 For i = 0 To numOfPDWindows - 1
@@ -1306,7 +1311,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                 
             'The parent window has just been maximized, minimized, or restored
             Case WM_SYSCOMMAND
-            
+                
+                Debug.Print "sys command received: " & wParam
+                
                 'Per MSDN (http://msdn.microsoft.com/en-us/library/windows/desktop/ms646360%28v=vs.85%29.aspx):
                 ' In WM_SYSCOMMAND messages, the four low-order bits of the wParam parameter are used internally by the system.
                 ' To obtain the correct result when testing the value of wParam, an application must combine the value 0xFFF0 with
