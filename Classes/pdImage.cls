@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2013 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 21/August/13
-'Last update: added the ability to roll back the Undo data for a canceled operation
+'Last updated: 13/September/13
+'Last update: added a new requestThumbnail function, which external functions can use to request a square thumbnail
+'              of an arbitrary size.
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -39,7 +40,7 @@ Option Explicit
 'This class is designed to store all the information about a particular image.
 'It currently includes the following information, per image:
 
-'Image ID (the value of NumOfImagesLoaded when the class was initialized - see the CreateNewImageForm routine)
+'Image ID (the value of g_NumOfImagesLoaded when the class was initialized - see the CreateNewImageForm routine)
 'Is it active? (e.g., still associated with a form that has not been unloaded)
 'Did the image load successfully? (this defaults to false, and must be set to True by the load function)
 'Containing form (e.g. upon which FormImage does this pdImage appear?)
@@ -175,7 +176,105 @@ Option Explicit
     
     'This image's location in the window manager.  We cache this value so we can quickly access information about this image's window.
     Public indexInWindowManager As Long
+
+'External functions can use this function to request a thumbnail version of the contained image.  Previously, thumbnail
+' generation was handled externally, but to prepare for the addition of layers, I will be rewriting all thumbnail-related
+' functions to use this function.  (This is necessary so that this pdImage object can composite a multi-layer image
+' before passing along a thumbnail version.)
+'
+'FreeImage is required for thumbnail resizing.
+Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional ByVal thumbnailSize As Long = 64) As Boolean
+
+    If Not g_ImageFormats.FreeImageEnabled Then
+        requestThumbnail = False
+        Exit Function
+    End If
     
+    'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
+    ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
+    
+    'Start by determining an aspect ratio for the current image.
+    Dim aspectRatio As Double
+    aspectRatio = CSng(Width) / CSng(Height)
+    
+    'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
+    ' aspect ratio and center the image on the thumbnail.
+    Dim tIcoWidth As Double, tIcoHeight As Double, tX As Double, tY As Double
+    
+    'If the form is wider than it is tall...
+    If aspectRatio > 1 Then
+        
+        'Determine proper sizes and (x, y) positioning so the icon will be centered
+        tIcoWidth = thumbnailSize
+        tIcoHeight = thumbnailSize * (1 / aspectRatio)
+        tX = 0
+        tY = (thumbnailSize - tIcoHeight) / 2
+        
+    Else
+    
+        'Same thing, but with the math adjusted for images taller than they are wide
+        tIcoHeight = thumbnailSize
+        tIcoWidth = thumbnailSize * aspectRatio
+        tY = 0
+        tX = (thumbnailSize - tIcoWidth) / 2
+        
+    End If
+    
+    'Load the FreeImage plugin into memory
+    Dim hLib As Long
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
+    
+    'Convert our current layer to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(mainLayer.getLayerDC)
+    
+    'Use that handle to request an image resize
+    If fi_DIB <> 0 Then
+            
+        'Rescale the image
+        Dim returnDIB As Long
+        returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
+        
+        'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
+        Dim newDIB32 As Long
+        newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
+        
+        'Unload the original DIB
+        If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
+        'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
+        
+        'Start by preparing a transparent quad, which we'll assign to the background of the enlarged area
+        Dim newColor As RGBQUAD
+        With newColor
+            .rgbBlue = 255
+            .rgbGreen = 255
+            .rgbRed = 255
+            .rgbReserved = 0
+        End With
+            
+        'Enlarge the canvas as necessary
+        Dim finalDIB As Long
+        finalDIB = FreeImage_EnlargeCanvas(newDIB32, tX, tY, tX, tY, newColor, FI_COLOR_IS_RGBA_COLOR)
+        
+        'Unload the original DIB
+        If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
+            
+        'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination layer.
+        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
+        SetDIBitsToDevice dstThumbnailLayer.getLayerDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
+            
+        'With the transfer complete, release the FreeImage DIB and unload the library
+        If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+        FreeLibrary hLib
+        
+        requestThumbnail = True
+    
+    Else
+        requestThumbnail = False
+    End If
+
+End Function
+
 'When this layer is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
     
