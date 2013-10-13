@@ -3,8 +3,8 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 12/October/13
-'Last update: remove some MDI-specific code that is no longer needed
+'Last updated: 13/October/13
+'Last update: rework custom form icon code to be much cleaner and self-contained
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -579,166 +579,109 @@ Public Sub ResetMenuIcons()
         
 End Sub
 
+'Convert a layer - any layer! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
+' at the current image's size (though you can specify a custom size if you wish).  Ideally, the passed layer will have been created using
+' the pdImage function "requestThumbnail".
+'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
+' the function without FreeImage's help, but frankly don't consider it worth the trouble.
+Public Function getIconFromLayer(ByRef srcLayer As pdLayer, Optional iconSize As Long = 0) As Long
+
+    If Not g_ImageFormats.FreeImageEnabled Then
+        getIconFromLayer = 0
+        Exit Function
+    End If
+    
+    'Load FreeImage, and pass it a copy of the current thumbnail.
+    Dim hLib As Long
+    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
+    
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(srcLayer.getLayerDC)
+    
+    'If the iconSize parameter is 0, use the current layer's dimensions.  Otherwise, resize it as requested.
+    If iconSize = 0 Then
+        iconSize = srcLayer.getLayerWidth
+    Else
+        fi_DIB = FreeImage_RescaleByPixel(fi_DIB, iconSize, iconSize, True, FILTER_BILINEAR)
+    End If
+    
+    If fi_DIB <> 0 Then
+    
+        'Icon generation has a number of quirks.  One is that even if you want a 32bpp icon, you still must supply a blank
+        ' monochrome mask for the icon, even though the API just discards it.  Prepare such a mask now.
+        Dim monoBmp As Long
+        monoBmp = CreateBitmap(iconSize, iconSize, 1, 1, ByVal 0&)
+        
+        'Create a header for the icon we desire, then use CreateIconIndirect to create it.
+        Dim icoInfo As ICONINFO
+        With icoInfo
+            .fIcon = True
+            .xHotspot = iconSize
+            .yHotspot = iconSize
+            .hbmMask = monoBmp
+            .hbmColor = FreeImage_GetBitmapForDevice(fi_DIB)
+        End With
+        
+        getIconFromLayer = CreateIconIndirect(icoInfo)
+        
+        'Delete the temporary monochrome mask and DDB
+        DeleteObject monoBmp
+        DeleteObject icoInfo.hbmColor
+    
+    Else
+        getIconFromLayer = 0
+    End If
+    
+    'Release both FreeImage and its copy of the source layer
+    FreeImage_UnloadEx fi_DIB
+    FreeLibrary hLib
+
+End Function
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
-' Past versions of this sub included a pure-VB fallback if FreeImage wasn't found.  These have since been removed -
-' so FreeImage is 100% required for this sub to operate.
+' Note that this function currently requires the FreeImage plugin to be present on the system.
 Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
-
-    'Generating an icon requires many variables; see below for specific comments on each one
-    Dim MonoBmp As Long
-    Dim icoInfo As ICONINFO
-    Dim generatedIcon As Long
-   
-    'The icon can be drawn at any size, but 16x16 is how it will (typically) end up on the form.  Since we are now rendering
-    ' a dynamically generated icon to the task bar as well, we opt for 32x32, and from that we generate an additional 16x16 version.
-    Dim icoSize As Long
     
-    'If we are rendering a dynamic taskbar icon, we will perform two reductions - first to 32x32, second to 16x16
-    If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then icoSize = 32 Else icoSize = 16
-
-    'Determine aspect ratio
-    Dim aspectRatio As Double
-    aspectRatio = CSng(pdImages(imgForm.Tag).Width) / CSng(pdImages(imgForm.Tag).Height)
+    'Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.
+    Dim hIcon32 As Long, hIcon16 As Long
     
-    'The target icon's width and height, x and y positioning
-    Dim tIcoWidth As Double, tIcoHeight As Double, TX As Double, TY As Double
+    Dim thumbLayer As pdLayer
+    Set thumbLayer = New pdLayer
     
-    'If the form is wider than it is tall...
-    If aspectRatio > 1 Then
-        
-        'Determine proper sizes and (x, y) positioning so the icon will be centered
-        tIcoWidth = icoSize
-        tIcoHeight = icoSize * (1 / aspectRatio)
-        TX = 0
-        TY = (icoSize - tIcoHeight) / 2
-        
-    Else
+    'Request a 32x32 thumbnail version of the current image
+    If pdImages(imgForm.Tag).requestThumbnail(thumbLayer, 32) Then
     
-        'Same thing, but with the math adjusted for images taller than they are wide
-        tIcoHeight = icoSize
-        tIcoWidth = icoSize * aspectRatio
-        TY = 0
-        TX = (icoSize - tIcoWidth) / 2
-        
-    End If
-    
-    'Load the FreeImage dll into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
-    'Convert our current layer to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
-    
-    'Use that handle to request an image resize
-    If fi_DIB <> 0 Then
-            
-        'Rescale the image
-        Dim returnDIB As Long
-        returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
-        
-        'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
-        Dim newDIB32 As Long
-        newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
-        
-        'Unload the original DIB
-        If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
-            
-        'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
-        
-        'Also, set the background of the enlarged area as transparent
-        Dim newColor As RGBQUAD
-        With newColor
-            .rgbBlue = 255
-            .rgbGreen = 255
-            .rgbRed = 255
-            .rgbReserved = 0
-        End With
-            
-        'Enlarge the canvas as necessary
-        Dim finalDIB As Long
-        finalDIB = FreeImage_EnlargeCanvas(newDIB32, TX, TY, TX, TY, newColor, FI_COLOR_IS_RGBA_COLOR)
-        
-        'Unload the original DIB
-        If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
-            
-        'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.
-        
-        'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 32x32 icon now
+        'A user preference controls whether we change the taskbar icon to match the current image - check it now.
         If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
-                
-            'Generate a blank monochrome mask to pass to the icon creation function.
-            MonoBmp = CreateBitmap(icoSize, icoSize, 1, 1, ByVal 0&)
-                        
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If finalDIB <> 0 Then
-                With icoInfo
-                    .fIcon = True
-                    .xHotspot = icoSize
-                    .yHotspot = icoSize
-                    .hbmMask = MonoBmp
-                    .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
-                End With
-            End If
-                
-            'Create the 32x32 icon
-            generatedIcon = CreateIconIndirect(icoInfo)
+        
+            'Request an icon-format version of the generated thumbnail
+            hIcon32 = getIconFromLayer(thumbLayer)
             
-            'Assign it to the taskbar
-            setNewTaskbarIcon generatedIcon, imgForm.hWnd
+            'Assign the new icon to the taskbar
+            setNewTaskbarIcon hIcon32, imgForm.hWnd
             
             '...and remember it in our current icon collection
-            addIconToList generatedIcon
+            addIconToList hIcon32
                 
             '...and the current form
-            pdImages(imgForm.Tag).curFormIcon32 = generatedIcon
-                                    
-            'Now delete the temporary mask and bitmap
-            DeleteObject MonoBmp
-            DeleteObject icoInfo.hbmColor
+            pdImages(imgForm.Tag).curFormIcon32 = hIcon32
             
         End If
-            
-        'Finally, resize the 32x32 icon to 16x16 so it will work as the current form icon as well
-        icoSize = 16
-        finalDIB = FreeImage_RescaleByPixel(finalDIB, 16, 16, True, FILTER_BILINEAR)
-            
-        'Generate a blank monochrome mask to pass to the icon creation function.
-        MonoBmp = CreateBitmap(icoSize, icoSize, 1, 1, ByVal 0&)
-            
-        'With the transfer complete, release the FreeImage DIB and unload the library
-        If finalDIB <> 0 Then
-            With icoInfo
-                .fIcon = True
-                .xHotspot = icoSize
-                .yHotspot = icoSize
-                .hbmMask = MonoBmp
-                .hbmColor = FreeImage_GetBitmapForDevice(finalDIB)
-            End With
-        End If
-            
-        'Render the icon to a handle and store it in our running list, so we can destroy it when the program is closed
-        generatedIcon = CreateIconIndirect(icoInfo)
-        addIconToList generatedIcon
         
-        'If we are dynamically updating the taskbar icon to match the current image, we need to assign the 16x16 icon now
-        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
-            setNewAppIcon generatedIcon
-            pdImages(imgForm.Tag).curFormIcon16 = generatedIcon
-        End If
+        'Now repeat the same steps, but for a 16x16 icon to be used in the form's title bar.
+        hIcon16 = getIconFromLayer(thumbLayer, 16)
+        addIconToList hIcon16
+        pdImages(imgForm.Tag).curFormIcon16 = hIcon16
         
-        'Clear out memory
-        FreeImage_UnloadEx finalDIB
-        FreeLibrary hLib
-        DeleteObject MonoBmp
-        DeleteObject icoInfo.hbmColor
+        'Back when PD used an MDI interface, the caption bar of the main form was changed to match the current image.  This is
+        ' no longer needed, but I have left the code here just in case.
+        'setNewAppIcon generatedIcon
         
-        'Use the API to assign this new icon to the specified child form
-        SendMessageLong imgForm.hWnd, &H80, 0, generatedIcon
+        'Apply the 16x16 icon to the title bar of the specified form
+        SendMessageLong imgForm.hWnd, &H80, 0, hIcon16
         
     End If
        
@@ -836,8 +779,8 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
             If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
                         
                 'Generate a blank monochrome mask to pass to the icon creation function.
-                Dim MonoBmp As Long
-                MonoBmp = CreateBitmap(CLng(tmpRect.fWidth), CLng(tmpRect.fHeight), 1, 1, ByVal 0&)
+                Dim monoBmp As Long
+                monoBmp = CreateBitmap(CLng(tmpRect.fWidth), CLng(tmpRect.fHeight), 1, 1, ByVal 0&)
                             
                 'With the transfer complete, release the FreeImage DIB and unload the library
                 Dim icoInfo As ICONINFO
@@ -845,14 +788,14 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
                     .fIcon = False
                     .xHotspot = curHotspotX
                     .yHotspot = curHotspotY
-                    .hbmMask = MonoBmp
+                    .hbmMask = monoBmp
                     .hbmColor = hBitmap
                 End With
                     
                 'Create the 32x32 cursor
                 createCursorFromResource = CreateIconIndirect(icoInfo)
                 
-                DeleteObject MonoBmp
+                DeleteObject monoBmp
                 DeleteObject hBitmap
             
             End If
