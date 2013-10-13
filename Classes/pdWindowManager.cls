@@ -1227,22 +1227,33 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'The parent window is currently being resized
             Case WM_SIZING
                 
-                'Note that in the case of sizing, wParam contains a value that identifies the edge being used for the resize.
-                ' Determine this via use of the winResizeEdge Enum.
                 
                 mainFormTriggeredChange = True
+                
+                'Note that in the case of sizing, wParam contains a value that identifies the edge being used for the resize.
+                ' Determine this via use of the winResizeEdge Enum.
+                Dim resizeHandle As winResizeEdge
+                resizeHandle = wParam
                 
                 'lParam contains a pointer to the window's rect location.  Retrieve it now.
                 CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
                 
                 'If the user has set the window size too small, force the window to a minimum size (640x480).
                 If (curWinRect.x2 - curWinRect.x1) < 640 Then
-                    curWinRect.x2 = curWinRect.x1 + 640
+                    If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
+                        curWinRect.x1 = curWinRect.x2 - 640
+                    Else
+                        curWinRect.x2 = curWinRect.x1 + 640
+                    End If
                     CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
                 End If
                 
                 If (curWinRect.y2 - curWinRect.y1) < 480 Then
-                    curWinRect.y2 = curWinRect.y1 + 480
+                    If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
+                        curWinRect.y1 = curWinRect.y2 - 480
+                    Else
+                        curWinRect.y2 = curWinRect.y1 + 480
+                    End If
                     CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
                 End If
                 
