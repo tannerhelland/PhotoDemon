@@ -195,8 +195,8 @@ Public Sub LoadTheProgram()
     tBoxFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False)
     imgWinFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False)
     
-    FormMain.MnuWindow(0).Checked = tBoxFloating
-    FormMain.MnuWindow(1).Checked = imgWinFloating
+    FormMain.MnuWindow(3).Checked = tBoxFloating
+    FormMain.MnuWindow(4).Checked = imgWinFloating
     
     g_WindowManager.setFloatState TOOLBAR_WINDOW, tBoxFloating
     g_WindowManager.setFloatState IMAGE_WINDOW, imgWinFloating
@@ -212,7 +212,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing image tools..."
     
     'Even though the user can hide toolbars, we still want them loaded, so we can interact with them as necessary.
-    Load toolbar_Main
+    Load toolbar_File
     Load toolbar_Selections
     
     Dim i As Long
@@ -284,14 +284,14 @@ Public Sub LoadTheProgram()
     End If
                 
     'Manually create multi-line tooltips for some command buttons
-    toolbar_Main.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
+    toolbar_File.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
     If g_ConfirmClosingUnsaved Then
-        toolbar_Main.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
+        toolbar_File.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
     Else
-        toolbar_Main.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
+        toolbar_File.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
     End If
-    toolbar_Main.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
-    toolbar_Main.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
+    toolbar_File.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
+    toolbar_File.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
                         
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     SetIcon FormMain.hWnd, "AAA", True
@@ -319,8 +319,8 @@ Public Sub LoadTheProgram()
         
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
     If g_UseFancyFonts Then
-        toolbar_Main.cmdZoomIn.Height = toolbar_Main.cmdZoomIn.Height + 1
-        toolbar_Main.cmdZoomOut.Height = toolbar_Main.cmdZoomOut.Height + 1
+        toolbar_File.cmdZoomIn.Height = toolbar_File.cmdZoomIn.Height + 1
+        toolbar_File.cmdZoomOut.Height = toolbar_File.cmdZoomOut.Height + 1
     End If
     
     'Allow drag-and-drop operations
@@ -681,6 +681,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If ((Not loadSuccessful) Or (targetImage.mainLayer.getLayerWidth = 0) Or (targetImage.mainLayer.getLayerHeight = 0)) And isThisPrimaryImage Then
             Message "Failed to load %1", sFile(thisImage)
             
+            'Deactivating the image will remove the reference to the containing form - this is desired behavior, because VB counts object references,
+            ' and doesn't free an object until all references are resolved.  To work around this, we make a copy of the reference prior to deactivation.
+            ' We then use this reference copy to unload the form.
+            Dim failedImageForm As Form
+            Set failedImageForm = targetImage.containingForm
+            failedImageForm.Visible = False
+            
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
                 brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
@@ -689,7 +696,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
             targetImage.deactivateImage
-            If isThisPrimaryImage Then Unload pdImages(g_CurrentImage).containingForm
+            
+            If isThisPrimaryImage Then
+                'Notify the window manager that this hWnd will soon be dead - so stop subclassing it!
+                g_WindowManager.unregisterForm failedImageForm
+                Unload failedImageForm
+                Set failedImageForm = Nothing
+            End If
+            
             GoTo PreloadMoreImages
             
         Else
@@ -917,7 +931,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
             ' update the zoom combo box to match the zoom assigned by the window-fit function.
             g_AllowViewportRendering = False
-            toolbar_Main.CmbZoom.ListIndex = targetImage.CurrentZoomValue
+            toolbar_File.CmbZoom.ListIndex = targetImage.CurrentZoomValue
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
@@ -1305,8 +1319,8 @@ Public Sub LoadAccelerators()
         .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuPlayMacroRecording, True, True, True, False
         
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(3), False, True, False, False
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(4), False, True, False, False
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(6), False, True, False, False
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(7), False, True, False, False
                 
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"
@@ -1602,7 +1616,7 @@ Public Sub DuplicateCurrentImage()
         
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
     g_AllowViewportRendering = False
-    toolbar_Main.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+    toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
         
     Message "Image duplication complete."
     
