@@ -27,7 +27,7 @@ Public imageHasMultiplePages As Boolean
 Public imagePageCount As Long
 
 'DIB declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean
@@ -44,7 +44,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     '****************************************************************************
     
     'Double-check that FreeImage.dll was located at start-up
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
@@ -591,10 +591,10 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     'Make sure the blank DIB creation worked
-    If creationSuccess = False Then
+    If Not creationSuccess Then
         If showMessages Then Message "Import via FreeImage failed (couldn't create DIB)."
         
-        If (pageToLoad <= 0) Or (needToCloseMulti = False) Then
+        If (pageToLoad <= 0) Or (Not needToCloseMulti) Then
             If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
         Else
             If (fi_hDIB <> 0) Then FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
@@ -616,7 +616,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
               
     'With the image bits now safely in our care, release the FreeImage DIB
-    If (pageToLoad <= 0) Or (needToCloseMulti = False) Then
+    If (pageToLoad <= 0) Or (Not needToCloseMulti) Then
         FreeImage_UnloadEx fi_hDIB
     Else
         FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
