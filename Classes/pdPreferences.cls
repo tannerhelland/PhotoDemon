@@ -371,6 +371,8 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "LastWindowTop", "1"
         xmlEngine.writeTag "LastWindowWidth", "1"
         xmlEngine.writeTag "LastWindowHeight", "1"
+        xmlEngine.writeTag "ShowFileToolbox", "True"
+        xmlEngine.writeTag "ShowSelectionsToolbox", "True"
     xmlEngine.closeTag "Core"
     xmlEngine.writeBlankLine
     

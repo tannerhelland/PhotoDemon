@@ -87,6 +87,59 @@ Private hadToChangeSmoothing As Long
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
 Private dpiRatio As Double
 
+'Both toolbars and image windows can be floated or docked.  Because some behind-the-scenes maintenance has to be applied whenever
+' this setting is changed, all float toggle operations should wrap this singular function.
+Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal floatStatus As Boolean, Optional ByVal suspendMenuRefresh As Boolean = False)
+
+    Dim i As Long
+
+    Select Case whichWindowType
+    
+        Case TOOLBAR_WINDOW
+            FormMain.MnuWindow(3).Checked = floatStatus
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", floatStatus
+            g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus
+            
+            'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
+            If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+                If g_NumOfImagesLoaded > 0 Then
+                    For i = 0 To g_NumOfImagesLoaded
+                        If (Not pdImages(i) Is Nothing) Then
+                            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
+                        End If
+                    Next i
+                End If
+            End If
+            
+        Case IMAGE_WINDOW
+            FormMain.MnuWindow(4).Checked = floatStatus
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", floatStatus
+            g_WindowManager.setFloatState IMAGE_WINDOW, floatStatus
+            
+            'All image windows need to be redrawn, because the available client area will have changed.
+            If g_NumOfImagesLoaded > 0 Then
+                For i = 0 To g_NumOfImagesLoaded
+                    If (Not pdImages(i) Is Nothing) Then
+                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
+                    End If
+                Next i
+            End If
+            
+            'If image windows are docked, there's no reason to display extra Window menu items like "Cascade" or "Minimize all windows".
+            ' En/disable those menu entries as necessary.
+            
+            '(The 8 here is a magic number corresponding to the index of the Cascade menu entry.
+            For i = 8 To FormMain.MnuWindow.Count - 1
+                FormMain.MnuWindow(i).Visible = g_WindowManager.getFloatState(IMAGE_WINDOW)
+            Next i
+            
+            'Menu icons may need to be reapplied to those menus if they were previously hidden
+            If Not suspendMenuRefresh Then ResetMenuIcons
+            
+    End Select
+
+End Sub
+
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
 ' toolbar's command box, etc).  All those operations should wrap this singular function.
 Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
