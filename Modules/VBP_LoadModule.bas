@@ -187,7 +187,12 @@ Public Sub LoadTheProgram()
     initializeViewportEngine
     
     
-    'While we're here, initiate our window manager as well
+    
+    '*************************************************************************************************************************************
+    ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
+    '*************************************************************************************************************************************
+    
+    LoadMessage "Initializing window manager..."
     Set g_WindowManager = New pdWindowManager
     
     'Register the main form
@@ -199,21 +204,15 @@ Public Sub LoadTheProgram()
     Load toolbar_Selections
         
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
-    Dim tBoxFloating As Boolean, imgWinFloating As Boolean
-    tBoxFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False)
-    imgWinFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False)
-    
-    FormMain.MnuWindow(3).Checked = tBoxFloating
-    FormMain.MnuWindow(4).Checked = imgWinFloating
-    
-    g_WindowManager.setFloatState TOOLBAR_WINDOW, tBoxFloating
-    g_WindowManager.setFloatState IMAGE_WINDOW, imgWinFloating
+    toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True
+    toggleWindowFloating IMAGE_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False), True
     
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
-        
-        
+    
+    
+    
     '*************************************************************************************************************************************
     ' Set all default tool values
     '*************************************************************************************************************************************

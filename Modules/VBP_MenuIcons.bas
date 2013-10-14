@@ -498,10 +498,8 @@ Public Sub ResetMenuIcons()
     If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
         
     'Redraw the Undo/Redo menus
-    With cMenuImage
-        AddMenuIcon "UNDO", 1, 0     'Undo
-        AddMenuIcon "REDO", 1, 1     'Redo
-    End With
+    AddMenuIcon "UNDO", 1, 0     'Undo
+    AddMenuIcon "REDO", 1, 1     'Redo
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
@@ -522,6 +520,15 @@ Public Sub ResetMenuIcons()
     Else
         AddMenuIcon "RIGHTPANHIDE", 2, 17   'Hide the panel
     End If
+    
+    'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
+    AddMenuIcon "NEXTIMAGE", 8, 6       'Next image
+    AddMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    AddMenuIcon "CASCADE", 8, 9         'Cascade
+    AddMenuIcon "TILEVER", 8, 10        'Tile Horizontally
+    AddMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    AddMenuIcon "MINALL", 8, 13         'Minimize All
+    AddMenuIcon "RESTOREALL", 8, 14     'Restore All
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
     If g_IsVistaOrLater Then

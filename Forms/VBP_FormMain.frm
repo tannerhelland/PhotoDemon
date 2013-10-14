@@ -2730,39 +2730,11 @@ Private Sub MnuWindow_Click(Index As Integer)
     
         'Floating toolbars
         Case 3
-        
-            'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
-            FormMain.MnuWindow(3).Checked = Not FormMain.MnuWindow(3).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", FormMain.MnuWindow(3).Checked
-            g_WindowManager.setFloatState TOOLBAR_WINDOW, FormMain.MnuWindow(3).Checked
-            
-            'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
-            If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                If g_NumOfImagesLoaded > 0 Then
-                    For i = 0 To g_NumOfImagesLoaded
-                        If (Not pdImages(i) Is Nothing) Then
-                            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
-                        End If
-                    Next i
-                End If
-            End If
+            toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(3).Checked
             
         'Floating image windows
         Case 4
-        
-            'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
-            FormMain.MnuWindow(4).Checked = Not FormMain.MnuWindow(4).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", FormMain.MnuWindow(4).Checked
-            g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(4).Checked
-            
-            'All image windows need to be redrawn, because the available client area will have changed.
-            If g_NumOfImagesLoaded > 0 Then
-                For i = 0 To g_NumOfImagesLoaded
-                    If (Not pdImages(i) Is Nothing) Then
-                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
-                    End If
-                Next i
-            End If
+            toggleWindowFloating IMAGE_WINDOW, Not FormMain.MnuWindow(4).Checked
             
         '<separator>
         Case 5
