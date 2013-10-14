@@ -148,10 +148,10 @@ Public Sub ActivateWorkaround()
 
     'If this MDI child is maximized, double-check that it's been drawn correctly.
     ' (This is necessary because VB doesn't handle _Resize() properly when switching between maximized MDI child forms)
-    If Me.WindowState = 2 Then
+    'If Me.WindowState = 2 Then
         'DoEvents
-        PrepareViewport Me, "Maximized MDI child redraw"
-    End If
+        'PrepareViewport Me, "Maximized MDI child redraw"
+    'End If
     
     'Determine whether Undo, Redo, Fade-last are available
     metaToggle tUndo, pdImages(g_CurrentImage).UndoState
@@ -188,7 +188,7 @@ Public Sub ActivateWorkaround()
     If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(g_CurrentImage).Width <> 0 Then toolbar_Main.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+    If pdImages(g_CurrentImage).Width <> 0 Then toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
     
     'If a selection is active on this image, update the text boxes to match
     If pdImages(g_CurrentImage).selectionActive Then
@@ -293,16 +293,16 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
       
         If LinesScrolled > 0 Then
             
-            If toolbar_Main.CmbZoom.ListIndex > 0 Then
-                toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
+            If toolbar_File.CmbZoom.ListIndex > 0 Then
+                toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
                 'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
                 'PrepareViewport Me, "Ctrl+Mousewheel"
             End If
         
         ElseIf LinesScrolled < 0 Then
             
-            If toolbar_Main.CmbZoom.ListIndex < (toolbar_Main.CmbZoom.ListCount - 1) Then
-                toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
+            If toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then
+                toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
                 'PrepareViewport Me, "Ctrl+Mousewheel"
         End If
             

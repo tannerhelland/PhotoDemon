@@ -190,6 +190,14 @@ Public Sub LoadTheProgram()
     'While we're here, initiate our window manager as well
     Set g_WindowManager = New pdWindowManager
     
+    'Register the main form
+    g_WindowManager.registerParentForm FormMain
+    
+    'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
+    ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
+    Load toolbar_File
+    Load toolbar_Selections
+        
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
     Dim tBoxFloating As Boolean, imgWinFloating As Boolean
     tBoxFloating = g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False)
@@ -201,20 +209,17 @@ Public Sub LoadTheProgram()
     g_WindowManager.setFloatState TOOLBAR_WINDOW, tBoxFloating
     g_WindowManager.setFloatState IMAGE_WINDOW, imgWinFloating
     
-    'Register the main form
-    g_WindowManager.registerParentForm FormMain
-    
+    'Retrieve visibility and mark those menus as well
+    FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
+    FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+        
         
     '*************************************************************************************************************************************
     ' Set all default tool values
     '*************************************************************************************************************************************
         
     LoadMessage "Initializing image tools..."
-    
-    'Even though the user can hide toolbars, we still want them loaded, so we can interact with them as necessary.
-    Load toolbar_File
-    Load toolbar_Selections
-    
+        
     Dim i As Long
     
     'INITIALIZE ALL SELECTION TOOLS
@@ -294,7 +299,7 @@ Public Sub LoadTheProgram()
     toolbar_File.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
                         
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
-    SetIcon FormMain.hwnd, "AAA", True
+    SetIcon FormMain.hWnd, "AAA", True
     
     'Initialize all system cursors we rely on (hand, busy, resizing, etc)
     InitAllCursors

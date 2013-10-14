@@ -960,12 +960,12 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
       Begin VB.Menu MnuWindow 
-         Caption         =   "Floating toolboxes"
+         Caption         =   "File toolbar"
          Checked         =   -1  'True
          Index           =   0
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Floating image windows"
+         Caption         =   "Selection toolbar"
          Checked         =   -1  'True
          Index           =   1
       End
@@ -974,11 +974,13 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
+         Caption         =   "Floating toolboxes"
+         Checked         =   -1  'True
          Index           =   3
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Previous image"
+         Caption         =   "Floating image windows"
+         Checked         =   -1  'True
          Index           =   4
       End
       Begin VB.Menu MnuWindow 
@@ -986,28 +988,40 @@ Begin VB.Form FormMain
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Cascade"
+         Caption         =   "Next image"
          Index           =   6
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &horizontally"
+         Caption         =   "Previous image"
          Index           =   7
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &vertically"
+         Caption         =   "-"
          Index           =   8
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
+         Caption         =   "&Cascade"
          Index           =   9
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Minimize all windows"
+         Caption         =   "Tile &horizontally"
          Index           =   10
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Restore all windows"
+         Caption         =   "Tile &vertically"
          Index           =   11
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "-"
+         Index           =   12
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "&Minimize all windows"
+         Index           =   13
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "&Restore all windows"
+         Index           =   14
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -1112,16 +1126,18 @@ Private Sub Form_Load()
     'Hide the selection tools
     metaToggle tSelection, False
     
-    'We can now display the main form
+    'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars are hiden, and I'm working
+    ' on a solution to that.)
     Me.Visible = True
-    'If FormMain.Enabled And picLeftPane.Visible Then cmdOpen.SetFocus
     
-    'Now that the main form is visible, we can load all tool windows.  Register each toolbar with the window manager, then display it.
-    g_WindowManager.registerChildForm toolbar_Main, TOOLBAR_WINDOW, 1, MAIN_TOOLBOX
-    toolbar_Main.Show vbModeless, Me
+    g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
     g_WindowManager.registerChildForm toolbar_Selections, TOOLBAR_WINDOW, 2, SELECTION_TOOLBOX
+    
+    toolbar_File.Show vbModeless, Me
+    g_WindowManager.setWindowVisibility toolbar_File.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     toolbar_Selections.Show vbModeless, Me
-            
+    g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+                
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
     
@@ -2410,23 +2426,23 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
     Select Case Index
     
         Case 0
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 2
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 2
         Case 1
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 4
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 4
         Case 2
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 8
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 8
         Case 3
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 10
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 10
         Case 4
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
         Case 5
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 14
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 14
         Case 6
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 16
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 16
         Case 7
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 19
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 19
         Case 8
-            If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 21
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 21
     End Select
 
 End Sub
@@ -2634,50 +2650,50 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Zoom in
     If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
-        If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex > 0 Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
+        If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex > 0 Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
     End If
     
     'Zoom out
     If ctlAccelerator.Key(nIndex) = "Zoom_Out" Then
-        If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex < (toolbar_Main.CmbZoom.ListCount - 1) Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
+        If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
     End If
     
     'Actual size
     If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
     End If
     
     'Various zoom values
     If ctlAccelerator.Key(nIndex) = "Zoom_161" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 2
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 2
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_81" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 4
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 4
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_41" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 8
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 8
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_21" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 10
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 10
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_12" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 14
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 14
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_14" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 16
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 16
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_18" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 19
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 19
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
-        If toolbar_Main.CmbZoom.Enabled Then toolbar_Main.CmbZoom.ListIndex = 21
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 21
     End If
     
     'Remove selection
@@ -2701,13 +2717,24 @@ Private Sub MnuWindow_Click(Index As Integer)
 
     Select Case Index
     
-        'Floating toolbars
+        'Show/hide file toolbox
         Case 0
+            toggleToolbarVisibility FILE_TOOLBOX
+        
+        'Show/hide selection toolbox
+        Case 1
+            toggleToolbarVisibility SELECTION_TOOLBOX
+        
+        '<separator>
+        Case 2
+    
+        'Floating toolbars
+        Case 3
         
             'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
-            FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", FormMain.MnuWindow(0).Checked
-            g_WindowManager.setFloatState TOOLBAR_WINDOW, FormMain.MnuWindow(0).Checked
+            FormMain.MnuWindow(3).Checked = Not FormMain.MnuWindow(3).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", FormMain.MnuWindow(3).Checked
+            g_WindowManager.setFloatState TOOLBAR_WINDOW, FormMain.MnuWindow(3).Checked
             
             'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
             If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
@@ -2721,12 +2748,12 @@ Private Sub MnuWindow_Click(Index As Integer)
             End If
             
         'Floating image windows
-        Case 1
+        Case 4
         
             'Change the menu state (checked/unchecked), store the preference, and notify the window manager of the change
-            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", FormMain.MnuWindow(1).Checked
-            g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(1).Checked
+            FormMain.MnuWindow(4).Checked = Not FormMain.MnuWindow(4).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", FormMain.MnuWindow(4).Checked
+            g_WindowManager.setFloatState IMAGE_WINDOW, FormMain.MnuWindow(4).Checked
             
             'All image windows need to be redrawn, because the available client area will have changed.
             If g_NumOfImagesLoaded > 0 Then
@@ -2738,21 +2765,21 @@ Private Sub MnuWindow_Click(Index As Integer)
             End If
             
         '<separator>
-        Case 2
+        Case 5
         
         'Next image
-        Case 3
+        Case 6
             moveToNextChildWindow True
             
         'Previous image
-        Case 4
+        Case 7
             moveToNextChildWindow False
     
         '<separator>
-        Case 5
+        Case 8
         
         'Cascade
-        Case 6
+        Case 9
             'Me.Arrange vbCascade
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
@@ -2764,7 +2791,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
         
         'Tile horizontally
-        Case 7
+        Case 10
             'Me.Arrange vbTileHorizontal
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
@@ -2776,7 +2803,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
     
         'Tile vertically
-        Case 8
+        Case 11
             'Me.Arrange vbTileVertical
     
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
@@ -2788,10 +2815,10 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
     
         '<separator>
-        Case 9
+        Case 12
         
         'Minimize all windows
-        Case 10
+        Case 13
         
             'Run a loop through every child form and minimize it
             For i = 0 To g_NumOfImagesLoaded
@@ -2803,7 +2830,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             Next i
         
         'Restore all windows
-        Case 11
+        Case 14
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
@@ -2846,7 +2873,7 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
                 
         If Not pdImages(i) Is Nothing Then
             If pdImages(i).IsActive Then
-                pdImages(i).containingForm.SetFocus
+                pdImages(i).containingForm.ActivateWorkaround
                 Exit Do
             End If
         End If
@@ -2862,11 +2889,11 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
 End Sub
 
 Private Sub MnuZoomIn_Click()
-    If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex > 0 Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
+    If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex > 0 Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If toolbar_Main.CmbZoom.Enabled And toolbar_Main.CmbZoom.ListIndex < (toolbar_Main.CmbZoom.ListCount - 1) Then toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
+    If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
 End Sub
 
 'When the form is resized, the progress bar at bottom needs to be manually redrawn.  Unfortunately, VB doesn't trigger

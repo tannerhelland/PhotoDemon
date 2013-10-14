@@ -828,9 +828,19 @@ Private Sub Form_Load()
         
 End Sub
 
+'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
+' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the toggleToolbarVisibility sub
+' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
-    g_WindowManager.unregisterForm Me
+    
+    If g_ProgramShuttingDown Then
+        ReleaseFormTheming Me
+        g_WindowManager.unregisterForm Me
+    Else
+        Cancel = True
+        toggleToolbarVisibility SELECTION_TOOLBOX
+    End If
+    
 End Sub
 
 Private Sub sltCornerRounding_Change()

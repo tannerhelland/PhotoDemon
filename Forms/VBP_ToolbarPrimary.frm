@@ -1,9 +1,9 @@
 VERSION 5.00
-Begin VB.Form toolbar_Main 
+Begin VB.Form toolbar_File 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Main"
+   Caption         =   "File"
    ClientHeight    =   8715
    ClientLeft      =   45
    ClientTop       =   315
@@ -324,7 +324,7 @@ Begin VB.Form toolbar_Main
       Y2              =   279
    End
 End
-Attribute VB_Name = "toolbar_Main"
+Attribute VB_Name = "toolbar_File"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -354,16 +354,16 @@ Private Sub CmbZoom_Click()
     
     'Track the current zoom value
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).CurrentZoomValue = toolbar_Main.CmbZoom.ListIndex
-        If toolbar_Main.CmbZoom.ListIndex = 0 Then
-            toolbar_Main.cmdZoomIn.Enabled = False
+        pdImages(g_CurrentImage).CurrentZoomValue = toolbar_File.CmbZoom.ListIndex
+        If toolbar_File.CmbZoom.ListIndex = 0 Then
+            toolbar_File.cmdZoomIn.Enabled = False
         Else
-            If Not toolbar_Main.cmdZoomIn.Enabled Then toolbar_Main.cmdZoomIn.Enabled = True
+            If Not toolbar_File.cmdZoomIn.Enabled Then toolbar_File.cmdZoomIn.Enabled = True
         End If
-        If toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListCount - 1 Then
-            toolbar_Main.cmdZoomOut.Enabled = False
+        If toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListCount - 1 Then
+            toolbar_File.cmdZoomOut.Enabled = False
         Else
-            If Not toolbar_Main.cmdZoomOut.Enabled Then toolbar_Main.cmdZoomOut.Enabled = True
+            If Not toolbar_File.cmdZoomOut.Enabled Then toolbar_File.cmdZoomOut.Enabled = True
         End If
         PrepareViewport pdImages(g_CurrentImage).containingForm, "zoom changed by user"
     End If
@@ -395,11 +395,11 @@ Private Sub cmdUndo_Click()
 End Sub
 
 Private Sub cmdZoomIn_Click()
-    toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex - 1
+    toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
 End Sub
 
 Private Sub cmdZoomOut_Click()
-    toolbar_Main.CmbZoom.ListIndex = toolbar_Main.CmbZoom.ListIndex + 1
+    toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
 End Sub
 
 Private Sub Form_Load()
@@ -410,7 +410,17 @@ Private Sub Form_Load()
     
 End Sub
 
+'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
+' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the toggleToolbarVisibility sub
+' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
-    g_WindowManager.unregisterForm Me
+    
+    If g_ProgramShuttingDown Then
+        ReleaseFormTheming Me
+        g_WindowManager.unregisterForm Me
+    Else
+        Cancel = True
+        toggleToolbarVisibility FILE_TOOLBOX
+    End If
+    
 End Sub

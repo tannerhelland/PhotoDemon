@@ -51,7 +51,6 @@ Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
 
 'Constants that define single meta-level actions that require certain controls to be en/disabled.  These are passed to tInit, below.
-'(Note: these constants should eventually be converted to an Enum)
 Public Enum metaInitializer
      tOpen = 0
      tSave = 1
@@ -62,7 +61,7 @@ Public Enum metaInitializer
      tImageOps = 6
      tFilter = 7
      tRedo = 8
-     'tHistogram = 9
+     tHistogram = 9
      tMacro = 10
      tEdit = 11
      tRepeatLast = 12
@@ -73,6 +72,10 @@ Public Enum metaInitializer
      tGPSMetadata = 17
 End Enum
 
+#If False Then
+    Private Const tOpen = 0, tSave = 1, tSaveAs = 2, tCopy = 3, tPaste = 4, tUndo = 5, tImageOps = 6, tFilter = 7, tRedo = 8, tHistogram = 9, tMacro = 10, tEdit = 11, tRepeatLast = 12, tSelection = 13, tSelectionTransform = 14, tImgMode32bpp = 15, tMetadata = 16, tGPSMetadata = 17
+#End If
+
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
 ' can contain the following values:
 ' 0: did not have to change smoothing, as ClearType is already enabled
@@ -80,9 +83,29 @@ End Enum
 ' 2: had to turn on smoothing, as it was originally turned off
 Private hadToChangeSmoothing As Long
 
-'PD is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.  To remedy
-' this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
+'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
+' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
 Private dpiRatio As Double
+
+'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
+' toolbar's command box, etc).  All those operations should wrap this singular function.
+Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
+
+    Select Case whichToolbar
+    
+        Case FILE_TOOLBOX
+            FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindow(0).Checked
+            g_WindowManager.setWindowVisibility toolbar_File.hWnd, FormMain.MnuWindow(0).Checked
+        
+        Case SELECTION_TOOLBOX
+            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(1).Checked
+            g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, FormMain.MnuWindow(1).Checked
+    
+    End Select
+
+End Sub
 
 Public Function fixDPI(ByVal pxMeasurement As Long) As Long
 
@@ -152,21 +175,21 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Open (left-hand panel button AND menu item)
         Case tOpen
             If FormMain.MnuFile(0).Enabled <> newState Then
-                toolbar_Main.cmdOpen.Enabled = newState
+                toolbar_File.cmdOpen.Enabled = newState
                 FormMain.MnuFile(0).Enabled = newState
             End If
             
         'Save (left-hand panel button AND menu item)
         Case tSave
             If FormMain.MnuFile(4).Enabled <> newState Then
-                toolbar_Main.cmdSave.Enabled = newState
+                toolbar_File.cmdSave.Enabled = newState
                 FormMain.MnuFile(4).Enabled = newState
             End If
             
         'Save As (menu item only)
         Case tSaveAs
             If FormMain.MnuFile(5).Enabled <> newState Then
-                toolbar_Main.cmdSaveAs.Enabled = newState
+                toolbar_File.cmdSaveAs.Enabled = newState
                 FormMain.MnuFile(5).Enabled = newState
             End If
         
@@ -181,16 +204,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Undo (left-hand panel button AND menu item)
         Case tUndo
             If FormMain.MnuEdit(0).Enabled <> newState Then
-                toolbar_Main.cmdUndo.Enabled = newState
+                toolbar_File.cmdUndo.Enabled = newState
                 FormMain.MnuEdit(0).Enabled = newState
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Main.cmdUndo.ToolTip = pdImages(g_CurrentImage).getUndoProcessID
+                toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).getUndoProcessID
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             Else
-                toolbar_Main.cmdUndo.ToolTip = ""
+                toolbar_File.cmdUndo.ToolTip = ""
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
                 ResetMenuIcons
             End If
@@ -222,17 +245,17 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Redo (left-hand panel button AND menu item)
         Case tRedo
             If FormMain.MnuEdit(1).Enabled <> newState Then
-                toolbar_Main.cmdRedo.Enabled = newState
+                toolbar_File.cmdRedo.Enabled = newState
                 FormMain.MnuEdit(1).Enabled = newState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Main.cmdRedo.ToolTip = pdImages(g_CurrentImage).getRedoProcessID
+                toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).getRedoProcessID
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             Else
-                toolbar_Main.cmdRedo.ToolTip = ""
+                toolbar_File.cmdRedo.ToolTip = ""
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
                 ResetMenuIcons
             End If
@@ -685,8 +708,8 @@ End Sub
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     
-    toolbar_Main.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
-    toolbar_Main.lblImgSize.Refresh
+    toolbar_File.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
+    toolbar_File.lblImgSize.Refresh
     
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
     ' now is an excellent time to update them.
@@ -812,8 +835,8 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    toolbar_Main.lblCoordinates.Caption = ""
-    toolbar_Main.lblCoordinates.Refresh
+    toolbar_File.lblCoordinates.Caption = ""
+    toolbar_File.lblCoordinates.Refresh
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
