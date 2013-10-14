@@ -50,7 +50,7 @@ Public Sub StartMacro()
     
     'Notify the user that recording has begun
     Message "Macro recording started."
-    toolbar_Main.lblRecording.Visible = True
+    toolbar_File.lblRecording.Visible = True
     
     FormMain.MnuStartMacroRecording.Enabled = False
     FormMain.MnuStopMacroRecording.Enabled = True
@@ -63,7 +63,7 @@ Public Sub StopMacro()
     MacroStatus = MacroSTOP
     Message "Macro recording stopped."
     
-    toolbar_Main.lblRecording.Visible = False
+    toolbar_File.lblRecording.Visible = False
     FormMain.MnuStartMacroRecording.Enabled = True
     FormMain.MnuStopMacroRecording.Enabled = False
     

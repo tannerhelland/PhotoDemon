@@ -147,8 +147,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         hDif = g_WindowManager.getVerticalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
         
         'Start our calculations by setting the new width/height to equal the image's current size (while accounting for zoom)
-        curWidth = wDif + (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
-        curHeight = hDif + (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(toolbar_Main.CmbZoom.ListIndex))
+        curWidth = wDif + (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(toolbar_File.CmbZoom.ListIndex))
+        curHeight = hDif + (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(toolbar_File.CmbZoom.ListIndex))
         
         'We now handle the fit operation in two possible ways:
         ' 1) If the image is being loaded for the first time, constrain its location to the main form's client area.
@@ -354,7 +354,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     End If
     
     'Change the zoom combo box to reflect the new zoom value
-    toolbar_Main.CmbZoom.ListIndex = zVal
+    toolbar_File.CmbZoom.ListIndex = zVal
     pdImages(g_CurrentImage).CurrentZoomValue = zVal
     
     'Re-enable scrolling
@@ -413,7 +413,7 @@ Public Sub FitOnScreen()
         End If
     Next i
     
-    toolbar_Main.CmbZoom.ListIndex = zVal
+    toolbar_File.CmbZoom.ListIndex = zVal
     pdImages(g_CurrentImage).CurrentZoomValue = zVal
     
     'Re-enable scrolling
@@ -432,11 +432,11 @@ Public Sub UpdateMDIStatus()
 
     'If two or more windows are open, enable the Next/Previous image menu items
     If g_OpenImageCount >= 2 Then
-        FormMain.MnuWindow(3).Enabled = True
-        FormMain.MnuWindow(4).Enabled = True
+        FormMain.MnuWindow(6).Enabled = True
+        FormMain.MnuWindow(7).Enabled = True
     Else
-        FormMain.MnuWindow(3).Enabled = False
-        FormMain.MnuWindow(4).Enabled = False
+        FormMain.MnuWindow(6).Enabled = False
+        FormMain.MnuWindow(7).Enabled = False
     End If
 
     'If every window has been closed, disable all toolbar and menu options that are no longer applicable
@@ -454,23 +454,23 @@ Public Sub UpdateMDIStatus()
         metaToggle tSelection, False
         FormMain.MnuFile(7).Enabled = False
         FormMain.MnuFile(8).Enabled = False
-        toolbar_Main.cmdClose.Enabled = False
+        toolbar_File.cmdClose.Enabled = False
         FormMain.MnuFitWindowToImage.Enabled = False
         FormMain.MnuFitOnScreen.Enabled = False
-        If toolbar_Main.CmbZoom.Enabled And toolbar_Main.Visible Then
-            toolbar_Main.CmbZoom.Enabled = False
+        If toolbar_File.CmbZoom.Enabled And toolbar_File.Visible Then
+            toolbar_File.CmbZoom.Enabled = False
             'FormMain.lblLeftToolBox(3).ForeColor = &H606060
-            toolbar_Main.CmbZoom.ListIndex = ZOOM_100_PERCENT   'Reset zoom to 100%
-            toolbar_Main.cmdZoomIn.Enabled = False
-            toolbar_Main.cmdZoomOut.Enabled = False
+            toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT   'Reset zoom to 100%
+            toolbar_File.cmdZoomIn.Enabled = False
+            toolbar_File.cmdZoomOut.Enabled = False
         End If
         
-        toolbar_Main.lblImgSize.ForeColor = &HD1B499
-        toolbar_Main.lblCoordinates.ForeColor = &HD1B499
+        toolbar_File.lblImgSize.ForeColor = &HD1B499
+        toolbar_File.lblCoordinates.ForeColor = &HD1B499
         
-        toolbar_Main.lblImgSize.Caption = ""
+        toolbar_File.lblImgSize.Caption = ""
         
-        toolbar_Main.lblCoordinates.Caption = ""
+        toolbar_File.lblCoordinates.Caption = ""
         
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
@@ -520,17 +520,17 @@ Public Sub UpdateMDIStatus()
         metaToggle tMacro, True
         metaToggle tRepeatLast, pdImages(g_CurrentImage).RedoState
         FormMain.MnuFile(7).Enabled = True
-        toolbar_Main.cmdClose.Enabled = True
+        toolbar_File.cmdClose.Enabled = True
         FormMain.MnuFile(8).Enabled = True
         FormMain.MnuFitWindowToImage.Enabled = True
         FormMain.MnuFitOnScreen.Enabled = True
-        toolbar_Main.lblImgSize.ForeColor = &H544E43
-        toolbar_Main.lblCoordinates.ForeColor = &H544E43
-        If toolbar_Main.CmbZoom.Enabled = False Then
-            toolbar_Main.CmbZoom.Enabled = True
+        toolbar_File.lblImgSize.ForeColor = &H544E43
+        toolbar_File.lblCoordinates.ForeColor = &H544E43
+        If toolbar_File.CmbZoom.Enabled = False Then
+            toolbar_File.CmbZoom.Enabled = True
             'FormMain.lblLeftToolBox(3).ForeColor = &H544E43
-            toolbar_Main.cmdZoomIn.Enabled = True
-            toolbar_Main.cmdZoomOut.Enabled = True
+            toolbar_File.cmdZoomIn.Enabled = True
+            toolbar_File.cmdZoomOut.Enabled = True
         End If
     End If
     

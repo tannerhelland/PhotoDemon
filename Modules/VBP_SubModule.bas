@@ -149,8 +149,8 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     If copyX Then copyX = x1
     If copyY Then copyY = y1
     
-    toolbar_Main.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-    toolbar_Main.lblCoordinates.Refresh
+    toolbar_File.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+    toolbar_File.lblCoordinates.Refresh
     
 End Sub
 

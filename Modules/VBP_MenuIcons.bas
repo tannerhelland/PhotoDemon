@@ -42,12 +42,12 @@ Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVa
 
 'API needed for converting PNG data to icon or cursor format
 Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
-Private Declare Function GdipLoadImageFromStream Lib "GdiPlus" (ByVal Stream As Any, ByRef mImage As Long) As Long
-Private Declare Function GdipCreateHICONFromBitmap Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
-Private Declare Function GdipCreateHBITMAPFromBitmap Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
-Private Declare Function GdipGetImageBounds Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
-Private Declare Function GdipDisposeImage Lib "GdiPlus" (ByVal gdiBitmap As Long) As Long
-Private Declare Function GdipGetImagePixelFormat Lib "GdiPlus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
+Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
+Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
+Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
+Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RECTF, ByRef mSrcUnit As Long) As Long
+Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiBitmap As Long) As Long
+Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
 
 'Used to check GDI+ images for alpha channels
 Private Const PixelFormatAlpha = &H40000             ' Has an alpha component
@@ -412,13 +412,13 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "PLUGIN", 7, 6          'Plugin Manager
     
     'Window Menu
-    AddMenuIcon "NEXTIMAGE", 8, 3       'Next image
-    AddMenuIcon "PREVIMAGE", 8, 4       'Previous image
-    AddMenuIcon "CASCADE", 8, 6         'Cascade
-    AddMenuIcon "TILEVER", 8, 7         'Tile Horizontally
-    AddMenuIcon "TILEHOR", 8, 8         'Tile Vertically
-    AddMenuIcon "MINALL", 8, 10         'Minimize All
-    AddMenuIcon "RESTOREALL", 8, 11     'Restore All
+    AddMenuIcon "NEXTIMAGE", 8, 6       'Next image
+    AddMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    AddMenuIcon "CASCADE", 8, 9         'Cascade
+    AddMenuIcon "TILEVER", 8, 10        'Tile Horizontally
+    AddMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    AddMenuIcon "MINALL", 8, 13         'Minimize All
+    AddMenuIcon "RESTOREALL", 8, 14     'Restore All
     
     'Help Menu
     AddMenuIcon "FAVORITE", 9, 0        'Donate
