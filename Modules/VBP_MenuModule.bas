@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, FormMain.hWnd) Then PreLoadImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, FormMain.hwnd) Then PreLoadImage sFile
 
     Erase sFile
 
@@ -226,7 +226,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).OriginalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
         
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hwnd, 0) Then
                 
         'Store the selected file format to the image object
         pdImages(imageID).CurrentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
@@ -246,9 +246,11 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         If MenuSaveAs Then
             
             If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) Then
-                pdImages(imageID).containingForm.Caption = getFilename(sFile)
+                'pdImages(imageID).containingForm.Caption = getFilename(sFile)
+                g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, getFilename(sFile)
             Else
-                pdImages(imageID).containingForm.Caption = sFile
+                'pdImages(imageID).containingForm.Caption = sFile
+                g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, sFile
             End If
             
         End If

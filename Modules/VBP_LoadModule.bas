@@ -294,7 +294,7 @@ Public Sub LoadTheProgram()
     toolbar_File.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
                         
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
-    SetIcon FormMain.hWnd, "AAA", True
+    SetIcon FormMain.hwnd, "AAA", True
     
     'Initialize all system cursors we rely on (hand, busy, resizing, etc)
     InitAllCursors
@@ -896,12 +896,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             If imgFormTitle = "" Then
                 If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                    pdImages(g_CurrentImage).containingForm.Caption = getFilename(sFile(thisImage))
+                    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, getFilename(sFile(thisImage))
                 Else
-                    pdImages(g_CurrentImage).containingForm.Caption = sFile(thisImage)
+                    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, sFile(thisImage)
                 End If
             Else
-                pdImages(g_CurrentImage).containingForm.Caption = imgFormTitle
+                g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, imgFormTitle
             End If
             
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
@@ -1612,7 +1612,7 @@ Public Sub DuplicateCurrentImage()
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Update the current caption to match
-    pdImages(g_CurrentImage).containingForm.Caption = pdImages(g_CurrentImage).OriginalFileNameAndExtension
+    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).OriginalFileNameAndExtension
         
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
     g_AllowViewportRendering = False
