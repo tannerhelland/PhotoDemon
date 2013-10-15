@@ -122,7 +122,7 @@ Private cMRUIcons As clsMenuImage
 Private m_refreshOutsideProgressBar As Boolean
 
 'Load all the menu icons from PhotoDemon's embedded resource file
-Public Sub LoadMenuIcons()
+Public Sub loadMenuIcons()
 
     'If we are re-loading all icons instead of just loading them for the first time, clear out the old list
     If Not (cMenuImage Is Nothing) Then
@@ -149,7 +149,7 @@ Public Sub LoadMenuIcons()
     End With
             
     'Now that all menu icons are loaded, apply them to the proper menu entires
-    ApplyAllMenuIcons
+    applyAllMenuIcons
     
     'Finally, calculate where to place the "Clear MRU" menu item (this requires its own special handling).
     Dim numOfMRUFiles As Long
@@ -166,269 +166,269 @@ Public Sub LoadMenuIcons()
 End Sub
 
 'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.
-Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
+Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
 
     m_refreshOutsideProgressBar = useDoEvents
 
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
     'File Menu
-    AddMenuIcon "OPENIMG", 0, 0       'Open Image
-    AddMenuIcon "OPENREC", 0, 1       'Open recent
-    AddMenuIcon "IMPORT", 0, 2        'Import
-    AddMenuIcon "SAVE", 0, 4          'Save
-    AddMenuIcon "SAVEAS", 0, 5        'Save As...
-    AddMenuIcon "CLOSE", 0, 7         'Close
-    AddMenuIcon "CLOSE", 0, 8         'Close All
-    AddMenuIcon "BCONVERT", 0, 10     'Batch conversion
-    AddMenuIcon "PRINT", 0, 12        'Print
-    AddMenuIcon "EXIT", 0, 14         'Exit
+    addMenuIcon "OPENIMG", 0, 0       'Open Image
+    addMenuIcon "OPENREC", 0, 1       'Open recent
+    addMenuIcon "IMPORT", 0, 2        'Import
+    addMenuIcon "SAVE", 0, 4          'Save
+    addMenuIcon "SAVEAS", 0, 5        'Save As...
+    addMenuIcon "CLOSE", 0, 7         'Close
+    addMenuIcon "CLOSE", 0, 8         'Close All
+    addMenuIcon "BCONVERT", 0, 10     'Batch conversion
+    addMenuIcon "PRINT", 0, 12        'Print
+    addMenuIcon "EXIT", 0, 14         'Exit
     
     '--> Import Sub-Menu
     'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
     If g_ScanEnabled Then
-        AddMenuIcon "PASTE", 0, 2, 0       'From Clipboard (Paste as New Image)
-        AddMenuIcon "SCANNER", 0, 2, 2     'Scan Image
-        AddMenuIcon "SCANNERSEL", 0, 2, 3  'Select Scanner
-        AddMenuIcon "DOWNLOAD", 0, 2, 5    'Online Image
-        AddMenuIcon "SCREENCAP", 0, 2, 7   'Screen Capture
+        addMenuIcon "PASTE", 0, 2, 0       'From Clipboard (Paste as New Image)
+        addMenuIcon "SCANNER", 0, 2, 2     'Scan Image
+        addMenuIcon "SCANNERSEL", 0, 2, 3  'Select Scanner
+        addMenuIcon "DOWNLOAD", 0, 2, 5    'Online Image
+        addMenuIcon "SCREENCAP", 0, 2, 7   'Screen Capture
     Else
-        AddMenuIcon "PASTE", 0, 2, 0       'From Clipboard (Paste as New Image)
-        AddMenuIcon "DOWNLOAD", 0, 2, 2    'Online Image
-        AddMenuIcon "SCREENCAP", 0, 2, 4   'Screen Capture
+        addMenuIcon "PASTE", 0, 2, 0       'From Clipboard (Paste as New Image)
+        addMenuIcon "DOWNLOAD", 0, 2, 2    'Online Image
+        addMenuIcon "SCREENCAP", 0, 2, 4   'Screen Capture
     End If
         
     'Edit Menu
-    AddMenuIcon "UNDO", 1, 0           'Undo
-    AddMenuIcon "REDO", 1, 1           'Redo
-    AddMenuIcon "REPEAT", 1, 2         'Repeat Last Action
-    AddMenuIcon "COPY", 1, 4           'Copy
-    AddMenuIcon "PASTE", 1, 5          'Paste
-    AddMenuIcon "CLEAR", 1, 6          'Empty Clipboard
+    addMenuIcon "UNDO", 1, 0           'Undo
+    addMenuIcon "REDO", 1, 1           'Redo
+    addMenuIcon "REPEAT", 1, 2         'Repeat Last Action
+    addMenuIcon "COPY", 1, 4           'Copy
+    addMenuIcon "PASTE", 1, 5          'Paste
+    addMenuIcon "CLEAR", 1, 6          'Empty Clipboard
     
     'View Menu
-    AddMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
-    AddMenuIcon "FITWINIMG", 2, 1      'Fit Viewport to Image
-    AddMenuIcon "ZOOMIN", 2, 3         'Zoom In
-    AddMenuIcon "ZOOMOUT", 2, 4        'Zoom Out
-    AddMenuIcon "ZOOMACTUAL", 2, 10    'Zoom 100%
+    addMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
+    addMenuIcon "FITWINIMG", 2, 1      'Fit Viewport to Image
+    addMenuIcon "ZOOMIN", 2, 3         'Zoom In
+    addMenuIcon "ZOOMOUT", 2, 4        'Zoom Out
+    addMenuIcon "ZOOMACTUAL", 2, 10    'Zoom 100%
     
     'Image Menu
-    AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
-    AddMenuIcon "TRANSPARENCY", 3, 2   'Transparency
+    addMenuIcon "DUPLICATE", 3, 0      'Duplicate
+    addMenuIcon "TRANSPARENCY", 3, 2   'Transparency
         '--> Image Mode sub-menu
-        AddMenuIcon "ADDTRANS", 3, 2, 0      'Add alpha channel
-        AddMenuIcon "GREENSCREEN", 3, 2, 1      'Color to alpha
-        AddMenuIcon "REMOVETRANS", 3, 2, 3   'Remove alpha channel
-    AddMenuIcon "RESIZE", 3, 4         'Resize
-    AddMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
-    AddMenuIcon "CROPSEL", 3, 7        'Crop to Selection
-    AddMenuIcon "AUTOCROP", 3, 8       'Autocrop
-    AddMenuIcon "ROTATECW", 3, 10      'Rotate top-level
+        addMenuIcon "ADDTRANS", 3, 2, 0      'Add alpha channel
+        addMenuIcon "GREENSCREEN", 3, 2, 1      'Color to alpha
+        addMenuIcon "REMOVETRANS", 3, 2, 3   'Remove alpha channel
+    addMenuIcon "RESIZE", 3, 4         'Resize
+    addMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
+    addMenuIcon "CROPSEL", 3, 7        'Crop to Selection
+    addMenuIcon "AUTOCROP", 3, 8       'Autocrop
+    addMenuIcon "ROTATECW", 3, 10      'Rotate top-level
         '--> Rotate sub-menu
-        AddMenuIcon "ROTATECW", 3, 10, 0     'Rotate Clockwise
-        AddMenuIcon "ROTATECCW", 3, 10, 1    'Rotate Counter-clockwise
-        AddMenuIcon "ROTATE180", 3, 10, 2    'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then AddMenuIcon "ROTATEANY", 3, 10, 3   'Rotate Arbitrary
-    AddMenuIcon "MIRROR", 3, 11        'Mirror
-    AddMenuIcon "FLIP", 3, 12          'Flip
-    AddMenuIcon "ISOMETRIC", 3, 13     'Isometric
-    AddMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
+        addMenuIcon "ROTATECW", 3, 10, 0     'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 3, 10, 1    'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 3, 10, 2    'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 10, 3   'Rotate Arbitrary
+    addMenuIcon "MIRROR", 3, 11        'Mirror
+    addMenuIcon "FLIP", 3, 12          'Flip
+    addMenuIcon "ISOMETRIC", 3, 13     'Isometric
+    addMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
     If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(15).Enabled = True Else FormMain.MnuImage(15).Enabled = False
-    AddMenuIcon "TILE", 3, 16          'Tile
-    AddMenuIcon "METADATA", 3, 18      'Metadata (top-level)
+    addMenuIcon "TILE", 3, 16          'Tile
+    addMenuIcon "METADATA", 3, 18      'Metadata (top-level)
         '--> Metadata sub-menu
-        AddMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
-        AddMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
-        AddMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
+        addMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
+        addMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
+        addMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Select Menu
-    AddMenuIcon "SELECTALL", 4, 0       'Select all
-    AddMenuIcon "SELECTNONE", 4, 1      'Select none
-    AddMenuIcon "SELECTINVERT", 4, 2    'Invert selection
-    AddMenuIcon "SELECTGROW", 4, 4      'Grow selection
-    AddMenuIcon "SELECTSHRINK", 4, 5    'Shrink selection
-    AddMenuIcon "SELECTBORDER", 4, 6    'Border selection
-    AddMenuIcon "SELECTFTHR", 4, 7      'Feather selection
-    AddMenuIcon "SELECTSHRP", 4, 8      'Sharpen selection
-    AddMenuIcon "SELECTLOAD", 4, 10     'Load selection from file
-    AddMenuIcon "SELECTSAVE", 4, 11     'Save selection to file
+    addMenuIcon "SELECTALL", 4, 0       'Select all
+    addMenuIcon "SELECTNONE", 4, 1      'Select none
+    addMenuIcon "SELECTINVERT", 4, 2    'Invert selection
+    addMenuIcon "SELECTGROW", 4, 4      'Grow selection
+    addMenuIcon "SELECTSHRINK", 4, 5    'Shrink selection
+    addMenuIcon "SELECTBORDER", 4, 6    'Border selection
+    addMenuIcon "SELECTFTHR", 4, 7      'Feather selection
+    addMenuIcon "SELECTSHRP", 4, 8      'Sharpen selection
+    addMenuIcon "SELECTLOAD", 4, 10     'Load selection from file
+    addMenuIcon "SELECTSAVE", 4, 11     'Save selection to file
     
     'Adjustments Menu
     
     'Adjustment shortcuts (top-level menu items)
-    AddMenuIcon "GRAYSCALE", 5, 0       'Black and white
-    AddMenuIcon "BRIGHT", 5, 1          'Brightness/Contrast
-    AddMenuIcon "COLORBALANCE", 5, 2    'Color balance
-    AddMenuIcon "CURVES", 5, 3          'Curves
-    AddMenuIcon "LEVELS", 5, 4          'Levels
-    AddMenuIcon "VIBRANCE", 5, 5        'Vibrance
-    AddMenuIcon "WHITEBAL", 5, 6        'White Balance
+    addMenuIcon "GRAYSCALE", 5, 0       'Black and white
+    addMenuIcon "BRIGHT", 5, 1          'Brightness/Contrast
+    addMenuIcon "COLORBALANCE", 5, 2    'Color balance
+    addMenuIcon "CURVES", 5, 3          'Curves
+    addMenuIcon "LEVELS", 5, 4          'Levels
+    addMenuIcon "VIBRANCE", 5, 5        'Vibrance
+    addMenuIcon "WHITEBAL", 5, 6        'White Balance
        
     'Channels
-    AddMenuIcon "CHANNELMIX", 5, 8     'Channels top-level
-        AddMenuIcon "CHANNELMIX", 5, 8, 0    'Channel mixer
-        AddMenuIcon "RECHANNEL", 5, 8, 1     'Rechannel
-        AddMenuIcon "CHANNELMAX", 5, 8, 3    'Channel max
-        AddMenuIcon "CHANNELMIN", 5, 8, 4    'Channel min
-        AddMenuIcon "COLORSHIFTL", 5, 8, 6   'Shift Left
-        AddMenuIcon "COLORSHIFTR", 5, 8, 7   'Shift Right
+    addMenuIcon "CHANNELMIX", 5, 8     'Channels top-level
+        addMenuIcon "CHANNELMIX", 5, 8, 0    'Channel mixer
+        addMenuIcon "RECHANNEL", 5, 8, 1     'Rechannel
+        addMenuIcon "CHANNELMAX", 5, 8, 3    'Channel max
+        addMenuIcon "CHANNELMIN", 5, 8, 4    'Channel min
+        addMenuIcon "COLORSHIFTL", 5, 8, 6   'Shift Left
+        addMenuIcon "COLORSHIFTR", 5, 8, 7   'Shift Right
             
     'Color
-    AddMenuIcon "HSL", 5, 9            'Color balance
-        AddMenuIcon "COLORBALANCE", 5, 9, 0  'Color balance
-        AddMenuIcon "WHITEBAL", 5, 9, 1      'White Balance
-        AddMenuIcon "HSL", 5, 9, 3           'HSL adjustment
-        AddMenuIcon "PHOTOFILTER", 5, 9, 4   'Photo filters
-        AddMenuIcon "VIBRANCE", 5, 9, 5      'Vibrance
-        AddMenuIcon "GRAYSCALE", 5, 9, 7     'Black and white
-        AddMenuIcon "COLORIZE", 5, 9, 8      'Colorize
-        AddMenuIcon "SEPIA", 5, 9, 9         'Sepia
+    addMenuIcon "HSL", 5, 9            'Color balance
+        addMenuIcon "COLORBALANCE", 5, 9, 0  'Color balance
+        addMenuIcon "WHITEBAL", 5, 9, 1      'White Balance
+        addMenuIcon "HSL", 5, 9, 3           'HSL adjustment
+        addMenuIcon "PHOTOFILTER", 5, 9, 4   'Photo filters
+        addMenuIcon "VIBRANCE", 5, 9, 5      'Vibrance
+        addMenuIcon "GRAYSCALE", 5, 9, 7     'Black and white
+        addMenuIcon "COLORIZE", 5, 9, 8      'Colorize
+        addMenuIcon "SEPIA", 5, 9, 9         'Sepia
     
     'Histogram
-    AddMenuIcon "HISTOGRAM", 5, 10      'Histogram top-level
-        AddMenuIcon "HISTOGRAM", 5, 10, 0     'Display Histogram
-        AddMenuIcon "EQUALIZE", 5, 10, 2      'Equalize
-        AddMenuIcon "STRETCH", 5, 10, 3       'Stretch
+    addMenuIcon "HISTOGRAM", 5, 10      'Histogram top-level
+        addMenuIcon "HISTOGRAM", 5, 10, 0     'Display Histogram
+        addMenuIcon "EQUALIZE", 5, 10, 2      'Equalize
+        addMenuIcon "STRETCH", 5, 10, 3       'Stretch
     
     'Invert
-    AddMenuIcon "INVERT", 5, 11         'Invert top-level
-        AddMenuIcon "INVCMYK", 5, 11, 0     'Invert CMYK
-        AddMenuIcon "INVHUE", 5, 11, 1       'Invert Hue
-        AddMenuIcon "INVRGB", 5, 11, 2       'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 5, 11, 4  'Compound Invert
+    addMenuIcon "INVERT", 5, 11         'Invert top-level
+        addMenuIcon "INVCMYK", 5, 11, 0     'Invert CMYK
+        addMenuIcon "INVHUE", 5, 11, 1       'Invert Hue
+        addMenuIcon "INVRGB", 5, 11, 2       'Invert RGB
+        addMenuIcon "INVCOMPOUND", 5, 11, 4  'Compound Invert
         
     'Lighting
-    AddMenuIcon "LIGHTING", 5, 12       'Lighting top-level
-        AddMenuIcon "BRIGHT", 5, 12, 0       'Brightness/Contrast
-        AddMenuIcon "CURVES", 5, 12, 1       'Curves
-        AddMenuIcon "EXPOSURE", 5, 12, 2     'Exposure
-        AddMenuIcon "GAMMA", 5, 12, 3        'Gamma Correction
-        AddMenuIcon "LEVELS", 5, 12, 4       'Levels
-        AddMenuIcon "SHDWHGHLGHT", 5, 12, 5  'Shadow/Highlight
-        AddMenuIcon "TEMPERATURE", 5, 12, 6  'Temperature
+    addMenuIcon "LIGHTING", 5, 12       'Lighting top-level
+        addMenuIcon "BRIGHT", 5, 12, 0       'Brightness/Contrast
+        addMenuIcon "CURVES", 5, 12, 1       'Curves
+        addMenuIcon "EXPOSURE", 5, 12, 2     'Exposure
+        addMenuIcon "GAMMA", 5, 12, 3        'Gamma Correction
+        addMenuIcon "LEVELS", 5, 12, 4       'Levels
+        addMenuIcon "SHDWHGHLGHT", 5, 12, 5  'Shadow/Highlight
+        addMenuIcon "TEMPERATURE", 5, 12, 6  'Temperature
     
     'Monochrome
-    AddMenuIcon "MONOCHROME", 5, 13      'Monochrome
-        AddMenuIcon "COLORTOMONO", 5, 13, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 5, 13, 1   'Monochrome to grayscale
+    addMenuIcon "MONOCHROME", 5, 13      'Monochrome
+        addMenuIcon "COLORTOMONO", 5, 13, 0   'Color to monochrome
+        addMenuIcon "MONOTOCOLOR", 5, 13, 1   'Monochrome to grayscale
     
     
     'Effects (Filters) Menu
-    AddMenuIcon "FADELAST", 6, 0        'Fade Last
-    AddMenuIcon "ARTISTIC", 6, 2        'Artistic
+    addMenuIcon "FADELAST", 6, 0        'Fade Last
+    addMenuIcon "ARTISTIC", 6, 2        'Artistic
         '--> Artistic sub-menu
-        AddMenuIcon "COMICBOOK", 6, 2, 0      'Comic book
-        AddMenuIcon "FIGGLASS", 6, 2, 1       'Figured glass
-        AddMenuIcon "FILMNOIR", 6, 2, 2       'Film Noir
-        AddMenuIcon "KALEIDOSCOPE", 6, 2, 3   'Kaleidoscope
-        AddMenuIcon "MODERNART", 6, 2, 4      'Modern Art
-        AddMenuIcon "OILPAINTING", 6, 2, 5    'Oil painting
-        AddMenuIcon "PENCIL", 6, 2, 6         'Pencil
-        AddMenuIcon "POSTERIZE", 6, 2, 7      'Posterize
-        AddMenuIcon "RELIEF", 6, 2, 8         'Relief
-    AddMenuIcon "BLUR", 6, 3            'Blur
+        addMenuIcon "COMICBOOK", 6, 2, 0      'Comic book
+        addMenuIcon "FIGGLASS", 6, 2, 1       'Figured glass
+        addMenuIcon "FILMNOIR", 6, 2, 2       'Film Noir
+        addMenuIcon "KALEIDOSCOPE", 6, 2, 3   'Kaleidoscope
+        addMenuIcon "MODERNART", 6, 2, 4      'Modern Art
+        addMenuIcon "OILPAINTING", 6, 2, 5    'Oil painting
+        addMenuIcon "PENCIL", 6, 2, 6         'Pencil
+        addMenuIcon "POSTERIZE", 6, 2, 7      'Posterize
+        addMenuIcon "RELIEF", 6, 2, 8         'Relief
+    addMenuIcon "BLUR", 6, 3            'Blur
         '--> Blur sub-menu
-        AddMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur
-        AddMenuIcon "GAUSSBLUR", 6, 3, 1      'Gaussian Blur
-        AddMenuIcon "GRIDBLUR", 6, 3, 2       'Grid Blur
-        AddMenuIcon "MOTIONBLUR", 6, 3, 3     'Motion Blur
-        AddMenuIcon "PIXELATE", 6, 3, 4       'Pixelate (formerly Mosaic)
-        AddMenuIcon "RADIALBLUR", 6, 3, 5     'Radial Blur
-        AddMenuIcon "SMARTBLUR", 6, 3, 6      'Smart Blur
-        AddMenuIcon "ZOOMBLUR", 6, 3, 7       'Zoom Blur
-    AddMenuIcon "DISTORT", 6, 4         'Distort
+        addMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur
+        addMenuIcon "GAUSSBLUR", 6, 3, 1      'Gaussian Blur
+        addMenuIcon "GRIDBLUR", 6, 3, 2       'Grid Blur
+        addMenuIcon "MOTIONBLUR", 6, 3, 3     'Motion Blur
+        addMenuIcon "PIXELATE", 6, 3, 4       'Pixelate (formerly Mosaic)
+        addMenuIcon "RADIALBLUR", 6, 3, 5     'Radial Blur
+        addMenuIcon "SMARTBLUR", 6, 3, 6      'Smart Blur
+        addMenuIcon "ZOOMBLUR", 6, 3, 7       'Zoom Blur
+    addMenuIcon "DISTORT", 6, 4         'Distort
         '--> Distort sub-menu
-        AddMenuIcon "LENSDISTORT", 6, 4, 0    'Apply lens distortion
-        AddMenuIcon "FIXLENS", 6, 4, 1        'Remove or correct existing lens distortion
-        AddMenuIcon "MISCDISTORT", 6, 4, 2    'Miscellaneous distort functions
-        AddMenuIcon "PANANDZOOM", 6, 4, 3     'Pan and zoom
-        AddMenuIcon "PERSPECTIVE", 6, 4, 4    'Perspective (free)
-        AddMenuIcon "PINCHWHIRL", 6, 4, 5     'Pinch and whirl
-        AddMenuIcon "POKE", 6, 4, 6           'Poke
-        AddMenuIcon "POLAR", 6, 4, 7          'Polar conversion
-        AddMenuIcon "RIPPLE", 6, 4, 8         'Ripple
-        AddMenuIcon "ROTATECW", 6, 4, 9       'Rotate
-        AddMenuIcon "SHEAR", 6, 4, 10         'Shear
-        AddMenuIcon "SPHERIZE", 6, 4, 11      'Spherize
-        AddMenuIcon "SQUISH", 6, 4, 12        'Squish (formerly Fixed Perspective)
-        AddMenuIcon "SWIRL", 6, 4, 13         'Swirl
-        AddMenuIcon "WAVES", 6, 4, 14         'Waves
+        addMenuIcon "LENSDISTORT", 6, 4, 0    'Apply lens distortion
+        addMenuIcon "FIXLENS", 6, 4, 1        'Remove or correct existing lens distortion
+        addMenuIcon "MISCDISTORT", 6, 4, 2    'Miscellaneous distort functions
+        addMenuIcon "PANANDZOOM", 6, 4, 3     'Pan and zoom
+        addMenuIcon "PERSPECTIVE", 6, 4, 4    'Perspective (free)
+        addMenuIcon "PINCHWHIRL", 6, 4, 5     'Pinch and whirl
+        addMenuIcon "POKE", 6, 4, 6           'Poke
+        addMenuIcon "POLAR", 6, 4, 7          'Polar conversion
+        addMenuIcon "RIPPLE", 6, 4, 8         'Ripple
+        addMenuIcon "ROTATECW", 6, 4, 9       'Rotate
+        addMenuIcon "SHEAR", 6, 4, 10         'Shear
+        addMenuIcon "SPHERIZE", 6, 4, 11      'Spherize
+        addMenuIcon "SQUISH", 6, 4, 12        'Squish (formerly Fixed Perspective)
+        addMenuIcon "SWIRL", 6, 4, 13         'Swirl
+        addMenuIcon "WAVES", 6, 4, 14         'Waves
         
-    AddMenuIcon "EDGES", 6, 5           'Edges
+    addMenuIcon "EDGES", 6, 5           'Edges
         '--> Edges sub-menu
-        AddMenuIcon "EMBOSS", 6, 5, 0         'Emboss / Engrave
-        AddMenuIcon "EDGEENHANCE", 6, 5, 1    'Enhance Edges
-        AddMenuIcon "EDGES", 6, 5, 2          'Find Edges
-        AddMenuIcon "TRACECONTOUR", 6, 5, 3   'Trace Contour
-    AddMenuIcon "OTHER", 6, 6           'Fun
+        addMenuIcon "EMBOSS", 6, 5, 0         'Emboss / Engrave
+        addMenuIcon "EDGEENHANCE", 6, 5, 1    'Enhance Edges
+        addMenuIcon "EDGES", 6, 5, 2          'Find Edges
+        addMenuIcon "TRACECONTOUR", 6, 5, 3   'Trace Contour
+    addMenuIcon "OTHER", 6, 6           'Fun
         '--> Fun sub-menu
-        AddMenuIcon "ALIEN", 6, 6, 0          'Alien
-        AddMenuIcon "BLACKLIGHT", 6, 6, 1     'Blacklight
-        AddMenuIcon "DREAM", 6, 6, 2          'Dream
-        AddMenuIcon "RADIOACTIVE", 6, 6, 3    'Radioactive
-        AddMenuIcon "SYNTHESIZE", 6, 6, 4     'Synthesize
-        AddMenuIcon "HEATMAP", 6, 6, 5        'Thermograph
-        AddMenuIcon "VIBRATE", 6, 6, 6        'Vibrate
-    AddMenuIcon "NATURAL", 6, 7         'Natural
+        addMenuIcon "ALIEN", 6, 6, 0          'Alien
+        addMenuIcon "BLACKLIGHT", 6, 6, 1     'Blacklight
+        addMenuIcon "DREAM", 6, 6, 2          'Dream
+        addMenuIcon "RADIOACTIVE", 6, 6, 3    'Radioactive
+        addMenuIcon "SYNTHESIZE", 6, 6, 4     'Synthesize
+        addMenuIcon "HEATMAP", 6, 6, 5        'Thermograph
+        addMenuIcon "VIBRATE", 6, 6, 6        'Vibrate
+    addMenuIcon "NATURAL", 6, 7         'Natural
         '--> Natural sub-menu
-        AddMenuIcon "ATMOSPHERE", 6, 7, 0     'Atmosphere
-        AddMenuIcon "BURN", 6, 7, 1           'Burn
-        AddMenuIcon "FOG", 6, 7, 2            'Fog
-        AddMenuIcon "FREEZE", 6, 7, 3         'Freeze
-        AddMenuIcon "LAVA", 6, 7, 4           'Lava
-        AddMenuIcon "RAINBOW", 6, 7, 5        'Rainbow
-        AddMenuIcon "STEEL", 6, 7, 6          'Steel
-        AddMenuIcon "RAIN", 6, 7, 7           'Water
-    AddMenuIcon "NOISE", 6, 8           'Noise
+        addMenuIcon "ATMOSPHERE", 6, 7, 0     'Atmosphere
+        addMenuIcon "BURN", 6, 7, 1           'Burn
+        addMenuIcon "FOG", 6, 7, 2            'Fog
+        addMenuIcon "FREEZE", 6, 7, 3         'Freeze
+        addMenuIcon "LAVA", 6, 7, 4           'Lava
+        addMenuIcon "RAINBOW", 6, 7, 5        'Rainbow
+        addMenuIcon "STEEL", 6, 7, 6          'Steel
+        addMenuIcon "RAIN", 6, 7, 7           'Water
+    addMenuIcon "NOISE", 6, 8           'Noise
         '--> Noise sub-menu
-        AddMenuIcon "FILMGRAIN", 6, 8, 0      'Film grain
-        AddMenuIcon "ADDNOISE", 6, 8, 1       'Add Noise
-        AddMenuIcon "MEDIAN", 6, 8, 3         'Median
-    AddMenuIcon "SHARPEN", 6, 9         'Sharpen
+        addMenuIcon "FILMGRAIN", 6, 8, 0      'Film grain
+        addMenuIcon "ADDNOISE", 6, 8, 1       'Add Noise
+        addMenuIcon "MEDIAN", 6, 8, 3         'Median
+    addMenuIcon "SHARPEN", 6, 9         'Sharpen
         '--> Sharpen sub-menu
-        AddMenuIcon "SHARPEN", 6, 9, 0       'Sharpen
-        AddMenuIcon "UNSHARP", 6, 9, 1       'Unsharp
-    AddMenuIcon "STYLIZE", 6, 10        'Stylize
+        addMenuIcon "SHARPEN", 6, 9, 0       'Sharpen
+        addMenuIcon "UNSHARP", 6, 9, 1       'Unsharp
+    addMenuIcon "STYLIZE", 6, 10        'Stylize
         '--> Stylize sub-menu
-        AddMenuIcon "ANTIQUE", 6, 10, 0       'Antique (Sepia)
-        AddMenuIcon "DIFFUSE", 6, 10, 1       'Diffuse
-        AddMenuIcon "DILATE", 6, 10, 2        'Dilate
-        AddMenuIcon "ERODE", 6, 10, 3         'Erode
-        AddMenuIcon "SOLARIZE", 6, 10, 4      'Solarize
-        AddMenuIcon "TWINS", 6, 10, 5         'Twins
-        AddMenuIcon "VIGNETTE", 6, 10, 6      'Vignetting
-    AddMenuIcon "CUSTFILTER", 6, 12     'Custom Filter
+        addMenuIcon "ANTIQUE", 6, 10, 0       'Antique (Sepia)
+        addMenuIcon "DIFFUSE", 6, 10, 1       'Diffuse
+        addMenuIcon "DILATE", 6, 10, 2        'Dilate
+        addMenuIcon "ERODE", 6, 10, 3         'Erode
+        addMenuIcon "SOLARIZE", 6, 10, 4      'Solarize
+        addMenuIcon "TWINS", 6, 10, 5         'Twins
+        addMenuIcon "VIGNETTE", 6, 10, 6      'Vignetting
+    addMenuIcon "CUSTFILTER", 6, 12     'Custom Filter
     
     'Tools Menu
-    AddMenuIcon "LANGUAGES", 7, 0       'Languages
-    AddMenuIcon "LANGEDITOR", 7, 1      'Language editor
-    AddMenuIcon "RECORD", 7, 3          'Macros
+    addMenuIcon "LANGUAGES", 7, 0       'Languages
+    addMenuIcon "LANGEDITOR", 7, 1      'Language editor
+    addMenuIcon "RECORD", 7, 3          'Macros
         '--> Macro sub-menu
-        AddMenuIcon "OPENMACRO", 7, 3, 0      'Open Macro
-        AddMenuIcon "RECORD", 7, 3, 2         'Start Recording
-        AddMenuIcon "RECORDSTOP", 7, 3, 3     'Stop Recording
-    AddMenuIcon "PREFERENCES", 7, 5           'Options (Preferences)
-    AddMenuIcon "PLUGIN", 7, 6          'Plugin Manager
+        addMenuIcon "OPENMACRO", 7, 3, 0      'Open Macro
+        addMenuIcon "RECORD", 7, 3, 2         'Start Recording
+        addMenuIcon "RECORDSTOP", 7, 3, 3     'Stop Recording
+    addMenuIcon "PREFERENCES", 7, 5           'Options (Preferences)
+    addMenuIcon "PLUGIN", 7, 6          'Plugin Manager
     
     'Window Menu
-    AddMenuIcon "NEXTIMAGE", 8, 6       'Next image
-    AddMenuIcon "PREVIMAGE", 8, 7       'Previous image
-    AddMenuIcon "CASCADE", 8, 9         'Cascade
-    AddMenuIcon "TILEVER", 8, 10        'Tile Horizontally
-    AddMenuIcon "TILEHOR", 8, 11        'Tile Vertically
-    AddMenuIcon "MINALL", 8, 13         'Minimize All
-    AddMenuIcon "RESTOREALL", 8, 14     'Restore All
+    addMenuIcon "NEXTIMAGE", 8, 6       'Next image
+    addMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    addMenuIcon "CASCADE", 8, 9         'Cascade
+    addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
+    addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    addMenuIcon "MINALL", 8, 13         'Minimize All
+    addMenuIcon "RESTOREALL", 8, 14     'Restore All
     
     'Help Menu
-    AddMenuIcon "FAVORITE", 9, 0        'Donate
-    AddMenuIcon "UPDATES", 9, 2         'Check for updates
-    AddMenuIcon "FEEDBACK", 9, 3        'Submit Feedback
-    AddMenuIcon "BUG", 9, 4             'Submit Bug
-    AddMenuIcon "PDWEBSITE", 9, 6       'Visit the PhotoDemon website
-    AddMenuIcon "DOWNLOADSRC", 9, 7     'Download source code
-    AddMenuIcon "LICENSE", 9, 8         'License
-    AddMenuIcon "ABOUT", 9, 10          'About PD
+    addMenuIcon "FAVORITE", 9, 0        'Donate
+    addMenuIcon "UPDATES", 9, 2         'Check for updates
+    addMenuIcon "FEEDBACK", 9, 3        'Submit Feedback
+    addMenuIcon "BUG", 9, 4             'Submit Bug
+    addMenuIcon "PDWEBSITE", 9, 6       'Visit the PhotoDemon website
+    addMenuIcon "DOWNLOADSRC", 9, 7     'Download source code
+    addMenuIcon "LICENSE", 9, 8         'License
+    addMenuIcon "ABOUT", 9, 10          'About PD
     
     'When we're done, reset the doEvents tracker
     m_refreshOutsideProgressBar = False
@@ -438,7 +438,7 @@ End Sub
 'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
 ' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
 ' of loaded icons and automatically fill in the numeric identifier as necessary.
-Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
+Private Sub addMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
 
     Dim i As Long
     Dim iconLocation As Long
@@ -492,43 +492,43 @@ End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
 ' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
-Public Sub ResetMenuIcons()
+Public Sub resetMenuIcons()
 
     'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
     If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
         
     'Redraw the Undo/Redo menus
-    AddMenuIcon "UNDO", 1, 0     'Undo
-    AddMenuIcon "REDO", 1, 1     'Redo
+    addMenuIcon "UNDO", 1, 0     'Undo
+    addMenuIcon "REDO", 1, 1     'Redo
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
     numOfMRUFiles = MRU_ReturnCount()
     
     'Vista+ gets a nice, large icon added later in the process.  XP is stuck with a 16x16 one, which we add now.
-    If Not g_IsVistaOrLater Then AddMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
+    If Not g_IsVistaOrLater Then addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
     'Change the Show/Hide panel icon to match its current state
     If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
-        AddMenuIcon "LEFTPANSHOW", 2, 16     'Show the panel
+        addMenuIcon "LEFTPANSHOW", 2, 16     'Show the panel
     Else
-        AddMenuIcon "LEFTPANHIDE", 2, 16     'Hide the panel
+        addMenuIcon "LEFTPANHIDE", 2, 16     'Hide the panel
     End If
     
     If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
-        AddMenuIcon "RIGHTPANSHOW", 2, 17   'Show the panel
+        addMenuIcon "RIGHTPANSHOW", 2, 17   'Show the panel
     Else
-        AddMenuIcon "RIGHTPANHIDE", 2, 17   'Hide the panel
+        addMenuIcon "RIGHTPANHIDE", 2, 17   'Hide the panel
     End If
     
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
-    AddMenuIcon "NEXTIMAGE", 8, 6       'Next image
-    AddMenuIcon "PREVIMAGE", 8, 7       'Previous image
-    AddMenuIcon "CASCADE", 8, 9         'Cascade
-    AddMenuIcon "TILEVER", 8, 10        'Tile Horizontally
-    AddMenuIcon "TILEHOR", 8, 11        'Tile Vertically
-    AddMenuIcon "MINALL", 8, 13         'Minimize All
-    AddMenuIcon "RESTOREALL", 8, 14     'Restore All
+    addMenuIcon "NEXTIMAGE", 8, 6       'Next image
+    addMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    addMenuIcon "CASCADE", 8, 9         'Cascade
+    addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
+    addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    addMenuIcon "MINALL", 8, 13         'Minimize All
+    addMenuIcon "RESTOREALL", 8, 14     'Restore All
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
     If g_IsVistaOrLater Then
@@ -647,7 +647,7 @@ End Function
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
 ' Note that this function currently requires the FreeImage plugin to be present on the system.
-Public Sub CreateCustomFormIcon(ByRef imgForm As FormImage)
+Public Sub createCustomFormIcon(ByRef imgForm As FormImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
@@ -820,7 +820,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
 End Function
 
 'Load all relevant program cursors into memory
-Public Sub InitAllCursors()
+Public Sub initAllCursors()
 
     'Previously, system cursors were cached here.  This is no longer needed per https://github.com/tannerhelland/PhotoDemon/issues/78
     ' I am leaving this sub in case I need to pre-load tool cursors in the future.
