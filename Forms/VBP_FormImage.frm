@@ -119,16 +119,19 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'The Activate event wraps a public function called ActivateWorkaround.  That function can be called externally when some special event
+' (such as the Next/Previous Image menus) needs to change focus to a new window.
+Private Sub Form_Activate()
+    ActivateWorkaround
+End Sub
+
 Public Sub ActivateWorkaround()
 
     'Update the current form variable
     g_CurrentImage = Val(Me.Tag)
     
+    'Use the window manager to bring the window to the foreground
     g_WindowManager.notifyChildReceivedFocus Me
-    
-    'If possible, set focus to this window
-    'NOTE: this throws inexplicable RTEs, so leave it uncommented until debugged.
-    'If Me.Visible Then Me.SetFocus
     
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
@@ -145,13 +148,6 @@ Public Sub ActivateWorkaround()
         End If
         If pdImages(g_CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(g_CurrentImage).curFormIcon16
     End If
-
-    'If this MDI child is maximized, double-check that it's been drawn correctly.
-    ' (This is necessary because VB doesn't handle _Resize() properly when switching between maximized MDI child forms)
-    'If Me.WindowState = 2 Then
-        'DoEvents
-        'PrepareViewport Me, "Maximized MDI child redraw"
-    'End If
     
     'Determine whether Undo, Redo, Fade-last are available
     metaToggle tUndo, pdImages(g_CurrentImage).UndoState
@@ -188,7 +184,11 @@ Public Sub ActivateWorkaround()
     If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(g_CurrentImage).Width <> 0 Then toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+    If pdImages(g_CurrentImage).Width <> 0 Then
+        g_AllowViewportRendering = False
+        toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+        g_AllowViewportRendering = True
+    End If
     
     'If a selection is active on this image, update the text boxes to match
     If pdImages(g_CurrentImage).selectionActive Then
@@ -310,16 +310,6 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
         
     End If
   
-End Sub
-
-'NOTE: _Activate and _GotFocus are confusing in VB6. _Activate will be fired whenever a child form
-' gains "focus." _GotFocus will be pre-empted by controls on the form, so do not use it.
-
-'Note also that _Activate has known problems - see http://support.microsoft.com/kb/190634
-' This is why ActivateWorkaround exists. Some external functions call that if I know _Activate won't fire properly - see
-' the Unload function in this block, for example.
-Private Sub Form_Activate()
-    ActivateWorkaround
 End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)

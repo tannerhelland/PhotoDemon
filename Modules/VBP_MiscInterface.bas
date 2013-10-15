@@ -91,6 +91,10 @@ Private dpiRatio As Double
 ' this setting is changed, all float toggle operations should wrap this singular function.
 Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal floatStatus As Boolean, Optional ByVal suspendMenuRefresh As Boolean = False)
 
+    'Make a note of the currently active image
+    Dim backupCurrentImage As Long
+    backupCurrentImage = g_CurrentImage
+    
     Dim i As Long
 
     Select Case whichWindowType
@@ -137,6 +141,11 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             If Not suspendMenuRefresh Then ResetMenuIcons
             
     End Select
+    
+    'Restore focus to the previously active window
+    If (Not suspendMenuRefresh) And (g_NumOfImagesLoaded > 0) Then
+        If Not (pdImages(backupCurrentImage).containingForm Is Nothing) Then pdImages(backupCurrentImage).containingForm.SetFocus
+    End If
 
 End Sub
 

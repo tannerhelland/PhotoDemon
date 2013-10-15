@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 10/October/13
+'Last updated: 14/October/13
 'Last update: many minor fixes to improve performance and reliability
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
@@ -240,6 +240,7 @@ Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, 
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHwnd As Long, ByVal lpString As String) As Long
+Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 
 'Child window tracking
 Private pdWindows() As pdWindowData
@@ -670,17 +671,8 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 'Set the border style to sizable dialog
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
                 
-                'Using this new border style, calculate a desired window rectangle while forcing the client size to the window's
-                ' original dimensions.  (Note that this does not matter the *first* time a floating window is rendered, because
-                ' the window will already be in floating-style.)
-                'If Not isFirstLoad Then
-                '    childRect.x2 = childRect.x1 + pdWindows(winIndex).originalWidth
-                '    childRect.y2 = childRect.y1 + pdWindows(winIndex).originalHeight
-                '    AdjustWindowRect childRect, GetWindowLong(pdWindows(winIndex).hWnd, GWL_STYLE), 0
-                'End If
-                
                 'Use that new rect to resize the image
-                SetWindowPos pdWindows(winIndex).hWnd, 0, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_FRAMECHANGED
+                SetWindowPos pdWindows(winIndex).hWnd, 0, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_FRAMECHANGED Or SWP_NOACTIVATE
                 
                 'Erase any alignment data, as floating windows cannot currently be aligned
                 pdWindows(winIndex).alignmentOptions.alignTop = False
@@ -696,7 +688,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             
                 'Remove the window border
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CLIPCHILDREN
-                SetWindowPos pdWindows(winIndex).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED
+                SetWindowPos pdWindows(winIndex).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
                 
                 'Force the window to take up the full client area of the parent
                 getActualMainFormClientRect childRect
@@ -1142,8 +1134,11 @@ Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
         
         'Redraw the child as well
         SetWindowPos childForm.hWnd, -2, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-        
+    
     End If
+    
+    'Regardless of float status, we can now manually bring the activated window to the foreground
+    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
 
 End Sub
 
