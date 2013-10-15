@@ -121,10 +121,12 @@ Private Const DT_WORD_ELLIPSIS = &H40000
 
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (ByRef lpLogFont As LOGFONT) As Long
 
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Integer) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -132,8 +134,8 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
@@ -160,6 +162,35 @@ Dim fontColor As Long
 'This LOGFONT object stores all current settings for the font
 Dim currentLogFont As LOGFONT
 
+'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
+' font settings (including alignment).  It is designed for one-off renderings of centered text.
+Public Sub drawCenteredText(ByRef srcString As String)
+
+    'Because DCs are dimensionless abstractions, we need to retrieve the attached window and use it to calculate the output rect
+    Dim winClientRect As winRect
+    GetClientRect WindowFromDC(curDC), winClientRect
+    
+    'Use the client rectangle to determine a width and height midpoint for the target DC
+    Dim halfDCWidth As Long, halfDCHeight As Long
+    halfDCWidth = winClientRect.x2 \ 2
+    halfDCHeight = winClientRect.y2 \ 2
+
+    'Next, determine the height of the string we were passed
+    Dim strHeightHalf As Long
+    strHeight = getHeightOfString(srcString) \ 2
+    
+    'Back-up the current text alignment, then change it to horizontally aligned
+    Dim backupAlignment As AlignmentConstants
+    backupAlignment = curTextAlignment
+    updateAlignment vbCenter
+    
+    'Render the text
+    ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeight, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    
+    'Restore the original text alignment
+    updateAlignment backupAlignment
+
+End Sub
 
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
 ' additional parameters have to be set)
@@ -275,13 +306,13 @@ End Sub
 Public Function getWidthOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
-    getWidthOfString = txtSize.X
+    getWidthOfString = txtSize.x
 End Function
 
 Public Function getHeightOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
-    getHeightOfString = txtSize.Y
+    getHeightOfString = txtSize.y
 End Function
 
 'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently
