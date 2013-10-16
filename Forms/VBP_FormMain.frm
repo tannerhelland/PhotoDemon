@@ -40,10 +40,10 @@ Begin VB.Form FormMain
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
-      Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      Top             =   1440
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1087,8 +1087,8 @@ Attribute VB_Exposed = False
 'Main Program Form
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 04/July/13
-'Last update: overhauled much of the selection-related control code to better separate interface/domain handling
+'Last updated: 16/October/13
+'Last update: use the system setting for keyboard delay when processing back-to-back accelerators
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -1131,12 +1131,14 @@ Private Sub Form_Load()
     Me.Visible = True
     
     g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
-    g_WindowManager.registerChildForm toolbar_Selections, TOOLBAR_WINDOW, 2, SELECTION_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Selections, TOOLBAR_WINDOW, 3, SELECTION_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP
     
     toolbar_File.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_File.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     toolbar_Selections.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    toolbar_ImageTabs.Show vbModeless, Me
                 
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
@@ -1240,8 +1242,8 @@ Private Sub Form_Load()
             
             'Since plugins may have been downloaded, update the interface to match any new features that may be available.
             LoadPlugins
-            ApplyAllMenuIcons
-            ResetMenuIcons
+            applyAllMenuIcons
+            resetMenuIcons
             g_ImageFormats.generateInputFormats
             g_ImageFormats.generateOutputFormats
             
@@ -2559,7 +2561,7 @@ End Sub
 'Because VB doesn't allow key tracking in MDIForms, we have to hook keypresses via this method.
 ' Many thanks to Steve McMahon for the usercontrol that helps implement this
 Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
-
+    
     'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
     ' action is in the middle of execution)
     If Not FormMain.Enabled Then Exit Sub
@@ -2570,11 +2572,9 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     End If
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
-    ' faster than one quarter-second apart.  (Ideally, the key repeat delay should be pulled from the OS - not sure how
-    ' to do this at present, but will revisit in the future.)
+    ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
     Static lastAccelerator As Double
-    
-    If Timer - lastAccelerator < 0.25 Then Exit Sub
+    If (Timer - lastAccelerator < getKeyboardDelay()) Then Exit Sub
 
     'Accelerators are divided into three groups, and they are processed in the following order:
     ' 1) Direct processor strings.  These are automatically submitted to the software processor.

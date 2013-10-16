@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 06/September/13
-'Last update: make progress bar font match the rest of the program.  (Can't believe I missed this for so long!)
+'Last updated: 15/September/13
+'Last update: if an image is loaded without an extension (e.g. a clipboard image), default to JPEG instead of BMP
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -201,6 +201,7 @@ Public Sub LoadTheProgram()
     'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
     ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
     Load toolbar_File
+    Load toolbar_ImageTabs
     Load toolbar_Selections
         
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
@@ -301,7 +302,7 @@ Public Sub LoadTheProgram()
     SetIcon FormMain.hWnd, "AAA", True
     
     'Initialize all system cursors we rely on (hand, busy, resizing, etc)
-    InitAllCursors
+    initAllCursors
     
     'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
     If (CLng(App.Minor) Mod 2 = 0) Then
@@ -350,7 +351,7 @@ Public Sub LoadTheProgram()
     LoadAccelerators
             
     'Load and draw all menu icons
-    LoadMenuIcons
+    loadMenuIcons
     
     'Look in the MDIWindow module for this code - it enables/disables additional menus based on whether or not images have been loaded.
     ' At this point, it mostly disables all image-related menu items (as no images have been loaded yet)
@@ -633,7 +634,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                 
-                targetImage.OriginalFileFormat = FIF_BMP
+                targetImage.OriginalFileFormat = FIF_JPEG
                 mustCountColors = True
         
             'All other formats follow a prescribed behavior - try to load via FreeImage (if available), then GDI+, then finally
@@ -912,7 +913,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If targetImage.mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
             
             'Render an icon-sized version of this image as the MDI child form's icon
-            If MacroStatus <> MacroBATCH Then CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
+            If MacroStatus <> MacroBATCH Then createCustomFormIcon pdImages(g_CurrentImage).containingForm
             
         
         '*************************************************************************************************************************************
@@ -1630,7 +1631,7 @@ Public Sub DuplicateCurrentImage()
     PrepareViewport pdImages(g_CurrentImage).containingForm, "DuplicateImage"
         
     'Render an icon-sized version of this image as the MDI child form's icon
-    CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
+    createCustomFormIcon pdImages(g_CurrentImage).containingForm
         
     'Note the window state, as it may be important in the future
     pdImages(g_CurrentImage).WindowState = pdImages(g_CurrentImage).containingForm.WindowState

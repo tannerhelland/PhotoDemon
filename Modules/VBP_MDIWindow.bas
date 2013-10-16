@@ -66,7 +66,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     pdImages(g_NumOfImagesLoaded).WindowLeft = mainClientRect.x1
     pdImages(g_NumOfImagesLoaded).WindowTop = mainClientRect.y1
     newImageForm.Left = 0
-    newImageForm.Top = g_cMonitors.DesktopHeight
+    newImageForm.Top = g_cMonitors.DesktopHeight * Screen.TwipsPerPixelY
     
     newImageForm.Show vbModeless, FormMain
     newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
