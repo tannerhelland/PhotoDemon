@@ -430,11 +430,13 @@ End Sub
 'When windows are created or destroyed, launch this routine to dis/en/able windows and toolbars, etc
 Public Sub UpdateMDIStatus()
 
-    'If two or more windows are open, enable the Next/Previous image menu items
+    'If two or more windows are open, enable the image tabstrip, and the Next/Previous image menu items
     If g_OpenImageCount >= 2 Then
+        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
         FormMain.MnuWindow(6).Enabled = True
         FormMain.MnuWindow(7).Enabled = True
     Else
+        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
         FormMain.MnuWindow(6).Enabled = False
         FormMain.MnuWindow(7).Enabled = False
     End If

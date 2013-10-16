@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormImage 
    AutoRedraw      =   -1  'True
-   BackColor       =   &H80000005&
+   BackColor       =   &H80000010&
    Caption         =   "Image Window"
    ClientHeight    =   2295
    ClientLeft      =   120
@@ -130,8 +130,14 @@ Public Sub ActivateWorkaround()
     'Update the current form variable
     g_CurrentImage = Val(Me.Tag)
     
+    'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
+    PrepareViewport Me, "Form received focus"
+    
     'Use the window manager to bring the window to the foreground
     g_WindowManager.notifyChildReceivedFocus Me
+    
+    'Notify the thumbnail bar that a new image has been selected
+    toolbar_ImageTabs.notifyNewActiveImage Me.Tag
     
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
@@ -202,7 +208,7 @@ Public Sub ActivateWorkaround()
         FormHistogram.TallyHistogramValues
         FormHistogram.DrawHistogram
     End If
-    
+        
 End Sub
 
 'Mousekey back triggers the same thing as clicking Undo
@@ -773,7 +779,10 @@ Private Sub Form_Resize()
     
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
     If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(Me.hWnd) > 0) Then
-        PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
+        
+        'New test as of 16 Oct '13 - do not redraw the viewport unless it is the active one.
+        If g_CurrentImage = CLng(Me.Tag) Then PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
+        
     End If
     
     'The height of a newly created form is automatically set to 1. This is normally changed when the image is
@@ -832,15 +841,15 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
+    Message "Closing image..."
+    Me.Visible = False
+    
     'Unload the mouse tracker
     Set cMouseEvents = Nothing
     
-    Message "Closing image..."
-    
+    'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1
-            
-    Me.Visible = False
-    
+        
     'Deactivate this layer
     pdImages(Me.Tag).deactivateImage
     
@@ -857,6 +866,9 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Notify the window manager that this hWnd will soon be dead - so stop subclassing it!
     g_WindowManager.unregisterForm Me
+    
+    'Remove this image from the thumbnail toolbar
+    toolbar_ImageTabs.RemoveImage Me.Tag
     
     'Before exiting, restore focus to the next child window in line.
     If g_OpenImageCount > 0 Then

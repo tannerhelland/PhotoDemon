@@ -833,15 +833,17 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
         Case IMAGE_TABSTRIP
         
             'Remove the window border
-            SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CLIPCHILDREN
+            newWinStyle = WS_CLIPCHILDREN
+            If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
+            SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
             SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
             
             'Force the window to top-align within the client area of the parent
             getActualMainFormClientRect childRect, True
-            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(winIndex).originalHeight, 1
+            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(winIndex).originalHeight, IIf(pdWindows(winIndex).isVisible, 1, 0)
             
             'Force a full repaint (to make sure children controls are also repainted)
-            forceFullWindowRefresh winIndex
+            If pdWindows(winIndex).isVisible Then forceFullWindowRefresh winIndex
             
     End Select
     
@@ -1589,7 +1591,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         Case IMAGE_TABSTRIP
                             'Force the window to right-align within the client area of the parent
                             getActualMainFormClientRect childRect, True
-                            MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(i).originalHeight, 1
+                            MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(i).originalHeight, IIf(pdWindows(i).isVisible, 1, 0)
                             requestWindowResync i
                         
                     End Select
@@ -1660,7 +1662,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             Case IMAGE_TABSTRIP
                                 'Force the window to top-align vertically within the client area of the parent
                                 getActualMainFormClientRect childRect, True
-                                MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(i).originalHeight, 1
+                                MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(i).originalHeight, IIf(pdWindows(i).isVisible, 1, 0)
                                 requestWindowResync i
                                 
                         End Select
@@ -1709,6 +1711,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         For i = 0 To numOfPDWindows - 1
                             SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
                         Next i
+                        
+                        'Because zOrder may get botched when the program gains/loses focus, forcibly restore the active image.
+                        ' (TODO: move this code out of the window manager)
+                        pdImages(g_CurrentImage).containingForm.ActivateWorkaround
                         
                 End Select
                         
