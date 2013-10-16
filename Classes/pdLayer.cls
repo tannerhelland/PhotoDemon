@@ -119,7 +119,7 @@ End Type
 
 
 'Drawing API functions
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
@@ -163,7 +163,7 @@ Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 
 'AlphaBlend API call
-Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
+Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'Variables related to the DIB
 'hDC for this layer
@@ -236,7 +236,7 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             prepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-            Dim X As Long, Y As Long, QuickX As Long
+            Dim x As Long, y As Long, QuickX As Long
             
             Dim chkAlpha As Byte
             Dim tmpAlpha As Double
@@ -244,33 +244,33 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             trnsX = -1
                 
             'Loop through the image, checking alphas as we go
-            For X = 0 To layerWidth - 1
-                QuickX = X * 4
-            For Y = 0 To layerHeight - 1
+            For x = 0 To layerWidth - 1
+                QuickX = x * 4
+            For y = 0 To layerHeight - 1
                 
-                chkAlpha = iData(QuickX + 3, Y)
+                chkAlpha = iData(QuickX + 3, y)
                 
                 'If the alpha value is less than the cutoff, mark this pixel
                 If chkAlpha < cutOff Then
                 
                     'Remember this location if we haven't already
                     If trnsX = -1 Then
-                        trnsX = X
-                        trnsY = Y
-                        originalTransparentColor = RGB(iData(QuickX + 2, Y), iData(QuickX + 1, Y), iData(QuickX, Y))
+                        trnsX = x
+                        trnsY = y
+                        originalTransparentColor = RGB(iData(QuickX + 2, y), iData(QuickX + 1, y), iData(QuickX, y))
                     End If
                     
                     'When previewing this effect, we don't actually want to change pixel colors. Otherwise,
                     ' HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
                     If forceColor Then
                         'Color this pixel with magic magenta (253,0,253)
-                        iData(QuickX + 2, Y) = 253
-                        iData(QuickX + 1, Y) = 0
-                        iData(QuickX, Y) = 253
+                        iData(QuickX + 2, y) = 253
+                        iData(QuickX + 1, y) = 0
+                        iData(QuickX, y) = 253
                     End If
                     
                     'Blank the alpha channel
-                    iData(QuickX + 3, Y) = 0
+                    iData(QuickX + 3, y) = 0
                     
                 'If the pixel is not beneath the cut-off, and not fully opaque, composite it against white
                 ElseIf chkAlpha < 255 Then
@@ -279,18 +279,18 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     tmpAlpha = CDbl(chkAlpha) / 255
             
                     'Use that alpha value to blend the current color against white
-                    iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), 255, tmpAlpha)
-                    iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), 255, tmpAlpha)
-                    iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), 255, tmpAlpha)
+                    iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), 255, tmpAlpha)
+                    iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), 255, tmpAlpha)
+                    iData(QuickX, y) = Blend2Colors(iData(QuickX, y), 255, tmpAlpha)
                     
                     'Opaque-ify the alpha channel
-                    iData(QuickX + 3, Y) = 255
+                    iData(QuickX + 3, y) = 255
                 
                 End If
                 
-            Next Y
+            Next y
                 
-            Next X
+            Next x
     
             'With our alpha channel complete, point iData() away from the DIB and deallocate it
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -502,15 +502,15 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
                     prepExternalSafeArray hackLayer, srcSA
                     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
-                    Dim X As Long, Y As Long, QuickX As Long
+                    Dim x As Long, y As Long, QuickX As Long
     
                     'Now loop through the image, copying alpha values as we go
-                    For X = 0 To layerWidth - 1
-                        QuickX = X * 4
-                    For Y = 0 To layerHeight - 1
-                        iData(QuickX + 3, Y) = aData(QuickX + 3, Y)
-                    Next Y
-                    Next X
+                    For x = 0 To layerWidth - 1
+                        QuickX = x * 4
+                    For y = 0 To layerHeight - 1
+                        iData(QuickX + 3, y) = aData(QuickX + 3, y)
+                    Next y
+                    Next x
                     
                     'Decommission both arrays
                     CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -618,15 +618,15 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 prepInternalSafeArray tmpSA
                 CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-                Dim X As Long, Y As Long, QuickX As Long
+                Dim x As Long, y As Long, QuickX As Long
                 
                 'Loop through the image, setting the alpha of each pixel to 255 (opaque)
-                For X = 0 To layerWidth - 1
-                    QuickX = X * 4
-                For Y = 0 To layerHeight - 1
-                    iData(QuickX + 3, Y) = newTransparency
-                Next Y
-                Next X
+                For x = 0 To layerWidth - 1
+                    QuickX = x * 4
+                For y = 0 To layerHeight - 1
+                    iData(QuickX + 3, y) = newTransparency
+                Next y
+                Next x
     
                 'With our alpha channel complete, point iData() away from the DIB and deallocate it
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -661,7 +661,7 @@ Public Sub convertToCMYK32()
         prepInternalSafeArray tmpSA
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
-        Dim X As Long, Y As Long, QuickX As Long
+        Dim x As Long, y As Long, QuickX As Long
                                 
         Dim cyan As Long, magenta As Long, yellow As Long, K As Long
         
@@ -669,35 +669,35 @@ Public Sub convertToCMYK32()
         qvDepth = layerColorDepth \ 8
                         
         'Loop through the image, checking alphas as we go
-        For X = 0 To layerWidth - 1
-            QuickX = X * qvDepth
-        For Y = 0 To layerHeight - 1
+        For x = 0 To layerWidth - 1
+            QuickX = x * qvDepth
+        For y = 0 To layerHeight - 1
                         
             'Cyan
-            cyan = 255 - iData(QuickX + 2, Y)
+            cyan = 255 - iData(QuickX + 2, y)
             
             'Magenta
-            magenta = 255 - iData(QuickX + 1, Y)
+            magenta = 255 - iData(QuickX + 1, y)
             
             'Yellow
-            yellow = 255 - iData(QuickX, Y)
+            yellow = 255 - iData(QuickX, y)
             
             'Key
             K = CByte(Min3Int(cyan, magenta, yellow))
-            iData(QuickX + 3, Y) = K
+            iData(QuickX + 3, y) = K
             
             If K = 255 Then
-                iData(QuickX, Y) = 0
-                iData(QuickX + 1, Y) = 0
-                iData(QuickX + 2, Y) = 0
+                iData(QuickX, y) = 0
+                iData(QuickX + 1, y) = 0
+                iData(QuickX + 2, y) = 0
             Else
-                iData(QuickX, Y) = cyan - K
-                iData(QuickX + 1, Y) = magenta - K
-                iData(QuickX + 2, Y) = yellow - K
+                iData(QuickX, y) = cyan - K
+                iData(QuickX + 1, y) = magenta - K
+                iData(QuickX + 2, y) = yellow - K
             End If
                             
-        Next Y
-        Next X
+        Next y
+        Next x
     
         'With our alpha channel complete, point iData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -720,7 +720,7 @@ Public Function isLayerGrayscale() As Boolean
         prepInternalSafeArray tmpSA
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
-        Dim X As Long, Y As Long, QuickX As Long
+        Dim x As Long, y As Long, QuickX As Long
                         
         Dim r As Long, g As Long, b As Long
         
@@ -728,13 +728,13 @@ Public Function isLayerGrayscale() As Boolean
         qvDepth = layerColorDepth \ 8
                         
         'Loop through the image, checking alphas as we go
-        For X = 0 To layerWidth - 1
-            QuickX = X * qvDepth
-        For Y = 0 To layerHeight - 1
+        For x = 0 To layerWidth - 1
+            QuickX = x * qvDepth
+        For y = 0 To layerHeight - 1
             
-            r = iData(QuickX + 2, Y)
-            g = iData(QuickX + 1, Y)
-            b = iData(QuickX, Y)
+            r = iData(QuickX + 2, y)
+            g = iData(QuickX + 1, y)
+            b = iData(QuickX, y)
             
             'For optimization reasons, this is stated as multiple IFs instead of an OR. I'm not sure if VB
             ' short-circuits OR statements, but I know multiple IF statements work. :)
@@ -764,8 +764,8 @@ Public Function isLayerGrayscale() As Boolean
                 
             End If
                 
-        Next Y
-        Next X
+        Next y
+        Next x
     
         'With our alpha channel complete, point iData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -800,7 +800,7 @@ Public Function isAlphaBinary() As Boolean
             prepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-            Dim X As Long, Y As Long, QuickX As Long
+            Dim x As Long, y As Long, QuickX As Long
                 
             'By default, assume that the image does not have a binary alpha channel. (This is the preferable
             ' default, as we will exit the loop IFF a non-0 or non-255 value is found.)
@@ -810,10 +810,10 @@ Public Function isAlphaBinary() As Boolean
             Dim chkAlpha As Byte
                 
             'Loop through the image, checking alphas as we go
-            For X = 0 To layerWidth - 1
-                QuickX = X * 4
-            For Y = 0 To layerHeight - 1
-                chkAlpha = iData(QuickX + 3, Y)
+            For x = 0 To layerWidth - 1
+                QuickX = x * 4
+            For y = 0 To layerHeight - 1
+                chkAlpha = iData(QuickX + 3, y)
                 
                 'For optimization reasons, this is stated as two IFs instead of an OR. I'm not sure if VB
                 ' short-circuits OR statements, but I know nested IF statements work. :)
@@ -826,9 +826,9 @@ Public Function isAlphaBinary() As Boolean
                 
                 End If
                 
-            Next Y
+            Next y
                 If notBinary = True Then Exit For
-            Next X
+            Next x
     
             'With our alpha channel complete, point iData() away from the DIB and deallocate it
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1402,7 +1402,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'If no color is specified, apply a checkerboard pattern
@@ -1468,12 +1468,12 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     End Select
     
     'Loop through the image, blending colors as we go
-    For X = 0 To layerWidth - 1
-        QuickX = X * 4
-    For Y = 0 To layerHeight - 1
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
         
         'Access the alpha data for this pixel
-        checkAlpha = iData(QuickX + 3, Y)
+        checkAlpha = iData(QuickX + 3, y)
         
         'Ignore fully opaque pixels. (This makes the routine much faster.)
         If checkAlpha <> 255 Then
@@ -1482,20 +1482,20 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
             tmpAlpha = CSng(checkAlpha) / 255
             
             'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
-            If (((X \ checkerSize) + (Y \ checkerSize)) And 1) = 0 Then
-                iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), r1, tmpAlpha)
-                iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), g1, tmpAlpha)
-                iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), b1, tmpAlpha)
+            If (((x \ checkerSize) + (y \ checkerSize)) And 1) = 0 Then
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
             Else
-                iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), r2, tmpAlpha)
-                iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), g2, tmpAlpha)
-                iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), b2, tmpAlpha)
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r2, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g2, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b2, tmpAlpha)
             End If
             
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'With our compositing complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1534,7 +1534,7 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
     prepExternalSafeArray srcAlpha, srcSA
     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'If no color is specified, apply a checkerboard pattern
@@ -1600,12 +1600,12 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
     End Select
     
     'Loop through the image, blending colors as we go
-    For X = 0 To layerWidth - 1
-        QuickX = X * 4
-    For Y = 0 To layerHeight - 1
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
         
         'Access the alpha data for this pixel
-        checkAlpha = aData(QuickX + 3, Y)
+        checkAlpha = aData(QuickX + 3, y)
         
         'Ignore fully opaque pixels. (This makes the routine much faster.)
         If checkAlpha <> 255 Then
@@ -1614,20 +1614,20 @@ Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional B
             tmpAlpha = CSng(checkAlpha) / 255
             
             'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
-            If (((X \ checkerSize) + (Y \ checkerSize)) And 1) = 0 Then
-                iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), r1, tmpAlpha)
-                iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), g1, tmpAlpha)
-                iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), b1, tmpAlpha)
+            If (((x \ checkerSize) + (y \ checkerSize)) And 1) = 0 Then
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
             Else
-                iData(QuickX + 2, Y) = Blend2Colors(iData(QuickX + 2, Y), r2, tmpAlpha)
-                iData(QuickX + 1, Y) = Blend2Colors(iData(QuickX + 1, Y), g2, tmpAlpha)
-                iData(QuickX, Y) = Blend2Colors(iData(QuickX, Y), b2, tmpAlpha)
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r2, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g2, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b2, tmpAlpha)
             End If
             
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'With our compositing complete, point both arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1659,7 +1659,7 @@ Public Function verifyAlphaChannel() As Boolean
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     Dim checkAlpha As Boolean, initAlpha As Double
     checkAlpha = False
     
@@ -1675,22 +1675,22 @@ Public Function verifyAlphaChannel() As Boolean
     End If
         
     'Loop through the image, comparing colors as we go
-    For X = 0 To layerWidth - 1
-        QuickX = X * 4
-    For Y = 0 To layerHeight - 1
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
         
         'Compare the alpha data for this pixel to the initial pixel. If they DO NOT match, this is a valid alpha channel.
-        If initAlpha <> iData(QuickX + 3, Y) Then
+        If initAlpha <> iData(QuickX + 3, y) Then
             checkAlpha = True
             Exit For
         End If
         
-    Next Y
+    Next y
     
         'If the alpha channel has been verified, exit this loop
         If checkAlpha Then Exit For
         
-    Next X
+    Next x
     
     'With our check complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1725,18 +1725,18 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
     prepExternalSafeArray srcLayer, srcSA
     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     
     'Loop through the image, copying alpha values as we go
-    For X = 0 To layerWidth - 1
-        QuickX = X * 4
-    For Y = 0 To layerHeight - 1
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
         
         'Access the alpha data for this pixel
-        iData(QuickX + 3, Y) = aData(QuickX + 3, Y)
+        iData(QuickX + 3, y) = aData(QuickX + 3, y)
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'With our alpha transfer complete, point both arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1747,8 +1747,8 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
 End Sub
 
 'Layers created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
-' photo editing. This routine can be used to restore (well, estimate) the original color values of the image.
-Public Sub fixPremultipliedAlpha()
+' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
+Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolean = False)
 
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly
     Dim iData() As Byte
@@ -1756,41 +1756,78 @@ Public Sub fixPremultipliedAlpha()
     prepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     
     Dim r As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Double
 
     'Loop through the image, removing the effects of pre-multiplication as we go
-    For X = 0 To layerWidth - 1
-        QuickX = X * 4
-    For Y = 0 To layerHeight - 1
+    For x = 0 To layerWidth - 1
+        QuickX = x * 4
+    For y = 0 To layerHeight - 1
         
-        tmpAlpha = iData(QuickX + 3, Y)
+        tmpAlpha = iData(QuickX + 3, y)
         
-        'Ignore completely opaque and completely transparent pixels
-        If tmpAlpha <> 255 Then
+        
+        If applyPremultiplication Then
+        
+            'When applying premultiplication, we can ignore fully opaque pixels
+            If tmpAlpha <> 255 Then
+            
+                'We can shortcut the calculation of full transparent pixels (they are made black)
+                If tmpAlpha = 0 Then
+                    iData(QuickX + 2, y) = 0
+                    iData(QuickX + 1, y) = 0
+                    iData(QuickX, y) = 0
+                Else
+            
+                    r = iData(QuickX + 2, y)
+                    g = iData(QuickX + 1, y)
+                    b = iData(QuickX, y)
+                    
+                    tmpAlphaModifier = tmpAlpha / 255
+                    
+                    'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
+                    r = r * tmpAlphaModifier
+                    g = g * tmpAlphaModifier
+                    b = b * tmpAlphaModifier
+                    
+                    iData(QuickX + 2, y) = CByte(r)
+                    iData(QuickX + 1, y) = CByte(g)
+                    iData(QuickX, y) = CByte(b)
+                    
+                End If
+            
+            End If
+        
+        Else
+            
+            'When removing premultiplication, we can ignore fully opaque and fully transparent pixels
+            If tmpAlpha <> 255 Then
             If tmpAlpha <> 0 Then
             
-                r = iData(QuickX + 2, Y)
-                g = iData(QuickX + 1, Y)
-                b = iData(QuickX, Y)
-            
+                r = iData(QuickX + 2, y)
+                g = iData(QuickX + 1, y)
+                b = iData(QuickX, y)
+                
                 tmpAlphaModifier = 255 / tmpAlpha
-            
+                
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
                 r = r * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
                 
-                iData(QuickX + 2, Y) = CByte(r)
-                iData(QuickX + 1, Y) = CByte(g)
-                iData(QuickX, Y) = CByte(b)
+                iData(QuickX + 2, y) = CByte(r)
+                iData(QuickX + 1, y) = CByte(g)
+                iData(QuickX, y) = CByte(b)
             
             End If
+            End If
+        
         End If
-    Next Y
-    Next X
+        
+    Next y
+    Next x
     
     'With our alpha channel complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
@@ -1799,7 +1836,7 @@ Public Sub fixPremultipliedAlpha()
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects a premultiplied layer
-Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255)
+Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0)
     
     Dim bfParams As Long
     
@@ -1811,6 +1848,6 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 25
         bfParams = customAlpha * &H10000
     End If
     
-    AlphaBlend dstDC, 0, 0, layerWidth, layerHeight, layerDC, 0, 0, layerWidth, layerHeight, bfParams
+    AlphaBlend dstDC, dstX, dstY, layerWidth, layerHeight, layerDC, 0, 0, layerWidth, layerHeight, bfParams
 
 End Sub

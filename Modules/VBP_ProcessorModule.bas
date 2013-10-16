@@ -257,16 +257,18 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If FormMain.MnuEdit(0).Enabled Then
                 RestoreUndoData
             
-                'Also, redraw the current child form icon
-                CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
+                'Also, redraw the current child form icon and the image tab-bar
+                createCustomFormIcon pdImages(g_CurrentImage).containingForm
+                toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
             
         Case "Redo"
             If FormMain.MnuEdit(1).Enabled Then
                 RestoreRedoData
             
-                'Also, redraw the current child form icon
-                CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
+                'Also, redraw the current child form icon and the image tab-bar
+                createCustomFormIcon pdImages(g_CurrentImage).containingForm
+                toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
         
         Case "Copy to clipboard"
@@ -1121,8 +1123,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
     End If
     
-    'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw the form icon to match.
-    If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then CreateCustomFormIcon pdImages(g_CurrentImage).containingForm
+    'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
+    ' as well as the image tab-bar.
+    If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then
+        createCustomFormIcon pdImages(g_CurrentImage).containingForm
+        toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+    End If
     
     'Unlock the main form
     FormMain.Enabled = True

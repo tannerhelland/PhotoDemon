@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 15/September/13
-'Last update: if an image is loaded without an extension (e.g. a clipboard image), default to JPEG instead of BMP
+'Last updated: 16/October/13
+'Last update: register newly loaded images with the image thumbnail control
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -925,6 +925,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
             g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
             
+            'Also register this image with the image tab bar
+            toolbar_ImageTabs.registerNewImage g_CurrentImage
+            
             Message "Resizing image to fit screen..."
     
             'If the user wants us to resize the image to fit on-screen, do that now
@@ -959,8 +962,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' bottom edges don't fall outside the MDI client area
             'If the user wants us to resize the image to fit on-screen, do that now
             If g_AutozoomLargeImages = 1 Then FitWindowToViewport
-            
-            
                         
             'Finally, add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
@@ -1630,8 +1631,9 @@ Public Sub DuplicateCurrentImage()
     
     PrepareViewport pdImages(g_CurrentImage).containingForm, "DuplicateImage"
         
-    'Render an icon-sized version of this image as the MDI child form's icon
+    'Render an icon-sized version of this image as the MDI child form's icon, and update the image thumbnail tab bar
     createCustomFormIcon pdImages(g_CurrentImage).containingForm
+    toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
         
     'Note the window state, as it may be important in the future
     pdImages(g_CurrentImage).WindowState = pdImages(g_CurrentImage).containingForm.WindowState

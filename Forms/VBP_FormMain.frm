@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1139,6 +1139,7 @@ Private Sub Form_Load()
     toolbar_Selections.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     toolbar_ImageTabs.Show vbModeless, Me
+    g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
                 
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.

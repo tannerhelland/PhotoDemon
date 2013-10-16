@@ -101,3 +101,10 @@ Public Declare Function ColorAdjustLuma Lib "shlwapi" (ByVal clrRGB As Long, ByV
 
 'LockWindowUpdate has many purposes, but I primarily use it to add items to a listbox without a visual refresh occurring
 Public Declare Function LockWindowUpdate Lib "user32" (ByVal hWnd As Long) As Long
+
+'API for drawing colored rectangles
+Public Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Public Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Public Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Public Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
+Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
