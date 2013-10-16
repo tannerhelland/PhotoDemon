@@ -226,7 +226,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).OriginalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
         
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(imageID).containingForm.hWnd, 0) Then
                 
         'Store the selected file format to the image object
         pdImages(imageID).CurrentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)

@@ -32,7 +32,7 @@ Attribute VB_Exposed = False
 'You may download the original version of this code from the following link (good as of June '12):
 ' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1
 
-' Many thanks to Juned for his excellent custom button, which PhotoDemon uses on the left-hand panel of the main form.
+' Many thanks to Juned for his excellent custom button, which PhotoDemon uses in a variety of ways.
 
 Option Explicit
 
@@ -109,7 +109,7 @@ Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Lon
 Private Declare Function CreateRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function GetTextColor Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function OleTranslateColor Lib "OLEPRO32" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, ByRef pccolorref As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, ByRef pccolorref As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetNearestColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As tLOGFONT) As Long
@@ -484,7 +484,7 @@ Private TrackUser32     As Boolean
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function LoadLibraryA Lib "kernel32" (ByVal lpLibFileName As String) As Long
 Private Declare Function TRACKMOUSEEVENT Lib "user32" Alias "TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
-Private Declare Function TrackMouseEventComCtl Lib "Comctl32" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
+Private Declare Function TrackMouseEventComCtl Lib "comctl32" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
@@ -1513,7 +1513,8 @@ Dim lShadowClr       As Long
            m_ButtonStyle = eGelButton Or m_ButtonStyle = eOffice2003 _
            Or m_ButtonStyle = eXPToolbar Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eStandard Then
             OffsetRect m_TextRect, 1, 1
-            OffsetRect m_PicRect, 1, 1
+            'TANNER EDIT: don't offset the image in a down state; this makes toolbars look better
+            'OffsetRect m_PicRect, 1, 1
             OffsetRect lpSignRect, 1, 1
         End If
     End If
@@ -2370,7 +2371,7 @@ Private Sub WindowsThemeButton(ByVal vState As enumButtonStates)
 
 Dim tmpState         As Long
 
-    UserControl.backColor = GetSysColor(COLOR_BTNFACE)
+    UserControl.BackColor = GetSysColor(COLOR_BTNFACE)
 
     If Not m_bEnabled Then
         tmpState = 4
@@ -3209,7 +3210,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
             End If
 
             On Error Resume Next
-                If App.LogMode Then
+                If App.logMode Then
                     If UserControl.Parent.MDIChild Then
                         If .ssc_Subclass(m_lParenthWnd, ByVal exParentForm, 1, Me) Then
                             .ssc_AddMsg m_lParenthWnd, MSG_AFTER, WM_NCACTIVATE
@@ -3440,16 +3441,16 @@ Attribute About.VB_UserMemId = -552
 
 End Sub
 
-Public Property Get backColor() As OLE_COLOR
-Attribute backColor.VB_Description = "Returns/sets the background color used for the button."
-Attribute backColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
-Attribute backColor.VB_UserMemId = -501
+Public Property Get BackColor() As OLE_COLOR
+Attribute BackColor.VB_Description = "Returns/sets the background color used for the button."
+Attribute BackColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute BackColor.VB_UserMemId = -501
 
-    backColor = m_bColors.tBackColor
+    BackColor = m_bColors.tBackColor
 
 End Property
 
-Public Property Let backColor(ByVal New_BackColor As OLE_COLOR)
+Public Property Let BackColor(ByVal New_BackColor As OLE_COLOR)
 
     m_bColors.tBackColor = New_BackColor
     If m_ButtonStyle <> eOfficeXP Then

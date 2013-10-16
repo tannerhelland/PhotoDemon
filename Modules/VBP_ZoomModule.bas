@@ -155,7 +155,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
     formToBuffer.Picture = formToBuffer.Image
-    formToBuffer.Refresh
+    If (CLng(formToBuffer.Tag) = g_CurrentImage) Then formToBuffer.Refresh
     
 End Sub
 

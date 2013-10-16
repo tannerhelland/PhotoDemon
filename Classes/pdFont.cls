@@ -177,7 +177,7 @@ Public Sub drawCenteredText(ByRef srcString As String)
 
     'Next, determine the height of the string we were passed
     Dim strHeightHalf As Long
-    strHeight = getHeightOfString(srcString) \ 2
+    strHeightHalf = getHeightOfString(srcString) \ 2
     
     'Back-up the current text alignment, then change it to horizontally aligned
     Dim backupAlignment As AlignmentConstants
@@ -185,7 +185,7 @@ Public Sub drawCenteredText(ByRef srcString As String)
     updateAlignment vbCenter
     
     'Render the text
-    ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeight, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
     
     'Restore the original text alignment
     updateAlignment backupAlignment

@@ -49,6 +49,7 @@ Private Const SPI_SETFONTSMOOTHINGTYPE As Long = &H200B
 Private Const SmoothingClearType As Long = &H2
 Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
+Private Const SPI_GETKEYBOARDDELAY As Long = &H16
 
 'Constants that define single meta-level actions that require certain controls to be en/disabled.  These are passed to tInit, below.
 Public Enum metaInitializer
@@ -86,6 +87,14 @@ Private hadToChangeSmoothing As Long
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
 Private dpiRatio As Double
+
+'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
+' (e.g. the system returns a value from 0 to 3), but we can use a "good enough" approximation.
+Public Function getKeyboardDelay() As Double
+    Dim keyDelayIndex As Long
+    SystemParametersInfo SPI_GETKEYBOARDDELAY, 0, keyDelayIndex, 0
+    getKeyboardDelay = (keyDelayIndex + 1) * 0.25
+End Function
 
 'Both toolbars and image windows can be floated or docked.  Because some behind-the-scenes maintenance has to be applied whenever
 ' this setting is changed, all float toggle operations should wrap this singular function.
@@ -138,7 +147,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             Next i
             
             'Menu icons may need to be reapplied to those menus if they were previously hidden
-            If Not suspendMenuRefresh Then ResetMenuIcons
+            If Not suspendMenuRefresh Then resetMenuIcons
             
     End Select
     
@@ -166,6 +175,16 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
             g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, FormMain.MnuWindow(1).Checked
     
     End Select
+    
+    'If both images and toolbars are docked, we need to redraw any open images because the available client area will have changed.
+    If g_NumOfImagesLoaded > 0 Then
+        Dim i As Long
+        For i = 0 To g_NumOfImagesLoaded
+            If (Not pdImages(i) Is Nothing) Then
+                If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar visibility changed"
+            End If
+        Next i
+    End If
 
 End Sub
 
@@ -273,11 +292,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If newState Then
                 toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).getUndoProcessID
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
-                ResetMenuIcons
+                resetMenuIcons
             Else
                 toolbar_File.cmdUndo.ToolTip = ""
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
-                ResetMenuIcons
+                resetMenuIcons
             End If
             
         'ImageOps is all Image-related menu items; it enables/disables the Image, Select, Color, View (most items), and Print menus
@@ -315,11 +334,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If newState Then
                 toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).getRedoProcessID
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
-                ResetMenuIcons
+                resetMenuIcons
             Else
                 toolbar_File.cmdRedo.ToolTip = ""
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
-                ResetMenuIcons
+                resetMenuIcons
             End If
             
         'Macro (top-level menu)
@@ -582,7 +601,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         tForm.Refresh
     Else
         'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned.
-        If FormMain.Visible Then ApplyAllMenuIcons
+        If FormMain.Visible Then applyAllMenuIcons
     End If
         
 End Sub
@@ -699,7 +718,7 @@ Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
             
     
             'Ask the menu icon handler to redraw the menu image with the new icon
-            ResetMenuIcons
+            resetMenuIcons
         
         Case VISIBILITY_FORCEDISPLAY
             'FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
@@ -725,7 +744,7 @@ Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
             'Toggle the text and picture box accordingly, using the preference we just stored
     
             'Ask the menu icon handler to redraw the menu image with the new icon
-            ResetMenuIcons
+            resetMenuIcons
         
         Case VISIBILITY_FORCEDISPLAY
             'FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")

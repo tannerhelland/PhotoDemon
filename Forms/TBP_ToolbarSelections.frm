@@ -4,11 +4,10 @@ Begin VB.Form toolbar_Selections
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Selections"
-   ClientHeight    =   7815
+   ClientHeight    =   1350
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   3045
-   ClipControls    =   0   'False
+   ClientWidth     =   14355
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,10 +20,61 @@ Begin VB.Form toolbar_Selections
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   521
+   ScaleHeight     =   90
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   203
+   ScaleWidth      =   957
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.jcbutton cmdTools 
+      Height          =   600
+      Index           =   0
+      Left            =   120
+      TabIndex        =   17
+      Top             =   120
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "TBP_ToolbarSelections.frx":0000
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin VB.ComboBox cmbSelRender 
+      Appearance      =   0  'Flat
+      CausesValidation=   0   'False
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   360
+      Index           =   0
+      ItemData        =   "TBP_ToolbarSelections.frx":0BE2
+      Left            =   120
+      List            =   "TBP_ToolbarSelections.frx":0BE4
+      Style           =   2  'Dropdown List
+      TabIndex        =   16
+      TabStop         =   0   'False
+      Top             =   840
+      Width           =   2130
+   End
    Begin VB.PictureBox picTools 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -32,39 +82,16 @@ Begin VB.Form toolbar_Selections
       BorderStyle     =   0  'None
       ClipControls    =   0   'False
       ForeColor       =   &H80000008&
-      Height          =   6135
+      Height          =   1575
       Index           =   0
-      Left            =   0
-      ScaleHeight     =   409
+      Left            =   2520
+      ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   198
-      TabIndex        =   4
-      Top             =   1560
+      ScaleWidth      =   814
+      TabIndex        =   0
+      Top             =   0
       Visible         =   0   'False
-      Width           =   2970
-      Begin VB.ComboBox cmbSelRender 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   360
-         Index           =   0
-         ItemData        =   "TBP_ToolbarSelections.frx":0000
-         Left            =   180
-         List            =   "TBP_ToolbarSelections.frx":0002
-         Style           =   2  'Dropdown List
-         TabIndex        =   8
-         TabStop         =   0   'False
-         Top             =   540
-         Width           =   2685
-      End
+      Width           =   12210
       Begin VB.ComboBox cmbSelType 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -79,14 +106,14 @@ Begin VB.Form toolbar_Selections
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "TBP_ToolbarSelections.frx":0004
-         Left            =   120
-         List            =   "TBP_ToolbarSelections.frx":0006
+         ItemData        =   "TBP_ToolbarSelections.frx":0BE6
+         Left            =   6060
+         List            =   "TBP_ToolbarSelections.frx":0BE8
          Style           =   2  'Dropdown List
-         TabIndex        =   6
+         TabIndex        =   2
          TabStop         =   0   'False
          ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
-         Top             =   4320
+         Top             =   390
          Width           =   2685
       End
       Begin VB.ComboBox cmbSelSmoothing 
@@ -103,22 +130,22 @@ Begin VB.Form toolbar_Selections
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "TBP_ToolbarSelections.frx":0008
-         Left            =   120
-         List            =   "TBP_ToolbarSelections.frx":000A
+         ItemData        =   "TBP_ToolbarSelections.frx":0BEA
+         Left            =   3120
+         List            =   "TBP_ToolbarSelections.frx":0BEC
          Style           =   2  'Dropdown List
-         TabIndex        =   5
+         TabIndex        =   1
          TabStop         =   0   'False
          ToolTipText     =   "Use this option to change the way selections blend with their surroundings."
-         Top             =   3000
+         Top             =   390
          Width           =   2685
       End
       Begin PhotoDemon.sliderTextCombo sltCornerRounding 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   0
-         TabIndex        =   7
-         Top             =   5640
+         Left            =   8820
+         TabIndex        =   3
+         Top             =   345
          Width           =   3000
          _ExtentX        =   5318
          _ExtentY        =   873
@@ -136,9 +163,9 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
          Index           =   0
-         Left            =   120
-         TabIndex        =   9
-         Top             =   1320
+         Left            =   0
+         TabIndex        =   4
+         Top             =   390
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -157,9 +184,9 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
          Index           =   1
-         Left            =   1560
-         TabIndex        =   10
-         Top             =   1320
+         Left            =   0
+         TabIndex        =   5
+         Top             =   840
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -178,9 +205,9 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
          Index           =   2
-         Left            =   120
-         TabIndex        =   11
-         Top             =   2160
+         Left            =   1560
+         TabIndex        =   6
+         Top             =   390
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -200,8 +227,8 @@ Begin VB.Form toolbar_Selections
          Height          =   405
          Index           =   3
          Left            =   1560
-         TabIndex        =   12
-         Top             =   2160
+         TabIndex        =   7
+         Top             =   840
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
@@ -220,12 +247,12 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   0
-         TabIndex        =   13
-         Top             =   4710
+         Left            =   5940
+         TabIndex        =   8
+         Top             =   840
          Visible         =   0   'False
-         Width           =   3000
-         _ExtentX        =   5318
+         Width           =   2880
+         _ExtentX        =   5080
          _ExtentY        =   873
          Min             =   1
          Max             =   10000
@@ -243,11 +270,11 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   0
-         TabIndex        =   14
-         Top             =   3390
-         Width           =   3000
-         _ExtentX        =   5318
+         Left            =   3000
+         TabIndex        =   9
+         Top             =   840
+         Width           =   2880
+         _ExtentX        =   5080
          _ExtentY        =   873
          Max             =   100
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -263,9 +290,9 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   0
-         TabIndex        =   15
-         Top             =   5640
+         Left            =   8820
+         TabIndex        =   10
+         Top             =   330
          Width           =   3000
          _ExtentX        =   5318
          _ExtentY        =   873
@@ -282,15 +309,23 @@ Begin VB.Form toolbar_Selections
             Strikethrough   =   0   'False
          EndProperty
       End
+      Begin VB.Line lineMain 
+         BorderColor     =   &H80000002&
+         Index           =   4
+         X1              =   0
+         X2              =   2048
+         Y1              =   0
+         Y2              =   0
+      End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "selection size"
+         Caption         =   "size (w, h)"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   12
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -298,22 +333,22 @@ Begin VB.Form toolbar_Selections
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   285
+         Height          =   240
          Index           =   2
-         Left            =   120
-         TabIndex        =   21
-         Top             =   1800
-         Width           =   1380
+         Left            =   1560
+         TabIndex        =   15
+         Top             =   60
+         Width           =   915
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "selection position"
+         Caption         =   "position (x, y)"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   12
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -321,35 +356,12 @@ Begin VB.Form toolbar_Selections
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   285
+         Height          =   240
          Index           =   1
-         Left            =   120
-         TabIndex        =   20
-         Top             =   960
-         Width           =   1830
-      End
-      Begin VB.Label lblSelection 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "visual style"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   19
-         Top             =   120
-         Width           =   1155
+         Left            =   0
+         TabIndex        =   14
+         Top             =   60
+         Width           =   1170
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
@@ -359,7 +371,7 @@ Begin VB.Form toolbar_Selections
          Caption         =   "corner rounding"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   12
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -367,22 +379,22 @@ Begin VB.Form toolbar_Selections
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   285
+         Height          =   240
          Index           =   5
-         Left            =   120
-         TabIndex        =   18
-         Top             =   5280
-         Width           =   1710
+         Left            =   8940
+         TabIndex        =   13
+         Top             =   60
+         Width           =   1365
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "selection type"
+         Caption         =   "area"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   12
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -390,12 +402,12 @@ Begin VB.Form toolbar_Selections
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   285
+         Height          =   240
          Index           =   4
-         Left            =   120
-         TabIndex        =   17
-         Top             =   3960
-         Width           =   1440
+         Left            =   6060
+         TabIndex        =   12
+         Top             =   60
+         Width           =   390
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
@@ -405,7 +417,7 @@ Begin VB.Form toolbar_Selections
          Caption         =   "smoothing"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   12
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -413,73 +425,93 @@ Begin VB.Form toolbar_Selections
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00606060&
-         Height          =   285
+         Height          =   240
          Index           =   3
-         Left            =   120
-         TabIndex        =   16
-         Top             =   2640
-         Width           =   1125
+         Left            =   3120
+         TabIndex        =   11
+         Top             =   60
+         Width           =   885
       End
    End
-   Begin VB.CommandButton cmdTools 
-      Caption         =   "Select (Ellipse)"
+   Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   1
-      Left            =   1080
-      TabIndex        =   2
-      ToolTipText     =   "Elliptical (Oval) Selection tool"
-      Top             =   495
-      Width           =   900
-   End
-   Begin VB.CommandButton cmdTools 
-      Caption         =   "Select (Rect)"
-      Height          =   600
-      Index           =   0
-      Left            =   120
-      TabIndex        =   1
-      ToolTipText     =   "Rectangular Selection tool"
-      Top             =   495
-      Width           =   900
-   End
-   Begin VB.CommandButton cmdTools 
-      Caption         =   "Select (Line)"
-      Height          =   600
-      Index           =   2
-      Left            =   2040
-      TabIndex        =   0
-      ToolTipText     =   "Line Selection tool"
-      Top             =   495
-      Width           =   900
-   End
-   Begin VB.Label lblTools 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "selection tools"
-      BeginProperty Font 
+      Left            =   840
+      TabIndex        =   18
+      Top             =   120
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   8.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00606060&
-      Height          =   285
-      Left            =   165
-      TabIndex        =   3
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "TBP_ToolbarSelections.frx":0BEE
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdTools 
+      Height          =   600
+      Index           =   2
+      Left            =   1560
+      TabIndex        =   19
       Top             =   120
-      Width           =   1500
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "TBP_ToolbarSelections.frx":17D0
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin VB.Line lineMain 
+      BorderColor     =   &H80000002&
+      Index           =   2
+      X1              =   0
+      X2              =   2048
+      Y1              =   0
+      Y2              =   0
+   End
+   Begin VB.Line lineMain 
+      BorderColor     =   &H80000002&
+      Index           =   0
+      X1              =   0
+      X2              =   0
+      Y1              =   0
+      Y2              =   168
    End
    Begin VB.Line lineMain 
       BorderColor     =   &H80000002&
       Index           =   1
-      X1              =   8
-      X2              =   195
-      Y1              =   94
-      Y2              =   94
+      X1              =   160
+      X2              =   160
+      Y1              =   0
+      Y2              =   960
    End
 End
 Attribute VB_Name = "toolbar_Selections"
@@ -491,8 +523,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selections Toolbar
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/October/13
-'Last updated: 03/October/13
-'Last update: initial build
+'Last updated: 15/October/13
+'Last update: redesigned with a horizontal layout
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -508,11 +540,6 @@ Option Explicit
 Private Const BM_SETSTATE = &HF3
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
-
-'Used to render images onto the tool buttons at run-time
-' NOTE: TOOLBOX IMAGES WILL NOT APPEAR IN THE IDE.  YOU MUST COMPILE FIRST.
-Private cImgCtl As clsControlImage
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -524,26 +551,35 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 ' manually track the first activation, and load any last-used settings then.
 Private hasBeenActivated As Boolean
 
+Private Sub cmdTools_Click(Index As Integer)
+    g_PreviousTool = g_CurrentTool
+    g_CurrentTool = Index
+    resetToolButtonStates
+End Sub
 
-'Upon first activation, restore all last-used settings
-Private Sub Form_Activate()
-
+Private Sub Form_Paint()
+    
+    'Upon first activation, restore all last-used settings
     If Not hasBeenActivated Then
         hasBeenActivated = True
         
         'Load any last-used settings for this form
         Set lastUsedSettings = New pdLastUsedSettings
         lastUsedSettings.setParentForm Me
-        'lastUsedSettings.loadAllControlValues
+        lastUsedSettings.loadAllControlValues
         
+        'Assign the system hand cursor to all relevant objects
+        Set m_ToolTip = New clsToolTip
+        makeFormPretty Me, m_ToolTip
+    
     End If
-
+    
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    'lastUsedSettings.saveAllControlValues
+    If hasBeenActivated Then lastUsedSettings.saveAllControlValues
 
 End Sub
 
@@ -624,31 +660,20 @@ Public Sub selectNewTool(ByVal newToolID As Long)
     resetToolButtonStates
 End Sub
 
-Private Sub cmdTools_Click(Index As Integer)
-    g_PreviousTool = g_CurrentTool
-    g_CurrentTool = Index
-    resetToolButtonStates
-End Sub
-
-'Private Sub cmdTools_LostFocus(Index As Integer)
-    'g_CurrentTool = Index
-    'resetToolButtonStates
-'End Sub
-
-Private Sub cmdTools_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    g_CurrentTool = Index
-    resetToolButtonStates
-End Sub
-
 'When a new tool button is selected, we need to raise all the others and display the proper options box
 Public Sub resetToolButtonStates()
     
     'Start by depressing the selected button and raising all unselected ones
+    Dim catID As Long
+    For catID = 0 To cmdTools.Count - 1
+        If catID = g_CurrentTool Then
+            cmdTools(catID).Value = True
+        Else
+            cmdTools(catID).Value = False
+        End If
+    Next catID
+    
     Dim i As Long
-    For i = 0 To cmdTools.Count - 1
-        SendMessageA cmdTools(i).hWnd, BM_SETSTATE, False, 0
-    Next i
-    SendMessageA cmdTools(g_CurrentTool).hWnd, BM_SETSTATE, True, 0
     
     'Next, we need to display the correct tool options panel.  There is no set pattern to this; some tools share
     ' panels, but show/hide certain controls as necessary.  Other tools require their own unique panel.  I've tried
@@ -696,19 +721,14 @@ Public Sub resetToolButtonStates()
     
         'Rectangular and elliptical selections use rectangular bounding boxes and potential corner rounding
         Case SELECT_RECT, SELECT_CIRC
-            lblSelection(1).Caption = g_Language.TranslateMessage("selection position")
-            lblSelection(2).Caption = g_Language.TranslateMessage("selection size")
+            lblSelection(1).Caption = g_Language.TranslateMessage("position (x, y)")
+            lblSelection(2).Caption = g_Language.TranslateMessage("size (x, y)")
             lblSelection(5).Caption = g_Language.TranslateMessage("corner rounding")
-            'If (g_PreviousTool <> SELECT_RECT) And (g_PreviousTool <> SELECT_CIRC) Then
-                'If selectionsAllowed And (Not g_UndoRedoActive) Then Process "Remove selection", , , 2, g_PreviousTool
-                'If g_CurrentTool = SELECT_RECT Then sltCornerRounding.Value = 0
-            'End If
             
         'Line selections use two points, and the corner rounding slider gets repurposed as line width.
         Case SELECT_LINE
-            'If selectionsAllowed And (Not g_UndoRedoActive) Then Process "Remove selection", , , 2, g_PreviousTool
-            lblSelection(1).Caption = g_Language.TranslateMessage("first point (x, y)")
-            lblSelection(2).Caption = g_Language.TranslateMessage("second point (x, y)")
+            lblSelection(1).Caption = g_Language.TranslateMessage("1st point (x, y)")
+            lblSelection(2).Caption = g_Language.TranslateMessage("2nd point (x, y)")
             lblSelection(5).Caption = g_Language.TranslateMessage("line width")
             
     End Select
@@ -787,47 +807,6 @@ Private Sub newToolSelected()
     
 End Sub
 
-Private Sub Form_Load()
-
-    'Render images to the toolbar command buttons
-    Dim i As Long
-    
-    'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
-    Set cImgCtl = New clsControlImage
-    If g_IsProgramCompiled Then
-        
-        'Remove all tool button captions
-        For i = 0 To cmdTools.Count - 1
-            cmdTools(i).Caption = ""
-        Next i
-        
-        With cImgCtl
-            
-            'Load the tool images (in PNG format) from the resource file
-            .LoadImageFromStream cmdTools(0).hWnd, LoadResData("T_SELRECT", "CUSTOM"), 22, 22
-            .LoadImageFromStream cmdTools(1).hWnd, LoadResData("T_SELCIRCLE", "CUSTOM"), 22, 22
-            .LoadImageFromStream cmdTools(2).hWnd, LoadResData("T_SELLINE", "CUSTOM"), 22, 22
-            
-            'Center-align the images in their respective buttons
-            For i = 0 To cmdTools.Count - 1
-                .SetMargins cmdTools(i).hWnd, 0
-                .Align(cmdTools(i).hWnd) = Icon_Center
-                
-                'On XP, the tool command button images aren't aligned properly until the buttons are hovered.  No one
-                ' knows why.  We can imitate a hover with a click - do so now.
-                If Not g_IsVistaOrLater Then cmdTools_Click CInt(i)
-            Next i
-            
-        End With
-    End If
-    
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-        
-End Sub
-
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the toggleToolbarVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
@@ -900,25 +879,17 @@ Private Sub updateSelectionPanelLayout()
     'Display the feathering slider as necessary
     If cmbSelSmoothing(0).ListIndex = sFullyFeathered Then
         sltSelectionFeathering.Visible = True
-        lblSelection(4).Top = sltSelectionFeathering.Top + fixDPI(38)
     Else
         sltSelectionFeathering.Visible = False
-        lblSelection(4).Top = cmbSelSmoothing(0).Top + fixDPI(34)
     End If
-    cmbSelType(0).Top = lblSelection(4).Top + fixDPI(24)
-    sltSelectionBorder.Top = cmbSelType(0).Top + fixDPI(26)
-
+    
     'Display the border slider as necessary
     If cmbSelType(0).ListIndex = sBorder Then
         sltSelectionBorder.Visible = True
-        lblSelection(5).Top = sltSelectionBorder.Top + fixDPI(38)
     Else
         sltSelectionBorder.Visible = False
-        lblSelection(5).Top = cmbSelType(0).Top + fixDPI(34)
     End If
-    sltCornerRounding.Top = lblSelection(5).Top + fixDPI(24)
-    sltSelectionLineWidth.Top = lblSelection(5).Top + fixDPI(24)
-
+    
 End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match
