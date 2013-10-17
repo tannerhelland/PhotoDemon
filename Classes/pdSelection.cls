@@ -1240,7 +1240,8 @@ Private Sub createSelectionMask()
                 tmpLayer.createFromExistingLayer selMask
             
                 Message "Feathering selection..."
-                CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
+                'CreateGaussianBlurLayer featheringRadius, tmpLayer, selMask
+                CreateApproximateGaussianBlurLayer featheringRadius, tmpLayer, selMask, 1, True
                 SetProgBarVal 0
                 Message "Finished."
             Else
@@ -1258,7 +1259,8 @@ Private Sub createSelectionMask()
                 dstLayer.createBlank boundWidth, boundHeight, 24
                 
                 'Blur the selection
-                CreateGaussianBlurLayer featheringRadius, srcLayer, dstLayer
+                'CreateGaussianBlurLayer featheringRadius, srcLayer, dstLayer
+                CreateApproximateGaussianBlurLayer featheringRadius, srcLayer, dstLayer, 1, True
                 
                 'Copy the blurred area back onto the selection mask
                 BitBlt selMask.getLayerDC, boundLeft, boundTop, boundWidth, boundHeight, dstLayer.getLayerDC, 0, 0, vbSrcCopy
