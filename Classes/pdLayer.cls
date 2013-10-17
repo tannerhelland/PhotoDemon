@@ -1836,7 +1836,7 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects a premultiplied layer
-Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0)
+Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     Dim bfParams As Long
     
@@ -1848,6 +1848,6 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 25
         bfParams = customAlpha * &H10000
     End If
     
-    AlphaBlend dstDC, dstX, dstY, layerWidth, layerHeight, layerDC, 0, 0, layerWidth, layerHeight, bfParams
+    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, layerWidth, newWidth), IIf(newHeight = 0, layerHeight, newHeight), layerDC, 0, 0, layerWidth, layerHeight, bfParams
 
 End Sub

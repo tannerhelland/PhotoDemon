@@ -840,7 +840,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             
             'Force the window to top-align within the client area of the parent
             getActualMainFormClientRect childRect, True
-            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(winIndex).originalHeight, IIf(pdWindows(winIndex).isVisible, 1, 0)
+            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), IIf(pdWindows(winIndex).isVisible, 1, 0)
             
             'Force a full repaint (to make sure children controls are also repainted)
             If pdWindows(winIndex).isVisible Then forceFullWindowRefresh winIndex
@@ -1400,6 +1400,67 @@ Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosin
     
 End Function
 
+'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
+Public Sub notifyImageTabStripResized()
+    
+    Dim curMainFormRect As winRect
+    GetWindowRect pdWindows(mainWindowIndex).hWnd, curMainFormRect
+    
+    Dim i As Long
+    For i = 0 To numOfPDWindows - 1
+        If pdWindows(i).typeOfWindow = IMAGE_WINDOW Then requestWindowRedraw i, curMainFormRect
+    Next i
+    
+End Sub
+
+'Whenever a size change occurs that requires multiple windows to be redrawn, this function can be called.  It will automatically handle redraw duties
+Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winRect)
+
+    Dim childRect As winRect
+    GetWindowRect pdWindows(winIndex).hWnd, childRect
+                    
+    Select Case pdWindows(winIndex).typeOfWindow
+    
+        'Toolbars
+        Case TOOLBAR_WINDOW
+            If toolbarsFloating Then
+                MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(winIndex).isVisible, 1, 0)
+            Else
+                
+                'Because the toolbars are not floating, they will have alignment data stored.  Use that to calculate their
+                ' position instead.
+                setWindowPosByAlignment winIndex
+                
+                'Stretch the toolbars to fit the full width/height of the main form (as applicable)
+                fixDockedToolbarSize winIndex
+                
+            End If
+    
+        'Images
+        Case IMAGE_WINDOW
+            If imagesFloating Then
+                MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(winIndex).isVisible, 1, 0)
+            Else
+            
+                'Force all child windows to the new size of the parent
+                getActualMainFormClientRect childRect
+                MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(winIndex).isVisible, 1, 0)
+            
+            End If
+            
+        'Image tabstrip
+        Case IMAGE_TABSTRIP
+            'Force the window to right-align within the client area of the parent
+            getActualMainFormClientRect childRect, True
+            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), IIf(pdWindows(winIndex).isVisible, 1, 0)
+            requestWindowResync winIndex
+        
+    End Select
+                    
+                    
+
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -1503,7 +1564,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Move each child window, while retaining the current offset
                 For i = 0 To numOfPDWindows - 1
                     GetWindowRect pdWindows(i).hWnd, childRect
-                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
+                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(i).isVisible, 1, 0)
                     updateStoredWindowLocation i
                 Next i
                 
@@ -1554,51 +1615,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 End If
                 
-                'Move each child window, while retaining the current offset
+                'Resize each child window, while retaining its current offset
                 For i = 0 To numOfPDWindows - 1
-                    GetWindowRect pdWindows(i).hWnd, childRect
-                    
-                    Select Case pdWindows(i).typeOfWindow
-                    
-                        'Toolbars
-                        Case TOOLBAR_WINDOW
-                            If toolbarsFloating Then
-                                MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                            Else
-                                
-                                'Because the toolbars are not floating, they will have alignment data stored.  Use that to calculate their
-                                ' position instead.
-                                setWindowPosByAlignment i
-                                
-                                'Stretch the toolbars to fit the full width/height of the main form (as applicable)
-                                fixDockedToolbarSize i
-                                
-                            End If
-                    
-                        'Images
-                        Case IMAGE_WINDOW
-                            If imagesFloating Then
-                                MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                            Else
-                            
-                                'Force all child windows to the new size of the parent
-                                getActualMainFormClientRect childRect
-                                MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                            
-                            End If
-                            
-                        'Image tabstrip
-                        Case IMAGE_TABSTRIP
-                            'Force the window to right-align within the client area of the parent
-                            getActualMainFormClientRect childRect, True
-                            MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(i).originalHeight, IIf(pdWindows(i).isVisible, 1, 0)
-                            requestWindowResync i
-                        
-                    End Select
-                    
-                    mainFormTriggeredChange = False
-                    
+                    requestWindowRedraw i, curWinRect
                 Next i
+                
+                mainFormTriggeredChange = False
                 
                 'Remember the main window's location
                 updateStoredWindowLocation mainWindowIndex
@@ -1606,7 +1628,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'The parent window has just been maximized, minimized, or restored
             Case WM_SYSCOMMAND
                 
-                Debug.Print "sys command received: " & wParam
+                'Debug.Print "sys command received: " & wParam
                 
                 'Per MSDN (http://msdn.microsoft.com/en-us/library/windows/desktop/ms646360%28v=vs.85%29.aspx):
                 ' In WM_SYSCOMMAND messages, the four low-order bits of the wParam parameter are used internally by the system.
@@ -1627,46 +1649,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'Manually retrieve the new window position.
                     GetWindowRect lng_hWnd, curWinRect
                     
-                    'Move each child window, while retaining the current offset
+                    'Resize each child window, while retaining its current offset
                     For i = 0 To numOfPDWindows - 1
-                        
-                        GetWindowRect pdWindows(i).hWnd, childRect
-                        
-                        Select Case pdWindows(i).typeOfWindow
-                    
-                            'Toolbars
-                            Case TOOLBAR_WINDOW
-                                If toolbarsFloating Then
-                                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                                Else
-                                    
-                                    'Because the toolbars are not floating, they will have alignment data stored.  Use that to calculate their
-                                    ' position instead.
-                                    setWindowPosByAlignment i
-                                    
-                                    'MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                                    fixDockedToolbarSize i
-                                End If
-                        
-                            'Images
-                            Case IMAGE_WINDOW
-                                If imagesFloating Then
-                                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                                Else
-                                    'Force the window to take up the full client area of the parent
-                                    getActualMainFormClientRect childRect
-                                    MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1
-                                End If
-                                
-                            'Image tabstrip
-                            Case IMAGE_TABSTRIP
-                                'Force the window to top-align vertically within the client area of the parent
-                                getActualMainFormClientRect childRect, True
-                                MoveWindow pdWindows(i).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, pdWindows(i).originalHeight, IIf(pdWindows(i).isVisible, 1, 0)
-                                requestWindowResync i
-                                
-                        End Select
-                        
+                        requestWindowRedraw i, curWinRect
                     Next i
                     
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now

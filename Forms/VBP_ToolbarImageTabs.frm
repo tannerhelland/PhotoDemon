@@ -34,13 +34,6 @@ Begin VB.Form toolbar_ImageTabs
       Visible         =   0   'False
       Width           =   13695
    End
-   Begin VB.Line lineSeparator 
-      BorderColor     =   &H00404040&
-      X1              =   0
-      X2              =   2000
-      Y1              =   67
-      Y2              =   67
-   End
 End
 Attribute VB_Name = "toolbar_ImageTabs"
 Attribute VB_GlobalNameSpace = False
@@ -78,8 +71,12 @@ End Type
 Private imgThumbnails() As thumbEntry
 Private numOfThumbnails As Long
 
-Private Const THUMB_TAB_WIDTH As Long = 68
-Private Const THUMB_TAB_HEIGHT As Long = 68
+'Because the user can resize the thumbnail bar, we must track thumbnail width/height dynamically
+Private thumbWidth As Long, thumbHeight As Long
+
+'We don't want thumbnails to fill the full size of their individual blocks, so we apply a border of this many pixels
+' to each side of the thumbnail
+Private Const thumbBorder As Long = 4
 
 'The back buffer we use to hold the thumbnail display
 Private bufferLayer As pdLayer
@@ -91,6 +88,14 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 
 'The currently selected and currently hovered thumbnail
 Private curThumb As Long, curThumbHover As Long
+
+'We allow the user to resize this window via the bottom border; these constants are used with the SendMessage API to enable this behavior
+Private Const WM_NCLBUTTONDOWN As Long = &HA1
+Private Const HTBOTTOM As Long = 15
+
+'When we are responsible for this window resizing (because the user is resizing our window manually), we set this to TRUE.
+' This variable is then checked before requesting additional redraws during our resize event.
+Private weAreResponsibleForResize As Boolean
 
 'When the user switches images, redraw the toolbar to match the change
 Public Sub notifyNewActiveImage(ByVal newPDImageIndex As Long)
@@ -116,7 +121,7 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
     Dim i As Long
     For i = 0 To numOfThumbnails
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
-            pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, 64
+            pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, thumbWidth - (thumbBorder * 2)
             imgThumbnails(i).thumbLayer.fixPremultipliedAlpha True
             Exit For
         End If
@@ -132,7 +137,7 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     
     'Request a thumbnail from the relevant pdImage object, and premultiply it to allow us to blit it more quickly
     Set imgThumbnails(numOfThumbnails).thumbLayer = New pdLayer
-    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbLayer, 64
+    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbLayer, thumbWidth - (thumbBorder * 2)
     imgThumbnails(numOfThumbnails).thumbLayer.fixPremultipliedAlpha True
     
     'Make a note of this thumbnail's index in the main pdImages array
@@ -187,7 +192,7 @@ Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
     Dim hOffset As Long
     hOffset = hsThumbnails.Value
     
-    getThumbAtPosition = (x + hOffset) \ fixDPI(THUMB_TAB_WIDTH)
+    getThumbAtPosition = (x + hOffset) \ fixDPI(thumbWidth)
     If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     
 End Function
@@ -241,35 +246,91 @@ Private Sub Form_Load()
     cMouseEvents.Attach Me.hWnd
     cMouseEvents.MousePointer = IDC_HAND
     
+    'Set default thumbnail sizes
+    thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
+    thumbWidth = thumbHeight
+    
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    curThumb = getThumbAtPosition(x, y)
     
-    'Notify the program that a new image has been selected; it will then bring that image to the foreground,
-    ' which will automatically trigger a toolbar redraw
-    pdImages(imgThumbnails(curThumb).indexInPDImages).containingForm.ActivateWorkaround
+    If Not weAreResponsibleForResize Then
+    
+        Dim potentialNewThumb As Long
+        potentialNewThumb = getThumbAtPosition(x, y)
+        
+        'Notify the program that a new image has been selected; it will then bring that image to the foreground,
+        ' which will automatically trigger a toolbar redraw
+        If potentialNewThumb >= 0 Then
+            curThumb = potentialNewThumb
+            pdImages(imgThumbnails(curThumb).indexInPDImages).containingForm.ActivateWorkaround
+        End If
+        
+    End If
     
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
     curThumbHover = getThumbAtPosition(x, y)
-    If curThumbHover = -1 Then cMouseEvents.MousePointer = 0 Else cMouseEvents.MousePointer = IDC_HAND
+    
+    'If the mouse is near the bottom of the toolbar, allow the user to resize the thumbnail toolbar
+    If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - 6) Then
+        cMouseEvents.MousePointer = IDC_SIZENS
+        
+        If Button = vbLeftButton Then
+            
+            'Allow resizing
+            weAreResponsibleForResize = True
+            ReleaseCapture
+            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTBOTTOM, ByVal 0&
+            
+        End If
+        
+    Else
+        weAreResponsibleForResize = False
+        If curThumbHover = -1 Then cMouseEvents.MousePointer = vbDefault Else cMouseEvents.MousePointer = IDC_HAND
+    End If
+    
     redrawToolbar
+    
 End Sub
 
 'Any time this window is resized, we need to recreate the thumbnail display
 Private Sub Form_Resize()
 
+    'If the window's height is changing, we do need to redraw all image thumbnails
+    If thumbHeight <> g_WindowManager.getClientHeight(Me.hWnd) Then
+        
+        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
+    
+        Dim i As Long
+        For i = 0 To numOfThumbnails - 1
+            imgThumbnails(i).thumbLayer.eraseLayer
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbLayer, thumbHeight - (thumbBorder * 2)
+            imgThumbnails(i).thumbLayer.fixPremultipliedAlpha True
+        Next i
+    
+    End If
+    
+    'Update thumbnail sizes
+    thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
+    thumbWidth = thumbHeight
+    
     'Create a background buffer the same size as this window
     m_BufferWidth = g_WindowManager.getClientWidth(Me.hWnd)
     m_BufferHeight = g_WindowManager.getClientHeight(Me.hWnd)
     
-    'Resize the scroll bar
-    hsThumbnails.Width = m_BufferWidth
+    'Resize and position the scroll bar
+    hsThumbnails.Move 0, m_BufferHeight - hsThumbnails.Height - 2, m_BufferWidth, hsThumbnails.Height
     
     'Redraw the toolbar
     redrawToolbar
+    
+    'Notify the window manager that the tab strip has been resized; it will resize image windows to match
+    'If Not weAreResponsibleForResize Then
+    g_WindowManager.notifyImageTabStripResized
     
 End Sub
 
@@ -288,7 +349,7 @@ Private Sub redrawToolbar()
     
     'Determine if the horizontal scrollbar needs to be visible or not
     Dim maxThumbSize As Long
-    maxThumbSize = fixDPIFloat(THUMB_TAB_WIDTH) * numOfThumbnails - 1
+    maxThumbSize = fixDPIFloat(thumbWidth) * numOfThumbnails - 1
     
     If maxThumbSize < m_BufferWidth Then
         hsThumbnails.Value = 0
@@ -305,8 +366,11 @@ Private Sub redrawToolbar()
     'Render each thumbnail block
     Dim i As Long
     For i = 0 To numOfThumbnails - 1
-        renderThumbTab i, fixDPI(i * THUMB_TAB_WIDTH) - scrollOffset - fixDPI(2), 0
+        renderThumbTab i, fixDPI(i * thumbWidth) - scrollOffset, 0
     Next i
+    
+    'Eventually we'll do something nicer, but for now, draw a line across the bottom of the tabstrip
+    GDIPlusDrawLineToDC bufferLayer.getLayerDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, RGB(255, 255, 255)
     
     'Copy the buffer to the form
     BitBlt Me.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
@@ -319,14 +383,14 @@ End Sub
 Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current tab if it will be visible
-    If ((offsetX + fixDPI(THUMB_TAB_WIDTH)) > 0) And (offsetX < m_BufferWidth) Then
+    If ((offsetX + fixDPI(thumbWidth)) > 0) And (offsetX < m_BufferWidth) Then
     
         Dim tmpRect As RECT
         Dim hBrush As Long
     
         'If this thumbnail has been selected, draw the background with the system's current selection color
         If thumbIndex = curThumb Then
-            SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(THUMB_TAB_WIDTH), offsetY + fixDPI(THUMB_TAB_HEIGHT)
+            SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FillRect bufferLayer.getLayerDC, tmpRect, hBrush
             DeleteObject hBrush
@@ -334,14 +398,14 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         
         'If the current thumbnail is highlighted but not selected, simply render the border with a highlight
         If (thumbIndex <> curThumb) And (thumbIndex = curThumbHover) Then
-            SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(THUMB_TAB_WIDTH), offsetY + fixDPI(THUMB_TAB_HEIGHT)
+            SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
             DeleteObject hBrush
         End If
     
         'Render the matching thumbnail into this block
-        imgThumbnails(thumbIndex).thumbLayer.alphaBlendToDC bufferLayer.getLayerDC, 255, offsetX + fixDPI(1), offsetY + fixDPI(1)
+        imgThumbnails(thumbIndex).thumbLayer.alphaBlendToDC bufferLayer.getLayerDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
         
     End If
 
