@@ -512,7 +512,8 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
         tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
-        CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
+        CreateApproximateGaussianBlurLayer featherRadius, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, 3, False
+        'CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         tmpLayer.eraseLayer
         Set tmpLayer = Nothing

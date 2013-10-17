@@ -240,7 +240,12 @@ Public Sub LoadTheProgram()
         
         'Live feathering is not allowed on XP or Vista for performance reasons (GDI+ can't be used).
         ' On these OSes, feathering must be applied via the Selection -> Feathering menu.
-        If g_GDIPlusFXAvailable Then toolbar_Selections.cmbSelSmoothing(0).AddItem "Feathered", 2
+        toolbar_Selections.cmbSelSmoothing(0).AddItem "Feathered", 2
+        'If g_GDIPlusFXAvailable Then
+        '    toolbar_Selections.sltSelectionFeathering.Max = 100
+        'Else
+        '    toolbar_Selections.sltSelectionFeathering.Max = 32
+        'End If
         toolbar_Selections.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
@@ -435,10 +440,10 @@ Private Sub LoadImagesFromCommandLine()
         Dim tChar As String
         
         'Scan the command line one character at a time
-        Dim x As Long
-        For x = 1 To Len(g_CommandLine)
+        Dim i As Long
+        For i = 1 To Len(g_CommandLine)
             
-            tChar = Mid(g_CommandLine, x, 1)
+            tChar = Mid(g_CommandLine, i, 1)
                 
             'If the current character is a quotation mark, change inQuotes to specify that we are either inside
             ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
@@ -450,11 +455,11 @@ Private Sub LoadImagesFromCommandLine()
                     
                 '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
                 ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, x - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - x)
+                If inQuotes = True Then g_CommandLine = Left(g_CommandLine, i - 1) & "*" & Right(g_CommandLine, Len(g_CommandLine) - i)
                     
             End If
             
-        Next x
+        Next i
             
         'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
         ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
@@ -463,10 +468,10 @@ Private Sub LoadImagesFromCommandLine()
             
         'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
         ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-        For x = 0 To UBound(sFile)
-            sFile(x) = Replace$(sFile(x), Chr(42), Chr(32))
-            sFile(x) = Replace$(sFile(x), Chr(34), "")
-        Next x
+        For i = 0 To UBound(sFile)
+            sFile(i) = Replace$(sFile(i), Chr(42), Chr(32))
+            sFile(i) = Replace$(sFile(i), Chr(34), "")
+        Next i
         
     End If
         
