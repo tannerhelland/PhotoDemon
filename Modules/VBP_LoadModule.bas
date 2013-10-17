@@ -45,7 +45,7 @@ Public Sub LoadTheProgram()
     CheckLoadingEnvironment
     
     If g_GDIPlusAvailable Then
-        If g_IsProgramCompiled Then m_LoadTime = 2# Else m_LoadTime = 1#
+        If g_IsProgramCompiled Then m_LoadTime = 1.5 Else m_LoadTime = 1#
     Else
         m_LoadTime = 0#
     End If
@@ -274,20 +274,7 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     
     LoadMessage "Initializing user interface..."
-                
-    'Display or hide the main form's tool panes according to the saved setting in the preferences file
-    If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
-        ChangeLeftPane VISIBILITY_FORCEHIDE
-    Else
-        ChangeLeftPane VISIBILITY_FORCEDISPLAY
-    End If
     
-    If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
-        ChangeRightPane VISIBILITY_FORCEHIDE
-    Else
-        ChangeRightPane VISIBILITY_FORCEDISPLAY
-    End If
-                
     'Manually create multi-line tooltips for some command buttons
     toolbar_File.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
     If g_ConfirmClosingUnsaved Then
