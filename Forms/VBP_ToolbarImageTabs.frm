@@ -4,7 +4,7 @@ Begin VB.Form toolbar_ImageTabs
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   0  'None
    Caption         =   "Form1"
-   ClientHeight    =   1020
+   ClientHeight    =   1140
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   13710
@@ -20,7 +20,7 @@ Begin VB.Form toolbar_ImageTabs
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   68
+   ScaleHeight     =   76
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   914
    ShowInTaskbar   =   0   'False
@@ -30,7 +30,7 @@ Begin VB.Form toolbar_ImageTabs
       Left            =   0
       Max             =   10
       TabIndex        =   0
-      Top             =   765
+      Top             =   840
       Visible         =   0   'False
       Width           =   13695
    End
@@ -76,7 +76,7 @@ Private thumbWidth As Long, thumbHeight As Long
 
 'We don't want thumbnails to fill the full size of their individual blocks, so we apply a border of this many pixels
 ' to each side of the thumbnail
-Private Const thumbBorder As Long = 4
+Private Const thumbBorder As Long = 5
 
 'The back buffer we use to hold the thumbnail display
 Private bufferLayer As pdLayer
@@ -187,17 +187,17 @@ End Sub
 
 'Given mouse coordinates over the form, return the thumbnail at that location.  If the cursor is not over a thumbnail,
 ' the function will return -1
-Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
+Private Function getThumbAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     
     Dim hOffset As Long
     hOffset = hsThumbnails.Value
     
-    getThumbAtPosition = (x + hOffset) \ fixDPI(thumbWidth)
+    getThumbAtPosition = (X + hOffset) \ fixDPI(thumbWidth)
     If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     
 End Function
 
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     'Horizontal scrolling - only trigger it if the horizontal scroll bar is actually visible
     If hsThumbnails.Visible Then
@@ -210,7 +210,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
         
         ElseIf CharsScrolled > 0 Then
@@ -221,7 +221,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
             
         End If
@@ -231,7 +231,10 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
 End Sub
 
 Private Sub cMouseEvents_MouseOut()
-    curThumbHover = -1
+    If curThumbHover <> -1 Then
+        curThumbHover = -1
+        redrawToolbar
+    End If
     cMouseEvents.MousePointer = 0
 End Sub
 
@@ -250,33 +253,35 @@ Private Sub Form_Load()
     thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
     thumbWidth = thumbHeight
     
+    makeFormPretty Me
+    
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     If Not weAreResponsibleForResize Then
     
         Dim potentialNewThumb As Long
-        potentialNewThumb = getThumbAtPosition(x, y)
+        potentialNewThumb = getThumbAtPosition(X, Y)
         
         'Notify the program that a new image has been selected; it will then bring that image to the foreground,
         ' which will automatically trigger a toolbar redraw
         If potentialNewThumb >= 0 Then
             curThumb = potentialNewThumb
-            pdImages(imgThumbnails(curThumb).indexInPDImages).containingForm.ActivateWorkaround
+            pdImages(imgThumbnails(curThumb).indexInPDImages).containingForm.ActivateWorkaround "user clicked image thumbnail"
         End If
         
     End If
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
-    curThumbHover = getThumbAtPosition(x, y)
+    curThumbHover = getThumbAtPosition(X, Y)
     
     'If the mouse is near the bottom of the toolbar, allow the user to resize the thumbnail toolbar
-    If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - 6) Then
+    If (X > 0) And (X < Me.ScaleWidth) And (Y > Me.ScaleHeight - 6) Then
         cMouseEvents.MousePointer = IDC_SIZENS
         
         If Button = vbLeftButton Then
@@ -345,7 +350,7 @@ Private Sub redrawToolbar()
 
     'Recreate the toolbar buffer
     Set bufferLayer = New pdLayer
-    bufferLayer.createBlank m_BufferWidth, m_BufferHeight, 24, g_CanvasBackground
+    bufferLayer.createBlank m_BufferWidth, m_BufferHeight, 24, ConvertSystemColor(vb3DShadow)
     
     'Determine if the horizontal scrollbar needs to be visible or not
     Dim maxThumbSize As Long
@@ -370,7 +375,7 @@ Private Sub redrawToolbar()
     Next i
     
     'Eventually we'll do something nicer, but for now, draw a line across the bottom of the tabstrip
-    GDIPlusDrawLineToDC bufferLayer.getLayerDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, RGB(255, 255, 255)
+    GDIPlusDrawLineToDC bufferLayer.getLayerDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, ConvertSystemColor(vb3DLight), 255, 2, False
     
     'Copy the buffer to the form
     BitBlt Me.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
@@ -391,7 +396,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         'If this thumbnail has been selected, draw the background with the system's current selection color
         If thumbIndex = curThumb Then
             SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
-            hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
+            hBrush = CreateSolidBrush(ConvertSystemColor(vb3DLight))
             FillRect bufferLayer.getLayerDC, tmpRect, hBrush
             DeleteObject hBrush
         End If
@@ -400,6 +405,8 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         If (thumbIndex <> curThumb) And (thumbIndex = curThumbHover) Then
             SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
+            FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
+            SetRect tmpRect, tmpRect.Left + 1, tmpRect.Top + 1, tmpRect.Right - 1, tmpRect.Bottom - 1
             FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
             DeleteObject hBrush
         End If

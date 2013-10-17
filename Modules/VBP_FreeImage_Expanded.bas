@@ -23,8 +23,8 @@ Option Explicit
 
 'When loading a multipage image, the user will be prompted to load each page as an individual image.  If the user agrees,
 ' this variable will be set to TRUE.  PreLoadImage will then use this variable to launch the import of the subsequent pages.
-Public imageHasMultiplePages As Boolean
-Public imagePageCount As Long
+Public g_imageHasMultiplePages As Boolean
+Public g_imagePageCount As Long
 
 'DIB declarations
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
@@ -126,8 +126,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'This is a temporary fix for batch convert.  For now, ignore all extra images.  A better option needs to be developed for handling
     ' these types of files during batch processing.
     If MacroStatus = MacroBATCH Then
-        imageHasMultiplePages = False
-        imagePageCount = 0
+        g_imageHasMultiplePages = False
+        g_imagePageCount = 0
     End If
     
     'If the image is a GIF, TIFF, or icon, it might contain multiple images.  Check for that now.
@@ -178,8 +178,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                             If showMessages Then Message "All pages will be loaded, per the user's request."
                         End If
                     
-                        imageHasMultiplePages = True
-                        imagePageCount = chkPageCount - 1
+                        g_imageHasMultiplePages = True
+                        g_imagePageCount = chkPageCount - 1
                                     
                     'If the user just wants the first frame, close the image and resume normal loading
                     
@@ -193,8 +193,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                             If showMessages Then Message "Only the first page will be loaded, per the user's request."
                         End If
                         
-                        imageHasMultiplePages = False
-                        imagePageCount = 0
+                        g_imageHasMultiplePages = False
+                        g_imagePageCount = 0
                     
                     End If
                 
@@ -202,15 +202,15 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
                 Case 1
                 
                     If showMessages Then Message "Ignoring extra images in the file, per user's saved preference."
-                    imageHasMultiplePages = False
-                    imagePageCount = 0
+                    g_imageHasMultiplePages = False
+                    g_imagePageCount = 0
                 
                 'Load every image in the file.
                 Case 2
                 
                     If showMessages Then Message "Loading all images in the file, per user's saved preference."
-                    imageHasMultiplePages = True
-                    imagePageCount = chkPageCount - 1
+                    g_imageHasMultiplePages = True
+                    g_imagePageCount = chkPageCount - 1
                 
             End Select
             

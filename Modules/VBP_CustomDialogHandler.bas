@@ -29,7 +29,7 @@ Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
     Load dialog_UnsavedChanges
     
     dialog_UnsavedChanges.formID = formID
-    dialog_UnsavedChanges.showDialog
+    dialog_UnsavedChanges.showDialog pdImages(formID).containingForm
     
     confirmClose = dialog_UnsavedChanges.DialogResult
     

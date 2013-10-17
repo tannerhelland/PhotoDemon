@@ -998,8 +998,8 @@ Public Function saveAllWindowLocations() As Boolean
     Dim i As Long
     For i = 0 To numOfPDWindows - 1
     
-        'We only save locations for the main window and toolbar windows - not image windows!
-        If (pdWindows(i).typeOfWindow = MAIN_WINDOW) Or (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) Then
+        'We save locations for everything but image windows
+        If Not (pdWindows(i).typeOfWindow = IMAGE_WINDOW) Then
     
             'Check for this window preset in the file.  If it does not exist, add it now.
             If Not xmlEngine.doesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
@@ -1184,7 +1184,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     updateWindowStyle numOfPDWindows, True
     
     'Move the window into place using either last-known location data, or the supplied "preferred location"
-    If pdWindows(numOfPDWindows).typeOfWindow = TOOLBAR_WINDOW Then restoreWindowLocation numOfPDWindows, preferredLocationIfNecessary
+    If pdWindows(numOfPDWindows).typeOfWindow <> IMAGE_WINDOW Then restoreWindowLocation numOfPDWindows, preferredLocationIfNecessary
     
     'Update this window's offset (because it may have been moved by the above function)
     requestWindowResync numOfPDWindows
@@ -1275,7 +1275,7 @@ Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
 '    End If
     
     'Regardless of float status, we can now manually bring the activated window to the foreground
-    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW 'Or SWP_NOACTIVATE
+    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
 
 End Sub
 
@@ -1687,19 +1687,23 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     Case WA_INACTIVE
                         Debug.Print "> PhotoDemon lost focus! <"
                         For i = 0 To numOfPDWindows - 1
-                            SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                            If pdWindows(i).isVisible Then
+                                SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                            End If
                         Next i
                         
                     'PD is gaining focus
                     Case Else
                         Debug.Print "> PhotoDemon regained focus! <"
                         For i = 0 To numOfPDWindows - 1
-                            SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                            If pdWindows(i).isVisible Then
+                                SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                            End If
                         Next i
                         
                         'Because zOrder may get botched when the program gains/loses focus, forcibly restore the active image.
                         ' (TODO: move this code out of the window manager)
-                        pdImages(g_CurrentImage).containingForm.ActivateWorkaround
+                        If (g_OpenImageCount > 0) Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "program regained focus"
                         
                 End Select
                         

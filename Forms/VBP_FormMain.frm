@@ -1272,7 +1272,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1308,7 +1308,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1842,7 +1842,7 @@ Private Sub MnuFile_Click(Index As Integer)
         
     
     End Select
-
+    
 End Sub
 
 Private Sub MnuFitOnScreen_Click()
@@ -2848,7 +2848,7 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
                 
         If Not pdImages(i) Is Nothing Then
             If pdImages(i).IsActive Then
-                pdImages(i).containingForm.ActivateWorkaround
+                pdImages(i).containingForm.ActivateWorkaround "user requested next/previous image"
                 Exit Do
             End If
         End If

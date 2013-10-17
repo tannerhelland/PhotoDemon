@@ -153,7 +153,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
     
     'Restore focus to the previously active window
     If (Not suspendMenuRefresh) And (g_NumOfImagesLoaded > 0) Then
-        If Not (pdImages(backupCurrentImage).containingForm Is Nothing) Then pdImages(backupCurrentImage).containingForm.SetFocus
+        If Not (pdImages(backupCurrentImage).containingForm Is Nothing) Then pdImages(backupCurrentImage).containingForm.ActivateWorkaround
     End If
 
 End Sub
