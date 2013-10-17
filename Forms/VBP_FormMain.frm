@@ -1259,7 +1259,9 @@ Private Sub Form_Load()
     'Render the main form with any extra visual styles we've decided to apply
     RedrawMainForm
     
-    MsgBox "WARNING!  PhotoDemon's current interface is undergoing a huge overhaul.  As long as this message remains, the program may not work as expected.  I've suspended nightly builds for now, but if you've downloaded this from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the 6.0 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.2 Development Warning"
+    'TODO: As of 17 Oct '13, I am removing the interface warning.  I think things are now "stable enough" for people to once again
+    '       play with nightly builds.
+    'MsgBox "WARNING!  PhotoDemon's current interface is undergoing a huge overhaul.  As long as this message remains, the program may not work as expected.  I've suspended nightly builds for now, but if you've downloaded this from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the 6.0 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.2 Development Warning"
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
@@ -1270,7 +1272,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1306,7 +1308,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
