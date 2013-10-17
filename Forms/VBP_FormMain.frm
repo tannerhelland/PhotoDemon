@@ -1126,8 +1126,8 @@ Private Sub Form_Load()
     'Hide the selection tools
     metaToggle tSelection, False
     
-    'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars are hiden, and I'm working
-    ' on a solution to that.)
+    'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
+    ' and I'm working on a solution to that.)
     Me.Visible = True
     
     g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX

@@ -700,64 +700,6 @@ Private Function WndProc_Frame(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wPa
     
 End Function
 
-'The next two subs can be used to show or hide the left and right toolbar panes.  An input parameter can be specified to force behavior.
-' INPUT VALUES:
-' 0 (or none) - toggle the visibility to the opposite state (const VISIBILITY_TOGGLE)
-' 1 - make the pane visible                                 (const VISIBILITY_FORCEDISPLAY)
-' 2 - hide the pane                                         (const VISIBILITY_FORCEHIDE)
-Public Sub ChangeLeftPane(Optional ByVal howToToggle As Long = 0)
-
-    Select Case howToToggle
-    
-        Case VISIBILITY_TOGGLE
-        
-            'Write the new value to the preferences files
-            g_UserPreferences.SetPref_Boolean "Core", "Hide Left Panel", Not g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False)
-
-            'Toggle the text and picture box accordingly, using the preference we just stored
-            
-    
-            'Ask the menu icon handler to redraw the menu image with the new icon
-            resetMenuIcons
-        
-        Case VISIBILITY_FORCEDISPLAY
-            'FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Hide left panel (file tools)")
-            'FormMain.picLeftPane.Visible = True
-            
-        Case VISIBILITY_FORCEHIDE
-            'FormMain.MnuLeftPanel.Caption = g_Language.TranslateMessage("Show left panel (file tools)")
-            'FormMain.picLeftPane.Visible = False
-            
-    End Select
-
-End Sub
-
-Public Sub ChangeRightPane(Optional ByVal howToToggle As Long)
-
-    Select Case howToToggle
-    
-        Case VISIBILITY_TOGGLE
-        
-            'Write the new value to the preferences file
-            g_UserPreferences.SetPref_Boolean "Core", "Hide Right Panel", Not g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False)
-
-            'Toggle the text and picture box accordingly, using the preference we just stored
-    
-            'Ask the menu icon handler to redraw the menu image with the new icon
-            resetMenuIcons
-        
-        Case VISIBILITY_FORCEDISPLAY
-            'FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Hide right panel (image tools)")
-            'FormMain.picRightPane.Visible = True
-            
-        Case VISIBILITY_FORCEHIDE
-            'FormMain.MnuRightPanel.Caption = g_Language.TranslateMessage("Show right panel (image tools)")
-            'FormMain.picRightPane.Visible = False
-            
-    End Select
-
-End Sub
-
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Form)
@@ -767,18 +709,6 @@ End Sub
 
 'Perform any drawing routines related to the main form
 Public Sub RedrawMainForm()
-
-    'Draw a subtle gradient on either pane if visible.
-    ' NOTE: this is momentarily disabled as part of tool implementation.  I may revisit it in the future.
-    'If FormMain.picLeftPane.Visible Then
-        'FormMain.picLeftPane.Refresh
-        'DrawGradient FormMain.picLeftPane, RGB(240, 240, 240), RGB(201, 211, 226), True
-    'End If
-    
-    'If FormMain.picRightPane.Visible Then
-        'FormMain.picRightPane.Refresh
-        'DrawGradient FormMain.picRightPane, RGB(201, 211, 226), RGB(240, 240, 240), True
-    'End If
     
     'Redraw the progress bar
     FormMain.picProgBar.Refresh
