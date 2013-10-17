@@ -1150,7 +1150,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo > 0) Then
-        If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround
+        If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "filter complete"
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
@@ -1161,7 +1161,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     Processing = False
     
     Exit Sub
-
 
 'MAIN PHOTODEMON ERROR HANDLER STARTS HERE
 

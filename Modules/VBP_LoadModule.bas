@@ -539,7 +539,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
     
         'Before doing anything else, reset the multipage checker
-        imageHasMultiplePages = False
+        g_imageHasMultiplePages = False
         
         '...and reset the "need to check colors" variable
         mustCountColors = False
@@ -986,7 +986,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         'Before continuing on to the next image (if any), see if the just-loaded image was in multipage format.  If it was, the user
         ' may have requested that we load all frames from this image.
-        If imageHasMultiplePages Then
+        If g_imageHasMultiplePages Then
             
             Dim pageTracker As Long
             
@@ -994,7 +994,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             tmpStringArray(0) = sFile(thisImage)
             
             'Call PreLoadImage again for each individual frame in the multipage file
-            For pageTracker = 1 To imagePageCount
+            For pageTracker = 1 To g_imagePageCount
                 If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
                     PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
@@ -1005,8 +1005,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Next pageTracker
         
         End If
-        
-        
         
     '*************************************************************************************************************************************
     ' Move on to the next image.

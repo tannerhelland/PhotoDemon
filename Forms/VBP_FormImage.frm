@@ -122,23 +122,34 @@ Dim m_ToolTip As clsToolTip
 'The Activate event wraps a public function called ActivateWorkaround.  That function can be called externally when some special event
 ' (such as the Next/Previous Image menus) needs to change focus to a new window.
 Private Sub Form_Activate()
-    ActivateWorkaround
+    ActivateWorkaround "Form_Activate fired"
 End Sub
 
-Public Sub ActivateWorkaround()
-
-    'Update the current form variable
-    g_CurrentImage = Val(Me.Tag)
+Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     
-    'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-    PrepareViewport Me, "Form received focus"
+    'Because activation is an expensive process (requiring viewport redraws and more), I track the calls that access it.  This is used
+    ' to minimize repeat calls as much as possible.
+    Debug.Print "(Image #" & Me.Tag & " was activated because " & reasonForActivation & ")"
     
-    'Use the window manager to bring the window to the foreground
-    g_WindowManager.notifyChildReceivedFocus Me
+    'If this image is already the active image, we don't need to perform certain steps
+    'If g_CurrentImage <> Val(Me.Tag) Then
     
-    'Notify the thumbnail bar that a new image has been selected
-    toolbar_ImageTabs.notifyNewActiveImage Me.Tag
-    
+        Debug.Print Me.Tag & ":" & g_CurrentImage
+        
+        'Update the current form variable
+        g_CurrentImage = Val(Me.Tag)
+        
+        'Use the window manager to bring the window to the foreground
+        g_WindowManager.notifyChildReceivedFocus Me
+        
+        'Notify the thumbnail bar that a new image has been selected
+        toolbar_ImageTabs.notifyNewActiveImage Me.Tag
+        
+        'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
+        PrepareViewport Me, "Form received focus"
+        
+    'End If
+        
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
     ' unless they actually exist.)
@@ -689,7 +700,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         If Not pdImages(Me.Tag).HasBeenSaved Then
                         
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
-            If g_DealWithAllUnsavedImages = False Then
+            If Not g_DealWithAllUnsavedImages Then
             
                 g_NumOfUnsavedImages = 0
                                 
@@ -706,7 +717,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 End If
             
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
-                If FormMain.Enabled Then Me.SetFocus
+                If FormMain.Enabled Then Me.ActivateWorkaround "unsaved changes dialog required"
             
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
@@ -796,46 +807,6 @@ Private Sub Form_Resize()
     
     'Remember this window state in the relevant pdImages object
     pdImages(Me.Tag).WindowState = Me.WindowState
-    
-    Exit Sub
-    
-    Dim i As Long
-    
-    'If the window is being un-maximized, it's necessary to redraw every image buffer (to check for scroll bar enabling/disabling)
-    If pdImages(Me.Tag).WindowState = vbMaximized And Me.WindowState = 0 Then
-        
-        'Run a loop through every child form to see if all windows are being un-maximized
-        ' (This will only happen when the user presses the "unmaximize" window button)
-        Dim allShrunk As Boolean
-        allShrunk = True
-        
-        Dim tForm As Form
-        For Each tForm In VB.Forms
-            If tForm.Name = "FormImage" Then
-                If tForm.WindowState = vbMaximized Then allShrunk = False
-            End If
-        Next
-        
-        'If the user has unmaximized all windows, we need to redraw them
-        If allShrunk = True Then
-        
-            'Loop through every image, redrawing as we go
-            For i = 1 To g_NumOfImagesLoaded
-                If pdImages(i).IsActive Then
-                    
-                    'Remember this new window state and redraw the form containing this image
-                    pdImages(i).WindowState = 0
-                    PrepareViewport pdImages(i).containingForm, "Form_Resize(), user unmaximized MDI children"
-                    
-                    'While we're at it, make sure the images aren't still hidden off-form (which can happen if they were loaded while the window was maximized)
-                    If pdImages(i).containingForm.Left >= FormMain.ScaleWidth Then pdImages(i).containingForm.Left = pdImages(i).WindowLeft
-                    If pdImages(i).containingForm.Top >= FormMain.ScaleHeight Then pdImages(i).containingForm.Top = pdImages(i).WindowTop
-    
-                End If
-            Next i
-        End If
-        
-    End If
             
 End Sub
 
@@ -874,15 +845,23 @@ Private Sub Form_Unload(Cancel As Integer)
     If g_OpenImageCount > 0 Then
     
         Dim i As Long
-        For i = g_NumOfImagesLoaded To 0 Step -1
+        i = Val(Me.Tag) + 1
+        If i > UBound(pdImages) Then i = i - 2
+        
+        Do Until i = Val(Me.Tag)
+        
             If (Not pdImages(i) Is Nothing) Then
                 If pdImages(i).IsActive Then
-                    pdImages(i).containingForm.ActivateWorkaround
-                    Exit For
+                    pdImages(i).containingForm.ActivateWorkaround "previous image unloaded"
+                    Exit Do
                 End If
             End If
-        Next i
-    
+            
+            i = i + 1
+            If i > UBound(pdImages) Then i = 0
+        
+        Loop
+        
     'If this is the last window, we need to make the toolbars children of the main form again.  Otherwise, they will be mistakenly unloaded.
     Else
         g_WindowManager.allImageWindowsUnloaded

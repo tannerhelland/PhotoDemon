@@ -167,7 +167,7 @@ Public Property Let formID(formID As Long)
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog()
+Public Sub showDialog(ByRef ownerForm As Form)
     
     Dim i As Long
     
@@ -270,7 +270,7 @@ Public Sub showDialog()
     makeFormPretty Me, m_ToolTip, True
 
     'Display the form
-    Me.Show vbModal, FormMain
+    Me.Show vbModal, ownerForm
 
 End Sub
 

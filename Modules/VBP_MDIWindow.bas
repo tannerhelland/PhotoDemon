@@ -70,7 +70,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     newImageForm.Show vbModeless, FormMain
     newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
-    If FormMain.Enabled Then newImageForm.SetFocus
+    'If FormMain.Enabled Then newImageForm.SetFocus
     
     'Set this image as the current one
     g_CurrentImage = g_NumOfImagesLoaded
