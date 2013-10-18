@@ -508,19 +508,6 @@ Public Sub resetMenuIcons()
     'Vista+ gets a nice, large icon added later in the process.  XP is stuck with a 16x16 one, which we add now.
     If Not g_IsVistaOrLater Then addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
-    'Change the Show/Hide panel icon to match its current state
-    If g_UserPreferences.GetPref_Boolean("Core", "Hide Left Panel", False) Then
-        addMenuIcon "LEFTPANSHOW", 2, 16     'Show the panel
-    Else
-        addMenuIcon "LEFTPANHIDE", 2, 16     'Hide the panel
-    End If
-    
-    If g_UserPreferences.GetPref_Boolean("Core", "Hide Right Panel", False) Then
-        addMenuIcon "RIGHTPANSHOW", 2, 17   'Show the panel
-    Else
-        addMenuIcon "RIGHTPANHIDE", 2, 17   'Hide the panel
-    End If
-    
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
     addMenuIcon "NEXTIMAGE", 8, 6       'Next image
     addMenuIcon "PREVIMAGE", 8, 7       'Previous image
