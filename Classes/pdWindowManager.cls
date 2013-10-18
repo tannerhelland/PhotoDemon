@@ -15,22 +15,31 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 14/October/13
-'Last update: many minor fixes to improve performance and reliability
+'Last updated: 18/October/13
+'Last update: allow tracking
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
-' 2013, it became time to rewrite its window method once again - this time, to a true multi-window project, separate from
-' MDI.  (MDI has a lot of interaction problems, not to mention a host of known bugs that will never be fixed because
-' Microsoft is - rightfully - moving away from the MDI model.)
+' 2013, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
+' the "stock" MDI implementation.  (MDI has a lot of interaction problems, not to mention a host of known bugs that will
+' never be fixed because Microsoft is - rightfully - moving away from the MDI model.  PD still allows for multiple document
+' windows via a custom floating-window system.)
 '
 'One unfortunate result of this change is that PhotoDemon must now be responsible for much of its own window handling.  In
 ' particular, child windows must move with the parent window, and all document windows must be managed intelligently.
+' Top-most behavior must be carefully handled to ensure proper order of the main form, toolboxes, image windows, and various
+' modal and non-modal dialogs.
 '
 'Thus this class.  The main form, toolbar forms, and image forms are all registered with this handler when they are created.
-' This class manages their placement, styles, opacity, and a host of other minor details.
+' This class manages their placement, styles, opacity, and a host of other minor details.  Additionally, other windows (such
+' as tool dialogs) can be registered on-the-fly if they require special behavior.
 '
-'In order to perform all this management, this class subclasses quite a few window messages.  It should be IDE-safe, but
-' consider yourself warned.
+'One thing I am particularly adamant about is properly deactivating top-most windows when the user switches to another
+' application.  I believe I have covered every possible contingency, because errant top-most windows are never something I
+' want PD to cause.
+'
+'In order to perform all this detailed window management, this class subclasses a lot of forms and a lot of messages.  That
+' said, it should be wholly IDE-safe, but consider yourself warned.  (Also, some window order API calls do not function
+' properly in the IDE per http://support.microsoft.com/kb/192254.  Compile for best results.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
