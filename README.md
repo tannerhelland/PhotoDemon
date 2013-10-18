@@ -1,10 +1,10 @@
-# PhotoDemon 6.0
+# PhotoDemon 6.2 beta
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/screenshot.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive selection of photo editing tools - including a full-featured macro recorder and batch processor - in a tiny 6 MB download.  It runs on any Windows machine (XP through Win 8) and it *does not* require installation.  It can easily be run from a portable USB drive or memory card.  English, Dutch, French, German, and Italian translations are included.
+It provides a comprehensive selection of photo editing tools - including a full-featured macro recorder and batch processor - in a tiny 7 MB download.  It runs on any Windows machine (XP through Win 8) and it *does not* require installation.  It can easily be run from a portable USB drive or memory card.  English, Dutch, French, German, and Italian translations are included.
 
 PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its performance will surprise you!)  Outside contributions from both coders and translators are always welcome.
 
