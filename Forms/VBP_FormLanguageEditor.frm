@@ -24,7 +24,6 @@ Begin VB.Form FormLanguageEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1024
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.Timer tmrProgBar 
       Enabled         =   0   'False
       Interval        =   50

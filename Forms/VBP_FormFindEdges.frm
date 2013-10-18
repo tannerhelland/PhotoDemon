@@ -23,7 +23,6 @@ Begin VB.Form FormFindEdges
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   813
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom

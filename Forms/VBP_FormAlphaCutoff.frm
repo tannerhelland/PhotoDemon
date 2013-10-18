@@ -24,7 +24,6 @@ Begin VB.Form dialog_AlphaCutoff
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   469
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   360
@@ -294,7 +293,7 @@ Public Sub showDialog()
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub
 

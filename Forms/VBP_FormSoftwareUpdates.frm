@@ -24,7 +24,6 @@ Begin VB.Form FormSoftwareUpdate
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   714
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdOKNo 
       Caption         =   "&OK"
       Height          =   615

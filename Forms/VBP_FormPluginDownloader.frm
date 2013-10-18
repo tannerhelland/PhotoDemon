@@ -21,7 +21,6 @@ Begin VB.Form FormPluginDownloader
    ScaleHeight     =   7320
    ScaleWidth      =   12405
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox picInitial 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True

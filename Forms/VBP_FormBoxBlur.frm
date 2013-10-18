@@ -23,7 +23,6 @@ Begin VB.Form FormBoxBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.sliderTextCombo sltWidth 
       Height          =   495
       Left            =   6000

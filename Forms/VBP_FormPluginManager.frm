@@ -23,7 +23,6 @@ Begin VB.Form FormPluginManager
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   721
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -2014,8 +2013,8 @@ Private Sub CmdOK_Click()
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
     If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngnqEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
         LoadPlugins
-        ApplyAllMenuIcons
-        ResetMenuIcons
+        applyAllMenuIcons
+        resetMenuIcons
         g_ImageFormats.generateInputFormats
         g_ImageFormats.generateOutputFormats
     End If

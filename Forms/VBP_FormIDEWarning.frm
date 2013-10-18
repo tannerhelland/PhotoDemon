@@ -25,7 +25,6 @@ Begin VB.Form dialog_IDEWarning
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   480
       Left            =   3120
@@ -211,7 +210,7 @@ Public Sub showDialog()
     makeFormPretty Me, m_ToolTip
 
     'Display the form
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub
 

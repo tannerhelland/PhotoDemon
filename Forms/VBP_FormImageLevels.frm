@@ -24,7 +24,6 @@ Begin VB.Form FormLevels
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   812
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -387,7 +386,7 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -417,15 +416,15 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
     ' every time we run this function.
     Dim gStep As Double
     gStep = (MAXGAMMA + MIDGAMMA) / 127
-    For X = 0 To 127
-        gValues(X) = (CDbl(X) / 127) * MIDGAMMA
-    Next X
-    For X = 128 To 255
-        gValues(X) = MIDGAMMA + (CDbl(X - 127) * gStep)
-    Next X
-    For X = 0 To 255
-        gValues(X) = 1 / ((gValues(X) + 1 / ROOT10) ^ 2)
-    Next X
+    For x = 0 To 127
+        gValues(x) = (CDbl(x) / 127) * MIDGAMMA
+    Next x
+    For x = 128 To 255
+        gValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
+    Next x
+    For x = 0 To 255
+        gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
+    Next x
     
     'Convert the midtone ratio into a byte (so we can access a look-up table with it)
     Dim bRatio As Byte
@@ -434,8 +433,8 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
     'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
     Dim gLevels(0 To 255) As Byte
     Dim tmpGamma As Double
-    For X = 0 To 255
-        tmpGamma = CDbl(X) / 255
+    For x = 0 To 255
+        tmpGamma = CDbl(x) / 255
         tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
         tmpGamma = tmpGamma * 255
         If tmpGamma > 255 Then
@@ -443,8 +442,8 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
         ElseIf tmpGamma < 0 Then
             tmpGamma = 0
         End If
-        gLevels(X) = tmpGamma
-    Next X
+        gLevels(x) = tmpGamma
+    Next x
     
     'Look-up table for the input leveled values
     Dim newLevels(0 To 255) As Byte
@@ -452,51 +451,51 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
     'Fill the look-up table with appropriately mapped input limits
     Dim pStep As Double
     pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
-    For X = 0 To 255
-        If X < inLLimit Then
-            newLevels(X) = 0
-        ElseIf X > inRLimit Then
-            newLevels(X) = 255
+    For x = 0 To 255
+        If x < inLLimit Then
+            newLevels(x) = 0
+        ElseIf x > inRLimit Then
+            newLevels(x) = 255
         Else
-            newLevels(X) = ByteMe(((CSng(X) - CSng(inLLimit)) * pStep))
+            newLevels(x) = ByteMe(((CSng(x) - CSng(inLLimit)) * pStep))
         End If
-    Next X
+    Next x
     
     'Now run all input-mapped values through our midtone-correction look-up
-    For X = 0 To 255
-        newLevels(X) = gLevels(newLevels(X))
-    Next X
+    For x = 0 To 255
+        newLevels(x) = gLevels(newLevels(x))
+    Next x
     
     'Last of all, remap all image values to match the user-specified output limits
     Dim oStep As Double
     oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
-    For X = 0 To 255
-        newLevels(X) = ByteMe(CSng(outLLimit) + (CSng(newLevels(X)) * oStep))
-    Next X
+    For x = 0 To 255
+        newLevels(x) = ByteMe(CSng(outLLimit) + (CSng(newLevels(x)) * oStep))
+    Next x
     
     'Now we can finally loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Assign new values looking the lookup table
-        ImageData(QuickVal + 2, Y) = newLevels(r)
-        ImageData(QuickVal + 1, Y) = newLevels(g)
-        ImageData(QuickVal, Y) = newLevels(b)
+        ImageData(QuickVal + 2, y) = newLevels(r)
+        ImageData(QuickVal + 1, y) = newLevels(g)
+        ImageData(QuickVal, y) = newLevels(b)
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

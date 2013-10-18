@@ -23,7 +23,6 @@ Begin VB.Form FormExposure
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -183,7 +182,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -205,40 +204,40 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
     Dim gLookup(0 To 255) As Byte
     Dim tmpVal As Double
     
-    For X = 0 To 255
-        tmpVal = X / 255
+    For x = 0 To 255
+        tmpVal = x / 255
         tmpVal = tmpVal * 2 ^ (exposureAdjust)
         tmpVal = tmpVal * 255
         
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookup(X) = tmpVal
-    Next X
+        gLookup(x) = tmpVal
+    Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Apply a new value based on the lookup table
-        ImageData(QuickVal + 2, Y) = gLookup(r)
-        ImageData(QuickVal + 1, Y) = gLookup(g)
-        ImageData(QuickVal, Y) = gLookup(b)
+        ImageData(QuickVal + 2, y) = gLookup(r)
+        ImageData(QuickVal + 1, y) = gLookup(g)
+        ImageData(QuickVal, y) = gLookup(b)
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -284,7 +283,7 @@ Private Sub updatePreview()
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
-        Dim X As Long
+        Dim x As Long
         
         Dim xWidth As Long, yHeight As Long
         xWidth = picChart.ScaleWidth
@@ -306,16 +305,16 @@ Private Sub updatePreview()
         curX = 0
         curY = yHeight
         
-        For X = 0 To xWidth
-            tmpVal = X / xWidth
+        For x = 0 To xWidth
+            tmpVal = x / xWidth
             tmpVal = tmpVal * 2 ^ (expVal)
             tmpVal = yHeight - (tmpVal * yHeight)
             curY = tmpVal
-            curX = X
+            curX = x
             GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
             prevX = curX
             prevY = curY
-        Next X
+        Next x
         
         picChart.Picture = picChart.Image
         picChart.Refresh

@@ -134,6 +134,12 @@ End Enum
     Private Const WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_CLIENTEDGE), WS_EX_PALETTEWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
 #End If
 
+'Constants for window z-order
+Private Const HWND_NOTOPMOST As Long = -2
+Private Const HWND_TOPMOST As Long = -1
+Private Const HWND_TOP As Long = 0
+Private Const HWND_BOTTOM As Long = 1
+
 'Windows can be aligned in a variety of ways, and it's helpful to track each direction independently.
 Private Type pdWindowAlignment
     alignLeft As Boolean
@@ -235,7 +241,7 @@ End Enum
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
@@ -245,10 +251,10 @@ Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 'Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
@@ -287,6 +293,60 @@ Private toolbarsFloating As Boolean, imagesFloating As Boolean
 'When the main form is being moved or resized, it will trigger the movement of all child forms to match.  We set this variable to TRUE
 ' so that child forms don't waste time and energy handling window move messages that have already been handled.
 Private mainFormTriggeredChange As Boolean
+
+'If the program has registered an extra window that it wants made top-most, any hWnds will be stored in this array.
+Private extraWindowHwnds() As Long
+Private numOfExtraWindows As Long
+
+'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
+' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
+Public Sub requestTopmostWindow(ByRef srcWindowHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
+
+    'By default, windows are ADDED to our collection, not removed.
+    If Not windowUnloading Then
+    
+        'Store the window's hWnd.  We need to remember it in case the user switches to another program while this window is still active;
+        ' in that case, we will remove the window's top-most status, to prevent the window from obscuring other programs.
+        extraWindowHwnds(numOfExtraWindows) = srcWindowHwnd
+        numOfExtraWindows = numOfExtraWindows + 1
+        ReDim Preserve extraWindowHwnds(0 To numOfExtraWindows) As Long
+        
+        'Make the window top-most, but do it without moving, sizing, or activating the window.  (Those actions are left up to the caller.)
+        SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
+    
+    'This function should be notified whenever a previously added window has been hidden or unloaded.  We'll remove it from our collection,
+    ' and stop activating/deactivating its top-most condition when the program gains or loses focus.
+    Else
+    
+        'Find the hWnd in our tracking array
+        Dim i As Long, srcWindowIndex As Long
+        srcWindowIndex = -1
+        For i = 0 To numOfExtraWindows
+            If extraWindowHwnds(i) = srcWindowHwnd Then
+                srcWindowIndex = i
+                Exit For
+            End If
+        Next i
+        
+        'If we found this hWnd, remove it from the collection
+        If srcWindowIndex >= 0 Then
+        
+            'Shift all existing entries down by one
+            For i = srcWindowIndex To numOfExtraWindows - 1
+                extraWindowHwnds(i) = extraWindowHwnds(i + 1)
+            Next i
+            
+            'Decrement our spare window counter
+            numOfExtraWindows = numOfExtraWindows - 1
+            
+            'Shrink the array by one
+            ReDim Preserve extraWindowHwnds(0 To numOfExtraWindows) As Long
+            
+        End If
+    
+    End If
+
+End Sub
 
 'Using a "Form.Caption = <string>" statement on a docked child form will cause the window to un-dock.  Thus, all caption requests
 ' must be passed through the window manager, who will then use the API to change the text.
@@ -660,15 +720,15 @@ Private Sub getClientCoordsRelativeToScreen(ByVal targetHwnd As Long, ByRef rect
     ClientToScreen targetHwnd, clientLeft
     
     'Fill the bottom-right coord object, then convert it to screen coords
-    clientRight.x = curClientRect.x2
-    clientRight.y = curClientRect.y2
+    clientRight.X = curClientRect.x2
+    clientRight.Y = curClientRect.y2
     ClientToScreen targetHwnd, clientRight
     
     'Fill the rect object we were passed.
-    rectToFill.x1 = clientLeft.x
-    rectToFill.y1 = clientLeft.y
-    rectToFill.x2 = clientRight.x
-    rectToFill.y2 = clientRight.y
+    rectToFill.x1 = clientLeft.X
+    rectToFill.y1 = clientLeft.Y
+    rectToFill.x2 = clientRight.X
+    rectToFill.y2 = clientRight.Y
 
 End Sub
 
@@ -1281,10 +1341,13 @@ End Sub
 
 Private Sub Class_Initialize()
 
-    'Reset all toolbar tracking variables
+    'Reset all tracking variables
     numOfPDWindows = 0
     ReDim pdWindows(0) As pdWindowData
-        
+    
+    numOfExtraWindows = 0
+    ReDim extraWindowHwnds(0) As Long
+    
     'Prepare the subclasser
     Set cSubclass = New cSelfSubHookCallback
     
@@ -1293,6 +1356,8 @@ Private Sub Class_Initialize()
     windowDataPath = g_UserPreferences.getPresetPath & "Program_WindowLocations.xml"
     loadAllWindowLocations
     
+    'To prevent circular redraws, we disable certain subclassing when we know we are responsible for triggering the window messages.  Initialize
+    ' that tracking variable to FALSE.
     mainFormTriggeredChange = False
     
 End Sub
@@ -1329,33 +1394,36 @@ End Sub
 ' parameter for a SetWindowPos call.
 Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosingFocus As Boolean = False) As Long
 
-    'If PhotoDemon is losing focus, this step is simple - restore a normal z-order and exit
-    If pdLosingFocus Then
-        getDesiredZOrder = 1
-        Exit Function
-    End If
-    
-    'If the program is not losing focus, this step is more complicated.
-
-    'A window can receive four z-order instructions.  Unfortunately, Windows makes it very difficult to provide detailed z-order instructions.
+     'A window can receive four z-order instructions.  Unfortunately, Windows makes it very difficult to provide detailed z-order instructions.
     ' Instead, we are limited to very broad classes of "top-most", "not-top-most", and "bottom".
     ' Descriptions are taken directly from this MSDN page: http://msdn.microsoft.com/en-us/library/windows/desktop/ms633545%28v=vs.85%29.aspx
     
     'Place the window at the top of the Z order.
-    Const HWND_TOP As Long = 0
+    'Const HWND_TOP As Long = 0
 
     'Place the window above all non-topmost windows. The window maintains its topmost position even when it is deactivated.
-    Const HWND_TOPMOST As Long = -1
+    'Const HWND_TOPMOST As Long = -1
     
     'Place the window above all non-topmost windows but behind all topmost windows. This flag has no effect if the window is already
     ' a non-topmost window.
-    Const HWND_NOTOPMOST As Long = -2
+    'Const HWND_NOTOPMOST As Long = -2
     
     'Place the window at the bottom of the Z order. If the hWnd parameter identifies a topmost window, the window loses its topmost status
     ' and is placed at the bottom of all other windows.
-    Const HWND_BOTTOM As Long = 1
+    'Const HWND_BOTTOM As Long = 1
+
+    'If PhotoDemon is losing focus, this step is simple - restore a normal z-order and exit
+    If pdLosingFocus Then
+        If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then
+            getDesiredZOrder = HWND_BOTTOM
+        Else
+            getDesiredZOrder = HWND_TOP
+        End If
+        Exit Function
+    End If
     
-    'What window is made top-most is determined by what is docked and what is not.  Roughly, speaking:
+    'If the program is not losing focus, this step is more complicated. What window is made top-most is determined
+    ' by what is docked and what is not.  Roughly, speaking:
     
     'If images are docked, and toolbars are docked, z-order doesn't matter
     'If images are docked, and toolbars are floating, make toolbars top-most
@@ -1692,6 +1760,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             End If
                         Next i
                         
+                        'If the program has registered any extra windows (e.g. modal dialogs), hide them as well
+                        If numOfExtraWindows > 0 Then
+                            For i = 0 To numOfExtraWindows - 1
+                                SetWindowPos extraWindowHwnds(i), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING
+                            Next i
+                        End If
+                        
                     'PD is gaining focus
                     Case Else
                         Debug.Print "> PhotoDemon regained focus! <"
@@ -1704,6 +1779,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'Because zOrder may get botched when the program gains/loses focus, forcibly restore the active image.
                         ' (TODO: move this code out of the window manager)
                         If (g_OpenImageCount > 0) Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "program regained focus"
+                        
+                        'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
+                        ' sit above any image or toolbar windows.
+                        If numOfExtraWindows > 0 Then
+                            For i = 0 To numOfExtraWindows - 1
+                                SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                            Next i
+                        End If
                         
                 End Select
                         

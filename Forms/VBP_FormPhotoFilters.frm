@@ -23,7 +23,6 @@ Begin VB.Form FormPhotoFilters
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   983
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   744

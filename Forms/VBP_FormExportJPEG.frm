@@ -23,7 +23,6 @@ Begin VB.Form dialog_ExportJPEG
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   496
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkOptimize 
       Height          =   540
       Left            =   600
@@ -548,7 +547,7 @@ Public Sub showDialog(Optional ByVal showAdvanced As Boolean = False)
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub
 

@@ -23,7 +23,6 @@ Begin VB.Form FormEqualize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   677
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -224,7 +223,7 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -254,14 +253,14 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
         
     'Loop through each pixel in the image, converting values as we go.
     ' (This step is so fast that I calculate all channels, even those not being converted, with the exception of luminance.)
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Store those values in the histogram
         rDataInt(r) = rDataInt(r) + 1
@@ -274,11 +273,11 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
             lDataInt(lInt) = lDataInt(lInt) + 1
         End If
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then SetProgBarVal X
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
         End If
-    Next X
+    Next x
     
     'Compute a scaling factor based on the number of pixels in the image
     Dim scaleFactor As Double
@@ -287,75 +286,75 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     'Compute red if requested
     If HandleR Then
         rData(0) = rDataInt(0) * scaleFactor
-        For X = 1 To 255
-            rData(X) = rData(X - 1) + (scaleFactor * rDataInt(X))
-        Next X
+        For x = 1 To 255
+            rData(x) = rData(x - 1) + (scaleFactor * rDataInt(x))
+        Next x
     End If
     
     'Compute green if requested
     If HandleG Then
         gData(0) = gDataInt(0) * scaleFactor
-        For X = 1 To 255
-            gData(X) = gData(X - 1) + (scaleFactor * gDataInt(X))
-        Next X
+        For x = 1 To 255
+            gData(x) = gData(x - 1) + (scaleFactor * gDataInt(x))
+        Next x
     End If
     
     'Compute blue if requested
     If HandleB Then
         bData(0) = bDataInt(0) * scaleFactor
-        For X = 1 To 255
-            bData(X) = bData(X - 1) + (scaleFactor * bDataInt(X))
-        Next X
+        For x = 1 To 255
+            bData(x) = bData(x - 1) + (scaleFactor * bDataInt(x))
+        Next x
     End If
     
     'Compute luminance if requested
     If HandleL Then
         lData(0) = lDataInt(0) * scaleFactor
-        For X = 1 To 255
-            lData(X) = lData(X - 1) + (scaleFactor * lDataInt(X))
-        Next X
+        For x = 1 To 255
+            lData(x) = lData(x - 1) + (scaleFactor * lDataInt(x))
+        Next x
     End If
     
     'Make sure all look-up values are in valid byte range (e.g. [0,255])
-    For X = 0 To 255
+    For x = 0 To 255
         
-        If rData(X) > 255 Then
-            rDataInt(X) = 255
+        If rData(x) > 255 Then
+            rDataInt(x) = 255
         Else
-            rDataInt(X) = Int(rData(X))
+            rDataInt(x) = Int(rData(x))
         End If
         
-        If gData(X) > 255 Then
-            gDataInt(X) = 255
+        If gData(x) > 255 Then
+            gDataInt(x) = 255
         Else
-            gDataInt(X) = Int(gData(X))
+            gDataInt(x) = Int(gData(x))
         End If
         
-        If bData(X) > 255 Then
-            bDataInt(X) = 255
+        If bData(x) > 255 Then
+            bDataInt(x) = 255
         Else
-            bDataInt(X) = Int(bData(X))
+            bDataInt(x) = Int(bData(x))
         End If
         
-        If lData(X) > 255 Then
-            lDataInt(X) = 255
+        If lData(x) > 255 Then
+            lDataInt(x) = 255
         Else
-            lDataInt(X) = Int(lData(X))
+            lDataInt(x) = Int(lData(x))
         End If
         
-    Next X
+    Next x
     
     'Apply the equalized values
     If Not toPreview Then Message "Equalizing image..."
     
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the RGB values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'If luminance has been requested, calculate it before messing with any of the color channels
         If HandleL Then
@@ -369,18 +368,18 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
         If HandleB Then b = bDataInt(b)
         
         'Assign our new values back into the pixel array
-        ImageData(QuickVal + 2, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal, Y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X + finalX
+                SetProgBarVal x + finalX
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

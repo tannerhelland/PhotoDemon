@@ -24,7 +24,6 @@ Begin VB.Form FormAbout
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat

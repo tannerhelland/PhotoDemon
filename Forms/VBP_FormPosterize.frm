@@ -23,7 +23,6 @@ Begin VB.Form FormPosterize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   798
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -313,7 +312,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -355,21 +354,21 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     
     'Finally, prepare conversion look-up tables (which will make the actual color reduction much faster)
     Dim rQuick(0 To 255) As Byte, gQuick(0 To 255) As Byte, bQuick(0 To 255) As Byte
-    For X = 0 To 255
-        rQuick(X) = Int((X / mR) + 0.5)
-        gQuick(X) = Int((X / mG) + 0.5)
-        bQuick(X) = Int((X / mB) + 0.5)
-    Next X
+    For x = 0 To 255
+        rQuick(x) = Int((x / mR) + 0.5)
+        gQuick(x) = Int((x / mG) + 0.5)
+        bQuick(x) = Int((x / mB) + 0.5)
+    Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Truncate R, G, and B values (posterize-style) into discreet increments.  0.5 is added for rounding purposes.
         cR = rQuick(r)
@@ -399,19 +398,19 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         
         'If we are not doing Intelligent Coloring, assign the colors now (to avoid having to do another loop at the end)
         If smartColors = False Then
-            ImageData(QuickVal + 2, Y) = cR
-            ImageData(QuickVal + 1, Y) = cG
-            ImageData(QuickVal, Y) = cb
+            ImageData(QuickVal + 2, y) = cR
+            ImageData(QuickVal + 1, y) = cG
+            ImageData(QuickVal, y) = cb
         End If
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
     ' computed counterparts.
@@ -439,24 +438,24 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         Next r
         
         'Assign average colors back into the picture
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
         
-            r = ImageData(QuickVal + 2, Y)
-            g = ImageData(QuickVal + 1, Y)
-            b = ImageData(QuickVal, Y)
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
             
             cR = rQuick(r)
             cG = gQuick(g)
             cb = bQuick(b)
             
-            ImageData(QuickVal + 2, Y) = rLookup(cR, cG, cb)
-            ImageData(QuickVal + 1, Y) = gLookup(cR, cG, cb)
-            ImageData(QuickVal, Y) = bLookup(cR, cG, cb)
+            ImageData(QuickVal + 2, y) = rLookup(cR, cG, cb)
+            ImageData(QuickVal + 1, y) = gLookup(cR, cG, cb)
+            ImageData(QuickVal, y) = bLookup(cR, cG, cb)
             
-        Next Y
-        Next X
+        Next y
+        Next x
         
     End If
     
@@ -482,7 +481,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -527,22 +526,22 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     
     'Finally, prepare conversion look-up tables (which will make the actual color reduction much faster)
     Dim rQuick(0 To 255) As Byte, gQuick(0 To 255) As Byte, bQuick(0 To 255) As Byte
-    For X = 0 To 255
-        rQuick(X) = Int((X / mR) + 0.5)
-        gQuick(X) = Int((X / mG) + 0.5)
-        bQuick(X) = Int((X / mB) + 0.5)
-    Next X
+    For x = 0 To 255
+        rQuick(x) = Int((x / mR) + 0.5)
+        gQuick(x) = Int((x / mG) + 0.5)
+        bQuick(x) = Int((x / mB) + 0.5)
+    Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For Y = initY To finalY
-    For X = initX To finalX
+    For y = initY To finalY
+    For x = initX To finalX
         
-        QuickVal = X * qvDepth
+        QuickVal = x * qvDepth
     
         'Get the source pixel color values
-        iR = ImageData(QuickVal + 2, Y)
-        iG = ImageData(QuickVal + 1, Y)
-        iB = ImageData(QuickVal, Y)
+        iR = ImageData(QuickVal + 2, y)
+        iG = ImageData(QuickVal + 1, y)
+        iB = ImageData(QuickVal, y)
         
         r = iR + Er
         g = iG + eG
@@ -580,7 +579,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         eB = iB - cb
         
         'Diffuse the error further (in a grid pattern) to prevent undesirable lining effects
-        If (X + Y) And 3 <> 0 Then
+        If (x + y) And 3 <> 0 Then
             Er = Er \ 2
             eG = eG \ 2
             eB = eB \ 2
@@ -595,12 +594,12 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         
         'If we are not doing Intelligent Coloring, assign the colors now (to avoid having to do another loop at the end)
         If Not smartColors Then
-            ImageData(QuickVal + 2, Y) = cR
-            ImageData(QuickVal + 1, Y) = cG
-            ImageData(QuickVal, Y) = cb
+            ImageData(QuickVal + 2, y) = cR
+            ImageData(QuickVal + 1, y) = cG
+            ImageData(QuickVal, y) = cb
         End If
         
-    Next X
+    Next x
         
         'At the end of each line, reset our error-tracking values
         Er = 0
@@ -608,12 +607,12 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         eB = 0
         
         If toPreview = False Then
-            If (Y And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal Y
+                SetProgBarVal y
             End If
         End If
-    Next Y
+    Next y
     
     'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
     ' computed counterparts.
@@ -641,14 +640,14 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         Next r
         
         'Assign average colors back into the picture
-        For Y = initY To finalY
-        For X = initX To finalX
+        For y = initY To finalY
+        For x = initX To finalX
             
-            QuickVal = X * qvDepth
+            QuickVal = x * qvDepth
         
-            iR = ImageData(QuickVal + 2, Y)
-            iG = ImageData(QuickVal + 1, Y)
-            iB = ImageData(QuickVal, Y)
+            iR = ImageData(QuickVal + 2, y)
+            iG = ImageData(QuickVal + 1, y)
+            iB = ImageData(QuickVal, y)
             
             r = iR + Er
             g = iG + eG
@@ -665,9 +664,9 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
             cG = gQuick(g)
             cb = bQuick(b)
             
-            ImageData(QuickVal + 2, Y) = rLookup(cR, cG, cb)
-            ImageData(QuickVal + 1, Y) = gLookup(cR, cG, cb)
-            ImageData(QuickVal, Y) = bLookup(cR, cG, cb)
+            ImageData(QuickVal + 2, y) = rLookup(cR, cG, cb)
+            ImageData(QuickVal + 1, y) = gLookup(cR, cG, cb)
+            ImageData(QuickVal, y) = bLookup(cR, cG, cb)
             
             'Calculate the error for this pixel
             cR = cR * mR
@@ -679,20 +678,20 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
             eB = iB - cb
             
             'Diffuse the error further (in a grid pattern) to prevent undesirable lining effects
-            If (X + Y) And 3 <> 0 Then
+            If (x + y) And 3 <> 0 Then
                 Er = Er \ 2
                 eG = eG \ 2
                 eB = eB \ 2
             End If
             
-        Next X
+        Next x
         
             'At the end of each line, reset our error-tracking values
             Er = 0
             eG = 0
             eB = 0
         
-        Next Y
+        Next y
         
     End If
     

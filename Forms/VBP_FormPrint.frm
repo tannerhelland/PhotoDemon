@@ -24,7 +24,6 @@ Begin VB.Form FormPrint
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkCenter 
       Height          =   480
       Left            =   4080

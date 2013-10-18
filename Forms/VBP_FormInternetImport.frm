@@ -23,7 +23,6 @@ Begin VB.Form FormInternetImport
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   670
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True

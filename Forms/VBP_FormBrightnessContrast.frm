@@ -23,7 +23,6 @@ Begin VB.Form FormBrightnessContrast
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -35,7 +34,7 @@ Begin VB.Form FormBrightnessContrast
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -205,7 +204,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -241,31 +240,31 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         Dim BrightTable(0 To 255) As Byte
         Dim BTCalc As Long
         
-        For X = 0 To 255
-            BTCalc = X + Bright
+        For x = 0 To 255
+            BTCalc = x + Bright
             If BTCalc > 255 Then BTCalc = 255
             If BTCalc < 0 Then BTCalc = 0
-            BrightTable(X) = CByte(BTCalc)
-        Next X
+            BrightTable(x) = CByte(BTCalc)
+        Next x
         
         'Loop through each pixel in the image, converting values as we go
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, Y) = BrightTable(ImageData(QuickVal, Y))
-            ImageData(QuickVal + 1, Y) = BrightTable(ImageData(QuickVal + 1, Y))
-            ImageData(QuickVal + 2, Y) = BrightTable(ImageData(QuickVal + 2, Y))
+            ImageData(QuickVal, y) = BrightTable(ImageData(QuickVal, y))
+            ImageData(QuickVal + 1, y) = BrightTable(ImageData(QuickVal + 1, y))
+            ImageData(QuickVal + 2, y) = BrightTable(ImageData(QuickVal + 2, y))
             
-        Next Y
+        Next y
             If toPreview = False Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal X
+                    SetProgBarVal x
                 End If
             End If
-        Next X
+        Next x
         
     End If
     
@@ -297,15 +296,15 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
                 Dim NumOfPixels As Long
                 NumOfPixels = 0
                 
-                For X = initX To finalX
-                    QuickVal = X * qvDepth
-                For Y = initY To finalY
-                    rTotal = rTotal + ImageData(QuickVal + 2, Y)
-                    gTotal = gTotal + ImageData(QuickVal + 1, Y)
-                    bTotal = bTotal + ImageData(QuickVal, Y)
+                For x = initX To finalX
+                    QuickVal = x * qvDepth
+                For y = initY To finalY
+                    rTotal = rTotal + ImageData(QuickVal + 2, y)
+                    gTotal = gTotal + ImageData(QuickVal + 1, y)
+                    bTotal = bTotal + ImageData(QuickVal, y)
                     NumOfPixels = NumOfPixels + 1
-                Next Y
-                Next X
+                Next y
+                Next x
                 
                 rTotal = rTotal \ NumOfPixels
                 gTotal = gTotal \ NumOfPixels
@@ -331,31 +330,31 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         'Like brightness, contrast works beautifully with look-up tables
         Dim ContrastTable(0 To 255) As Byte, CTCalc As Long
                 
-        For X = 0 To 255
-            CTCalc = X + (((X - Mean) * Contrast) \ 100)
+        For x = 0 To 255
+            CTCalc = x + (((x - Mean) * Contrast) \ 100)
             If CTCalc > 255 Then CTCalc = 255
             If CTCalc < 0 Then CTCalc = 0
-            ContrastTable(X) = CByte(CTCalc)
-        Next X
+            ContrastTable(x) = CByte(CTCalc)
+        Next x
         
         'Loop through each pixel in the image, converting values as we go
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, Y) = ContrastTable(ImageData(QuickVal, Y))
-            ImageData(QuickVal + 1, Y) = ContrastTable(ImageData(QuickVal + 1, Y))
-            ImageData(QuickVal + 2, Y) = ContrastTable(ImageData(QuickVal + 2, Y))
+            ImageData(QuickVal, y) = ContrastTable(ImageData(QuickVal, y))
+            ImageData(QuickVal + 1, y) = ContrastTable(ImageData(QuickVal + 1, y))
+            ImageData(QuickVal + 2, y) = ContrastTable(ImageData(QuickVal + 2, y))
             
-        Next Y
+        Next y
             If toPreview = False Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    If Bright <> 0 Then SetProgBarVal X + finalX Else SetProgBarVal X
+                    If Bright <> 0 Then SetProgBarVal x + finalX Else SetProgBarVal x
                 End If
             End If
-        Next X
+        Next x
         
     End If
     

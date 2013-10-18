@@ -24,7 +24,6 @@ Begin VB.Form FormSpherize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -398,7 +397,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -460,21 +459,21 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     ReDim xLookup(initX To finalX) As Double
     ReDim yLookup(initY To finalY) As Double
     
-    For X = initX To finalX
+    For x = initX To finalX
         If minDimVertical Then
-            xLookup(X) = (2 * (X - halfDimDiff)) / minDimension - 1
+            xLookup(x) = (2 * (x - halfDimDiff)) / minDimension - 1
         Else
-            xLookup(X) = (2 * X) / minDimension - 1
+            xLookup(x) = (2 * x) / minDimension - 1
         End If
-    Next X
+    Next x
     
-    For Y = initY To finalY
+    For y = initY To finalY
         If minDimVertical Then
-            yLookup(Y) = (2 * Y) / minDimension - 1
+            yLookup(y) = (2 * y) / minDimension - 1
         Else
-            yLookup(Y) = (2 * (Y - halfDimDiff)) / minDimension - 1
+            yLookup(y) = (2 * (y - halfDimDiff)) / minDimension - 1
         End If
-    Next Y
+    Next y
     
     'We can also calculate a few constants in advance
     Dim twoDivByPI As Double
@@ -484,13 +483,13 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     halfMinDimension = minDimension / 2
             
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0), and normalize them to (-1, 1)
-        nX = xLookup(X)
-        nY = yLookup(Y)
+        nX = xLookup(x)
+        nY = yLookup(y)
         
         'Next, map them to polar coordinates and apply the spherification
         r = Sqr(nX * nX + nY * nY)
@@ -509,23 +508,23 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         If useRays Then
-            fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+            fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
         Else
             If r < 1 Then
-                fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+                fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
             Else
-                fSupport.forcePixels X, Y, 255, 255, 255, 0, dstImageData
+                fSupport.forcePixels x, y, 255, 255, 255, 0, dstImageData
             End If
         End If
                 
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -24,7 +24,6 @@ Begin VB.Form FormRechannel
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   630
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -408,7 +407,7 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -427,41 +426,41 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     Dim cK As Double, MK As Double, yK As Double, bK As Double, invBK As Double
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         Select Case rType
             'Rechannel red
             Case 0
-                ImageData(QuickVal, Y) = 0
-                ImageData(QuickVal + 1, Y) = 0
+                ImageData(QuickVal, y) = 0
+                ImageData(QuickVal + 1, y) = 0
             'Rechannel green
             Case 1
-                ImageData(QuickVal, Y) = 0
-                ImageData(QuickVal + 2, Y) = 0
+                ImageData(QuickVal, y) = 0
+                ImageData(QuickVal + 2, y) = 0
             'Rechannel blue
             Case 2
-                ImageData(QuickVal + 1, Y) = 0
-                ImageData(QuickVal + 2, Y) = 0
+                ImageData(QuickVal + 1, y) = 0
+                ImageData(QuickVal + 2, y) = 0
             'Rechannel cyan
             Case 3
-                ImageData(QuickVal, Y) = 255
-                ImageData(QuickVal + 1, Y) = 255
+                ImageData(QuickVal, y) = 255
+                ImageData(QuickVal + 1, y) = 255
             'Rechannel magenta
             Case 4
-                ImageData(QuickVal, Y) = 255
-                ImageData(QuickVal + 2, Y) = 255
+                ImageData(QuickVal, y) = 255
+                ImageData(QuickVal + 2, y) = 255
             'Rechannel yellow
             Case 5
-                ImageData(QuickVal + 1, Y) = 255
-                ImageData(QuickVal + 2, Y) = 255
+                ImageData(QuickVal + 1, y) = 255
+                ImageData(QuickVal + 2, y) = 255
             
             'Rechannel CMYK
             Case Else
-                cK = 255 - ImageData(QuickVal + 2, Y)
-                MK = 255 - ImageData(QuickVal + 1, Y)
-                yK = 255 - ImageData(QuickVal, Y)
+                cK = 255 - ImageData(QuickVal + 2, y)
+                MK = 255 - ImageData(QuickVal + 1, y)
+                yK = 255 - ImageData(QuickVal, y)
                 
                 cK = cK / 255
                 MK = MK / 255
@@ -474,40 +473,40 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
                 
                 If rType = 6 Then
                     cK = ((cK - bK) / invBK) * 255
-                    ImageData(QuickVal + 2, Y) = 255 - cK
-                    ImageData(QuickVal + 1, Y) = 255
-                    ImageData(QuickVal, Y) = 255
+                    ImageData(QuickVal + 2, y) = 255 - cK
+                    ImageData(QuickVal + 1, y) = 255
+                    ImageData(QuickVal, y) = 255
                 End If
                 
                 If rType = 7 Then
                     MK = ((MK - bK) / invBK) * 255
-                    ImageData(QuickVal + 2, Y) = 255
-                    ImageData(QuickVal + 1, Y) = 255 - MK
-                    ImageData(QuickVal, Y) = 255
+                    ImageData(QuickVal + 2, y) = 255
+                    ImageData(QuickVal + 1, y) = 255 - MK
+                    ImageData(QuickVal, y) = 255
                 End If
                 
                 If rType = 8 Then
                     yK = ((yK - bK) / invBK) * 255
-                    ImageData(QuickVal + 2, Y) = 255
-                    ImageData(QuickVal + 1, Y) = 255
-                    ImageData(QuickVal, Y) = 255 - yK
+                    ImageData(QuickVal + 2, y) = 255
+                    ImageData(QuickVal + 1, y) = 255
+                    ImageData(QuickVal, y) = 255 - yK
                 End If
                 
                 If rType = 9 Then
-                    ImageData(QuickVal + 2, Y) = invBK * 255
-                    ImageData(QuickVal + 1, Y) = invBK * 255
-                    ImageData(QuickVal, Y) = invBK * 255
+                    ImageData(QuickVal + 2, y) = invBK * 255
+                    ImageData(QuickVal + 1, y) = invBK * 255
+                    ImageData(QuickVal, y) = invBK * 255
                 End If
                 
         End Select
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

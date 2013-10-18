@@ -217,14 +217,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 
                 'Because the Batch Wizard window provides a custom drag/drop implementation, we disable regular drag/drop while it's active
                 g_AllowDragAndDrop = False
-                FormBatchWizard.Show vbModal, FormMain
+                showPDDialog vbModal, FormBatchWizard
                 g_AllowDragAndDrop = True
                 
             End If
             
         Case "Print"
             If showDialog Then
-                If Not FormPrint.Visible Then FormPrint.Show vbModal, FormMain
+                If Not FormPrint.Visible Then showPDDialog vbModal, FormPrint
             End If
             
         Case "Exit program"
@@ -244,7 +244,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Internet import"
             If Not FormInternetImport.Visible Then
-                FormInternetImport.Show vbModal, FormMain
+                showPDDialog vbModal, FormInternetImport
                 Exit Sub
             End If
         
@@ -309,21 +309,21 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Alpha channel addition/removal
         Case "Add alpha channel"
             If showDialog Then
-                FormTransparency_Basic.Show vbModal, FormMain
+                showPDDialog vbModal, FormTransparency_Basic
             Else
                 FormTransparency_Basic.simpleConvert32bpp cParams.GetLong(1)
             End If
             
         Case "Color to alpha"
             If showDialog Then
-                FormTransparency_FromColor.Show vbModal, FormMain
+                showPDDialog vbModal, FormTransparency_FromColor
             Else
                 FormTransparency_FromColor.colorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Remove alpha channel"
             If showDialog Then
-                FormConvert24bpp.Show vbModal, FormMain
+                showPDDialog vbModal, FormConvert24bpp
             Else
                 ConvertImageColorDepth 24, cParams.GetLong(1)
             End If
@@ -331,14 +331,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Resize operations
         Case "Resize"
             If showDialog Then
-                FormResize.Show vbModal, FormMain
+                showPDDialog vbModal, FormResize
             Else
                 FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
         
         Case "Canvas size"
             If showDialog Then
-                FormCanvasSize.Show vbModal, FormMain
+                showPDDialog vbModal, FormCanvasSize
             Else
                 FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
@@ -362,7 +362,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Arbitrary rotation"
             If showDialog Then
-                FormRotate.Show vbModal, FormMain
+                showPDDialog vbModal, FormRotate
             Else
                 FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
             End If
@@ -379,7 +379,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Tile"
             If showDialog Then
-                FormTile.Show vbModal, FormMain
+                showPDDialog vbModal, FormTile
             Else
                 FormTile.GenerateTile cParams.GetByte(1), cParams.GetLong(2), cParams.GetLong(3)
             End If
@@ -391,7 +391,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Reduce colors"
             If showDialog Then
-                FormReduceColors.Show vbModal, FormMain
+                showPDDialog vbModal, FormReduceColors
             Else
                 FormReduceColors.ReduceImageColors_Auto cParams.GetLong(2)
             End If
@@ -484,49 +484,49 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Luminance adjustment functions
         Case "Brightness and contrast"
             If showDialog Then
-                FormBrightnessContrast.Show vbModal, FormMain
+                showPDDialog vbModal, FormBrightnessContrast
             Else
                 FormBrightnessContrast.BrightnessContrast cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
         
         Case "Curves"
             If showDialog Then
-                FormCurves.Show vbModal, FormMain
+                showPDDialog vbModal, FormCurves
             Else
                 FormCurves.ApplyCurveToImage cParams.getParamString
             End If
         
         Case "Exposure"
             If showDialog Then
-                FormExposure.Show vbModal, FormMain
+                showPDDialog vbModal, FormExposure
             Else
                 FormExposure.Exposure cParams.GetDouble(1)
             End If
             
         Case "Gamma"
             If showDialog Then
-                FormGamma.Show vbModal, FormMain
+                showPDDialog vbModal, FormGamma
             Else
                 FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         Case "Levels"
             If showDialog Then
-                FormLevels.Show vbModal, FormMain
+                showPDDialog vbModal, FormLevels
             Else
                 FormLevels.MapImageLevels cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
             
         Case "Shadows and highlights"
             If showDialog Then
-                FormShadowHighlight.Show vbModal, FormMain
+                showPDDialog vbModal, FormShadowHighlight
             Else
                 FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         Case "White balance"
             If showDialog Then
-                FormWhiteBalance.Show vbModal, FormMain
+                showPDDialog vbModal, FormWhiteBalance
             Else
                 FormWhiteBalance.AutoWhiteBalance cParams.GetDouble(1)
             End If
@@ -534,35 +534,35 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Color adjustments
         Case "Color balance"
             If showDialog Then
-                FormColorBalance.Show vbModal, FormMain
+                showPDDialog vbModal, FormColorBalance
             Else
                 FormColorBalance.ApplyColorBalance cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Hue and saturation"
             If showDialog Then
-                FormHSL.Show vbModal, FormMain
+                showPDDialog vbModal, FormHSL
             Else
                 FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Photo filter"
             If showDialog Then
-                FormPhotoFilters.Show vbModal, FormMain
+                showPDDialog vbModal, FormPhotoFilters
             Else
                 FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
             
         Case "Temperature"
             If showDialog Then
-                FormColorTemp.Show vbModal, FormMain
+                showPDDialog vbModal, FormColorTemp
             Else
                 FormColorTemp.ApplyTemperatureToImage cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3)
             End If
             
         Case "Vibrance"
             If showDialog Then
-                FormVibrance.Show vbModal, FormMain
+                showPDDialog vbModal, FormVibrance
             Else
                 FormVibrance.Vibrance cParams.GetDouble(1)
             End If
@@ -570,7 +570,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Miscellaneous adjustments
         Case "Colorize"
             If showDialog Then
-                FormColorize.Show vbModal, FormMain
+                showPDDialog vbModal, FormColorize
             Else
                 FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
             End If
@@ -578,7 +578,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Grayscale conversions
         Case "Black and white"
             If showDialog Then
-                FormGrayscale.Show vbModal, FormMain
+                showPDDialog vbModal, FormGrayscale
             Else
                 FormGrayscale.masterGrayscaleFunction cParams.GetLong(1), cParams.GetString(2)
             End If
@@ -600,14 +600,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
         Case "Color to monochrome"
             If showDialog Then
-                FormMonochrome.Show vbModal, FormMain
+                showPDDialog vbModal, FormMonochrome
             Else
                 FormMonochrome.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Monochrome to grayscale"
             If showDialog Then
-                FormMonoToColor.Show vbModal, FormMain
+                showPDDialog vbModal, FormMonoToColor
             Else
                 FormMonoToColor.ConvertMonoToColor cParams.GetLong(1)
             End If
@@ -618,14 +618,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Channel operations
         Case "Channel mixer"
             If showDialog Then
-                FormChannelMixer.Show vbModal, FormMain
+                showPDDialog vbModal, FormChannelMixer
             Else
                 FormChannelMixer.ApplyChannelMixer cParams.getParamString
             End If
             
         Case "Rechannel"
             If showDialog Then
-                FormRechannel.Show vbModal, FormMain
+                showPDDialog vbModal, FormRechannel
             Else
                 FormRechannel.RechannelImage cParams.GetByte(1)
             End If
@@ -644,14 +644,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         'Histogram functions
         Case "Display histogram"
-            FormHistogram.Show 0, FormMain
+            showPDDialog vbModal, FormHistogram
         
         Case "Stretch histogram"
             FormHistogram.StretchHistogram
             
         Case "Equalize"
             If showDialog Then
-                FormEqualize.Show vbModal, FormMain
+                showPDDialog vbModal, FormEqualize
             Else
                 FormEqualize.EqualizeHistogram cParams.GetBool(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
             End If
@@ -668,7 +668,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Figured glass"
             If showDialog Then
-                FormFiguredGlass.Show vbModal, FormMain
+                showPDDialog vbModal, FormFiguredGlass
             Else
                 FormFiguredGlass.FiguredGlassFX cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
@@ -678,28 +678,28 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Kaleidoscope"
             If showDialog Then
-                FormKaleidoscope.Show vbModal, FormMain
+                showPDDialog vbModal, FormKaleidoscope
             Else
                 FormKaleidoscope.KaleidoscopeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetBool(5)
             End If
             
         Case "Modern art"
             If showDialog Then
-                FormModernArt.Show vbModal, FormMain
+                showPDDialog vbModal, FormModernArt
             Else
                 FormModernArt.ApplyModernArt cParams.GetLong(1)
             End If
             
         Case "Oil painting"
             If showDialog Then
-                FormOilPainting.Show vbModal, FormMain
+                showPDDialog vbModal, FormOilPainting
             Else
                 FormOilPainting.ApplyOilPaintingEffect cParams.GetLong(1), cParams.GetDouble(2)
             End If
             
         Case "Posterize"
             If showDialog Then
-                FormPosterize.Show vbModal, FormMain
+                showPDDialog vbModal, FormPosterize
             Else
                 FormPosterize.ReduceImageColors_BitRGB cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
             End If
@@ -718,14 +718,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Box blur"
             If showDialog Then
-                FormBoxBlur.Show vbModal, FormMain
+                showPDDialog vbModal, FormBoxBlur
             Else
                 FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
         
         Case "Gaussian blur"
             If showDialog Then
-                FormGaussianBlur.Show vbModal, FormMain
+                showPDDialog vbModal, FormGaussianBlur
             Else
                 FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
             End If
@@ -735,35 +735,35 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Motion blur"
             If showDialog Then
-                FormMotionBlur.Show vbModal, FormMain
+                showPDDialog vbModal, FormMotionBlur
             Else
                 FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetBool(4)
             End If
             
         Case "Pixelate"
             If showDialog Then
-                FormPixelate.Show vbModal, FormMain
+                showPDDialog vbModal, FormPixelate
             Else
                 FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
             
         Case "Radial blur"
             If showDialog Then
-                FormRadialBlur.Show vbModal, FormMain
+                showPDDialog vbModal, FormRadialBlur
             Else
                 FormRadialBlur.RadialBlurFilter cParams.GetDouble(1), cParams.GetBool(2), cParams.GetBool(3)
             End If
             
         Case "Smart blur"
             If showDialog Then
-                FormSmartBlur.Show vbModal, FormMain
+                showPDDialog vbModal, FormSmartBlur
             Else
                 FormSmartBlur.SmartBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
             End If
             
         Case "Zoom blur"
             If showDialog Then
-                FormZoomBlur.Show vbModal, FormMain
+                showPDDialog vbModal, FormZoomBlur
             Else
                 FormZoomBlur.ZoomBlurWrapper cParams.GetBool(1), cParams.GetLong(2)
             End If
@@ -772,105 +772,105 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Apply lens distortion"
             If showDialog Then
-                FormLens.Show vbModal, FormMain
+                showPDDialog vbModal, FormLens
             Else
                 FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
             
         Case "Correct lens distortion"
             If showDialog Then
-                FormLensCorrect.Show vbModal, FormMain
+                showPDDialog vbModal, FormLensCorrect
             Else
                 FormLensCorrect.ApplyLensCorrection cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
         
         Case "Miscellaneous distort"
             If showDialog Then
-                FormMiscDistorts.Show vbModal, FormMain
+                showPDDialog vbModal, FormMiscDistorts
             Else
                 FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Pan and zoom"
             If showDialog Then
-                FormPanAndZoom.Show vbModal, FormMain
+                showPDDialog vbModal, FormPanAndZoom
             Else
                 FormPanAndZoom.PanAndZoomFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
         
         Case "Perspective"
             If showDialog Then
-                FormPerspective.Show vbModal, FormMain
+                showPDDialog vbModal, FormPerspective
             Else
                 FormPerspective.PerspectiveImage cParams.getParamString
             End If
             
         Case "Pinch and whirl"
             If showDialog Then
-                FormPinch.Show vbModal, FormMain
+                showPDDialog vbModal, FormPinch
             Else
                 FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Poke"
             If showDialog Then
-                FormPoke.Show vbModal, FormMain
+                showPDDialog vbModal, FormPoke
             Else
                 FormPoke.ApplyPokeDistort cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
             
         Case "Polar conversion"
             If showDialog Then
-                FormPolar.Show vbModal, FormMain
+                showPDDialog vbModal, FormPolar
             Else
                 FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Ripple"
             If showDialog Then
-                FormRipple.Show vbModal, FormMain
+                showPDDialog vbModal, FormRipple
             Else
                 FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
             End If
             
         Case "Rotate"
             If showDialog Then
-                FormRotateDistort.Show vbModal, FormMain
+                showPDDialog vbModal, FormRotateDistort
             Else
                 FormRotateDistort.RotateFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
             
         Case "Shear"
             If showDialog Then
-                FormShear.Show vbModal, FormMain
+                showPDDialog vbModal, FormShear
             Else
                 FormShear.ShearImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Spherize"
             If showDialog Then
-                FormSpherize.Show vbModal, FormMain
+                showPDDialog vbModal, FormSpherize
             Else
                 FormSpherize.SpherizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetBool(6)
             End If
         
         Case "Squish"
             If showDialog Then
-                FormSquish.Show vbModal, FormMain
+                showPDDialog vbModal, FormSquish
             Else
                 FormSquish.SquishImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Swirl"
             If showDialog Then
-                FormSwirl.Show vbModal, FormMain
+                showPDDialog vbModal, FormSwirl
             Else
                 FormSwirl.SwirlImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetBool(4)
             End If
             
         Case "Waves"
             If showDialog Then
-                FormWaves.Show vbModal, FormMain
+                showPDDialog vbModal, FormWaves
             Else
                 FormWaves.WaveImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
             End If
@@ -878,7 +878,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         'Edge filters
         Case "Emboss or engrave"
-            FormEmbossEngrave.Show vbModal, FormMain
+            showPDDialog vbModal, FormEmbossEngrave
             
             Case "Emboss"
                 FormEmbossEngrave.FilterEmbossColor cParams.GetLong(1)
@@ -890,7 +890,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             FilterEdgeEnhance
             
         Case "Find edges"
-            FormFindEdges.Show vbModal, FormMain
+            showPDDialog vbModal, FormFindEdges
             
             Case "Artistic contour"
                 FormFindEdges.FilterSmoothContour cParams.GetBool(1)
@@ -921,7 +921,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Trace contour"
             If showDialog Then
-                FormContour.Show vbModal, FormMain
+                showPDDialog vbModal, FormContour
             Else
                 FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
             End If
@@ -934,7 +934,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Black light"
             If showDialog Then
-                FormBlackLight.Show vbModal, FormMain
+                showPDDialog vbModal, FormBlackLight
             Else
                 FormBlackLight.fxBlackLight cParams.GetDouble(1)
             End If
@@ -986,14 +986,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Add film grain"
             If showDialog Then
-                FormFilmGrain.Show vbModal, FormMain
+                showPDDialog vbModal, FormFilmGrain
             Else
                 FormFilmGrain.AddFilmGrain cParams.GetDouble(1), cParams.GetLong(2)
             End If
         
         Case "Add RGB noise"
             If showDialog Then
-                FormNoise.Show vbModal, FormMain
+                showPDDialog vbModal, FormNoise
             Else
                 FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
             End If
@@ -1010,14 +1010,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Sharpen"
             If showDialog Then
-                FormSharpen.Show vbModal, FormMain
+                showPDDialog vbModal, FormSharpen
             Else
                 FormSharpen.ApplySharpenFilter cParams.GetDouble(1)
             End If
             
         Case "Unsharp mask"
             If showDialog Then
-                FormUnsharpMask.Show vbModal, FormMain
+                showPDDialog vbModal, FormUnsharpMask
             Else
                 FormUnsharpMask.UnsharpMask cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
@@ -1030,7 +1030,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Diffuse"
             If showDialog Then
-                FormDiffuse.Show vbModal, FormMain
+                showPDDialog vbModal, FormDiffuse
             Else
                 FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
@@ -1051,21 +1051,21 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Solarize"
             If showDialog Then
-                FormSolarize.Show vbModal, FormMain
+                showPDDialog vbModal, FormSolarize
             Else
                 FormSolarize.SolarizeImage cParams.GetByte(1)
             End If
             
         Case "Twins"
             If showDialog Then
-                FormTwins.Show vbModal, FormMain
+                showPDDialog vbModal, FormTwins
             Else
                 FormTwins.GenerateTwins cParams.GetLong(1)
             End If
             
         Case "Vignetting"
             If showDialog Then
-                FormVignette.Show vbModal, FormMain
+                showPDDialog vbModal, FormVignette
             Else
                 FormVignette.ApplyVignette cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5)
             End If
@@ -1075,7 +1075,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Custom filter"
             If showDialog Then
-                FormCustomFilter.Show vbModal, FormMain
+                showPDDialog vbModal, FormCustomFilter
             Else
                 DoFilter cParams.getParamString
             End If

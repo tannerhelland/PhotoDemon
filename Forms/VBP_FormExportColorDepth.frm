@@ -23,7 +23,6 @@ Begin VB.Form dialog_ExportColorDepth
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   429
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   345
@@ -313,7 +312,7 @@ Public Sub showDialog()
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub
 
