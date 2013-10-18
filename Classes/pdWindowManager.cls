@@ -78,6 +78,7 @@ Private Const LWA_ALPHA As Long = &H2&
 Private Const WS_EX_LAYERED As Long = &H80000
 Private Const GWL_EXSTYLE As Long = (-20)
 Private Const GWL_STYLE As Long = (-16)
+Private Const GWL_HWNDPARENT As Long = (-8)
 
 Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
 Private Const SWP_FRAMECHANGED As Long = &H20
@@ -250,20 +251,21 @@ End Enum
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
+Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 
 'API calls for changing window style
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 'Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
@@ -307,9 +309,14 @@ Private mainFormTriggeredChange As Boolean
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
 
+'If external functions want to know if PD has focus or not, they can use this function.  It will return TRUE if PhotoDemon is the active window.
+Public Function doesProgramHaveFocus() As Boolean
+    doesProgramHaveFocus = Not isPDDeactivated
+End Function
+
 'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
 ' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
-Public Sub requestTopmostWindow(ByRef srcWindowHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
+Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
 
     'By default, windows are ADDED to our collection, not removed.
     If Not windowUnloading Then
@@ -322,6 +329,13 @@ Public Sub requestTopmostWindow(ByRef srcWindowHwnd As Long, Optional ByVal wind
         
         'Make the window top-most, but do it without moving, sizing, or activating the window.  (Those actions are left up to the caller.)
         SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
+        
+        'Dynamically set the window's owner to match
+        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerHwnd
+        
+        'NOW we can display the window.  (Doing this via anything besides VB's in-built .Show method breaks stuff.  I'll need
+        ' to investigate further to see if it's possible to mimic the .Show event via API.)
+        'ShowWindow srcWindowHwnd, SW_SHOW
     
     'This function should be notified whenever a previously added window has been hidden or unloaded.  We'll remove it from our collection,
     ' and stop activating/deactivating its top-most condition when the program gains or loses focus.
@@ -729,15 +743,15 @@ Private Sub getClientCoordsRelativeToScreen(ByVal targetHwnd As Long, ByRef rect
     ClientToScreen targetHwnd, clientLeft
     
     'Fill the bottom-right coord object, then convert it to screen coords
-    clientRight.X = curClientRect.x2
-    clientRight.Y = curClientRect.y2
+    clientRight.x = curClientRect.x2
+    clientRight.y = curClientRect.y2
     ClientToScreen targetHwnd, clientRight
     
     'Fill the rect object we were passed.
-    rectToFill.x1 = clientLeft.X
-    rectToFill.y1 = clientLeft.Y
-    rectToFill.x2 = clientRight.X
-    rectToFill.y2 = clientRight.Y
+    rectToFill.x1 = clientLeft.x
+    rectToFill.y1 = clientLeft.y
+    rectToFill.x2 = clientRight.x
+    rectToFill.y2 = clientRight.y
 
 End Sub
 
@@ -1787,13 +1801,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                         'Because zOrder may get botched when the program gains/loses focus, forcibly restore the active image.
                         ' (TODO: move this code out of the window manager)
-                        If (g_OpenImageCount > 0) Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "program regained focus"
+                        If (g_OpenImageCount > 0) Then SetForegroundWindow pdImages(g_CurrentImage).containingForm.hWnd 'pdImages(g_CurrentImage).containingForm.ActivateWorkaround "program regained focus"
                         
                         'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
                         ' sit above any image or toolbar windows.
                         If numOfExtraWindows > 0 Then
                             For i = 0 To numOfExtraWindows - 1
-                                SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                                SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
                             Next i
                         End If
                         

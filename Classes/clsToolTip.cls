@@ -41,143 +41,150 @@ Option Explicit
 'moved all the support Types and declates into the class
 'makes it much more portable
 Private Type RECT
-  Left                            As Long
-  Top                             As Long
-  Right                           As Long
-  Bottom                          As Long
+    Left                            As Long
+    Top                             As Long
+    Right                           As Long
+    Bottom                          As Long
 End Type
+
 Private Const WM_USER             As Long = &H400
 Private Const TOOLTIPS_CLASS      As String = "tooltips_class32"
 Private Const TTS_ALWAYSTIP       As Long = &H1
 
 #Const WIN32_IE = &H400
 Private Type TOOLINFO
-  cbSize                          As Long
-  uFlags                          As TT_Flags
-  hWnd                            As Long
-  uId                             As Long
-  RECT                            As RECT
-  hInst                           As Long
-  lpszText                        As String
+    cbSize                          As Long
+    uFlags                          As TT_Flags
+    hWnd                            As Long
+    uId                             As Long
+    RECT                            As RECT
+    hInst                           As Long
+    lpszText                        As String
 #If (WIN32_IE >= &H300) Then
-  lParam                          As Long
+    lParam                          As Long
 #End If
 End Type
 
 Public Enum TT_Flags
-  TTF_IDIShWnd = &H1
-  TTF_CENTERTIP = &H2
-  TTF_RTLREADING = &H4
-  TTF_SUBCLASS = &H10
+    TTF_IDIShWnd = &H1
+    TTF_CENTERTIP = &H2
+    TTF_RTLREADING = &H4
+    TTF_SUBCLASS = &H10
 #If (WIN32_IE >= &H300) Then
-  TTF_TRACK = &H20
-  TTF_ABSOLUTE = &H80
-  TTF_TRANSPARENT = &H100
-  TTF_DI_SETITEM = &H8000&
+    TTF_TRACK = &H20
+    TTF_ABSOLUTE = &H80
+    TTF_TRANSPARENT = &H100
+    TTF_DI_SETITEM = &H8000&
 #End If
 End Enum
+
 #If False Then 'Trick preserves Case of Enums when typing in IDE
-Private TTF_IDIShWnd, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT
-Private TTF_DI_SETITEM
+    Private TTF_IDIShWnd, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT, TTF_DI_SETITEM
 #End If
 
 Public Enum TT_DelayTime
-  TTDT_AUTOMATIC = 0
-  TTDT_RESHOW = 1
-  TTDT_AUTOPOP = 2
-  TTDT_INITIAL = 3
+    TTDT_AUTOMATIC = 0
+    TTDT_RESHOW = 1
+    TTDT_AUTOPOP = 2
+    TTDT_INITIAL = 3
 End Enum
+
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private TTDT_AUTOMATIC, TTDT_RESHOW, TTDT_AUTOPOP, TTDT_INITIAL
 #End If
 
 Public Enum ttDelayTimeConstants
-  ttDelayDefault = TTDT_AUTOMATIC '= 0
-  ttDelayInitial = TTDT_INITIAL '= 3
-  ttDelayShow = TTDT_AUTOPOP '= 2
-  ttDelayReshow = TTDT_RESHOW '= 1
-  ttDelayMask = 3
+    ttDelayDefault = TTDT_AUTOMATIC '= 0
+    ttDelayInitial = TTDT_INITIAL '= 3
+    ttDelayShow = TTDT_AUTOPOP '= 2
+    ttDelayReshow = TTDT_RESHOW '= 1
+    ttDelayMask = 3
 End Enum
+
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private ttDelayDefault, ttDelayInitial, ttDelayShow, ttDelayReshow, ttDelayMask
 #End If
 
 Public Enum ttMarginConstants
-  ttMarginLeft = 0
-  ttMarginTop = 1
-  ttMarginRight = 2
-  ttMarginBottom = 3
+    ttMarginLeft = 0
+    ttMarginTop = 1
+    ttMarginRight = 2
+    ttMarginBottom = 3
 End Enum
+
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private ttMarginLeft, ttMarginTop, ttMarginRight, ttMarginBottom
 #End If
 
 Public Enum TT_Msgs
-  TTM_ACTIVATE = (WM_USER + 1)
-  TTM_SETDELAYTIME = (WM_USER + 3)
-  TTM_RELAYEVENT = (WM_USER + 7)
-  TTM_GETTOOLCOUNT = (WM_USER + 13)
-  TTM_WINDOWFROMPOINT = (WM_USER + 16)
+    TTM_ACTIVATE = (WM_USER + 1)
+    TTM_SETDELAYTIME = (WM_USER + 3)
+    TTM_RELAYEVENT = (WM_USER + 7)
+    TTM_GETTOOLCOUNT = (WM_USER + 13)
+    TTM_WINDOWFROMPOINT = (WM_USER + 16)
 #If UNICODE Then
-  TTM_ADDTOOL = (WM_USER + 50)
-  TTM_DELTOOL = (WM_USER + 51)
-  TTM_NEWTOOLRECT = (WM_USER + 52)
-  TTM_GETTOOLINFO = (WM_USER + 53)
-  TTM_SETTOOLINFO = (WM_USER + 54)
-  TTM_HITTEST = (WM_USER + 55)
-  TTM_GETTEXT = (WM_USER + 56)
-  TTM_UPDATETIPTEXT = (WM_USER + 57)
-  TTM_ENUMTOOLS = (WM_USER + 58)
-  TTM_GETCURRENTTOOL = (WM_USER + 59)
+    TTM_ADDTOOL = (WM_USER + 50)
+    TTM_DELTOOL = (WM_USER + 51)
+    TTM_NEWTOOLRECT = (WM_USER + 52)
+    TTM_GETTOOLINFO = (WM_USER + 53)
+    TTM_SETTOOLINFO = (WM_USER + 54)
+    TTM_HITTEST = (WM_USER + 55)
+    TTM_GETTEXT = (WM_USER + 56)
+    TTM_UPDATETIPTEXT = (WM_USER + 57)
+    TTM_ENUMTOOLS = (WM_USER + 58)
+    TTM_GETCURRENTTOOL = (WM_USER + 59)
 #Else
-  TTM_ADDTOOL = (WM_USER + 4)
-  TTM_DELTOOL = (WM_USER + 5)
-  TTM_NEWTOOLRECT = (WM_USER + 6)
-  TTM_GETTOOLINFO = (WM_USER + 8)
-  TTM_SETTOOLINFO = (WM_USER + 9)
-  TTM_HITTEST = (WM_USER + 10)
-  TTM_GETTEXT = (WM_USER + 11)
-  TTM_UPDATETIPTEXT = (WM_USER + 12)
-  TTM_ENUMTOOLS = (WM_USER + 14)
-  TTM_GETCURRENTTOOL = (WM_USER + 15)
+    TTM_ADDTOOL = (WM_USER + 4)
+    TTM_DELTOOL = (WM_USER + 5)
+    TTM_NEWTOOLRECT = (WM_USER + 6)
+    TTM_GETTOOLINFO = (WM_USER + 8)
+    TTM_SETTOOLINFO = (WM_USER + 9)
+    TTM_HITTEST = (WM_USER + 10)
+    TTM_GETTEXT = (WM_USER + 11)
+    TTM_UPDATETIPTEXT = (WM_USER + 12)
+    TTM_ENUMTOOLS = (WM_USER + 14)
+    TTM_GETCURRENTTOOL = (WM_USER + 15)
 #End If
 #If (WIN32_IE >= &H300) Then
-  TTM_TRACKACTIVATE = (WM_USER + 17)
-  TTM_TRACKPOSITION = (WM_USER + 18)
-  TTM_SETTIPBKCOLOR = (WM_USER + 19)
-  TTM_SETTIPTEXTCOLOR = (WM_USER + 20)
-  TTM_GETDELAYTIME = (WM_USER + 21)
-  TTM_GETTIPBKCOLOR = (WM_USER + 22)
-  TTM_GETTIPTEXTCOLOR = (WM_USER + 23)
-  TTM_SETMAXTIPWIDTH = (WM_USER + 24)
-  TTM_GETMAXTIPWIDTH = (WM_USER + 25)
-  TTM_SETMARGIN = (WM_USER + 26)
-  TTM_GETMARGIN = (WM_USER + 27)
-  TTM_POP = (WM_USER + 28)
+    TTM_TRACKACTIVATE = (WM_USER + 17)
+    TTM_TRACKPOSITION = (WM_USER + 18)
+    TTM_SETTIPBKCOLOR = (WM_USER + 19)
+    TTM_SETTIPTEXTCOLOR = (WM_USER + 20)
+    TTM_GETDELAYTIME = (WM_USER + 21)
+    TTM_GETTIPBKCOLOR = (WM_USER + 22)
+    TTM_GETTIPTEXTCOLOR = (WM_USER + 23)
+    TTM_SETMAXTIPWIDTH = (WM_USER + 24)
+    TTM_GETMAXTIPWIDTH = (WM_USER + 25)
+    TTM_SETMARGIN = (WM_USER + 26)
+    TTM_GETMARGIN = (WM_USER + 27)
+    TTM_POP = (WM_USER + 28)
 #End If
 #If (WIN32_IE >= &H400) Then
-  TTM_UPDATE = (WM_USER + 29)
+    TTM_UPDATE = (WM_USER + 29)
 #End If
 End Enum
+
 #If False Then 'Trick preserves Case of Enums when typing in IDE
-Private TTM_ACTIVATE, TTM_SETDELAYTIME, TTM_RELAYEVENT, TTM_GETTOOLCOUNT, TTM_WINDOWFROMPOINT
-Private TTM_ADDTOOL, TTM_DELTOOL, TTM_NEWTOOLRECT, TTM_GETTOOLINFO, TTM_SETTOOLINFO, TTM_HITTEST
-Private TTM_GETTEXT, TTM_UPDATETIPTEXT, TTM_ENUMTOOLS, TTM_GETCURRENTTOOL, TTM_TRACKACTIVATE
-Private TTM_TRACKPOSITION, TTM_SETTIPBKCOLOR, TTM_SETTIPTEXTCOLOR, TTM_GETDELAYTIME, TTM_GETTIPBKCOLOR
-Private TTM_GETTIPTEXTCOLOR, TTM_SETMAXTIPWIDTH, TTM_GETMAXTIPWIDTH, TTM_SETMARGIN, TTM_GETMARGIN
-Private TTM_POP, TTM_UPDATE
+    Private TTM_ACTIVATE, TTM_SETDELAYTIME, TTM_RELAYEVENT, TTM_GETTOOLCOUNT, TTM_WINDOWFROMPOINT
+    Private TTM_ADDTOOL, TTM_DELTOOL, TTM_NEWTOOLRECT, TTM_GETTOOLINFO, TTM_SETTOOLINFO, TTM_HITTEST
+    Private TTM_GETTEXT, TTM_UPDATETIPTEXT, TTM_ENUMTOOLS, TTM_GETCURRENTTOOL, TTM_TRACKACTIVATE
+    Private TTM_TRACKPOSITION, TTM_SETTIPBKCOLOR, TTM_SETTIPTEXTCOLOR, TTM_GETDELAYTIME, TTM_GETTIPBKCOLOR
+    Private TTM_GETTIPTEXTCOLOR, TTM_SETMAXTIPWIDTH, TTM_GETMAXTIPWIDTH, TTM_SETMARGIN, TTM_GETMARGIN
+    Private TTM_POP, TTM_UPDATE
 #End If
+
 Public Enum TT_Notifications
-  TTN_FIRST = -520&
-  TTN_LAST = -549&
+    TTN_FIRST = -520&
+    TTN_LAST = -549&
 #If UNICODE Then
-  TTN_NEEDTEXT = (TTN_FIRST - 10)
+    TTN_NEEDTEXT = (TTN_FIRST - 10)
 #Else
-  TTN_NEEDTEXT = (TTN_FIRST - 0)
+    TTN_NEEDTEXT = (TTN_FIRST - 0)
 #End If
-  TTN_SHOW = (TTN_FIRST - 1)
-  TTN_POP = (TTN_FIRST - 2)
+    TTN_SHOW = (TTN_FIRST - 1)
+    TTN_POP = (TTN_FIRST - 2)
 End Enum
+
 #If False Then 'Trick preserves Case of Enums when typing in IDE
 Private TTN_FIRST, TTN_LAST, TTN_NEEDTEXT, TTN_SHOW, TTN_POP
 #End If
@@ -191,77 +198,69 @@ Private mnlgHwndTT                As Long
 Private mnlgMaxTip                As Long
 Private m_TTHeader                As String
 Private m_ShowHeader              As Boolean
-Private Declare Function SendMessageT Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, _
-                                                                         ByVal wMsg As Long, _
-                                                                         ByVal wParam As Long, _
-                                                                         lParam As Any) As Long
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, _
-                                                                              ByVal lpClassName As String, _
-                                                                              ByVal lpWindowName As String, _
-                                                                              ByVal dwStyle As Long, _
-                                                                              ByVal X As Long, _
-                                                                              ByVal Y As Long, _
-                                                                              ByVal nWidth As Long, _
-                                                                              ByVal nHeight As Long, _
-                                                                              ByVal hWndParent As Long, _
-                                                                              ByVal hMenu As Long, _
-                                                                              ByVal hInstance As Long, _
-                                                                              lpParam As Any) As Long
+Private Declare Function SendMessageT Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, _
-                                                                     pSource As Any, _
-                                                                     ByVal dwLength As Long)
+Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal dwLength As Long)
 
-Public Function AddTool(ByRef ctrl As Control, _
-                        Optional ByVal strText As String) As Boolean
+'Added by Tanner: due to complexities with always-on-top windows, we must also make tooltips always-on-top
+Private Const WS_EX_TOPMOST As Long = &H8&
 
-  Dim ti As TOOLINFO
+Public Function AddTool(ByRef ctrl As Control, Optional ByVal strText As String) As Boolean
 
-'MODIFICATION
-'if a control has no hWnd to use for tooltip
-  If Not fIsWindow(ctrl) Then
-''MsgBox ctrl.Name & " cannot have a tool tip", vbCritical
-    Exit Function
-  End If
-  If (mnlgHwndTT = 0) Then
-    Exit Function
-  End If
-  If (fGetToolInfo(ctrl.hWnd, ti) = False) Then
-    With ti
-      .cbSize = Len(ti)
-'
-' TTF_IDISHWND must be set to tell the tooltip
-' control to retrieve the control's rect from
-' it's hWnd specified in uId.
-'
-      .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
-      .hWnd = ctrl.Container.hWnd
-      .uId = ctrl.hWnd
-      If Len(strText) > 0 Then
-'MODIFICATION
-'sending a blank string to ToolText deletes the control from the collection
-'MODIFICATION
-'add ToolTipHeader to strText if requested
-        If m_ShowHeader Then
-          If LenB(m_TTHeader) Then
-            strText = m_TTHeader & vbNewLine & strText
-          End If
-        End If
-        .lpszText = strText
+    Dim ti As TOOLINFO
+
+    'MODIFICATION
+    'if a control has no hWnd to use for tooltip
+    If Not fIsWindow(ctrl) Then
+        ''MsgBox ctrl.Name & " cannot have a tool tip", vbCritical
+        Exit Function
+    End If
+    
+    If (mnlgHwndTT = 0) Then
+        Exit Function
+    End If
+  
+    If (fGetToolInfo(ctrl.hWnd, ti) = False) Then
+    
+        With ti
+            .cbSize = Len(ti)
+            '
+            ' TTF_IDISHWND must be set to tell the tooltip
+            ' control to retrieve the control's rect from
+            ' it's hWnd specified in uId.
+            '
+            .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
+            .hWnd = ctrl.Container.hWnd
+            .uId = ctrl.hWnd
+            
+            If Len(strText) > 0 Then
+
+                'MODIFICATION
+                'sending a blank string to ToolText deletes the control from the collection
+                'MODIFICATION
+                'add ToolTipHeader to strText if requested
+                
+                If m_ShowHeader Then
+                    If LenB(m_TTHeader) Then strText = m_TTHeader & vbNewLine & strText
+                End If
+                
+                .lpszText = strText
 '            Else
 '                .lpszText = "Tool" & ToolCount + 1
-      End If
+            End If
 '
-' Maintain the maximun tip text
-' length for fGetToolInfo.
-'
-      mnlgMaxTip = fMax(mnlgMaxTip, Len(.lpszText) + 1)
-    End With
-'
-' Returns 1 on success, 0 on failure
-'
-    AddTool = SendMessageT(mnlgHwndTT, TTM_ADDTOOL, 0, ti)
-  End If
+            ' Maintain the maximum tip text
+            ' length for fGetToolInfo.
+            '
+            mnlgMaxTip = fMax(mnlgMaxTip, Len(.lpszText) + 1)
+    
+        End With
+        
+        ' Returns 1 on success, 0 on failure
+        AddTool = SendMessageT(mnlgHwndTT, TTM_ADDTOOL, 0, ti)
+        
+    End If
 
 End Function
 
@@ -310,7 +309,7 @@ Public Function Create(ByRef frm As Object) As Boolean
 ' along with it. We'll cleanup in Class_Terminate anyway.
 ' No WS_EX_TOPMOST or TTS_ALWAYSTIP per Win95 UI rules.
 '
-    mnlgHwndTT = CreateWindowEx(0, TOOLTIPS_CLASS, vbNullString, TTS_ALWAYSTIP, 0, 0, 0, 0, frm.hWnd, 0, App.hInstance, ByVal 0)
+    mnlgHwndTT = CreateWindowEx(0, TOOLTIPS_CLASS, vbNullString, TTS_ALWAYSTIP Or WS_EX_TOPMOST, 0, 0, 0, 0, frm.hWnd, 0, App.hInstance, ByVal 0)
   End If
   Create = CBool(mnlgHwndTT)
 
