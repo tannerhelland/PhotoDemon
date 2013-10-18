@@ -123,8 +123,7 @@ Public Sub LoadTheProgram()
     FormSplash.lblMessage.FontName = g_InterfaceFont
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
-    FormSplash.Show
-            
+    FormSplash.Show vbModeless
     
     
     '*************************************************************************************************************************************
@@ -238,14 +237,11 @@ Public Sub LoadTheProgram()
         toolbar_Selections.cmbSelSmoothing(0).AddItem "None", 0
         toolbar_Selections.cmbSelSmoothing(0).AddItem "Antialiased", 1
         
-        'Live feathering is not allowed on XP or Vista for performance reasons (GDI+ can't be used).
-        ' On these OSes, feathering must be applied via the Selection -> Feathering menu.
+        'Previously, live feathering was disallowed on XP or Vista for performance reasons (GDI+ can't be used to blur
+        ' the selection mask, and our own code was too slow).  As of 17 Oct '13, I have reinstated live selection
+        ' feathering on these OSes using PD's very fast horizontal and vertical blur.  While not perfect, this should
+        ' still provide "good enough" performance for smaller images and/or slight feathering.
         toolbar_Selections.cmbSelSmoothing(0).AddItem "Feathered", 2
-        'If g_GDIPlusFXAvailable Then
-        '    toolbar_Selections.sltSelectionFeathering.Max = 100
-        'Else
-        '    toolbar_Selections.sltSelectionFeathering.Max = 32
-        'End If
         toolbar_Selections.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
@@ -695,7 +691,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.deactivateImage
             
             If isThisPrimaryImage Then
-                'Notify the window manager that this hWnd will soon be dead - so stop subclassing it!
+                'Notify the window manager that this hWnd will soon be dead, so we can stop subclassing it
                 g_WindowManager.unregisterForm failedImageForm
                 Unload failedImageForm
                 Set failedImageForm = Nothing
@@ -893,19 +889,19 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             If imgFormTitle = "" Then
                 If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, getFilename(sFile(thisImage))
+                    g_WindowManager.requestWindowCaptionChange targetImage.containingForm, getFilename(sFile(thisImage))
                 Else
-                    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, sFile(thisImage)
+                    g_WindowManager.requestWindowCaptionChange targetImage.containingForm, sFile(thisImage)
                 End If
             Else
-                g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, imgFormTitle
+                g_WindowManager.requestWindowCaptionChange targetImage.containingForm, imgFormTitle
             End If
             
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             If targetImage.mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
             
             'Render an icon-sized version of this image as the MDI child form's icon
-            If MacroStatus <> MacroBATCH Then createCustomFormIcon pdImages(g_CurrentImage).containingForm
+            If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage.containingForm
             
         
         '*************************************************************************************************************************************
@@ -915,7 +911,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
             ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
-            g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
+            g_WindowManager.registerChildForm targetImage.containingForm, IMAGE_WINDOW, , , g_CurrentImage
             
             'Also register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage
@@ -935,15 +931,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
-            PrepareViewport pdImages(g_CurrentImage).containingForm, "PreLoadImage"
+            PrepareViewport targetImage.containingForm, "PreLoadImage"
             
             'Note the window state, as it may be important in the future
-            targetImage.WindowState = pdImages(g_CurrentImage).containingForm.WindowState
+            targetImage.WindowState = targetImage.containingForm.WindowState
             
             'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
             If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                pdImages(g_CurrentImage).containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
-                g_WindowManager.requestWindowResync pdImages(g_CurrentImage).indexInWindowManager
+                targetImage.containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
+                g_WindowManager.requestWindowResync targetImage.indexInWindowManager
                 
             'If image windows are docked, the window manager will have already positioned the window for us.
             Else
@@ -1593,16 +1589,6 @@ Public Sub DuplicateCurrentImage()
     
     'Fit the window to the newly duplicated image
     Message "Resizing image to fit screen..."
-    
-    'If the user wants us to resize the image to fit on-screen, do that now
-    If g_AutozoomLargeImages = 0 Then
-        FitImageToViewport True
-    Else
-        FitWindowToViewport True
-    End If
-                
-    'If the window is not maximized or minimized, fit the form around the picture box
-    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then FitWindowToImage True
         
     'Note the image dimensions and display them on the left-hand pane
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
@@ -1610,29 +1596,48 @@ Public Sub DuplicateCurrentImage()
     'Update the current caption to match
     g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).OriginalFileNameAndExtension
         
-    'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so MAKE SURE it's false
+    'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
+    ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
+    g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
+            
+    'Also register this image with the image tab bar
+    createCustomFormIcon pdImages(g_CurrentImage).containingForm
+    toolbar_ImageTabs.registerNewImage g_CurrentImage
+    
+    'If the user wants us to resize the image to fit on-screen, do that now
+    If g_AutozoomLargeImages = 0 Then FitImageToViewport True
+                    
+    'If image windows are not docked, fit the window around the (now properly-zoomed) image
+    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then FitWindowToImage True, True
+            
+    'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
+    ' update the zoom combo box to match the zoom assigned by the window-fit function.
     g_AllowViewportRendering = False
     toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
         
-    Message "Image duplication complete."
-    
-    'Now that the image is loaded, allow PrepareViewport to set up the scrollbars and buffer
+    'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True
-    
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "DuplicateImage"
-        
-    'Render an icon-sized version of this image as the MDI child form's icon, and update the image thumbnail tab bar
-    createCustomFormIcon pdImages(g_CurrentImage).containingForm
-    toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
-        
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "Duplicate image"
+            
     'Note the window state, as it may be important in the future
     pdImages(g_CurrentImage).WindowState = pdImages(g_CurrentImage).containingForm.WindowState
+            
+    'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
+    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+        pdImages(g_CurrentImage).containingForm.Move pdImages(g_CurrentImage).WindowLeft * Screen.TwipsPerPixelX, pdImages(g_CurrentImage).WindowTop * Screen.TwipsPerPixelY
+        g_WindowManager.requestWindowResync pdImages(g_CurrentImage).indexInWindowManager
         
-    'The form has been hiding off-screen this entire time, and now it's finally time to bring it to the forefront
-    If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then
-        pdImages(g_CurrentImage).containingForm.Left = pdImages(g_CurrentImage).WindowLeft
-        pdImages(g_CurrentImage).containingForm.Top = pdImages(g_CurrentImage).WindowTop
+    'If image windows are docked, the window manager will have already positioned the window for us.
+    Else
+            
     End If
+            
+    'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
+    ' bottom edges don't fall outside the MDI client area
+    'If the user wants us to resize the image to fit on-screen, do that now
+    If g_AutozoomLargeImages = 1 Then FitWindowToViewport
+    
+    Message "Image duplication complete."
     
     'If we made it all the way here, the image was successfully duplicated.
     pdImages(g_CurrentImage).loadedSuccessfully = True
