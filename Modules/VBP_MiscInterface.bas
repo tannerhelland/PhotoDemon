@@ -137,22 +137,26 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
 
     'Manually disable all other images forms to prevent them from mistakenly receiving input
     Dim i As Long
-    For i = 0 To g_NumOfImagesLoaded
-        If Not pdImages(i) Is Nothing Then
-            If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
-        End If
-    Next i
+    If g_NumOfImagesLoaded > 0 Then
+        For i = 0 To g_NumOfImagesLoaded
+            If Not pdImages(i) Is Nothing Then
+                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
+            End If
+        Next i
+    End If
 
     'Show the dialog, and dynamically assign its owner to the proper window (the main form if no child windows are active; otherwise, the
     ' active child image window).
     dialogForm.Show dialogModality, getModalOwner()
     
     'Re-enable any disabled image forms
-    For i = 0 To g_NumOfImagesLoaded
-        If Not pdImages(i) Is Nothing Then
-            If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
-        End If
-    Next i
+    If g_NumOfImagesLoaded > 0 Then
+        For i = 0 To g_NumOfImagesLoaded
+            If Not pdImages(i) Is Nothing Then
+                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
+            End If
+        Next i
+    End If
     
     'De-register this hWnd with the window manager
     g_WindowManager.requestTopmostWindow dialogHwnd, True
