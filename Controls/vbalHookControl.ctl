@@ -400,19 +400,19 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
     
-    Dim bKeyUp As Boolean
-    Dim bAlt As Boolean
-    Dim bCtrl As Boolean
-    Dim bShift As Boolean
-    Dim bCancel As Boolean
-    Dim iAccel As Long
-    Dim eShiftCode As ShiftConstants
-   
     'On Error Resume Next
     
     If Not UserControl.EventsFrozen Then
     
         If nCode = HC_ACTION Then
+        
+            Dim bKeyUp As Boolean
+            Dim bAlt As Boolean
+            Dim bCtrl As Boolean
+            Dim bShift As Boolean
+            Dim bCancel As Boolean
+            Dim iAccel As Long
+            Dim eShiftCode As ShiftConstants
         
             ' Key up or down:
             bKeyUp = ((lParam And &H80000000) = &H80000000)
