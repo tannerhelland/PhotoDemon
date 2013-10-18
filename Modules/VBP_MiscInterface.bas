@@ -247,6 +247,13 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
     If (Not suspendMenuRefresh) And (g_NumOfImagesLoaded > 0) Then
         If Not (pdImages(backupCurrentImage).containingForm Is Nothing) Then pdImages(backupCurrentImage).containingForm.ActivateWorkaround
     End If
+    
+    'The "Fit viewport around image" option is only available for floating image windows
+    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+        FormMain.MnuFitWindowToImage.Enabled = True
+    Else
+        FormMain.MnuFitWindowToImage.Enabled = False
+    End If
 
 End Sub
 
@@ -395,10 +402,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tImageOps
             If FormMain.MnuImageTop.Enabled <> newState Then
                 FormMain.MnuImageTop.Enabled = newState
+                
                 'Use this same command to disable other menus
                 FormMain.MnuFile(12).Enabled = newState
                 FormMain.MnuFitOnScreen.Enabled = newState
-                FormMain.MnuFitWindowToImage.Enabled = newState
                 FormMain.MnuZoomIn.Enabled = newState
                 FormMain.MnuZoomOut.Enabled = newState
                 FormMain.MnuSelectTop.Enabled = newState
@@ -409,6 +416,18 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                     FormMain.MnuSpecificZoom(i).Enabled = newState
                 Next i
                 
+            End If
+            
+            'FitWindowToImage is a little weird - we disable it if no images are active, but also if images are docked
+            If Not newState Then
+                FormMain.MnuFitWindowToImage.Enabled = newState
+            Else
+                'The "Fit viewport around image" option is only available for floating image windows
+                If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+                    FormMain.MnuFitWindowToImage.Enabled = True
+                Else
+                    FormMain.MnuFitWindowToImage.Enabled = False
+                End If
             End If
         
         'Filter (top-level menu)
