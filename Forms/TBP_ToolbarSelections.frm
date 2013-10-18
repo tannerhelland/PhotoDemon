@@ -7,7 +7,7 @@ Begin VB.Form toolbar_Selections
    ClientHeight    =   1350
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   14355
+   ClientWidth     =   13665
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,7 +22,7 @@ Begin VB.Form toolbar_Selections
    MinButton       =   0   'False
    ScaleHeight     =   90
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   957
+   ScaleWidth      =   911
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -87,11 +87,11 @@ Begin VB.Form toolbar_Selections
       Left            =   2520
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   814
+      ScaleWidth      =   750
       TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
-      Width           =   12210
+      Width           =   11250
       Begin VB.ComboBox cmbSelType 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -107,14 +107,14 @@ Begin VB.Form toolbar_Selections
          Height          =   360
          Index           =   0
          ItemData        =   "TBP_ToolbarSelections.frx":0BE6
-         Left            =   6060
+         Left            =   5820
          List            =   "TBP_ToolbarSelections.frx":0BE8
          Style           =   2  'Dropdown List
          TabIndex        =   2
          TabStop         =   0   'False
          ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
          Top             =   390
-         Width           =   2685
+         Width           =   2445
       End
       Begin VB.ComboBox cmbSelSmoothing 
          Appearance      =   0  'Flat
@@ -138,16 +138,16 @@ Begin VB.Form toolbar_Selections
          TabStop         =   0   'False
          ToolTipText     =   "Use this option to change the way selections blend with their surroundings."
          Top             =   390
-         Width           =   2685
+         Width           =   2445
       End
       Begin PhotoDemon.sliderTextCombo sltCornerRounding 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   8820
+         Left            =   8340
          TabIndex        =   3
          Top             =   345
-         Width           =   3000
-         _ExtentX        =   5318
+         Width           =   2670
+         _ExtentX        =   4710
          _ExtentY        =   873
          Max             =   10000
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -247,12 +247,12 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   5940
+         Left            =   5700
          TabIndex        =   8
          Top             =   840
          Visible         =   0   'False
-         Width           =   2880
-         _ExtentX        =   5080
+         Width           =   2670
+         _ExtentX        =   4710
          _ExtentY        =   873
          Min             =   1
          Max             =   10000
@@ -273,8 +273,8 @@ Begin VB.Form toolbar_Selections
          Left            =   3000
          TabIndex        =   9
          Top             =   840
-         Width           =   2880
-         _ExtentX        =   5080
+         Width           =   2670
+         _ExtentX        =   4710
          _ExtentY        =   873
          Max             =   100
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -290,11 +290,11 @@ Begin VB.Form toolbar_Selections
       Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   8820
+         Left            =   8340
          TabIndex        =   10
-         Top             =   330
-         Width           =   3000
-         _ExtentX        =   5318
+         Top             =   345
+         Width           =   2670
+         _ExtentX        =   4710
          _ExtentY        =   873
          Min             =   1
          Max             =   10000
@@ -381,7 +381,7 @@ Begin VB.Form toolbar_Selections
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   5
-         Left            =   8940
+         Left            =   8460
          TabIndex        =   13
          Top             =   60
          Width           =   1365
@@ -404,7 +404,7 @@ Begin VB.Form toolbar_Selections
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   4
-         Left            =   6060
+         Left            =   5820
          TabIndex        =   12
          Top             =   60
          Width           =   390
@@ -557,8 +557,8 @@ Private Sub cmdTools_Click(Index As Integer)
     resetToolButtonStates
 End Sub
 
-Private Sub Form_Paint()
-    
+Private Sub Form_Activate()
+
     'Upon first activation, restore all last-used settings
     If Not hasBeenActivated Then
         hasBeenActivated = True
@@ -573,7 +573,7 @@ Private Sub Form_Paint()
         makeFormPretty Me, m_ToolTip
     
     End If
-    
+
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -599,8 +599,9 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     Else
         g_CurrentTool = SELECT_RECT
     End If
-    cmdTools_Click CInt(g_CurrentTool)
-        
+    resetToolButtonStates
+    
+    'Reset the selection coordinate boxes to 0
     Dim i As Long
     For i = 0 To tudSel.Count - 1
         tudSel(i) = 0
