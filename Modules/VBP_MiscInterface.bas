@@ -3,10 +3,16 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 13/September/13
-'Last update: new DPI translation functions for fixing non-96dpi issues
+'Last updated: 18/October/13
+'Last update: new showDialog function, which is now universally used throughout PD in place of the stock .Show event.
+'              This function properly handles window placement (including in multimonitor environments), and it
+'              assigns z-order to a custom owner to ensure correct top-most order when modal dialogs are displayed.
 '
-'Miscellaneous routines related to rendering PhotoDemon interface elements.
+'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
+' increased, so has the need for specialized handling of certain UI elements.
+'
+'Many of the functions in this module rely on subclassing, either directly or through things like PD's window manager.
+' This means that many of the functions may operate differently (or not at all) in the IDE.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -25,6 +31,9 @@ Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVa
 Private Declare Function GetProp Lib "user32" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
 Private Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_PAINT As Long = &HF&
 Private Const GWL_WNDPROC As Long = -4
@@ -87,6 +96,89 @@ Private hadToChangeSmoothing As Long
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
 Private dpiRatio As Double
+
+'For best results, any modal form should be shown via this function.  This function will automatically center the form over the main window,
+' while also properly assigning ownership so that the dialog is truly on top of any active windows.  It also handles deactivation of
+' other windows (to prevent click-through), and dynamic top-most behavior to ensure that the program doesn't steal focus if the user switches
+' to another program while a modal dialog is active.
+Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form)
+
+    'Start by loading the form and hiding it
+    dialogForm.Visible = False
+    
+    'Retrieve and cache the hWnd; we need access to this even if the form is unloaded, so we can properly deregister it
+    ' with the window manager.
+    Dim dialogHwnd As Long
+    dialogHwnd = dialogForm.hWnd
+    
+    'Get the rect of the main form, which we will use to calculate a center position
+    Dim ownerRect As winRect
+    GetWindowRect FormMain.hWnd, ownerRect
+    
+    'Determine the center of that rect
+    Dim centerX As Long, centerY As Long
+    centerX = ownerRect.x1 + (ownerRect.x2 - ownerRect.x1) \ 2
+    centerY = ownerRect.y1 + (ownerRect.y2 - ownerRect.y1) \ 2
+    
+    'Get the rect of the child dialog
+    Dim dialogRect As winRect
+    GetWindowRect dialogHwnd, dialogRect
+    
+    'Determine an upper-left point for the dialog based on its size
+    Dim newLeft As Long, newTop As Long
+    newLeft = centerX - ((dialogRect.x2 - dialogRect.x1) \ 2)
+    newTop = centerY - ((dialogRect.y2 - dialogRect.y1) \ 2)
+    
+    'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
+    MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
+    
+    'Register the window with the window manager, which will also make it a top-most window
+    g_WindowManager.requestTopmostWindow dialogHwnd
+
+    'Manually disable all other images forms to prevent them from mistakenly receiving input
+    Dim i As Long
+    For i = 0 To g_NumOfImagesLoaded
+        If Not pdImages(i) Is Nothing Then
+            If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
+        End If
+    Next i
+
+    'Show the dialog, and dynamically assign its owner to the proper window (the main form if no child windows are active; otherwise, the
+    ' active child image window).
+    dialogForm.Show dialogModality, getModalOwner()
+    
+    'Re-enable any disabled image forms
+    For i = 0 To g_NumOfImagesLoaded
+        If Not pdImages(i) Is Nothing Then
+            If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
+        End If
+    Next i
+    
+    'De-register this hWnd with the window manager
+    g_WindowManager.requestTopmostWindow dialogHwnd, True
+    
+    'If the form has not been unloaded, unload it now
+    If Not (dialogForm Is Nothing) Then
+        Unload dialogForm
+        Set dialogForm = Nothing
+    End If
+
+End Sub
+
+'When a modal dialog needs to be raised, we want to set its ownership to the top-most (relevant) window in the program, which may or may
+' not be the main form.  This function should be called to determine the proper owner of any modal dialog box.
+Public Function getModalOwner() As Form
+
+    'If no images have been loaded, the main form owns any dialog boxes.
+    If g_OpenImageCount = 0 Then
+        Set getModalOwner = FormMain
+    
+    'If images HAVE been loaded, make the top-most child the dialog owner
+    Else
+        Set getModalOwner = pdImages(g_CurrentImage).containingForm
+    End If
+
+End Function
 
 'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
 ' (e.g. the system returns a value from 0 to 3), but we can use a "good enough" approximation.
@@ -867,11 +959,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    getPixelWidthOfString = txtSize.X
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    getPixelHeightOfString = txtSize.Y
 End Function

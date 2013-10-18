@@ -24,7 +24,6 @@ Begin VB.Form FormTwins
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -163,7 +162,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -186,48 +185,48 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     'This look-up table will be used for alpha-blending.  It contains the equivalent of any two color values [0,255] added
     ' together and divided by 2.
     Dim hLookup(0 To 510) As Byte
-    For X = 0 To 510
-        hLookup(X) = X \ 2
-    Next X
+    For x = 0 To 510
+        hLookup(x) = x \ 2
+    Next x
     
     'Color variables
     Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Grab the current pixel values
-        r = srcImageData(QuickVal + 2, Y)
-        g = srcImageData(QuickVal + 1, Y)
-        b = srcImageData(QuickVal, Y)
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If tType = 0 Then
-            r2 = srcImageData(maxX - QuickVal + 2, Y)
-            g2 = srcImageData(maxX - QuickVal + 1, Y)
-            b2 = srcImageData(maxX - QuickVal, Y)
+            r2 = srcImageData(maxX - QuickVal + 2, y)
+            g2 = srcImageData(maxX - QuickVal + 1, y)
+            b2 = srcImageData(maxX - QuickVal, y)
         Else
-            r2 = srcImageData(QuickVal + 2, finalY - Y)
-            g2 = srcImageData(QuickVal + 1, finalY - Y)
-            b2 = srcImageData(QuickVal, finalY - Y)
+            r2 = srcImageData(QuickVal + 2, finalY - y)
+            g2 = srcImageData(QuickVal + 1, finalY - y)
+            b2 = srcImageData(QuickVal, finalY - y)
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
-        dstImageData(QuickVal + 2, Y) = hLookup(r + r2)
-        dstImageData(QuickVal + 1, Y) = hLookup(g + g2)
-        dstImageData(QuickVal, Y) = hLookup(b + b2)
+        dstImageData(QuickVal + 2, y) = hLookup(r + r2)
+        dstImageData(QuickVal + 1, y) = hLookup(g + g2)
+        dstImageData(QuickVal, y) = hLookup(b + b2)
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

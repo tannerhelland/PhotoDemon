@@ -25,7 +25,6 @@ Begin VB.Form dialog_MultiImage
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   370
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "Load only the first page"
       BeginProperty Font 
@@ -205,7 +204,7 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     makeFormPretty Me, m_ToolTip
 
     'Display the form
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub
 

@@ -24,7 +24,6 @@ Begin VB.Form FormPerspective
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1009
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.ComboBox cmbMapping 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 

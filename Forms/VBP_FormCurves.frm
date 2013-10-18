@@ -24,7 +24,6 @@ Begin VB.Form FormCurves
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -302,7 +301,7 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -328,26 +327,26 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
     Set cParams = New pdParamString
     cParams.setParamString listOfPoints
     
-    For X = 0 To 255
-        cHistogram(X) = cParams.GetDouble(X + 1) * 255
-    Next X
+    For x = 0 To 255
+        cHistogram(x) = cParams.GetDouble(x + 1) * 255
+    Next x
     
     'Our curves correction can be easily applied using a look-up table
     Dim newGamma(0 To 255) As Byte
     Dim tmpGamma As Double
     
-    For X = 0 To 255
+    For x = 0 To 255
     
-        tmpGamma = CDbl(X) / 255
+        tmpGamma = CDbl(x) / 255
         
         'This 'if' statement is necessary to match a weird trend with Photoshop's Curves dialog.  For darker gamma
         ' values, Photoshop increases the force of the gamma conversion.  This is good for emphasizing subtle dark
         ' shades that the human eye doesn't normally pick up... I think.  If this 'if' statement is removed and
         ' only the TRUE condition is kept, the function will yield more mathematically correct results.
-        If cHistogram(X) <= (256 - X) Then
-            tmpGamma = tmpGamma ^ (1 / ((256 - X) / (cHistogram(X) + 1)))
+        If cHistogram(x) <= (256 - x) Then
+            tmpGamma = tmpGamma ^ (1 / ((256 - x) / (cHistogram(x) + 1)))
         Else
-            tmpGamma = tmpGamma ^ ((1 / ((256 - X) / (cHistogram(X) + 1))) ^ 1.5)
+            tmpGamma = tmpGamma ^ ((1 / ((256 - x) / (cHistogram(x) + 1))) ^ 1.5)
         End If
         
         tmpGamma = tmpGamma * 255
@@ -355,33 +354,33 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
         If tmpGamma > 255 Then tmpGamma = 255
         If tmpGamma < 0 Then tmpGamma = 0
         
-        newGamma(X) = CByte(tmpGamma)
+        newGamma(x) = CByte(tmpGamma)
         
-    Next X
+    Next x
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, Y) = newGamma(r)
-        ImageData(QuickVal + 1, Y) = newGamma(g)
-        ImageData(QuickVal, Y) = newGamma(b)
+        ImageData(QuickVal + 2, y) = newGamma(r)
+        ImageData(QuickVal + 1, y) = newGamma(g)
+        ImageData(QuickVal, y) = newGamma(b)
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -689,10 +688,10 @@ Private Sub redrawPreviewBox()
     
 End Sub
 
-Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the mouse is over a point, mark it as the active point
-    selectedNode = checkClick(X, Y)
+    selectedNode = checkClick(x, y)
     
     'Different actions are initiated for left vs right clicks (left to add/move points, right to remove)
     If Button = vbLeftButton Then
@@ -709,7 +708,7 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, X As Single, 
             pointFound = -1
             
             For i = 0 To numOfNodes
-                If cNodes(i).pX > X Then
+                If cNodes(i).pX > x Then
                     pointFound = i
                     Exit For
                 End If
@@ -728,8 +727,8 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, X As Single, 
                 Next i
                 
                 'Store the new point
-                cNodes(pointFound).pX = X
-                cNodes(pointFound).pY = Y
+                cNodes(pointFound).pX = x
+                cNodes(pointFound).pY = y
                 
                 'Make sure the new point falls within acceptable boundaries
                 If cNodes(pointFound).pX < previewBorder Then cNodes(pointFound).pX = previewBorder
@@ -753,8 +752,8 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, X As Single, 
             
             'If no neighboring point was found, this point should be inserted at the end of the curve
             Else
-                cNodes(numOfNodes).pX = X
-                cNodes(numOfNodes).pY = Y
+                cNodes(numOfNodes).pX = x
+                cNodes(numOfNodes).pY = y
                 selectedNode = numOfNodes
             End If
             
@@ -799,15 +798,15 @@ Private Sub deleteCurveNode(ByVal nodeIndex As Long)
 
 End Sub
 
-Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'If the mouse is *not* down, indicate to the user that points can be moved
     If Not isMouseDown Then
         
         'If the user is close to a knot, change the mousepointer to 'move'
-        If checkClick(X, Y) > -1 Then
+        If checkClick(x, y) > -1 Then
             If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
-            selectedNode = checkClick(X, Y)
+            selectedNode = checkClick(x, y)
         Else
             If picDraw.MousePointer <> 0 Then picDraw.MousePointer = 0
             selectedNode = -1
@@ -822,8 +821,8 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, 
     
         If selectedNode > 0 Then
         
-            cNodes(selectedNode).pX = X
-            cNodes(selectedNode).pY = Y
+            cNodes(selectedNode).pX = x
+            cNodes(selectedNode).pY = y
             
             'Perform basic bounds-checking.  Points are not allowed to cross over each other, and they cannot lie
             ' outside the bounds of the curve preview box.
@@ -853,19 +852,19 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, 
 
 End Sub
 
-Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     isMouseDown = False
     selectedNode = -1
 End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
-Private Function checkClick(ByVal X As Long, ByVal Y As Long) As Long
+Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
     
     Dim pDist As Double
     Dim i As Long
     
     For i = 1 To numOfNodes
-        pDist = pDistance(X, Y, cNodes(i).pX, cNodes(i).pY)
+        pDist = pDistance(x, y, cNodes(i).pX, cNodes(i).pY)
         
         'If we're close to an existing point, return the index of that point
         If pDist < mouseAccuracy Then
@@ -894,8 +893,8 @@ Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
 End Function
 
 'Original required spline function:
-Private Function f(ByRef X As Double) As Double
-        f = X * X * X - X
+Private Function f(ByRef x As Double) As Double
+        f = x * x * x - x
 End Function
 
 'Original required spline function:

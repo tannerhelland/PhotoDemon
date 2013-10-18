@@ -23,7 +23,6 @@ Begin VB.Form FormBatchWizard
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1024
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdPrevious 
       Caption         =   "&Previous"
       Enabled         =   0   'False

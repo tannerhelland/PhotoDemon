@@ -25,7 +25,6 @@ Begin VB.Form FormSelectionDialogs
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   444
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
@@ -180,7 +179,7 @@ Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
     makeFormPretty Me, m_ToolTip
 
     'Display the form
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub
 

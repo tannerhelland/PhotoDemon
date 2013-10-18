@@ -23,7 +23,6 @@ Begin VB.Form dialog_ExportJP2
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   489
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -318,6 +317,6 @@ Public Sub showDialog()
     makeFormPretty Me, m_ToolTip
     
     'Display the dialog
-    Me.Show vbModal, FormMain
+    showPDDialog vbModal, Me
 
 End Sub

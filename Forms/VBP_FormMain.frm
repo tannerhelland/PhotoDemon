@@ -1222,7 +1222,7 @@ Private Sub Form_Load()
                 
             Case UPDATE_AVAILABLE
                 Message "Software update found!  Launching update notifier..."
-                FormSoftwareUpdate.Show vbModal, Me
+                showPDDialog vbModal, FormSoftwareUpdate
             
         End Select
             
@@ -1241,7 +1241,7 @@ Private Sub Form_Load()
                 
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload Then
-            FormPluginDownloader.Show vbModal, FormMain
+            showPDDialog vbModal, FormPluginDownloader
             
             'Since plugins may have been downloaded, update the interface to match any new features that may be available.
             LoadPlugins
@@ -1274,7 +1274,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1310,7 +1310,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1893,7 +1893,7 @@ Private Sub MnuHelp_Click(Index As Integer)
                         
                 Case 2
                     Message "Software update found!  Launching update notifier..."
-                    FormSoftwareUpdate.Show vbModal, Me
+                    showPDDialog vbModal, FormSoftwareUpdate
                 
             End Select
         
@@ -1948,7 +1948,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             
         'Display About page
         Case 10
-            FormAbout.Show vbModal, FormMain
+            showPDDialog vbModal, FormAbout
         
     End Select
 
@@ -1956,7 +1956,7 @@ End Sub
 
 Private Sub MnuHistogram_Click()
     'Process "Display histogram", True
-    FormHistogram.Show vbModal, Me
+    showPDDialog vbModal, FormHistogram
 End Sub
 
 Private Sub MnuHistogramEqualize_Click()
@@ -2144,7 +2144,7 @@ Private Sub MnuMetadata_Click(Index As Integer)
                 Exit Sub
             End If
             
-            FormMetadata.Show vbModal, Me
+            showPDDialog vbModal, FormMetadata
         
         'Separator
         Case 1
@@ -2514,15 +2514,15 @@ Private Sub mnuTool_Click(Index As Integer)
     
         'Language editor
         Case 1
-            If Not FormLanguageEditor.Visible Then FormLanguageEditor.Show vbModeless, FormMain
+            If Not FormLanguageEditor.Visible Then showPDDialog vbModeless, FormLanguageEditor
     
         'Options
         Case 5
-            If Not FormPreferences.Visible Then FormPreferences.Show vbModal, FormMain
+            If Not FormPreferences.Visible Then showPDDialog vbModal, FormPreferences
             
         'Plugin manager
         Case 6
-            If Not FormPluginManager.Visible Then FormPluginManager.Show vbModal, FormMain
+            If Not FormPluginManager.Visible Then showPDDialog vbModal, FormPluginManager
             
     End Select
 
@@ -2614,14 +2614,14 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     'Open program preferences
     If ctlAccelerator.Key(nIndex) = "Preferences" Then
         If Not FormPreferences.Visible Then
-            FormPreferences.Show vbModal, FormMain
+            showPDDialog vbModal, FormPreferences
             Exit Sub
         End If
     End If
     
     If ctlAccelerator.Key(nIndex) = "Plugin manager" Then
         If Not FormPluginManager.Visible Then
-            FormPluginManager.Show vbModal, FormMain
+            showPDDialog vbModal, FormPluginManager
             Exit Sub
         End If
     End If

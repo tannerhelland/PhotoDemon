@@ -25,7 +25,6 @@ Begin VB.Form dialog_UnsavedChanges
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "Cancel, and return to editing"
       Height          =   735
@@ -270,7 +269,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     makeFormPretty Me, m_ToolTip, True
 
     'Display the form
-    Me.Show vbModal, ownerForm
+    showPDDialog vbModal, Me
 
 End Sub
 

@@ -23,7 +23,6 @@ Begin VB.Form FormColorTemp
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   822
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -254,7 +253,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -283,14 +282,14 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     tempStrength = tempStrength / 100
             
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
         originalLuminance = (getLuminance(r, g, b) / 255)
@@ -308,18 +307,18 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal, Y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -352,11 +351,11 @@ Private Sub Form_Activate()
     Dim r As Long, g As Long, b As Long
     
     'Simple gradient-ish code implementation of drawing temperature between 1000 and 12000 Kelvin
-    Dim X As Long
-    For X = 0 To picTempDemo.ScaleWidth
+    Dim x As Long
+    For x = 0 To picTempDemo.ScaleWidth
     
         'Based on our x-position, gradient a value between 1000 and 12000
-        temperatureVal = X / picTempDemo.ScaleWidth
+        temperatureVal = x / picTempDemo.ScaleWidth
         temperatureVal = temperatureVal * sltTemperature.Max
         temperatureVal = temperatureVal + sltTemperature.Min
         
@@ -364,9 +363,9 @@ Private Sub Form_Activate()
         getRGBfromTemperature r, g, b, temperatureVal
         
         'Draw the color
-        picTempDemo.Line (X, 0)-(X, picTempDemo.ScaleHeight), RGB(r, g, b)
+        picTempDemo.Line (x, 0)-(x, picTempDemo.ScaleHeight), RGB(r, g, b)
         
-    Next X
+    Next x
     
     picTempDemo.Picture = picTempDemo.Image
         

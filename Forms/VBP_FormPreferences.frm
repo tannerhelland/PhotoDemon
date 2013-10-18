@@ -23,7 +23,6 @@ Begin VB.Form FormPreferences
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   751
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset all options"
       Height          =   495
@@ -2452,7 +2451,7 @@ Private Sub CmdOK_Click()
                 g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cmbMRUCaption.ListIndex
                 MRU_SaveToFile
                 MRU_LoadFromFile
-                ResetMenuIcons
+                resetMenuIcons
             End If
         
         'END MRU caption length

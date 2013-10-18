@@ -25,7 +25,6 @@ Begin VB.Form FormHistogram
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   706
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkLog 
       Height          =   480
       Left            =   7320

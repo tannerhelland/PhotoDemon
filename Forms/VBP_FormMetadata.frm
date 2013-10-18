@@ -24,7 +24,6 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.smartCheckBox chkFriendlyNames 
       Height          =   540
       Left            =   3240
