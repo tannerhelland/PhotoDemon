@@ -32,7 +32,7 @@ Private Declare Function GetProp Lib "user32" Alias "GetPropA" (ByVal hWnd As Lo
 Private Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_PAINT As Long = &HF&
@@ -103,6 +103,8 @@ Private dpiRatio As Double
 ' to another program while a modal dialog is active.
 Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form)
 
+    On Error GoTo showPDDialogError
+
     'Start by loading the form and hiding it
     dialogForm.Visible = False
     
@@ -131,10 +133,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
-    
-    'Register the window with the window manager, which will also make it a top-most window
-    g_WindowManager.requestTopmostWindow dialogHwnd
-
+        
     'Manually disable all other images forms to prevent them from mistakenly receiving input
     Dim i As Long
     If g_NumOfImagesLoaded > 0 Then
@@ -146,7 +145,15 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     End If
 
     'Show the dialog, and dynamically assign its owner to the proper window (the main form if no child windows are active; otherwise, the
-    ' active child image window).
+    ' active child image window).  Note that in almost all cases, the owning window will already be activated.  The only problem occurs if
+    ' a modal dialog is active, and the user switches to another window then returns, while image windows are floating.  Still need to debug
+    ' that case.
+    'getModalOwner().ActivateWorkaround
+    
+    'Register the window with the window manager, which will also make it a top-most window
+    g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
+    
+    'Use VB to actually display the dialog
     dialogForm.Show dialogModality, getModalOwner()
     
     'Re-enable any disabled image forms
@@ -159,13 +166,19 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     End If
     
     'De-register this hWnd with the window manager
-    g_WindowManager.requestTopmostWindow dialogHwnd, True
+    g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
     
     'If the form has not been unloaded, unload it now
     If Not (dialogForm Is Nothing) Then
         Unload dialogForm
         Set dialogForm = Nothing
     End If
+    
+    Exit Sub
+    
+'For reasons I can't yet ascertain, this function will sometimes fail, claiming that a modal window is already active.  If that happens,
+' we can just exit.
+showPDDialogError:
 
 End Sub
 
@@ -982,11 +995,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.X
+    getPixelWidthOfString = txtSize.x
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.Y
+    getPixelHeightOfString = txtSize.y
 End Function

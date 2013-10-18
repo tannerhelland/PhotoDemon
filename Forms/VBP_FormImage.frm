@@ -132,9 +132,7 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     Debug.Print "(Image #" & Me.Tag & " was activated because " & reasonForActivation & ")"
     
     'If this image is already the active image, we don't need to perform certain steps
-    'If g_CurrentImage <> Val(Me.Tag) Then
-    
-        Debug.Print Me.Tag & ":" & g_CurrentImage
+    If g_CurrentImage <> Val(Me.Tag) Then
         
         'Update the current form variable
         g_CurrentImage = Val(Me.Tag)
@@ -148,7 +146,7 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
         PrepareViewport Me, "Form received focus"
         
-    'End If
+    End If
         
     'Display the size of this image in the status bar
     ' (NOTE: because this event will be fired when this form is first built, don't update the size values
@@ -692,6 +690,8 @@ End Sub
 
 'In VB6, _QueryUnload fires before _Unload. We check for unsaved images here.
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+
+    Debug.Print "(Image #" & Me.Tag & " received a Query_Unload trigger)"
 
     'If the user wants to be prompted about unsaved images, do it now
     If g_ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
