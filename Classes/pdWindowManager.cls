@@ -316,7 +316,7 @@ End Function
 
 'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
 ' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
-Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
+Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerhWnd As Long, Optional ByVal windowUnloading As Boolean = False)
 
     'By default, windows are ADDED to our collection, not removed.
     If Not windowUnloading Then
@@ -331,7 +331,7 @@ Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As 
         SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
         
         'Dynamically set the window's owner to match
-        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerHwnd
+        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerhWnd
         
         'NOW we can display the window.  (Doing this via anything besides VB's in-built .Show method breaks stuff.  I'll need
         ' to investigate further to see if it's possible to mimic the .Show event via API.)
@@ -1655,7 +1655,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Move each child window, while retaining the current offset
                 For i = 0 To numOfPDWindows - 1
                     GetWindowRect pdWindows(i).hWnd, childRect
-                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(i).isVisible, 1, 0)
+                    
+                    'NOTE: Win 7 classic theme will need extra debugging, as I have just discovered.  Desktop redraws are handled COMPLETELY differently,
+                    ' so optimizations for Aero can cause all kinds of horrible distortions on classic theme!  Ugh....
+                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
                     updateStoredWindowLocation i
                 Next i
                 
