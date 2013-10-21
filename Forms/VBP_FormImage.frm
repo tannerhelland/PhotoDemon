@@ -128,92 +128,87 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     'Because activation is an expensive process (requiring viewport redraws and more), I track the calls that access it.  This is used
     ' to minimize repeat calls as much as possible.
     Debug.Print "(Image #" & Me.Tag & " was activated because " & reasonForActivation & ")"
+        
+    'Update the current form variable
+    g_CurrentImage = Val(Me.Tag)
     
-    'If this image is already the active image, we don't need to perform certain steps
-    If g_CurrentImage <> Val(Me.Tag) Then
-        
-        'Update the current form variable
-        g_CurrentImage = Val(Me.Tag)
-        
-        'Use the window manager to bring the window to the foreground
-        g_WindowManager.notifyChildReceivedFocus Me
-        
-        'Notify the thumbnail bar that a new image has been selected
-        toolbar_ImageTabs.notifyNewActiveImage Me.Tag
-        
-        'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-        PrepareViewport Me, "Form received focus"
-        
-        'Display the size of this image in the status bar
-        ' (NOTE: because this event will be fired when this form is first built, don't update the size values
-        ' unless they actually exist.)
-        If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
+    PrepareViewport Me, "Form received focus"
     
-        'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
-        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) And (MacroStatus <> MacroBATCH) Then
-            If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
-                setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
-            Else
-                setNewTaskbarIcon origIcon32, FormMain.hWnd
-                setNewAppIcon origIcon16
-            End If
-            If pdImages(g_CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(g_CurrentImage).curFormIcon16
-        End If
-        
-        'Determine whether Undo, Redo, Fade-last are available
-        metaToggle tUndo, pdImages(g_CurrentImage).UndoState
-        metaToggle tRedo, pdImages(g_CurrentImage).RedoState
-        FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
-        
-        'Determine whether save is enabled
-        metaToggle tSave, Not pdImages(g_CurrentImage).HasBeenSaved
-        
-        'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-        ' Note that if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
-        ' browse at their leisure.
-        If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-            
-            'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
-            metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
-            
+    'Use the window manager to bring the window to the foreground
+    g_WindowManager.notifyChildReceivedFocus Me
+    
+    'Notify the thumbnail bar that a new image has been selected
+    toolbar_ImageTabs.notifyNewActiveImage Me.Tag
+    
+    'Display the size of this image in the status bar
+    ' (NOTE: because this event will be fired when this form is first built, don't update the size values
+    ' unless they actually exist.)
+    If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+
+    'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
+    If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) And (MacroStatus <> MacroBATCH) Then
+        If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
+            setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
         Else
-        
-            'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
-            ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
-            ' In that rare case, we can enable the GPS menu correctly.
-            metaToggle tMetadata, True
-            If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
-            Else
-                metaToggle tGPSMetadata, True
-            End If
-                    
+            setNewTaskbarIcon origIcon32, FormMain.hWnd
+            setNewAppIcon origIcon16
         End If
+        If pdImages(g_CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(g_CurrentImage).curFormIcon16
+    End If
+    
+    'Determine whether Undo, Redo, Fade-last are available
+    metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+    metaToggle tRedo, pdImages(g_CurrentImage).RedoState
+    FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
+    
+    'Determine whether save is enabled
+    metaToggle tSave, Not pdImages(g_CurrentImage).HasBeenSaved
+    
+    'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+    ' Note that if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
+    ' browse at their leisure.
+    If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
         
-        'Check the image's color depth, and check/uncheck the matching Image Mode setting
-        If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+        'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
+        metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+        metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
         
-        'Restore the zoom value for this particular image (again, only if the form has been initialized)
-        If pdImages(g_CurrentImage).Width <> 0 Then
-            g_AllowViewportRendering = False
-            toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
-            g_AllowViewportRendering = True
-        End If
-        
-        'If a selection is active on this image, update the text boxes to match
-        If pdImages(g_CurrentImage).selectionActive Then
-            metaToggle tSelection, True
+    Else
+    
+        'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
+        ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
+        ' In that rare case, we can enable the GPS menu correctly.
+        metaToggle tMetadata, True
+        If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
         Else
-            metaToggle tSelection, False
+            metaToggle tGPSMetadata, True
         End If
-        
-        'Finally, if the histogram window is open, redraw it
-        If FormHistogram.Visible And pdImages(Me.Tag).loadedSuccessfully Then
-            FormHistogram.TallyHistogramValues
-            FormHistogram.DrawHistogram
-        End If
-        
+                
+    End If
+    
+    'Check the image's color depth, and check/uncheck the matching Image Mode setting
+    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+    
+    'Restore the zoom value for this particular image (again, only if the form has been initialized)
+    If pdImages(g_CurrentImage).Width <> 0 Then
+        g_AllowViewportRendering = False
+        toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+        g_AllowViewportRendering = True
+    End If
+    
+    'If a selection is active on this image, update the text boxes to match
+    If pdImages(g_CurrentImage).selectionActive Then
+        metaToggle tSelection, True
+    Else
+        metaToggle tSelection, False
+    End If
+    
+    'Finally, if the histogram window is open, redraw it
+    If FormHistogram.Visible And pdImages(Me.Tag).loadedSuccessfully Then
+        FormHistogram.TallyHistogramValues
+        FormHistogram.DrawHistogram
     End If
         
 End Sub
@@ -716,7 +711,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
                 If FormMain.Enabled Then Me.ActivateWorkaround "unsaved changes dialog required"
-            
+                
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
                 Dim confirmReturn As VbMsgBoxResult
