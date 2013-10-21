@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 18/October/13
-'Last update: allow tracking
+'Last updated: 21/October/13
+'Last update: only update window visibility status when it doesn't match the value we have stored; this fixes a number of flickering
+'             issues related to loading multiple images
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2013, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
@@ -93,6 +94,20 @@ Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOZORDER As Long = &H4
 Private Const SWP_DRAWFRAME As Long = &H20
 Private Const SWP_NOCOPYBITS As Long = &H100
+
+'Experimental messages related to Win 7 taskbar stuff
+Private Const WM_CHILDACTIVATE As Long = &H22
+
+'AnimateWindows decs
+Private Const AW_ACTIVATE As Long = &H20000
+Private Const AW_BLEND As Long = &H80000
+Private Const AW_CENTER As Long = &H10
+Private Const AW_HIDE As Long = &H10000
+Private Const AW_HOR_POSITIVE As Long = &H1
+Private Const AW_HOR_NEGATIVE As Long = &H2
+Private Const AW_SLIDE As Long = &H40000
+Private Const AW_VER_POSITIVE As Long = &H4
+Private Const AW_VER_NEGATIVE As Long = &H8
 
 Private Enum enWindowStyles
     WS_BORDER = &H800000
@@ -383,11 +398,22 @@ End Sub
 Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boolean)
     
     'Find this entry in the windows array, and mark its visibility status
+    Dim winIndex As Long
+    
     Dim i As Long
     For i = 0 To numOfPDWindows - 1
         If pdWindows(i).hWnd = winHwnd Then
-            pdWindows(i).isVisible = newVisibility
-            Exit For
+        
+            winIndex = i
+        
+            'If this window's visibility already matches what we have stored, ignore the request and exit
+            If pdWindows(i).isVisible = newVisibility Then
+                Exit Sub
+            Else
+                pdWindows(i).isVisible = newVisibility
+                Exit For
+            End If
+            
         End If
     Next i
     
@@ -399,9 +425,11 @@ Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     End If
     
     'If both toolbars and images are docked, the available client area for the main form will have changed.  Refresh all relevant windows.
-    For i = 0 To numOfPDWindows - 1
-        If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
-    Next i
+    'If pdWindows(winIndex).typeOfWindow = TOOLBAR_WINDOW Then
+        For i = 0 To numOfPDWindows - 1
+            If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
+        Next i
+    'End If
     
 End Sub
 
@@ -985,6 +1013,9 @@ Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Bool
         Next i
     End If
     
+    'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
+    restoreActiveImageToForeground "float status of toolbars or images changed"
+    
 End Sub
 
 'If a window had location data previously stored, this function will retrieve that data and move the window into place.
@@ -1261,7 +1292,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
     cSubclass.ssc_Subclass pdWindows(numOfPDWindows).hWnd, 64 + numOfPDWindows, , Me
-    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOVING, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOVING, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING, WM_ACTIVATE
     
     'Paint this window with the proper visual style (based on whether it's docked or floating)
     updateWindowStyle numOfPDWindows, True
@@ -1358,7 +1389,22 @@ Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
 '    End If
     
     'Regardless of float status, we can now manually bring the activated window to the foreground
-    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
+    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER 'Or SWP_NOACTIVATE
+    
+    'EXPERIMENTAL:
+    'Find this image in the window array, and note that we have made it visible.
+    Dim i As Long
+    For i = 0 To numOfPDWindows
+        If pdWindows(i).typeOfWindow = IMAGE_WINDOW Then
+            If pdWindows(i).hWnd = childForm.hWnd Then
+                pdWindows(i).isVisible = True
+                Exit For
+                'setWindowVisibility pdWindows(i).hWnd, True
+            'Else
+                'setWindowVisibility pdWindows(i).hWnd, False
+            End If
+        End If
+    Next i
 
 End Sub
 
@@ -1504,7 +1550,7 @@ Public Sub notifyImageTabStripResized()
     
 End Sub
 
-'Whenever a size change occurs that requires multiple windows to be redrawn, this function can be called.  It will automatically handle redraw duties
+'Whenever a size change occurs that requires multiple windows to be redrawn, this function can be called.  It will automatically handle redraw duties.
 Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winRect)
 
     Dim childRect As winRect
@@ -1544,12 +1590,33 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
             'Force the window to right-align within the client area of the parent
             getActualMainFormClientRect childRect, True
             MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), IIf(pdWindows(winIndex).isVisible, 1, 0)
-            requestWindowResync winIndex
-        
+            
     End Select
                     
-                    
+    'Regardless of the type of window being redrawn, it makes sense to resync the window's coordinates here (as a failsafe).
+    requestWindowResync winIndex
 
+End Sub
+
+'Because window zOrder may get botched under a variety of circumstances (e.g. when the program gains/loses focus, when toolbar or image floating
+' status is changed, etc), it is sometimes necessary to forcibly restore the active image to the foreground.  Use this wrapper to do it.
+Private Sub restoreActiveImageToForeground(ByVal reasonForRestore As String)
+    
+    If (g_OpenImageCount > 0) Then
+    
+        'Find the active image in our window array and restore it
+        Dim i As Long
+        For i = 0 To numOfPDWindows - 1
+            If Not pdWindows(i).subclassingReleased Then
+                If pdWindows(i).formReference.hWnd = pdImages(g_CurrentImage).containingForm.hWnd Then
+                    Debug.Print "Active image window is about to be redrawn due to " & reasonForRestore
+                    SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                End If
+            End If
+        Next i
+        
+    End If
+    
 End Sub
 
 'All events subclassed by this window are processed here.
@@ -1593,6 +1660,15 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     
         'Check child window messages
         Select Case uMsg
+            
+            'VB's built-in _Activate event is a worthless mess.  (It fires on a completely different system than the actual WM_ACTIVATE
+            ' message for the window in question.)  Rather than deal with it, we subclass _Activate messages ourselves, and process
+            ' them as necessary.
+            Case WM_ACTIVATE
+                If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW And LoWord(wParam) > 0 Then
+                    pdWindows(winIndex).formReference.ActivateWorkaround "API activate event captured"
+                    Debug.Print "received activate message for window #" & winIndex & " - " & pdWindows(winIndex).formReference.Caption & " - " & LoWord(wParam)
+                End If
         
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
@@ -1748,6 +1824,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         requestWindowRedraw i, curWinRect
                     Next i
                     
+                    'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
+                    restoreActiveImageToForeground "PD maximized or restored"
+                    
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now
                 ElseIf wParam = SC_MINIMIZE Then
                 
@@ -1786,6 +1865,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             End If
                         Next i
                         
+                        'This is a bit funny, but - when the program loses focus, we need to handle the active image last; otherwise, it may look
+                        ' as though another window has mistakenly received focus (even though internally we know it hasn't).
+                        SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                        
                         'If the program has registered any extra windows (e.g. modal dialogs), hide them as well
                         If numOfExtraWindows > 0 Then
                             For i = 0 To numOfExtraWindows - 1
@@ -1793,25 +1876,33 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             Next i
                         End If
                         
+                        isPDDeactivated = True
+                        
                     'PD is gaining focus
                     Case Else
                         Debug.Print "> PhotoDemon regained focus! <"
-                        For i = 0 To numOfPDWindows - 1
-                            If pdWindows(i).isVisible Then
-                                SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-                            End If
-                        Next i
                         
-                        'Because zOrder may get botched when the program gains/loses focus, forcibly restore the active image.
-                        ' (TODO: move this code out of the window manager)
-                        If (g_OpenImageCount > 0) Then SetForegroundWindow pdImages(g_CurrentImage).containingForm.hWnd 'pdImages(g_CurrentImage).containingForm.ActivateWorkaround "program regained focus"
+                        If isPDDeactivated Then
                         
-                        'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
-                        ' sit above any image or toolbar windows.
-                        If numOfExtraWindows > 0 Then
-                            For i = 0 To numOfExtraWindows - 1
-                                SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                            For i = 0 To numOfPDWindows - 1
+                                If pdWindows(i).isVisible Then
+                                    SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                                End If
                             Next i
+                            
+                            'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
+                            restoreActiveImageToForeground "PD gained focus"
+                            
+                            'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
+                            ' sit above any image or toolbar windows.
+                            If numOfExtraWindows > 0 Then
+                                For i = 0 To numOfExtraWindows - 1
+                                    SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                                Next i
+                            End If
+                            
+                            isPDDeactivated = False
+                            
                         End If
                         
                 End Select

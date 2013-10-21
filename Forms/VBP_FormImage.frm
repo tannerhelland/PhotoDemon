@@ -79,14 +79,15 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Image Form (Child MDI form)
+'Image Form (no longer an MDI child, but still specially handled by PhotoDemon's window manager class)
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 26/August/13
-'Last update: Converted mouse tracking code to use bluMouseEvents
+'Last updated: 21/October/13
+'Last update: Improve "select next image" logic when an image is unloaded, but other images are still active.
+'              The behavior should now properly mimic a standard tabstrip.
 '
 'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
-' specialized program components in the MDIWindow module.
+' specialized program components in the pdWindowManager class.
 '
 'As I start including more and more paint tools, this form is going to become a bit more complex. Stay tuned.
 '
@@ -119,12 +120,9 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'The Activate event wraps a public function called ActivateWorkaround.  That function can be called externally when some special event
-' (such as the Next/Previous Image menus) needs to change focus to a new window.
-Private Sub Form_Activate()
-    ActivateWorkaround "Form_Activate fired"
-End Sub
-
+'The Activate event (which is handled by subclassing in the pdWindowManager class) wraps this public ActivateWorkaround function.
+' This function can be called externally when any activation-related event (including peripheral things like the Next/Previous
+' Image menus) requires a change in focus between images windows.
 Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     
     'Because activation is an expensive process (requiring viewport redraws and more), I track the calls that access it.  This is used
@@ -146,76 +144,76 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
         PrepareViewport Me, "Form received focus"
         
-    End If
-        
-    'Display the size of this image in the status bar
-    ' (NOTE: because this event will be fired when this form is first built, don't update the size values
-    ' unless they actually exist.)
-    If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
-
-    'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
-    If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) And (MacroStatus <> MacroBATCH) Then
-        If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
-            setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
-        Else
-            setNewTaskbarIcon origIcon32, FormMain.hWnd
-            setNewAppIcon origIcon16
+        'Display the size of this image in the status bar
+        ' (NOTE: because this event will be fired when this form is first built, don't update the size values
+        ' unless they actually exist.)
+        If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    
+        'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
+        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) And (MacroStatus <> MacroBATCH) Then
+            If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
+                setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
+            Else
+                setNewTaskbarIcon origIcon32, FormMain.hWnd
+                setNewAppIcon origIcon16
+            End If
+            If pdImages(g_CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(g_CurrentImage).curFormIcon16
         End If
-        If pdImages(g_CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(g_CurrentImage).curFormIcon16
-    End If
-    
-    'Determine whether Undo, Redo, Fade-last are available
-    metaToggle tUndo, pdImages(g_CurrentImage).UndoState
-    metaToggle tRedo, pdImages(g_CurrentImage).RedoState
-    FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
-    
-    'Determine whether save is enabled
-    metaToggle tSave, Not pdImages(g_CurrentImage).HasBeenSaved
-    
-    'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    ' Note that if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
-    ' browse at their leisure.
-    If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
         
-        'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
-        metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-        metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+        'Determine whether Undo, Redo, Fade-last are available
+        metaToggle tUndo, pdImages(g_CurrentImage).UndoState
+        metaToggle tRedo, pdImages(g_CurrentImage).RedoState
+        FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).UndoState
         
-    Else
-    
-        'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
-        ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
-        ' In that rare case, we can enable the GPS menu correctly.
-        metaToggle tMetadata, True
-        If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
+        'Determine whether save is enabled
+        metaToggle tSave, Not pdImages(g_CurrentImage).HasBeenSaved
+        
+        'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+        ' Note that if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
+        ' browse at their leisure.
+        If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+            
+            'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
+            metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+            
         Else
-            metaToggle tGPSMetadata, True
+        
+            'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
+            ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
+            ' In that rare case, we can enable the GPS menu correctly.
+            metaToggle tMetadata, True
+            If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
+            Else
+                metaToggle tGPSMetadata, True
+            End If
+                    
         End If
-                
-    End If
-    
-    'Check the image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
-    
-    'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(g_CurrentImage).Width <> 0 Then
-        g_AllowViewportRendering = False
-        toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
-        g_AllowViewportRendering = True
-    End If
-    
-    'If a selection is active on this image, update the text boxes to match
-    If pdImages(g_CurrentImage).selectionActive Then
-        metaToggle tSelection, True
-    Else
-        metaToggle tSelection, False
-    End If
-    
-    'Finally, if the histogram window is open, redraw it
-    If FormHistogram.Visible And pdImages(Me.Tag).loadedSuccessfully Then
-        FormHistogram.TallyHistogramValues
-        FormHistogram.DrawHistogram
+        
+        'Check the image's color depth, and check/uncheck the matching Image Mode setting
+        If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+        
+        'Restore the zoom value for this particular image (again, only if the form has been initialized)
+        If pdImages(g_CurrentImage).Width <> 0 Then
+            g_AllowViewportRendering = False
+            toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+            g_AllowViewportRendering = True
+        End If
+        
+        'If a selection is active on this image, update the text boxes to match
+        If pdImages(g_CurrentImage).selectionActive Then
+            metaToggle tSelection, True
+        Else
+            metaToggle tSelection, False
+        End If
+        
+        'Finally, if the histogram window is open, redraw it
+        If FormHistogram.Visible And pdImages(Me.Tag).loadedSuccessfully Then
+            FormHistogram.TallyHistogramValues
+            FormHistogram.DrawHistogram
+        End If
+        
     End If
         
 End Sub
@@ -813,7 +811,6 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     Message "Closing image..."
-    Me.Visible = False
     
     'Unload the mouse tracker
     Set cMouseEvents = Nothing
@@ -841,31 +838,47 @@ Private Sub Form_Unload(Cancel As Integer)
     'Remove this image from the thumbnail toolbar
     toolbar_ImageTabs.RemoveImage Me.Tag
     
-    'Before exiting, restore focus to the next child window in line.
-    If g_OpenImageCount > 0 Then
+    'Before exiting, restore focus to the next child window in line.  (But only if this image was the active window!)
+    If g_CurrentImage = CLng(Me.Tag) Then
     
-        Dim i As Long
-        i = Val(Me.Tag) + 1
-        If i > UBound(pdImages) Then i = i - 2
+        If g_OpenImageCount > 0 Then
         
-        Do Until i = Val(Me.Tag)
-        
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then
-                    pdImages(i).containingForm.ActivateWorkaround "previous image unloaded"
-                    Exit Do
-                End If
-            End If
+            Dim i As Long
+            i = Val(Me.Tag) + 1
+            If i > UBound(pdImages) Then i = i - 2
             
-            i = i + 1
-            If i > UBound(pdImages) Then i = 0
+            Dim directionAscending As Boolean
+            directionAscending = True
+            
+            Do While i >= 0
+            
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).IsActive Then
+                        pdImages(i).containingForm.ActivateWorkaround "previous image unloaded"
+                        Exit Do
+                    End If
+                End If
+                
+                If directionAscending Then
+                    i = i + 1
+                    If i > UBound(pdImages) Then
+                        directionAscending = False
+                        i = CLng(Me.Tag)
+                    End If
+                Else
+                    i = i - 1
+                End If
+            
+            Loop
         
-        Loop
+        End If
         
-    'If this is the last window, we need to make the toolbars children of the main form again.  Otherwise, they will be mistakenly unloaded.
-    Else
-        g_WindowManager.allImageWindowsUnloaded
     End If
+    
+    Me.Visible = False
+    
+    'If this was the last unloaded image, we need to disable a number of menus and other items.
+    If g_OpenImageCount = 0 Then g_WindowManager.allImageWindowsUnloaded
     
     Message "Finished."
             
