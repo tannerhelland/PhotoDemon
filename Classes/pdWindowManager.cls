@@ -324,6 +324,16 @@ Private mainFormTriggeredChange As Boolean
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
 
+'Though officially discouraged by Microsoft (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx), it is
+' sometimes useful to dynamically reassign ownership of a window at run-time.  In fact, this is a necessity in VB, because we cannot physically
+' assign an owner at creation time, as VB doesn't let us intermix form references and CreateWindow API calls.  (For the record, I am almost
+' certain that VB uses this exact same code to assign ownership when it encounters code like FormChild.Show vbModeless, FormOwner.)
+' Technically we should also track the previous window owner and restore it upon form exiting, but VB makes that unnecessary due to the way it
+' couples owner/child unload behavior.
+Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerHwnd As Long)
+    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerHwnd
+End Sub
+
 'If external functions want to know if PD has focus or not, they can use this function.  It will return TRUE if PhotoDemon is the active window.
 Public Function doesProgramHaveFocus() As Boolean
     doesProgramHaveFocus = Not isPDDeactivated
@@ -331,7 +341,7 @@ End Function
 
 'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
 ' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
-Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerhWnd As Long, Optional ByVal windowUnloading As Boolean = False)
+Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
 
     'By default, windows are ADDED to our collection, not removed.
     If Not windowUnloading Then
@@ -346,7 +356,7 @@ Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerhWnd As 
         SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
         
         'Dynamically set the window's owner to match
-        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerhWnd
+        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerHwnd
         
         'NOW we can display the window.  (Doing this via anything besides VB's in-built .Show method breaks stuff.  I'll need
         ' to investigate further to see if it's possible to mimic the .Show event via API.)
@@ -1285,9 +1295,6 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
         .typeOfWindow = whatWindowType
         .windowName = childForm.Name
     End With
-    
-    'All child forms are (obviously!) children of the main form
-    'SetParent pdWindows(numOfPDWindows).hWnd, mainWindowHwnd
         
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
@@ -1395,14 +1402,9 @@ Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
     'Find this image in the window array, and note that we have made it visible.
     Dim i As Long
     For i = 0 To numOfPDWindows
-        If pdWindows(i).typeOfWindow = IMAGE_WINDOW Then
-            If pdWindows(i).hWnd = childForm.hWnd Then
-                pdWindows(i).isVisible = True
-                Exit For
-                'setWindowVisibility pdWindows(i).hWnd, True
-            'Else
-                'setWindowVisibility pdWindows(i).hWnd, False
-            End If
+        If pdWindows(i).hWnd = childForm.hWnd Then
+            pdWindows(i).isVisible = True
+            Exit For
         End If
     Next i
 

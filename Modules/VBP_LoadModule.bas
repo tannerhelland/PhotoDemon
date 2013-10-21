@@ -943,7 +943,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
             'If image windows are docked, the window manager will have already positioned the window for us.
             Else
-            
+                
             End If
             
             'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
