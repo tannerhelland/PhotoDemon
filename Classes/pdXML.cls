@@ -587,7 +587,7 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If LenB(tagName) > 0 Then
+    If Len(tagName) > 0 Then
         getUniqueTag_String = CStr(tmpString)
     Else
         getUniqueTag_String = defaultReturn

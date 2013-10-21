@@ -44,8 +44,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Selection ("Tab") Toolbar
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 15/October/13
-'Last updated: 15/October/13
-'Last update: initial implementation
+'Last updated: 21/October/13
+'Last update: fix syncing of curThumb and g_CurrentImage when an inactive image is unloaded via the taskbar
 '
 'In fall 2013, PhotoDemon left behind the MDI model in favor of fully dockable/floatable tool and image windows.
 ' This required quite a new features, including a way to switch between loaded images when image windows are docked -
@@ -179,7 +179,16 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long)
     'Decrease the array size to erase the unneeded trailing entry
     numOfThumbnails = numOfThumbnails - 1
     ReDim Preserve imgThumbnails(0 To numOfThumbnails) As thumbEntry
- 
+    
+    'Because inactive images can be unloaded via the Win 7 taskbar, it is possible for our curThumb tracker to get out of sync.
+    ' Update it now.
+    For i = 0 To numOfThumbnails
+        If imgThumbnails(i).indexInPDImages = g_CurrentImage Then
+            curThumb = i
+            Exit For
+        End If
+    Next i
+    
     'Redraw the toolbar to reflect these changes
     redrawToolbar
 
@@ -187,17 +196,17 @@ End Sub
 
 'Given mouse coordinates over the form, return the thumbnail at that location.  If the cursor is not over a thumbnail,
 ' the function will return -1
-Private Function getThumbAtPosition(ByVal X As Long, ByVal Y As Long) As Long
+Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
     
     Dim hOffset As Long
     hOffset = hsThumbnails.Value
     
-    getThumbAtPosition = (X + hOffset) \ fixDPI(thumbWidth)
+    getThumbAtPosition = (x + hOffset) \ fixDPI(thumbWidth)
     If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     
 End Function
 
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Horizontal scrolling - only trigger it if the horizontal scroll bar is actually visible
     If hsThumbnails.Visible Then
@@ -210,7 +219,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(X, Y)
+            curThumbHover = getThumbAtPosition(x, y)
             redrawToolbar
         
         ElseIf CharsScrolled > 0 Then
@@ -221,7 +230,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(X, Y)
+            curThumbHover = getThumbAtPosition(x, y)
             redrawToolbar
             
         End If
@@ -257,12 +266,12 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     If Not weAreResponsibleForResize Then
     
         Dim potentialNewThumb As Long
-        potentialNewThumb = getThumbAtPosition(X, Y)
+        potentialNewThumb = getThumbAtPosition(x, y)
         
         'Notify the program that a new image has been selected; it will then bring that image to the foreground,
         ' which will automatically trigger a toolbar redraw
@@ -275,13 +284,13 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
-    curThumbHover = getThumbAtPosition(X, Y)
+    curThumbHover = getThumbAtPosition(x, y)
     
     'If the mouse is near the bottom of the toolbar, allow the user to resize the thumbnail toolbar
-    If (X > 0) And (X < Me.ScaleWidth) And (Y > Me.ScaleHeight - 6) Then
+    If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - 6) Then
         cMouseEvents.MousePointer = IDC_SIZENS
         
         If Button = vbLeftButton Then
