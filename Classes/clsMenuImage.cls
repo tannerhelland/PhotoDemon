@@ -11,12 +11,12 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
+'Note: this file has been modified for use within PhotoDemon.  Modifications primarily include bugfixes relating to use under
+' a non-standard Windows theme (e.g. "Classic Theme").  These fixes rely on some internal PhotoDemon checks and variables, so
+' I do not recommend using this copy of the class in your own projects.  You may download the original version of this code
+' from the following link (good as of June '12): http://leandroascierto.com/blog/clsmenuimage/
 
 'This code was originally written by Leandro I. Ascierto.
-
-'You may download the original version of this code from the following link (good as of June '12):
-' http://leandroascierto.com/blog/clsmenuimage/
 
 ' Many thanks to Leandro for providing a way to apply PNG images to program menus in VB6
 
@@ -73,25 +73,25 @@ Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Long
 
 ' ------------------------------------------------------- GDI Plus -------------------------------------------------------------------
-Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal Callback As Long = 0, Optional ByVal CallbackData As Long = 0) As Long
-Private Declare Function GdipCreateFromHDC Lib "GdiPlus" (ByVal hDC As Long, ByRef graphics As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "GdiPlus" (ByVal graphics As Long) As Long
-Private Declare Function GdipLoadImageFromFile Lib "GdiPlus" (ByVal FileName As Long, ByRef Image As Long) As Long
-Private Declare Function GdiplusStartup Lib "GdiPlus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
-Private Declare Function GdiplusShutdown Lib "GdiPlus" (ByVal Token As Long) As Long
-Private Declare Function GdipDisposeImage Lib "GdiPlus" (ByVal Image As Long) As Long
-Private Declare Function GdipGetImageDimension Lib "GdiPlus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "GdiPlus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, BITMAP As Long) As Long
-Private Declare Function GdipImageRotateFlip Lib "GdiPlus" (ByVal Image As Long, ByVal rfType As Long) As Long
-Private Declare Function GdipCreateBitmapFromHICON Lib "GdiPlus" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
-Private Declare Function GdipGetImagePixelFormat Lib "GdiPlus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipBitmapLockBits Lib "GdiPlus" (ByVal BITMAP As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipBitmapUnlockBits Lib "GdiPlus" (ByVal BITMAP As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipCreateBitmapFromHBITMAP Lib "GdiPlus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef BITMAP As Long) As Long
-Private Declare Function GdipLoadImageFromStream Lib "GdiPlus" (ByVal Stream As Any, ByRef Image As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "GdiPlus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
-Private Declare Function GdipCreateImageAttributes Lib "GdiPlus" (ByRef imageattr As Long) As Long
-Private Declare Function GdipDisposeImageAttributes Lib "GdiPlus" (ByVal imageattr As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
+Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
+Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
+Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, BITMAP As Long) As Long
+Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal Image As Long, ByVal rfType As Long) As Long
+Private Declare Function GdipCreateBitmapFromHICON Lib "gdiplus" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
+Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
+Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal BITMAP As Long, ByRef LockedBitmapData As BitmapData) As Long
+Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef BITMAP As Long) As Long
+Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Boolean, ByRef MatrixColor As COLORMATRIX, MatrixGray As Any, ByVal Flags As Long) As Long
+Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
+Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal imageattr As Long) As Long
 
 Private Type RECT
     Left As Long
@@ -300,7 +300,7 @@ Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam A
 
 Private pASMWrapper As Long
 Private PrevWndProc As Long
-Private m_hWnd As Long
+Private m_Hwnd As Long
 
 Private GdipToken As Long
 Private m_lWidth As Long
@@ -338,7 +338,11 @@ Public Function WindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam 
                     MIS.itemHeight = m_lHeight + 4
                 End If
                 
-                MIS.itemWidth = MIS.itemWidth + m_lWidth + 4
+                If Not classicThemeWorkaround Then
+                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 4
+                Else
+                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
+                End If
             
                 CopyMemory ByVal lParam, MIS, Len(MIS)
                 
@@ -458,7 +462,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     Dim v As Variant
     Dim sKey As String
 
-    hMenu = GetMenu(m_hWnd)
+    hMenu = GetMenu(m_Hwnd)
     
     Dim tmpInfo As MENUINFO
     
@@ -507,7 +511,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     
     PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
    
-    If hSubMenu = hMenu Then DrawMenuBar m_hWnd
+    If hSubMenu = hMenu Then DrawMenuBar m_Hwnd
     
 End Function
 
@@ -565,7 +569,7 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
     Dim hSubMenu As Long
     Dim v As Variant
 
-    hMenu = GetMenu(m_hWnd)
+    hMenu = GetMenu(m_Hwnd)
     
     hSubMenu = hMenu
     
@@ -999,13 +1003,13 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
-        m_hWnd = hWnd
+        m_Hwnd = hWnd
         
         If UBound(mDIB) > 0 Then
            Me.Clear
         End If
         
-        If Not IsWinVistaOrLater Or bRaiseEvent = True Then
+        If Not IsWinVistaOrLater Or bRaiseEvent Then
             If hWnd <> 0 Then
                 Call StopSubclassing
                 Init = SetSubclassing(hWnd)
@@ -1038,13 +1042,13 @@ End Function
 
 Private Function StopSubclassing() As Boolean
 
-    If m_hWnd <> 0 Then
+    If m_Hwnd <> 0 Then
     
         If PrevWndProc <> 0 Then
         
-            Call SetWindowLong(m_hWnd, GWL_WNDPROC, PrevWndProc)
+            Call SetWindowLong(m_Hwnd, GWL_WNDPROC, PrevWndProc)
             
-            m_hWnd = 0
+            m_Hwnd = 0
             PrevWndProc = 0
             
             StopSubclassing = True
