@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 04/September/13
-'Last update: large overhaul to mirror the rewrite in the Preferences dialog.  Preferences are now properly organized, with much
-'             prettier formatting in the final XML file.  Their categorization matches that of the Preferences dialog itself.
+'Last updated: 21/October/13
+'Last update: added additional debug code to individual GetPref subs, to help track down some obscure errors
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
 ' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
@@ -508,13 +507,14 @@ Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
     If Len(tmpString) = 0 Then
         
         'To prevent future blank results, write out a default value
+        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & CStr(defaultValue)
         SetPref_Boolean preferenceSection, preferenceName, defaultValue
         GetPref_Boolean = defaultValue
             
     'If the requested value DOES exist, convert it to boolean type and return it
     Else
         
-        If tmpString = "False" Then
+        If (tmpString = "False") Or (tmpString = "0") Then
             GetPref_Boolean = False
         Else
             GetPref_Boolean = True
@@ -546,6 +546,7 @@ Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     If Len(tmpString) = 0 Then
     
         'To prevent future blank results, write out a default value
+        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & CStr(defaultValue)
         SetPref_Long preferenceSection, preferenceName, defaultValue
         GetPref_Long = defaultValue
     
@@ -572,6 +573,7 @@ Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
     If Len(tmpString) = 0 Then
         
         'To prevent future blank results, write out a default value
+        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & defaultValue
         SetPref_String preferenceSection, preferenceName, defaultValue
         GetPref_String = defaultValue
     
