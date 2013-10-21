@@ -233,11 +233,13 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
     Dim xmlSafePresetName As String
     xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
     
-    'Start by looking for this preset name in the file.  If it does not exist, abandon this load.
-    If Not xmlEngine.doesTagExist("presetEntry", "id", xmlSafePresetName) Then
-        readXMLSettings = False
-        Exit Function
-    End If
+    'Start by looking for this preset name in the file.  If it does not exist, continue with the load so that the
+    ' ReadCustomPresetData event is still fired - external functions may need access to this, so they can account
+    ' for first-run behavior.
+    'If Not xmlEngine.doesTagExist("presetEntry", "id", xmlSafePresetName) Then
+        'readXMLSettings = False
+        'Exit Function
+    'End If
     
     'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
     ' saved preset file.
