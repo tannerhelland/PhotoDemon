@@ -68,9 +68,14 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     newImageForm.Left = 0
     newImageForm.Top = g_cMonitors.DesktopHeight * Screen.TwipsPerPixelY
     
+    'Previously we used the .Show event here to display the form, but we now rely on the window manager to handle this
+    ' later in the load process.  (This reduces flicker while loading images.)
     newImageForm.Show vbModeless, FormMain
+    
+    'Use the window manager to properly assign the main form ownership over this window
+    'g_WindowManager.requestNewOwner newImageForm.hWnd, FormMain.hWnd
+    
     newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
-    'If FormMain.Enabled Then newImageForm.SetFocus
     
     'Set this image as the current one
     g_CurrentImage = g_NumOfImagesLoaded
@@ -90,9 +95,10 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
 End Sub
 
 'Fit the active window tightly around the image, using its current zoom value.  It is generally assumed that the image has been set to a
-' reasonable zoom value at this point (preferably by FitImageToViewport); otherwise, this function may result in a very large form.
+' reasonable zoom value at this point (preferably by FitImageToViewport); otherwise, this function may result in a very large window.
 Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False, Optional ByVal isImageLoading As Boolean = False)
-        
+    
+    'As a failsafe, exit if no images are currently loaded
     If g_OpenImageCount = 0 Then Exit Sub
     
     'If image windows are docked, we don't need to perform this function, as the window manager will automatically handle all
@@ -102,7 +108,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
     'Make sure the window isn't minimized or maximized
     If pdImages(g_CurrentImage).containingForm.WindowState = 0 Then
     
-        'Disable AutoScroll, because that messes with our calculations
+        'Disable viewport rendering, because we don't want the viewport attempting to re-render itself in the
+        ' midst of our calculations.
         g_AllowViewportRendering = False
     
         'To minimize flickering, we will only apply width/height and top/left changes once.

@@ -781,6 +781,8 @@ End Sub
 
 Private Sub Form_Resize()
     
+    If pdImages(Me.Tag) Is Nothing Then Exit Sub
+    
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
     If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(Me.hWnd) > 0) Then
         
