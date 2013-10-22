@@ -434,12 +434,16 @@ Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
         ShowWindow winHwnd, SW_HIDE
     End If
     
-    'If both toolbars and images are docked, the available client area for the main form will have changed.  Refresh all relevant windows.
-    'If pdWindows(winIndex).typeOfWindow = TOOLBAR_WINDOW Then
-        For i = 0 To numOfPDWindows - 1
-            If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
-        Next i
-    'End If
+    'The available client area for the main form may have changed.  Refresh all relevant windows.
+    For i = 0 To numOfPDWindows - 1
+        
+        'If images are floating, we may need to move them into the proper client area.  Do so now.
+        If imagesFloating And pdWindows(i).typeOfWindow = IMAGE_WINDOW Then
+            moveChildInsideParent i
+        End If
+        
+        If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
+    Next i
     
 End Sub
 
@@ -706,7 +710,9 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
             childRect.x2 = curMainFormClient.x1 + clientWidth
         End If
         
-        SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
+        SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOCOPYBITS
+        
+        forceFullWindowRefresh winIndex
         
     End If
 
@@ -961,7 +967,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             
             'Force the window to top-align within the client area of the parent
             getActualMainFormClientRect childRect, True
-            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), IIf(pdWindows(winIndex).isVisible, 1, 0)
+            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
             
             'Force a full repaint (to make sure children controls are also repainted)
             If pdWindows(winIndex).isVisible Then forceFullWindowRefresh winIndex
@@ -1250,10 +1256,11 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE, WM_SIZING, WM_MOVING
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING
     
-    'In the future, it may be helpful to know when PD loses focus (e.g. to dump images from RAM to the hard drive).
-    ' Thus I am leaving this code here "just in case".
+    'Because I care about PD being a good "desktop citizen", I deactivate top-most status of all toolbars (and other windows, as necessary),
+    ' when PD loses focus.  To do that successfully, we must intercept app activation messages.
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_ACTIVATEAPP, WM_ACTIVATE
     
     'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
@@ -1299,7 +1306,8 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
     cSubclass.ssc_Subclass pdWindows(numOfPDWindows).hWnd, 64 + numOfPDWindows, , Me
-    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOVING, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZING, WM_ACTIVATE
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_ACTIVATE
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_BEFORE, WM_MOVING, WM_SIZING
     
     'Paint this window with the proper visual style (based on whether it's docked or floating)
     updateWindowStyle numOfPDWindows, True
@@ -1521,19 +1529,19 @@ Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosin
     Else
     
         'If toolbars are floating, make them top-most
-        If toolbarsFloating Then
-            If curWindowType = TOOLBAR_WINDOW Then
-                getDesiredZOrder = HWND_TOPMOST
-            End If
+        'If toolbarsFloating Then
+        '    If curWindowType = TOOLBAR_WINDOW Then
+        '        getDesiredZOrder = HWND_TOPMOST
+        '    End If
         
         'If toolbars are docked, make images top-most
-        Else
-            If curWindowType = IMAGE_WINDOW Then
-                getDesiredZOrder = HWND_TOPMOST
-            ElseIf curWindowType = TOOLBAR_WINDOW Then
-                getDesiredZOrder = HWND_NOTOPMOST
-            End If
-        End If
+        'Else
+        '    If curWindowType = IMAGE_WINDOW Then
+        '        getDesiredZOrder = HWND_TOPMOST
+        '    ElseIf curWindowType = TOOLBAR_WINDOW Then
+        '        getDesiredZOrder = HWND_NOTOPMOST
+        '    End If
+        'End If
     
     End If
     
@@ -1560,10 +1568,14 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
                     
     Select Case pdWindows(winIndex).typeOfWindow
     
+        'Main window
+        Case MAIN_WINDOW
+            forceFullWindowRefresh winIndex
+    
         'Toolbars
         Case TOOLBAR_WINDOW
             If toolbarsFloating Then
-                MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(winIndex).isVisible, 1, 0)
+                MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
             Else
                 
                 'Because the toolbars are not floating, they will have alignment data stored.  Use that to calculate their
@@ -1578,12 +1590,14 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
         'Images
         Case IMAGE_WINDOW
             If imagesFloating Then
-                MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(winIndex).isVisible, 1, 0)
+                MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
+                'toremove
+                forceFullWindowRefresh winIndex
             Else
             
                 'Force all child windows to the new size of the parent
                 getActualMainFormClientRect childRect
-                MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, IIf(pdWindows(winIndex).isVisible, 1, 0)
+                MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
             
             End If
             
@@ -1591,7 +1605,7 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
         Case IMAGE_TABSTRIP
             'Force the window to right-align within the client area of the parent
             getActualMainFormClientRect childRect, True
-            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), IIf(pdWindows(winIndex).isVisible, 1, 0)
+            MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
             
     End Select
                     
@@ -1619,6 +1633,95 @@ Private Sub restoreActiveImageToForeground(ByVal reasonForRestore As String)
         
     End If
     
+End Sub
+
+'This sub provides a simpler interface to restrictRectToParent (below).  It will perform the actual move for the window in question.
+Private Sub moveChildInsideParent(ByVal winIndex As Long)
+
+    If pdWindows(winIndex).typeOfWindow <> IMAGE_WINDOW Then Exit Sub
+    
+    'Get the child window's rect
+    Dim childRect As winRect
+    GetWindowRect pdWindows(winIndex).hWnd, childRect
+    
+    'Request the new position and/or size
+    restrictRectToParent childRect, 0
+    
+    'Move the window into place
+    SetWindowPos pdWindows(winIndex).hWnd, 0, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
+
+End Sub
+
+'Whenever a child rect needs to be fit inside a parent rect, use this sub.  It will modify the childRect so that it fits snugly within the parent's
+' client area (including toolbars, if necessary).  If a resize action is requesting the fit, please supply the direction of the resize as the
+' second parameter (as retrieved from the wParam of the window procedure).
+Private Sub restrictRectToParent(ByRef childRect As winRect, Optional ByVal resizeHandle As Long = -1)
+
+    'Get the parent's client window rect (accounting for toolbars, etc)
+    Dim parentRect As winRect
+    getActualMainFormClientRect parentRect
+    
+    Dim parentWidth As Long, parentHeight As Long
+    parentWidth = parentRect.x2 - parentRect.x1
+    parentHeight = parentRect.y2 - parentRect.y1
+    
+    'We will calculate horizontal and vertical differences as necessary, then apply them in one fell swoop after all calculations are complete.
+    Dim hDif As Long, vDif As Long
+    hDif = 0
+    vDif = 0
+    
+    Dim childWidth As Long, childHeight As Long
+    childWidth = childRect.x2 - childRect.x1
+    childHeight = childRect.y2 - childRect.y1
+    
+    'A resize direction has been specified, meaning we may need to shrink the window before checking its position.
+    ' Also, we must take directionality into account to provide a predictable experience.
+    If resizeHandle >= 0 Then
+    
+        'If the user has set the window size too large for the parent's client, force it to fit inside.
+        If childWidth > parentWidth Then
+            If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
+                childRect.x1 = childRect.x2 - parentWidth
+            Else
+                childRect.x2 = childRect.x1 + parentWidth
+            End If
+        End If
+        
+        If childHeight > parentHeight Then
+            If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
+                childRect.y1 = childRect.y2 - parentHeight
+            Else
+                childRect.y2 = childRect.y1 + parentHeight
+            End If
+        End If
+    
+    End If
+    
+    'For both moving and sizing events, we always check positioning.  If this was a resize, the child's size will have already been set to
+    ' fit within the parent, so we can assume the child rect is "fittable".
+    
+    'Check horizontal fit
+    If childRect.x1 < parentRect.x1 Then
+        hDif = parentRect.x1 - childRect.x1
+    ElseIf childRect.x2 > parentRect.x2 Then
+        hDif = parentRect.x2 - childRect.x2
+    End If
+    
+    'Check vertical fit
+    If childRect.y1 < parentRect.y1 Then
+        vDif = parentRect.y1 - childRect.y1
+    ElseIf childRect.y2 > parentRect.y2 Then
+        vDif = parentRect.y2 - childRect.y2
+    End If
+    
+    'Apply any changes to the child rect
+    With childRect
+        .x1 = .x1 + hDif
+        .x2 = .x2 + hDif
+        .y1 = .y1 + vDif
+        .y2 = .y2 + vDif
+    End With
+
 End Sub
 
 'All events subclassed by this window are processed here.
@@ -1683,6 +1786,21 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Calculate this window's rectangle as an offset of its parent.
                 Dim parentRect As winRect
                 GetWindowRect mainWindowHwnd, parentRect
+                
+                'If the main form is not responsible for this change, and windows are floating, restrict the window to the main
+                ' form's area (to roughly mimic MDI)
+                If (Not mainFormTriggeredChange) And imagesFloating Then
+                    
+                    'Request a new child rect from the restrictToParent function
+                    Dim resizeDirection As Long
+                    resizeDirection = -1
+                    If uMsg = WM_SIZING Then resizeDirection = wParam
+                    restrictRectToParent curWinRect, resizeDirection
+                    
+                    'Copy that rect over the existing lParam
+                    Call CopyMemory(ByVal lParam, curWinRect, Len(curWinRect))
+                    
+                End If
                 
                 'Store the new offset values
                 pdWindows(winIndex).offsetX = curWinRect.x1 - parentRect.x1
@@ -1783,13 +1901,31 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
                     ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
                     ' window changes causing more window changes).
-                    SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOSENDCHANGING Or SWP_NOACTIVATE
+                    SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER 'Or SWP_NOSENDCHANGING
                     
                 End If
                 
                 'Resize each child window, while retaining its current offset
                 For i = 0 To numOfPDWindows - 1
+                
+                    'If images are floating, we must make sure they fit inside the child rect area before redrawing them.  Do that now.
+                    If imagesFloating And (pdWindows(i).typeOfWindow = IMAGE_WINDOW) Then
+                         
+                        GetWindowRect pdWindows(i).hWnd, childRect
+                         
+                        'Calculate the new size and apply it
+                        restrictRectToParent childRect, 0
+                        SetWindowPos pdWindows(i).hWnd, 0, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER
+                    
+                        'Store the new offset values
+                        pdWindows(i).offsetX = childRect.x1 - curWinRect.x1
+                        pdWindows(i).offsetY = childRect.y1 - curWinRect.y1
+                        
+                    End If
+                    
+                    'We can now redraw this window
                     requestWindowRedraw i, curWinRect
+                    
                 Next i
                 
                 mainFormTriggeredChange = False
@@ -1869,7 +2005,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                         'This is a bit funny, but - when the program loses focus, we need to handle the active image last; otherwise, it may look
                         ' as though another window has mistakenly received focus (even though internally we know it hasn't).
-                        SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                        If g_OpenImageCount > 0 Then
+                            SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+                        End If
                         
                         'If the program has registered any extra windows (e.g. modal dialogs), hide them as well
                         If numOfExtraWindows > 0 Then
