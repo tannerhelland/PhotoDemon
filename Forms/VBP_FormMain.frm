@@ -1012,18 +1012,6 @@ Begin VB.Form FormMain
          Caption         =   "Tile &vertically"
          Index           =   11
       End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "-"
-         Index           =   12
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "&Minimize all windows"
-         Index           =   13
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "&Restore all windows"
-         Index           =   14
-      End
    End
    Begin VB.Menu MnuHelpTop 
       Caption         =   "&Help"
@@ -2719,7 +2707,9 @@ End Sub
 Private Sub MnuWindow_Click(Index As Integer)
 
     Dim i As Long
-    Dim MDIClient As Long
+    
+    Dim prevActiveWindow As Long
+    prevActiveWindow = g_CurrentImage
 
     Select Case Index
     
@@ -2770,20 +2760,25 @@ Private Sub MnuWindow_Click(Index As Integer)
         
         'Tile horizontally
         Case 10
-            'Me.Arrange vbTileHorizontal
-            MsgBox "Not implemented for the new window manager just yet, but it's on my ""to-do"" list!", vbApplicationModal Or vbInformation Or vbOKOnly, "Coming soon"
+            
+            g_WindowManager.tileImageWindows True
+            
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
                 End If
             Next i
+            
+            'Restore focus to the active window
+            pdImages(prevActiveWindow).containingForm.ActivateWorkaround
     
         'Tile vertically
         Case 11
-            'Me.Arrange vbTileVertical
-            MsgBox "Not implemented for the new window manager just yet, but it's on my ""to-do"" list!", vbApplicationModal Or vbInformation Or vbOKOnly, "Coming soon"
+            
+            g_WindowManager.tileImageWindows False
+            
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
@@ -2791,34 +2786,9 @@ Private Sub MnuWindow_Click(Index As Integer)
                     If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
                 End If
             Next i
-    
-        '<separator>
-        Case 12
-        
-        'Minimize all windows
-        Case 13
-        
-            'Run a loop through every child form and minimize it
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then
-                        pdImages(i).containingForm.WindowState = vbMinimized
-                    End If
-                End If
-            Next i
-        
-        'Restore all windows
-        Case 14
-            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-            ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then
-                        pdImages(i).containingForm.WindowState = vbNormal
-                        PrepareViewport pdImages(i).containingForm, "Restore all windows"
-                    End If
-                End If
-            Next i
+            
+            'Restore focus to the active window
+            pdImages(prevActiveWindow).containingForm.ActivateWorkaround
     
     End Select
     

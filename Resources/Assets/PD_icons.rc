@@ -242,13 +242,11 @@ PREFERENCES  CUSTOM  MOVEABLE        LOADONCALL      cog_edit.png
 PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
 
 //Window menu
+NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png
+PREVIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow_180.png
 TILEHOR      CUSTOM  MOVEABLE        LOADONCALL      application_tile_horizontal.png
 TILEVER      CUSTOM  MOVEABLE        LOADONCALL      application_tile_vertical.png
 CASCADE      CUSTOM  MOVEABLE        LOADONCALL      application_cascade.png
-MINALL       CUSTOM  MOVEABLE        LOADONCALL      minimize_all.png
-RESTOREALL   CUSTOM  MOVEABLE        LOADONCALL      restore_all.png
-NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png
-PREVIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow_180.png
 
 //Help menu
 FAVORITE     CUSTOM  MOVEABLE        LOADONCALL      favorite.png
