@@ -278,7 +278,7 @@ Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHw
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-'Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
 Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
@@ -324,14 +324,69 @@ Private mainFormTriggeredChange As Boolean
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
 
+'Now that we no longer use MDI in PhotoDemon, we must rely on the API for window tiling.  Fortunately, there is a very simple TileWindows function...
+Public Sub tileImageWindows(Optional ByVal tHorizontally As Boolean = True)
+
+    'Start by counting the number of image windows
+    Dim imgWinCount As Long
+    Dim i As Long
+    
+    For i = 0 To numOfPDWindows - 1
+        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then imgWinCount = imgWinCount + 1
+    Next i
+    
+    'Prepare an array to hold the hWnds of all image windows
+    Dim imgWindows() As Long
+    ReDim imgWindows(0 To imgWinCount - 1) As Long
+    
+    'Fill the array
+    imgWinCount = 0
+    For i = 0 To numOfPDWindows - 1
+        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then
+            imgWindows(imgWinCount) = pdWindows(i).hWnd
+            imgWinCount = imgWinCount + 1
+        End If
+    Next i
+    
+    'Fill a rect with the main form's client area (accounting for toolbars, etc)
+    Dim mainClientRect As winRect
+    getActualMainFormClientRect mainClientRect
+    
+    Dim clientWidth As Long, clientHeight As Long
+    clientWidth = mainClientRect.x2 - mainClientRect.x1
+    clientHeight = mainClientRect.y2 - mainClientRect.y1
+    
+    'Given the number of windows to tile, determine how big we can make each one
+    Dim imgWidth As Long, imgHeight As Long
+    imgWidth = clientWidth
+    imgHeight = clientHeight
+    If tHorizontally Then imgWidth = clientWidth \ imgWinCount Else imgHeight = clientHeight \ imgWinCount
+    
+    'Manually tile all windows
+    If tHorizontally Then
+    
+        For i = 0 To imgWinCount - 1
+            MoveWindow imgWindows(i), mainClientRect.x1 + i * imgWidth, mainClientRect.y1, imgWidth, imgHeight, 1
+        Next i
+    
+    Else
+    
+        For i = 0 To imgWinCount - 1
+            MoveWindow imgWindows(i), mainClientRect.x1, mainClientRect.y1 + i * imgHeight, imgWidth, imgHeight, 1
+        Next i
+    
+    End If
+    
+End Sub
+
 'Though officially discouraged by Microsoft (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx), it is
 ' sometimes useful to dynamically reassign ownership of a window at run-time.  In fact, this is a necessity in VB, because we cannot physically
 ' assign an owner at creation time, as VB doesn't let us intermix form references and CreateWindow API calls.  (For the record, I am almost
 ' certain that VB uses this exact same code to assign ownership when it encounters code like FormChild.Show vbModeless, FormOwner.)
 ' Technically we should also track the previous window owner and restore it upon form exiting, but VB makes that unnecessary due to the way it
 ' couples owner/child unload behavior.
-Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerHwnd As Long)
-    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerHwnd
+Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerhWnd As Long)
+    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerhWnd
 End Sub
 
 'If external functions want to know if PD has focus or not, they can use this function.  It will return TRUE if PhotoDemon is the active window.
@@ -341,7 +396,7 @@ End Function
 
 'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
 ' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
-Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
+Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerhWnd As Long, Optional ByVal windowUnloading As Boolean = False)
 
     'By default, windows are ADDED to our collection, not removed.
     If Not windowUnloading Then
@@ -356,7 +411,7 @@ Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As 
         SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
         
         'Dynamically set the window's owner to match
-        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerHwnd
+        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerhWnd
         
         'NOW we can display the window.  (Doing this via anything besides VB's in-built .Show method breaks stuff.  I'll need
         ' to investigate further to see if it's possible to mimic the .Show event via API.)
@@ -915,7 +970,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 If pdWindows(winIndex).previousRenderStyle <> FLOAT_STYLE Then
                     
                     'Set the border style to sizable dialog
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN 'Or WS_CHILD
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.

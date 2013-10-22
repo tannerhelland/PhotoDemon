@@ -417,8 +417,6 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "CASCADE", 8, 9         'Cascade
     addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
     addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
-    addMenuIcon "MINALL", 8, 13         'Minimize All
-    addMenuIcon "RESTOREALL", 8, 14     'Restore All
     
     'Help Menu
     addMenuIcon "FAVORITE", 9, 0        'Donate
