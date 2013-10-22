@@ -2748,8 +2748,9 @@ Private Sub MnuWindow_Click(Index As Integer)
         
         'Cascade
         Case 9
-            'Me.Arrange vbCascade
-            MsgBox "Not implemented for the new window manager just yet, but it's on my ""to-do"" list!", vbApplicationModal Or vbInformation Or vbOKOnly, "Coming soon"
+            
+            g_WindowManager.cascadeImageWindows
+            
             'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
@@ -2757,6 +2758,9 @@ Private Sub MnuWindow_Click(Index As Integer)
                     If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
                 End If
             Next i
+            
+            'Restore focus to the active window
+            pdImages(prevActiveWindow).containingForm.ActivateWorkaround
         
         'Tile horizontally
         Case 10
