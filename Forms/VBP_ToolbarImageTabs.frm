@@ -314,7 +314,7 @@ End Sub
 'Any time this window is resized, we need to recreate the thumbnail display
 Private Sub Form_Resize()
 
-    'If the window's height is changing, we do need to redraw all image thumbnails
+    'If the window's height is changing, we need to redraw all image thumbnails
     If thumbHeight <> g_WindowManager.getClientHeight(Me.hWnd) Then
         
         thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)

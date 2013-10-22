@@ -263,6 +263,10 @@ End Enum
     Private Const SW_HIDE = 0, SW_SHOWNORMAL = 1, SW_SHOWMINIMIZED = 2, SW_SHOWMAXIMIZED = 3, SW_SHOWNOACTIVATE = 4, SW_SHOW = 5, SW_MINIMIZE = 6, SW_SHOWMINNOACTIVE = 7, SW_SHOWNA = 8, SW_RESTORE = 9, SW_SHOWDEFAULT = 10, SW_FORCEMINIMIZE = 11
 #End If
 
+'GetSystemMetrics constants
+Private Const SM_CYCAPTION As Long = 4
+Private Const SM_CYSIZEFRAME As Long = 33
+
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
@@ -287,6 +291,7 @@ Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As
 Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHwnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 
 'Child window tracking
 Private pdWindows() As pdWindowData
@@ -324,7 +329,64 @@ Private mainFormTriggeredChange As Boolean
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
 
-'Now that we no longer use MDI in PhotoDemon, we must rely on the API for window tiling.  Fortunately, there is a very simple TileWindows function...
+'Now that we no longer use MDI in PhotoDemon, we must rely on custom code for window cascading.
+Public Sub cascadeImageWindows()
+
+    'Start by counting the number of image windows
+    Dim imgWinCount As Long
+    Dim i As Long
+    
+    For i = 0 To numOfPDWindows - 1
+        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then imgWinCount = imgWinCount + 1
+    Next i
+    
+    'Prepare an array to hold the hWnds of all image windows
+    Dim imgWindows() As Long
+    ReDim imgWindows(0 To imgWinCount - 1) As Long
+    
+    'Fill the array
+    imgWinCount = 0
+    For i = 0 To numOfPDWindows - 1
+        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then
+            imgWindows(imgWinCount) = pdWindows(i).hWnd
+            imgWinCount = imgWinCount + 1
+        End If
+    Next i
+    
+    'Fill a rect with the main form's client area (accounting for toolbars, etc)
+    Dim mainClientRect As winRect
+    getActualMainFormClientRect mainClientRect
+    
+    Dim clientWidth As Long, clientHeight As Long
+    clientWidth = mainClientRect.x2 - mainClientRect.x1
+    clientHeight = mainClientRect.y2 - mainClientRect.y1
+    
+    'Ask the OS for the height of window title (caption) bars.  We use this amount to control the cascade offset.
+    Dim captionHeight As Long
+    captionHeight = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME)
+        
+    'Basically, cascading tiles windows so that they fill the available window space, up to a maximum of 5.  (After that point, windows
+    ' start cascading over the top of each other.)  5 is a completely arbitrary value; any other number could be used, but note that
+    ' if the main window is resized quite small, a value larger than 5 may result in unusably small image windows.
+    Dim cascadeCount As Long
+    If imgWinCount > 5 Then cascadeCount = 5 Else cascadeCount = imgWinCount - 1
+    
+    'Per the original Windows convention, all cascaded windows will be forced to the same size
+    Dim windowWidth As Long, windowHeight As Long
+    windowWidth = clientWidth - captionHeight * cascadeCount
+    windowHeight = clientHeight - captionHeight * cascadeCount
+    
+    'Because we use Mod to determine cascade offset, we need the count to be one higher than it actually is
+    cascadeCount = cascadeCount + 1
+    
+    'Cascade all available windows using an extremely simple formula
+    For i = 0 To imgWinCount - 1
+        MoveWindow imgWindows(i), mainClientRect.x1 + (i Mod cascadeCount) * captionHeight, mainClientRect.y1 + (i Mod cascadeCount) * captionHeight, windowWidth, windowHeight, 1
+    Next i
+
+End Sub
+
+'Now that we no longer use MDI in PhotoDemon, we must rely on custom code for window tiling.
 Public Sub tileImageWindows(Optional ByVal tHorizontally As Boolean = True)
 
     'Start by counting the number of image windows
@@ -1080,7 +1142,13 @@ Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Bool
     'Whenever float status is changed, all windows need to be redrawn (as their layering and/or position may have changed)
     If (numOfPDWindows > 0) Then
         For i = 0 To numOfPDWindows - 1
+        
+            'For floating image windows, we also need to move them inside the client area.
+            If imagesFloating And (pdWindows(i).typeOfWindow = IMAGE_WINDOW) Then moveChildInsideParent i
+            
+            'Request a window style update and/or redraw
             updateWindowStyle i
+            
         Next i
     End If
     
@@ -1416,52 +1484,18 @@ Public Sub unregisterForm(ByRef srcForm As Form)
 
 End Sub
 
-'When all child windows have been unloaded, we need to reassign toolbars as children of the main form.  (Otherwise, they will get unloaded!)
+'At present, we handle all window maintenance on-the-fly, so nothing special needs to be done when all images are unloaded.
+' If extra work does need to be performed in the future, the program already ties into this function.
 Public Sub allImageWindowsUnloaded()
-
-'    Dim i As Long, windowFlags As Long
-'    For i = 0 To numOfPDWindows - 1
-'        If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then
-'            SetWindowLong pdWindows(i).hWnd, -8, mainWindowHwnd
-'
-'            'If this toolbar window is currently hidden, do not make it visible
-'            windowFlags = SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING
-'            If pdWindows(i).isVisible Then windowFlags = windowFlags Or SWP_SHOWWINDOW
-'
-'            SetWindowPos pdWindows(i).hWnd, -2, 0, 0, 0, 0, windowFlags
-'        End If
-'    Next i
     
 End Sub
 
-'When an image window receives focus, we dynamically reassign the toolbars as children of that window, so that they stay on top of it.
+'When an image window receives focus, we use the API to bring it to the foreground
 Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
-
-'    If toolbarsFloating Then
-'
-'        'Make all toolbars a child of this form - this keeps them on top
-'        Dim i As Long, windowFlags As Long
-'        For i = 0 To numOfPDWindows - 1
-'            If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then
-'                SetWindowLong pdWindows(i).hWnd, -8, childForm.hWnd
-'
-'                'If this toolbar window is currently hidden, do not make it visible
-'                windowFlags = SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING
-'                If pdWindows(i).isVisible Then windowFlags = windowFlags Or SWP_SHOWWINDOW
-'
-'                SetWindowPos pdWindows(i).hWnd, -2, 0, 0, 0, 0, windowFlags
-'            End If
-'        Next i
-'
-'        'Redraw the child as well
-'        SetWindowPos childForm.hWnd, -2, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-'
-'    End If
     
-    'Regardless of float status, we can now manually bring the activated window to the foreground
+    'Bring the activated window to the foreground
     SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER 'Or SWP_NOACTIVATE
     
-    'EXPERIMENTAL:
     'Find this image in the window array, and note that we have made it visible.
     Dim i As Long
     For i = 0 To numOfPDWindows
@@ -1584,19 +1618,19 @@ Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosin
     Else
     
         'If toolbars are floating, make them top-most
-        'If toolbarsFloating Then
-        '    If curWindowType = TOOLBAR_WINDOW Then
-        '        getDesiredZOrder = HWND_TOPMOST
-        '    End If
+        If toolbarsFloating Then
+            If curWindowType = TOOLBAR_WINDOW Then
+                getDesiredZOrder = HWND_TOPMOST
+            End If
         
-        'If toolbars are docked, make images top-most
+        'If toolbars are docked, order doesn't matter, because image windows can't be moved outside the toolbars anyway!
         'Else
         '    If curWindowType = IMAGE_WINDOW Then
         '        getDesiredZOrder = HWND_TOPMOST
         '    ElseIf curWindowType = TOOLBAR_WINDOW Then
         '        getDesiredZOrder = HWND_NOTOPMOST
         '    End If
-        'End If
+        End If
     
     End If
     
@@ -1825,7 +1859,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             ' message for the window in question.)  Rather than deal with it, we subclass _Activate messages ourselves, and process
             ' them as necessary.
             Case WM_ACTIVATE
-                If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW And LoWord(wParam) > 0 Then
+                If (pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW) And (LoWord(wParam) > 0) Then
                     pdWindows(winIndex).formReference.ActivateWorkaround "API activate event captured"
                     Debug.Print "received activate message for window #" & winIndex & " - " & pdWindows(winIndex).formReference.Caption & " - " & LoWord(wParam)
                 End If
@@ -1844,7 +1878,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'If the main form is not responsible for this change, and windows are floating, restrict the window to the main
                 ' form's area (to roughly mimic MDI)
-                If (Not mainFormTriggeredChange) And imagesFloating Then
+                If (Not mainFormTriggeredChange) And imagesFloating And (pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW) Then
                     
                     'Request a new child rect from the restrictToParent function
                     Dim resizeDirection As Long
@@ -1957,10 +1991,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
                     ' window changes causing more window changes).
                     SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER 'Or SWP_NOSENDCHANGING
-                    
+                
                 End If
                 
-                'Resize each child window, while retaining its current offset
+                'Re-retrieve the current window rect for subsequent functions
+                GetWindowRect lng_hWnd, curWinRect
+                
+                'Resize and/or move each child window as necessary
                 For i = 0 To numOfPDWindows - 1
                 
                     'If images are floating, we must make sure they fit inside the child rect area before redrawing them.  Do that now.
@@ -1979,7 +2016,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                     
                     'We can now redraw this window
+                    If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then Message "*" & pdWindows(i).offsetX & "," & pdWindows(i).offsetY
                     requestWindowRedraw i, curWinRect
+                    If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then Message pdWindows(i).offsetX & "," & pdWindows(i).offsetY
                     
                 Next i
                 
