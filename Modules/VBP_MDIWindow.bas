@@ -39,6 +39,9 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'This is the actual, physical form object on which an image will reside
     Dim newImageForm As New FormImage
     
+    'Assign it a 32bpp icon
+    SetIcon newImageForm.hWnd, "AAA", False
+    
     'IMPORTANT: the form tag is the only way we can keep track of separate forms
     'DO NOT CHANGE THIS TAG VALUE!
     newImageForm.Tag = g_NumOfImagesLoaded
