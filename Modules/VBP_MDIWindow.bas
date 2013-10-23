@@ -47,7 +47,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     newImageForm.Tag = g_NumOfImagesLoaded
     
     'Remember this ID in the associated image class
-    pdImages(g_NumOfImagesLoaded).IsActive = True
+    pdImages(g_NumOfImagesLoaded).isActive = True
     pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
         
     'Set a default window size (in twips)
@@ -57,11 +57,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     'Default image values
     Set pdImages(g_NumOfImagesLoaded).containingForm = newImageForm
-    pdImages(g_NumOfImagesLoaded).UndoNum = 0
-    pdImages(g_NumOfImagesLoaded).UndoMax = 0
-    pdImages(g_NumOfImagesLoaded).UndoState = False
-    pdImages(g_NumOfImagesLoaded).RedoState = False
-    pdImages(g_NumOfImagesLoaded).CurrentZoomValue = ZOOM_100_PERCENT   'Default zoom is 100%
+    pdImages(g_NumOfImagesLoaded).currentZoomValue = ZOOM_100_PERCENT   'Default zoom is 100%
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
     Dim mainClientRect As winRect
@@ -87,7 +83,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     g_OpenImageCount = g_OpenImageCount + 1
     
     'Run a separate subroutine (see bottom of this page) to enable/disable menus and such if this is the first image to be loaded
-    UpdateMDIStatus
+    synchronizeInterfaceToImageState
     
     'Re-enable viewport adjustments
     g_AllowViewportRendering = True
@@ -365,7 +361,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     'Change the zoom combo box to reflect the new zoom value
     toolbar_File.CmbZoom.ListIndex = zVal
-    pdImages(g_CurrentImage).CurrentZoomValue = zVal
+    pdImages(g_CurrentImage).currentZoomValue = zVal
     
     'Re-enable scrolling
     g_AllowViewportRendering = True
@@ -424,7 +420,7 @@ Public Sub FitOnScreen()
     Next i
     
     toolbar_File.CmbZoom.ListIndex = zVal
-    pdImages(g_CurrentImage).CurrentZoomValue = zVal
+    pdImages(g_CurrentImage).currentZoomValue = zVal
     
     'Re-enable scrolling
     g_AllowViewportRendering = True
@@ -434,115 +430,6 @@ Public Sub FitOnScreen()
     
     'Now fix scrollbars and everything
     PrepareViewport pdImages(g_CurrentImage).containingForm, "FitOnScreen"
-    
-End Sub
-
-'When windows are created or destroyed, launch this routine to dis/en/able windows and toolbars, etc
-Public Sub UpdateMDIStatus()
-
-    'If two or more windows are open, enable the image tabstrip, and the Next/Previous image menu items
-    If g_OpenImageCount >= 2 Then
-        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
-        FormMain.MnuWindow(6).Enabled = True
-        FormMain.MnuWindow(7).Enabled = True
-    Else
-        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
-        FormMain.MnuWindow(6).Enabled = False
-        FormMain.MnuWindow(7).Enabled = False
-    End If
-
-    'If every window has been closed, disable all toolbar and menu options that are no longer applicable
-    If g_OpenImageCount < 1 Then
-        metaToggle tFilter, False
-        metaToggle tSave, False
-        metaToggle tSaveAs, False
-        metaToggle tCopy, False
-        metaToggle tUndo, False
-        metaToggle tRedo, False
-        metaToggle tImageOps, False
-        metaToggle tFilter, False
-        metaToggle tMacro, False
-        metaToggle tRepeatLast, False
-        metaToggle tSelection, False
-        FormMain.MnuFile(7).Enabled = False
-        FormMain.MnuFile(8).Enabled = False
-        toolbar_File.cmdClose.Enabled = False
-        FormMain.MnuFitWindowToImage.Enabled = False
-        FormMain.MnuFitOnScreen.Enabled = False
-        If toolbar_File.CmbZoom.Enabled And toolbar_File.Visible Then
-            toolbar_File.CmbZoom.Enabled = False
-            'FormMain.lblLeftToolBox(3).ForeColor = &H606060
-            toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT   'Reset zoom to 100%
-            toolbar_File.cmdZoomIn.Enabled = False
-            toolbar_File.cmdZoomOut.Enabled = False
-        End If
-        
-        toolbar_File.lblImgSize.ForeColor = &HD1B499
-        toolbar_File.lblCoordinates.ForeColor = &HD1B499
-        
-        toolbar_File.lblImgSize.Caption = ""
-        
-        toolbar_File.lblCoordinates.Caption = ""
-        
-        Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
-        
-        'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
-        destroyAllIcons
-        setNewTaskbarIcon origIcon32, FormMain.hWnd
-        setNewAppIcon origIcon16
-        
-        'New addition: destroy all inactive pdImage objects.  This helps keep memory usage at a bare minimum.
-        If g_NumOfImagesLoaded > 1 Then
-        
-            Dim i As Long
-            
-            'Loop through all pdImage objects and make sure they've been deactivated
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    pdImages(i).deactivateImage
-                    Set pdImages(i) = Nothing
-                End If
-            Next i
-        
-            'Redim the pdImages array
-            'Erase pdImages
-        
-            'Reset all window tracking variables
-            g_NumOfImagesLoaded = 0
-            g_CurrentImage = 0
-            g_OpenImageCount = 0
-                        
-        End If
-        
-        'Erase any remaining viewport buffer
-        eraseViewportBuffers
-                
-    'Otherwise, enable all of 'em
-    Else
-        metaToggle tFilter, True
-        metaToggle tSave, True
-        metaToggle tSaveAs, True
-        metaToggle tCopy, True
-        metaToggle tUndo, pdImages(g_CurrentImage).UndoState
-        metaToggle tRedo, pdImages(g_CurrentImage).RedoState
-        metaToggle tImageOps, True
-        metaToggle tFilter, True
-        metaToggle tMacro, True
-        metaToggle tRepeatLast, pdImages(g_CurrentImage).RedoState
-        FormMain.MnuFile(7).Enabled = True
-        toolbar_File.cmdClose.Enabled = True
-        FormMain.MnuFile(8).Enabled = True
-        FormMain.MnuFitWindowToImage.Enabled = True
-        FormMain.MnuFitOnScreen.Enabled = True
-        toolbar_File.lblImgSize.ForeColor = &H544E43
-        toolbar_File.lblCoordinates.ForeColor = &H544E43
-        If toolbar_File.CmbZoom.Enabled = False Then
-            toolbar_File.CmbZoom.Enabled = True
-            'FormMain.lblLeftToolBox(3).ForeColor = &H544E43
-            toolbar_File.cmdZoomIn.Enabled = True
-            toolbar_File.cmdZoomOut.Enabled = True
-        End If
-    End If
     
 End Sub
 

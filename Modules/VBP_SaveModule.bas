@@ -43,7 +43,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     'Start by determining the output format for this image (which was set either by a "Save As" common dialog box,
     ' or by copying the image's original format - or, if in the midst of a batch process, by the user via the batch wizard).
     Dim saveFormat As Long
-    saveFormat = srcPDImage.CurrentFileFormat
+    saveFormat = srcPDImage.currentFileFormat
 
 
     '****************************************************************************************************
@@ -77,16 +77,16 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Case 0
                 
                 'Check to see if this format supports the image's original color depth
-                If g_ImageFormats.isColorDepthSupported(saveFormat, srcPDImage.OriginalColorDepth) Then
+                If g_ImageFormats.isColorDepthSupported(saveFormat, srcPDImage.originalColorDepth) Then
                     
                     'If it IS supported, set the original color depth as the output color depth for this save
-                    outputColorDepth = srcPDImage.OriginalColorDepth
+                    outputColorDepth = srcPDImage.originalColorDepth
                     Message "Original color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
                 
                 'If it IS NOT supported, we need to find the closest available color depth for this format.
                 Else
-                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.OriginalColorDepth)
-                    Message "Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.OriginalColorDepth, outputColorDepth
+                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
+                    Message "Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
                 
                 End If
             
@@ -124,7 +124,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 'If it IS NOT supported, we need to find the closest available color depth for this format.
                 Else
                     outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                    Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.OriginalColorDepth, outputColorDepth
+                    Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
                 
                 End If
             
@@ -149,7 +149,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 'If this format only supports a single output color depth, don't bother the user with a prompt
                 Else
             
-                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.OriginalColorDepth)
+                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
             
                 End If
                 
@@ -168,7 +168,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 'If it IS NOT supported, we need to find the closest available color depth for this format.
                 Else
                     outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                    Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.OriginalColorDepth, outputColorDepth
+                    Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
                 
                 End If
             
@@ -205,7 +205,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
             'Binary metadata is requested.  Cache it now (if necessary).
             If Not srcPDImage.imgMetadata.hasBinaryMetadata Then
-                srcPDImage.imgMetadata.quickCacheMetadata srcPDImage.LocationOnDisk
+                srcPDImage.imgMetadata.quickCacheMetadata srcPDImage.locationOnDisk
             End If
         
         Else
@@ -213,7 +213,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'XML metadata is requested.  Cache it now (if necessary).
             If Not srcPDImage.imgMetadata.hasXMLMetadata Then
             
-                srcPDImage.imgMetadata.loadAllMetadata srcPDImage.LocationOnDisk, srcPDImage.OriginalFileFormat
+                srcPDImage.imgMetadata.loadAllMetadata srcPDImage.locationOnDisk, srcPDImage.originalFileFormat
                     
                 'As a convenience to the user, if metadata was loaded successfully, dis/enable metadata menu items accordingly
                 metaToggle tMetadata, srcPDImage.imgMetadata.hasXMLMetadata
@@ -430,18 +430,18 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             MRU_AddNewFile dstPath, srcPDImage
         
             'Remember the file's location for future saves
-            srcPDImage.LocationOnDisk = dstPath
+            srcPDImage.locationOnDisk = dstPath
             
             'Remember the file's filename
             Dim tmpFilename As String
             tmpFilename = dstPath
             StripFilename tmpFilename
-            srcPDImage.OriginalFileNameAndExtension = tmpFilename
+            srcPDImage.originalFileNameAndExtension = tmpFilename
             StripOffExtension tmpFilename
-            srcPDImage.OriginalFileName = tmpFilename
+            srcPDImage.originalFileName = tmpFilename
             
             'Mark this file as having been saved
-            srcPDImage.UpdateSaveState True
+            srcPDImage.setSaveState True
             
             PhotoDemon_SaveImage = True
             

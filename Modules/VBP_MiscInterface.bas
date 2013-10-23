@@ -139,7 +139,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If g_NumOfImagesLoaded > 0 Then
         For i = 0 To g_NumOfImagesLoaded
             If Not pdImages(i) Is Nothing Then
-                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
+                If pdImages(i).isActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
             End If
         Next i
     End If
@@ -160,7 +160,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If g_NumOfImagesLoaded > 0 Then
         For i = 0 To g_NumOfImagesLoaded
             If Not pdImages(i) Is Nothing Then
-                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
+                If pdImages(i).isActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
             End If
         Next i
     End If
@@ -227,7 +227,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
                 If g_NumOfImagesLoaded > 0 Then
                     For i = 0 To g_NumOfImagesLoaded
                         If (Not pdImages(i) Is Nothing) Then
-                            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
+                            If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
                         End If
                     Next i
                 End If
@@ -242,7 +242,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             If g_NumOfImagesLoaded > 0 Then
                 For i = 0 To g_NumOfImagesLoaded
                     If (Not pdImages(i) Is Nothing) Then
-                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
+                        If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
                     End If
                 Next i
             End If
@@ -297,7 +297,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Dim i As Long
         For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar visibility changed"
+                If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Toolbar visibility changed"
             End If
         Next i
     End If
@@ -361,6 +361,126 @@ Public Sub hideWaitScreen()
     Unload FormWait
 End Sub
 
+'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
+' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
+' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.
+Public Sub synchronizeInterfaceToImageState()
+
+    Dim i As Long
+    
+    'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image, and stuff that changes based
+    ' on the *total* number of available images.
+    
+    'Start by breaking our actions into two broad categories: "no images are loaded" and "one or more images are loaded".
+    
+    'If no images are loaded, disable a whole swath of controls
+    If g_OpenImageCount = 0 Then
+    
+        metaToggle tFilter, False
+        metaToggle tSave, False
+        metaToggle tSaveAs, False
+        metaToggle tCopy, False
+        metaToggle tUndo, False
+        metaToggle tRedo, False
+        metaToggle tImageOps, False
+        metaToggle tFilter, False
+        metaToggle tMacro, False
+        metaToggle tRepeatLast, False
+        metaToggle tSelection, False
+        FormMain.MnuFile(7).Enabled = False
+        FormMain.MnuFile(8).Enabled = False
+        toolbar_File.cmdClose.Enabled = False
+        FormMain.MnuFitWindowToImage.Enabled = False
+        FormMain.MnuFitOnScreen.Enabled = False
+        If toolbar_File.CmbZoom.Enabled And toolbar_File.Visible Then
+            toolbar_File.CmbZoom.Enabled = False
+            'FormMain.lblLeftToolBox(3).ForeColor = &H606060
+            toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT   'Reset zoom to 100%
+            toolbar_File.cmdZoomIn.Enabled = False
+            toolbar_File.cmdZoomOut.Enabled = False
+        End If
+        
+        toolbar_File.lblImgSize.ForeColor = &HD1B499
+        toolbar_File.lblCoordinates.ForeColor = &HD1B499
+        
+        toolbar_File.lblImgSize.Caption = ""
+        
+        toolbar_File.lblCoordinates.Caption = ""
+        
+        Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
+        
+        'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
+        destroyAllIcons
+        setNewTaskbarIcon origIcon32, FormMain.hWnd
+        setNewAppIcon origIcon16
+        
+        'If no images are currently open, but images were open in the past, release any memory associated with those images.
+        ' This helps minimize PD's memory usage.
+        If g_NumOfImagesLoaded > 1 Then
+        
+            'Loop through all pdImage objects and make sure they've been deactivated
+            For i = 0 To g_NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    pdImages(i).deactivateImage
+                    Set pdImages(i) = Nothing
+                End If
+            Next i
+            
+            'Reset all window tracking variables
+            g_NumOfImagesLoaded = 0
+            g_CurrentImage = 0
+            g_OpenImageCount = 0
+                        
+        End If
+        
+        'Erase any remaining viewport buffer
+        eraseViewportBuffers
+    
+    'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
+    ' while others (Undo and Redo) are only enabled if the current image requires it.
+    Else
+    
+        'Start by enabling actions that are always available if one or more images are loaded.
+        metaToggle tFilter, True
+        metaToggle tSave, True
+        metaToggle tSaveAs, True
+        metaToggle tCopy, True
+        metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState
+        metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState
+        metaToggle tImageOps, True
+        metaToggle tFilter, True
+        metaToggle tMacro, True
+        metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getRedoState
+        FormMain.MnuFile(7).Enabled = True
+        toolbar_File.cmdClose.Enabled = True
+        FormMain.MnuFile(8).Enabled = True
+        FormMain.MnuFitWindowToImage.Enabled = True
+        FormMain.MnuFitOnScreen.Enabled = True
+        toolbar_File.lblImgSize.ForeColor = &H544E43
+        toolbar_File.lblCoordinates.ForeColor = &H544E43
+        If toolbar_File.CmbZoom.Enabled = False Then
+            toolbar_File.CmbZoom.Enabled = True
+            'FormMain.lblLeftToolBox(3).ForeColor = &H544E43
+            toolbar_File.cmdZoomIn.Enabled = True
+            toolbar_File.cmdZoomOut.Enabled = True
+        End If
+        
+        'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls,
+        ' such as the image tabstrip and the "Next/Previous" image menu items.
+        If g_OpenImageCount >= 2 Then
+            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+            FormMain.MnuWindow(6).Enabled = True
+            FormMain.MnuWindow(7).Enabled = True
+        Else
+            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+            FormMain.MnuWindow(6).Enabled = False
+            FormMain.MnuWindow(7).Enabled = False
+        End If
+    
+    End If
+    
+End Sub
+
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbar buttons)
 Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
@@ -406,8 +526,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).getUndoProcessID
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).getUndoProcessID & vbTab & "Ctrl+Z"
+                toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).undoManager.getUndoProcessID
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID & vbTab & "Ctrl+Z"
                 resetMenuIcons
             Else
                 toolbar_File.cmdUndo.ToolTip = ""
@@ -460,8 +580,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).getRedoProcessID
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).getRedoProcessID & vbTab & "Ctrl+Y"
+                toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).undoManager.getRedoProcessID
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).undoManager.getRedoProcessID & vbTab & "Ctrl+Y"
                 resetMenuIcons
             Else
                 toolbar_File.cmdRedo.ToolTip = ""

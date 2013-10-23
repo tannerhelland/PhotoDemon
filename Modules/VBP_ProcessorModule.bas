@@ -144,7 +144,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' 2) If recording has been disabled for this action
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
         If MacroStatus <> MacroBATCH Then
-            If (Not showDialog) And recordAction Then CreateUndoData processID, createUndo, relevantTool
+            If (Not showDialog) And recordAction Then pdImages(g_CurrentImage).undoManager.createUndoData processID, createUndo, relevantTool
         End If
         
         'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.
@@ -255,8 +255,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Undo"
             If FormMain.MnuEdit(0).Enabled Then
-                RestoreUndoData
-            
+                pdImages(g_CurrentImage).undoManager.restoreUndoData
+                
                 'Also, redraw the current child form icon and the image tab-bar
                 createCustomFormIcon pdImages(g_CurrentImage).containingForm
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
@@ -264,8 +264,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Redo"
             If FormMain.MnuEdit(1).Enabled Then
-                RestoreRedoData
-            
+                pdImages(g_CurrentImage).undoManager.RestoreRedoData
+                
                 'Also, redraw the current child form icon and the image tab-bar
                 createCustomFormIcon pdImages(g_CurrentImage).containingForm
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
@@ -1137,8 +1137,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     If cancelCurrentAction Then
         
         'Ask the Undo manager to roll back to a previous state
-        rollBackLastUndo
-    
+        pdImages(g_CurrentImage).undoManager.rollBackLastUndo
+        
         'Reset any interface elements that may still be in "processing" mode.
         SetProgBarVal 0
         Message "Action canceled."

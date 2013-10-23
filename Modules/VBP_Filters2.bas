@@ -171,7 +171,7 @@ Public Sub MenuFadeLastEffect()
     'Create a temporary layer and use it to load the last Undo file's pixel data
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromFile GetLastUndoFile()
+    tmpLayer.createFromFile pdImages(g_CurrentImage).undoManager.getLastUndoFile()
     
     'Create a local array and point it at the pixel data of that undo file
     Dim uImageData() As Byte
