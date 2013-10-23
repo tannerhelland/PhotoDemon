@@ -776,7 +776,12 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
             zDelMsg ALL_MESSAGES, IDX_BTABLE, z_ScMem   'Delete all before messages
             zDelMsg ALL_MESSAGES, IDX_ATABLE, z_ScMem   'Delete all after messages
         End If
-        z_scFunk.Remove "h" & thunkID           'Remove the specified thunk from the collection
+        
+        'EDIT BY TANNER: check to see if the thunk exists before attempting to remove it.  Not sure why
+        ' this has suddenly become necessary, but I was getting errors from this line before implementing
+        ' a collection check.
+        If ExistsNonObject(z_scFunk, "h" & thunkID) Then z_scFunk.Remove "h" & thunkID 'Remove the specified thunk from the collection
+        
         
     Case HookThunk
         If z_ScMem Then       'Ensure that the thunk hasn't already released its memory
@@ -966,3 +971,15 @@ Public Sub scb_TerminateCallbacks()
     zTerminateThunks CallbackThunk
 End Sub
 
+'This handy function comes from http://stackoverflow.com/questions/40651/check-if-a-record-exists-in-a-vb6-collection
+Private Function ExistsNonObject(col, index) As Boolean
+    On Error GoTo ExistsNonObjectErrorHandler
+    Dim v As Variant
+
+    v = col(index)
+    ExistsNonObject = True
+    Exit Function
+
+ExistsNonObjectErrorHandler:
+    ExistsNonObject = False
+End Function
