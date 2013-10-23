@@ -376,9 +376,6 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
     
-    'Enable/disable the remove/add alpha channel menus to match
-    If Not toPreview Then metaToggle tImgMode32bpp, True
-
 End Sub
 
 Private Sub sltBlend_Change()

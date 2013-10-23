@@ -348,7 +348,6 @@ Public Sub FilterIsometric()
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
-        metaToggle tSelection, False
     End If
     
     'Create a local array and point it at the pixel data of the current image

@@ -68,9 +68,6 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     'Synchronize all user-facing controls to match
     syncTextToCurrentSelection g_CurrentImage
     
-    'Change the selection-related menu items to match
-    metaToggle tSelection, True
-    
     'Draw the new selection to the screen
     RenderViewport pdImages(g_CurrentImage).containingForm
 
@@ -85,10 +82,7 @@ Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
     
     'Synchronize all user-facing controls to match
     syncTextToCurrentSelection g_CurrentImage
-    
-    'Change the selection-related menu items to match
-    metaToggle tSelection, False
-    
+        
     'Redraw the image (with selection removed)
     RenderViewport pdImages(g_CurrentImage).containingForm
 
@@ -110,10 +104,7 @@ Public Sub SelectWholeImage()
     
     'Synchronize all user-facing controls to match
     syncTextToCurrentSelection g_CurrentImage
-    
-    'Change the selection-related menu items to match
-    metaToggle tSelection, True
-    
+        
     'Draw the new selection to the screen
     RenderViewport pdImages(g_CurrentImage).containingForm
 
@@ -170,11 +161,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         
         'Synchronize all user-facing controls to match
         syncTextToCurrentSelection g_CurrentImage
-        
-        'Change the selection-related menu items to match
-        metaToggle tSelection, True
-        metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
-        
+                
         'Draw the new selection to the screen
         RenderViewport pdImages(g_CurrentImage).containingForm
         Message "Selection loaded successfully"
@@ -226,8 +213,6 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
         If pdImages(formID).mainSelection.isTransformable Then
-        
-            metaToggle tSelectionTransform, True
             
             'Different types of selections will display size and position differently
             Select Case pdImages(formID).mainSelection.getSelectionShape
@@ -250,7 +235,6 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
         Else
         
-            metaToggle tSelectionTransform, False
             For i = 0 To toolbar_Selections.tudSel.Count - 1
                 If toolbar_Selections.tudSel(i).Value <> 0 Then toolbar_Selections.tudSel(i).Value = 0
             Next i
@@ -311,7 +295,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
 
     'Grab the current zoom value
     Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).CurrentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).currentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
     x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
@@ -474,16 +458,7 @@ Public Sub invertCurrentSelection()
     'Lock in this selection
     pdImages(g_CurrentImage).mainSelection.lockIn
     pdImages(g_CurrentImage).selectionActive = True
-    
-    'Synchronize all user-facing controls to match
-    'syncTextToCurrentSelection g_CurrentImage
-    
-    'Change the selection-related menu items to match
-    metaToggle tSelection, True
-    
-    'Disable all transformable selection items
-    metaToggle tSelectionTransform, False
-    
+        
     'Draw the new selection to the screen
     RenderViewport pdImages(g_CurrentImage).containingForm
 
@@ -525,13 +500,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.lockIn
         pdImages(g_CurrentImage).selectionActive = True
-        
-        'Change the selection-related menu items to match
-        metaToggle tSelection, True
-        
-        'Disable all transformable selection items
-        metaToggle tSelectionTransform, False
-        
+                
         SetProgBarVal 0
         
         Message "Feathering complete."
@@ -572,13 +541,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.lockIn
         pdImages(g_CurrentImage).selectionActive = True
-        
-        'Change the selection-related menu items to match
-        metaToggle tSelection, True
-        
-        'Disable all transformable selection items
-        metaToggle tSelectionTransform, False
-        
+                
         SetProgBarVal 0
         
         Message "Feathering complete."
@@ -625,13 +588,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.lockIn
         pdImages(g_CurrentImage).selectionActive = True
-        
-        'Change the selection-related menu items to match
-        metaToggle tSelection, True
-        
-        'Disable all transformable selection items
-        metaToggle tSelectionTransform, False
-        
+                
         SetProgBarVal 0
         
         Message "Selection resize complete."
@@ -678,13 +635,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.lockIn
         pdImages(g_CurrentImage).selectionActive = True
-        
-        'Change the selection-related menu items to match
-        metaToggle tSelection, True
-        
-        'Disable all transformable selection items
-        metaToggle tSelectionTransform, False
-        
+                
         SetProgBarVal 0
         
         Message "Selection resize complete."
@@ -695,7 +646,6 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
     End If
     
 End Sub
-
 
 'Convert the current selection to border-type.  Note that this will make a transformable selection non-transformable.
 Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
@@ -726,13 +676,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.lockIn
         pdImages(g_CurrentImage).selectionActive = True
-        
-        'Change the selection-related menu items to match
-        metaToggle tSelection, True
-        
-        'Disable all transformable selection items
-        metaToggle tSelectionTransform, False
-        
+                
         SetProgBarVal 0
         
         Message "Selection resize complete."

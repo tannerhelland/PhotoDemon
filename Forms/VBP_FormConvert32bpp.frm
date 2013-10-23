@@ -233,9 +233,6 @@ Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Opti
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
     
-    'Enable/disable the remove/add alpha channel menus to match
-    If Not toPreview Then metaToggle tImgMode32bpp, True
-
 End Sub
 
 'Note that if the user is moving this slider, they presumably want the corresponding option button selected

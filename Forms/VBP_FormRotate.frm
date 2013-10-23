@@ -199,7 +199,6 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
-        metaToggle tSelection, False
     End If
 
     'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
@@ -208,14 +207,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
 
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
-    
-        If pdImages(g_CurrentImage).selectionActive Then
-            pdImages(g_CurrentImage).selectionActive = False
-            pdImages(g_CurrentImage).mainSelection.lockRelease
-            metaToggle tSelection, False
-        End If
         
-        If isPreview = False Then Message "Rotating image (this may take a few seconds)..."
+        If Not isPreview Then Message "Rotating image (this may take a few seconds)..."
         
         'Load the FreeImage dll into memory
         Dim hLib As Long

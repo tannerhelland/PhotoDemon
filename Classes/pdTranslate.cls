@@ -290,19 +290,10 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     If FormMain.Visible Then
         FormMain.requestMakeFormPretty useDoEvents
         DrawAccelerators
-        ApplyAllMenuIcons True
+        applyAllMenuIcons True
         
-        'Because the Undo and Redo captions are dynamic, they must be recreated in the current language
-        metaToggle tUndo, FormMain.MnuEdit(0).Enabled
-        metaToggle tRedo, FormMain.MnuEdit(1).Enabled
-        
-        'Normally we would want to reset menu icons manually, but the metaToggle calls above call ResetMenuIcons for us.
-        'ResetMenuIcons
-        
-        'If an image is loaded, we need to redraw the "size" caption on the left
-        If (g_OpenImageCount > 0) Then
-            If Not pdImages(g_CurrentImage) Is Nothing Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
-        End If
+        'Resync the interface to redraw any remaining text and/or buttons
+        syncInterfaceToCurrentImage
         
     End If
         

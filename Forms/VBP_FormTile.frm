@@ -365,10 +365,9 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
-        metaToggle tSelection, False
     End If
     
-    If isPreview = False Then Message "Rendering tiled image..."
+    If Not isPreview Then Message "Rendering tiled image..."
     
     'Create a temporary layer to generate the tile and/or tile preview
     Dim tmpLayer As pdLayer

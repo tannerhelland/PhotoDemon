@@ -341,9 +341,8 @@ Public Sub LoadTheProgram()
     'Load and draw all menu icons
     loadMenuIcons
     
-    'Look in the MDIWindow module for this code - it enables/disables additional menus based on whether or not images have been loaded.
-    ' At this point, it mostly disables all image-related menu items (as no images have been loaded yet)
-    synchronizeInterfaceToImageState
+    'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
+    syncInterfaceToCurrentImage
     
     
     
@@ -573,15 +572,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
             pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
-            'Prepare the user interface for a new image
-            metaToggle tSaveAs, True
-            metaToggle tCopy, True
-            metaToggle tPaste, True
-            metaToggle tUndo, False
-            metaToggle tRedo, False
-            metaToggle tImageOps, True
-            metaToggle tFilter, True
-            
         End If
             
             
@@ -696,6 +686,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 Unload failedImageForm
                 Set failedImageForm = Nothing
             End If
+            
+            'Update the interface to reflect the images currently loaded
+            syncInterfaceToCurrentImage
             
             GoTo PreloadMoreImages
             
@@ -862,16 +855,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
                 Message "Compiling metadata..."
                 targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.originalFileFormat
-                
-                'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-                metaToggle tMetadata, targetImage.imgMetadata.hasXMLMetadata
-                metaToggle tGPSMetadata, targetImage.imgMetadata.hasGPSMetadata()
-            Else
-            
-                'Enable the metadata browser.  If the user selects this, we will attempt to load metadata then.
-                metaToggle tMetadata, True
-                metaToggle tGPSMetadata, True
-                
             End If
             
         End If
@@ -884,9 +867,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
             
-            'Update relevant user interface controls
-            DisplaySize targetImage.Width, targetImage.Height
-            
             If imgFormTitle = "" Then
                 If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
                     g_WindowManager.requestWindowCaptionChange targetImage.containingForm, getFilename(sFile(thisImage))
@@ -897,12 +877,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 g_WindowManager.requestWindowCaptionChange targetImage.containingForm, imgFormTitle
             End If
             
-            'Check the image's color depth, and check/uncheck the matching Image Mode setting
-            If targetImage.mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
-            
-            'Render an icon-sized version of this image as the MDI child form's icon
+            'Create an icon-sized version of this image, which we will use as form's taskbar icon
             If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage.containingForm
             
+            'Synchronize all other interface elements to match the newly loaded image
+            syncInterfaceToCurrentImage
         
         '*************************************************************************************************************************************
         ' If this is a primary image, register the new window with the window manager, then display the image on-screen
@@ -951,11 +930,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'If the user wants us to resize the image to fit on-screen, do that now
             If g_AutozoomLargeImages = 1 Then FitWindowToViewport
                         
-            'Finally, add this file to the MRU list (unless specifically told not to)
+            'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
-        
+            
         End If
-        
         
         
         '*************************************************************************************************************************************
@@ -1148,19 +1126,9 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
     If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
-    
-    'Display the new size on screen, and activate any selection controls as necessary
-    DisplaySize pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerHeight
-    metaToggle tSelection, pdImages(g_CurrentImage).selectionActive
         
     'Render the image to the screen
     PrepareViewport pdImages(g_CurrentImage).containingForm, "LoadUndo"
-        
-    If isRedoData Then
-        'Message "Redo restored successfully."
-    Else
-        'Message "Undo restored successfully."
-    End If
     
 End Sub
 
@@ -1301,7 +1269,7 @@ Public Sub LoadAccelerators()
         'Effects Menu
         '.AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask Or vbShiftMask, "Add RGB noise", FormMain.MnuNoise(1), True, True, True, False
         '.AddAccelerator vbKeyG, vbCtrlMask Or vbAltMask Or vbShiftMask, "Gaussian blur", FormMain.MnuBlurFilter(1), True, True, True, False
-        '.AddAccelerator vbKeyY, vbCtrlMask Or vbAltMask Or vbShiftMask, "Correct lens distortion", FormMain.MnuDistortFilter(1), True, True, True, False
+        '.AddAccelerator vbKeyY, vbCtrlMask Or vbAltMask Or vbShiftMask, "Correct lens distortion", FormMain.MnuDistortEffects(1), True, True, True, False
         '.AddAccelerator vbKeyU, vbCtrlMask Or vbAltMask Or vbShiftMask, "Unsharp mask", FormMain.MnuSharpen(1), True, True, True, False
         
         'Tools menu
@@ -1554,15 +1522,6 @@ Public Sub DuplicateCurrentImage()
     pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
     pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
-    'Prepare the user interface for a new image
-    metaToggle tSaveAs, True
-    metaToggle tCopy, True
-    metaToggle tPaste, True
-    metaToggle tUndo, False
-    metaToggle tRedo, False
-    metaToggle tImageOps, True
-    metaToggle tFilter, True
-        
     'Copy the picture from the previous form to this new one
     pdImages(g_CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer
 
@@ -1589,9 +1548,6 @@ Public Sub DuplicateCurrentImage()
     
     'Fit the window to the newly duplicated image
     Message "Resizing image to fit screen..."
-        
-    'Note the image dimensions and display them on the left-hand pane
-    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Update the current caption to match
     g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).originalFileNameAndExtension
@@ -1636,6 +1592,9 @@ Public Sub DuplicateCurrentImage()
     ' bottom edges don't fall outside the MDI client area
     'If the user wants us to resize the image to fit on-screen, do that now
     If g_AutozoomLargeImages = 1 Then FitWindowToViewport
+    
+    'Synchronize the interface to match the newly created image's settings
+    syncInterfaceToCurrentImage
     
     Message "Image duplication complete."
     

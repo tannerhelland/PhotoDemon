@@ -16,7 +16,9 @@ Attribute VB_Exposed = False
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 23/October/13
-'Last update: moved all Undo/Redo operations to a single class, and gave each pdImage a copy of said class.
+'Last update: moved all Undo/Redo operations to a single class, and gave each pdImage a copy of said class.  This
+'              not only made the resulting Undo/Redo code base much smaller, but it should also be significantly
+'              easier to add and improve Undo/Redo functionality in the future.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -25,7 +27,9 @@ Attribute VB_Exposed = False
 '
 'In 2013, I finally had enough of the program's shoddy Undo/Redo code, so I merged all the various Undo/Redo subs
 ' into a single class, and gave each pdImage a copy of said class.  This achieves a long-desired goal of making
-' the Undo/Redo code completely self-contained, and should make future improvements much, much easier.
+' the Undo/Redo code completely self-contained, and should make future improvements much, much easier.  As part
+' of this change, the Undo/Redo engine was largely rewritten, and all interface-related code was moved outside the
+' class.  (Specifically, it is now handled by the separate syncInterfaceToCurrentImage function.)
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if you run out of free
@@ -144,21 +148,11 @@ Public Sub createUndoData(ByVal processID As String, Optional ByVal processType 
     undoState = True
     redoState = False
     
-    'TODO: move all metaToggle functions out of this class.
-    
     'If this action changed pixel data, mark the image as NOT saved (because if we're creating an Undo file, the
     ' image has changed from its saved version).
     If processType = 1 Then parentPDImage.setSaveState False
     
     Debug.Print "Undo created successfully."
-    
-    'Since an undo exists, enable the Undo button and disable the Redo button
-    metaToggle tUndo, undoState
-    metaToggle tRedo, redoState
-    
-    '"Fade last effect" is reserved for filters and effects only, so if this action is selection-only
-    ' (e.g. "feather selection"), do not enable the "Fade Last Effect" menu.
-    If (processType = 0) Or (processType = 1) Then FormMain.MnuFadeLastEffect.Enabled = True Else FormMain.MnuFadeLastEffect.Enabled = False
     
 End Sub
 
@@ -229,17 +223,9 @@ Public Sub restoreUndoData()
     If getUndoTool > -1 Then
         toolbar_Selections.selectNewTool getUndoTool
     End If
-    
-    'Set the undo, redo, Fade last effect buttons to their proper state
-    metaToggle tUndo, undoState
-    metaToggle tRedo, redoState
-    FormMain.MnuFadeLastEffect.Enabled = undoState
         
     'Launch the undo bitmap loading routine
     LoadUndo getCurrentUndoFilename(), getUndoProcessType
-    
-    'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
-    If parentPDImage.getActiveLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     'Notify the program that undo/redo data is no longer being processed.
     g_UndoRedoActive = False
@@ -286,14 +272,6 @@ Public Sub rollBackLastUndo()
         parentPDImage.setSaveState False
     End If
     
-    'Set the undo, redo, Fade last effect buttons to their proper state
-    metaToggle tUndo, undoState
-    metaToggle tRedo, redoState
-    FormMain.MnuFadeLastEffect.Enabled = undoState
-    
-    'Check the Undo image's color depth, and check/uncheck the matching Image Mode setting
-    If parentPDImage.getActiveLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
-    
     'Notify the program that undo/redo data is no longer being processed.
     g_UndoRedoActive = False
 
@@ -322,17 +300,9 @@ Public Sub RestoreRedoData()
     
     'Select the relevant tool for this action, if one is provided
     If getUndoTool > -1 Then toolbar_Selections.selectNewTool getUndoTool
-    
-    'Set the undo, redo, Fade last effect buttons to their proper state
-    metaToggle tUndo, undoState
-    metaToggle tRedo, redoState
-    FormMain.MnuFadeLastEffect.Enabled = undoState
         
     'Load the Redo bitmap file
     LoadUndo getCurrentUndoFilename(), getUndoProcessType, True
-    
-    'Finally, check the Redo image's color depth, and check/uncheck the matching Image Mode setting
-    If parentPDImage.getActiveLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
     
     'Notify the program that undo/redo data is no longer being processed.
     g_UndoRedoActive = False
@@ -397,47 +367,38 @@ End Function
 
 'Return the process type associated with the current Undo state
 Public Function getUndoProcessType() As Long
-    If undoState = False Then
-        getUndoProcessType = 0
+    If undoState Then
+        getUndoProcessType = undoStack(undoNum - 1).undoType
     Else
-        getUndoProcessType = undoStack(undoNum).undoType
+        getUndoProcessType = -1
     End If
 End Function
 
 'Return the process type associated with the current Redo state
 Public Function getRedoProcessType() As Long
-
-    'If we don't have a relevant Redo state, return nothing.  Otherwise return the proper process ID.
-    If redoState = False Then
-        getRedoProcessType = 0
-    Else
+    If redoState Then
         getRedoProcessType = undoStack(undoNum).undoType
+    Else
+        getRedoProcessType = -1
     End If
-
 End Function
 
 'Return the processID associated with the current Undo state
 Public Function getUndoProcessID() As String
-    
-    'If we don't have a relevant Undo state, return -1.  Otherwise return the proper process ID.
-    If undoState = False Then
-        getUndoProcessID = ""
-    Else
+    If undoState Then
         getUndoProcessID = g_Language.TranslateMessage(undoStack(undoNum - 1).processID)
+    Else
+        getUndoProcessID = ""
     End If
-        
 End Function
 
 'Return the processID associated with the current Redo state
 Public Function getRedoProcessID() As String
-
-    'If we don't have a relevant Redo state, return -1.  Otherwise return the proper process ID.
-    If redoState = False Then
-        getRedoProcessID = ""
-    Else
+    If redoState Then
         getRedoProcessID = g_Language.TranslateMessage(undoStack(undoNum).processID)
+    Else
+        getRedoProcessID = ""
     End If
-
 End Function
 
 'Undo/redo data handling is complex.  Sometimes it is helpful to see how our Undo/Redo stack looks - use this sub

@@ -309,9 +309,7 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
     Else
         hasBeenSaved = False
     End If
-
-    metaToggle tSave, Not hasBeenSaved
-
+    
 End Sub
 
 'If the class's size has somehow changed, this can be called to update it.  At present, it simply copies over the size of

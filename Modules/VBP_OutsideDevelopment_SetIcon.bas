@@ -92,15 +92,17 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
    
 End Sub
 
-'During run-time, the user has an option to use the current MDI child window's icon as the task bar icon as well.
+'During run-time, the program can use this function to assign a custom icon to any form
 Public Sub setNewTaskbarIcon(ByVal iconhWnd32 As Long, ByVal targetHwnd As Long)
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     SendMessageLong targetHwnd, WM_SETICON, ICON_BIG, iconhWnd32
 End Sub
 
-Public Sub setNewAppIcon(ByVal iconhWnd16 As Long)
-    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
+'Previously, we changed the main program icon to match the thumbnail of the currently active image.  Now that each
+' image is independently displaying in the tashbar, there is no need for this behavior.
+'Public Sub setNewAppIcon(ByVal iconhWnd16 As Long)
+    'If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     'SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconhWnd16
     'SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, origIcon32
-End Sub
+'End Sub
 

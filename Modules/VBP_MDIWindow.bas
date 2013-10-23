@@ -39,7 +39,9 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'This is the actual, physical form object on which an image will reside
     Dim newImageForm As New FormImage
     
-    'Assign it a 32bpp icon
+    'Assign it a 32bpp icon matching the PD one; this will be overwritten momentarily, but as the user may sneak a peak
+    ' if the image takes a long time to load (e.g. RAW photos), it's nice to display something other than the crappy
+    ' stock VB form icon.
     SetIcon newImageForm.hWnd, "AAA", False
     
     'IMPORTANT: the form tag is the only way we can keep track of separate forms
@@ -49,15 +51,15 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'Remember this ID in the associated image class
     pdImages(g_NumOfImagesLoaded).isActive = True
     pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
-        
-    'Set a default window size (in twips)
-    newImageForm.Width = 4500
     
-    newImageForm.Height = 1
+    'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
+    pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
     
-    'Default image values
+    'Give the relevant pdImage object a reference to this form
     Set pdImages(g_NumOfImagesLoaded).containingForm = newImageForm
-    pdImages(g_NumOfImagesLoaded).currentZoomValue = ZOOM_100_PERCENT   'Default zoom is 100%
+    
+    'Set a default zoom of 100% (this is likely to change, assuming the user has auto-zoom enabled)
+    pdImages(g_NumOfImagesLoaded).currentZoomValue = ZOOM_100_PERCENT
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
     Dim mainClientRect As winRect
@@ -74,6 +76,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'Use the window manager to properly assign the main form ownership over this window
     'g_WindowManager.requestNewOwner newImageForm.hWnd, FormMain.hWnd
     
+    'Supply a temporary caption (again, only necessary if the image takes a long time to load)
     newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
     
     'Set this image as the current one
@@ -82,14 +85,11 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'Track how many windows we currently have open
     g_OpenImageCount = g_OpenImageCount + 1
     
-    'Run a separate subroutine (see bottom of this page) to enable/disable menus and such if this is the first image to be loaded
-    synchronizeInterfaceToImageState
+    'Run a separate subroutine to enable/disable menus (important primarily if this is the first image to be loaded)
+    syncInterfaceToCurrentImage
     
     'Re-enable viewport adjustments
     g_AllowViewportRendering = True
-    
-    'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
-    pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
     
 End Sub
 
