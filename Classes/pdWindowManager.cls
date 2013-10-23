@@ -270,7 +270,7 @@ Private Const SM_CYSIZEFRAME As Long = 33
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
@@ -281,10 +281,10 @@ Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Lo
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
@@ -904,15 +904,15 @@ Private Sub getClientCoordsRelativeToScreen(ByVal targetHwnd As Long, ByRef rect
     ClientToScreen targetHwnd, clientLeft
     
     'Fill the bottom-right coord object, then convert it to screen coords
-    clientRight.x = curClientRect.x2
-    clientRight.y = curClientRect.y2
+    clientRight.X = curClientRect.x2
+    clientRight.Y = curClientRect.y2
     ClientToScreen targetHwnd, clientRight
     
     'Fill the rect object we were passed.
-    rectToFill.x1 = clientLeft.x
-    rectToFill.y1 = clientLeft.y
-    rectToFill.x2 = clientRight.x
-    rectToFill.y2 = clientRight.y
+    rectToFill.x1 = clientLeft.X
+    rectToFill.y1 = clientLeft.Y
+    rectToFill.x2 = clientRight.X
+    rectToFill.y2 = clientRight.Y
 
 End Sub
 
@@ -1861,7 +1861,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Case WM_ACTIVATE
                 If (pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW) And (LoWord(wParam) > 0) Then
                     pdWindows(winIndex).formReference.ActivateWorkaround "API activate event captured"
-                    Debug.Print "received activate message for window #" & winIndex & " - " & pdWindows(winIndex).formReference.Caption & " - " & LoWord(wParam)
                 End If
         
             'The window is currently being moved
@@ -2016,9 +2015,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                     
                     'We can now redraw this window
-                    If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then Message "*" & pdWindows(i).offsetX & "," & pdWindows(i).offsetY
                     requestWindowRedraw i, curWinRect
-                    If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then Message pdWindows(i).offsetX & "," & pdWindows(i).offsetY
                     
                 Next i
                 

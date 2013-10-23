@@ -483,12 +483,10 @@ Public Sub UpdateMDIStatus()
         
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
-        'Finally, if dynamic icons are enabled, restore the main program icon and clear the icon cache
-        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
-            destroyAllIcons
-            setNewTaskbarIcon origIcon32, FormMain.hWnd
-            setNewAppIcon origIcon16
-        End If
+        'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
+        destroyAllIcons
+        setNewTaskbarIcon origIcon32, FormMain.hWnd
+        setNewAppIcon origIcon16
         
         'New addition: destroy all inactive pdImage objects.  This helps keep memory usage at a bare minimum.
         If g_NumOfImagesLoaded > 1 Then

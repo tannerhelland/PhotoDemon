@@ -94,9 +94,6 @@ Public g_ZLibEnabled As Boolean
 'Is metadata handling via ExifTool enabled?
 Public g_ExifToolEnabled As Boolean
 
-'Whether or not the user has created a custom filter
-Public g_HasCreatedFilter As Boolean
-
 'How to draw the background of image forms; -1 is checkerboard, any other value is treated as an RGB long
 Public g_CanvasBackground As Long
 

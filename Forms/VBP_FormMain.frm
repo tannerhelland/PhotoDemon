@@ -1263,7 +1263,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1299,7 +1299,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1322,16 +1322,13 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'If the histogram form is open, close it
     Unload FormHistogram
     
-    'If the user wants us to remember the program's last-used location, store those values to file now
-    If g_UserPreferences.GetPref_Boolean("Core", "Remember Window Location", True) Then
-    
-        g_UserPreferences.SetPref_Long "Core", "Last Window State", Me.WindowState
-        g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / Screen.TwipsPerPixelX
-        g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / Screen.TwipsPerPixelY
-        g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / Screen.TwipsPerPixelX
-        g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / Screen.TwipsPerPixelY
-    
-    End If
+    'Store the main window's location to file now.  We will use this in the future to determine which monitor
+    ' to display the splash screen on
+    g_UserPreferences.SetPref_Long "Core", "Last Window State", Me.WindowState
+    g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / Screen.TwipsPerPixelX
+    g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / Screen.TwipsPerPixelX
+    g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / Screen.TwipsPerPixelY
     
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
     g_ProgramShuttingDown = True

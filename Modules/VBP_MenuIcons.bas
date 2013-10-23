@@ -645,23 +645,18 @@ Public Sub createCustomFormIcon(ByRef imgForm As FormImage)
     
     'Request a 32x32 thumbnail version of the current image
     If pdImages(imgForm.Tag).requestThumbnail(thumbLayer, 32) Then
-    
-        'A user preference controls whether we change the taskbar icon to match the current image - check it now.
-        If g_UserPreferences.GetPref_Boolean("Interface", "Dynamic Taskbar Icon", True) Then
         
-            'Request an icon-format version of the generated thumbnail
-            hIcon32 = getIconFromLayer(thumbLayer)
+        'Request an icon-format version of the generated thumbnail
+        hIcon32 = getIconFromLayer(thumbLayer)
+        
+        'Assign the new icon to the taskbar
+        setNewTaskbarIcon hIcon32, imgForm.hWnd
+        
+        '...and remember it in our current icon collection
+        addIconToList hIcon32
             
-            'Assign the new icon to the taskbar
-            setNewTaskbarIcon hIcon32, imgForm.hWnd
-            
-            '...and remember it in our current icon collection
-            addIconToList hIcon32
-                
-            '...and the current form
-            pdImages(imgForm.Tag).curFormIcon32 = hIcon32
-            
-        End If
+        '...and the current form
+        pdImages(imgForm.Tag).curFormIcon32 = hIcon32
         
         'Now repeat the same steps, but for a 16x16 icon to be used in the form's title bar.
         hIcon16 = getIconFromLayer(thumbLayer, 16)

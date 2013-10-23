@@ -308,7 +308,7 @@ Public Sub LoadTheProgram()
     initializeIconHandler
     
     'Before displaying the main window, see if the user wants to restore last-used window location.
-    If g_UserPreferences.GetPref_Boolean("Interface", "Remember Window Location", True) Then restoreMainWindowLocation
+    restoreMainWindowLocation
         
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
     If g_UseFancyFonts Then
