@@ -3,16 +3,15 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 18/October/13
-'Last update: new showDialog function, which is now universally used throughout PD in place of the stock .Show event.
-'              This function properly handles window placement (including in multimonitor environments), and it
-'              assigns z-order to a custom owner to ensure correct top-most order when modal dialogs are displayed.
+'Last updated: 23/October/13
+'Last update: new syncInterfaceToCurrentImage function, which should be universally used throughout PD in place of
+'              the old metaToggle events.
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
 '
 'Many of the functions in this module rely on subclassing, either directly or through things like PD's window manager.
-' This means that many of the functions may operate differently (or not at all) in the IDE.
+' As such, some functions may operate differently (or not at all) while in the IDE.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -33,7 +32,7 @@ Private Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hWnd As Lo
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_PAINT As Long = &HF&
 Private Const GWL_WNDPROC As Long = -4
