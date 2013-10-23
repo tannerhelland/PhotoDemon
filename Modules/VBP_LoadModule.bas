@@ -343,7 +343,7 @@ Public Sub LoadTheProgram()
     
     'Look in the MDIWindow module for this code - it enables/disables additional menus based on whether or not images have been loaded.
     ' At this point, it mostly disables all image-related menu items (as no images have been loaded yet)
-    UpdateMDIStatus
+    synchronizeInterfaceToImageState
     
     
     
@@ -595,7 +595,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Initially, set the filetype of the target image to "unknown".  If the load is successful, this value will
         ' be changed to something >= 0. (Note: if FreeImage is used to load the file, this value will be set by the
         ' LoadFreeImageV3 function.)
-        If Not (targetImage Is Nothing) Then targetImage.OriginalFileFormat = -1
+        If Not (targetImage Is Nothing) Then targetImage.originalFileFormat = -1
         
         'Strip the extension from the file
         FileExtension = UCase(GetExtension(sFile(thisImage)))
@@ -612,7 +612,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer)
                 
-                targetImage.OriginalFileFormat = 100
+                targetImage.originalFileFormat = 100
                 mustCountColors = True
         
             'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too.
@@ -622,7 +622,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
                 
-                targetImage.OriginalFileFormat = FIF_JPEG
+                targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
         
             'All other formats follow a prescribed behavior - try to load via FreeImage (if available), then GDI+, then finally
@@ -714,25 +714,25 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Select Case FileExtension
                 
                 Case "GIF"
-                    targetImage.OriginalFileFormat = FIF_GIF
-                    targetImage.OriginalColorDepth = 8
+                    targetImage.originalFileFormat = FIF_GIF
+                    targetImage.originalColorDepth = 8
                     
                 Case "ICO"
-                    targetImage.OriginalFileFormat = FIF_ICO
+                    targetImage.originalFileFormat = FIF_ICO
                 
                 Case "JIF", "JPG", "JPEG", "JPE"
-                    targetImage.OriginalFileFormat = FIF_JPEG
-                    targetImage.OriginalColorDepth = 24
+                    targetImage.originalFileFormat = FIF_JPEG
+                    targetImage.originalColorDepth = 24
                     
                 Case "PNG"
-                    targetImage.OriginalFileFormat = FIF_PNG
+                    targetImage.originalFileFormat = FIF_PNG
                 
                 Case "TIF", "TIFF"
-                    targetImage.OriginalFileFormat = FIF_TIFF
+                    targetImage.originalFileFormat = FIF_TIFF
                     
                 'Treat anything else as a BMP file
                 Case Else
-                    targetImage.OriginalFileFormat = FIF_BMP
+                    targetImage.originalFileFormat = FIF_BMP
                     
             End Select
         
@@ -776,8 +776,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         targetImage.updateSize
-        If FileExist(sFile(thisImage)) Then targetImage.OriginalFileSize = FileLen(sFile(thisImage))
-        targetImage.CurrentFileFormat = targetImage.OriginalFileFormat
+        If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
+        targetImage.currentFileFormat = targetImage.originalFileFormat
                 
                 
                 
@@ -795,12 +795,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
         
             'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-            targetImage.OriginalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
+            targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
             
             If g_IsImageGray Then
-                Message "Color count successful (%1 BPP, grayscale)", targetImage.OriginalColorDepth
+                Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
             Else
-                Message "Color count successful (%1 BPP, indexed color)", targetImage.OriginalColorDepth
+                Message "Color count successful (%1 BPP, indexed color)", targetImage.originalColorDepth
             End If
                         
         End If
@@ -822,29 +822,29 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If imgName = "" Then
             'The calling routine hasn't specified an image name, so assume this is a normal load situation.
             ' That means pulling the filename from the file itself.
-            targetImage.LocationOnDisk = sFile(thisImage)
+            targetImage.locationOnDisk = sFile(thisImage)
             
             tmpFilename = sFile(thisImage)
             StripFilename tmpFilename
-            targetImage.OriginalFileNameAndExtension = tmpFilename
+            targetImage.originalFileNameAndExtension = tmpFilename
             StripOffExtension tmpFilename
-            targetImage.OriginalFileName = tmpFilename
+            targetImage.originalFileName = tmpFilename
             
             'Disable the save button, because this file exists on disk
-            targetImage.UpdateSaveState True
+            targetImage.setSaveState True
             
         Else
             'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
             ' dialog in the future by not specifying a location on disk
-            targetImage.LocationOnDisk = ""
-            targetImage.OriginalFileNameAndExtension = imgName
+            targetImage.locationOnDisk = ""
+            targetImage.originalFileNameAndExtension = imgName
             
             tmpFilename = imgName
             StripOffExtension tmpFilename
-            targetImage.OriginalFileName = tmpFilename
+            targetImage.originalFileName = tmpFilename
             
             'Similarly, enable the save button
-            targetImage.UpdateSaveState False
+            targetImage.setSaveState False
             
         End If
         
@@ -861,7 +861,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'A user preference determines whether we loda metadata now, or suspend it until requested (e.g. save or browse time)
             If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
                 Message "Compiling metadata..."
-                targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.OriginalFileFormat
+                targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.originalFileFormat
                 
                 'Determine whether metadata is present, and dis/enable metadata menu items accordingly
                 metaToggle tMetadata, targetImage.imgMetadata.hasXMLMetadata
@@ -927,7 +927,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
             ' update the zoom combo box to match the zoom assigned by the window-fit function.
             g_AllowViewportRendering = False
-            toolbar_File.CmbZoom.ListIndex = targetImage.CurrentZoomValue
+            toolbar_File.CmbZoom.ListIndex = targetImage.currentZoomValue
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
@@ -984,11 +984,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Call PreLoadImage again for each individual frame in the multipage file
             For pageTracker = 1 To g_imagePageCount
                 If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
-                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    PreLoadImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
-                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    PreLoadImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 Else
-                    PreLoadImage tmpStringArray, False, targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.OriginalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    PreLoadImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 End If
             Next pageTracker
         
@@ -1568,24 +1568,24 @@ Public Sub DuplicateCurrentImage()
 
     'Store important data about the image to the pdImages array
     pdImages(g_CurrentImage).updateSize
-    pdImages(g_CurrentImage).OriginalFileSize = pdImages(imageToBeDuplicated).OriginalFileSize
-    pdImages(g_CurrentImage).LocationOnDisk = ""
+    pdImages(g_CurrentImage).originalFileSize = pdImages(imageToBeDuplicated).originalFileSize
+    pdImages(g_CurrentImage).locationOnDisk = ""
             
     'Get the original file's extension and filename, then append " - Copy" to it
     Dim originalExtension As String
-    originalExtension = GetExtension(pdImages(imageToBeDuplicated).OriginalFileNameAndExtension)
+    originalExtension = GetExtension(pdImages(imageToBeDuplicated).originalFileNameAndExtension)
             
     Dim newFilename As String
-    newFilename = pdImages(imageToBeDuplicated).OriginalFileName & " - " & g_Language.TranslateMessage("Copy")
-    pdImages(g_CurrentImage).OriginalFileName = newFilename
+    newFilename = pdImages(imageToBeDuplicated).originalFileName & " - " & g_Language.TranslateMessage("Copy")
+    pdImages(g_CurrentImage).originalFileName = newFilename
     If Len(originalExtension) > 0 Then
-        pdImages(g_CurrentImage).OriginalFileNameAndExtension = newFilename & "." & originalExtension
+        pdImages(g_CurrentImage).originalFileNameAndExtension = newFilename & "." & originalExtension
     Else
-        pdImages(g_CurrentImage).OriginalFileNameAndExtension = newFilename
+        pdImages(g_CurrentImage).originalFileNameAndExtension = newFilename
     End If
             
     'Because this image hasn't been saved to disk, mark its save state as "false"
-    pdImages(g_CurrentImage).UpdateSaveState False
+    pdImages(g_CurrentImage).setSaveState False
     
     'Fit the window to the newly duplicated image
     Message "Resizing image to fit screen..."
@@ -1594,7 +1594,7 @@ Public Sub DuplicateCurrentImage()
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Update the current caption to match
-    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).OriginalFileNameAndExtension
+    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).originalFileNameAndExtension
         
     'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
     ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
@@ -1613,7 +1613,7 @@ Public Sub DuplicateCurrentImage()
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
     ' update the zoom combo box to match the zoom assigned by the window-fit function.
     g_AllowViewportRendering = False
-    toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).CurrentZoomValue
+    toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).currentZoomValue
         
     'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True
