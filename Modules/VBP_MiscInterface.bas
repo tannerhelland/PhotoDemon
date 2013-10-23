@@ -60,30 +60,33 @@ Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
 Private Const SPI_GETKEYBOARDDELAY As Long = &H16
 
-'Constants that define single meta-level actions that require certain controls to be en/disabled.  These are passed to tInit, below.
+'Constants that define single meta-level actions that require certain controls to be en/disabled.  (For example, use tSave to disable
+' the File -> Save menu, file toolbar Save button, and Ctrl+S hotkey.)  Constants are listed in roughly the order they appear in the
+' main menu.
 Public Enum metaInitializer
-     tOpen = 0
-     tSave = 1
-     tSaveAs = 2
-     tCopy = 3
-     tPaste = 4
-     tUndo = 5
-     tImageOps = 6
-     tFilter = 7
-     tRedo = 8
-     tHistogram = 9
-     tMacro = 10
-     tEdit = 11
-     tRepeatLast = 12
-     tSelection = 13
-     tSelectionTransform = 14
-     tImgMode32bpp = 15
-     tMetadata = 16
-     tGPSMetadata = 17
+     tSave
+     tSaveAs
+     tClose
+     tUndo
+     tRedo
+     tRepeatLast
+     tCopy
+     tPaste
+     tView
+     tImageOps
+     tImgMode32bpp
+     tMetadata
+     tGPSMetadata
+     tEffects
+     tMacro
+     tSelection
+     tSelectionTransform
+     tZoom
 End Enum
 
 #If False Then
-    Private Const tOpen = 0, tSave = 1, tSaveAs = 2, tCopy = 3, tPaste = 4, tUndo = 5, tImageOps = 6, tFilter = 7, tRedo = 8, tHistogram = 9, tMacro = 10, tEdit = 11, tRepeatLast = 12, tSelection = 13, tSelectionTransform = 14, tImgMode32bpp = 15, tMetadata = 16, tGPSMetadata = 17
+    Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tRepeatLast = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0
+    Private Const tImgMode32bpp = 0, tMetadata = 0, tGPSMetadata = 0, tEffects = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0
 #End If
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
@@ -96,6 +99,420 @@ Private hadToChangeSmoothing As Long
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
 Private dpiRatio As Double
+
+
+'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
+' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
+' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.
+Public Sub syncInterfaceToCurrentImage()
+
+    Dim i As Long
+    
+    'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image (e.g. Undo), and stuff that changes
+    ' based on the *total* number of available images (e.g. visibility of the Effects menu).
+    
+    'Start by breaking our interface decisions into two broad categories: "no images are loaded" and "one or more images are loaded".
+    
+    'If no images are loaded, we can disable a whole swath of controls
+    If g_OpenImageCount = 0 Then
+    
+        metaToggle tSave, False
+        metaToggle tSaveAs, False
+        metaToggle tClose, False
+        metaToggle tUndo, False
+        metaToggle tRedo, False
+        metaToggle tRepeatLast, False
+        metaToggle tCopy, False
+        metaToggle tView, False
+        metaToggle tImageOps, False
+        metaToggle tSelection, False
+        metaToggle tEffects, False
+        metaToggle tMacro, False
+        metaToggle tZoom, False
+        
+        toolbar_File.lblImgSize.ForeColor = &HD1B499
+        toolbar_File.lblCoordinates.ForeColor = &HD1B499
+        toolbar_File.lblImgSize.Caption = ""
+        toolbar_File.lblCoordinates.Caption = ""
+        
+        Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
+        
+        'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
+        destroyAllIcons
+        setNewTaskbarIcon origIcon32, FormMain.hWnd
+        
+        'If no images are currently open, but images were open in the past, release any memory associated with those images.
+        ' This helps minimize PD's memory usage.
+        If g_NumOfImagesLoaded > 1 Then
+        
+            'Loop through all pdImage objects and make sure they've been deactivated
+            For i = 0 To g_NumOfImagesLoaded
+                If (Not pdImages(i) Is Nothing) Then
+                    pdImages(i).deactivateImage
+                    Set pdImages(i) = Nothing
+                End If
+            Next i
+            
+            'Reset all window tracking variables
+            g_NumOfImagesLoaded = 0
+            g_CurrentImage = 0
+            g_OpenImageCount = 0
+            
+        End If
+        
+        'Erase any remaining viewport buffer
+        eraseViewportBuffers
+    
+    'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
+    ' while others (Undo and Redo) are only enabled if the current image requires it.
+    Else
+    
+        'Start by enabling actions that are always available if one or more images are loaded.
+        metaToggle tSaveAs, True
+        metaToggle tClose, True
+        metaToggle tCopy, True
+        
+        metaToggle tView, True
+        metaToggle tZoom, True
+        metaToggle tImageOps, True
+        metaToggle tEffects, True
+        metaToggle tMacro, True
+        
+        toolbar_File.lblImgSize.ForeColor = &H544E43
+        toolbar_File.lblCoordinates.ForeColor = &H544E43
+        
+        'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
+        ' the image has not already been saved in its current state.
+        
+        'Note that all of these functions rely on the g_CurrentImage value to function.
+        
+        'Save is a bit funny if the image HAS been saved to file, we DISABLE the save button.
+        metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState
+        
+        'Undo, Redo, and RepeatLast are all closely related
+        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState
+        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState
+        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getRedoState
+        
+        '"Fade last effect" is reserved for filters and effects only, so if the last Undo action was selection-only
+        ' (e.g. "feather selection"), do not enable the "Fade Last Effect" menu.
+        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
+            If (pdImages(g_CurrentImage).undoManager.getUndoProcessType = 0) Or (pdImages(g_CurrentImage).undoManager.getUndoProcessType = 1) Then
+                FormMain.MnuFadeLastEffect.Enabled = True
+            Else
+                FormMain.MnuFadeLastEffect.Enabled = False
+            End If
+        End If
+        
+        'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+        ' NOTE: if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
+        ' browse it at their leisure.  If they have chosen to process metadata at load time, we can enable those menu items
+        ' contingent on the actual presence of metadata in this image.
+        If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+            
+            'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
+            metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+            
+        Else
+        
+            'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
+            ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
+            ' In that rare case, we can enable the GPS menu correctly.
+            metaToggle tMetadata, True
+            
+            If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
+            Else
+                metaToggle tGPSMetadata, True
+            End If
+                    
+        End If
+        
+        'Display the size of this image in the status bar
+        If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        
+        'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
+        If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
+            If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
+        Else
+            setNewTaskbarIcon origIcon32, FormMain.hWnd
+        End If
+        
+        'Check the image's color depth, and check/uncheck the matching Image Mode setting
+        If Not (pdImages(g_CurrentImage).mainLayer Is Nothing) Then
+            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+        End If
+        
+        'Restore the zoom value for this particular image (again, only if the form has been initialized)
+        If pdImages(g_CurrentImage).Width <> 0 Then
+            g_AllowViewportRendering = False
+            toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).currentZoomValue
+            g_AllowViewportRendering = True
+        End If
+        
+        'If a selection is active on this image, update the text boxes to match
+        If pdImages(g_CurrentImage).selectionActive Then
+            metaToggle tSelection, True
+            metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+            syncTextToCurrentSelection g_CurrentImage
+        Else
+            metaToggle tSelection, False
+            metaToggle tSelectionTransform, False
+        End If
+        
+        'Finally, if the histogram window is open, redraw it.  (This isn't needed at present, but could be useful in the future)
+        'If FormHistogram.Visible And pdImages(g_CurrentImage).loadedSuccessfully Then
+        '    FormHistogram.TallyHistogramValues
+        '    FormHistogram.DrawHistogram
+        'End If
+        
+    End If
+    
+    'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, including the
+    ' image tabstrip and the "Next/Previous" image menu items.
+    If g_OpenImageCount >= 2 Then
+        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+        FormMain.MnuWindow(6).Enabled = True
+        FormMain.MnuWindow(7).Enabled = True
+    Else
+        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+        FormMain.MnuWindow(6).Enabled = False
+        FormMain.MnuWindow(7).Enabled = False
+    End If
+    
+End Sub
+
+'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
+' and toolbar buttons)
+Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
+    
+    Dim i As Long
+    
+    Select Case metaItem
+            
+        'Save (left-hand panel button AND menu item)
+        Case tSave
+            If FormMain.MnuFile(4).Enabled <> newState Then
+                toolbar_File.cmdSave.Enabled = newState
+                FormMain.MnuFile(4).Enabled = newState
+            End If
+            
+        'Save As (menu item only)
+        Case tSaveAs
+            If FormMain.MnuFile(5).Enabled <> newState Then
+                toolbar_File.cmdSaveAs.Enabled = newState
+                FormMain.MnuFile(5).Enabled = newState
+            End If
+            
+        'Close and Close All
+        Case tClose
+            If FormMain.MnuFile(7).Enabled <> newState Then
+                FormMain.MnuFile(7).Enabled = newState
+                FormMain.MnuFile(8).Enabled = newState
+                toolbar_File.cmdClose.Enabled = newState
+            End If
+        
+        'Undo (left-hand panel button AND menu item)
+        Case tUndo
+            If FormMain.MnuEdit(0).Enabled <> newState Then
+                toolbar_File.cmdUndo.Enabled = newState
+                FormMain.MnuEdit(0).Enabled = newState
+            End If
+            'If Undo is being enabled, change the text to match the relevant action that created this Undo file
+            If newState Then
+                toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).undoManager.getUndoProcessID
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID & vbTab & "Ctrl+Z"
+            Else
+                toolbar_File.cmdUndo.ToolTip = ""
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
+            End If
+            
+            'When changing menu text, icons must be reapplied.
+            resetMenuIcons
+        
+        'Redo (left-hand panel button AND menu item)
+        Case tRedo
+            If FormMain.MnuEdit(1).Enabled <> newState Then
+                toolbar_File.cmdRedo.Enabled = newState
+                FormMain.MnuEdit(1).Enabled = newState
+            End If
+            
+            'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
+            If newState Then
+                toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).undoManager.getRedoProcessID
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).undoManager.getRedoProcessID & vbTab & "Ctrl+Y"
+            Else
+                toolbar_File.cmdRedo.ToolTip = ""
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
+            End If
+            
+            'When changing menu text, icons must be reapplied.
+            resetMenuIcons
+        
+        'Repeat last action (menu item only)
+        Case tRepeatLast
+            If FormMain.MnuEdit(2).Enabled <> newState Then FormMain.MnuEdit(2).Enabled = newState
+            
+        'Copy (menu item only)
+        Case tCopy
+            If FormMain.MnuEdit(4).Enabled <> newState Then FormMain.MnuEdit(4).Enabled = newState
+        
+        'Paste (menu item only)
+        Case tPaste
+            If FormMain.MnuEdit(5).Enabled <> newState Then FormMain.MnuEdit(5).Enabled = newState
+        
+        'View (top-menu level)
+        Case tView
+            If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState
+        
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Select, Color, and Print menus
+        Case tImageOps
+            If FormMain.MnuImageTop.Enabled <> newState Then
+                FormMain.MnuImageTop.Enabled = newState
+                
+                'Use this same command to disable other menus
+                
+                'File -> Print
+                FormMain.MnuFile(12).Enabled = newState
+                
+                'Select menu
+                FormMain.MnuSelectTop.Enabled = newState
+                
+                'Adjustments menu
+                FormMain.MnuAdjustmentsTop.Enabled = newState
+            End If
+            
+            'FitWindowToImage is a little weird - we disable it if no images are active, but also if images are docked.
+            If newState Then
+                
+                'The "Fit viewport around image" option is only available for floating image windows.  If images are docked,
+                ' do not enable that menu, even if requested.
+                If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+                    FormMain.MnuFitWindowToImage.Enabled = True
+                Else
+                    FormMain.MnuFitWindowToImage.Enabled = False
+                End If
+                
+            Else
+                FormMain.MnuFitWindowToImage.Enabled = newState
+            End If
+        
+        'Effects (top-level menu)
+        Case tEffects
+            If FormMain.MnuFilter.Enabled <> newState Then FormMain.MnuFilter.Enabled = newState
+            
+        'Macro (within the Tools menu)
+        Case tMacro
+            If FormMain.mnuTool(3).Enabled <> newState Then FormMain.mnuTool(3).Enabled = newState
+        
+        'Selections in general
+        Case tSelection
+            
+            'If selections are not active, clear all the selection value textboxes
+            If Not newState Then
+                For i = 0 To toolbar_Selections.tudSel.Count - 1
+                    toolbar_Selections.tudSel(i).Value = 0
+                Next i
+            End If
+            
+            'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
+            ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
+            ' draw a selection, it already has the attributes they want.
+            For i = 0 To toolbar_Selections.tudSel.Count - 1
+                toolbar_Selections.tudSel(i).Enabled = newState
+            Next i
+            
+            'En/disable all selection menu items that rely on an existing selection to operate
+            If FormMain.MnuSelect(2).Enabled <> newState Then
+                
+                'Select none, invert selection
+                FormMain.MnuSelect(1).Enabled = newState
+                FormMain.MnuSelect(2).Enabled = newState
+                
+                'Grow/shrink/border/feather/sharpen selection
+                For i = 4 To 8
+                    FormMain.MnuSelect(i).Enabled = newState
+                Next i
+                
+                'Save selection
+                FormMain.MnuSelect(11).Enabled = newState
+                
+            End If
+                                    
+            'Selection enabling/disabling also affects the Crop to Selection command
+            If FormMain.MnuImage(7).Enabled <> newState Then FormMain.MnuImage(7).Enabled = newState
+            
+        'Transformable selection controls specifically
+        Case tSelectionTransform
+        
+            'Under certain circumstances, it is desirable to disable only the selection location boxes
+            For i = 0 To toolbar_Selections.tudSel.Count - 1
+                If (Not newState) Then toolbar_Selections.tudSel(i).Value = 0
+                toolbar_Selections.tudSel(i).Enabled = newState
+            Next i
+        
+        '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
+        ' 32bpp, but I've since changed my mind.  It may be useful to take a 32bpp image and apply a *new* alpha channel, so those options are
+        ' now enabled regardless of color depth.  "Remove transparency", however, is still disabled for 24bpp images.
+        Case tImgMode32bpp
+            FormMain.MnuTransparency(3).Enabled = newState
+        
+        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  Otherwise, its enablement will change depending
+        ' on the user's preferences for when to load metadata.
+        Case tMetadata
+        
+            If g_ExifToolEnabled Then
+            
+                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
+                ' we will leave the metadata menu always enabled.
+                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+                    If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
+                Else
+                    If Not FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = True
+                End If
+                
+            Else
+                If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
+            End If
+        
+        Case tGPSMetadata
+        
+            If g_ExifToolEnabled Then
+            
+                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
+                ' we will leave the metadata menu always enabled.
+                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
+                    If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
+                Else
+                    
+                    'If an on-demand model is being used, check to see if the user has attempted to load metadata for this image.
+                    ' If they have, set the toggle to match the GPS metadata's state.
+                    If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
+                        If FormMain.MnuMetadata(3).Enabled <> pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then FormMain.MnuMetadata(3).Enabled = pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
+                    Else
+                        If Not FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = True
+                    End If
+                End If
+                
+            Else
+                If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
+            End If
+            
+        Case tZoom
+            If toolbar_File.CmbZoom.Enabled <> newState Then
+                toolbar_File.CmbZoom.Enabled = newState
+                toolbar_File.cmdZoomIn.Enabled = newState
+                toolbar_File.cmdZoomOut.Enabled = newState
+            End If
+            
+            'When disabling zoom controls, reset the zoom drop-down to 100%
+            If Not newState Then toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
+            
+    End Select
+    
+End Sub
+
 
 'For best results, any modal form should be shown via this function.  This function will automatically center the form over the main window,
 ' while also properly assigning ownership so that the dialog is truly on top of any active windows.  It also handles deactivation of
@@ -139,7 +556,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If g_NumOfImagesLoaded > 0 Then
         For i = 0 To g_NumOfImagesLoaded
             If Not pdImages(i) Is Nothing Then
-                If pdImages(i).isActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
+                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
             End If
         Next i
     End If
@@ -160,7 +577,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If g_NumOfImagesLoaded > 0 Then
         For i = 0 To g_NumOfImagesLoaded
             If Not pdImages(i) Is Nothing Then
-                If pdImages(i).isActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
+                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
             End If
         Next i
     End If
@@ -227,7 +644,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
                 If g_NumOfImagesLoaded > 0 Then
                     For i = 0 To g_NumOfImagesLoaded
                         If (Not pdImages(i) Is Nothing) Then
-                            If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
+                            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
                         End If
                     Next i
                 End If
@@ -242,7 +659,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             If g_NumOfImagesLoaded > 0 Then
                 For i = 0 To g_NumOfImagesLoaded
                     If (Not pdImages(i) Is Nothing) Then
-                        If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
+                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
                     End If
                 Next i
             End If
@@ -297,7 +714,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Dim i As Long
         For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Toolbar visibility changed"
+                If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar visibility changed"
             End If
         Next i
     End If
@@ -359,345 +776,6 @@ End Sub
 Public Sub hideWaitScreen()
     Screen.MousePointer = vbDefault
     Unload FormWait
-End Sub
-
-'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
-' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
-' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.
-Public Sub synchronizeInterfaceToImageState()
-
-    Dim i As Long
-    
-    'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image, and stuff that changes based
-    ' on the *total* number of available images.
-    
-    'Start by breaking our actions into two broad categories: "no images are loaded" and "one or more images are loaded".
-    
-    'If no images are loaded, disable a whole swath of controls
-    If g_OpenImageCount = 0 Then
-    
-        metaToggle tFilter, False
-        metaToggle tSave, False
-        metaToggle tSaveAs, False
-        metaToggle tCopy, False
-        metaToggle tUndo, False
-        metaToggle tRedo, False
-        metaToggle tImageOps, False
-        metaToggle tFilter, False
-        metaToggle tMacro, False
-        metaToggle tRepeatLast, False
-        metaToggle tSelection, False
-        FormMain.MnuFile(7).Enabled = False
-        FormMain.MnuFile(8).Enabled = False
-        toolbar_File.cmdClose.Enabled = False
-        FormMain.MnuFitWindowToImage.Enabled = False
-        FormMain.MnuFitOnScreen.Enabled = False
-        If toolbar_File.CmbZoom.Enabled And toolbar_File.Visible Then
-            toolbar_File.CmbZoom.Enabled = False
-            'FormMain.lblLeftToolBox(3).ForeColor = &H606060
-            toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT   'Reset zoom to 100%
-            toolbar_File.cmdZoomIn.Enabled = False
-            toolbar_File.cmdZoomOut.Enabled = False
-        End If
-        
-        toolbar_File.lblImgSize.ForeColor = &HD1B499
-        toolbar_File.lblCoordinates.ForeColor = &HD1B499
-        
-        toolbar_File.lblImgSize.Caption = ""
-        
-        toolbar_File.lblCoordinates.Caption = ""
-        
-        Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
-        
-        'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
-        destroyAllIcons
-        setNewTaskbarIcon origIcon32, FormMain.hWnd
-        setNewAppIcon origIcon16
-        
-        'If no images are currently open, but images were open in the past, release any memory associated with those images.
-        ' This helps minimize PD's memory usage.
-        If g_NumOfImagesLoaded > 1 Then
-        
-            'Loop through all pdImage objects and make sure they've been deactivated
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    pdImages(i).deactivateImage
-                    Set pdImages(i) = Nothing
-                End If
-            Next i
-            
-            'Reset all window tracking variables
-            g_NumOfImagesLoaded = 0
-            g_CurrentImage = 0
-            g_OpenImageCount = 0
-                        
-        End If
-        
-        'Erase any remaining viewport buffer
-        eraseViewportBuffers
-    
-    'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
-    ' while others (Undo and Redo) are only enabled if the current image requires it.
-    Else
-    
-        'Start by enabling actions that are always available if one or more images are loaded.
-        metaToggle tFilter, True
-        metaToggle tSave, True
-        metaToggle tSaveAs, True
-        metaToggle tCopy, True
-        metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState
-        metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState
-        metaToggle tImageOps, True
-        metaToggle tFilter, True
-        metaToggle tMacro, True
-        metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getRedoState
-        FormMain.MnuFile(7).Enabled = True
-        toolbar_File.cmdClose.Enabled = True
-        FormMain.MnuFile(8).Enabled = True
-        FormMain.MnuFitWindowToImage.Enabled = True
-        FormMain.MnuFitOnScreen.Enabled = True
-        toolbar_File.lblImgSize.ForeColor = &H544E43
-        toolbar_File.lblCoordinates.ForeColor = &H544E43
-        If toolbar_File.CmbZoom.Enabled = False Then
-            toolbar_File.CmbZoom.Enabled = True
-            'FormMain.lblLeftToolBox(3).ForeColor = &H544E43
-            toolbar_File.cmdZoomIn.Enabled = True
-            toolbar_File.cmdZoomOut.Enabled = True
-        End If
-        
-        'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls,
-        ' such as the image tabstrip and the "Next/Previous" image menu items.
-        If g_OpenImageCount >= 2 Then
-            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
-            FormMain.MnuWindow(6).Enabled = True
-            FormMain.MnuWindow(7).Enabled = True
-        Else
-            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
-            FormMain.MnuWindow(6).Enabled = False
-            FormMain.MnuWindow(7).Enabled = False
-        End If
-    
-    End If
-    
-End Sub
-
-'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
-' and toolbar buttons)
-Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
-    
-    Dim i As Long
-    
-    Select Case metaItem
-        
-        'Open (left-hand panel button AND menu item)
-        Case tOpen
-            If FormMain.MnuFile(0).Enabled <> newState Then
-                toolbar_File.cmdOpen.Enabled = newState
-                FormMain.MnuFile(0).Enabled = newState
-            End If
-            
-        'Save (left-hand panel button AND menu item)
-        Case tSave
-            If FormMain.MnuFile(4).Enabled <> newState Then
-                toolbar_File.cmdSave.Enabled = newState
-                FormMain.MnuFile(4).Enabled = newState
-            End If
-            
-        'Save As (menu item only)
-        Case tSaveAs
-            If FormMain.MnuFile(5).Enabled <> newState Then
-                toolbar_File.cmdSaveAs.Enabled = newState
-                FormMain.MnuFile(5).Enabled = newState
-            End If
-        
-        'Copy (menu item only)
-        Case tCopy
-            If FormMain.MnuEdit(4).Enabled <> newState Then FormMain.MnuEdit(4).Enabled = newState
-        
-        'Paste (menu item only)
-        Case tPaste
-            If FormMain.MnuEdit(5).Enabled <> newState Then FormMain.MnuEdit(5).Enabled = newState
-        
-        'Undo (left-hand panel button AND menu item)
-        Case tUndo
-            If FormMain.MnuEdit(0).Enabled <> newState Then
-                toolbar_File.cmdUndo.Enabled = newState
-                FormMain.MnuEdit(0).Enabled = newState
-            End If
-            'If Undo is being enabled, change the text to match the relevant action that created this Undo file
-            If newState Then
-                toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).undoManager.getUndoProcessID
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID & vbTab & "Ctrl+Z"
-                resetMenuIcons
-            Else
-                toolbar_File.cmdUndo.ToolTip = ""
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
-                resetMenuIcons
-            End If
-            
-        'ImageOps is all Image-related menu items; it enables/disables the Image, Select, Color, View (most items), and Print menus
-        Case tImageOps
-            If FormMain.MnuImageTop.Enabled <> newState Then
-                FormMain.MnuImageTop.Enabled = newState
-                
-                'Use this same command to disable other menus
-                FormMain.MnuFile(12).Enabled = newState
-                FormMain.MnuFitOnScreen.Enabled = newState
-                FormMain.MnuZoomIn.Enabled = newState
-                FormMain.MnuZoomOut.Enabled = newState
-                FormMain.MnuSelectTop.Enabled = newState
-                FormMain.MnuAdjustmentsTop.Enabled = newState
-                'FormMain.MnuWindowTop.Enabled = newState
-                
-                For i = 0 To FormMain.MnuSpecificZoom.Count - 1
-                    FormMain.MnuSpecificZoom(i).Enabled = newState
-                Next i
-                
-            End If
-            
-            'FitWindowToImage is a little weird - we disable it if no images are active, but also if images are docked
-            If Not newState Then
-                FormMain.MnuFitWindowToImage.Enabled = newState
-            Else
-                'The "Fit viewport around image" option is only available for floating image windows
-                If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                    FormMain.MnuFitWindowToImage.Enabled = True
-                Else
-                    FormMain.MnuFitWindowToImage.Enabled = False
-                End If
-            End If
-        
-        'Filter (top-level menu)
-        Case tFilter
-            If FormMain.MnuFilter.Enabled <> newState Then FormMain.MnuFilter.Enabled = newState
-        
-        'Redo (left-hand panel button AND menu item)
-        Case tRedo
-            If FormMain.MnuEdit(1).Enabled <> newState Then
-                toolbar_File.cmdRedo.Enabled = newState
-                FormMain.MnuEdit(1).Enabled = newState
-            End If
-            
-            'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
-            If newState Then
-                toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).undoManager.getRedoProcessID
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).undoManager.getRedoProcessID & vbTab & "Ctrl+Y"
-                resetMenuIcons
-            Else
-                toolbar_File.cmdRedo.ToolTip = ""
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
-                resetMenuIcons
-            End If
-            
-        'Macro (top-level menu)
-        Case tMacro
-            If FormMain.mnuTool(3).Enabled <> newState Then FormMain.mnuTool(3).Enabled = newState
-        
-        'Edit (top-level menu)
-        Case tEdit
-            If FormMain.MnuEditTop.Enabled <> newState Then FormMain.MnuEditTop.Enabled = newState
-        
-        'Repeat last action (menu item only)
-        Case tRepeatLast
-            If FormMain.MnuEdit(2).Enabled <> newState Then FormMain.MnuEdit(2).Enabled = newState
-            
-        'Selections in general
-        Case tSelection
-            
-            'If selections are not active, clear all the selection value textboxes
-            If Not newState Then
-                For i = 0 To toolbar_Selections.tudSel.Count - 1
-                    toolbar_Selections.tudSel(i).Value = 0
-                Next i
-            End If
-            
-            'Set selection text boxes (only the location ones!) to enable only when a selection is active.  Other selection controls can
-            ' remain active even without a selection present; this allows the user to set certain parameters in advance, so when they
-            ' actually draw a selection, it already has the attributes they want.
-            For i = 0 To toolbar_Selections.tudSel.Count - 1
-                toolbar_Selections.tudSel(i).Enabled = newState
-            Next i
-                                    
-            'En/disable all selection menu items that rely on an existing selection to operate
-            If FormMain.MnuSelect(2).Enabled <> newState Then
-                
-                'Select none, invert selection
-                FormMain.MnuSelect(1).Enabled = newState
-                FormMain.MnuSelect(2).Enabled = newState
-                
-                'Grow/shrink/border/feather/sharpen selection
-                For i = 4 To 8
-                    FormMain.MnuSelect(i).Enabled = newState
-                Next i
-                
-                'Save selection
-                FormMain.MnuSelect(11).Enabled = newState
-                
-            End If
-                                    
-            'Selection enabling/disabling also affects the Crop to Selection command
-            If FormMain.MnuImage(7).Enabled <> newState Then FormMain.MnuImage(7).Enabled = newState
-        
-        'Transformable selection controls specifically
-        Case tSelectionTransform
-        
-            'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To toolbar_Selections.tudSel.Count - 1
-                toolbar_Selections.tudSel(i).Enabled = newState
-            Next i
-        
-        '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
-        ' 32bpp, but I've since changed my mind.  It may be useful to take a 32bpp image and apply a *new* alpha channel, so those options are
-        ' now enabled regardless of color depth.  "Remove transparency", however, is still disabled for 24bpp images.
-        Case tImgMode32bpp
-            
-            'FormMain.MnuTransparency(0).Enabled = Not newState
-            'FormMain.MnuTransparency(1).Enabled = Not newState
-            FormMain.MnuTransparency(3).Enabled = newState
-        
-        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  Otherwise, its enablement will change depending
-        ' on the user's preferences for when to load metadata.
-        Case tMetadata
-        
-            If g_ExifToolEnabled Then
-            
-                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
-                ' we will leave the metadata menu always enabled.
-                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-                    If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
-                Else
-                    If Not FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = True
-                End If
-                
-            Else
-                If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
-            End If
-        
-        Case tGPSMetadata
-        
-            If g_ExifToolEnabled Then
-            
-                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
-                ' we will leave the metadata menu always enabled.
-                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-                    If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
-                Else
-                    
-                    'If an on-demand model is being used, check to see if the user has attempted to load metadata for this image.
-                    ' If they have, set the toggle to match the GPS metadata's state.
-                    If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-                        If FormMain.MnuMetadata(3).Enabled <> pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then FormMain.MnuMetadata(3).Enabled = pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
-                    Else
-                        If Not FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = True
-                    End If
-                End If
-                
-            Else
-                If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
-            End If
-            
-    End Select
-    
 End Sub
 
 'Given a wordwrap label with a set size, attempt to fit the label's text inside it

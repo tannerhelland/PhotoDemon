@@ -620,7 +620,6 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
-        metaToggle tSelection, False
     End If
     
     'Based on the anchor position, determine x and y locations for the image on the new canvas

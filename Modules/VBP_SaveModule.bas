@@ -212,12 +212,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
             'XML metadata is requested.  Cache it now (if necessary).
             If Not srcPDImage.imgMetadata.hasXMLMetadata Then
-            
                 srcPDImage.imgMetadata.loadAllMetadata srcPDImage.locationOnDisk, srcPDImage.originalFileFormat
-                    
-                'As a convenience to the user, if metadata was loaded successfully, dis/enable metadata menu items accordingly
-                metaToggle tMetadata, srcPDImage.imgMetadata.hasXMLMetadata
-                metaToggle tGPSMetadata, srcPDImage.imgMetadata.hasGPSMetadata()
             End If
         
         End If
@@ -444,6 +439,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             srcPDImage.setSaveState True
             
             PhotoDemon_SaveImage = True
+            
+            'Update the interface to match the newly saved image (e.g. disable the Save button)
+            syncInterfaceToCurrentImage
             
         End If
     

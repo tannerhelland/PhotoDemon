@@ -693,63 +693,63 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Distort"
          Index           =   2
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Apply lens distortion..."
             Index           =   0
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Correct existing lens distortion..."
             Index           =   1
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Miscellaneous..."
             Index           =   2
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Pan and zoom..."
             Index           =   3
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Perspective..."
             Index           =   4
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Pinch and whirl..."
             Index           =   5
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Poke..."
             Index           =   6
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Polar conversion..."
             Index           =   7
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Ripple..."
             Index           =   8
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Rotate..."
             Index           =   9
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Shear..."
             Index           =   10
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Spherize..."
             Index           =   11
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Squish..."
             Index           =   12
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Swirl..."
             Index           =   13
          End
-         Begin VB.Menu MnuDistortFilter 
+         Begin VB.Menu MnuDistortEffects 
             Caption         =   "Waves..."
             Index           =   14
          End
@@ -1111,9 +1111,6 @@ Private Sub Form_Load()
     
     'The bulk of the loading code actually takes place inside the LoadTheprogram subroutine (which can be found in the "Loading" module)
     LoadTheProgram
-        
-    'Hide the selection tools
-    metaToggle tSelection, False
     
     'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
     ' and I'm working on a solution to that.)
@@ -1263,7 +1260,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1299,7 +1296,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1340,7 +1337,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
         For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then
+                If pdImages(i).isActive Then
                 
                     'This image is active and so is its parent form.  Unload both now.
                     Unload pdImages(i).containingForm
@@ -1361,10 +1358,6 @@ End Sub
 
 'UNLOAD EVERYTHING
 Private Sub Form_Unload(Cancel As Integer)
-        
-    'By this point, all the child forms should have taken care of their Undo clearing-out.
-    ' Just in case, however, prompt a final cleaning.
-    ClearALLUndo
     
     'Release GDIPlus (if applicable)
     If g_ImageFormats.GDIPlusEnabled Then releaseGDIPlus
@@ -1634,7 +1627,7 @@ Private Sub MnuCustomFilter_Click()
 End Sub
 
 'All distortion filters happen here
-Private Sub MnuDistortFilter_Click(Index As Integer)
+Private Sub MnuDistortEffects_Click(Index As Integer)
 
     Select Case Index
     
@@ -2117,10 +2110,11 @@ Private Sub MnuMetadata_Click(Index As Integer)
         
             'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
             If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
-                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).LocationOnDisk, pdImages(g_CurrentImage).OriginalFileFormat
+                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
                 
-                'If the image contains GPS metadata, enable that option now
-                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+                'Update the interface to reflect any changes to the metadata menu (for example, if we found GPS data
+                ' during the metadata load process)
+                syncInterfaceToCurrentImage
             End If
             
             'If the image STILL doesn't have metadata, warn the user and exit.
@@ -2148,11 +2142,10 @@ Private Sub MnuMetadata_Click(Index As Integer)
             
                 'Attempt to load it now...
                 Message "Loading metadata for this image..."
-                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).LocationOnDisk, pdImages(g_CurrentImage).OriginalFileFormat
+                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
                 
                 'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-                metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+                syncInterfaceToCurrentImage
             
             End If
             
@@ -2752,7 +2745,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
+                    If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
                 End If
             Next i
             
@@ -2768,7 +2761,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+                    If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
                 End If
             Next i
             
@@ -2784,7 +2777,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+                    If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
                 End If
             Next i
             
@@ -2821,7 +2814,7 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
         End If
                 
         If Not pdImages(i) Is Nothing Then
-            If pdImages(i).IsActive Then
+            If pdImages(i).isActive Then
                 pdImages(i).containingForm.ActivateWorkaround "user requested next/previous image"
                 Exit Do
             End If

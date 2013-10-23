@@ -617,7 +617,7 @@ Private Sub cmbSelRender_Click(Index As Integer)
         Dim i As Long
         For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
+                If pdImages(i).isActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
             End If
         Next i
     

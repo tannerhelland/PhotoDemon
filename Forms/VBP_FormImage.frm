@@ -130,7 +130,7 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     Debug.Print "(Image #" & Me.Tag & " was activated because " & reasonForActivation & ")"
         
     'Update the current form variable
-    g_CurrentImage = Val(Me.Tag)
+    g_CurrentImage = CLng(Me.Tag)
     
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
     PrepareViewport Me, "Form received focus"
@@ -139,90 +139,23 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     g_WindowManager.notifyChildReceivedFocus Me
     
     'Notify the thumbnail bar that a new image has been selected
-    toolbar_ImageTabs.notifyNewActiveImage Me.Tag
+    toolbar_ImageTabs.notifyNewActiveImage CLng(Me.Tag)
     
-    'Display the size of this image in the status bar
-    ' (NOTE: because this event will be fired when this form is first built, don't update the size values
-    ' unless they actually exist.)
-    If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
-
-    'If we are dynamically updating the taskbar icon to match the current image, we need to update those icons
-    If (MacroStatus <> MacroBATCH) Then
-        If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
-            setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
-        Else
-            setNewTaskbarIcon origIcon32, FormMain.hWnd
-            setNewAppIcon origIcon16
-        End If
-        If pdImages(g_CurrentImage).curFormIcon16 <> 0 Then setNewAppIcon pdImages(g_CurrentImage).curFormIcon16
-    End If
-    
-    'Determine whether Undo, Redo, Fade-last are available
-    metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState
-    metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState
-    FormMain.MnuFadeLastEffect.Enabled = pdImages(g_CurrentImage).undoManager.getUndoState
-    
-    'Determine whether save is enabled
-    metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState
-    
-    'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    ' Note that if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
-    ' browse at their leisure.
-    If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-        
-        'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
-        metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-        metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
-        
-    Else
-    
-        'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
-        ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
-        ' In that rare case, we can enable the GPS menu correctly.
-        metaToggle tMetadata, True
-        If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
-        Else
-            metaToggle tGPSMetadata, True
-        End If
-                
-    End If
-    
-    'Check the image's color depth, and check/uncheck the matching Image Mode setting
-    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
-    
-    'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(g_CurrentImage).Width <> 0 Then
-        g_AllowViewportRendering = False
-        toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).currentZoomValue
-        g_AllowViewportRendering = True
-    End If
-    
-    'If a selection is active on this image, update the text boxes to match
-    If pdImages(g_CurrentImage).selectionActive Then
-        metaToggle tSelection, True
-    Else
-        metaToggle tSelection, False
-    End If
-    
-    'Finally, if the histogram window is open, redraw it
-    If FormHistogram.Visible And pdImages(Me.Tag).loadedSuccessfully Then
-        FormHistogram.TallyHistogramValues
-        FormHistogram.DrawHistogram
-    End If
+    'Synchronize various interface elements to match values stored in this image.
+    syncInterfaceToCurrentImage
         
 End Sub
 
 'Mousekey back triggers the same thing as clicking Undo
 Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    If pdImages(Me.Tag).isActive Then
+    If pdImages(Me.Tag).IsActive Then
         If pdImages(Me.Tag).undoManager.getUndoState Then Process "Undo", , , False
     End If
 End Sub
 
 'Mousekey forward triggers the same thing as clicking Redo
 Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    If pdImages(Me.Tag).isActive Then
+    If pdImages(Me.Tag).IsActive Then
         If pdImages(Me.Tag).undoManager.getRedoState Then Process "Redo", , , False
     End If
 End Sub
@@ -687,7 +620,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Debug.Print "(Image #" & Me.Tag & " received a Query_Unload trigger)"
 
     'If the user wants to be prompted about unsaved images, do it now
-    If g_ConfirmClosingUnsaved And pdImages(Me.Tag).isActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
+    If g_ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If Not pdImages(Me.Tag).getSaveState Then
@@ -703,7 +636,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 If g_ProgramShuttingDown Or g_ClosingAllImages Then
                     Dim i As Long
                     For i = 1 To g_NumOfImagesLoaded
-                        If pdImages(i).isActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState) Then
+                        If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState) Then
                             g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                         End If
                     Next i
@@ -768,9 +701,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 ' this comment here until I'm absolutely certain the problem has been resolved.
                 Unload Me
                 'Set Me = Nothing
-                'Cancel = False
-                'Me.Visible = False
-            
+                
             End If
         
         End If
@@ -823,8 +754,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ' (If we don't do this, the histogram may attempt to update, and without an active image it will throw an error)
     If g_OpenImageCount = 0 Then Unload FormHistogram
     
-    synchronizeInterfaceToImageState
-    
     ReleaseFormTheming Me
     
     'Notify the window manager that this hWnd will soon be dead - so stop subclassing it!
@@ -848,7 +777,7 @@ Private Sub Form_Unload(Cancel As Integer)
             Do While i >= 0
             
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).isActive Then
+                    If pdImages(i).IsActive Then
                         pdImages(i).containingForm.ActivateWorkaround "previous image unloaded"
                         Exit Do
                     End If
@@ -874,6 +803,9 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'If this was the last unloaded image, we need to disable a number of menus and other items.
     If g_OpenImageCount = 0 Then g_WindowManager.allImageWindowsUnloaded
+    
+    'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
+    syncInterfaceToCurrentImage
     
     Message "Finished."
             
@@ -990,5 +922,6 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
         
     'Make the selection tools visible
     metaToggle tSelection, True
+    metaToggle tSelectionTransform, True
                         
 End Sub

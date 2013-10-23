@@ -93,7 +93,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     End If
         
     'If we are to perform the last command, simply replace all the method parameters using data from the
-    ' LastFilterCall object, then let the routine carry on as usual
+    ' LastEffectsCall object, then let the routine carry on as usual
     If processID = "Repeat last action" Then
         processID = LastProcess.Id
         showDialog = LastProcess.Dialog
@@ -1156,6 +1156,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = 1
     End If
+    
+    'Whenever a process is completed, it is generally a good idea to re-sync the interface to match settings that
+    ' may have changed (Undo/Redo, etc).
+    syncInterfaceToCurrentImage
     
     'Mark the processor as ready
     Processing = False

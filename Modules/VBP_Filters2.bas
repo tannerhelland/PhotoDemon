@@ -142,17 +142,11 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     
         'Ask the current layer to convert itself to 24bpp mode
         pdImages(g_CurrentImage).mainLayer.convertTo24bpp newBackColor
-    
-        'Change the menu entries to match
-        metaToggle tImgMode32bpp, False
         
     Else
     
         'Ask the current layer to convert itself to 32bpp mode
         pdImages(g_CurrentImage).mainLayer.convertTo32bpp
-    
-        'Change the menu entries to match
-        metaToggle tImgMode32bpp, True
     
     End If
     
