@@ -1317,7 +1317,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
     'If the histogram form is open, close it
-    Unload FormHistogram
+    'Unload FormHistogram
     
     'Store the main window's location to file now.  We will use this in the future to determine which monitor
     ' to display the splash screen on
@@ -1337,7 +1337,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
         For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).isActive Then
+                If pdImages(i).IsActive Then
                 
                     'This image is active and so is its parent form.  Unload both now.
                     Unload pdImages(i).containingForm
@@ -2745,7 +2745,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
                 End If
             Next i
             
@@ -2761,7 +2761,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
                 End If
             Next i
             
@@ -2777,7 +2777,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             ' may not get triggered - it's a particular VB quirk)
             For i = 0 To g_NumOfImagesLoaded
                 If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).isActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
+                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
                 End If
             Next i
             
@@ -2814,7 +2814,7 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
         End If
                 
         If Not pdImages(i) Is Nothing Then
-            If pdImages(i).isActive Then
+            If pdImages(i).IsActive Then
                 pdImages(i).containingForm.ActivateWorkaround "user requested next/previous image"
                 Exit Do
             End If

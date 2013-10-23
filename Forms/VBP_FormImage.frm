@@ -752,7 +752,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'If this was the last (or only) open image and the histogram is loaded, unload the histogram
     ' (If we don't do this, the histogram may attempt to update, and without an active image it will throw an error)
-    If g_OpenImageCount = 0 Then Unload FormHistogram
+    'If g_OpenImageCount = 0 Then Unload FormHistogram
     
     ReleaseFormTheming Me
     

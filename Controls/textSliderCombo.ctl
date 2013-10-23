@@ -317,9 +317,7 @@ Private Sub UserControl_Initialize()
     setHandCursor hsPrimary
     
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
-        SubclassFrame UserControl.hWnd, False
-    End If
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.requestContainerSubclass UserControl.hWnd
     
     'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
     If g_UseFancyFonts Then hsPrimary.Height = fixDPI(23) Else hsPrimary.Height = fixDPI(22)
@@ -419,7 +417,7 @@ End Sub
 Private Sub UserControl_Terminate()
     
     'When the control is terminated, release the subclassing used for transparent backgrounds
-    If g_IsProgramCompiled Then SubclassFrame UserControl.hWnd, True
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
     
 End Sub
 

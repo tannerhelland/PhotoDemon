@@ -8,6 +8,7 @@ Begin VB.Form toolbar_File
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   1050
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -26,7 +27,6 @@ Begin VB.Form toolbar_File
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.ComboBox CmbZoom 
-      Appearance      =   0  'Flat
       CausesValidation=   0   'False
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -354,7 +354,7 @@ Private Sub CmbZoom_Click()
     
     'Track the current zoom value
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).CurrentZoomValue = toolbar_File.CmbZoom.ListIndex
+        pdImages(g_CurrentImage).currentZoomValue = toolbar_File.CmbZoom.ListIndex
         If toolbar_File.CmbZoom.ListIndex = 0 Then
             toolbar_File.cmdZoomIn.Enabled = False
         Else
