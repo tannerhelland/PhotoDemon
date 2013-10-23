@@ -208,7 +208,7 @@ Private Sub UserControl_Initialize()
     
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
     If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
-        SubclassFrame UserControl.hWnd, False
+        g_Themer.requestContainerSubclass UserControl.hWnd
         chkBox.ZOrder 0
     End If
       
@@ -277,7 +277,7 @@ End Sub
 Private Sub UserControl_Terminate()
     
     'When the control is terminated, release the subclassing used for transparent backgrounds
-    If g_IsProgramCompiled Then SubclassFrame UserControl.hWnd, True
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
     
 End Sub
 

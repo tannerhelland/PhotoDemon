@@ -1110,18 +1110,18 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     If MacroStatus <> MacroBATCH Then Screen.MousePointer = vbDefault
         
     'If the histogram form is visible and images are loaded, redraw the histogram
-    If FormHistogram.Visible Then
-        If g_OpenImageCount > 0 Then
+    'If FormHistogram.Visible Then
+        'If g_OpenImageCount > 0 Then
             
             'Note that the histogram is automatically drawn when an MDI child form receives focus.  This happens below
             ' (look for pdImages(g_CurrentImage).containingForm.SetFocus), so we do not need to manually redraw the histogram here.
             'FormHistogram.TallyHistogramValues
             'FormHistogram.DrawHistogram
-        Else
+        'Else
             'If the histogram is visible but no images are open, unload the histogram
-            Unload FormHistogram
-        End If
-    End If
+            'Unload FormHistogram
+        'End If
+    'End If
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
