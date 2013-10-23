@@ -291,10 +291,7 @@ Public Sub loadUserSettings()
     g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
-    
-    'No custom filters have been created yet
-    g_HasCreatedFilter = False
-    
+        
     'Mark the Macro recorder as "not recording"
     MacroStatus = MacroSTOP
     
@@ -390,9 +387,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Interface", "", True
         xmlEngine.writeTag "CanvasBackground", CStr(vb3DShadow) 'RGB(201, 211, 226)
         xmlEngine.writeTag "CanvasDropShadow", "True"
-        xmlEngine.writeTag "DynamicTaskbarIcon", "True"
         xmlEngine.writeTag "MRUCaptionLength", "0"
-        xmlEngine.writeTag "RememberWindowLocation", "True"
         
         'On Vista and later, Segoe UI is used as the interface font instead of Tahoma
         If g_IsVistaOrLater Then xmlEngine.writeTag "UseFancyFonts", "True" Else xmlEngine.writeTag "UseFancyFonts", "False"
