@@ -512,8 +512,6 @@ Public Sub resetMenuIcons()
     addMenuIcon "CASCADE", 8, 9         'Cascade
     addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
     addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
-    addMenuIcon "MINALL", 8, 13         'Minimize All
-    addMenuIcon "RESTOREALL", 8, 14     'Restore All
         
     'If the OS is Vista or later, render MRU icons to the Open Recent menu
     If g_IsVistaOrLater Then
@@ -936,12 +934,12 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
     If vbSupportedFormat Then
     
         'Load the requested image into a temporary StdPicture object
-        Dim tmppic As StdPicture
-        Set tmppic = New StdPicture
-        Set tmppic = LoadResPicture(resTitle, 0)
+        Dim tmpPic As StdPicture
+        Set tmpPic = New StdPicture
+        Set tmpPic = LoadResPicture(resTitle, 0)
         
         'Copy that image into the supplied layer
-        If dstLayer.CreateFromPicture(tmppic) Then
+        If dstLayer.CreateFromPicture(tmpPic) Then
             loadResourceToLayer = True
         Else
             loadResourceToLayer = False
