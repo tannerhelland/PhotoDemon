@@ -306,6 +306,9 @@ MARROWDOWN   CUSTOM  MOVEABLE        LOADONCALL      arrow_270_medium.png
 MARROWDOWNR  CUSTOM  MOVEABLE        LOADONCALL      arrow_315_medium.png
 MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
 
+//Image toolbar notifications
+NTFY_UNSAVED CUSTOM  MOVEABLE        LOADONCALL      asterisk.png
+
 //Resize mode sample images
 RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
 RSZ_FITIN    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_inclusive.png

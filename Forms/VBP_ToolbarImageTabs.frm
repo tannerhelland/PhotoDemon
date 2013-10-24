@@ -97,6 +97,9 @@ Private Const HTBOTTOM As Long = 15
 ' This variable is then checked before requesting additional redraws during our resize event.
 Private weAreResponsibleForResize As Boolean
 
+'As a convenience to the user, we provide a small notification when an image has unsaved changes
+Private unsavedChangesLayer As pdLayer
+
 'When the user switches images, redraw the toolbar to match the change
 Public Sub notifyNewActiveImage(ByVal newPDImageIndex As Long)
     
@@ -262,6 +265,11 @@ Private Sub Form_Load()
     thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
     thumbWidth = thumbHeight
     
+    'Retrieve the unsaved image notification icon from the resource file
+    Set unsavedChangesLayer = New pdLayer
+    loadResourceToLayer "NTFY_UNSAVED", unsavedChangesLayer
+    
+    'Theme the form
     makeFormPretty Me
     
 End Sub
@@ -422,6 +430,11 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
     
         'Render the matching thumbnail into this block
         imgThumbnails(thumbIndex).thumbLayer.alphaBlendToDC bufferLayer.getLayerDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
+        
+        'If the parent image has unsaved changes, also render a notification icon
+        If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState Then
+            unsavedChangesLayer.alphaBlendToDC bufferLayer.getLayerDC, 196, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + fixDPI(thumbHeight) - fixDPI(thumbBorder) - unsavedChangesLayer.getLayerHeight - fixDPI(2)
+        End If
         
     End If
 

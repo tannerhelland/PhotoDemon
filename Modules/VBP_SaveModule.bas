@@ -443,6 +443,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'Update the interface to match the newly saved image (e.g. disable the Save button)
             syncInterfaceToCurrentImage
             
+            'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
+            If Not srcPDImage.forInternalUseOnly Then toolbar_ImageTabs.notifyUpdatedImage srcPDImage.imageID
+            
         End If
     
     Else

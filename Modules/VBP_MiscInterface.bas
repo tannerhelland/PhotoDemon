@@ -171,7 +171,7 @@ Public Sub syncInterfaceToCurrentImage()
         
         'Note that all of these functions rely on the g_CurrentImage value to function.
         
-        'Save is a bit funny if the image HAS been saved to file, we DISABLE the save button.
+        'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
         metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState
         
         'Undo, Redo, and RepeatLast are all closely related
