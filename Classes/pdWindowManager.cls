@@ -56,6 +56,7 @@ Private Const INACTIVE_TOOLBOX_OPACITY As Byte = 170
 Private Const WM_SYSCOMMAND As Long = &H112
 Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0
 Private Const WM_MOUSEMOVE As Long = &H200
+Private Const WM_MOVE As Long = &H3
 Private Const WM_MOVING As Long = &H216
 Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_NCMOUSEMOVE As Long = &HA0
@@ -383,7 +384,7 @@ Public Sub cascadeImageWindows()
     For i = 0 To imgWinCount - 1
         MoveWindow imgWindows(i), mainClientRect.x1 + (i Mod cascadeCount) * captionHeight, mainClientRect.y1 + (i Mod cascadeCount) * captionHeight, windowWidth, windowHeight, 1
     Next i
-
+    
 End Sub
 
 'Now that we no longer use MDI in PhotoDemon, we must rely on custom code for window tiling.
@@ -438,7 +439,7 @@ Public Sub tileImageWindows(Optional ByVal tHorizontally As Boolean = True)
         Next i
     
     End If
-    
+        
 End Sub
 
 'Though officially discouraged by Microsoft (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx), it is
@@ -1429,7 +1430,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
     cSubclass.ssc_Subclass pdWindows(numOfPDWindows).hWnd, 64 + numOfPDWindows, , Me
-    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_ACTIVATE
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_ACTIVATE, WM_MOVE, WM_SIZE
     cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_BEFORE, WM_MOVING, WM_SIZING
     
     'Paint this window with the proper visual style (based on whether it's docked or floating)
@@ -1863,6 +1864,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     pdWindows(winIndex).formReference.ActivateWorkaround "API activate event captured"
                 End If
         
+            'The window has moved
+            Case WM_MOVE, WM_SIZE
+            
+                'If images are floating but toolbars are docked, give an MDI-like experience by restricting child size and position
+                ' to the main form's client area.
+                If imagesFloating And (Not toolbarsFloating) Then
+                    If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then moveChildInsideParent winIndex
+                End If
+                requestWindowResync winIndex
+            
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
                 
@@ -1877,16 +1888,20 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'If the main form is not responsible for this change, and windows are floating, restrict the window to the main
                 ' form's area (to roughly mimic MDI)
-                If (Not mainFormTriggeredChange) And imagesFloating And (pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW) Then
+                If (Not mainFormTriggeredChange) And imagesFloating And (Not toolbarsFloating) Then
                     
-                    'Request a new child rect from the restrictToParent function
-                    Dim resizeDirection As Long
-                    resizeDirection = -1
-                    If uMsg = WM_SIZING Then resizeDirection = wParam
-                    restrictRectToParent curWinRect, resizeDirection
+                    If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then
                     
-                    'Copy that rect over the existing lParam
-                    Call CopyMemory(ByVal lParam, curWinRect, Len(curWinRect))
+                        'Request a new child rect from the restrictToParent function
+                        Dim resizeDirection As Long
+                        resizeDirection = -1
+                        If uMsg = WM_SIZING Then resizeDirection = wParam
+                        restrictRectToParent curWinRect, resizeDirection
+                        
+                        'Copy that rect over the existing lParam
+                        Call CopyMemory(ByVal lParam, curWinRect, Len(curWinRect))
+                        
+                    End If
                     
                 End If
                 
@@ -2000,7 +2015,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 For i = 0 To numOfPDWindows - 1
                 
                     'If images are floating, we must make sure they fit inside the child rect area before redrawing them.  Do that now.
-                    If imagesFloating And (pdWindows(i).typeOfWindow = IMAGE_WINDOW) Then
+                    If imagesFloating And (Not toolbarsFloating) And (pdWindows(i).typeOfWindow = IMAGE_WINDOW) Then
                          
                         GetWindowRect pdWindows(i).hWnd, childRect
                          
