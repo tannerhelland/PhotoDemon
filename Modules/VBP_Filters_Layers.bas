@@ -27,6 +27,93 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
+'Pad a layer with blank space.  This will (obviously) resize the layer as necessary.
+Public Function padLayer(ByRef srcLayer As pdLayer, ByVal paddingSize As Long) As Boolean
+
+    'Make a copy of the current layer
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.createFromExistingLayer srcLayer
+    
+    'Resize the source layer to accommodate the new padding
+    srcLayer.createBlank srcLayer.getLayerWidth + paddingSize * 2, srcLayer.getLayerHeight + paddingSize * 2, srcLayer.getLayerColorDepth, 0, 0
+    
+    'Copy the old layer into the center of the new layer
+    BitBlt srcLayer.getLayerDC, paddingSize, paddingSize, tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+    
+    'Erase the temporary layer
+    Set tmpLayer = Nothing
+    
+    padLayer = True
+
+End Function
+
+'If the application needs to quickly blur a layer and it doesn't care how, use this function.  It will lean on GDI+ if
+' available (unless otherwise requested), or fall back to a high-speed internal box blur.
+Public Function quickBlurLayer(ByRef srcLayer As pdLayer, ByVal blurRadius As Long, Optional ByVal useGDIPlusIfAvailable As Boolean = True) As Boolean
+
+    If blurRadius > 0 Then
+    
+        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to one of our internal blur functions.
+        If g_GDIPlusFXAvailable And useGDIPlusIfAvailable Then
+            GDIPlusBlurLayer srcLayer, blurRadius * 2, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight
+        Else
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = New pdLayer
+            tmpLayer.createFromExistingLayer srcLayer
+            CreateApproximateGaussianBlurLayer blurRadius, tmpLayer, srcLayer, 1, True
+            Set tmpLayer = Nothing
+        End If
+    
+    End If
+    
+    quickBlurLayer = True
+    
+End Function
+
+'Given a 32bpp layer, return a "shadow" version.  (It's pretty simple, really - black out the layer but retain alpha values.)
+Public Function createShadowLayer(ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer) As Boolean
+
+    'If the source layer is not 32bpp, exit.
+    If srcLayer.getLayerColorDepth <> 32 Then
+        createShadowLayer = False
+        Exit Function
+    End If
+
+    'Start by copying the source layer into the destination
+    dstLayer.createFromExistingLayer srcLayer
+    
+    'Create a local array and point it at the pixel data of the destination image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstLayer
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim X As Long, Y As Long, finalX As Long, finalY As Long, QuickX As Long
+    finalX = dstLayer.getLayerWidth - 1
+    finalY = dstLayer.getLayerHeight - 1
+    
+    'Loop through all pixels in the destination image and set them to black.  Easy as pie!
+    For X = 0 To finalX
+        QuickX = X * 4
+    For Y = 0 To finalY
+    
+        dstImageData(QuickX + 2, Y) = 0
+        dstImageData(QuickX + 1, Y) = 0
+        dstImageData(QuickX, Y) = 0
+        
+    Next Y
+    Next X
+    
+    'Release our array reference and exit
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    createShadowLayer = True
+
+End Function
+
 'Given two layers, fill one with a median-filtered version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
