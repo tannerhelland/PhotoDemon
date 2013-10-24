@@ -257,7 +257,11 @@ Public Sub syncInterfaceToCurrentImage()
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, including the
     ' image tabstrip and the "Next/Previous" image menu items.
     If g_OpenImageCount >= 2 Then
-        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+        If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+        Else
+            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+        End If
         FormMain.MnuWindow(6).Enabled = True
         FormMain.MnuWindow(7).Enabled = True
     Else
@@ -638,7 +642,23 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
         Case IMAGE_WINDOW
             FormMain.MnuWindow(4).Checked = floatStatus
             g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", floatStatus
+            
+            'If image windows are floating, do not display the image tabstrip
+            If (Not floatStatus) Then
+                If g_OpenImageCount > 1 Then
+                    g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+                Else
+                    g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+                End If
+            Else
+                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+            End If
+            
+            'Notify the window manager of the change
             g_WindowManager.setFloatState IMAGE_WINDOW, floatStatus
+            
+            'As a convenience to the user, cascade any open windows
+            If floatStatus And (g_OpenImageCount > 0) Then g_WindowManager.cascadeImageWindows
             
             'All image windows need to be redrawn, because the available client area will have changed.
             If g_NumOfImagesLoaded > 0 Then
