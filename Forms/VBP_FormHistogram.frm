@@ -876,6 +876,10 @@ End Sub
 
 Private Sub Form_Load()
     histogramGenerated = False
+    
+    'On XP, GDI+'s line function is hideously slow.  Disable filled curves by default.
+    chkFillCurve.Value = vbUnchecked
+    
 End Sub
 
 'If the form is resized, adjust all the controls to match
