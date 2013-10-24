@@ -552,7 +552,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
     
     If Button = vbRightButton Then rMouseDown = False
     
-    makeFormPretty Me
+    'makeFormPretty Me
     setArrowCursorToHwnd Me.hWnd
         
     'Reset the mouse movement tracker
