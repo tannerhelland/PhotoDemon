@@ -65,6 +65,7 @@ Option Explicit
 'A collection of all currently active thumbnails; this is dynamically resized as thumbnails are added/removed.
 Private Type thumbEntry
     thumbLayer As pdLayer
+    thumbShadow As pdLayer
     indexInPDImages As Long
 End Type
 
@@ -100,6 +101,9 @@ Private weAreResponsibleForResize As Boolean
 'As a convenience to the user, we provide a small notification when an image has unsaved changes
 Private unsavedChangesLayer As pdLayer
 
+'Drop-shadows on the thumbnails have a variable radius that changes based on the user's DPI settings
+Private shadowBlurRadius As Long
+
 'When the user switches images, redraw the toolbar to match the change
 Public Sub notifyNewActiveImage(ByVal newPDImageIndex As Long)
     
@@ -124,7 +128,8 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
     Dim i As Long
     For i = 0 To numOfThumbnails
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
-            pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, thumbWidth - (thumbBorder * 2)
+            pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+            updateShadowLayer i
             imgThumbnails(i).thumbLayer.fixPremultipliedAlpha True
             Exit For
         End If
@@ -140,7 +145,12 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     
     'Request a thumbnail from the relevant pdImage object, and premultiply it to allow us to blit it more quickly
     Set imgThumbnails(numOfThumbnails).thumbLayer = New pdLayer
-    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbLayer, thumbWidth - (thumbBorder * 2)
+    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbLayer, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+    
+    'Create a matching shadow layer
+    Set imgThumbnails(numOfThumbnails).thumbShadow = New pdLayer
+    updateShadowLayer numOfThumbnails
+    
     imgThumbnails(numOfThumbnails).thumbLayer.fixPremultipliedAlpha True
     
     'Make a note of this thumbnail's index in the main pdImages array
@@ -173,9 +183,12 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long)
     'thumbIndex is now equal to the matching thumbnail.  Remove that entry, then shift all thumbnails after that point down.
     imgThumbnails(thumbIndex).thumbLayer.eraseLayer
     Set imgThumbnails(thumbIndex).thumbLayer = Nothing
+    imgThumbnails(thumbIndex).thumbShadow.eraseLayer
+    Set imgThumbnails(thumbIndex).thumbShadow = Nothing
     
     For i = thumbIndex To numOfThumbnails - 1
         Set imgThumbnails(i).thumbLayer = imgThumbnails(i + 1).thumbLayer
+        Set imgThumbnails(i).thumbShadow = imgThumbnails(i + 1).thumbShadow
         imgThumbnails(i).indexInPDImages = imgThumbnails(i + 1).indexInPDImages
     Next i
     
@@ -199,17 +212,17 @@ End Sub
 
 'Given mouse coordinates over the form, return the thumbnail at that location.  If the cursor is not over a thumbnail,
 ' the function will return -1
-Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
+Private Function getThumbAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     
     Dim hOffset As Long
     hOffset = hsThumbnails.Value
     
-    getThumbAtPosition = (x + hOffset) \ fixDPI(thumbWidth)
+    getThumbAtPosition = (X + hOffset) \ fixDPI(thumbWidth)
     If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     
 End Function
 
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     'Horizontal scrolling - only trigger it if the horizontal scroll bar is actually visible
     If hsThumbnails.Visible Then
@@ -222,7 +235,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
         
         ElseIf CharsScrolled > 0 Then
@@ -233,7 +246,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
             
         End If
@@ -269,17 +282,20 @@ Private Sub Form_Load()
     Set unsavedChangesLayer = New pdLayer
     loadResourceToLayer "NTFY_UNSAVED", unsavedChangesLayer
     
+    'Update the drop-shadow blur radius to account for DPI
+    shadowBlurRadius = fixDPI(2)
+    
     'Theme the form
     makeFormPretty Me
     
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     If Not weAreResponsibleForResize Then
     
         Dim potentialNewThumb As Long
-        potentialNewThumb = getThumbAtPosition(x, y)
+        potentialNewThumb = getThumbAtPosition(X, Y)
         
         'Notify the program that a new image has been selected; it will then bring that image to the foreground,
         ' which will automatically trigger a toolbar redraw
@@ -292,13 +308,13 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
-    curThumbHover = getThumbAtPosition(x, y)
+    curThumbHover = getThumbAtPosition(X, Y)
     
     'If the mouse is near the bottom of the toolbar, allow the user to resize the thumbnail toolbar
-    If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - 6) Then
+    If (X > 0) And (X < Me.ScaleWidth) And (Y > Me.ScaleHeight - 6) Then
         cMouseEvents.MousePointer = IDC_SIZENS
         
         If Button = vbLeftButton Then
@@ -330,7 +346,8 @@ Private Sub Form_Resize()
         Dim i As Long
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbLayer.eraseLayer
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbLayer, thumbHeight - (thumbBorder * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+            updateShadowLayer i
             imgThumbnails(i).thumbLayer.fixPremultipliedAlpha True
         Next i
     
@@ -428,7 +445,8 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
             DeleteObject hBrush
         End If
     
-        'Render the matching thumbnail into this block
+        'Render the matching thumbnail shadow and thumbnail into this block
+        imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferLayer.getLayerDC, 192, offsetX, offsetY + fixDPI(1)
         imgThumbnails(thumbIndex).thumbLayer.alphaBlendToDC bufferLayer.getLayerDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
         
         'If the parent image has unsaved changes, also render a notification icon
@@ -446,4 +464,13 @@ End Sub
 
 Private Sub hsThumbnails_Scroll()
     redrawToolbar
+End Sub
+
+'Whenever a thumbnail has been updated, this sub must be called to regenerate its drop-shadow
+Private Sub updateShadowLayer(ByVal imgThumbnailIndex As Long)
+    imgThumbnails(imgThumbnailIndex).thumbShadow.eraseLayer
+    createShadowLayer imgThumbnails(imgThumbnailIndex).thumbLayer, imgThumbnails(imgThumbnailIndex).thumbShadow
+    padLayer imgThumbnails(imgThumbnailIndex).thumbShadow, fixDPI(thumbBorder)
+    quickBlurLayer imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
+    imgThumbnails(imgThumbnailIndex).thumbShadow.fixPremultipliedAlpha True
 End Sub
