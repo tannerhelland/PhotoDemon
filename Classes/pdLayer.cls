@@ -911,7 +911,8 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
 End Function
 
 'Create a blank layer. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite) As Boolean
+' If the layer is 32bpp, an optional alpha parameter can be set for the layer.
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal layerAlpha As Long = 255) As Boolean
     
     'Erase any existing layer data
     eraseLayer
@@ -954,19 +955,27 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         layerDIB = CreateDIBSection(layerDC, layerDIBHeader, 0, layerDIBits, 0, 0)
         
         'If successful, select the newly created dib into our DC
-        If layerDIB <> 0 Then
+        If (layerDIB <> 0) Then
         
-            'We will later use layerDIBOriginal to clear up the memory associated with this layer
-            layerDIBOriginal = SelectObject(layerDC, layerDIB)
-            
-            'Finally, set the backColor
-            Dim layerRect As RECT
-            SetRect layerRect, 0, 0, iWidth, iHeight
-            
-            Dim hBrush As Long
-            hBrush = CreateSolidBrush(BackColor)
-            FillRect layerDC, layerRect, hBrush
-            DeleteObject hBrush
+            'If the layer is 24bpp, apply the background color now
+            'If (colorDepth = 24) Then
+        
+                'We will later use layerDIBOriginal to clear up the memory associated with this layer
+                layerDIBOriginal = SelectObject(layerDC, layerDIB)
+                
+                'Finally, set the backColor
+                Dim layerRect As RECT
+                SetRect layerRect, 0, 0, iWidth, iHeight
+                
+                Dim hBrush As Long
+                hBrush = CreateSolidBrush(BackColor)
+                FillRect layerDC, layerRect, hBrush
+                DeleteObject hBrush
+                
+            'If the layer is 32bpp, apply any transparency now
+            'Else
+                '(NOT IMPLEMENTED YET; may add in the future if it proves useful)
+            'End If
         
         'If DIB creation failed, clear out the work we've done so far
         Else
