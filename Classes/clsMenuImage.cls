@@ -473,7 +473,7 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
 End Sub
 
 
-Private Sub DrawCheck(ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
+Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
     Dim hPen As Long, OldPen As Long
     Dim hBrush As Long, OldBrush As Long
     
@@ -483,7 +483,7 @@ Private Sub DrawCheck(ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal
     OldPen = SelectObject(hDC, hPen)
     OldBrush = SelectObject(hDC, hBrush)
     
-    Rectangle hDC, X, Y, X + x2, Y + y2
+    Rectangle hDC, x, y, x + x2, y + y2
     
     DeleteObject SelectObject(hDC, OldPen)
     Call SelectObject(hDC, OldBrush)
@@ -547,7 +547,7 @@ Public Function Clear()
     
 End Function
 
-Private Sub DrawDIB(ByVal DestHdc As Long, ByVal X As Long, ByVal Y As Long, ByVal Index As Long, Disabled As Boolean)
+Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByVal Index As Long, Disabled As Boolean)
 
     Dim hGraphics As Long
     Dim hImage As Long
@@ -585,7 +585,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal X As Long, ByVal Y As Long, ByV
     
             End If
             
-            GdipDrawImageRectRectI hGraphics, hImage, X, Y, m_lWidth, m_lHeight, 0, 0, m_lWidth, m_lHeight, &H2, hAttributes, 0&, 0&
+            GdipDrawImageRectRectI hGraphics, hImage, x, y, m_lWidth, m_lHeight, 0, 0, m_lWidth, m_lHeight, &H2, hAttributes, 0&, 0&
             
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
@@ -1139,12 +1139,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     MIS.itemHeight = m_lHeight + 4
                 End If
                 
-                If Not classicThemeWorkaround Then
-                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 4
+                If g_IsVistaOrLater Then
+                    If classicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
                 Else
-                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
+                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 2
                 End If
-            
+                
                 CopyMemory ByVal lParam, MIS, Len(MIS)
                 
                 lReturn = 1

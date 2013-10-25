@@ -160,7 +160,8 @@ Public Sub MRU_LoadFromFile()
             End If
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
-            If g_IsVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            'If g_IsVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x
             
         Next x
         
@@ -317,7 +318,8 @@ MRUEntryFound:
     End If
     
     'On Vista or later, display the corresponding accelerator.  XP truncates this, so just add some blank spaces for aesthetics.
-    If g_IsVistaOrLater Then FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & "   "
+    'If g_IsVistaOrLater Then FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0" Else FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & "   "
+    FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0"
     
     If numEntries > 1 Then
         'Unload existing menus...
@@ -336,7 +338,8 @@ MRUEntryFound:
                 FormMain.mnuRecDocs(x).Caption = getShortMRU(MRUlist(x))
             End If
             
-            If g_IsVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            'If g_IsVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
+            FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x
             
         Next x
     End If
