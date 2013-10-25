@@ -12,9 +12,10 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.  Modifications primarily include bugfixes relating to use under
-' a non-standard Windows theme (e.g. "Classic Theme").  These fixes rely on some internal PhotoDemon checks and variables, so
-' I do not recommend using this copy of the class in your own projects.  You may download the original version of this code
-' from the following link (good as of June '12): http://leandroascierto.com/blog/clsmenuimage/
+' a non-standard Windows theme (e.g. "Classic Theme"), and a full conversion of the subclassing system to a more stable
+' alternative.  These fixes rely on some internal PhotoDemon checks, variables, and objects, so I do not recommend using this
+' copy of the class in your own projects.  You may download the original version of this code from the following link
+' (good as of June '12): http://leandroascierto.com/blog/clsmenuimage/
 
 'This code was originally written by Leandro I. Ascierto.
 
@@ -311,120 +312,16 @@ Private cColl As Collection
 
 Private classicThemeWorkaround As Boolean
 
-
-
-Public Function WindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-    
-    On Error Resume Next
-    
-
-    Select Case uMsg
-    
-        Case WM_MENUSELECT, WM_ENTERIDLE 'put here what you need :)
-        
-            RaiseEvent MenuMessages(hWnd, uMsg, wParam, lParam)
-            WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
-            
-        Case WM_MEASUREITEM
-        
-            Dim MIS As MEASUREITEMSTRUCT
-            
-            
-            CopyMemory MIS, ByVal lParam, Len(MIS)
-
-            If MIS.CtlType = ODT_MENU Then
-
-                If MIS.itemHeight < m_lHeight + 4 Then
-                    MIS.itemHeight = m_lHeight + 4
-                End If
-                
-                If Not classicThemeWorkaround Then
-                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 4
-                Else
-                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
-                End If
-            
-                CopyMemory ByVal lParam, MIS, Len(MIS)
-                
-                WindowProc = 1
-            Else
-                WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
-            End If
-        
-        
-        Case WM_DRAWITEM
-    
-            Dim DIS As DRAWITEMSTRUCT
-            Dim IsDisabled As Boolean
-            Dim IsCheckStyle As Boolean
-            Dim IsChecked As Boolean
-            Dim lLeft As Long
-            Dim MI As MENUINFO
-            
-            CopyMemory DIS, ByVal lParam, Len(DIS)
-
-            If DIS.CtlType = ODT_MENU Then
-            
-                If DIS.hWndItem <> GetMenu(hWnd) Then
-                        
-                    With MI
-                        .cbSize = Len(MI)
-                        .fMask = MIM_STYLE
-                    End With
-    
-                    GetMenuInfo DIS.hWndItem, MI
-  
-                    IsCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
-    
-                    IsChecked = (DIS.ItemState And ODS_CHECKED) = ODS_CHECKED
-    
-                    lLeft = IIf(IsCheckStyle, GetSystemMetrics(SM_CXMENUCHECK), 0)
-                
-                End If
-                
-                IsDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
-                
-                If Not IsCheckStyle And IsChecked Then
-                
-                    Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, IsDisabled)
-                    
-                End If
-                
-                'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
-                ' for users of the "classic theme"
-                If Not (classicThemeWorkaround And IsDisabled) Then
-                    DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
-                End If
-                
-                WindowProc = 1
-            Else
-                WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
-            End If
-            
-        Case WM_DESTROY
-        
-            WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
-            
-            Call StopSubclassing
-            
-        Case Else
-        
-            WindowProc = CallWindowProc(PrevWndProc, hWnd, uMsg, wParam, lParam)
-            
-    End Select
-    
-End Function
-
+'Tanner's addition: convert this class to ise IDE-safe subclassing
+Private cSubclass As cSelfSubHookCallback
 
 Public Property Get IsWindowVistaOrLater() As Boolean
     IsWindowVistaOrLater = IsWinVistaOrLater
 End Property
 
-
 Public Property Get CanWeTheme() As Boolean
     CanWeTheme = Not classicThemeWorkaround
 End Property
-
 
 Public Property Get ImageCount() As Long
     ImageCount = UBound(mDIB) - 1
@@ -587,7 +484,7 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
 End Sub
 
 
-Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
+Private Sub DrawCheck(ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
     Dim hPen As Long, OldPen As Long
     Dim hBrush As Long, OldBrush As Long
     
@@ -597,7 +494,7 @@ Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal
     OldPen = SelectObject(hDC, hPen)
     OldBrush = SelectObject(hDC, hBrush)
     
-    Rectangle hDC, x, y, x + x2, y + y2
+    Rectangle hDC, X, Y, X + x2, Y + y2
     
     DeleteObject SelectObject(hDC, OldPen)
     Call SelectObject(hDC, OldBrush)
@@ -661,7 +558,7 @@ Public Function Clear()
     
 End Function
 
-Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByVal Index As Long, Disabled As Boolean)
+Private Sub DrawDIB(ByVal DestHdc As Long, ByVal X As Long, ByVal Y As Long, ByVal Index As Long, Disabled As Boolean)
 
     Dim hGraphics As Long
     Dim hImage As Long
@@ -699,7 +596,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     
             End If
             
-            GdipDrawImageRectRectI hGraphics, hImage, x, y, m_lWidth, m_lHeight, 0, 0, m_lWidth, m_lHeight, &H2, hAttributes, 0&, 0&
+            GdipDrawImageRectRectI hGraphics, hImage, X, Y, m_lWidth, m_lHeight, 0, 0, m_lWidth, m_lHeight, &H2, hAttributes, 0&, 0&
             
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
@@ -1025,17 +922,11 @@ End Function
 
 Private Function SetSubclassing(ByVal hWnd As Long) As Boolean
 
-    If PrevWndProc = 0 Then
-    
-        If pASMWrapper <> 0 Then
-            
-            PrevWndProc = SetWindowLong(hWnd, GWL_WNDPROC, pASMWrapper)
-            
-            If PrevWndProc <> 0 Then
-                SetSubclassing = True
-            End If
-            
-        End If
+    If cSubclass.ssc_Subclass(hWnd, , , Me) Then
+        cSubclass.ssc_AddMsg hWnd, MSG_AFTER, WM_MENUSELECT, WM_ENTERIDLE, WM_MEASUREITEM, WM_DRAWITEM, WM_DESTROY
+        SetSubclassing = True
+    Else
+        SetSubclassing = False
     End If
 
 End Function
@@ -1043,42 +934,24 @@ End Function
 Private Function StopSubclassing() As Boolean
 
     If m_Hwnd <> 0 Then
-    
-        If PrevWndProc <> 0 Then
-        
-            Call SetWindowLong(m_Hwnd, GWL_WNDPROC, PrevWndProc)
-            
-            m_Hwnd = 0
-            PrevWndProc = 0
-            
-            StopSubclassing = True
-            
-        End If
+        cSubclass.ssc_UnSubclass m_Hwnd <> 0
+        StopSubclassing = True
+    Else
+        StopSubclassing = False
     End If
 
 End Function
 
 Private Sub Class_Initialize()
-
-    Dim ASM(0 To 103) As Byte
-    Dim pVar As Long
-    Dim ThisClass As Long
-    Dim CallbackFunction As Long
-    Dim pVirtualFree
-    Dim i As Long
-    Dim sCode As String
-    Dim tOSVI As OSVERSIONINFO
     
     Set cColl = New Collection
     
-    
+    Dim tOSVI As OSVERSIONINFO
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
-    
     Call GetVersionEx(tOSVI)
     
     If tOSVI.dwMajorVersion < 5 Then Exit Sub
-
-    IsWinVistaOrLater = tOSVI.dwMajorVersion >= 6
+    IsWinVistaOrLater = (tOSVI.dwMajorVersion >= 6)
     
     'Tanner's addition 20 September '12:
     ' Double-check that theming is enabled. If it isn't, fall back to subclassing (e.g. Windows XP style)
@@ -1087,7 +960,6 @@ Private Sub Class_Initialize()
     sClass = "Window"
     hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
     If hTheme = 0 Then
-    '    IsWinVistaOrLater = False
         classicThemeWorkaround = True
     Else
         CloseThemeData hTheme
@@ -1097,60 +969,16 @@ Private Sub Class_Initialize()
 
     InitGDI
 
-    pASMWrapper = VirtualAlloc(ByVal 0&, 104, MEM_COMMIT, PAGE_EXECUTE_READWRITE)
+    'Tanner's fix: initialize an IDE-safe subclasser
+    Set cSubclass = New cSelfSubHookCallback
     
-    If pASMWrapper <> 0 Then
-
-        ThisClass = ObjPtr(Me)
-        Call CopyMemory(pVar, ByVal ThisClass, 4)
-        Call CopyMemory(CallbackFunction, ByVal (pVar + 28), 4)
-        pVirtualFree = GetProcAddress(GetModuleHandle("kernel32.dll"), "VirtualFree")
-
-        'TANNER'S NOTE: Don't let this line frighten you. This ASM code is based off the work of Paul Caton, who pioneered
-        ' the art of using ASM to perform IDE-safe subclassing. The original version of Paul's code can be found here:
-        ' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=42918&lngWId=1
-        sCode = "90FF05000000006A0054FF742418FF742418FF742418FF7424186800000000B800000000FFD0FF0D00000000A10000000085C075" & _
-                "0458C21000A10000000085C0740458C2100058595858585868008000006A00680000000051B800000000FFE00000000000000000"
-                
-        For i = 0 To Len(sCode) - 1 Step 2
-            ASM(i / 2) = CByte("&h" & Mid$(sCode, i + 1, 2))
-        Next
-
-        Call CopyMemory(ASM(3), pASMWrapper + 96, 4)
-        Call CopyMemory(ASM(40), pASMWrapper + 96, 4)
-        Call CopyMemory(ASM(58), pASMWrapper + 96, 4)
-        Call CopyMemory(ASM(45), pASMWrapper + 100, 4)
-        Call CopyMemory(ASM(84), pASMWrapper, 4)
-        Call CopyMemory(ASM(27), ThisClass, 4)
-        Call CopyMemory(ASM(32), CallbackFunction, 4)
-        Call CopyMemory(ASM(90), pVirtualFree, 4)
-        Call CopyMemory(ByVal pASMWrapper, ASM(0), 104)
-
-    End If
-
 End Sub
 
 
 Private Sub Class_Terminate()
 
-    Dim Counter As Long
-
-    If pASMWrapper <> 0 Then
-    
-        Call StopSubclassing
-
-        Call CopyMemory(Counter, ByVal (pASMWrapper + 104), 4)
-        
-        If Counter = 0 Then
-            'Call VirtualFree(ByVal pASMWrapper, 0, MEM_RELEASE)
-        Else
-            Call CopyMemory(ByVal (pASMWrapper + 108), 1, 4)
-        End If
-        
-    End If
-    
+    cSubclass.ssc_Terminate
     Clear
-    
     TerminateGDI
     
 End Sub
@@ -1279,3 +1107,125 @@ Private Function IsAlphaIcon(ByVal IconHandle As Long) As Boolean
     
 End Function
 
+'All events subclassed by this window are processed here.
+Private Sub myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal lng_hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
+'*************************************************************************************************
+'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
+'*              you will know unless the callback for the uMsg value is specified as
+'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
+'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
+'*              message being passed to the original WndProc and (if set to do so) the after
+'*              original WndProc callback.
+'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
+'*              and/or, in an after the original WndProc callback, act on the return value as set
+'*              by the original WndProc.
+'* lng_hWnd   - Window handle.
+'* uMsg       - Message value.
+'* wParam     - Message related data.
+'* lParam     - Message related data.
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+    
+    On Error Resume Next
+    
+    Select Case uMsg
+    
+        Case WM_MENUSELECT, WM_ENTERIDLE 'put here what you need :)
+            RaiseEvent MenuMessages(lng_hWnd, uMsg, wParam, lParam)
+            
+        Case WM_MEASUREITEM
+        
+            Dim MIS As MEASUREITEMSTRUCT
+            
+            CopyMemory MIS, ByVal lParam, Len(MIS)
+
+            If MIS.CtlType = ODT_MENU Then
+
+                If MIS.itemHeight < m_lHeight + 4 Then
+                    MIS.itemHeight = m_lHeight + 4
+                End If
+                
+                If Not classicThemeWorkaround Then
+                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 4
+                Else
+                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
+                End If
+            
+                CopyMemory ByVal lParam, MIS, Len(MIS)
+                
+                lReturn = 1
+                bHandled = True
+            Else
+                bHandled = False
+            End If
+        
+        
+        Case WM_DRAWITEM
+    
+            Dim DIS As DRAWITEMSTRUCT
+            Dim IsDisabled As Boolean
+            Dim IsCheckStyle As Boolean
+            Dim IsChecked As Boolean
+            Dim lLeft As Long
+            Dim MI As MENUINFO
+            
+            CopyMemory DIS, ByVal lParam, Len(DIS)
+
+            If DIS.CtlType = ODT_MENU Then
+            
+                If DIS.hWndItem <> GetMenu(lng_hWnd) Then
+                        
+                    With MI
+                        .cbSize = Len(MI)
+                        .fMask = MIM_STYLE
+                    End With
+    
+                    GetMenuInfo DIS.hWndItem, MI
+  
+                    IsCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
+    
+                    IsChecked = (DIS.ItemState And ODS_CHECKED) = ODS_CHECKED
+    
+                    lLeft = IIf(IsCheckStyle, GetSystemMetrics(SM_CXMENUCHECK), 0)
+                
+                End If
+                
+                IsDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
+                
+                If Not IsCheckStyle And IsChecked Then
+                
+                    Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, IsDisabled)
+                    
+                End If
+                
+                'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
+                ' for users of the "classic theme"
+                If Not (classicThemeWorkaround And IsDisabled) Then
+                    DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
+                End If
+                
+                lReturn = 1
+                bHandled = True
+            Else
+                bHandled = False
+            End If
+            
+        Case WM_DESTROY
+            Call StopSubclassing
+            
+    End Select
+    
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
+End Sub
