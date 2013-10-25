@@ -40,11 +40,6 @@ Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As 
 ' ------------
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
-'Private Declare Function VirtualFree Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
@@ -293,14 +288,8 @@ Private Const WM_DRAWITEM As Long = &H2B
 Private Const WM_MENUSELECT As Long = &H11F
 Private Const WM_ENTERIDLE As Long = &H121
 
-Private Const GWL_WNDPROC As Long = -4
-Private Const MEM_COMMIT As Long = &H1000
-Private Const PAGE_EXECUTE_READWRITE As Long = &H40
-
 Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
-Private pASMWrapper As Long
-Private PrevWndProc As Long
 Private m_Hwnd As Long
 
 Private GdipToken As Long
@@ -892,9 +881,7 @@ LoadIconFromStream_Error:
 
 End Function
 
-
-
-Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean) As Boolean
+Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
     If GdipToken Then
     

@@ -345,7 +345,7 @@ MRUEntryFound:
     saveMRUThumbnail newFile, srcImage
     
     'The icons in the MRU sub-menu need to be reset after this action
-    ResetMenuIcons
+    resetMenuIcons
 
 End Sub
 
@@ -361,29 +361,22 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
         Dim sFilename As String
         sFilename = g_UserPreferences.getIconPath & getMRUHash(iPath) & ".png"
         
+        'Request a thumbnail from the current image, and store it in a temporary layer
+        Dim mruThumb As pdLayer
+        Set mruThumb = New pdLayer
+        If g_IsVistaOrLater Then
+            tImage.requestThumbnail mruThumb, 64
+        Else
+            tImage.requestThumbnail mruThumb, 16
+        End If
+        
         'Load FreeImage into memory
         Dim hLib As Long
         hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
-        'Calculate thumbnail dimensions of the image in question
-        Dim nWidth As Long, nHeight As Long
-        convertAspectRatio tImage.Width, tImage.Height, 64, 64, nWidth, nHeight
-    
-        'Create a temporary layer in a square shape
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        
-        If tImage.Width > tImage.Height Then
-            tmpLayer.createBlank tImage.Width, tImage.Width, tImage.mainLayer.getLayerColorDepth, vbButtonFace
-            BitBlt tmpLayer.getLayerDC, 0, (tImage.Width - tImage.Height) \ 2, tImage.Width, tImage.Height, tImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
-        Else
-            tmpLayer.createBlank tImage.Height, tImage.Height, tImage.mainLayer.getLayerColorDepth, vbButtonFace
-            BitBlt tmpLayer.getLayerDC, (tImage.Height - tImage.Width) \ 2, 0, tImage.Width, tImage.Height, tImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
-        End If
         
         'Convert the temporary layer to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(mruThumb.getLayerDC)
     
         'Use that handle to save the image to PNG format
         If fi_DIB <> 0 Then
@@ -391,13 +384,13 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
             
             'Output the PNG file at the proper color depth
             Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-            If tImage.mainLayer.getLayerColorDepth = 24 Then
+            If mruThumb.getLayerColorDepth = 24 Then
                 fi_OutputColorDepth = FICD_24BPP
             Else
                 fi_OutputColorDepth = FICD_32BPP
             End If
             
-            fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, 64, 64, , FILTER_BILINEAR, True)
+            fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , FILTER_BILINEAR, True)
             If fi_Check Then Message "Thumbnail saved successfully." Else Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             
         Else
@@ -408,8 +401,8 @@ Private Sub saveMRUThumbnail(ByRef iPath As String, ByRef tImage As pdImage)
         FreeLibrary hLib
         
         'Delete our temporary layer
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        mruThumb.eraseLayer
+        Set mruThumb = Nothing
     
     End If
 
@@ -450,7 +443,7 @@ Public Sub MRU_ClearList()
     g_UserPreferences.SetPref_Long "MRU", "Number Of Entries", 0
     
     'The icons in the MRU sub-menu need to be reset after this action
-    ResetMenuIcons
+    resetMenuIcons
 
 End Sub
 

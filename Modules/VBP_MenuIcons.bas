@@ -156,11 +156,12 @@ Public Sub loadMenuIcons()
     numOfMRUFiles = MRU_ReturnCount()
     cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
     
-    'And initialize the MRU icon handler.  (Unfortunately, MRU icons must be disabled on XP.  We can't
-    ' double-subclass the main form, and using a single menu icon class isn't possible at present.)
+    '...and initialize the MRU icon handler.
+    Set cMRUIcons = New clsMenuImage
     If g_IsVistaOrLater Then
-        Set cMRUIcons = New clsMenuImage
         cMRUIcons.Init FormMain.hWnd, 64, 64
+    Else
+        cMRUIcons.Init FormMain.hWnd, 16, 16
     End If
         
 End Sub
@@ -493,7 +494,8 @@ End Sub
 Public Sub resetMenuIcons()
 
     'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-    If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
+    ' Now that I've rewritten the project to use IDE-safe subclassing, I think icon refreshes will work on XP...?
+    'If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
         
     'Redraw the Undo/Redo menus
     addMenuIcon "UNDO", 1, 0     'Undo
@@ -512,59 +514,42 @@ Public Sub resetMenuIcons()
     addMenuIcon "CASCADE", 8, 9         'Cascade
     addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
     addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    
+    'Clear the current MRU icon cache
+    cMRUIcons.Clear
+    Dim tmpFilename As String
+    
+    'Load a placeholder image for missing MRU entries
+    cMRUIcons.AddImageFromStream LoadResData("MRUHOLDER", "CUSTOM")
+    
+    'This counter will be used to track the current position of loaded thumbnail images into the icon collection
+    Dim iconLocation As Long
+    iconLocation = 0
+    
+    'Loop through the MRU list, and attempt to load thumbnail images for each entry
+    Dim i As Long
+    For i = 0 To numOfMRUFiles
+    
+        'Start by seeing if an image exists for this MRU entry
+        tmpFilename = getMRUThumbnailPath(i)
         
-    'If the OS is Vista or later, render MRU icons to the Open Recent menu
-    If g_IsVistaOrLater Then
-    
-        'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
-        ' everything to the right by one.
-        
-        'Thus, we must check for that and redraw the Undo/Redo menus accordingly
-        Dim posModifier As Long
-        posModifier = 0
-    
-        If g_OpenImageCount > 0 Then
-            If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then
-                If pdImages(g_CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
-            End If
-        End If
-    
-        cMRUIcons.Clear
-        Dim tmpFilename As String
-    
-        'Load a placeholder image for missing MRU entries
-        cMRUIcons.AddImageFromStream LoadResData("MRUHOLDER", "CUSTOM")
-    
-        'This counter will be used to track the current position of loaded thumbnail images into the icon collection
-        Dim iconLocation As Long
-        iconLocation = 0
-    
-        'Loop through the MRU list, and attempt to load thumbnail images for each entry
-        Dim i As Long
-        For i = 0 To numOfMRUFiles
-        
-            'Start by seeing if an image exists for this MRU entry
-            tmpFilename = getMRUThumbnailPath(i)
-        
-            'If the file exists, add it to the MRU icon handler
-            If FileExist(tmpFilename) Then
+        'If the file exists, add it to the MRU icon handler
+        If FileExist(tmpFilename) Then
                 
-                iconLocation = iconLocation + 1
-                cMRUIcons.AddImageFromFile tmpFilename
-                cMRUIcons.PutImageToVBMenu iconLocation, i, 0 + posModifier, 1
+            iconLocation = iconLocation + 1
+            cMRUIcons.AddImageFromFile tmpFilename
+            cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
             
-            Else
-                cMRUIcons.PutImageToVBMenu 0, i, 0 + posModifier, 1
-            End If
-        
-        Next i
-        
-        'Vista+ users now get their nice, large clear icon.
-        If g_IsVistaOrLater Then
-            cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
-            cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0 + posModifier, 1
+        Else
+            If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
         End If
-                
+        
+    Next i
+        
+    'Vista+ users now get their nice, large "clear list" icon.
+    If g_IsVistaOrLater Then
+        cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
+        cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 1
     End If
         
 End Sub
