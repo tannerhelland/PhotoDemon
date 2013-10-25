@@ -668,8 +668,11 @@ End Property
 'Error handler
 Private Sub zError(ByRef sRoutine As String, ByVal sMsg As String)
   ' \\LaVolpe -  Note. These two lines can be rem'd out if you so desire. But don't remove the routine
-  App.LogEvent TypeName(Me) & "." & sRoutine & ": " & sMsg, vbLogEventTypeError
-  pdMsgBox sMsg & ".", vbExclamation + vbApplicationModal, "Error in " & TypeName(Me) & "." & sRoutine
+  'App.LogEvent TypeName(Me) & "." & sRoutine & ": " & sMsg, vbLogEventTypeError
+  'pdMsgBox sMsg & ".", vbExclamation + vbApplicationModal, "Error in " & TypeName(Me) & "." & sRoutine
+  
+  'Tanner's modification: do not display message boxes on errors.  Debug output is preferred.
+  Debug.Print ">> Subclasser returned the following message: " & sRoutine & ": " & sMsg
 End Sub
 
 'Return the address of the specified DLL/procedure
@@ -972,11 +975,11 @@ Public Sub scb_TerminateCallbacks()
 End Sub
 
 'This handy function comes from http://stackoverflow.com/questions/40651/check-if-a-record-exists-in-a-vb6-collection
-Private Function ExistsNonObject(col, index) As Boolean
+Private Function ExistsNonObject(col, Index) As Boolean
     On Error GoTo ExistsNonObjectErrorHandler
     Dim v As Variant
 
-    v = col(index)
+    v = col(Index)
     ExistsNonObject = True
     Exit Function
 
