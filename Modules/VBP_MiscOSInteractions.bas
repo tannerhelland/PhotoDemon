@@ -56,7 +56,7 @@ Private Declare Function GetModuleFileNameExA Lib "PSAPI.DLL" (ByVal hProcess As
 Private Declare Function GetProcessMemoryInfo Lib "PSAPI.DLL" (ByVal hProcess As Long, ppsmemCounters As PROCESS_MEMORY_COUNTERS, ByVal cb As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal Handle As Long) As Long
 
-'Check the current Windows version.  In PhotoDemon, we are only concerned with "is it Vista or later?"
+'Check for a version >= Vista.
 Public Function getVistaOrLaterStatus() As Boolean
 
     Dim tOSVI As OSVERSIONINFO
@@ -64,6 +64,17 @@ Public Function getVistaOrLaterStatus() As Boolean
     GetVersionEx tOSVI
     
     getVistaOrLaterStatus = (tOSVI.dwMajorVersion >= 6)
+
+End Function
+
+'Check for a version >= Win 7
+Public Function getWin7OrLaterStatus() As Boolean
+
+    Dim tOSVI As OSVERSIONINFO
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    getWin7OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 1))
 
 End Function
 

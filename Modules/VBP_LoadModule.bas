@@ -32,7 +32,7 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     
     'We need GDI+ to extract a JPEG from the resource file and convert it in-memory.  (Yes, there are other ways to do this.  No, I don't
-    ' care about using them.)  Check it's availability
+    ' care about using them.)  Check it's availability.
     If isGDIPlusAvailable() Then
     
         'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
@@ -56,9 +56,10 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Detecting Windows® version..."
     
-    'Note that PhotoDemon is only concerned with "Vista or later", which lets it know that certain features are
-    ' guaranteed to be available (such as the Segoe UI font, which may not exist on XP installs).
+    'Certain features are OS-version dependent.  We must determine the OS version early in the load process to ensure that all features
+    ' are loaded correctly.
     g_IsVistaOrLater = getVistaOrLaterStatus
+    g_IsWin7OrLater = getWin7OrLaterStatus
     
     
     

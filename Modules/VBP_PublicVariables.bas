@@ -138,8 +138,9 @@ Public g_AlphaCheckTwo As Long
 ' 2 - Large (16x16 pixels per square)
 Public g_AlphaCheckSize As Long
 
-'Is the current system running Vista, Windows 7, or later?  (Used to determine availability of certain system fonts)
+'Is the current system running Vista, Windows 7, or later?  (Used to determine availability of certain system features)
 Public g_IsVistaOrLater As Boolean
+Public g_IsWin7OrLater As Boolean
 
 'Is theming enabled?  (Used to handle some menu icon rendering quirks)
 Public g_IsThemingEnabled As Boolean
