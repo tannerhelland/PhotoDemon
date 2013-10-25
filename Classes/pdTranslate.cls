@@ -174,7 +174,7 @@ Public Sub DetermineLanguage()
     If g_IsFirstRun Then
     
         Dim curLangID As String
-        curLangID = getDefaultUserLanguage()
+        curLangID = "en-US" 'getDefaultUserLanguage()
                 
         'Compare the full language ID (language and region) against language files available in the Languages folder.
         ' If an exact match is found, present that as the default program language.
