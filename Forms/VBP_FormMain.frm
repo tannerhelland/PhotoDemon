@@ -43,7 +43,7 @@ Begin VB.Form FormMain
       Top             =   1440
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -99,11 +99,11 @@ Begin VB.Form FormMain
          Index           =   3
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Save"
+         Caption         =   "&Close"
          Index           =   4
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Save &as..."
+         Caption         =   "Close all"
          Index           =   5
       End
       Begin VB.Menu MnuFile 
@@ -111,36 +111,40 @@ Begin VB.Form FormMain
          Index           =   6
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Close"
+         Caption         =   "&Save"
          Index           =   7
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Close all"
+         Caption         =   "Save &as..."
          Index           =   8
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "Revert"
          Index           =   9
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Batch process..."
+         Caption         =   "-"
          Index           =   10
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "&Batch process..."
          Index           =   11
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Print..."
+         Caption         =   "-"
          Index           =   12
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "&Print..."
          Index           =   13
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "E&xit"
+         Caption         =   "-"
          Index           =   14
+      End
+      Begin VB.Menu MnuFile 
+         Caption         =   "E&xit"
+         Index           =   15
       End
    End
    Begin VB.Menu MnuEditTop 
@@ -1259,7 +1263,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1295,7 +1299,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1780,44 +1784,48 @@ Private Sub MnuFile_Click(Index As Integer)
         '<separator>
         Case 3
         
-        'Save
+        'Close
         Case 4
-            Process "Save", True
-            
-        'Save as
+            Process "Close", True
+        
+        'Close all
         Case 5
-            Process "Save as", True
+            Process "Close all", True
             
         '<separator>
         Case 6
         
-        'Close
+        'Save
         Case 7
-            Process "Close", True
-        
-        'Close all
+            Process "Save", True
+            
+        'Save as
         Case 8
-            Process "Close all", True
+            Process "Save as", True
+        
+        'Revert
+        Case 9
+            Process "Revert", True
         
         '<separator>
-        Case 9
+        Case 10
         
         'Batch wizard
-        Case 10
+        Case 11
             Process "Batch wizard", True
         
         '<separator>
-        Case 11
+        Case 12
         
         'Print
-        Case 12
+        Case 13
             Process "Print", True
         
         '<separator>
-        Case 13
+        Case 14
         
         'Exit
-        Case 14
+        Case 15
             Process "Exit program", True
         
     

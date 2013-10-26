@@ -177,13 +177,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "OPENIMG", 0, 0       'Open Image
     addMenuIcon "OPENREC", 0, 1       'Open recent
     addMenuIcon "IMPORT", 0, 2        'Import
-    addMenuIcon "SAVE", 0, 4          'Save
-    addMenuIcon "SAVEAS", 0, 5        'Save As...
-    addMenuIcon "CLOSE", 0, 7         'Close
-    addMenuIcon "CLOSE", 0, 8         'Close All
-    addMenuIcon "BCONVERT", 0, 10     'Batch conversion
-    addMenuIcon "PRINT", 0, 12        'Print
-    addMenuIcon "EXIT", 0, 14         'Exit
+    addMenuIcon "CLOSE", 0, 4         'Close
+    addMenuIcon "CLOSE", 0, 5         'Close All
+    addMenuIcon "SAVE", 0, 7          'Save
+    addMenuIcon "SAVEAS", 0, 8        'Save As...
+    'addMenuIcon "REVERT", 0, 9        'Revert
+    addMenuIcon "BCONVERT", 0, 11     'Batch conversion
+    addMenuIcon "PRINT", 0, 13        'Print
+    addMenuIcon "EXIT", 0, 15         'Exit
     
     '--> Import Sub-Menu
     'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.

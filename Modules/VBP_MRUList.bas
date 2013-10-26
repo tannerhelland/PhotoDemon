@@ -3,8 +3,8 @@ Attribute VB_Name = "MRU_List_Handler"
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2013 by Tanner Helland
 'Created: 22/May/05
-'Last updated: 25/September/13
-'Last update: allow MRU accelerators (Ctrl + menu index) in the IDE, since we now use IDE-safe subclassing.
+'Last updated: 26/October/13
+'Last update: do not rely on the .Caption property for determining MRU status, because translations modify it!
 '
 'Handles the creation and maintenance of the program's MRU list.  The MRU list is stored in the user preferences file.
 '
@@ -160,7 +160,6 @@ Public Sub MRU_LoadFromFile()
             End If
             
             'Shortcuts are not displayed on XP, because they end up smashed into the caption itself.
-            'If g_IsVistaOrLater Then FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x Else FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & "   "
             FormMain.mnuRecDocs(x).Caption = FormMain.mnuRecDocs(x).Caption & vbTab & "Ctrl+" & x
             
         Next x
@@ -173,7 +172,7 @@ Public Sub MRU_LoadFromFile()
     Else
         ReDim MRUlist(0) As String
         MRUlist(0) = ""
-        FormMain.mnuRecDocs(0).Caption = "Empty"
+        FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")
         FormMain.mnuRecDocs(0).Enabled = False
         FormMain.MnuRecentSepBar1.Visible = False
         FormMain.MnuClearMRU.Visible = False
@@ -202,7 +201,6 @@ Public Sub MRU_SaveToFile()
         For x = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
             Unload FormMain.mnuRecDocs(x)
         Next x
-        'DoEvents
     End If
     
     'Finally, scan the MRU icon directory to make sure there are no orphaned PNG files.  (Multiple instances of PhotoDemon
@@ -304,7 +302,7 @@ MRUEntryFound:
     MRUlist(0) = newFile
     
     'Redraw the MRU menu based on the current list
-    If (FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")) Then
+    If Not FormMain.mnuRecDocs(0).Enabled Then
         FormMain.mnuRecDocs(0).Enabled = True
         FormMain.MnuRecentSepBar1.Visible = True
         FormMain.MnuClearMRU.Visible = True
@@ -420,6 +418,7 @@ Public Sub MRU_ClearList()
     For i = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
         Unload FormMain.mnuRecDocs(i)
     Next i
+    
     FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")
     FormMain.mnuRecDocs(0).Enabled = False
     FormMain.MnuRecentSepBar1.Visible = False
