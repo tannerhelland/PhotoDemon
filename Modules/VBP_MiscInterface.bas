@@ -290,6 +290,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If FormMain.MnuFile(7).Enabled <> newState Then
                 toolbar_File.cmdSave.Enabled = newState
                 FormMain.MnuFile(7).Enabled = newState
+                
+                'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
+                ' we allow the user to revert to the last save state).
+                FormMain.MnuFile(9).Enabled = newState
+                
             End If
             
         'Save As (menu item only)
@@ -312,10 +317,6 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If FormMain.MnuEdit(0).Enabled <> newState Then
                 toolbar_File.cmdUndo.Enabled = newState
                 FormMain.MnuEdit(0).Enabled = newState
-                
-                'The File -> Revert menu is also tied to Undo state
-                FormMain.MnuFile(9).Enabled = newState
-                
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then

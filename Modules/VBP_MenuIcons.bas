@@ -181,7 +181,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "CLOSE", 0, 5         'Close All
     addMenuIcon "SAVE", 0, 7          'Save
     addMenuIcon "SAVEAS", 0, 8        'Save As...
-    'addMenuIcon "REVERT", 0, 9        'Revert
+    addMenuIcon "REVERT", 0, 9        'Revert
     addMenuIcon "BCONVERT", 0, 11     'Batch conversion
     addMenuIcon "PRINT", 0, 13        'Print
     addMenuIcon "EXIT", 0, 15         'Exit

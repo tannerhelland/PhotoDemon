@@ -1149,7 +1149,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", FormMain.MnuFile(5), True, True, True, False
         .AddAccelerator vbKeyS, vbCtrlMask, "Save", FormMain.MnuFile(7), True, True, True, False
         .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuFile(8), True, True, True, False
-        .AddAccelerator vbKeyF12, 0, "Revert", FormMain.MnuFile(9), True, True, True, False
+        .AddAccelerator vbKeyF12, 0, "Revert", FormMain.MnuFile(9), True, True, False, False
         .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(11), True, True, True
         .AddAccelerator vbKeyP, vbCtrlMask, "Print", FormMain.MnuFile(13), True, True, True
         .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(15), True, False, True, False

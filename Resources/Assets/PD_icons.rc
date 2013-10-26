@@ -17,9 +17,12 @@ SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
 DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
 SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
 
+CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
+
 SAVE         CUSTOM  MOVEABLE        LOADONCALL      disk.png
 SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      disk_save_as.png
-CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
+REVERT       CUSTOM  MOVEABLE        LOADONCALL      disk_revert.png
+
 BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
 PRINT        CUSTOM  MOVEABLE        LOADONCALL      printer.png
 EXIT         CUSTOM  MOVEABLE        LOADONCALL      exit.png

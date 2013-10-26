@@ -156,8 +156,21 @@ Public Sub createUndoData(ByVal processID As String, Optional ByVal processType 
     
 End Sub
 
-'Restore an undo entry, e.g. "the user just clicked Undo"
-Public Sub restoreUndoData()
+'This special command can be used to revert the image to its last saved state.  For images that have never been
+' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
+Public Sub revertToLastSavedState()
+    If undoNumAtLastSave > 0 Then
+        restoreUndoData undoNumAtLastSave
+    Else
+        restoreUndoData 0
+    End If
+End Sub
+
+'Restore an undo entry, e.g. "the user just clicked Undo".
+' Optionally, a specific position in the Undo/Redo chain can be specified if the user wants to revert to
+' a specific state in an image's history.  (For example, the File -> Revert command calls this function
+' with an undoPosition of 0.)
+Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     
     'Some external actions are deactivated while Undo/Redo processing occurs.  Such functions can check this global
     ' variable to determine if they should fire - so set it before doing anything else.
@@ -165,7 +178,6 @@ Public Sub restoreUndoData()
     
     'If we're at the top of the Undo stack, save the image's current state - this allows the user to Redo whichever
     ' action they're about to Undo.
-    
     If undoNum = undoMax Then
         
         'Depending on the last action, write out a Redo file for that action
@@ -195,14 +207,21 @@ Public Sub restoreUndoData()
         
     End If
     
-    'If this is not the last Undo state, decrease the number of Undos available
-    If undoNum > 0 Then
+    'If the user supplied an undoPosition, apply it now.  Otherwise, decrement it from its current position.
+    If undoPosition <> -1 Then
+        undoNum = undoPosition
+    Else
         undoNum = undoNum - 1
-        undoState = True
-        redoState = True
+        If undoNum < 0 Then undoNum = 0
     End If
     
-    'If we're now at the bottom of the Undo stack (e.g. the image is in its original state), disable further undo-ing
+    'If this is not the last Undo state, still allow the user to Undo.
+    If undoNum > 0 Then undoState = True
+    
+    'If we are not at the top of the Undo stack, also enable Redo-ing
+    If undoNum < undoMax Then redoState = True
+    
+    'If we are at the bottom of the Undo stack (e.g. the image is in its original state), disable further Undo-ing
     If undoNum = 0 Then undoState = False
     
     'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
