@@ -8,6 +8,7 @@ Begin VB.Form toolbar_Selections
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   13665
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -547,21 +548,50 @@ Dim m_ToolTip As clsToolTip
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
-'Because VB doesn't provide a good equivalent for the "Show" event, and because the Load event is too early, we must
-' manually track the first activation, and load any last-used settings then.
-Private hasBeenActivated As Boolean
-
 Private Sub cmdTools_Click(Index As Integer)
     g_PreviousTool = g_CurrentTool
     g_CurrentTool = Index
     resetToolButtonStates
 End Sub
 
-Private Sub Form_Activate()
+Private Sub Form_Load()
 
-    'Upon first activation, restore all last-used settings
-    If Not hasBeenActivated Then
-        hasBeenActivated = True
+     Dim i As Long
+    
+    'INITIALIZE ALL SELECTION TOOLS
+    
+        'Selection visual styles (currently lightbox or highlight)
+        toolbar_Selections.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
+        For i = 0 To toolbar_Selections.cmbSelRender.Count - 1
+            toolbar_Selections.cmbSelRender(i).AddItem "Lightbox", 0
+            toolbar_Selections.cmbSelRender(i).AddItem "Highlight (Blue)", 1
+            toolbar_Selections.cmbSelRender(i).AddItem "Highlight (Red)", 2
+            toolbar_Selections.cmbSelRender(i).ListIndex = 0
+        Next i
+        
+        'Selection smoothing (currently none, antialiased, fully feathered)
+        toolbar_Selections.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
+        toolbar_Selections.cmbSelSmoothing(0).AddItem "None", 0
+        toolbar_Selections.cmbSelSmoothing(0).AddItem "Antialiased", 1
+        
+        'Previously, live feathering was disallowed on XP or Vista for performance reasons (GDI+ can't be used to blur
+        ' the selection mask, and our own code was too slow).  As of 17 Oct '13, I have reinstated live selection
+        ' feathering on these OSes using PD's very fast horizontal and vertical blur.  While not perfect, this should
+        ' still provide "good enough" performance for smaller images and/or slight feathering.
+        toolbar_Selections.cmbSelSmoothing(0).AddItem "Feathered", 2
+        toolbar_Selections.cmbSelSmoothing(0).ListIndex = 1
+        
+        'Selection types (currently interior, exterior, border)
+        toolbar_Selections.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
+        toolbar_Selections.cmbSelType(0).AddItem "Interior", 0
+        toolbar_Selections.cmbSelType(0).AddItem "Exterior", 1
+        toolbar_Selections.cmbSelType(0).AddItem "Border", 2
+        toolbar_Selections.cmbSelType(0).ListIndex = 0
+        
+        toolbar_Selections.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        toolbar_Selections.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+        toolbar_Selections.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+        toolbar_Selections.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
         
         'Load any last-used settings for this form
         Set lastUsedSettings = New pdLastUsedSettings
@@ -571,15 +601,13 @@ Private Sub Form_Activate()
         'Assign the system hand cursor to all relevant objects
         Set m_ToolTip = New clsToolTip
         makeFormPretty Me, m_ToolTip
-    
-    End If
 
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    If hasBeenActivated Then lastUsedSettings.saveAllControlValues
+    lastUsedSettings.saveAllControlValues
 
 End Sub
 
@@ -617,7 +645,7 @@ Private Sub cmbSelRender_Click(Index As Integer)
         Dim i As Long
         For i = 0 To g_NumOfImagesLoaded
             If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).isActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
+                If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i).containingForm
             End If
         Next i
     

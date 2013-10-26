@@ -645,14 +645,10 @@ Public Sub createCustomFormIcon(ByRef imgForm As FormImage)
         hIcon16 = getIconFromLayer(thumbLayer, 16)
         addIconToList hIcon16
         pdImages(imgForm.Tag).curFormIcon16 = hIcon16
-        
-        'Back when PD used an MDI interface, the caption bar of the main form was changed to match the current image.  This is
-        ' no longer needed, but I have left the code here just in case.
-        'setNewAppIcon generatedIcon
-        
+                
         'Apply the 16x16 icon to the title bar of the specified form
         SendMessageLong imgForm.hWnd, &H80, 0, hIcon16
-        
+                
     End If
        
 End Sub

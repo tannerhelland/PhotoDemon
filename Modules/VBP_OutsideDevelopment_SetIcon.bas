@@ -99,10 +99,10 @@ Public Sub setNewTaskbarIcon(ByVal iconhWnd32 As Long, ByVal targetHwnd As Long)
 End Sub
 
 'Previously, we changed the main program icon to match the thumbnail of the currently active image.  Now that each
-' image is independently displaying in the tashbar, there is no need for this behavior.
-'Public Sub setNewAppIcon(ByVal iconhWnd16 As Long)
-    'If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
-    'SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconhWnd16
-    'SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, origIcon32
-'End Sub
+' image is independently displaying in the taskbar, there is no need for this behavior.
+Public Sub setNewAppIcon(ByVal iconhWnd16 As Long, ByVal iconhWnd32 As Long)
+    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
+    SendMessageLong FormMain.hWnd, WM_SETICON, ICON_SMALL, iconhWnd16
+    SendMessageLong FormMain.hWnd, WM_SETICON, ICON_BIG, iconhWnd32
+End Sub
 
