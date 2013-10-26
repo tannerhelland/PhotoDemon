@@ -15,10 +15,10 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 23/October/13
-'Last update: moved all Undo/Redo operations to a single class, and gave each pdImage a copy of said class.  This
-'              not only made the resulting Undo/Redo code base much smaller, but it should also be significantly
-'              easier to add and improve Undo/Redo functionality in the future.
+'Last updated: 26/October/13
+'Last update: new revertToLastSavedState function, and support for Undo-ing to an arbitrary location in the Undo stack.
+'              This was actually quite trivial to implement, which hopefully means that a History browser will not be
+'              too much work... <fingers crossed>
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
