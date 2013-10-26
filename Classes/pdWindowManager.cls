@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 21/October/13
-'Last update: only update window visibility status when it doesn't match the value we have stored; this fixes a number of flickering
-'             issues related to loading multiple images
+'Last updated: 25/October/13
+'Last update: dynamically switch WS_CHILD status of toolbars and images when they are docked vs floating; this should allow
+'              the main form to maintain focus, even when those controls are selected.
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2013, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
@@ -74,6 +74,7 @@ Private Const WA_CLICKACTIVE   As Long = 2
 Private Const SC_MAXIMIZE As Long = &HF030&
 Private Const SC_MINIMIZE As Long = &HF020&
 Private Const SC_RESTORE As Long = &HF120&
+Private Const SC_SIZE As Long = &HF000&
 
 'Constants for changing window style (including transparency)
 Private Const LWA_ALPHA As Long = &H2&
@@ -293,6 +294,7 @@ Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect,
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHwnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
 
 'Child window tracking
 Private pdWindows() As pdWindowData
@@ -563,6 +565,9 @@ Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
         If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
     Next i
     
+    'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
+    restoreActiveImageToForeground "float status of toolbars or images changed"
+    
 End Sub
 
 'If external (or internal) functions move windows around on their own, they can manually request resyncing the window's offset.
@@ -592,11 +597,16 @@ End Sub
 
 'Similar to the functions below, this sub can be used to retrieve a rect that contains (in *screen coordinates*) the position of the main
 ' form's "actual" client rect, by which I mean - the rect accounting for docked toolbars, as necessary.
-Friend Sub getActualMainFormClientRect(ByRef modifiedRect As winRect, Optional ByVal ignoreTabstrip As Boolean = False)
+Friend Sub getActualMainFormClientRect(ByRef modifiedRect As winRect, Optional ByVal ignoreTabstrip As Boolean = False, Optional ByVal useScreenCoordinates As Boolean = True)
 
-    'Start by retrieving the main form's client rect, in screen coordinates.
+    'Start by retrieving the main form's client rect, in screen coordinates as desired.
     Dim clientRect As winRect, toolbarRect As winRect
-    getClientCoordsRelativeToScreen mainWindowHwnd, clientRect
+    
+    If useScreenCoordinates Then
+        getClientCoordsRelativeToScreen mainWindowHwnd, clientRect
+    Else
+        GetClientRect mainWindowHwnd, clientRect
+    End If
         
     'If toolbars are docked, subtract their width and/or height from the rect, contingent on their visibility and alignment
     If (Not toolbarsFloating) Then
@@ -710,20 +720,22 @@ Public Function requestActualMainFormClientHeight() As Long
 End Function
 
 'If a toolbar is docked, it will also be aligned.  We can use alignment data to position it instead of an x/y offset.
-Private Sub setWindowPosByAlignment(ByVal winIndex As Long)
+Private Sub setWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspendRedraw As Boolean = False)
 
     Dim newPositionRect As winRect
         
     'Retrieve the window's current size
     Dim curWinRect As winRect
-    GetWindowRect pdWindows(winIndex).hWnd, curWinRect
+    GetClientRect pdWindows(winIndex).hWnd, curWinRect
     
     'Retrieve the client area of the main form
     Dim mainClientRect As winRect
-    getClientCoordsRelativeToScreen mainWindowHwnd, mainClientRect
+    GetClientRect mainWindowHwnd, mainClientRect
+    
+    'For now, subtract the progress bar's height as well
     mainClientRect.y2 = mainClientRect.y2 - getClientHeight(FormMain.picProgBar.hWnd)
     
-    'For all windows but the file toolbox, offset them right
+    'For all windows but the file toolbox, offset them to the right (to account for the file toolbox's width)
     Dim i As Long, fileToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
         If pdWindows(i).optionalToolbarType = FILE_TOOLBOX Then
@@ -767,7 +779,7 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long)
     newPositionRect.y2 = newPositionRect.y1 + (curWinRect.y2 - curWinRect.y1)
     
     'Move the window into place
-    MoveWindow pdWindows(winIndex).hWnd, newPositionRect.x1, newPositionRect.y1, newPositionRect.x2 - newPositionRect.x1, newPositionRect.y2 - newPositionRect.y1, 1
+    MoveWindow pdWindows(winIndex).hWnd, newPositionRect.x1, newPositionRect.y1, newPositionRect.x2 - newPositionRect.x1, newPositionRect.y2 - newPositionRect.y1, IIf(suspendRedraw, 0, 1)
     
     'Resync the window's offset
     requestWindowResync winIndex
@@ -796,7 +808,7 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     'In rare circumstances, it's possible for the user to shrink the main form horizontally to the point that the main menu overflows
     ' into a second row.  To accomodate this case, also recalculate the proper top client coordinate.
     Dim curMainFormClient As winRect
-    getClientCoordsRelativeToScreen mainWindowHwnd, curMainFormClient
+    GetClientRect mainWindowHwnd, curMainFormClient
     
     'For all windows but the file toolbox, offset them right
     Dim i As Long, fileToolboxIndex As Long
@@ -812,28 +824,23 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
         curMainFormClient.x1 = curMainFormClient.x1 + getClientWidth(toolbar_File.hWnd)
     End If
     
+    'Get this toolbar window's current location and size.  (We only care about size, as location will have already been set
+    ' in a prior step.)
     Dim childRect As winRect
-    
-    If pdWindows(winIndex).typeOfWindow = TOOLBAR_WINDOW Then
-    
-        'Get this toolbar window's current location and size
-        GetWindowRect pdWindows(winIndex).hWnd, childRect
+    GetWindowRect pdWindows(winIndex).hWnd, childRect
         
-        'Depending on the toolbar's alignment, we will either change the height or the width
-        If pdWindows(winIndex).alignmentOptions.alignLeft Or pdWindows(winIndex).alignmentOptions.alignRight Then
-            childRect.y1 = curMainFormClient.y1
-            childRect.y2 = curMainFormClient.y1 + clientHeight
-        ElseIf pdWindows(winIndex).alignmentOptions.alignBottom Or pdWindows(winIndex).alignmentOptions.alignTop Then
-            childRect.x1 = curMainFormClient.x1
-            childRect.x2 = curMainFormClient.x1 + clientWidth
-        End If
-        
-        SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOCOPYBITS
-        
-        forceFullWindowRefresh winIndex
-        
+    'Depending on the toolbar's alignment, we will either change the height or the width
+    If pdWindows(winIndex).alignmentOptions.alignLeft Or pdWindows(winIndex).alignmentOptions.alignRight Then
+        childRect.y1 = curMainFormClient.y1
+        childRect.y2 = curMainFormClient.y1 + clientHeight
+    ElseIf pdWindows(winIndex).alignmentOptions.alignBottom Or pdWindows(winIndex).alignmentOptions.alignTop Then
+        childRect.x1 = curMainFormClient.x1
+        childRect.x2 = curMainFormClient.x1 + clientWidth
     End If
-
+    
+    'Reposition the window, but note that we do not want it moved - only resized
+    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
+    
 End Sub
 
 'Given a window, return its horizontal (or vertical) client size, in pixels.
@@ -940,8 +947,11 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 
                 If pdWindows(winIndex).previousRenderStyle <> FLOAT_STYLE Then
                 
+                    'Remove the main window parent reference (if present)
+                    SetParent pdWindows(winIndex).hWnd, 0
+                    
                     'Set the border style to fixed toolbar
-                    newWinStyle = WS_BORDER Or WS_CAPTION Or WS_SYSMENU 'Or WS_CHILD 'Or WS_CLIPCHILDREN
+                    newWinStyle = WS_BORDER Or WS_CAPTION Or WS_SYSMENU
                     If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
@@ -980,13 +990,16 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 GetClientRect pdWindows(winIndex).hWnd, clientDimensions
                 
                 If pdWindows(winIndex).previousRenderStyle <> DOCK_STYLE Then
-                
+                    
                     'Remove the window border
-                    newWinStyle = 0
+                    newWinStyle = WS_CHILD
                     If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE
-                    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER
+                    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidth, pdWindows(winIndex).originalHeight, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
+                    
+                    'Specify the main window as the parent
+                    SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.
                     pdWindows(winIndex).previousRenderStyle = DOCK_STYLE
@@ -998,23 +1011,26 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 
                 'Get an updated window rect
                 GetWindowRect pdWindows(winIndex).hWnd, childRect
-            
+                
+                'Because these are now children of the main window (per their "docked" status"), all movement is relative
+                ' to the parent's client area - NOT the screen.  Thus we need to retrieve the parent's rect in client coords.
+                GetClientRect mainWindowHwnd, mainFormClientRect
+                
                 'Embed the toolbar in a specific section of the main form
                 Select Case pdWindows(winIndex).optionalToolbarType
                 
                     'Main toolbar gets embedded in the top-left
                     Case FILE_TOOLBOX
-                        MoveWindow pdWindows(winIndex).hWnd, mainFormClientRect.x1, mainFormClientRect.y1, pdWindows(winIndex).originalWidth, pdWindows(winIndex).originalHeight, 1
                         pdWindows(winIndex).alignmentOptions.alignLeft = True
                         
                     'Selection toolbar gets embedded at the bottom
                     Case SELECTION_TOOLBOX
-                        MoveWindow pdWindows(winIndex).hWnd, mainFormClientRect.x1, mainFormClientRect.y2 - FormMain.picProgBar.ScaleHeight - pdWindows(winIndex).originalHeight, pdWindows(winIndex).originalWidth, pdWindows(winIndex).originalHeight, 1
                         pdWindows(winIndex).alignmentOptions.alignBottom = True
                         
                 End Select
                 
-                'Force docked toolbars to the full height of the parent form's client area
+                'Use each toolbox's alignment to set its new position and size
+                setWindowPosByAlignment winIndex
                 fixDockedToolbarSize winIndex
                     
                 'Force a full repaint (to make sure children controls are also repainted)
@@ -1032,8 +1048,11 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 
                 If pdWindows(winIndex).previousRenderStyle <> FLOAT_STYLE Then
                     
+                    'Remove the main window parent reference (if present)
+                    SetParent pdWindows(winIndex).hWnd, 0
+                    
                     'Set the border style to sizable dialog
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN 'Or WS_CHILD
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.
@@ -1056,8 +1075,11 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 If pdWindows(winIndex).previousRenderStyle <> DOCK_STYLE Then
                 
                     'Remove the window border
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CLIPCHILDREN
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CHILD
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
+                    
+                    'Specify the main window as the parent
+                    SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.
                     pdWindows(winIndex).previousRenderStyle = DOCK_STYLE
@@ -1065,8 +1087,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 End If
                 
                 'Force the window to take up the full client area of the parent
-                getActualMainFormClientRect childRect
-                'MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 0
+                getActualMainFormClientRect childRect, , False
                 SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER
                 
                 'Force a full repaint (to make sure children controls are also repainted)
@@ -1078,13 +1099,16 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
         Case IMAGE_TABSTRIP
         
             'Remove the window border
-            newWinStyle = WS_CLIPCHILDREN
+            newWinStyle = WS_CHILD
             If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
             SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
             SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
             
+            'Specify the main form as the tabstrip's parent
+            SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
+            
             'Force the window to top-align within the client area of the parent
-            getActualMainFormClientRect childRect, True
+            getActualMainFormClientRect childRect, True, False
             MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
             
             'Force a full repaint (to make sure children controls are also repainted)
@@ -1120,7 +1144,7 @@ Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Bool
     'Before doing anything else, reset all z-order data
     For i = 0 To numOfPDWindows - 1
         If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then
-            SetWindowPos pdWindows(i).hWnd, 1, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOACTIVATE
+            SetWindowPos pdWindows(i).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOACTIVATE
         End If
     Next i
     
@@ -1298,8 +1322,8 @@ Private Function resetXMLData()
     
 End Function
 
-'This class provides some helper functions to intelligently position child windows, typically when the program is run for the
-' first time and custom positions have not yet been established.  Constants are used to specify where the window should be placed.
+'This class provides some helper functions to intelligently position child windows, typically only used if toolbars are in float
+' mode and we can't locate a saved window location file.  Constants are used to specify where the window should be placed.
 Public Sub requestIdealPosition(ByVal childHwnd As Long, Optional ByVal desiredPosition As Long = 1)
 
     'Before doing anything else, get the current size and location of child and parent windows
@@ -1393,7 +1417,7 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     'Resize the window array for future additions
     numOfPDWindows = numOfPDWindows + 1
     ReDim Preserve pdWindows(0 To numOfPDWindows) As pdWindowData
-    
+        
 End Sub
 
 'Each child window must be registered through this class, using its hWnd.  This class will then use that hWnd to do things
@@ -1445,7 +1469,8 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     'If this is an image window, notify the corresponding pdImages() entry of this window's location in the window manager.
     If pdWindows(numOfPDWindows).typeOfWindow = IMAGE_WINDOW Then pdImages(imageWindowIndex).indexInWindowManager = numOfPDWindows
     
-    'If this is the custom image tabstrip window, make a note of its hWnd and array location
+    'If this is the custom image tabstrip window, make a note of its hWnd and array location, because we will refer to it frequently
+    ' and this is faster than constantly searching the window array for it.
     If pdWindows(numOfPDWindows).typeOfWindow = IMAGE_TABSTRIP Then
         imageTabstripHwnd = pdWindows(numOfPDWindows).hWnd
         imageTabstripIndex = numOfPDWindows
@@ -1491,11 +1516,15 @@ Public Sub allImageWindowsUnloaded()
     
 End Sub
 
+Public Sub requestActivation(ByVal hWndToActivate As Long)
+    SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW
+End Sub
+
 'When an image window receives focus, we use the API to bring it to the foreground
 Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
     
     'Bring the activated window to the foreground
-    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER 'Or SWP_NOACTIVATE
+    SetWindowPos childForm.hWnd, 0, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW
     
     'Find this image in the window array, and note that we have made it visible.
     Dim i As Long
@@ -1505,7 +1534,10 @@ Public Sub notifyChildReceivedFocus(ByRef childForm As Form)
             Exit For
         End If
     Next i
-
+    
+    'If images are docked, activate the main form as well
+    If Not imagesFloating Then requestActivation mainWindowHwnd
+        
 End Sub
 
 Private Sub Class_Initialize()
@@ -1623,14 +1655,6 @@ Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosin
             If curWindowType = TOOLBAR_WINDOW Then
                 getDesiredZOrder = HWND_TOPMOST
             End If
-        
-        'If toolbars are docked, order doesn't matter, because image windows can't be moved outside the toolbars anyway!
-        'Else
-        '    If curWindowType = IMAGE_WINDOW Then
-        '        getDesiredZOrder = HWND_TOPMOST
-        '    ElseIf curWindowType = TOOLBAR_WINDOW Then
-        '        getDesiredZOrder = HWND_NOTOPMOST
-        '    End If
         End If
     
     End If
@@ -1640,13 +1664,17 @@ End Function
 'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
 Public Sub notifyImageTabStripResized()
     
-    Dim curMainFormRect As winRect
-    GetWindowRect pdWindows(mainWindowIndex).hWnd, curMainFormRect
+    If Not mainFormTriggeredChange Then
     
-    Dim i As Long
-    For i = 0 To numOfPDWindows - 1
-        If pdWindows(i).typeOfWindow = IMAGE_WINDOW Then requestWindowRedraw i, curMainFormRect
-    Next i
+        Dim curMainFormRect As winRect
+        GetWindowRect pdWindows(mainWindowIndex).hWnd, curMainFormRect
+        
+        Dim i As Long
+        For i = 0 To numOfPDWindows - 1
+            If pdWindows(i).typeOfWindow = IMAGE_WINDOW Then requestWindowRedraw i, curMainFormRect
+        Next i
+        
+    End If
     
 End Sub
 
@@ -1670,7 +1698,7 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
                 
                 'Because the toolbars are not floating, they will have alignment data stored.  Use that to calculate their
                 ' position instead.
-                setWindowPosByAlignment winIndex
+                setWindowPosByAlignment winIndex, True
                 
                 'Stretch the toolbars to fit the full width/height of the main form (as applicable)
                 fixDockedToolbarSize winIndex
@@ -1681,20 +1709,19 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
         Case IMAGE_WINDOW
             If imagesFloating Then
                 MoveWindow pdWindows(winIndex).hWnd, curWinRect.x1 + pdWindows(winIndex).offsetX, curWinRect.y1 + pdWindows(winIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
-                'toremove
                 forceFullWindowRefresh winIndex
             Else
             
-                'Force all child windows to the new size of the parent
-                getActualMainFormClientRect childRect
+                'Force all child windows to the full client size of the parent
+                getActualMainFormClientRect childRect, , False
                 MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
-            
+                
             End If
             
         'Image tabstrip
         Case IMAGE_TABSTRIP
-            'Force the window to right-align within the client area of the parent
-            getActualMainFormClientRect childRect, True
+            'Force the window to top-align within the client area of the parent
+            getActualMainFormClientRect childRect, True, False
             MoveWindow pdWindows(winIndex).hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, getWindowHeight(pdWindows(winIndex).hWnd), 1 'IIf(pdWindows(winIndex).isVisible, 1, 0)
             
     End Select
@@ -1872,7 +1899,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 If imagesFloating And (Not toolbarsFloating) Then
                     If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then moveChildInsideParent winIndex
                 End If
-                requestWindowResync winIndex
+                If Not mainFormTriggeredChange Then requestWindowResync winIndex
             
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
@@ -1884,7 +1911,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'Calculate this window's rectangle as an offset of its parent.
                 Dim parentRect As winRect
-                GetWindowRect mainWindowHwnd, parentRect
+                If pdWindows(winIndex).typeOfWindow = TOOLBAR_WINDOW And (Not toolbarsFloating) Then
+                    GetClientRect mainWindowHwnd, parentRect
+                Else
+                    GetWindowRect mainWindowHwnd, parentRect
+                End If
                 
                 'If the main form is not responsible for this change, and windows are floating, restrict the window to the main
                 ' form's area (to roughly mimic MDI)
@@ -1951,14 +1982,24 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 mainFormTriggeredChange = True
                 
-                'Move each child window, while retaining the current offset
+                'Move each child window, while retaining the current offset.  Note that docked (child) windows do not have to
+                ' be manually moved - Windows takes care of this for us.
                 For i = 0 To numOfPDWindows - 1
                     GetWindowRect pdWindows(i).hWnd, childRect
                     
                     'NOTE: Win 7 classic theme will need extra debugging, as I have just discovered.  Desktop redraws are handled COMPLETELY differently,
                     ' so optimizations for Aero can cause all kinds of horrible distortions on classic theme!  Ugh....
-                    MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
-                    updateStoredWindowLocation i
+                    Select Case pdWindows(i).typeOfWindow
+                    
+                        Case TOOLBAR_WINDOW
+                            If toolbarsFloating Then MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
+                            
+                        Case IMAGE_WINDOW
+                            If imagesFloating Then MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
+                    
+                    End Select
+                    
+                    'requestWindowResync i
                 Next i
                 
                 mainFormTriggeredChange = False
@@ -1975,6 +2016,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' minimum size.  Check that now.
                 If uMsg = WM_SIZING Then
                 
+                    Dim userSizeTooSmall As Boolean
+                    userSizeTooSmall = False
+                    
                     'wParam contains a value that identifies the edge being used for the resize.
                     Dim resizeHandle As winResizeEdge
                     resizeHandle = wParam
@@ -1984,32 +2028,42 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                     'If the user has set the window size too small, force the window to a minimum size (640x480).
                     If (curWinRect.x2 - curWinRect.x1) < 640 Then
+                        userSizeTooSmall = True
                         If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
                             curWinRect.x1 = curWinRect.x2 - 640
                         Else
                             curWinRect.x2 = curWinRect.x1 + 640
                         End If
-                        CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
                     End If
                     
                     If (curWinRect.y2 - curWinRect.y1) < 480 Then
+                        userSizeTooSmall = True
                         If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
                             curWinRect.y1 = curWinRect.y2 - 480
                         Else
                             curWinRect.y2 = curWinRect.y1 + 480
                         End If
-                        CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
                     End If
                     
-                    'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
-                    ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
-                    ' window changes causing more window changes).
-                    SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER 'Or SWP_NOSENDCHANGING
+                    If userSizeTooSmall Then
+                    
+                        'Copy the new rect into place
+                        CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
+                        
+                        'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
+                        ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
+                        ' window changes causing more window changes).
+                        SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER 'Or SWP_NOSENDCHANGING
+                        
+                    End If
                 
                 End If
                 
                 'Re-retrieve the current window rect for subsequent functions
                 GetWindowRect lng_hWnd, curWinRect
+                
+                'Remember the main window's location
+                updateStoredWindowLocation mainWindowIndex
                 
                 'Resize and/or move each child window as necessary
                 For i = 0 To numOfPDWindows - 1
@@ -2035,9 +2089,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 Next i
                 
                 mainFormTriggeredChange = False
-                
-                'Remember the main window's location
-                updateStoredWindowLocation mainWindowIndex
+                               
                                 
             'The parent window has just been maximized, minimized, or restored
             Case WM_SYSCOMMAND
@@ -2050,7 +2102,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' the wParam value by using the bitwise AND operator.
                 wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
             
-                If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Then
+                If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Then
                 
                     'If the window was previously minimized, restore any child windows now
                     For i = 0 To numOfPDWindows - 1

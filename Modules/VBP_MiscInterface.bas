@@ -22,7 +22,7 @@ Attribute VB_Name = "Interface"
 Option Explicit
 
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 'Used to measure the expected length of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -125,6 +125,7 @@ Public Sub syncInterfaceToCurrentImage()
         'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
         destroyAllIcons
         setNewTaskbarIcon origIcon32, FormMain.hWnd
+        setNewAppIcon origIcon16, origIcon32
         
         'If no images are currently open, but images were open in the past, release any memory associated with those images.
         ' This helps minimize PD's memory usage.
@@ -220,6 +221,10 @@ Public Sub syncInterfaceToCurrentImage()
         'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
         If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
             If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
+            
+            'If images are docked, they do not have their own taskbar entries.  Change the main program icon to match this image.
+            setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, FormMain.hWnd
+            setNewAppIcon pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
         Else
             setNewTaskbarIcon origIcon32, FormMain.hWnd
         End If
@@ -1162,11 +1167,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    getPixelWidthOfString = txtSize.X
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    getPixelHeightOfString = txtSize.Y
 End Function

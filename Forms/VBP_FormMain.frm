@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form FormMain 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   10455
@@ -42,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1260,7 +1259,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1296,7 +1295,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2294,6 +2293,9 @@ Public Sub mnuRecDocs_Click(Index As Integer)
         
         PreLoadImage sFile
     End If
+    
+    'If the image loaded successfully, activate it and bring it to the foreground
+    If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "processor call complete"
     
 End Sub
 

@@ -8,6 +8,7 @@ Begin VB.Form toolbar_ImageTabs
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   13710
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,6 +21,7 @@ Begin VB.Form toolbar_ImageTabs
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   76
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   914
@@ -263,6 +265,39 @@ Private Sub cMouseEvents_MouseOut()
     cMouseEvents.MousePointer = 0
 End Sub
 
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+
+    'Vertical scrolling - only trigger it if the horizontal scroll bar is actually visible
+    If hsThumbnails.Visible Then
+  
+        If LinesScrolled < 0 Then
+            
+            If hsThumbnails.Value + hsThumbnails.LargeChange > hsThumbnails.Max Then
+                hsThumbnails.Value = hsThumbnails.Max
+            Else
+                hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
+            End If
+            
+            curThumbHover = getThumbAtPosition(X, Y)
+            redrawToolbar
+        
+        ElseIf LinesScrolled > 0 Then
+            
+            If hsThumbnails.Value - hsThumbnails.LargeChange < hsThumbnails.Min Then
+                hsThumbnails.Value = hsThumbnails.Min
+            Else
+                hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
+            End If
+            
+            curThumbHover = getThumbAtPosition(X, Y)
+            redrawToolbar
+            
+        End If
+        
+    End If
+
+End Sub
+
 Private Sub Form_Load()
 
     'Reset the thumbnail array
@@ -361,11 +396,11 @@ Private Sub Form_Resize()
     m_BufferWidth = g_WindowManager.getClientWidth(Me.hWnd)
     m_BufferHeight = g_WindowManager.getClientHeight(Me.hWnd)
     
-    'Resize and position the scroll bar
-    hsThumbnails.Move 0, m_BufferHeight - hsThumbnails.Height - 2, m_BufferWidth, hsThumbnails.Height
-    
     'Redraw the toolbar
     redrawToolbar
+    
+    'Resize and position the scroll bar
+    hsThumbnails.Move 0, m_BufferHeight - hsThumbnails.Height - 2, m_BufferWidth, hsThumbnails.Height
     
     'Notify the window manager that the tab strip has been resized; it will resize image windows to match
     'If Not weAreResponsibleForResize Then
@@ -392,9 +427,9 @@ Private Sub redrawToolbar()
     
     If maxThumbSize < m_BufferWidth Then
         hsThumbnails.Value = 0
-        hsThumbnails.Visible = False
+        If hsThumbnails.Visible Then hsThumbnails.Visible = False
     Else
-        hsThumbnails.Visible = True
+        If Not hsThumbnails.Visible Then hsThumbnails.Visible = True
         hsThumbnails.Max = maxThumbSize - m_BufferWidth
     End If
     
@@ -414,7 +449,7 @@ Private Sub redrawToolbar()
     'Copy the buffer to the form
     BitBlt Me.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
     Me.Picture = Me.Image
-    If Me.Visible Then Me.Refresh
+    Me.Refresh
     
 End Sub
     

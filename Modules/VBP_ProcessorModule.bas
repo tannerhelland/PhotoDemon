@@ -1150,17 +1150,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo > 0) Then
-        If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "filter complete"
+        If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "processor call complete"
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = 1
     End If
     
-    'Whenever a process is completed, it is generally a good idea to re-sync the interface to match settings that
-    ' may have changed (Undo/Redo, etc).
-    syncInterfaceToCurrentImage
-    
+    'The interface will automatically be synched if an image is open and some undo-related action was applied,
+    ' but if either of those did not occur, sync the interface now
+    If (createUndo = 0) Or (g_OpenImageCount = 0) Then syncInterfaceToCurrentImage
+        
+    'Finally, after all our work is done, return focus to the main PD window
+    If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then g_WindowManager.requestActivation FormMain.hWnd
+        
     'Mark the processor as ready
     Processing = False
     
