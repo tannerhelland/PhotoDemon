@@ -200,17 +200,26 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Open"
             MenuOpen
             
+        Case "Close"
+            MenuClose
+            
+        Case "Close all"
+            MenuCloseAll
+        
         Case "Save"
             MenuSave g_CurrentImage
             
         Case "Save as"
             MenuSaveAs g_CurrentImage
             
-        Case "Close"
-            MenuClose
-            
-        Case "Close all"
-            MenuCloseAll
+        Case "Revert"
+            If FormMain.MnuFile(7).Enabled Then
+                pdImages(g_CurrentImage).undoManager.revertToLastSavedState
+                
+                'Also, redraw the current child form icon and the image tab-bar
+                createCustomFormIcon pdImages(g_CurrentImage).containingForm
+                toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+            End If
             
         Case "Batch wizard"
             If showDialog Then
