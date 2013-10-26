@@ -22,7 +22,7 @@ Attribute VB_Name = "Interface"
 Option Explicit
 
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 'Used to measure the expected length of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -287,23 +287,23 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
         'Save (left-hand panel button AND menu item)
         Case tSave
-            If FormMain.MnuFile(4).Enabled <> newState Then
+            If FormMain.MnuFile(7).Enabled <> newState Then
                 toolbar_File.cmdSave.Enabled = newState
-                FormMain.MnuFile(4).Enabled = newState
+                FormMain.MnuFile(7).Enabled = newState
             End If
             
         'Save As (menu item only)
         Case tSaveAs
-            If FormMain.MnuFile(5).Enabled <> newState Then
+            If FormMain.MnuFile(8).Enabled <> newState Then
                 toolbar_File.cmdSaveAs.Enabled = newState
-                FormMain.MnuFile(5).Enabled = newState
+                FormMain.MnuFile(8).Enabled = newState
             End If
             
         'Close and Close All
         Case tClose
-            If FormMain.MnuFile(7).Enabled <> newState Then
-                FormMain.MnuFile(7).Enabled = newState
-                FormMain.MnuFile(8).Enabled = newState
+            If FormMain.MnuFile(4).Enabled <> newState Then
+                FormMain.MnuFile(4).Enabled = newState
+                FormMain.MnuFile(5).Enabled = newState
                 toolbar_File.cmdClose.Enabled = newState
             End If
         
@@ -312,6 +312,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If FormMain.MnuEdit(0).Enabled <> newState Then
                 toolbar_File.cmdUndo.Enabled = newState
                 FormMain.MnuEdit(0).Enabled = newState
+                
+                'The File -> Revert menu is also tied to Undo state
+                FormMain.MnuFile(9).Enabled = newState
+                
             End If
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
@@ -368,7 +372,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 'Use this same command to disable other menus
                 
                 'File -> Print
-                FormMain.MnuFile(12).Enabled = newState
+                FormMain.MnuFile(13).Enabled = newState
                 
                 'Select menu
                 FormMain.MnuSelectTop.Enabled = newState
@@ -1167,7 +1171,7 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.X
+    getPixelWidthOfString = txtSize.x
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
