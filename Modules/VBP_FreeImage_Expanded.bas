@@ -25,9 +25,6 @@ Option Explicit
 ' this variable will be set to TRUE.  PreLoadImage will then use this variable to launch the import of the subsequent pages.
 Public g_imageHasMultiplePages As Boolean
 Public g_imagePageCount As Long
-
-'DIB declarations
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As Any, ByVal wUsage As Long) As Long
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean
@@ -77,7 +74,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     'Store this file format inside the relevant pdImage object
-    dstImage.OriginalFileFormat = fileFIF
+    dstImage.originalFileFormat = fileFIF
     
     '****************************************************************************
     ' Based on the detected format, prepare any necessary load flags
@@ -466,7 +463,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' Now that we have filtered out > 32bpp images, store the current color depth of the image.
     '****************************************************************************
     
-    dstImage.OriginalColorDepth = FreeImage_GetBPP(fi_hDIB)
+    dstImage.originalColorDepth = FreeImage_GetBPP(fi_hDIB)
     
     '****************************************************************************
     ' If the image is < 24bpp, upsample it to 24bpp or 32bpp
