@@ -52,12 +52,15 @@ Public Function promptMultiImage(ByVal srcFilename As String, ByVal numOfPages A
 End Function
 
 'Present a dialog box to ask the user for various JPEG export settings
-Public Function promptJPEGSettings(Optional ByVal showAdvanced As Boolean = False) As VbMsgBoxResult
+Public Function promptJPEGSettings() As VbMsgBoxResult
 
     Load dialog_ExportJPEG
-    dialog_ExportJPEG.showDialog showAdvanced
+    Set dialog_ExportJPEG.imageBeingExported = pdImages(g_CurrentImage)
+    dialog_ExportJPEG.showDialog
 
     promptJPEGSettings = dialog_ExportJPEG.DialogResult
+    
+    Set dialog_ExportJPEG.imageBeingExported = Nothing
     
     Unload dialog_ExportJPEG
     Set dialog_ExportJPEG = Nothing
