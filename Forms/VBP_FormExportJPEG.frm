@@ -3,10 +3,10 @@ Begin VB.Form dialog_ExportJPEG
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
-   ClientHeight    =   5715
+   ClientHeight    =   8580
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   7440
+   ClientWidth     =   9240
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,15 +19,48 @@ Begin VB.Form dialog_ExportJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   381
+   ScaleHeight     =   572
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   496
+   ScaleWidth      =   616
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Left            =   240
+      ScaleHeight     =   311
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   583
+      TabIndex        =   10
+      Top             =   120
+      Width           =   8775
+   End
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   7830
+      Width           =   9240
+      _ExtentX        =   16298
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.smartCheckBox chkOptimize 
       Height          =   540
-      Left            =   600
-      TabIndex        =   8
-      Top             =   1920
+      Left            =   480
+      TabIndex        =   5
+      Top             =   6240
       Width           =   3105
       _ExtentX        =   5477
       _ExtentY        =   953
@@ -43,59 +76,6 @@ Begin VB.Form dialog_ExportJPEG
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   4440
-      TabIndex        =   0
-      Top             =   5070
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   5910
-      TabIndex        =   1
-      Top             =   5070
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdShowHide 
-      Caption         =   " Hide advanced settings"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   240
-      TabIndex        =   6
-      Top             =   5070
-      Width           =   2685
-   End
    Begin VB.ComboBox cmbSubsample 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -108,12 +88,12 @@ Begin VB.Form dialog_ExportJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   960
+      Left            =   840
       Style           =   2  'Dropdown List
-      TabIndex        =   5
+      TabIndex        =   4
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3930
-      Width           =   5415
+      Top             =   7320
+      Width           =   4215
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -127,17 +107,17 @@ Begin VB.Form dialog_ExportJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   600
+      Left            =   480
       Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   630
-      Width           =   2055
+      TabIndex        =   1
+      Top             =   5325
+      Width           =   2775
    End
    Begin PhotoDemon.smartCheckBox chkThumbnail 
       Height          =   540
-      Left            =   600
-      TabIndex        =   9
-      Top             =   2400
+      Left            =   5160
+      TabIndex        =   6
+      Top             =   6240
       Width           =   2715
       _ExtentX        =   4789
       _ExtentY        =   953
@@ -154,9 +134,9 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.smartCheckBox chkProgressive 
       Height          =   540
-      Left            =   600
-      TabIndex        =   10
-      Top             =   2880
+      Left            =   5160
+      TabIndex        =   7
+      Top             =   6720
       Width           =   2835
       _ExtentX        =   5001
       _ExtentY        =   953
@@ -173,10 +153,10 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.smartCheckBox chkSubsample 
       Height          =   540
-      Left            =   600
-      TabIndex        =   11
+      Left            =   480
+      TabIndex        =   8
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   3360
+      Top             =   6720
       Width           =   2820
       _ExtentX        =   4974
       _ExtentY        =   953
@@ -193,11 +173,11 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   495
-      Left            =   2640
-      TabIndex        =   12
-      Top             =   585
-      Width           =   4695
-      _ExtentX        =   8281
+      Left            =   3480
+      TabIndex        =   9
+      Top             =   5265
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   873
       Min             =   1
       Max             =   99
@@ -212,24 +192,10 @@ Begin VB.Form dialog_ExportJPEG
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -120
-      TabIndex        =   7
-      Top             =   4920
-      Width           =   7575
-   End
-   Begin VB.Line lineSeparator 
-      BorderColor     =   &H8000000F&
-      X1              =   8
-      X2              =   480
-      Y1              =   328
-      Y2              =   328
-   End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "advanced JPEG settings:"
+      Caption         =   "advanced settings:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -242,15 +208,15 @@ Begin VB.Form dialog_ExportJPEG
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   360
-      TabIndex        =   4
-      Top             =   1560
-      Width           =   2580
+      Left            =   240
+      TabIndex        =   3
+      Top             =   5880
+      Width           =   1965
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "image quality:"
+      Caption         =   "JPEG quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -263,10 +229,10 @@ Begin VB.Form dialog_ExportJPEG
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   360
-      TabIndex        =   3
-      Top             =   240
-      Width           =   1515
+      Left            =   240
+      TabIndex        =   2
+      Top             =   4920
+      Width           =   1410
    End
 End
 Attribute VB_Name = "dialog_ExportJPEG"
@@ -297,24 +263,42 @@ Option Explicit
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
-'The pdImage object being exported
-Private imageBeingExported As pdImage
-
-'Whether to show or hide the advanced settings
-Private showAdvanced As Boolean
+'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
+Public imageBeingExported As pdImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
+' store one in this layer (at the size of the preview) and simply re-use it when we need to render a preview.
+Private origImageCopy As pdLayer
+Private previewWidth As Long, previewHeight As Long
+
+'As a further optimizations, we keep a persistent copy of the image in FreeImage format; FreeImage is used to save the
+' JPEG in-memory, then render it back out to the picture box.  As the JPEG encoding/decoding is an intensive process,
+' anything we can do to alleviate its burden is helpful.
+Private fi_Handle As Long, fi_DIB As Long
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
 
-'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
-Public Property Let srcImage(srcImage As pdImage)
-    imageBeingExported = srcImage
-End Property
+Private Sub chkOptimize_Click()
+    updatePreview
+End Sub
+
+Private Sub chkProgressive_Click()
+    updatePreview
+End Sub
+
+Private Sub chkSubsample_Click()
+    updatePreview
+End Sub
+
+Private Sub chkThumbnail_Click()
+    updatePreview
+End Sub
 
 'QUALITY combo box - when adjusted, change the scroll bar to match
 Private Sub CmbSaveQuality_Click()
@@ -340,17 +324,17 @@ Private Sub CmbSaveQuality_Click()
     
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    
-    userAnswer = vbCancel
-    Me.Hide
-    
+Private Sub cmbSubsample_Click()
+    updatePreview
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-        
+Private Sub cmdBar_CancelClick()
+    userAnswer = vbCancel
+    Me.Hide
+End Sub
+
+Private Sub cmdBar_OKClick()
+    
     'Determine the compression quality for the quantization tables
     If sltQuality.IsValid Then
         g_JPEGQuality = sltQuality.Value
@@ -368,23 +352,8 @@ Private Sub CmdOK_Click()
     If CBool(chkProgressive) Then g_JPEGFlags = g_JPEGFlags Or JPEG_PROGRESSIVE
         
     'Subsampling
-    If CBool(chkSubsample) Then
+    If CBool(chkSubsample) Then g_JPEGFlags = g_JPEGFlags Or getSubsampleConstantFromComboBox()
     
-        Select Case cmbSubsample.ListIndex
-            
-            Case 0
-                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_444
-            Case 1
-                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_422
-            Case 2
-                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_420
-            Case 3
-                g_JPEGFlags = g_JPEGFlags Or JPEG_SUBSAMPLING_411
-                    
-        End Select
-            
-    End If
-        
     'Finally, determine whether or not a thumbnail version of the file should be embedded inside
     If CBool(chkThumbnail) Then g_JPEGThumbnail = 1 Else g_JPEGThumbnail = 0
      
@@ -393,15 +362,36 @@ Private Sub CmdOK_Click()
     
 End Sub
 
-'Show or hide the advanced settings per the user's command
-Private Sub cmdShowHide_Click()
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
 
-    toggleAdvancedSettings
+Private Sub cmdBar_ResetClick()
     
+    'Default save quality is "Excellent"
+    CmbSaveQuality.ListIndex = 1
+    
+    'By default, the only advanced setting is Optimize compression tables
+    chkOptimize.Value = vbChecked
+    chkThumbnail.Value = vbUnchecked
+    chkProgressive.Value = vbUnchecked
+    chkSubsample.Value = vbUnchecked
+
+End Sub
+
+Private Sub Form_Activate()
+    'Draw a preview of the effect
+    updatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+    
+    'Release any remaining FreeImage handles; we will maintain this copy to improve JPEG preview performance.
+    If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
+    If fi_Handle <> 0 Then FreeLibrary fi_Handle
+    If Not origImageCopy Is Nothing Then Set origImageCopy = Nothing
+    
 End Sub
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
@@ -429,72 +419,12 @@ Private Sub updateComboBox()
                 
     End Select
     
-End Sub
-
-'Show or hide the advanced settings per the user's command
-Private Sub toggleAdvancedSettings()
-
-    showAdvanced = Not showAdvanced
-
-    If showAdvanced Then
+    updatePreview
     
-        'Re-caption the button
-        cmdShowHide.Caption = g_Language.TranslateMessage("Show advanced settings") & "  >>"
-    
-        'Hide all advanced options
-        lblTitle(1).Visible = False
-        chkOptimize.Visible = False
-        chkThumbnail.Visible = False
-        chkProgressive.Visible = False
-        chkSubsample.Visible = False
-        cmbSubsample.Visible = False
-    
-        'Move all other controls accordingly
-        lineSeparator.y1 = sltQuality.Top + fixDPI(48)
-        lineSeparator.y2 = lineSeparator.y1
-        lblBackground.Top = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + fixDPI(10)
-        CmdOK.Top = cmdShowHide.Top
-        cmdCancel.Top = CmdOK.Top
-    
-    Else
-    
-        'Re-caption the button
-        cmdShowHide.Caption = "<<  " & g_Language.TranslateMessage("Hide advanced settings")
-    
-        'Show all advanced options
-        lblTitle(1).Visible = True
-        chkOptimize.Visible = True
-        chkThumbnail.Visible = True
-        chkProgressive.Visible = True
-        chkSubsample.Visible = True
-        cmbSubsample.Visible = True
-        
-        'Move all other controls accordingly
-        lineSeparator.y1 = cmbSubsample.Top + fixDPI(48)
-        lineSeparator.y2 = lineSeparator.y1
-        lblBackground.Top = lineSeparator.y1
-        cmdShowHide.Top = lineSeparator.y1 + fixDPI(10)
-        CmdOK.Top = cmdShowHide.Top
-        cmdCancel.Top = CmdOK.Top
-    
-    End If
-    
-    'Change the form size to match
-    Dim formSizeDiff As Long
-    Me.ScaleMode = vbTwips
-    formSizeDiff = Me.Height - Me.ScaleHeight
-    
-    Me.Height = formSizeDiff + cmdShowHide.Top + cmdShowHide.Height + Abs(lineSeparator.y1 - cmdShowHide.Top)
-    
-    Me.ScaleMode = vbPixels
-
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(Optional ByVal showAdvanced As Boolean = False)
-
-    showAdvanced = False
+Public Sub showDialog()
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -538,13 +468,49 @@ Public Sub showDialog(Optional ByVal showAdvanced As Boolean = False)
     chkThumbnail.ToolTipText = g_Language.TranslateMessage("Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).")
     chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
     
-    'Hide the advanced settings unless the user has specifically requested otherwise
-    'If Not showAdvanced Then toggleAdvancedSettings
-    toggleAdvancedSettings
-                
+    'Make a copy of the main image; we'll use this to render the preview image
+    Set origImageCopy = New pdLayer
+    convertAspectRatio imageBeingExported.Width, imageBeingExported.Height, picPreview.Width, picPreview.Height, previewWidth, previewHeight
+    origImageCopy.createFromExistingLayer imageBeingExported.getActiveLayer, previewWidth, previewHeight
+    If origImageCopy.getLayerColorDepth = 32 Then origImageCopy.convertTo24bpp
+    
+    'FreeImage is required to perform the JPEG transformation.  We could use GDI+, but FreeImage is
+    ' much easier to interface with.
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'Convert our DIB into FreeImage-format; we will maintain this copy to improve JPEG preview performance.
+        fi_Handle = LoadLibrary(g_PluginPath & "FreeImage.dll")
+        fi_DIB = FreeImage_CreateFromDC(origImageCopy.getLayerDC)
+        
+    'If FreeImage is not available, notify the user.
+    Else
+        
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
+    
+        Dim notifyFont As pdFont
+        Set notifyFont = New pdFont
+        notifyFont.setFontFace g_InterfaceFont
+        notifyFont.setFontSize 14
+        notifyFont.setFontColor 0
+        notifyFont.setFontBold True
+        notifyFont.setTextAlignment vbCenter
+        notifyFont.createFontObject
+        notifyFont.attachToDC tmpLayer.getLayerDC
+    
+        notifyFont.fastRenderText tmpLayer.getLayerWidth \ 2, tmpLayer.getLayerHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
+        tmpLayer.renderToPictureBox picPreview
+        Set tmpLayer = Nothing
+        
+    End If
+    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Update the preview
+    updatePreview
     
     'Display the dialog
     showPDDialog vbModal, Me
@@ -554,3 +520,50 @@ End Sub
 Private Sub sltQuality_Change()
     updateComboBox
 End Sub
+
+Private Sub updatePreview()
+    If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+                
+        'Only some of the JPEG settings actually affect the appearance of the saved image.  Specifically, only
+        ' save quality and subsampling technique matter.  Convert those into FreeImage-compatible settings now.
+        Dim jpegFlags As Long
+        jpegFlags = sltQuality.Value
+        
+        If CBool(chkSubsample) Then jpegFlags = jpegFlags Or getSubsampleConstantFromComboBox()
+        
+        'Now comes the conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save the image
+        ' in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
+        Dim jpegArray() As Byte
+        Dim fi_Check As Long
+        fi_Check = FreeImage_SaveToMemoryEx(FIF_JPEG, fi_DIB, jpegArray, jpegFlags, False)
+        
+        Dim tmpFI_DIB As Long
+        tmpFI_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
+        
+        'Copy the newly decompressed JPEG into our original pdLayer object.
+        SetDIBitsToDevice origImageCopy.getLayerDC, 0, 0, origImageCopy.getLayerWidth, origImageCopy.getLayerHeight, 0, 0, 0, origImageCopy.getLayerHeight, ByVal FreeImage_GetBits(tmpFI_DIB), ByVal FreeImage_GetInfo(tmpFI_DIB), 0&
+        
+        'Paint the final image to screen and release all temporary objects
+        origImageCopy.renderToPictureBox picPreview
+        FreeImage_Unload tmpFI_DIB
+        Erase jpegArray
+    
+    End If
+End Sub
+
+Private Function getSubsampleConstantFromComboBox() As Long
+    
+    Select Case cmbSubsample.ListIndex
+            
+        Case 0
+            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_444
+        Case 1
+            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_422
+        Case 2
+            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_420
+        Case 3
+            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_411
+                    
+    End Select
+    
+End Function
