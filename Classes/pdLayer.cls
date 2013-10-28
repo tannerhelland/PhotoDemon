@@ -192,10 +192,10 @@ Private Const LAYER_FILE_VERSION_2012 As Long = &H1000
 
 'These variables are a temporary addition to ensure that print previewing still works. They will be removed in a future
 ' update as part of a print preview revamp, so DO NOT add features that rely on them.
-Public PreviewX As Long
-Public PreviewY As Long
-Public PreviewWidth As Long
-Public PreviewHeight As Long
+Public previewX As Long
+Public previewY As Long
+Public previewWidth As Long
+Public previewHeight As Long
 
 'When converting a 32bpp layer to 8bpp with transparency, we need to know the location of a transparent pixel.
 ' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
@@ -1064,21 +1064,21 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     If srcAspect > dstAspect Then
         dWidth = dstWidth
         dHeight = CSng(srcHeight / srcWidth) * dWidth + 0.5
-        PreviewY = CInt((dstHeight - dHeight) / 2)
-        PreviewX = 0
+        previewY = CInt((dstHeight - dHeight) / 2)
+        previewX = 0
         'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
         ' to render its picture box). They will be removed in a future update so DO NOT rely on them elsewhere.
-        PreviewWidth = dWidth
-        PreviewHeight = dHeight
-        StretchBlt dstPicture.hDC, 0, PreviewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+        previewWidth = dWidth
+        previewHeight = dHeight
+        StretchBlt dstPicture.hDC, 0, previewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
     Else
         dHeight = dstHeight
         dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
-        PreviewX = CInt((dstWidth - dWidth) / 2)
-        PreviewY = 0
-        PreviewWidth = dWidth
-        PreviewHeight = dHeight
-        StretchBlt dstPicture.hDC, PreviewX, 0, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+        previewX = CInt((dstWidth - dWidth) / 2)
+        previewY = 0
+        previewWidth = dWidth
+        previewHeight = dHeight
+        StretchBlt dstPicture.hDC, previewX, 0, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
     End If
     
     dstPicture.Picture = dstPicture.Image
@@ -1758,6 +1758,9 @@ End Sub
 'Layers created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
 ' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
 Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolean = False)
+
+    'This function doesn't matter if the image isn't 32bpp
+    If layerColorDepth <> 32 Then Exit Sub
 
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly
     Dim iData() As Byte
