@@ -160,7 +160,9 @@ End Function
 'FreeImage is required for thumbnail resizing.
 Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional ByVal thumbnailSize As Long = 64) As Boolean
 
+    'If FreeImage is missing, return a blank thumbnail and notify the calling function that thumbnail creation failed
     If Not g_ImageFormats.FreeImageEnabled Then
+        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize
         requestThumbnail = False
         Exit Function
     End If
