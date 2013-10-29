@@ -44,7 +44,7 @@ Option Explicit
     Public imageID As Long
 
     'Is the form associated with this image still loaded?
-    Public isActive As Boolean
+    Public IsActive As Boolean
 
     'Was the image loaded successfully?
     Public loadedSuccessfully As Boolean
@@ -159,13 +159,6 @@ End Function
 '
 'FreeImage is required for thumbnail resizing.
 Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional ByVal thumbnailSize As Long = 64) As Boolean
-
-    'If FreeImage is missing, return a blank thumbnail and notify the calling function that thumbnail creation failed
-    If Not g_ImageFormats.FreeImageEnabled Then
-        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize
-        requestThumbnail = False
-        Exit Function
-    End If
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
@@ -197,57 +190,69 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
         
     End If
     
-    'Load the FreeImage plugin into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
-    'Convert our current layer to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(mainLayer.getLayerDC)
-    
-    'Use that handle to request an image resize
-    If fi_DIB <> 0 Then
+    'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
+    ' provides superior results, but if it is not available, GDI+ will suffice.
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        'Load the FreeImage plugin into memory
+        Dim hLib As Long
+        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
+        
+        'Convert our current layer to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(mainLayer.getLayerDC)
+        
+        'Use that handle to request an image resize
+        If fi_DIB <> 0 Then
             
-        'Rescale the image
-        Dim returnDIB As Long
-        returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
-        
-        'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
-        Dim newDIB32 As Long
-        newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
-        
-        'Unload the original DIB
-        If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
-        'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
-        
-        'Start by preparing a transparent quad, which we'll assign to the background of the enlarged area
-        Dim newColor As RGBQUAD
-        With newColor
-            .rgbBlue = 255
-            .rgbGreen = 255
-            .rgbRed = 255
-            .rgbReserved = 0
-        End With
+            'Rescale the image
+            Dim returnDIB As Long
+            returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
             
-        'Enlarge the canvas as necessary
-        Dim finalDIB As Long
-        finalDIB = FreeImage_EnlargeCanvas(newDIB32, tX, tY, tX, tY, newColor, FI_COLOR_IS_RGBA_COLOR)
-        
-        'Unload the original DIB
-        If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
+            'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
+            Dim newDIB32 As Long
+            newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
             
-        'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination layer.
-        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
-        SetDIBitsToDevice dstThumbnailLayer.getLayerDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
+            'Unload the original DIB
+            If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
+            'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
             
-        'With the transfer complete, release the FreeImage DIB and unload the library
-        If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-        FreeLibrary hLib
+            'Start by preparing a transparent quad, which we'll assign to the background of the enlarged area
+            Dim newColor As RGBQUAD
+            With newColor
+                .rgbBlue = 255
+                .rgbGreen = 255
+                .rgbRed = 255
+                .rgbReserved = 0
+            End With
+                
+            'Enlarge the canvas as necessary
+            Dim finalDIB As Long
+            finalDIB = FreeImage_EnlargeCanvas(newDIB32, tX, tY, tX, tY, newColor, FI_COLOR_IS_RGBA_COLOR)
+            
+            'Unload the original DIB
+            If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
+                
+            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination layer.
+            dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
+            SetDIBitsToDevice dstThumbnailLayer.getLayerDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
+                
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            FreeLibrary hLib
+            
+            requestThumbnail = True
         
-        requestThumbnail = True
-    
+        Else
+            FreeLibrary hLib
+            requestThumbnail = False
+        End If
+        
     Else
-        requestThumbnail = False
+    
+        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
+        requestThumbnail = GDIPlusResizeLayer(dstThumbnailLayer, tX, tY, tIcoWidth, tIcoHeight, mainLayer, 0, 0, mainLayer.getLayerWidth, mainLayer.getLayerHeight, InterpolationModeHighQualityBilinear)
+    
     End If
 
 End Function
@@ -292,7 +297,7 @@ Public Sub deactivateImage()
     locationOnDisk = ""
     
     'Mark this image as inactive
-    isActive = False
+    IsActive = False
     
 End Sub
     
@@ -325,7 +330,7 @@ End Function
 Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
-    isActive = False
+    IsActive = False
     loadedSuccessfully = False
     hasBeenSaved = False
     forInternalUseOnly = False
@@ -360,7 +365,7 @@ End Sub
 Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
 
     'If this image does not contain an active selection, exit now.
-    If (Not isActive) Or (Not selectionActive) Then
+    If (Not IsActive) Or (Not selectionActive) Then
         retrieveProcessedSelection = False
         Exit Function
     End If
