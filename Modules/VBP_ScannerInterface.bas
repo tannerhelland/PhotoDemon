@@ -76,7 +76,7 @@ Public Sub Twain32SelectScanner()
             Dim hLib As Long
             hLib = LoadLibrary(g_PluginPath & "eztw32.dll")
             
-            TWAIN_SelectImageSource FormMain.hWnd
+            TWAIN_SelectImageSource getModalOwner().hWnd
             
             If hLib Then FreeLibrary hLib
             
@@ -135,7 +135,7 @@ Public Sub Twain32Scan()
     ScannerCaptureFile = g_UserPreferences.getTempPath & "PDScanInterface.tmp"
     
     'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
-    ScanCheck = TWAIN_AcquireToFilename(FormMain.hWnd, ScannerCaptureFile)
+    ScanCheck = TWAIN_AcquireToFilename(getModalOwner().hWnd, ScannerCaptureFile)
     
     'If the image was successfully scanned, load it
     If ScanCheck = 0 Then

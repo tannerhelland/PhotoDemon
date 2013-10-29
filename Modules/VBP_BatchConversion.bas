@@ -84,7 +84,7 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd, 0) Then
         
         'Save this macro's directory as the default macro path
         g_UserPreferences.setMacroPath sFile
@@ -178,7 +178,7 @@ Public Sub PlayMacro()
     cdTitle = g_Language.TranslateMessage("Open Macro File")
     
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, FormMain.hWnd, OFN_HIDEREADONLY) Then
+    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd, OFN_HIDEREADONLY) Then
         
         Message "Loading macro data..."
         
