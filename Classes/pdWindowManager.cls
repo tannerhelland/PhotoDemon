@@ -186,6 +186,8 @@ Private Type pdWindowData
     lastPosition As winRect
     lastWindowState As Long
     lastWindowBorder As Long
+    minimumWidth As Long
+    minimumHeight As Long
     offsetX As Long
     offsetY As Long
     optionalToolbarType As pdToolbarType
@@ -272,7 +274,7 @@ Private Const SM_CYSIZEFRAME As Long = 33
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
@@ -283,10 +285,10 @@ Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Lo
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
@@ -912,15 +914,15 @@ Private Sub getClientCoordsRelativeToScreen(ByVal targetHwnd As Long, ByRef rect
     ClientToScreen targetHwnd, clientLeft
     
     'Fill the bottom-right coord object, then convert it to screen coords
-    clientRight.X = curClientRect.x2
-    clientRight.Y = curClientRect.y2
+    clientRight.x = curClientRect.x2
+    clientRight.y = curClientRect.y2
     ClientToScreen targetHwnd, clientRight
     
     'Fill the rect object we were passed.
-    rectToFill.x1 = clientLeft.X
-    rectToFill.y1 = clientLeft.Y
-    rectToFill.x2 = clientRight.X
-    rectToFill.y2 = clientRight.Y
+    rectToFill.x1 = clientLeft.x
+    rectToFill.y1 = clientLeft.y
+    rectToFill.x2 = clientRight.x
+    rectToFill.y2 = clientRight.y
 
 End Sub
 
@@ -1422,7 +1424,7 @@ End Sub
 
 'Each child window must be registered through this class, using its hWnd.  This class will then use that hWnd to do things
 ' like move child windows proportionally to their parent.
-Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pdWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1, Optional ByVal toolbarType As pdToolbarType = NOT_A_TOOLBAR, Optional imageWindowIndex As Long = -1)
+Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pdWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1, Optional ByVal toolbarType As pdToolbarType = NOT_A_TOOLBAR, Optional imageWindowIndex As Long = -1, Optional ByVal minWidth As Long = -1, Optional ByVal minHeight As Long = -1)
 
     'Has this window already been registered?  If so, don't re-register it.
     Dim i As Long
@@ -1441,6 +1443,8 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     
     With pdWindows(numOfPDWindows)
         .isVisible = True
+        .minimumWidth = minWidth
+        .minimumHeight = minHeight
         .offsetX = childRect.x1 - parentRect.x1
         .offsetY = childRect.y1 - parentRect.y1
         .optionalToolbarType = toolbarType
@@ -1870,6 +1874,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     Dim curWinRect As winRect
     Dim curWinPoint As POINTAPI
     
+    Dim userSizeTooSmall As Boolean
+    Dim resizeHandle As winResizeEdge
+    
     Dim i As Long
     
     'Before doing anything else, check the user-supplied param.  If it is >= 64, we know this is a child (toolbar or image) window.
@@ -1908,6 +1915,40 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'lParam contains a pointer to this window's rect location.  Retrieve it now.
                 Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
+                
+                'Note that in the case of WM_SIZING, we want to make sure the user is not stretching the window below an acceptable
+                ' minimum size.  Check that now.
+                If (uMsg = WM_SIZING) And ((pdWindows(winIndex).minimumWidth >= 0) Or (pdWindows(winIndex).minimumHeight >= 0)) Then
+                
+                    userSizeTooSmall = False
+                    
+                    'wParam contains a value that identifies the edge being used for the resize.
+                    
+                    resizeHandle = wParam
+                    
+                    'If the user has set the window size too small, force the window to a minimum size (640x480).
+                    If (curWinRect.x2 - curWinRect.x1) < pdWindows(winIndex).minimumWidth Then
+                        userSizeTooSmall = True
+                        If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
+                            curWinRect.x1 = curWinRect.x2 - pdWindows(winIndex).minimumWidth
+                        Else
+                            curWinRect.x2 = curWinRect.x1 + pdWindows(winIndex).minimumWidth
+                        End If
+                    End If
+                    
+                    If (curWinRect.y2 - curWinRect.y1) < pdWindows(winIndex).minimumHeight Then
+                        userSizeTooSmall = True
+                        If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
+                            curWinRect.y1 = curWinRect.y2 - pdWindows(winIndex).minimumHeight
+                        Else
+                            curWinRect.y2 = curWinRect.y1 + pdWindows(winIndex).minimumHeight
+                        End If
+                    End If
+                    
+                    'Copy the new rect into place
+                    If userSizeTooSmall Then CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
+                    
+                End If
                 
                 'Calculate this window's rectangle as an offset of its parent.
                 Dim parentRect As winRect
@@ -2016,11 +2057,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' minimum size.  Check that now.
                 If uMsg = WM_SIZING Then
                 
-                    Dim userSizeTooSmall As Boolean
                     userSizeTooSmall = False
                     
                     'wParam contains a value that identifies the edge being used for the resize.
-                    Dim resizeHandle As winResizeEdge
                     resizeHandle = wParam
                     
                     'lParam contains a pointer to the window's rect location.  Retrieve it now.
