@@ -128,7 +128,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
         
-        If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, , FormMain.hWnd, 0) Then
+        If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, , getModalOwner().hWnd, 0) Then
             
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
@@ -185,7 +185,7 @@ Public Sub SaveSelectionToFile()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
     
-    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, FormMain.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, getModalOwner().hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
         g_UserPreferences.setSelectionPath sFile

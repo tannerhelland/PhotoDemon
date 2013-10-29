@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, FormMain.hWnd) Then PreLoadImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, getModalOwner().hWnd) Then PreLoadImage sFile
 
     Erase sFile
 
@@ -122,7 +122,7 @@ End Function
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
 Public Function MenuSave(ByVal imageID As Long) As Boolean
 
-    If pdImages(imageID).LocationOnDisk = "" Then
+    If pdImages(imageID).locationOnDisk = "" Then
     
         'This image hasn't been saved before.  Launch the Save As... dialog
         MenuSave = MenuSaveAs(imageID)
@@ -135,21 +135,21 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
                 
         'If the user has requested that we only save copies of current images, we need to come up with a new filename
         If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
-            dstFilename = pdImages(imageID).LocationOnDisk
+            dstFilename = pdImages(imageID).locationOnDisk
         Else
         
             'Determine the destination directory
             Dim tempPathString As String
-            tempPathString = pdImages(imageID).LocationOnDisk
+            tempPathString = pdImages(imageID).locationOnDisk
             StripDirectory tempPathString
             
             'Next, determine the target filename
             Dim tempFilename As String
-            tempFilename = pdImages(imageID).OriginalFileName
+            tempFilename = pdImages(imageID).originalFileName
             
             'Finally, determine the target file extension
             Dim tempExtension As String
-            tempExtension = GetExtension(pdImages(imageID).LocationOnDisk)
+            tempExtension = GetExtension(pdImages(imageID).locationOnDisk)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
             dstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
@@ -160,11 +160,11 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
-        If (pdImages(imageID).CurrentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
+        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JPEG-2000
-        ElseIf (pdImages(imageID).CurrentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'All other formats
@@ -199,7 +199,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         ' Use that preference to determine which save filter we select.
         If g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0) = 0 Then
         
-            g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(pdImages(imageID).CurrentFileFormat) + 1
+            g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(pdImages(imageID).currentFileFormat) + 1
     
             'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
             ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
@@ -224,12 +224,12 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     'Check to see if an image with this filename appears in the save location. If it does, use the incrementFilename
     ' function to append ascending numbers (of the format "_(#)") to the filename until a unique filename is found.
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).OriginalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
+    sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
         
     If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(imageID).containingForm.hWnd, 0) Then
                 
         'Store the selected file format to the image object
-        pdImages(imageID).CurrentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
+        pdImages(imageID).currentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
