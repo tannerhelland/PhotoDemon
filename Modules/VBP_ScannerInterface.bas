@@ -76,7 +76,14 @@ Public Sub Twain32SelectScanner()
             Dim hLib As Long
             hLib = LoadLibrary(g_PluginPath & "eztw32.dll")
             
+            'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+            ' appear over the top of the TWAIN window.
+            g_WindowManager.resetTopmostForAllWindows False
+    
             TWAIN_SelectImageSource getModalOwner().hWnd
+            
+            'Reset window top-most status
+            g_WindowManager.resetTopmostForAllWindows True
             
             If hLib Then FreeLibrary hLib
             
@@ -134,8 +141,15 @@ Public Sub Twain32Scan()
     'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
     ScannerCaptureFile = g_UserPreferences.getTempPath & "PDScanInterface.tmp"
     
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the scanner dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
     'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
     ScanCheck = TWAIN_AcquireToFilename(getModalOwner().hWnd, ScannerCaptureFile)
+    
+    'Reset window top-most status
+    g_WindowManager.resetTopmostForAllWindows True
     
     'If the image was successfully scanned, load it
     If ScanCheck = 0 Then

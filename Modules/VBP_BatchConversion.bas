@@ -80,7 +80,11 @@ Public Sub StopMacro()
     
     'If the user cancels the save dialog, give them another chance to save - just in case
     Dim mReturn As VbMsgBoxResult
-     
+    
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the common dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
 SaveMacroAgain:
      
     'If we get the data we want, save the information
@@ -157,6 +161,9 @@ SaveMacroAgain:
         Message "Macro abandoned."
         
     End If
+    
+    'Reset window top-most status
+    g_WindowManager.resetTopmostForAllWindows True
         
     ProcessCount = 0
     
@@ -177,6 +184,10 @@ Public Sub PlayMacro()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Open Macro File")
     
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the common dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
     'If we get a path, load that file
     If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd, OFN_HIDEREADONLY) Then
         
@@ -190,6 +201,9 @@ Public Sub PlayMacro()
     Else
         Message "Macro load canceled."
     End If
+    
+    'Reset window top-most status
+    g_WindowManager.resetTopmostForAllWindows True
     
 End Sub
 

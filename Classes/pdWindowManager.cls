@@ -1845,6 +1845,56 @@ Private Sub restrictRectToParent(ByRef childRect As winRect, Optional ByVal resi
 
 End Sub
 
+'Under certain circumstances (such as PD losing focus), it is important to remove the top-most status of any window types.  Use this
+' function to do so.  If restoreOriginalZOrder is TRUE, the function will re-enable top-most status for any windows that require it.
+Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boolean = False)
+
+    Dim i As Long
+
+    If restoreOriginalZOrder Then
+    
+        For i = 0 To numOfPDWindows - 1
+            If pdWindows(i).isVisible Then
+                SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+            End If
+        Next i
+        
+        'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
+        restoreActiveImageToForeground "PD gained focus"
+        
+        'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
+        ' sit above any image or toolbar windows.
+        If numOfExtraWindows > 0 Then
+            For i = 0 To numOfExtraWindows - 1
+                SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+            Next i
+        End If
+        
+    Else
+        
+        For i = 0 To numOfPDWindows - 1
+            If pdWindows(i).isVisible Then
+                SetWindowPos pdWindows(i).hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW
+            End If
+        Next i
+        
+        'This is a bit funny, but - when resetting zOrder, we need to manually handle the active image last; otherwise, it may look
+        ' as though another image window has mistakenly received focus (even though internally we know it hasn't).
+        If g_OpenImageCount > 0 Then
+            SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+        End If
+        
+        'If the program has registered any extra windows (e.g. modal dialogs), reset them as well
+        If numOfExtraWindows > 0 Then
+            For i = 0 To numOfExtraWindows - 1
+                SetWindowPos extraWindowHwnds(i), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING
+            Next i
+        End If
+        
+    End If
+
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -2194,25 +2244,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'PD is losing focus; make all top-most windows not topmost
                     Case WA_INACTIVE
                         Debug.Print "> PhotoDemon lost focus! <"
-                        For i = 0 To numOfPDWindows - 1
-                            If pdWindows(i).isVisible Then
-                                SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-                            End If
-                        Next i
-                        
-                        'This is a bit funny, but - when the program loses focus, we need to handle the active image last; otherwise, it may look
-                        ' as though another window has mistakenly received focus (even though internally we know it hasn't).
-                        If g_OpenImageCount > 0 Then
-                            SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-                        End If
-                        
-                        'If the program has registered any extra windows (e.g. modal dialogs), hide them as well
-                        If numOfExtraWindows > 0 Then
-                            For i = 0 To numOfExtraWindows - 1
-                                SetWindowPos extraWindowHwnds(i), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING
-                            Next i
-                        End If
-                        
+                        resetTopmostForAllWindows False
                         isPDDeactivated = True
                         
                     'PD is gaining focus
@@ -2220,26 +2252,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         Debug.Print "> PhotoDemon regained focus! <"
                         
                         If isPDDeactivated Then
-                        
-                            For i = 0 To numOfPDWindows - 1
-                                If pdWindows(i).isVisible Then
-                                    SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-                                End If
-                            Next i
-                            
-                            'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-                            restoreActiveImageToForeground "PD gained focus"
-                            
-                            'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
-                            ' sit above any image or toolbar windows.
-                            If numOfExtraWindows > 0 Then
-                                For i = 0 To numOfExtraWindows - 1
-                                    SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-                                Next i
-                            End If
-                            
+                            resetTopmostForAllWindows True
                             isPDDeactivated = False
-                            
                         End If
                         
                 End Select

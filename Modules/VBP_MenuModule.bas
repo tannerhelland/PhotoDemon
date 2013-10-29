@@ -42,6 +42,10 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         
     Dim sFileList As String
     
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the common dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
     If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerhWnd, 0) Then
         
@@ -111,6 +115,9 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
         PhotoDemon_OpenImageDialog = False
     End If
+    
+    'Restore window status
+    g_WindowManager.resetTopmostForAllWindows True
     
     'Release the common dialog object
     Set CC = Nothing

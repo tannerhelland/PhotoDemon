@@ -128,6 +128,10 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
         
+        'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+        ' appear over the top of the common dialog.
+        g_WindowManager.resetTopmostForAllWindows False
+        
         If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, , getModalOwner().hWnd, 0) Then
             
             'Use a temporary selection object to validate the requested selection file
@@ -153,6 +157,9 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
             
         End If
         
+        'Reset window top-most status
+        g_WindowManager.resetTopmostForAllWindows True
+        
     Else
     
         Message "Loading selection..."
@@ -167,7 +174,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Message "Selection loaded successfully"
     
     End If
-    
+        
 End Sub
 
 'Save the current selection to file.  Note that this function also handles creation and display of the relevant common dialog.
@@ -185,6 +192,10 @@ Public Sub SaveSelectionToFile()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
     
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the common dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
     If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, getModalOwner().hWnd, 0) Then
         
         'Save the new directory as the default path for future usage
@@ -198,6 +209,9 @@ Public Sub SaveSelectionToFile()
         End If
         
     End If
+    
+    'Reset window top-most status
+    g_WindowManager.resetTopmostForAllWindows True
     
 End Sub
 
