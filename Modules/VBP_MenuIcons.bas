@@ -285,7 +285,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "VIBRANCE", 5, 9, 5      'Vibrance
         addMenuIcon "GRAYSCALE", 5, 9, 7     'Black and white
         addMenuIcon "COLORIZE", 5, 9, 8      'Colorize
-        addMenuIcon "SEPIA", 5, 9, 9         'Sepia
+        addMenuIcon "REPLACECLR", 5, 9, 9    'Replace color
+        addMenuIcon "SEPIA", 5, 9, 10        'Sepia
     
     'Histogram
     addMenuIcon "HISTOGRAM", 5, 10      'Histogram top-level

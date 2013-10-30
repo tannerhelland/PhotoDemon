@@ -562,6 +562,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
             
+        Case "Replace color"
+            If showDialog Then
+                showPDDialog vbModal, FormReplaceColor
+            Else
+                FormReplaceColor.ReplaceSelectedColor cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3), cParams.GetDouble(4)
+            End If
+            
         Case "Temperature"
             If showDialog Then
                 showPDDialog vbModal, FormColorTemp
