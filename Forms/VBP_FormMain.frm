@@ -43,7 +43,7 @@ Begin VB.Form FormMain
       Top             =   1440
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -524,8 +524,12 @@ Begin VB.Form FormMain
             Index           =   8
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Sepia"
+            Caption         =   "Replace color..."
             Index           =   9
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Sepia"
+            Index           =   10
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -1573,9 +1577,13 @@ Private Sub MnuColor_Click(Index As Integer)
         'Colorize
         Case 8
             Process "Colorize", True
+            
+        'Replace color
+        Case 9
+            Process "Replace color", True
                 
         'Sepia
-        Case 9
+        Case 10
             Process "Sepia"
 
     End Select

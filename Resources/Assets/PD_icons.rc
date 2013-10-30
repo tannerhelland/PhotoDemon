@@ -105,6 +105,7 @@ PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
 VIBRANCE     CUSTOM  MOVEABLE        LOADONCALL      image_saturation_up.png
 COLORIZE     CUSTOM  MOVEABLE        LOADONCALL      color_swatch.png
 GRAYSCALE    CUSTOM  MOVEABLE        LOADONCALL      image_gray.png
+REPLACECLR   CUSTOM  MOVEABLE        LOADONCALL      node_delete_child.png
 SEPIA        CUSTOM  MOVEABLE        LOADONCALL      zone.png
 //
 
