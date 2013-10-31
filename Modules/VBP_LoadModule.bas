@@ -309,14 +309,16 @@ Public Sub LoadTheProgram()
     'If inside the IDE, disable the "Effects" -> "Test" menu
     If g_IsProgramCompiled Then FormMain.MnuTest.Visible = False Else FormMain.MnuTest.Visible = True
     
-    'Load the most-recently-used file list (MRU)
-    MRU_LoadFromFile
-    
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadAccelerators
             
+    'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
+    Set g_RecentFiles = New pdRecentFiles
+    g_RecentFiles.MRU_LoadFromFile
+            
     'Load and draw all menu icons
     loadMenuIcons
+    'resetMenuIcons
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     syncInterfaceToCurrentImage
@@ -908,7 +910,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If g_AutozoomLargeImages = 1 Then FitWindowToViewport
                         
             'Add this file to the MRU list (unless specifically told not to)
-            If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then MRU_AddNewFile sFile(thisImage), targetImage
+            If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
             
         End If
         

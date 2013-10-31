@@ -388,6 +388,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "CanvasBackground", CStr(vb3DShadow) 'RGB(201, 211, 226)
         xmlEngine.writeTag "CanvasDropShadow", "True"
         xmlEngine.writeTag "MRUCaptionLength", "0"
+        xmlEngine.writeTag "RecentFilesLimit", "10"
         
         'On Vista and later, Segoe UI is used as the interface font instead of Tahoma
         If g_IsVistaOrLater Then xmlEngine.writeTag "UseFancyFonts", "True" Else xmlEngine.writeTag "UseFancyFonts", "False"
@@ -411,22 +412,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "VerifyInitialColorDepth", "True"
     xmlEngine.closeTag "Loading"
     xmlEngine.writeBlankLine
-    
-    'Write out the "MRU" block of preferences:
-    xmlEngine.writeTag "MRU", "", True
-        xmlEngine.writeTag "NumberOfEntries", "0"
-        xmlEngine.writeTag "f0", ""
-        xmlEngine.writeTag "f1", ""
-        xmlEngine.writeTag "f2", ""
-        xmlEngine.writeTag "f3", ""
-        xmlEngine.writeTag "f4", ""
-        xmlEngine.writeTag "f5", ""
-        xmlEngine.writeTag "f6", ""
-        xmlEngine.writeTag "f7", ""
-        xmlEngine.writeTag "f8", ""
-    xmlEngine.closeTag "MRU"
-    xmlEngine.writeBlankLine
-    
+        
     'Write out the "paths" block of preferences:
     xmlEngine.writeTag "Paths", "", True
         xmlEngine.writeTag "TempFiles", GetTemporaryPath

@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1267,7 +1267,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1303,7 +1303,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1381,7 +1381,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Save the MRU list to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)
-    MRU_SaveToFile
+    g_RecentFiles.MRU_SaveToFile
         
     'Restore the user's font smoothing setting as necessary
     handleClearType False
@@ -1536,7 +1536,7 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
 End Sub
 
 Private Sub MnuClearMRU_Click()
-    MRU_ClearList
+    g_RecentFiles.MRU_ClearList
 End Sub
 
 'All Color sub-menu entries are handled here.
@@ -2296,7 +2296,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
     
     'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
     Dim tmpString As String
-    tmpString = getSpecificMRU(Index)
+    tmpString = g_RecentFiles.getSpecificMRU(Index)
     
     'Check - just in case - to make sure the path isn't empty
     If tmpString <> "" Then
