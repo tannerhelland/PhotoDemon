@@ -422,7 +422,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         If MacroStatus <> MacroBATCH Then
         
             'Add this file to the MRU list
-            MRU_AddNewFile dstPath, srcPDImage
+            g_RecentFiles.MRU_AddNewFile dstPath, srcPDImage
         
             'Remember the file's location for future saves
             srcPDImage.locationOnDisk = dstPath
@@ -1235,13 +1235,13 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     Dim cParams As pdParamString
     Set cParams = New pdParamString
     If Len(jpegParams) > 0 Then cParams.setParamString jpegParams
-    Dim JPEGFlags As Long
-    JPEGFlags = cParams.GetLong(1, 92)
+    Dim jpegFlags As Long
+    jpegFlags = cParams.GetLong(1, 92)
     
     'If FreeImage is not available, fall back to GDI+.  If that is not available, fail the function.
     If Not g_ImageFormats.FreeImageEnabled Then
         If g_ImageFormats.GDIPlusEnabled Then
-            SaveJPEGImage = GDIPlusSavePicture(srcPDImage, JPEGPath, ImageJPEG, 24, JPEGFlags)
+            SaveJPEGImage = GDIPlusSavePicture(srcPDImage, JPEGPath, ImageJPEG, 24, jpegFlags)
         Else
             SaveJPEGImage = False
             Message "No %1 encoder found. Save aborted.", "JPEG"
@@ -1281,7 +1281,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     End If
         
     'Combine all received flags into one
-    JPEGFlags = JPEGFlags Or cParams.GetLong(2, 0)
+    jpegFlags = jpegFlags Or cParams.GetLong(2, 0)
     
     'If a thumbnail has been requested, generate that now
     If cParams.GetLong(3, 0) <> 0 Then
@@ -1301,7 +1301,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, JPEGFlags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
         If fi_Check = False Then
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             FreeLibrary hLib

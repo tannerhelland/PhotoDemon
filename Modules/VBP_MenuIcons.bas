@@ -150,13 +150,8 @@ Public Sub loadMenuIcons()
             
     'Now that all menu icons are loaded, apply them to the proper menu entires
     applyAllMenuIcons
-    
-    'Finally, calculate where to place the "Clear MRU" menu item (this requires its own special handling).
-    Dim numOfMRUFiles As Long
-    numOfMRUFiles = MRU_ReturnCount()
-    cMenuImage.PutImageToVBMenu 44, numOfMRUFiles + 1, 0, 1
-    
-    '...and initialize the MRU icon handler.
+        
+    '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
     If g_IsVistaOrLater Then
         cMRUIcons.Init FormMain.hWnd, 64, 64
@@ -494,21 +489,10 @@ End Sub
 'When menu captions are changed, the associated images are lost.  This forces a reset.
 ' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
 Public Sub resetMenuIcons()
-
-    'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-    ' Now that I've rewritten the project to use IDE-safe subclassing, I think icon refreshes will work on XP...?
-    'If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
         
     'Redraw the Undo/Redo menus
     addMenuIcon "UNDO", 1, 0     'Undo
     addMenuIcon "REDO", 1, 1     'Redo
-    
-    'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
-    Dim numOfMRUFiles As Long
-    numOfMRUFiles = MRU_ReturnCount()
-    
-    'Vista+ gets a nice, large icon added later in the process.  XP is stuck with a 16x16 one, which we add now.
-    If Not g_IsVistaOrLater Then addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
     addMenuIcon "NEXTIMAGE", 8, 6       'Next image
@@ -516,6 +500,13 @@ Public Sub resetMenuIcons()
     addMenuIcon "CASCADE", 8, 9         'Cascade
     addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
     addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    
+    'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
+    Dim numOfMRUFiles As Long
+    numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
+    
+    'Vista+ gets a nice, large icon added later in the process.  XP is stuck with a 16x16 one, which we add now.
+    If Not g_IsVistaOrLater Then addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
     
     'Clear the current MRU icon cache
     cMRUIcons.Clear
@@ -533,7 +524,7 @@ Public Sub resetMenuIcons()
     For i = 0 To numOfMRUFiles
     
         'Start by seeing if an image exists for this MRU entry
-        tmpFilename = getMRUThumbnailPath(i)
+        tmpFilename = g_RecentFiles.getMRUThumbnailPath(i)
         
         'If the file exists, add it to the MRU icon handler
         If FileExist(tmpFilename) Then
@@ -541,7 +532,8 @@ Public Sub resetMenuIcons()
             iconLocation = iconLocation + 1
             cMRUIcons.AddImageFromFile tmpFilename
             cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
-            
+        
+        'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
         Else
             If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
         End If
@@ -917,12 +909,12 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
     If vbSupportedFormat Then
     
         'Load the requested image into a temporary StdPicture object
-        Dim tmpPic As StdPicture
-        Set tmpPic = New StdPicture
-        Set tmpPic = LoadResPicture(resTitle, 0)
+        Dim tmppic As StdPicture
+        Set tmppic = New StdPicture
+        Set tmppic = LoadResPicture(resTitle, 0)
         
         'Copy that image into the supplied layer
-        If dstLayer.CreateFromPicture(tmpPic) Then
+        If dstLayer.CreateFromPicture(tmppic) Then
             loadResourceToLayer = True
         Else
             loadResourceToLayer = False

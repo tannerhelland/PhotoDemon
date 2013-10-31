@@ -241,3 +241,7 @@ Public g_WindowManager As pdWindowManager
 
 'PhotoDemon's visual theme engine.
 Public g_Themer As pdVisualThemes
+
+'PhotoDemon's recent files manager.
+Public g_RecentFiles As pdRecentFiles
+
