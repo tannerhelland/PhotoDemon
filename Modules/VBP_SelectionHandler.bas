@@ -215,6 +215,145 @@ Public Sub SaveSelectionToFile()
     
 End Sub
 
+'Export the currently selected area as an image.  This is provided as a convenience to the user, so that they do not have to crop
+' or copy-paste the selected area in order to save it.  The selected area is also checked for bit-depth; 24bpp is recommended as
+' JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format from the common dialog).
+Public Function ExportSelectedAreaAsImage() As Boolean
+
+    'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
+    If Not pdImages(g_CurrentImage).selectionActive Then
+        Message "This action requires an active selection.  Please create a selection before continuing."
+        ExportSelectedAreaAsImage = False
+        Exit Function
+    End If
+    
+    'Prepare a temporary pdImage object to house the current selection mask
+    Dim tmpImage As pdImage
+    Set tmpImage = New pdImage
+    
+    'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
+    tmpImage.forInternalUseOnly = True
+    
+    'Copy the current selection layer into the temporary image's main layer.  (NOTE: for reasons known, I can't provide tmpImage.mainLayer
+    ' directly without the function failing.  No idea why.  Hence the need for creating a temporary layer first.)
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    
+    pdImages(g_CurrentImage).retrieveProcessedSelection tmpLayer
+    Set tmpImage.mainLayer = tmpLayer
+    tmpImage.updateSize
+    
+    'If the selected area has a blank alpha channel, convert it to 24bpp
+    If Not tmpImage.mainLayer.verifyAlphaChannel Then tmpImage.mainLayer.convertTo24bpp
+    
+    'Give the selection a basic filename
+    tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
+    
+    'Now it's time to prepare a standard Save Image common dialog
+    Dim CC As cCommonDialog
+    Set CC = New cCommonDialog
+    
+    'Get the last "save image" path from the preferences file
+    Dim tempPathString As String
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    
+    'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
+    Dim saveFormat As Long
+    If tmpImage.mainLayer.getLayerColorDepth = 24 Then
+        saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
+    Else
+        saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+    End If
+    
+    'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
+    Dim sFile As String
+    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, g_ImageFormats.getOutputFormatExtension(saveFormat - 1))
+    
+    'Present a common dialog to the user
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(g_CurrentImage).containingForm.hWnd, 0) Then
+                
+        'Store the selected file format to the image object
+        tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
+                                
+        'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
+        ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, , True)
+        
+    Else
+        ExportSelectedAreaAsImage = False
+    End If
+    
+    'Release the common dialog object
+    Set CC = Nothing
+    
+    'Release our temporary image
+    Set tmpLayer = Nothing
+    Set tmpImage.mainLayer = Nothing
+    Set tmpImage = Nothing
+    
+End Function
+
+'Export the current selection mask as an image.  PNG is recommended by default, but the user can choose from any of PD's available formats.
+Public Function ExportSelectionMaskAsImage() As Boolean
+
+    'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
+    If Not pdImages(g_CurrentImage).selectionActive Then
+        Message "This action requires an active selection.  Please create a selection before continuing."
+        ExportSelectionMaskAsImage = False
+        Exit Function
+    End If
+    
+    'Prepare a temporary pdImage object to house the current selection mask
+    Dim tmpImage As pdImage
+    Set tmpImage = New pdImage
+    
+    'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
+    tmpImage.forInternalUseOnly = True
+    
+    'Copy the current selection layer into the temporary image's main layer
+    tmpImage.mainLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
+    tmpImage.updateSize
+    
+    'Give the selection a basic filename
+    tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
+    
+    'Now it's time to prepare a standard Save Image common dialog
+    Dim CC As cCommonDialog
+    Set CC = New cCommonDialog
+    
+    'Get the last "save image" path from the preferences file
+    Dim tempPathString As String
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    
+    'By default, recommend PNG as the save format
+    Dim saveFormat As Long
+    saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+    
+    'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
+    Dim sFile As String
+    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, "png")
+    
+    'Present a common dialog to the user
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(g_CurrentImage).containingForm.hWnd, 0) Then
+                
+        'Store the selected file format to the image object
+        tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
+                                
+        'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
+        ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, , True)
+        
+    Else
+        ExportSelectionMaskAsImage = False
+    End If
+    
+    'Release the common dialog object
+    Set CC = Nothing
+    
+    'Release our temporary image
+    Set tmpImage.mainLayer = Nothing
+    Set tmpImage = Nothing
+
+End Function
+
 'Use this to populate the text boxes on the main form with the current selection values
 Public Sub syncTextToCurrentSelection(ByVal formID As Long)
 

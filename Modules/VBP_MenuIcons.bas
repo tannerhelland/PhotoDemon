@@ -11,15 +11,10 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 ' Menu icons are extracted from a resource file (where they're stored in PNG format) and rendered to the menu at run-time.
 ' See the clsMenuImage class for details on how this works. (A link to Leandro's original project can also be found there.)
 '
-'NOTE: Because the Windows XP version of Leandro's code utilizes potentially dirty subclassing, PhotoDemon automatically
-' disables menu icons while running in the IDE on Windows XP.  Compile the project to see icons. (Windows Vista and 7 use
-' a different mechanism, so menu icons are enabled in the IDE, and menu icons appear on all versions of Windows when compiled.)
-'
 'This module also handles the rendering of dynamic form, program, and taskbar icons.  (When an image is loaded and active,
 ' those icons can change to match the current image.)  As of February 2013, custom form icon generation has now been reworked
 ' based off this MSDN article: http://support.microsoft.com/kb/318876
-' The new code is much leaner (and cleaner!) than past incarnations, and FreeImage is now required for the operation.  If
-' FreeImage is not found, custom form icons will not be generated.
+' The new code is much leaner (and cleaner!) than past incarnations.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -250,6 +245,10 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "SELECTSHRP", 4, 8      'Sharpen selection
     addMenuIcon "SELECTLOAD", 4, 10     'Load selection from file
     addMenuIcon "SELECTSAVE", 4, 11     'Save selection to file
+    addMenuIcon "SELECTEXPORT", 4, 12   'Export selection (top-level)
+        '--> Export Selection sub-menu
+        addMenuIcon "EXPRTSELAREA", 4, 12, 0  'Export selected area as image
+        addMenuIcon "EXPRTSELMASK", 4, 12, 1  'Export selection mask as image
     
     'Adjustments Menu
     

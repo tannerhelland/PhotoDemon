@@ -85,7 +85,10 @@ SELECTFTHR   CUSTOM  MOVEABLE        LOADONCALL      select_feather.png
 SELECTSHRP   CUSTOM  MOVEABLE        LOADONCALL      select_sharpen.png
 SELECTLOAD   CUSTOM  MOVEABLE        LOADONCALL      select_load.png
 SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      disk.png
-
+SELECTEXPORT CUSTOM  MOVEABLE        LOADONCALL      select_export.png
+//--> Export sub-menu
+EXPRTSELAREA CUSTOM  MOVEABLE        LOADONCALL      selected_area_export.png
+EXPRTSELMASK CUSTOM  MOVEABLE        LOADONCALL      mask.png
 
 //Adjustments menu
 

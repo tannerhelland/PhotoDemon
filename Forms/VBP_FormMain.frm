@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -412,6 +412,18 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuSelect 
          Caption         =   "Save current selection..."
          Index           =   11
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Export"
+         Index           =   12
+         Begin VB.Menu MnuSelectExport 
+            Caption         =   "Selected area as image..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuSelectExport 
+            Caption         =   "Selection mask as image..."
+            Index           =   1
+         End
       End
    End
    Begin VB.Menu MnuAdjustmentsTop 
@@ -1267,7 +1279,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1303,7 +1315,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2398,7 +2410,27 @@ Private Sub MnuSelect_Click(Index As Integer)
         'Save current selection
         Case 11
             Process "Save selection", True, , 0
+            
+        '<Export top-level>
+        Case 12
+            
+    End Select
+
+End Sub
+
+'All Select -> Export menu items are handled here
+Private Sub MnuSelectExport_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Export selected area as image
+        Case 0
+            Process "Export selected area as image", True, , 0
         
+        'Export selection mask itself as image
+        Case 1
+            Process "Export selection mask as image", True, , 0
+    
     End Select
 
 End Sub

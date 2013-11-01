@@ -473,6 +473,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Save selection"
             SaveSelectionToFile
+            
+        'Export selected area as image (defaults to PNG, but user can select the actual format)
+        Case "Export selected area as image"
+            ExportSelectedAreaAsImage
+        
+        'Export selection mask as image (defaults to PNG, but user can select the actual format)
+        Case "Export selection mask as image"
+            ExportSelectionMaskAsImage
         
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
         Case "Move selection"
