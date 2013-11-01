@@ -75,6 +75,7 @@ Private Const SC_MAXIMIZE As Long = &HF030&
 Private Const SC_MINIMIZE As Long = &HF020&
 Private Const SC_RESTORE As Long = &HF120&
 Private Const SC_SIZE As Long = &HF000&
+Private Const SC_MOVE As Long = &HF010&
 
 'Constants for changing window style (including transparency)
 Private Const LWA_ALPHA As Long = &H2&
@@ -2183,16 +2184,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'The parent window has just been maximized, minimized, or restored
             Case WM_SYSCOMMAND
                 
-                'Debug.Print "sys command received: " & wParam
-                
                 'Per MSDN (http://msdn.microsoft.com/en-us/library/windows/desktop/ms646360%28v=vs.85%29.aspx):
                 ' In WM_SYSCOMMAND messages, the four low-order bits of the wParam parameter are used internally by the system.
                 ' To obtain the correct result when testing the value of wParam, an application must combine the value 0xFFF0 with
                 ' the wParam value by using the bitwise AND operator.
                 wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
-            
-                If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Then
                 
+                If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE) Then
+                    
                     'If the window was previously minimized, restore any child windows now
                     For i = 0 To numOfPDWindows - 1
                         If pdWindows(i).forciblyMinimized Then
