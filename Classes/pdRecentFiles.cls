@@ -202,6 +202,7 @@ Public Sub MRU_LoadFromFile()
         FormMain.mnuRecDocs(0).Enabled = False
         FormMain.MnuRecentSepBar1.Visible = False
         FormMain.MnuClearMRU.Visible = False
+        FormMain.MnuLoadAllMRU.Visible = False
     End If
     
     'If one or more recent file entries were found, load them now.
@@ -238,6 +239,7 @@ Public Sub MRU_LoadFromFile()
     
         'Finally, make sure the "Clear MRU" option is visible and enabled
         FormMain.MnuRecentSepBar1.Visible = True
+        FormMain.MnuLoadAllMRU.Visible = True
         FormMain.MnuClearMRU.Visible = True
      
     End If
@@ -409,6 +411,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
     If Not FormMain.mnuRecDocs(0).Enabled Then
         FormMain.mnuRecDocs(0).Enabled = True
         FormMain.MnuRecentSepBar1.Visible = True
+        FormMain.MnuLoadAllMRU.Visible = True
         FormMain.MnuClearMRU.Visible = True
     End If
     
@@ -543,6 +546,7 @@ Public Sub MRU_ClearList()
     FormMain.mnuRecDocs(0).Caption = g_Language.TranslateMessage("Empty")
     FormMain.mnuRecDocs(0).Enabled = False
     FormMain.MnuRecentSepBar1.Visible = False
+    FormMain.MnuLoadAllMRU.Visible = False
     FormMain.MnuClearMRU.Visible = False
     
     'If any recent file thumbnails still exist, delete them.

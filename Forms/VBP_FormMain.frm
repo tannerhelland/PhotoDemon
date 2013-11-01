@@ -62,6 +62,9 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuRecentSepBar1 
             Caption         =   "-"
          End
+         Begin VB.Menu MnuLoadAllMRU 
+            Caption         =   "Load all recent images"
+         End
          Begin VB.Menu MnuClearMRU 
             Caption         =   "Clear recent image list"
          End
@@ -1279,7 +1282,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1315,7 +1318,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2125,6 +2128,26 @@ Private Sub MnuLighting_Click(Index As Integer)
     
     End Select
 
+End Sub
+
+'Load all images in the current "Recent Files" menu
+Private Sub MnuLoadAllMRU_Click()
+    
+    'Fill a string array with all current MRU entries
+    Dim sFile() As String
+    ReDim sFile(0 To g_RecentFiles.MRU_ReturnCount() - 1) As String
+    
+    Dim i As Long
+    For i = 0 To UBound(sFile)
+        sFile(i) = g_RecentFiles.getSpecificMRU(i)
+    Next i
+    
+    'Load all images in the list
+    PreLoadImage sFile
+    
+    'If the image loaded successfully, activate it and bring it to the foreground
+    If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "finished loading all recent images"
+    
 End Sub
 
 'All metadata sub-menu options are handled here
