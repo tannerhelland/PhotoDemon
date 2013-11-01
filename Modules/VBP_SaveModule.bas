@@ -236,7 +236,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If loadRelevantForm Then
                 
                 Dim gotSettings As VbMsgBoxResult
-                gotSettings = promptJPEGSettings
+                gotSettings = promptJPEGSettings(srcPDImage)
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotSettings = vbOK Then
@@ -441,7 +441,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             PhotoDemon_SaveImage = True
             
             'Update the interface to match the newly saved image (e.g. disable the Save button)
-            syncInterfaceToCurrentImage
+            If Not srcPDImage.forInternalUseOnly Then syncInterfaceToCurrentImage
             
             'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
             If Not srcPDImage.forInternalUseOnly Then toolbar_ImageTabs.notifyUpdatedImage srcPDImage.imageID

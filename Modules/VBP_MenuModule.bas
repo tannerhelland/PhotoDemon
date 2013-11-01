@@ -54,19 +54,19 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         'Take the return string (a null-delimited list of filenames) and split it out into a string array
         listOfFiles = Split(sFileList, vbNullChar)
         
-        Dim x As Long
+        Dim i As Long
         
         'Due to the buffering required by the API call, uBound(listOfFiles) should ALWAYS > 0 but
         ' let's check it anyway (just to be safe)
         If UBound(listOfFiles) > 0 Then
         
             'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
-            For x = UBound(listOfFiles) To 0 Step -1
-                If listOfFiles(x) <> "" Then Exit For
+            For i = UBound(listOfFiles) To 0 Step -1
+                If listOfFiles(i) <> "" Then Exit For
             Next
             
             'With all the empty strings removed, all that's left is legitimate file paths
-            ReDim Preserve listOfFiles(0 To x) As String
+            ReDim Preserve listOfFiles(0 To i) As String
             
         End If
         
@@ -81,9 +81,9 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
             'The remaining indices contain a filename within that folder.  To get the full filename, we must
             ' append the path from (0) to the start of each filename.  This will relieve the burden on
             ' whatever function called us - it can simply loop through the full paths, loading files as it goes
-            For x = 1 To UBound(listOfFiles)
-                listOfFiles(x - 1) = imagesPath & listOfFiles(x)
-            Next x
+            For i = 1 To UBound(listOfFiles)
+                listOfFiles(i - 1) = imagesPath & listOfFiles(i)
+            Next i
             
             ReDim Preserve listOfFiles(0 To UBound(listOfFiles) - 1)
             
