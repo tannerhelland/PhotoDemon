@@ -459,25 +459,12 @@ Private Sub addMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
         iconLocation = curIcon
         curIcon = curIcon + 1
     End If
-    
-    'The position of menus changes if the MDI child is maximized.  When maximized, the form menu is given index 0, shifting
-    ' everything to the right by one.
-    
-    'Thus, we must check for that and redraw the Undo/Redo menus accordingly
-    Dim posModifier As Long
-    posModifier = 0
-
-    If g_OpenImageCount > 0 Then
-        If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then
-            If pdImages(g_CurrentImage).containingForm.WindowState = vbMaximized Then posModifier = 1
-        End If
-    End If
-    
+        
     'Place the icon onto the requested menu
     If subSubMenu = -1 Then
-        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu + posModifier
+        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
     Else
-        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu + posModifier, subMenu
+        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
     End If
     
     'If an outside progress bar needs to refresh, do so now
@@ -504,8 +491,11 @@ Public Sub resetMenuIcons()
     Dim numOfMRUFiles As Long
     numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
     
-    'Vista+ gets a nice, large icon added later in the process.  XP is stuck with a 16x16 one, which we add now.
-    If Not g_IsVistaOrLater Then addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 1
+    'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
+    If Not g_IsVistaOrLater Then
+        addMenuIcon "LOADALL", 0, 1, numOfMRUFiles + 1
+        addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 2
+    End If
     
     'Clear the current MRU icon cache
     cMRUIcons.Clear
@@ -539,10 +529,13 @@ Public Sub resetMenuIcons()
         
     Next i
         
-    'Vista+ users now get their nice, large "clear list" icon.
+    'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
     If g_IsVistaOrLater Then
-        cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
+        cMRUIcons.AddImageFromStream LoadResData("LOADALLLRG", "CUSTOM")
         cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 1
+        
+        cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
+        cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 1
     End If
         
 End Sub

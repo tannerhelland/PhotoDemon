@@ -7,6 +7,8 @@ AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
 OPENIMG      CUSTOM  MOVEABLE        LOADONCALL      image.png
 OPENREC      CUSTOM  MOVEABLE        LOADONCALL      clock_arrow.png
 //--> Recent documents sub-menu
+LOADALL      CUSTOM  MOVEABLE        LOADONCALL      folder_open_image.png
+LOADALLLRG   CUSTOM  MOVEABLE        LOADONCALL      load_all_recent_large.png
 CLEARRECENT  CUSTOM  MOVEABLE        LOADONCALL      minus_circle_16.png
 CLEARRECLRG  CUSTOM  MOVEABLE        LOADONCALL      minus_circle_24.png
 
