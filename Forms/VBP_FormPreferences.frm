@@ -25,6 +25,15 @@ Begin VB.Form FormPreferences
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset all options"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   2670
       TabIndex        =   86
@@ -34,6 +43,15 @@ Begin VB.Form FormPreferences
    Begin VB.CommandButton cmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   8280
       TabIndex        =   0
@@ -43,6 +61,15 @@ Begin VB.Form FormPreferences
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
       Left            =   9750
       TabIndex        =   1
@@ -306,7 +333,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":723E
+      PictureNormal   =   "VBP_FormPreferences.frx":763E
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -330,10 +357,10 @@ Begin VB.Form FormPreferences
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.textUpDown tudRecentFiles 
-         Height          =   375
+         Height          =   420
          Left            =   3900
          TabIndex        =   112
-         Top             =   4620
+         Top             =   4605
          Width           =   1335
          _ExtentX        =   2355
          _ExtentY        =   661
