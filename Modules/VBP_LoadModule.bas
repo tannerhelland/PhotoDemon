@@ -752,7 +752,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         targetImage.currentFileFormat = targetImage.originalFileFormat
                 
                 
-                
+        
+        '*************************************************************************************************************************************
+        ' If the image contains an embedded ICC profile, apply it now (before counting colors, etc).
+        '*************************************************************************************************************************************
+        
+        If targetImage.ICCProfile.hasICCData Then targetImage.ICCProfile.applyICCtoParentImage targetImage
+        
+        
+        
         '*************************************************************************************************************************************
         ' If requested by the user, manually count the number of unique colors in the image (to determine absolutely accurate color depth)
         '*************************************************************************************************************************************

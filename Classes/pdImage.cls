@@ -139,6 +139,9 @@ Option Explicit
     
     'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
     Public undoManager As pdUndo
+    
+    'All ICC Profile interactions are handled through a publicly available ICCProfile class
+    Public ICCProfile As pdICCProfile
 
 'If the image has been saved to file in its current state, this will return TRUE.  Use this value to determine
 ' whether to enable a Save button, for example.
@@ -358,6 +361,9 @@ Private Sub Class_Initialize()
     'Initialize the Undo/Redo handler
     Set undoManager = New pdUndo
     Set undoManager.parentPDImage = Me
+    
+    'Initialize the ICC profile manager
+    Set ICCProfile = New pdICCProfile
         
 End Sub
 
