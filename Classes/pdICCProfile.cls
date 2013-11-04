@@ -15,25 +15,31 @@ Attribute VB_Exposed = False
 'PhotoDemon ICC (International Color Consortium) Profile Manager
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 01/November/13
-'Last updated: 01/November/13
-'Last update: initial build
+'Last updated: 04/November/13
+'Last update: fixed an undocumented TranslateBitmapBits error, where RGB format must be specified for BGR DIBs.
+'              Very strange!  However there is no denying that it fixes a host of issues with ICC profile
+'              application.  I only found one other mention of this online, and it was in a MSDN help forum
+'              with no response.  I'm guessing MS screwed this up in their first implementation of their color
+'              engine and have never attempted to fix it (perhaps on account of backward-compatibility).
 '
-'ICC Profiles can be embedded in certain types of images (JPEG, PNG, and TIFF at the time of this writing - RAW
+'ICC profiles can be embedded in certain types of images (JPEG, PNG, and TIFF at the time of this writing - RAW
 ' may be added at a later date, but it's a bit more complicated as it will need to rely on ExifTool).  These
 ' profiles can be used to convert an image to its true color space, taking into account any pecularities of the
 ' device that captured the image (typically a camera), and the device now being used to display the image
 ' (typically a monitor).
 '
-'ICC Profile handling is broken into two parts: extracting the profile from an image, then applying that profile
-' to the image.  The extraction step is currently handled via FreeImage, while the application step is handled by
-' Windows.  In the future I may look at adding ExifTool as a possibly mechanism for extracting the profile, as it
-' provides better support for RAW-format photos than FreeImage does.
+'ICC profile handling is broken into two parts: extracting the profile from an image, then applying that profile
+' to the image.  The extraction step is currently handled via FreeImage or GDI+, while the application step is handled
+' by Windows.  In the future I may look at adding ExifTool as a possibly mechanism for extracting the profile, as it
+' provides better support for esoteric formats than FreeImage.
 '
-'Note that this class retains a copy of the ICC Profile itself, which is typically a ~1k byte array.  In the future
+'Note that this class retains a copy of the ICC Profile itself, which is typically a ~1-5k byte array.  In the future
 ' I may add support for attaching a new profile to an image, or for exporting a profile to file.
 '
 'This class would not be possible without this excellent test code from pro VB coder LaVolpe:
 ' http://www.vbforums.com/showthread.php?666143-RESOLVED-ICC-%28Color-Profiles%29
+' Note that LaVolpe's code contains a number of errors, so if you're looking to build your own ICC implementation,
+' I suggest basing it off my implementation instead.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -74,6 +80,7 @@ Private Const OPEN_EXISTING As Long = 3&
 
 'Thanks to coder LaVolpe for pointing out that this value is actually "sRGB" in ASCII (big-endian)
 Private Const LCS_sRGB As Long = &H73524742
+Private Const LCS_WINDOWS_COLOR_SPACE As Long = &H2
 
 'Profile transformation is Heisenbergian (sp?); for example, it is not always possible to preserve hue, saturation,
 ' and luminance - some must be sacrificed to preserve the other.  By default, PhotoDemon uses the standard intent
@@ -92,8 +99,9 @@ Private Const INDEX_DONT_CARE As Long = 0&
 
 'When it comes time to actually apply the transformation to the image data, the transform needs to know the image's
 ' color depth.  PD only operates in 24 and 32bpp mode, so we only need two constants here.
-Private Const BM_BGRTRIPLETS As Long = 4&
-Private Const BM_xBGRQUADS As Long = 16&
+Private Const BM_RGBTRIPLETS As Long = &H2
+Private Const BM_BGRTRIPLETS As Long = &H4
+Private Const BM_xBGRQUADS As Long = &H10
 
 'Various ICC-related APIs are needed to open profiles and transform data between them
 Private Declare Function OpenColorProfile Lib "mscms" Alias "OpenColorProfileA" (ByRef pProfile As Any, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal dwCreationMode As Long) As Long
@@ -161,29 +169,24 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
             
             'We could validate the sRGB header here, but since it came from the system, I assume it's valid.
             
-            'Next we need to prepare a transformation matrix to supply to CreateMultiProfileTransform.
-            ' The format of this matrix is a bit odd; for details, see http://msdn.microsoft.com/en-us/library/windows/desktop/dd316840%28v=vs.85%29.aspx
-            Dim profileMatrix(0 To 1, 0 To 1) As Long
+            'Next we need to prepare two matrices to supply to CreateMultiProfileTransform: one for ICC profiles themselves,
+            ' and one for desired render intents.
+            Dim profileMatrix(0 To 1) As Long, intentMatrix(0 To 1) As Long
             
             'The first row in the array contains the two profile pointers we've already acquired, in src/dest order
-            profileMatrix(0, 0) = srcProfile
-            profileMatrix(1, 0) = dstProfile
+            profileMatrix(0) = srcProfile
+            profileMatrix(1) = dstProfile
             
             'The second column in the array contains the render intents for the transformation.
-            profileMatrix(0, 1) = INTENT_PERCEPTUAL
-            profileMatrix(1, 1) = INTENT_PERCEPTUAL
+            intentMatrix(0) = INTENT_PERCEPTUAL
+            intentMatrix(1) = INTENT_PERCEPTUAL
             
             'We can now use our profile matrix to generate a transformation object, which we will use on the DIB itself
             Dim iccTransformation As Long
-            iccTransformation = CreateMultiProfileTransform(profileMatrix(0, 0), 2&, profileMatrix(0, 1), 2&, BEST_MODE, INDEX_DONT_CARE)
+            iccTransformation = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, BEST_MODE, INDEX_DONT_CARE)
             
             'If the transformation was generated successfully, carry on!
             If iccTransformation <> 0 Then
-            
-                'Create a temporary copy of the image to use as the source bits
-                Dim tmpLayer As pdLayer
-                Set tmpLayer = New pdLayer
-                tmpLayer.createFromExistingLayer parentPDImage.mainLayer
                 
                 'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
                 ' the API with direct access to our DIB bits.
@@ -193,10 +196,13 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
                 Dim transformCheck As Long
                 With parentPDImage.mainLayer
                 
+                    'NOTE: note that I use BM_RGBTRIPLETS below, despite our DIB most definitely being in BGR order.  This is an
+                    '       undocumented bug with Windows' color management engine!
                     Dim bitDepthIdentifier As Long
-                    If .getLayerColorDepth = 24 Then bitDepthIdentifier = BM_BGRTRIPLETS Else bitDepthIdentifier = BM_xBGRQUADS
+                    If .getLayerColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xBGRQUADS
                     
-                    transformCheck = TranslateBitmapBits(iccTransformation, ByVal tmpLayer.getLayerDIBits, bitDepthIdentifier, .getLayerWidth, .getLayerHeight, 0&, ByVal .getLayerDIBits, bitDepthIdentifier, 0&, ByVal 0&, 0&)
+                    'TranslateBitmapBits handles the actual transformation for us.
+                    transformCheck = TranslateBitmapBits(iccTransformation, ByVal .getLayerDIBits, bitDepthIdentifier, .getLayerWidth, .getLayerHeight, .getLayerArrayWidth, ByVal .getLayerDIBits, bitDepthIdentifier, .getLayerArrayWidth, ByVal 0&, 0&)
                     
                 End With
                 
@@ -204,16 +210,21 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
                 If transformCheck <> 0 Then
                     Message "ICC profile transformation successful.  Image is now sRGB."
                 Else
-                    Message "ICC profile could not be applied.  Image remains in original profile."
+                    'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
+                    ' This is a known error when the source image is in CMYK format, because FreeImage (or GDI+) will have
+                    ' automatically converted the image to RGB for us.  Because the ICC profile is CMYK-specific, Windows will
+                    ' not be able to apply it to the image (which is no longer in CMYK format!)
+                    If CLng(Err.LastDllError) = 2021 Then
+                        Message "ICC profile could not be applied, because CMYK conversion has already occurred!"
+                    Else
+                        Message "ICC profile could not be applied.  Image remains in original profile. (Error #%1)", Err.LastDllError
+                    End If
                 End If
                     
                 'Release our transformation
                 DeleteColorTransform iccTransformation
                 Erase profileMatrix
-                
-                'Erase our temporary image
-                Set tmpLayer = Nothing
-                
+                                
             Else
                 Message "Both ICC profiles loaded successfully, but transformation could not be created."
                 applyICCtoParentImage = False
@@ -265,6 +276,24 @@ Public Function loadICCFromFreeImage(ByVal fi_Bitmap As Long) As Boolean
         loadICCFromFreeImage = False
     End If
     
+End Function
+
+Public Function loadICCFromGDIPlus(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
+
+    Message "Image contains ICC profile.  Copying profile now..."
+    
+    'Use the SIZE parameter to prepare a VB array to receive the profile data
+    ReDim iccData(0 To profileSize - 1) As Byte
+    
+    'Extract the ICC data using the supplied pointer
+    CopyMemory ByVal VarPtr(iccData(0)), ByVal ptrToProfile, profileSize
+        
+    'The complete ICC profile will now be inside the iccData array.
+    Message "ICC profile copied successfully."
+    Debug.Print "ICC profile size (in bytes): " & CStr(UBound(iccData) + 1)
+    iccDataPresent = True
+    loadICCFromGDIPlus = True
+
 End Function
 
 Public Function hasICCData() As Boolean
