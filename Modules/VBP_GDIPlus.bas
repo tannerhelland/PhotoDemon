@@ -3,10 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 30/September/13
-'Last update: added new functions for caching GDI+ graphics containers and pens.  This was used to test line draw performance
-'              in the histogram module - performance is still hideous on XP, so it must be the line function itself that's the
-'              problem.  Argh!
+'Last updated: 04/November/13
+'Last update: added support for ICC profile extraction when loading images via GDI+.  Surprisingly simple!
 '
 'This interface provides a means for interacting with the unnecessarily complex (and overwrought) GDI+ module.  GDI+ was
 ' originally used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time it has become
@@ -126,7 +124,7 @@ End Type
 Private Type EncoderParameter
     Guid           As clsid
     NumberOfValues As Long
-    Type           As EncoderParameterValueType
+    encType           As EncoderParameterValueType
     Value          As Long
 End Type
 
@@ -153,6 +151,9 @@ Private Const EncoderQuality          As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB3
 Private Const PixelFormat24bppRGB = &H21808
 Private Const PixelFormat32bppARGB = &H26200A
 Private Const PixelFormat32bppPARGB = &HE200B
+
+'Now that PD supports the loading of ICC profiles, we use this constant to retrieve it
+Private Const PropertyTagICCProfile As Long = &H8773&
 
 'GDI+ supports a variety of different linecaps.  Anchor caps will center the cap at the end of the line.
 Public Enum LineCap
@@ -193,10 +194,28 @@ Private Type GdiplusStartupInput
     SuppressExternalCodecs   As Long
 End Type
 
+'GDI+ image properties
+Private Type PropertyItem
+   propId As Long              ' ID of this property
+   propLength As Long              ' Length of the property value, in bytes
+   propType As Integer             ' Type of the value, as one of TAG_TYPE_XXX
+   propValue As Long               ' property value
+End Type
+
+' Image property types
+Private Const PropertyTagTypeByte = 1
+Private Const PropertyTagTypeASCII = 2
+Private Const PropertyTagTypeShort = 3
+Private Const PropertyTagTypeLong = 4
+Private Const PropertyTagTypeRational = 5
+Private Const PropertyTagTypeUndefined = 7
+Private Const PropertyTagTypeSLONG = 9
+Private Const PropertyTagTypeSRational = 10
+
 'OleCreatePictureIndirect types
 Private Type PictDesc
     Size       As Long
-    Type       As Long
+    picType       As Long
     hBmpOrIcon As Long
     hPal       As Long
 End Type
@@ -232,18 +251,23 @@ End Type
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
     
 'Start-up and shutdown
-Private Declare Function GdiplusStartup Lib "GdiPlus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
-Private Declare Function GdiplusShutdown Lib "GdiPlus" (ByVal Token As Long) As GDIPlusStatus
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
+Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
 
 'Load image from file, process said file, etc.
-Private Declare Function GdipLoadImageFromFile Lib "GdiPlus" (ByVal FileName As Long, GpImage As Long) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "GdiPlus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
-Private Declare Function GdipCreateHBITMAPFromBitmap Lib "GdiPlus" (ByVal BITMAP As Long, hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
-Private Declare Function GdipDisposeImage Lib "GdiPlus" (ByVal hImage As Long) As GDIPlusStatus
-Private Declare Function GdipCreateBitmapFromGdiDib Lib "GdiPlus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, BITMAP As Long) As GDIPlusStatus
-Private Declare Function GdipGetImageEncodersSize Lib "GdiPlus" (numEncoders As Long, Size As Long) As GDIPlusStatus
-Private Declare Function GdipGetImageEncoders Lib "GdiPlus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
-Private Declare Function GdipSaveImageToFile Lib "GdiPlus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, GpImage As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
+Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal BITMAP As Long, hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
+Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GDIPlusStatus
+Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, BITMAP As Long) As GDIPlusStatus
+Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
+Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
+Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
+
+'Retrieve properties from an image
+'Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As PropertyItem) As Long
+Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As Long) As Long
+Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, propSize As Long) As Long
 
 'OleCreatePictureIndirect is used to convert GDI+ images to VB's preferred StdPicture
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
@@ -259,33 +283,33 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
 'GDI+ calls related to drawing lines and various shapes
-Private Declare Function GdipCreateFromHDC Lib "GdiPlus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
 'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "GdiPlus" (ByVal mGraphics As Long) As Long
-Private Declare Function GdipSetSmoothingMode Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
-Private Declare Function GdipDeleteBrush Lib "GdiPlus" (ByVal mBrush As Long) As Long
-Private Declare Function GdipCreateSolidFill Lib "GdiPlus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
-Private Declare Function GdipDrawLine Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
-Private Declare Function GdipDrawEllipse Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal X As Single, ByVal Y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
-Private Declare Function GdipFillEllipseI Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
-Private Declare Function GdipCreatePath Lib "GdiPlus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
-Private Declare Function GdipDeletePath Lib "GdiPlus" (ByVal mPath As Long) As Long
+Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
+Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
+Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
+Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
+Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
+Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
+Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
+Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
+Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
 'Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
-Private Declare Function GdipAddPathArc Lib "GdiPlus" (ByVal mPath As Long, ByVal X As Single, ByVal Y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
-Private Declare Function GdipClosePathFigure Lib "GdiPlus" (ByVal mPath As Long) As Long
-Private Declare Function GdipFillPath Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mPath As Long) As Long
-Private Declare Function GdipDrawPath Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal mPath As Long) As Long
-Private Declare Function GdipCreatePen1 Lib "GdiPlus" (ByVal mColor As Long, ByVal mWidth As Single, ByVal mUnit As GpUnit, mPen As Long) As Long
-Private Declare Function GdipDeletePen Lib "GdiPlus" (ByVal mPen As Long) As Long
-Private Declare Function GdipCreateEffect Lib "GdiPlus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef mEffect As Long) As Long
-Private Declare Function GdipSetEffectParameters Lib "GdiPlus" (ByVal mEffect As Long, ByRef eParams As Any, ByVal Size As Long) As Long
-Private Declare Function GdipDeleteEffect Lib "GdiPlus" (ByVal mEffect As Long) As Long
-Private Declare Function GdipDrawImageFX Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
-Private Declare Function GdipCreateMatrix2 Lib "GdiPlus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
-Private Declare Function GdipDeleteMatrix Lib "GdiPlus" (ByVal mMatrix As Long) As Long
-Private Declare Function GdipSetPenLineCap Lib "GdiPlus" Alias "GdipSetPenLineCap197819" (ByVal mPen As Long, ByVal startCap As LineCap, ByVal endCap As LineCap, ByVal dCap As DashCap) As Long
-Private Declare Function GdipDrawImageRectRectI Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
-Private Declare Function GdipSetInterpolationMode Lib "GdiPlus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
+Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal mPath As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
+Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal mPath As Long) As Long
+Private Declare Function GdipFillPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mPath As Long) As Long
+Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal mPath As Long) As Long
+Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal mColor As Long, ByVal mWidth As Single, ByVal mUnit As GpUnit, mPen As Long) As Long
+Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal mPen As Long) As Long
+Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef mEffect As Long) As Long
+Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As Long, ByRef eParams As Any, ByVal Size As Long) As Long
+Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
+Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
+Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
+Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
+Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal mPen As Long, ByVal startCap As LineCap, ByVal endCap As LineCap, ByVal dCap As DashCap) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
+Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
 
 'Quality mode constants (only supported by certain functions!)
 Private Enum QualityMode
@@ -660,7 +684,7 @@ End Function
 
 'Use GDI+ to load a picture into a StdPicture object - not ideal, as some information will be lost in the transition, but since
 ' this is only a fallback from FreeImage I'm not going out of my way to improve it.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef targetPicture As StdPicture) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef targetPicture As StdPicture, ByRef dstImage As pdImage) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
@@ -673,6 +697,23 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef targetPict
         GdipDisposeImage hImage
         GDIPlusLoadPicture = False
         Exit Function
+    End If
+    
+    'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
+    Dim profileSize As Long
+    GdipGetPropertyItemSize hImage, PropertyTagICCProfile, profileSize
+    
+    'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
+    If profileSize > 0 Then
+    
+        Dim iccProfileBuffer() As Byte
+        ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
+        GdipGetPropertyItem hImage, PropertyTagICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
+        
+        dstImage.ICCProfile.loadICCFromGDIPlus profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
+        
+        Erase iccProfileBuffer
+        
     End If
     
     'Copy the GDI+ image into a standard bitmap
@@ -695,7 +736,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef targetPict
         Dim picHeader As PictDesc
         With picHeader
             .Size = Len(picHeader)
-            .Type = vbPicTypeBitmap
+            .picType = vbPicTypeBitmap
             .hBmpOrIcon = hBitmap
             .hPal = 0
         End With
@@ -841,7 +882,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
-                .Type = EncoderParameterValueTypeLong
+                .encType = EncoderParameterValueTypeLong
                 .Guid = pvDEFINE_GUID(EncoderColorDepth)
                 .Value = VarPtr(gdipColorDepth)
             End With
@@ -856,7 +897,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
-                .Type = EncoderParameterValueTypeLong
+                .encType = EncoderParameterValueTypeLong
                 .Guid = pvDEFINE_GUID(EncoderVersion)
                 .Value = VarPtr(GIF_EncoderVersion)
             End With
@@ -871,7 +912,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
-                .Type = [EncoderParameterValueTypeLong]
+                .encType = [EncoderParameterValueTypeLong]
                 .Guid = pvDEFINE_GUID(EncoderQuality)
                 .Value = VarPtr(JPEGQuality)
             End With
@@ -886,7 +927,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
-                .Type = EncoderParameterValueTypeLong
+                .encType = EncoderParameterValueTypeLong
                 .Guid = pvDEFINE_GUID(EncoderColorDepth)
                 .Value = VarPtr(gdipColorDepth)
             End With
@@ -901,7 +942,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
-                .Type = [EncoderParameterValueTypeLong]
+                .encType = [EncoderParameterValueTypeLong]
                 .Guid = pvDEFINE_GUID(EncoderCompression)
                 .Value = VarPtr(TIFF_Compression)
             End With
@@ -910,7 +951,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             
             With uEncParams.Parameter
                 .NumberOfValues = 1
-                .Type = [EncoderParameterValueTypeLong]
+                .encType = [EncoderParameterValueTypeLong]
                 .Guid = pvDEFINE_GUID(EncoderColorDepth)
                 .Value = VarPtr(gdipColorDepth)
             End With

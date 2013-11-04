@@ -548,8 +548,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             g_AllowViewportRendering = False
         
-            pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
-            pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
+            pdImages(g_CurrentImage).containingForm.HScroll.value = 0
+            pdImages(g_CurrentImage).containingForm.VScroll.value = 0
         
         End If
             
@@ -579,7 +579,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Case "PDI"
             
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
-                loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer)
+                loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer, targetImage)
                 
                 targetImage.originalFileFormat = 100
                 mustCountColors = True
@@ -587,9 +587,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too.
             Case "TMP"
             
-                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer, targetImage)
                 
-                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer, targetImage)
                 
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
@@ -607,7 +607,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
                     If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer)
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer, targetImage)
                     
                     'If GDI+ loaded the image successfully, note that we have to determine color depth manually
                     If loadSuccessful Then
@@ -621,7 +621,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If (Not loadSuccessful) Then
                     
                     If isThisPrimaryImage Then Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer)
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer, targetImage)
                 
                     'If VB managed to load the image successfully, note that we have to deteremine color depth manually
                     If loadSuccessful Then
@@ -1001,7 +1001,7 @@ Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
-Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
     
     'Decompress the current PDI file
     DecompressFile PDIPath
@@ -1030,14 +1030,14 @@ End Function
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
 
     Dim tmpPicture As StdPicture
     Set tmpPicture = New StdPicture
             
     Dim verifyGDISuccess As Boolean
     
-    verifyGDISuccess = GDIPlusLoadPicture(imagePath, tmpPicture)
+    verifyGDISuccess = GDIPlusLoadPicture(imagePath, tmpPicture, dstImage)
     
     If verifyGDISuccess And (tmpPicture.Width <> 0) And (tmpPicture.Height <> 0) Then
     
@@ -1055,7 +1055,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
 End Function
 
 'BITMAP loading
-Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
     
     On Error GoTo LoadVBImageFail
     
@@ -1507,8 +1507,8 @@ Public Sub DuplicateCurrentImage()
         
     g_AllowViewportRendering = False
         
-    pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
-    pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
+    pdImages(g_CurrentImage).containingForm.HScroll.value = 0
+    pdImages(g_CurrentImage).containingForm.VScroll.value = 0
         
     'Copy the picture from the previous form to this new one
     pdImages(g_CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer

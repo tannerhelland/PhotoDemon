@@ -299,8 +299,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dx As Long, _
-    ByVal dy As Long, _
+    ByVal dX As Long, _
+    ByVal dY As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal Scan As Long, _
@@ -313,8 +313,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dx As Long, _
-    ByVal dy As Long, _
+    ByVal dX As Long, _
+    ByVal dY As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
@@ -1520,19 +1520,19 @@ Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Ali
            
 Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal BITMAP As Long, _
-           ByRef backColor As RGBQUAD) As Long
+           ByRef BackColor As RGBQUAD) As Long
 
 Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
            ByVal BITMAP As Long, _
-           ByRef backColor As Long) As Long
+           ByRef BackColor As Long) As Long
 
 Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal BITMAP As Long, _
-           ByRef backColor As RGBQUAD) As Long
+           ByRef BackColor As RGBQUAD) As Long
            
 Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
            ByVal BITMAP As Long, _
-           ByRef backColor As Long) As Long
+           ByRef BackColor As Long) As Long
 
 Public Declare Function FreeImage_GetThumbnail Lib "FreeImage.dll" Alias "_FreeImage_GetThumbnail@4" ( _
            ByVal BITMAP As Long) As Long
@@ -2522,21 +2522,21 @@ Public Function FreeImage_HasBackgroundColor(ByVal BITMAP As Long) As Boolean
 End Function
 
 Public Function FreeImage_GetBackgroundColor(ByVal BITMAP As Long, _
-                                             ByRef backColor As RGBQUAD) As Boolean
+                                             ByRef BackColor As RGBQUAD) As Boolean
    
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(BITMAP, backColor) = 1)
+   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(BITMAP, BackColor) = 1)
    
 End Function
 
 Public Function FreeImage_GetBackgroundColorAsLong(ByVal BITMAP As Long, _
-                                                   ByRef backColor As Long) As Boolean
+                                                   ByRef BackColor As Long) As Boolean
    
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as a Long value.
 
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(BITMAP, backColor) = 1)
+   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(BITMAP, BackColor) = 1)
    
 End Function
 
@@ -2562,21 +2562,21 @@ Dim bkcolor As RGBQUAD
 End Function
 
 Public Function FreeImage_SetBackgroundColor(ByVal BITMAP As Long, _
-                                             ByRef backColor As RGBQUAD) As Boolean
+                                             ByRef BackColor As RGBQUAD) As Boolean
                                              
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(BITMAP, backColor) = 1)
+   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(BITMAP, BackColor) = 1)
                                              
 End Function
 
 Public Function FreeImage_SetBackgroundColorAsLong(ByVal BITMAP As Long, _
-                                                   ByVal backColor As Long) As Boolean
+                                                   ByVal BackColor As Long) As Boolean
                                              
    ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
    ' the color value to set must be provided as a Long value.
 
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(BITMAP, backColor) = 1)
+   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(BITMAP, BackColor) = 1)
                                              
 End Function
 
