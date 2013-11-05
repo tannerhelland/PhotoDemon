@@ -101,6 +101,9 @@ Public Sub LoadTheProgram()
     Set g_cMonitors = New clsMonitors
     g_cMonitors.Refresh
     
+    'While here, also cache the current color management settings in use by the system
+    cacheCurrentSystemColorProfile
+    
     
     
     '*************************************************************************************************************************************
@@ -548,8 +551,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             g_AllowViewportRendering = False
         
-            pdImages(g_CurrentImage).containingForm.HScroll.value = 0
-            pdImages(g_CurrentImage).containingForm.VScroll.value = 0
+            pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
+            pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
         End If
             
@@ -1507,8 +1510,8 @@ Public Sub DuplicateCurrentImage()
         
     g_AllowViewportRendering = False
         
-    pdImages(g_CurrentImage).containingForm.HScroll.value = 0
-    pdImages(g_CurrentImage).containingForm.VScroll.value = 0
+    pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
+    pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
     'Copy the picture from the previous form to this new one
     pdImages(g_CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer

@@ -99,6 +99,74 @@ Private Declare Function CreateMultiProfileTransform Lib "mscms" (ByRef pProfile
 Private Declare Function DeleteColorTransform Lib "mscms" (ByVal hTransform As Long) As Long
 Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByRef srcBits As Any, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByRef dstBits As Any, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
 
+'Windows handles color management on a per-DC basis.  Use SetICMMode and these constants to activate/deactivate or query a DC.
+Private Declare Function SetICMMode Lib "gdi32" (ByVal targetDC As Long, ByVal iEnableICM As ICM_Mode) As Long
+
+Private Enum ICM_Mode
+    ICM_OFF = 1
+    ICM_ON = 2
+    ICM_QUERY = 3
+    ICM_DONE_OUTSIDEDC = 4
+End Enum
+
+#If False Then
+    Const ICM_OFF = 1, ICM_ON = 2, ICM_QUERY = 3, ICM_DONE_OUTSIDEDC = 4
+#End If
+
+'Retrieves the filename of the color management file associated with a given DC
+Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileA" (ByVal hDC As Long, ByRef lpcbName As Long, ByRef bufferPtr As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+
+'When PD is first loaded, the system's current color management file will be cached in this variable
+Private currentSystemColorProfile As String
+Private Const MAX_PATH As Long = 260
+
+'When PD is first loaded, this function will be called, which caches the current color management file in use by the system
+Public Sub cacheCurrentSystemColorProfile()
+    currentSystemColorProfile = getDefaultICCProfile()
+End Sub
+
+'Returns the path to the default color mangement profile file (ICC or WCS) currently in use by the system.
+Public Function getDefaultICCProfile() As String
+
+    'Prepare a blank string to receive the profile path
+    Dim filenameLength As Long
+    filenameLength = MAX_PATH
+    
+    Dim tmpPathString As String
+    tmpPathString = ""
+    
+    Dim tmpPathBuffer() As Byte
+    ReDim tmpPathBuffer(0 To filenameLength - 1) As Byte
+    
+    'Using the desktop DC as our reference, request the filename of the currently in-use ICM profile (which should be the system default)
+    If GetICMProfile(GetDC(0), filenameLength, ByVal VarPtr(tmpPathBuffer(0))) = 0 Then
+        getDefaultICCProfile = ""
+    Else
+    
+        'Convert the returned byte array into a string
+        Dim i As Long
+        For i = 0 To filenameLength - 1
+            tmpPathString = tmpPathString & Chr(tmpPathBuffer(i))
+            Debug.Print tmpPathBuffer(i)
+        Next i
+                
+        getDefaultICCProfile = tmpPathString
+        
+    End If
+    
+End Function
+
+'Turn on color management for a specified device context
+Public Sub turnOnColorManagementForDC(ByVal dstDC As Long)
+    SetICMMode dstDC, ICM_ON
+End Sub
+
+'Turn off color management for a specified device context
+Public Sub turnOffColorManagementForDC(ByVal dstDC As Long)
+    SetICMMode dstDC, ICM_OFF
+End Sub
+
 'Given a valid iccProfileArray (such as one stored in a pdICCProfile class), convert it to an internal Windows color profile
 ' handle, validate it, and return the result.  Returns a non-zero handle if successful.
 Public Function loadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVal profileArraySize As Long) As Long
