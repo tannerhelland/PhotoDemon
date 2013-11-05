@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Layer class
 'Copyright ©2011-2013 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 05/August/13
-'Last update: added support for compressing layer data when writing it out to file (and decompressing it at load-time).
+'Last updated: 05/November/13
+'Last update: whenever the layer is created anew (and thus acquires a new DC), activate color management for that DC.
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
 ' pdLayer is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
@@ -950,6 +950,9 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     layerDC = CreateCompatibleDC(0)
     
     If layerDC <> 0 Then
+    
+        'Activate color management for this DC
+        turnOnColorManagementForDC layerDC
         
         'Create a DIB
         layerDIB = CreateDIBSection(layerDC, layerDIBHeader, 0, layerDIBits, 0, 0)
