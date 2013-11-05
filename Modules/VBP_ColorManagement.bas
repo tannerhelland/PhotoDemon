@@ -148,7 +148,6 @@ Public Function getDefaultICCProfile() As String
         Dim i As Long
         For i = 0 To filenameLength - 1
             tmpPathString = tmpPathString & Chr(tmpPathBuffer(i))
-            Debug.Print tmpPathBuffer(i)
         Next i
                 
         getDefaultICCProfile = tmpPathString
