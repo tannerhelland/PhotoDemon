@@ -351,6 +351,11 @@ Public Function getLayerDIBits() As Long
     getLayerDIBits = layerDIBits
 End Function
 
+'Return a pointer to this layer's DIB header
+Public Function getLayerDIBHeader() As Long
+    getLayerDIBHeader = VarPtr(layerDIBHeader)
+End Function
+
 'Copy the current layer's contents to the clipboard
 Public Sub copyLayerToClipboard()
     
@@ -951,8 +956,12 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     
     If layerDC <> 0 Then
     
-        'Activate color management for this DC
-        turnOnColorManagementForDC layerDC
+        'Activate color management for this DC.
+        ' NOTE!  Due to rejiggering of PD's color management engine, this is no longer necessary.  Color management is only applied
+        '         at image load-time (to convert into sRGB), and when drawing to the screen - but when drawing to the screen, all
+        '         management is handled at the destination.  For performance reasons, we no longer color-manage layers themselves,
+        '         which allows us to move RGB/A data between layers much more efficiently.
+        'turnOnColorManagementForDC layerDC
         
         'Create a DIB
         layerDIB = CreateDIBSection(layerDC, layerDIBHeader, 0, layerDIBits, 0, 0)
