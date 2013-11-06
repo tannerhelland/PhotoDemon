@@ -717,8 +717,14 @@ Private Sub Form_Resize()
     'Redraw this form if certain criteria are met (image loaded, form visible, viewport adjustments allowed)
     If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(Me.hWnd) > 0) Then
         
-        'New test as of 16 Oct '13 - do not redraw the viewport unless it is the active one.
-        If g_CurrentImage = CLng(Me.Tag) Then PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
+        'Additionally, do not attempt to draw the image until it has been marked as "loaded successfully"; otherwise it will
+        ' attempt to draw mid-load, causing unsightly flickering.
+        If pdImages(Me.Tag).loadedSuccessfully Then
+        
+            'New test as of 16 Oct '13 - do not redraw the viewport unless it is the active one.
+            If g_CurrentImage = CLng(Me.Tag) Then PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
+            
+        End If
         
     End If
     
