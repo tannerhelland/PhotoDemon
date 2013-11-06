@@ -53,11 +53,14 @@ Private Type RECT
 End Type
 
 'Structure for the position of a monitor
+Private Const CCHDEVICENAME As Long = 32
+
 Private Type tagMONITORINFO
     cbSize      As Long 'Size of structure
     rcMonitor   As RECT 'Monitor rect
     rcWork      As RECT 'Working area rect
     dwFlags     As Long 'Flags
+    b(0 To CCHDEVICENAME - 1) As Byte 'Monitor name
 End Type
 
 Public Monitors As New Collection
@@ -81,13 +84,49 @@ Private Declare Function MonitorFromRect Lib "user32" ( _
 Private Declare Function GetWindowRect Lib "user32.dll" _
           (ByVal hWnd As Long, _
            rc As RECT) As Long
+           
+'ADDITION BY TANNER: this is helpful for retrieving detailed monitor info, like a human-friendly name and description
+Private Type DISPLAY_DEVICE
+   cb As Long
+   DeviceName(0 To 31) As Byte
+   DeviceString(0 To 127) As Byte
+   StateFlags As Long
+   DeviceID(0 To 127) As Byte
+   DeviceKey(0 To 127) As Byte
+End Type
+
+Private Declare Function EnumDisplayDevices Lib "user32" _
+   Alias "EnumDisplayDevicesA" _
+  (ByVal lpDevice As Any, _
+   ByVal iDevNum As Long, _
+   lpDisplayDevice As DISPLAY_DEVICE, _
+   ByVal dwFlags As Long) As Long
+   
+Private Const DD_PRIMARY_DEVICE As Long = &H4
 
 '==================================================================================================
 'Public Members
 '==================================================================================================
 Private Sub Class_Initialize()
+
     'Load the monitors collection
     Refresh
+    
+    'Provide some helpful debug info while in the IDE
+    If Not g_IsProgramCompiled Then
+    
+        Dim i As Long
+            
+        For i = 1 To Monitors.Count
+            If Monitors(i).isPrimary Then
+                Debug.Print "Found primary monitor: " & Monitors(i).FriendlyName & " (" & Monitors(i).Description & ")"
+            Else
+                Debug.Print "Found secondary monitor: " & Monitors(i).FriendlyName & " (" & Monitors(i).Description & ")"
+        End If
+        Next i
+        
+    End If
+                    
 End Sub
 
 Public Property Get DesktopLeft() As Long
@@ -160,7 +199,7 @@ Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm
     '====================================================================
     Dim lMonitor        As Long
     Dim lReturn         As Long
-    Dim MonitorInfo     As tagMONITORINFO
+    Dim monitorInfo     As tagMONITORINFO
     Dim lMonitorWidth   As Long
     Dim lMonitorHeight  As Long
     
@@ -181,16 +220,16 @@ Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm
     If lMonitor Then
         
         'init the structure
-        MonitorInfo.cbSize = Len(MonitorInfo)
+        monitorInfo.cbSize = Len(monitorInfo)
         
         'Get the monitor information
-        lReturn = GetMonitorInfo(lMonitor, MonitorInfo)
+        lReturn = GetMonitorInfo(lMonitor, monitorInfo)
         'If the Call does not fail then center the form over that monitor
         If lReturn Then
-            With MonitorInfo
+            With monitorInfo
                 lMonitorWidth = (.rcWork.Right - .rcWork.Left) * Screen.TwipsPerPixelX
                 lMonitorHeight = (.rcWork.Bottom - .rcWork.Top) * Screen.TwipsPerPixelY
-                FormToCenter.Move ((lMonitorWidth - FormToCenter.Width) \ 2) + .rcMonitor.Left * Screen.TwipsPerPixelX, ((lMonitorHeight - FormToCenter.Height) \ 2) + MonitorInfo.rcMonitor.Top * Screen.TwipsPerPixelX
+                FormToCenter.Move ((lMonitorWidth - FormToCenter.Width) \ 2) + .rcMonitor.Left * Screen.TwipsPerPixelX, ((lMonitorHeight - FormToCenter.Height) \ 2) + monitorInfo.rcMonitor.Top * Screen.TwipsPerPixelX
             End With
         End If
     Else
@@ -205,7 +244,7 @@ CenterFormOnMonitor_Err:
     End If
 End Function
 
-Public Function GetMonitorFromXYPoint(x As Long, y As Long, dwFlags As Long) As Long
+Public Function GetMonitorFromXYPoint(X As Long, Y As Long, dwFlags As Long) As Long
     '==========================================
     'Gets a monitor handle from the xy point
     'Workaround for the GetMonitorFromPoint API
@@ -217,10 +256,10 @@ Public Function GetMonitorFromXYPoint(x As Long, y As Long, dwFlags As Long) As 
     
     'Transfer the x y into a rect 1 pixel square
     With rcRect
-        .Top = y
-        .Left = x
-        .Right = x + 1
-        .Bottom = y + 1
+        .Top = Y
+        .Left = X
+        .Right = X + 1
+        .Bottom = Y + 1
     End With
     On Error Resume Next
     lReturn = MonitorFromRect(rcRect, dwFlags)
@@ -267,7 +306,7 @@ Public Sub Refresh()
             .Height = .Bottom
         End With
         'Add the monitor to the monitors collection
-        Monitors.Add Item:=cMonitor, Key:=CStr(0)
+        Monitors.Add item:=cMonitor, Key:=CStr(0)
     Else
         
         'Loop through an imaginary grid of 640x480 cells across the virtual desktop
@@ -279,7 +318,7 @@ Public Sub Refresh()
                 If lMonitor <> 0 Then
                     Set cMonitor = New clsMonitor
                     Call GetMonitorInformation(lMonitor, cMonitor)
-                    Monitors.Add Item:=cMonitor, Key:=CStr(lMonitor)
+                    Monitors.Add item:=cMonitor, Key:=CStr(lMonitor)
                 End If
             Next
         Next
@@ -312,27 +351,62 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
     '======================================================
     'Fills in the cMon class passed in with the information
     '======================================================
-    Dim MonitorInfo As tagMONITORINFO
+    Dim monitorInfo As tagMONITORINFO
     Dim lReturn     As Long
     
     On Error GoTo GetMonitorInformation_Err
-    MonitorInfo.cbSize = Len(MonitorInfo)
-    lReturn = GetMonitorInfo(hMonitor, MonitorInfo)
+    monitorInfo.cbSize = Len(monitorInfo)
+    lReturn = GetMonitorInfo(hMonitor, monitorInfo)
     With cMon
         .Handle = hMonitor
-        .Left = MonitorInfo.rcMonitor.Left
-        .Right = MonitorInfo.rcMonitor.Right
-        .Top = MonitorInfo.rcMonitor.Top
-        .Bottom = MonitorInfo.rcMonitor.Bottom
+        .Name = TrimNull(StrConv(monitorInfo.b, vbUnicode))
+        .Left = monitorInfo.rcMonitor.Left
+        .Right = monitorInfo.rcMonitor.Right
+        .Top = monitorInfo.rcMonitor.Top
+        .Bottom = monitorInfo.rcMonitor.Bottom
         
-        .WorkLeft = MonitorInfo.rcWork.Left
-        .WorkRight = MonitorInfo.rcWork.Right
-        .WorkTop = MonitorInfo.rcWork.Top
-        .WorkBottom = MonitorInfo.rcWork.Bottom
+        .WorkLeft = monitorInfo.rcWork.Left
+        .WorkRight = monitorInfo.rcWork.Right
+        .WorkTop = monitorInfo.rcWork.Top
+        .WorkBottom = monitorInfo.rcWork.Bottom
         
-        .Height = MonitorInfo.rcMonitor.Bottom - MonitorInfo.rcMonitor.Top
-        .Width = MonitorInfo.rcMonitor.Right - MonitorInfo.rcMonitor.Left
+        .Height = monitorInfo.rcMonitor.Bottom - monitorInfo.rcMonitor.Top
+        .Width = monitorInfo.rcMonitor.Right - monitorInfo.rcMonitor.Left
     End With
+    
+    'ADDED BY TANNER: use the device name to retrieve even more helpful information, like a human-friendly
+    ' name and description.
+    Dim monitorInfoDetailed As DISPLAY_DEVICE
+    monitorInfoDetailed.cb = Len(monitorInfoDetailed)
+    
+    'Enumerate display devices until we find one that matches this monitor
+    Dim displayCount As Long
+    displayCount = 0
+    Do While EnumDisplayDevices(0&, displayCount, monitorInfoDetailed, 0&)
+    
+        'A match was found; retrieve the display driver's description
+        If cMon.Name = TrimNull(StrConv(monitorInfoDetailed.DeviceName, vbUnicode)) Then
+            cMon.Description = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
+            
+            'Also, if this is the primary monitor, mark it as such
+            If (monitorInfoDetailed.StateFlags And DD_PRIMARY_DEVICE) Then
+                cMon.isPrimary = True
+            Else
+                cMon.isPrimary = False
+            End If
+            
+            Exit Do
+        End If
+        
+        displayCount = displayCount + 1
+    
+    Loop
+    
+    'Repeat the call a second time, providing the monitor's name, in order to receive even *more* information
+    If EnumDisplayDevices(cMon.Name, 0, monitorInfoDetailed, 1&) <> 0 Then
+        cMon.FriendlyName = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
+    End If
+        
     GetMonitorInformation = lReturn
     Exit Function
 GetMonitorInformation_Err:
@@ -356,3 +430,16 @@ Private Sub ClearMonitorsCollection()
     Next
 End Sub
 
+Private Function TrimNull(item As String) As String
+
+    Dim pos As Long
+   
+   'double check that there is a chr$(0) in the string
+    pos = InStr(item, Chr$(0))
+    If pos Then
+       TrimNull = Left$(item, pos - 1)
+    Else
+       TrimNull = item
+    End If
+  
+End Function

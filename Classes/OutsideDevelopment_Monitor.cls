@@ -49,6 +49,42 @@ Private m_Worktop       As Long
 Private m_Workbottom    As Long
 Private m_Width         As Long
 Private m_Height        As Long
+Private m_Name          As String
+Private m_FriendlyName  As String
+Private m_Description   As String
+Private m_Primary As Boolean
+
+Public Property Get isPrimary() As Boolean
+    isPrimary = m_Primary
+End Property
+
+Public Property Let isPrimary(lPrimary As Boolean)
+    m_Primary = lPrimary
+End Property
+
+Public Property Get Description() As String
+    Description = m_Description
+End Property
+
+Public Property Let Description(lDescription As String)
+    m_Description = lDescription
+End Property
+
+Public Property Get FriendlyName() As String
+    FriendlyName = m_FriendlyName
+End Property
+
+Public Property Let FriendlyName(lFriendlyName As String)
+    m_FriendlyName = lFriendlyName
+End Property
+
+Public Property Get Name() As String
+    Name = m_Name
+End Property
+
+Public Property Let Name(lName As String)
+    m_Name = lName
+End Property
 
 Public Property Get Handle() As Long
     Handle = m_Handle
@@ -70,8 +106,8 @@ Public Property Get Width() As Long
     Width = m_Width
 End Property
 
-Public Property Let Width(W As Long)
-    m_Width = W
+Public Property Let Width(w As Long)
+    m_Width = w
 End Property
 
 Public Property Get Left() As Long
@@ -86,8 +122,8 @@ Public Property Get Right() As Long
     Right = m_Right
 End Property
 
-Public Property Let Right(R As Long)
-    m_Right = R
+Public Property Let Right(r As Long)
+    m_Right = r
 End Property
 
 Public Property Get Top() As Long
@@ -118,8 +154,8 @@ Public Property Get WorkRight() As Long
     WorkRight = m_Workright
 End Property
 
-Public Property Let WorkRight(R As Long)
-    m_Workright = R
+Public Property Let WorkRight(r As Long)
+    m_Workright = r
 End Property
 
 Public Property Get WorkTop() As Long
