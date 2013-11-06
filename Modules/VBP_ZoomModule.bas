@@ -125,9 +125,14 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'In the future, additional compositing can be handled here.
     
+    'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
+    ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
+    assignDefaultColorProfileToDC formToBuffer.hDC
+    turnOnColorManagementForDC formToBuffer.hDC
+    
     'Finally, flip the front buffer to the screen
     BitBlt formToBuffer.hDC, 0, 0, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
-    
+        
     'If both scrollbars are active, copy a gray square over the small space between them
     If formToBuffer.HScroll.Visible And formToBuffer.VScroll.Visible Then
         
@@ -174,7 +179,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     curImage = CLng(formToBuffer.Tag)
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).currentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
     srcWidth = pdImages(curImage).targetWidth / ZoomVal
@@ -193,68 +198,69 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
         If pdImages(curImage).mainLayer.getLayerColorDepth = 32 Then
-            
+        
             'Create a blank layer in the parent pdImages object.  (For performance reasons, we create this image at the size
             ' of the viewport.)
             pdImages(curImage).alphaFixLayer.createBlank pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, 32
-            
+
             'Update 15 Sep 2013: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
             ' if HALFTONE mode is used, and zooming-out requires HALFTONE for properly pretty results.)
             If g_GDIPlusAvailable Then
-            
+
                 'For performance reasons, crop out the source area of the main image.  (This saves GDI+ from having to copy
                 ' the entire source image, which may be large!)
                 Dim tmpSrcLayer As pdLayer
                 Set tmpSrcLayer = New pdLayer
                 tmpSrcLayer.createBlank srcWidth, srcHeight, 32
                 BitBlt tmpSrcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
-                
+
                 'Use GDI+ to apply the resize
                 GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeBilinear
-                
+
                 'Composite the resized layer against a checkerboard background
                 pdImages(curImage).alphaFixLayer.compositeBackgroundColor
-                
+
                 'Copy the composited and resized layer into the back buffer
                 BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
-                
+
                 'Erase our temporary layer
                 tmpSrcLayer.eraseLayer
                 Set tmpSrcLayer = Nothing
-                
+
             Else
-            
+
                 'If GDI+ is not available, we must rely on a nasty hack; HALFTONE stretching does not preserve the alpha channel, but
                 ' COLORONCOLOR does.  So make two copies of the image - one created via COLORONCOLOR, from which we'll steal alpha values,
                 ' and the other using HALFTONE, from which we'll steal RGB values.
-                
+
                 'hackLayer is resized using nearest-neighbor interpolation.  This makes RGB data look terrible, but it preserves alpha data.
                 Dim hackLayer As pdLayer
                 Set hackLayer = New pdLayer
                 hackLayer.createBlank pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, 32
-                
+
                 SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
                 StretchBlt hackLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-                
+
                 'Next, alphaFixLayer is resized using HALFTONE data.  This results in a good-quality RGB image, but all alpha data is erased.
                 SetStretchBltMode pdImages(curImage).alphaFixLayer.getLayerDC, STRETCHBLT_HALFTONE
                 StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-                
+
                 'Use a unique PD function called "compositeBackgroundColorSpecial", which tells alphaFixLayer to borrow the alpha values
                 ' from hackLayer, then composite itself against a checkerboard.  Once this is done, copy the resulting image into the
                 ' viewport layer (backBuffer).
                 pdImages(curImage).alphaFixLayer.compositeBackgroundColorSpecial hackLayer
                 BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
-                
+
                 'Remove our temporary layer from memory
                 hackLayer.eraseLayer
                 Set hackLayer = Nothing
-            
+
             End If
             
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
             StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).mainLayer.getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            'StretchDIBits pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, srcX, srcY, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDIBits(), pdImages(curImage).mainLayer.getLayerDIBHeader(), 0&, vbSrcCopy
         End If
         
     Else
@@ -264,9 +270,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
         Dim bltWidth As Long, bltHeight As Long
-        bltWidth = pdImages(curImage).targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue)) - (pdImages(curImage).targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue))))
+        bltWidth = pdImages(curImage).targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
         srcWidth = bltWidth / ZoomVal
-        bltHeight = pdImages(curImage).targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue)) - (pdImages(curImage).targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue))))
+        bltHeight = pdImages(curImage).targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
         srcHeight = bltHeight / ZoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
@@ -328,7 +334,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'Get the mathematical zoom multiplier (based on the current combo box setting - for example, 0.50 for "50% zoom")
     Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).CurrentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).currentZoomValue)
     
     'Calculate the width and height of a full-size viewport based on the current zoom value
     zWidth = (pdImages(curImage).Width * ZoomVal)
@@ -429,10 +435,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            newScrollMax = pdImages(curImage).Width - Int(viewportWidth * g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(curImage).Width - Int(viewportWidth * g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(curImage).Width - Int(viewportWidth / g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(curImage).Width - Int(viewportWidth / g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
         End If
         
         If formToBuffer.HScroll.Value > newScrollMax Then formToBuffer.HScroll.Value = newScrollMax
@@ -448,10 +454,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If ZoomVal <= 1 Then
-            newScrollMax = pdImages(curImage).Height - Int(viewportHeight * g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(curImage).Height - Int(viewportHeight * g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(curImage).Height - Int(viewportHeight / g_Zoom.ZoomFactor(pdImages(curImage).CurrentZoomValue) + 0.5)
+            newScrollMax = pdImages(curImage).Height - Int(viewportHeight / g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
         End If
         
         If formToBuffer.VScroll.Value > newScrollMax Then formToBuffer.VScroll.Value = newScrollMax

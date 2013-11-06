@@ -7,7 +7,6 @@ Begin VB.Form FormImage
    ClientLeft      =   120
    ClientTop       =   345
    ClientWidth     =   5430
-   ClipControls    =   0   'False
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"

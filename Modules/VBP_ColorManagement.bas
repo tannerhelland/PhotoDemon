@@ -114,12 +114,24 @@ End Enum
 #End If
 
 'Retrieves the filename of the color management file associated with a given DC
-Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileA" (ByVal hDC As Long, ByRef lpcbName As Long, ByRef bufferPtr As Long) As Long
+Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileA" (ByVal hDC As Long, ByRef lpcbName As Long, ByRef BufferPtr As Long) As Long
+Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileA" (ByVal hDC As Long, ByVal lpFileName As String) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
 Private currentSystemColorProfile As String
 Private Const MAX_PATH As Long = 260
+
+'Assign the default color profile (whether the system profile or the user profile) to a DC
+Public Sub assignDefaultColorProfileToDC(ByVal targetDC As Long)
+    SetICMProfile targetDC, currentSystemColorProfile
+    
+    'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
+    ' that the function is working), use something similar to the code below.
+    'Dim TEST_ICM As String
+    'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
+    'SetICMProfile targetDC, TEST_ICM
+End Sub
 
 'When PD is first loaded, this function will be called, which caches the current color management file in use by the system
 Public Sub cacheCurrentSystemColorProfile()
