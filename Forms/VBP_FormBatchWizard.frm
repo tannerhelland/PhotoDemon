@@ -3696,32 +3696,32 @@ Private Sub prepareForBatchConversion()
                     m_FormatParams = ""
                     
                     'See if this image's file format is supported by the export engine
-                    If g_ImageFormats.getIndexOfOutputFIF(pdImages(g_CurrentImage).CurrentFileFormat) = -1 Then
+                    If g_ImageFormats.getIndexOfOutputFIF(pdImages(g_CurrentImage).currentFileFormat) = -1 Then
                         
                         'If it isn't, save as JPEG or PNG contingent on color depth
                         
                         '24bpp images default to JPEG
                         If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 24 Then
                             tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
-                            pdImages(g_CurrentImage).CurrentFileFormat = FIF_JPEG
+                            pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
                         
                         '32bpp images default to PNG
                         Else
                             tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
-                            pdImages(g_CurrentImage).CurrentFileFormat = FIF_PNG
+                            pdImages(g_CurrentImage).currentFileFormat = FIF_PNG
                         End If
                         
                     Else
                         
                         'This format IS supported, so use the default extension
-                        tmpFileExtension = g_ImageFormats.getExtensionFromFIF(pdImages(g_CurrentImage).CurrentFileFormat)
+                        tmpFileExtension = g_ImageFormats.getExtensionFromFIF(pdImages(g_CurrentImage).currentFileFormat)
                     
                     End If
                     
                 'Possibility 2: force all images to a single file format
                 Else
                     tmpFileExtension = g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
-                    pdImages(g_CurrentImage).CurrentFileFormat = g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
+                    pdImages(g_CurrentImage).currentFileFormat = g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
                 End If
                 
                 'If the user has requested lower- or upper-case, we now need to convert the extension as well

@@ -1034,23 +1034,13 @@ End Function
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
 Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
-
-    Dim tmpPicture As StdPicture
-    Set tmpPicture = New StdPicture
             
     Dim verifyGDISuccess As Boolean
     
-    verifyGDISuccess = GDIPlusLoadPicture(imagePath, tmpPicture, dstImage)
+    verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstImage, dstLayer)
     
-    If verifyGDISuccess And (tmpPicture.Width <> 0) And (tmpPicture.Height <> 0) Then
-    
-        'Copy the image returned by GDI+ into the current pdImage object
-        LoadGDIPlusImage = dstLayer.CreateFromPicture(tmpPicture)
-        
-        'If the load was successful and the image contains an alpha channel, remove the effects of a premultiplied alpha channel
-        ' (which is the GDI+ default)
-        If LoadGDIPlusImage And dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha
-                
+    If verifyGDISuccess And (dstLayer.getLayerWidth <> 0) And (dstLayer.getLayerHeight <> 0) Then
+        LoadGDIPlusImage = True
     Else
         LoadGDIPlusImage = False
     End If

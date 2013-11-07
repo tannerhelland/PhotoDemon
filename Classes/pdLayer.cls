@@ -1840,7 +1840,7 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
                 r = r * tmpAlphaModifier
                 g = g * tmpAlphaModifier
                 b = b * tmpAlphaModifier
-                
+                                
                 iData(QuickX + 2, y) = CByte(r)
                 iData(QuickX + 1, y) = CByte(g)
                 iData(QuickX, y) = CByte(b)
