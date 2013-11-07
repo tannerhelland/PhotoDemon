@@ -1407,7 +1407,7 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE ', WM_MOVE - adding WM_MOVE causes freezing at present, and I'm not sure why, so leave it unsubclassed for the time being
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING
     
     'Because I care about PD being a good "desktop citizen", I deactivate top-most status of all toolbars (and other windows, as necessary),
@@ -1958,6 +1958,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then moveChildInsideParent winIndex
                 End If
                 If Not mainFormTriggeredChange Then requestWindowResync winIndex
+                
+                'Notify the child window that it may have changed monitors, so it may need to redraw itself with a new color profile
+                If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then pdWindows(winIndex).formReference.checkParentMonitor
             
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
@@ -2067,7 +2070,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         Select Case uMsg
         
             'The parent window is currently being moved
-            Case WM_MOVING
+            Case WM_MOVING, WM_MOVE
             
                 'lParam contains a pointer to the window's rect location.  Retrieve it now.
                 Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
@@ -2087,7 +2090,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             If toolbarsFloating Then MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
                             
                         Case IMAGE_WINDOW
-                            If imagesFloating Then MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
+                            If imagesFloating Then
+                                MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
+                            
+                            'Images are not floating, so they will not receive WM_MOVE notifications.  Notify them that they may have changed
+                            ' monitors, so they will need to re-check their color management settings.
+                            Else
+                                pdWindows(i).formReference.checkParentMonitor
+                            End If
                     
                     End Select
                     

@@ -151,9 +151,25 @@ Public Function getSystemColorFolder() As String
 
 End Function
 
-'Assign the default color profile (whether the system profile or the user profile) to a DC
-Public Sub assignDefaultColorProfileToDC(ByVal targetDC As Long)
-    SetICMProfile targetDC, currentSystemColorProfile
+'Assign the default color profile (whether the system profile or the user profile) to an object with a DC
+Public Sub assignDefaultColorProfileToForm(ByRef targetForm As Form)
+    
+    'If the current user setting is "use system color profile", our job is easy.
+    If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then
+        SetICMProfile targetForm.hDC, currentSystemColorProfile
+    Else
+        
+        'Use the form's containing monitor to retrieve a matching profile from the preferences file
+        Dim newICMProfile As String
+        newICMProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & targetForm.currentMonitor, "")
+        
+        If Len(newICMProfile) > 0 Then
+            SetICMProfile targetForm.hDC, newICMProfile
+        Else
+            SetICMProfile targetForm.hDC, currentSystemColorProfile
+        End If
+        
+    End If
     
     'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
     ' that the function is working), use something similar to the code below.
