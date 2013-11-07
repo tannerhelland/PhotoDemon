@@ -185,7 +185,7 @@ Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
     Set objShell = New Shell
     Set objFolder = objShell.BrowseForFolder(srcHwnd, g_Language.TranslateMessage("Please select a folder:"), 0)
             
-    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
+    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.item.Path Else returnString = ""
     
     Set objFolder = Nothing
     Set objShell = Nothing
@@ -406,3 +406,18 @@ Public Function GetDomainName(ByVal Address As String) As String
 
 End Function
 
+'When passing file and path strings among API calls, they often have to be pre-initialized to some arbitrary buffer length
+' (typically MAX_PATH).  When finished, the string needs to be resized to remove any null chars.  Use this function.
+Public Function TrimNull(ByVal origString As String) As String
+
+    Dim nullPosition As Long
+   
+   'double check that there is a chr$(0) in the string
+    nullPosition = InStr(origString, Chr$(0))
+    If nullPosition Then
+       TrimNull = Left$(origString, nullPosition - 1)
+    Else
+       TrimNull = origString
+    End If
+  
+End Function

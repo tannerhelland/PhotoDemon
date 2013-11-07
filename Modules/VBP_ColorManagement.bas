@@ -94,10 +94,11 @@ Private Const BM_xBGRQUADS As Long = &H10
 Private Declare Function OpenColorProfile Lib "mscms" Alias "OpenColorProfileA" (ByRef pProfile As Any, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal dwCreationMode As Long) As Long
 Private Declare Function CloseColorProfile Lib "mscms" (ByVal hProfile As Long) As Long
 Private Declare Function IsColorProfileValid Lib "mscms" (ByVal hProfile As Long, ByRef pBool As Long) As Long
-Private Declare Function GetStandardColorSpaceProfile Lib "mscms" Alias "GetStandardColorSpaceProfileA" (ByVal pcstr As String, ByVal dwProfileID As Long, ByVal pProfileName As Long, ByRef pdwSize As Long) As Long
+Private Declare Function GetStandardColorSpaceProfile Lib "mscms" Alias "GetStandardColorSpaceProfileA" (ByVal pcStr As String, ByVal dwProfileID As Long, ByVal pProfileName As Long, ByRef pdwSize As Long) As Long
 Private Declare Function CreateMultiProfileTransform Lib "mscms" (ByRef pProfile As Any, ByVal nProfiles As Long, ByRef pIntents As Long, ByVal nIntents As Long, ByVal dwFlags As Long, ByVal indexPreferredCMM As Long) As Long
 Private Declare Function DeleteColorTransform Lib "mscms" (ByVal hTransform As Long) As Long
 Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByRef srcBits As Any, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByRef dstBits As Any, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
+Private Declare Function GetColorDirectory Lib "mscms" Alias "GetColorDirectoryA" (ByVal pMachineName As Long, ByVal pBuffer As Long, ByRef pdwSize As Long) As Long
 
 'Windows handles color management on a per-DC basis.  Use SetICMMode and these constants to activate/deactivate or query a DC.
 Private Declare Function SetICMMode Lib "gdi32" (ByVal targetDC As Long, ByVal iEnableICM As ICM_Mode) As Long
@@ -121,6 +122,34 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 'When PD is first loaded, the system's current color management file will be cached in this variable
 Private currentSystemColorProfile As String
 Private Const MAX_PATH As Long = 260
+
+'Retrieve the current system color profile directory
+Public Function getSystemColorFolder() As String
+
+    'Prepare a blank string to receive the profile path
+    Dim filenameLength As Long
+    filenameLength = MAX_PATH
+    
+    Dim tmpPathString As String
+    tmpPathString = ""
+    
+    Dim tmpPathBuffer() As Byte
+    ReDim tmpPathBuffer(0 To filenameLength - 1) As Byte
+    
+    'Use the GetColorDirectory function to request the location of the system color folder
+    If GetColorDirectory(0&, ByVal VarPtr(tmpPathBuffer(0)), filenameLength) = 0 Then
+        getSystemColorFolder = ""
+    Else
+    
+        'Convert the returned byte array into a string
+        tmpPathString = StrConv(tmpPathBuffer, vbUnicode)
+        tmpPathString = TrimNull(tmpPathString)
+                
+        getSystemColorFolder = tmpPathString
+        
+    End If
+
+End Function
 
 'Assign the default color profile (whether the system profile or the user profile) to a DC
 Public Sub assignDefaultColorProfileToDC(ByVal targetDC As Long)

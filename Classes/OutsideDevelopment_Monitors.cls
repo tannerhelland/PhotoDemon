@@ -11,7 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
+'Note: this file has been heavily modified for use within PhotoDemon.
 
 'This class was originally written by Mike Dixon.
 
@@ -306,7 +306,7 @@ Public Sub Refresh()
             .Height = .Bottom
         End With
         'Add the monitor to the monitors collection
-        Monitors.Add item:=cMonitor, Key:=CStr(0)
+        Monitors.Add Item:=cMonitor, Key:=CStr(0)
     Else
         
         'Loop through an imaginary grid of 640x480 cells across the virtual desktop
@@ -318,7 +318,7 @@ Public Sub Refresh()
                 If lMonitor <> 0 Then
                     Set cMonitor = New clsMonitor
                     Call GetMonitorInformation(lMonitor, cMonitor)
-                    Monitors.Add item:=cMonitor, Key:=CStr(lMonitor)
+                    Monitors.Add Item:=cMonitor, Key:=CStr(lMonitor)
                 End If
             Next
         Next
@@ -430,16 +430,3 @@ Private Sub ClearMonitorsCollection()
     Next
 End Sub
 
-Private Function TrimNull(item As String) As String
-
-    Dim pos As Long
-   
-   'double check that there is a chr$(0) in the string
-    pos = InStr(item, Chr$(0))
-    If pos Then
-       TrimNull = Left$(item, pos - 1)
-    Else
-       TrimNull = item
-    End If
-  
-End Function
