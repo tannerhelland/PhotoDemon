@@ -23,8 +23,8 @@ Begin VB.UserControl fxPreviewCtl
    ToolboxBitmap   =   "fxPreview.ctx":0000
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
       BackColor       =   &H00808080&
+      ClipControls    =   0   'False
       ForeColor       =   &H80000008&
       Height          =   5100
       Left            =   0
@@ -68,8 +68,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 13/September/13
-'Last update: fix non-96dpi layout issues
+'Last updated: 07/November/13
+'Last update: apply color management to anything rendered on the preview picture box
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -181,6 +181,10 @@ Public Sub setFXImage(ByRef srcLayer As pdLayer)
     fxImage.eraseLayer
     fxImage.createFromExistingLayer srcLayer
     
+    'Activate color management for this picture box, contingent on its containing monitor
+    assignDefaultColorProfileToPictureBox picPreview
+    turnOnColorManagementForDC picPreview.hDC
+        
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
     If (Not isColorSelectionAllowed) Then
@@ -270,6 +274,23 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
         
     End If
     
+End Sub
+
+'Because AutoRedraw is set to FALSE, we must handle our own _Paint events
+Private Sub picPreview_Paint()
+
+    'Update the image to match the before/after label state
+    If Not curImageState Then
+        If m_HasOriginal Then originalImage.renderToPictureBox picPreview
+    Else
+        
+        If m_HasFX Then
+            fxImage.renderToPictureBox picPreview
+        Else
+            If m_HasOriginal Then originalImage.renderToPictureBox picPreview
+        End If
+    End If
+
 End Sub
 
 'When the control's access key is pressed (alt+t) , toggle the original/current image

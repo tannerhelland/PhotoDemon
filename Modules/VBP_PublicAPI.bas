@@ -1,8 +1,7 @@
 Attribute VB_Name = "Public_API"
 'Any and all *publicly* necessary API declarations can be found here
-' (Note 1: privately declared API calls have been left in their respective forms/modules)
-' (Note 2: it makes more sense to keep API-related constants here than in the constants
-'  module, so don't be surprised to find constants here)
+' (Note 1: privately declared API calls have obviously been left in their respective forms/modules)
+' (Note 2: it makes more sense to keep API-related constants here than in the constants module)
 ' (Note 3: I haven't searched every form/module/class for duplicate API calls... yet)
 
 Option Explicit
@@ -56,9 +55,10 @@ Public Type SAFEARRAY1D
 End Type
 
 'These functions are used to interact with various windows
+Public Const MONITOR_DEFAULTTONEAREST As Long = &H2
 Public Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
 Public Declare Function ReleaseCapture Lib "user32" () As Long
-'Public Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Public Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, ByVal dwFlags As Long) As Long
 
 'Drawing calls
 Public Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean

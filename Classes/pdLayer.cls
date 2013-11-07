@@ -1049,7 +1049,7 @@ End Sub
 Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 
     'Erase any existing picture
-    dstPicture.Picture = LoadPicture("")
+    If dstPicture.AutoRedraw Then dstPicture.Picture = LoadPicture("")
 
     'If the target picture box is smaller than this layer, request halftoning
     If (dstPicture.ScaleWidth < layerWidth) Or (dstPicture.ScaleHeight < layerHeight) Then
@@ -1083,6 +1083,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         previewWidth = dWidth
         previewHeight = dHeight
         StretchBlt dstPicture.hDC, 0, previewY, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+        'StretchDIBits dstPicture.hDC, 0, previewY, dWidth, dHeight, 0, 0, layerWidth, layerHeight, layerDIBits, VarPtr(layerDIBHeader), 0&, vbSrcCopy
     Else
         dHeight = dstHeight
         dWidth = CSng(srcWidth / srcHeight) * dHeight + 0.5
@@ -1091,10 +1092,13 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         previewWidth = dWidth
         previewHeight = dHeight
         StretchBlt dstPicture.hDC, previewX, 0, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+        'StretchDIBits dstPicture.hDC, 0, previewY, dWidth, dHeight, 0, 0, layerWidth, layerHeight, layerDIBits, VarPtr(layerDIBHeader), 0&, vbSrcCopy
     End If
     
-    dstPicture.Picture = dstPicture.Image
-    dstPicture.Refresh
+    If dstPicture.AutoRedraw Then
+        dstPicture.Picture = dstPicture.Image
+        dstPicture.Refresh
+    End If
 
 End Sub
 
