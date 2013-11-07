@@ -302,6 +302,7 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & " --IFD2:ImageWidth --IFD2:ImageHeight"
     cmdParams = cmdParams & " -ImageWidth=" & srcPDImage.Width & " -ExifIFD:ExifImageWidth=" & srcPDImage.Width
     cmdParams = cmdParams & " -ImageHeight=" & srcPDImage.Height & " -ExifIFD:ExifImageHeight=" & srcPDImage.Height
+    cmdParams = cmdParams & " -ColorSpace=sRGB"
     
     'If the user only wants the preservation of relevant metadata, remove useless padding tags
     If g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 0 Then cmdParams = cmdParams & " --Padding"
