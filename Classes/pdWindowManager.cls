@@ -2190,6 +2190,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' the wParam value by using the bitwise AND operator.
                 wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
                 
+                'WM_SYSCOMMAND functions are difficult to handle, especially on Win 7 where Aero Snap features interact with them
+                ' in completely unpredictable ways.  This code block (which can be safely commented out) is helpful for seeing
+                ' what messages the window manager receives from different actions.
+                If Not g_IsProgramCompiled Then
+                    If (wParam = SC_MAXIMIZE) Then Debug.Print "Received system maximize message"
+                    If (wParam = SC_RESTORE) Then Debug.Print "Received system restore window message"
+                    If (wParam = SC_SIZE) Then Debug.Print "Received system window size message"
+                    If (wParam = SC_MOVE) Then Debug.Print "Received system window move message"
+                End If
+                
                 If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE) Then
                     
                     'If the window was previously minimized, restore any child windows now
