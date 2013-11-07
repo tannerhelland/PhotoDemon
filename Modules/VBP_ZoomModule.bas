@@ -205,29 +205,29 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 
             'Update 15 Sep 2013: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
             ' if HALFTONE mode is used, and zooming-out requires HALFTONE for properly pretty results.)
-            If g_GDIPlusAvailable Then
-
-                'For performance reasons, crop out the source area of the main image.  (This saves GDI+ from having to copy
-                ' the entire source image, which may be large!)
-                Dim tmpSrcLayer As pdLayer
-                Set tmpSrcLayer = New pdLayer
-                tmpSrcLayer.createBlank srcWidth, srcHeight, 32
-                BitBlt tmpSrcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
-
-                'Use GDI+ to apply the resize
-                GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeBilinear
-
-                'Composite the resized layer against a checkerboard background
-                pdImages(curImage).alphaFixLayer.compositeBackgroundColor
-
-                'Copy the composited and resized layer into the back buffer
-                BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
-
-                'Erase our temporary layer
-                tmpSrcLayer.eraseLayer
-                Set tmpSrcLayer = Nothing
-
-            Else
+'            If g_GDIPlusAvailable Then
+'
+'                'For performance reasons, crop out the source area of the main image.  (This saves GDI+ from having to copy
+'                ' the entire source image, which may be large!)
+'                Dim tmpSrcLayer As pdLayer
+'                Set tmpSrcLayer = New pdLayer
+'                tmpSrcLayer.createBlank srcWidth, srcHeight, 32
+'                BitBlt tmpSrcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
+'
+'                'Use GDI+ to apply the resize
+'                GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeBilinear
+'
+'                'Composite the resized layer against a checkerboard background
+'                pdImages(curImage).alphaFixLayer.compositeBackgroundColor
+'
+'                'Copy the composited and resized layer into the back buffer
+'                BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
+'
+'                'Erase our temporary layer
+'                tmpSrcLayer.eraseLayer
+'                Set tmpSrcLayer = Nothing
+'
+'            Else
 
                 'If GDI+ is not available, we must rely on a nasty hack; HALFTONE stretching does not preserve the alpha channel, but
                 ' COLORONCOLOR does.  So make two copies of the image - one created via COLORONCOLOR, from which we'll steal alpha values,
@@ -255,7 +255,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
                 hackLayer.eraseLayer
                 Set hackLayer = Nothing
 
-            End If
+            'End If
             
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
