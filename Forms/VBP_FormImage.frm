@@ -98,6 +98,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'A handle (HMONITOR, specifically) to this window's current monitor.  This value is updated by firing the
+' checkParentMonitor() function, below.
+Public currentMonitor As Long
+Private Const MONITOR_DEFAULTTONEAREST As Long = &H2
+Private Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, ByVal dwFlags As Long) As Long
+
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Dim ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
 
@@ -119,6 +125,27 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'When this window is moved, the window manager will trigger this function.
+Public Sub checkParentMonitor()
+
+    'Use the API to determine the monitor with the largest intersect with this window
+    Dim monitorCheck As Long
+    monitorCheck = MonitorFromWindow(Me.hWnd, MONITOR_DEFAULTTONEAREST)
+    
+    'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
+    If monitorCheck <> currentMonitor Then
+        currentMonitor = monitorCheck
+        
+        If pdImages(Me.Tag) Is Nothing Then Exit Sub
+        
+        If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(Me.hWnd) > 0) And pdImages(Me.Tag).loadedSuccessfully Then
+            RenderViewport Me
+        End If
+    
+    End If
+    
+End Sub
 
 'The Activate event (which is handled by subclassing in the pdWindowManager class) wraps this public ActivateWorkaround function.
 ' This function can be called externally when any activation-related event (including peripheral things like the Next/Previous

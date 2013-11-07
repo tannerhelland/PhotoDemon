@@ -41,7 +41,7 @@ Const SM_CYVIRTUALSCREEN = 79   'Virtual Height
 Const SM_CMONITORS = 80         'Get number of monitors
 
 'Constants for the return value when finding a monitor
-Const MONITOR_DEFAULTTONEAREST = &H2    'If the monitor is not found, return the nearest monitor
+Private Const MONITOR_DEFAULTTONEAREST As Long = &H2    'If the monitor is not found, return the nearest monitor
 
 'Rectangle structure, for determining
 'monitors at a given position

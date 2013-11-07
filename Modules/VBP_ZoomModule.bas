@@ -127,7 +127,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
-    assignDefaultColorProfileToDC formToBuffer.hDC
+    assignDefaultColorProfileToForm formToBuffer
     turnOnColorManagementForDC formToBuffer.hDC
     
     'Finally, flip the front buffer to the screen
