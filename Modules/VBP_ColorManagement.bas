@@ -151,6 +151,29 @@ Public Function getSystemColorFolder() As String
 
 End Function
 
+'Assign the default color profile (whether the system profile or the user profile) to any arbitrary object.  Note that the object
+' MUST have an hWnd and an hDC property for this to work.
+Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
+    
+    'If the current user setting is "use system color profile", our job is easy.
+    If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then
+        SetICMProfile objectHDC, currentSystemColorProfile
+    Else
+        
+        'Use the form's containing monitor to retrieve a matching profile from the preferences file
+        Dim newICMProfile As String
+        newICMProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & MonitorFromWindow(objectHWnd, MONITOR_DEFAULTTONEAREST), "")
+        
+        If Len(newICMProfile) > 0 Then
+            SetICMProfile objectHDC, newICMProfile
+        Else
+            SetICMProfile objectHDC, currentSystemColorProfile
+        End If
+        
+    End If
+    
+End Sub
+
 'Assign the default color profile (whether the system profile or the user profile) to a picture box, typically a picture box
 ' used as a preview in a tool dialog
 Public Sub assignDefaultColorProfileToPictureBox(ByRef targetPictureBox As PictureBox)

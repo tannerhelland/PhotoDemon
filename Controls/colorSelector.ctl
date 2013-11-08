@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl colorSelector 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   1710
    ClientLeft      =   0
@@ -83,7 +82,7 @@ Private Sub UserControl_Click()
 
     'Use the default color dialog to select a new color
     Dim newColor As Long
-    If showColorDialog(newColor, UserControl.Parent, CLng(curColor)) Then
+    If showColorDialog(newColor, UserControl.hWnd, CLng(curColor)) Then
         Color = newColor
     End If
     
@@ -106,6 +105,10 @@ Private Sub UserControl_InitProperties()
     Color = curColor
 End Sub
 
+Private Sub UserControl_Paint()
+    drawControlBorders
+End Sub
+
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     curColor = PropBag.ReadProperty("curColor", RGB(255, 255, 255))
     Color = curColor
@@ -119,12 +122,20 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "curColor", curColor, RGB(255, 255, 255)
 End Sub
 
+'For flexibility, we draw our own borders.  I may decide to change this behavior in the future...
 Private Sub drawControlBorders()
-    'For flexibility, we draw our own borders.  I may decide to change this behavior in the future...
+    
     UserControl.Cls
+    
+    'Activate color management for this box
+    assignDefaultColorProfileToObject UserControl.hWnd, UserControl.hDC
+    turnOnColorManagementForDC UserControl.hDC
+    
     UserControl.Line (0, 0)-(UserControl.ScaleWidth - 1, 0)
     UserControl.Line (UserControl.ScaleWidth - 1, 0)-(UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)
     UserControl.Line (UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)-(0, UserControl.ScaleHeight - 1)
     UserControl.Line (0, UserControl.ScaleHeight - 1)-(0, 0)
+    
     UserControl.Refresh
+    
 End Sub

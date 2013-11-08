@@ -26,7 +26,7 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 '          2) an optional intial color
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showColorDialog(ByRef colorReceive As Long, ByRef dialogOwner As Form, Optional ByVal initialColor As Long = vbWhite) As Boolean
+Public Function showColorDialog(ByRef colorReceive As Long, ByVal ownerHwnd As Long, Optional ByVal initialColor As Long = vbWhite) As Boolean
 
     'For now, use a standard Windows color selector
     Dim retColor As Long
@@ -34,7 +34,7 @@ Public Function showColorDialog(ByRef colorReceive As Long, ByRef dialogOwner As
     Set CD1 = New cCommonDialog
     retColor = initialColor
     
-    If CD1.VBChooseColor(retColor, True, True, False, dialogOwner.hWnd) Then
+    If CD1.VBChooseColor(retColor, True, True, False, ownerHwnd) Then
         colorReceive = retColor
         showColorDialog = True
     Else
@@ -95,7 +95,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = srcImage.Width - 1
     finalY = srcImage.Height - 1
             
@@ -124,13 +124,13 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     Dim colorFound As Boolean
         
     'Apply the filter
-    For X = 0 To finalX
-        QuickVal = X * qvDepth
-    For Y = 0 To finalY
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+    For y = 0 To finalY
         
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         chkValue = RGB(r, g, b)
         colorFound = False
@@ -152,9 +152,9 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
         'If the image has more than 256 colors, treat it as 24/32 bpp
         If totalCount > 256 Then Exit For
         
-    Next Y
+    Next y
         If totalCount > 256 Then Exit For
-    Next X
+    Next x
         
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -392,15 +392,15 @@ End Sub
 'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB, per
 Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
 
-    Dim X As Double, Y As Double, z As Double
-    RGBtoXYZ r, g, b, X, Y, z
-    XYZtoLab X, Y, z, labL, labA, labB
+    Dim x As Double, y As Double, z As Double
+    RGBtoXYZ r, g, b, x, y, z
+    XYZtoLab x, y, z, labL, labA, labB
 
 End Sub
 
 'Convert RGB to XYZ space, using an sRGB conversion and the assumption of a D65 (e.g. color temperature of 6500k) illuminant
 ' Formula adopted from http://www.easyrgb.com/index.php?X=MATH&H=02#text2
-Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef X As Double, ByRef Y As Double, ByRef z As Double)
+Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef x As Double, ByRef y As Double, ByRef z As Double)
 
     'Normalize RGB to [0, 1]
     Dim rFloat As Double, gFloat As Double, bFloat As Double
@@ -428,8 +428,8 @@ Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef X A
     End If
     
     'Calculate XYZ using D65 correction
-    X = rFloat * 0.4124 + gFloat * 0.3576 + bFloat * 0.1805
-    Y = rFloat * 0.2126 + gFloat * 0.7152 + bFloat * 0.0722
+    x = rFloat * 0.4124 + gFloat * 0.3576 + bFloat * 0.1805
+    y = rFloat * 0.2126 + gFloat * 0.7152 + bFloat * 0.0722
     z = rFloat * 0.0193 + gFloat * 0.1192 + bFloat * 0.9505
     
 End Sub
@@ -437,10 +437,10 @@ End Sub
 'Convert an XYZ color to CIELab.  As with the original XYZ calculation, D65 is assumed.
 ' Formula adopted from http://www.easyrgb.com/index.php?X=MATH&H=07#text7, with minor changes by me (not re-applying D65 values until after
 '  fXYZ has been calculated)
-Public Sub XYZtoLab(ByVal X As Double, ByVal Y As Double, ByVal z As Double, ByRef l As Double, ByRef a As Double, ByRef b As Double)
-    l = 116 * fXYZ(Y) - 16
-    a = 500 * (fXYZ(X / 0.9505) - fXYZ(Y))
-    b = 200 * (fXYZ(Y) - fXYZ(z / 1.089))
+Public Sub XYZtoLab(ByVal x As Double, ByVal y As Double, ByVal z As Double, ByRef l As Double, ByRef a As Double, ByRef b As Double)
+    l = 116 * fXYZ(y) - 16
+    a = 500 * (fXYZ(x / 0.9505) - fXYZ(y))
+    b = 200 * (fXYZ(y) - fXYZ(z / 1.089))
 End Sub
 
 Private Function fXYZ(ByVal t As Double) As Double
