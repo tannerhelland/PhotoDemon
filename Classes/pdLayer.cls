@@ -1071,7 +1071,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
     
-    'Activate color management for the destination picture box, contingent on its containing monitor
+    'Activate color management for the destination picture box
     assignDefaultColorProfileToPictureBox dstPicture
     turnOnColorManagementForDC dstPicture.hDC
     
