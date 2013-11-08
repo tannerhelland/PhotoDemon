@@ -168,7 +168,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":20A4
+      PictureNormal   =   "VBP_FormPreferences.frx":24A4
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -201,7 +201,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":30F6
+      PictureNormal   =   "VBP_FormPreferences.frx":38F6
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -234,7 +234,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":4148
+      PictureNormal   =   "VBP_FormPreferences.frx":4D48
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -267,7 +267,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":519A
+      PictureNormal   =   "VBP_FormPreferences.frx":619A
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -300,7 +300,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":61EC
+      PictureNormal   =   "VBP_FormPreferences.frx":71EC
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -333,7 +333,7 @@ Begin VB.Form FormPreferences
       ForeColorHover  =   4194304
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormPreferences.frx":763E
+      PictureNormal   =   "VBP_FormPreferences.frx":863E
       PictureAlign    =   0
       PictureEffectOnDown=   0
       DisabledPictureMode=   1
@@ -368,11 +368,10 @@ Begin VB.Form FormPreferences
             Strikethrough   =   0   'False
          EndProperty
          Height          =   375
-         Left            =   7440
+         Left            =   7380
          TabIndex        =   120
-         ToolTipText     =   "Click to open a browse-for-folder dialog"
          Top             =   2760
-         Width           =   765
+         Width           =   810
       End
       Begin VB.TextBox txtColorProfilePath 
          BeginProperty Font 
@@ -386,13 +385,12 @@ Begin VB.Form FormPreferences
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   375
-         Left            =   720
+         Left            =   780
          Locked          =   -1  'True
          TabIndex        =   119
          Text            =   "(none)"
-         ToolTipText     =   "Folder used for temporary files"
          Top             =   2760
-         Width           =   6615
+         Width           =   6525
       End
       Begin VB.ComboBox cmbMonitors 
          BeginProperty Font 
@@ -406,16 +404,16 @@ Begin VB.Form FormPreferences
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         Left            =   720
+         Left            =   780
          Style           =   2  'Dropdown List
          TabIndex        =   117
-         Top             =   1920
-         Width           =   7455
+         Top             =   1950
+         Width           =   7440
       End
       Begin PhotoDemon.smartOptionButton optColorManagement 
          Height          =   330
          Index           =   0
-         Left            =   360
+         Left            =   240
          TabIndex        =   114
          Top             =   840
          Width           =   2760
@@ -509,13 +507,13 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartOptionButton optColorManagement 
          Height          =   330
          Index           =   1
-         Left            =   360
+         Left            =   240
          TabIndex        =   115
          Top             =   1200
-         Width           =   2685
-         _ExtentX        =   4736
+         Width           =   3660
+         _ExtentX        =   6456
          _ExtentY        =   582
-         Caption         =   "use a custom color profile:"
+         Caption         =   "use one or more custom color profiles"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -529,7 +527,7 @@ Begin VB.Form FormPreferences
       Begin VB.Label lblColorManagement 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "color profile for this monitor:"
+         Caption         =   "color profile for selected monitor:"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -542,10 +540,10 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Index           =   2
-         Left            =   720
+         Left            =   780
          TabIndex        =   118
-         Top             =   2400
-         Width           =   2475
+         Top             =   2430
+         Width           =   2880
       End
       Begin VB.Label lblColorManagement 
          AutoSize        =   -1  'True
@@ -563,9 +561,9 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Index           =   1
-         Left            =   720
+         Left            =   780
          TabIndex        =   116
-         Top             =   1650
+         Top             =   1590
          Width           =   1635
       End
       Begin VB.Label lblColorManagement 
@@ -627,7 +625,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Left            =   240
          TabIndex        =   25
-         Top             =   4830
+         Top             =   4860
          Width           =   2790
       End
       Begin VB.Label lblAlphaCheck 
@@ -647,13 +645,13 @@ Begin VB.Form FormPreferences
          Height          =   240
          Left            =   240
          TabIndex        =   23
-         Top             =   3840
+         Top             =   3870
          Width           =   2970
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "transparency"
+         Caption         =   "transparency management"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -669,7 +667,7 @@ Begin VB.Form FormPreferences
          Left            =   0
          TabIndex        =   21
          Top             =   3420
-         Width           =   1350
+         Width           =   2805
       End
    End
    Begin VB.PictureBox picContainer 
@@ -2226,7 +2224,7 @@ Begin VB.Form FormPreferences
          Style           =   2  'Dropdown List
          TabIndex        =   32
          ToolTipText     =   "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
-         Top             =   2640
+         Top             =   2610
          Width           =   8055
       End
       Begin VB.ComboBox cmbCanvas 
@@ -3283,6 +3281,13 @@ Private Sub LoadAllPreferences()
             'Display the primary monitor by default; this will also trigger a load of the matching
             ' custom profile, if one exists.
             cmbMonitors.ListIndex = primaryIndex
+            
+            'Add tooltips to all color-profile-related controls
+            optColorManagement(0).ToolTipText = g_Language.TranslateMessage("This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.")
+            optColorManagement(1).ToolTipText = g_Language.TranslateMessage("To configure custom color profiles on a per-monitor basis, please use this setting.")
+            
+            cmbMonitors.ToolTipText = g_Language.TranslateMessage("Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.")
+            cmdColorProfilePath.ToolTipText = g_Language.TranslateMessage("Click this button to bring up a ""browse for color profile"" dialog.")
         
         'END color management preferences
     
