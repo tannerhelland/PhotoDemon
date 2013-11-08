@@ -1183,7 +1183,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
     ' but if either of those did not occur, sync the interface now
-    If (createUndo = 0) Or (g_OpenImageCount = 0) Then syncInterfaceToCurrentImage
+    syncInterfaceToCurrentImage
         
     'Finally, after all our work is done, return focus to the main PD window
     If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then g_WindowManager.requestActivation FormMain.hWnd
