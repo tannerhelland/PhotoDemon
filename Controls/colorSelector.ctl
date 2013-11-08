@@ -127,9 +127,11 @@ Private Sub drawControlBorders()
     
     UserControl.Cls
     
-    'Activate color management for this box
-    assignDefaultColorProfileToObject UserControl.hWnd, UserControl.hDC
-    turnOnColorManagementForDC UserControl.hDC
+    'Activate color management for this box (but during compilation, obviously!)
+    If g_UserModeFix Then
+        assignDefaultColorProfileToObject UserControl.hWnd, UserControl.hDC
+        turnOnColorManagementForDC UserControl.hDC
+    End If
     
     UserControl.Line (0, 0)-(UserControl.ScaleWidth - 1, 0)
     UserControl.Line (UserControl.ScaleWidth - 1, 0)-(UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)
