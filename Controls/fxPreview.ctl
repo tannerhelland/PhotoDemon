@@ -23,6 +23,7 @@ Begin VB.UserControl fxPreviewCtl
    ToolboxBitmap   =   "fxPreview.ctx":0000
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H00808080&
       ClipControls    =   0   'False
       ForeColor       =   &H80000008&
@@ -105,7 +106,7 @@ Private originalImage As pdLayer, fxImage As pdLayer
 Private curImageState As Boolean
 
 'GetPixel is used to retrieve colors from the image
-Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
 
 'Mouse events are raised with the help of a bluMouseEvents class
 Private WithEvents cMouseEvents As bluMouseEvents
@@ -180,10 +181,6 @@ Public Sub setFXImage(ByRef srcLayer As pdLayer)
     
     fxImage.eraseLayer
     fxImage.createFromExistingLayer srcLayer
-    
-    'Activate color management for this picture box, contingent on its containing monitor
-    assignDefaultColorProfileToPictureBox picPreview
-    turnOnColorManagementForDC picPreview.hDC
         
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
@@ -249,9 +246,9 @@ Private Sub lblBeforeToggle_Click()
 End Sub
 
 'If color selection is allowed, raise that event now
-Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If isColorSelectionAllowed Then
-        curColor = GetPixel(picPreview.hDC, x, y)
+        curColor = GetPixel(picPreview.hDC, X, Y)
         If AllowColorSelection Then colorJustClicked = 1
         RaiseEvent ColorSelected
     End If
@@ -260,7 +257,7 @@ End Sub
 'When the user is selecting a color, we want to give them a preview of how that color will affect the previewed image.
 ' This is handled in the _MouseDown event above.  After the color has been selected, we want to restore the original
 ' image on a subsequent mouse move, in case the user wants to select a different color.
-Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     If colorJustClicked > 0 Then
     
@@ -276,7 +273,8 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
     
 End Sub
 
-'Because AutoRedraw is set to FALSE, we must handle our own _Paint events
+'I haven't made up my mind on whether to use AutoRedraw or not; just to be safe, I've added handling code to the _Paint
+' event so that AutoRedraw can be turned off without trouble.
 Private Sub picPreview_Paint()
 
     'Update the image to match the before/after label state
