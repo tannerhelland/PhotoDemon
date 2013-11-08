@@ -22,7 +22,7 @@ Attribute VB_Name = "Interface"
 Option Explicit
 
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 'Used to measure the expected length of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -1175,11 +1175,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    getPixelWidthOfString = txtSize.X
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    getPixelHeightOfString = txtSize.Y
 End Function
