@@ -873,6 +873,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Synchronize all other interface elements to match the newly loaded image
             syncInterfaceToCurrentImage
         
+        
         '*************************************************************************************************************************************
         ' If this is a primary image, register the new window with the window manager, then display the image on-screen
         '*************************************************************************************************************************************
@@ -884,6 +885,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Also register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage
+            
+            'Give the image form a chance to detect its parent monitor
+            targetImage.containingForm.checkParentMonitor True
             
             Message "Resizing image to fit screen..."
     

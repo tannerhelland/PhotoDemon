@@ -117,7 +117,7 @@ Dim m_initMouseX As Double, m_initMouseY As Double
 'Used to prevent the obnoxious blinking effect of the main image scroll bars
 Private Declare Function DestroyCaret Lib "user32" () As Long
 
-'An outside class provides access to mousewheel events for scrolling the filter view
+'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
@@ -125,7 +125,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Dim m_ToolTip As clsToolTip
 
 'When this window is moved, the window manager will trigger this function.
-Public Sub checkParentMonitor()
+Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
 
     'Use the API to determine the monitor with the largest intersect with this window
     Dim monitorCheck As Long
@@ -136,6 +136,8 @@ Public Sub checkParentMonitor()
         currentMonitor = monitorCheck
         
         If pdImages(Me.Tag) Is Nothing Then Exit Sub
+        
+        If suspendRedraw Then Exit Sub
         
         If (pdImages(Me.Tag).Width > 0) And (pdImages(Me.Tag).Height > 0) And Me.Visible And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(Me.hWnd) > 0) And pdImages(Me.Tag).loadedSuccessfully Then
             RenderViewport Me
@@ -150,24 +152,32 @@ End Sub
 ' Image menus) requires a change in focus between images windows.
 Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
     
-    'Because activation is an expensive process (requiring viewport redraws and more), I track the calls that access it.  This is used
-    ' to minimize repeat calls as much as possible.
-    Debug.Print "(Image #" & Me.Tag & " was activated because " & reasonForActivation & ")"
+    'If this form is already the active image, don't waste time re-activating it
+    If g_CurrentImage <> CLng(Me.Tag) Then
+    
+        'Update the current form variable
+        g_CurrentImage = CLng(Me.Tag)
+    
+        'Because activation is an expensive process (requiring viewport redraws and more), I track the calls that access it.  This is used
+        ' to minimize repeat calls as much as possible.
+        Debug.Print "(Image #" & g_CurrentImage & " was activated because " & reasonForActivation & ")"
         
-    'Update the current form variable
-    g_CurrentImage = CLng(Me.Tag)
+        'Double-check which monitor we are appearing on (for color management reasons)
+        checkParentMonitor True
+        
+        'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
+        PrepareViewport Me, "Form received focus"
     
-    'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-    PrepareViewport Me, "Form received focus"
-    
-    'Use the window manager to bring the window to the foreground
-    g_WindowManager.notifyChildReceivedFocus Me
-    
-    'Notify the thumbnail bar that a new image has been selected
-    toolbar_ImageTabs.notifyNewActiveImage CLng(Me.Tag)
-    
-    'Synchronize various interface elements to match values stored in this image.
-    syncInterfaceToCurrentImage
+        'Use the window manager to bring the window to the foreground
+        g_WindowManager.notifyChildReceivedFocus Me
+        
+        'Notify the thumbnail bar that a new image has been selected
+        toolbar_ImageTabs.notifyNewActiveImage CLng(Me.Tag)
+        
+        'Synchronize various interface elements to match values stored in this image.
+        syncInterfaceToCurrentImage
+        
+    End If
         
 End Sub
 
@@ -185,10 +195,10 @@ Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, B
     End If
 End Sub
 
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
-    If HScroll.Visible And (Not CtrlDown) Then
+    If HScroll.Visible And Not (Shift And vbCtrlMask) Then
   
         If CharsScrolled < 0 Then
             
@@ -222,10 +232,10 @@ Private Sub cMouseEvents_MouseOut()
     If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-  
+Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+    
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If VScroll.Visible And (Not CtrlDown) Then
+    If VScroll.Visible And Not (Shift And vbCtrlMask) Then
       
         If LinesScrolled < 0 Then
             
@@ -255,22 +265,16 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
     '      a dedicated horizontal scroller.
     
     'Zooming - only trigger when Ctrl has been pressed
-    If CtrlDown And (Not ShiftDown) Then
+    If (Shift And vbCtrlMask) Then
       
         If LinesScrolled > 0 Then
             
-            If toolbar_File.CmbZoom.ListIndex > 0 Then
-                toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
-                'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
-                'PrepareViewport Me, "Ctrl+Mousewheel"
-            End If
-        
+            If toolbar_File.CmbZoom.ListIndex > 0 Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
+            'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
+            
         ElseIf LinesScrolled < 0 Then
             
-            If toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then
-                toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
-                'PrepareViewport Me, "Ctrl+Mousewheel"
-        End If
+            If toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
             
         End If
         
@@ -305,7 +309,7 @@ Private Sub Form_Load()
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
     Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach Me.hWnd
+    cMouseEvents.Attach Me.hWnd, FormMain.hWnd
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
