@@ -43,7 +43,7 @@ Begin VB.Form FormMain
       Top             =   1440
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1120,6 +1120,26 @@ Private m_ToolTip As clsToolTip
 ' collection whenever we need tooltips replaced.
 Private tooltipBackup As Collection
 
+'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
+Private WithEvents cMouseEvents As bluMouseEvents
+Attribute cMouseEvents.VB_VarHelpID = -1
+
+'If a child image window is active, forward all mousewheel events to that window
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+    End If
+
+End Sub
+
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+    End If
+
+End Sub
 
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
@@ -1266,6 +1286,10 @@ Private Sub Form_Load()
         
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
+    'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
+    Set cMouseEvents = New bluMouseEvents
+    cMouseEvents.Attach Me.hWnd
+    
     'Render the main form with any extra visual styles we've decided to apply
     RedrawMainForm
     
@@ -1282,7 +1306,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1318,7 +1342,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub

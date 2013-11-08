@@ -13,7 +13,8 @@ Attribute VB_Name = "File_And_Path_Handling"
 
 Option Explicit
 
-'Used to quickly check if a file (or folder) exists
+'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExists Function"
+' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
 
@@ -185,7 +186,7 @@ Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
     Set objShell = New Shell
     Set objFolder = objShell.BrowseForFolder(srcHwnd, g_Language.TranslateMessage("Please select a folder:"), 0)
             
-    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.item.Path Else returnString = ""
+    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
     
     Set objFolder = Nothing
     Set objShell = Nothing
