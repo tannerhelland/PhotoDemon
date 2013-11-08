@@ -58,18 +58,10 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   2
       Top             =   4005
       Width           =   4875
-      _ExtentX        =   8599
-      _ExtentY        =   847
-      Caption         =   "Repeat this action for all unsaved images (X in total)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   8599
+      _extenty        =   847
+      caption         =   "Repeat this action for all unsaved images (X in total)"
+      font            =   "VBP_FormUnsavedChanges.frx":0000
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -192,24 +184,9 @@ Public Sub showDialog(ByRef ownerForm As Form)
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
-    
-    'Draw the image being closed to the preview box
-    If pdImages(imageBeingClosed).mainLayer.getLayerColorDepth = 24 Then
-        pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
-    Else
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        Dim nWidth As Long, nHeight As Long
-        convertAspectRatio pdImages(imageBeingClosed).Width, pdImages(imageBeingClosed).Height, picPreview.ScaleWidth, picPreview.ScaleHeight, nWidth, nHeight
-        tmpLayer.createFromExistingLayer pdImages(imageBeingClosed).mainLayer, nWidth, nHeight, True
-        tmpLayer.compositeBackgroundColor
-        tmpLayer.renderToPictureBox picPreview
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
-    End If
-    
+        
     'Adjust the save message to match this image's name
-    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", pdImages(imageBeingClosed).OriginalFileNameAndExtension)
+    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", pdImages(imageBeingClosed).originalFileNameAndExtension)
 
     'Use a custom tooltip class to allow for multiline tooltips
     Set m_ToolTip = New clsToolTip
@@ -223,7 +200,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
         Next i
     
         'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-        If pdImages(imageBeingClosed).LocationOnDisk <> "" Then
+        If pdImages(imageBeingClosed).locationOnDisk <> "" Then
             'cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.  If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
             .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
         Else
@@ -304,6 +281,25 @@ Private Sub cmdAnswer_Click(Index As Integer)
     updateRepeatToAllUnsavedImages userAnswer
     Me.Hide
 
+End Sub
+
+Private Sub Form_Activate()
+
+    'Draw the image being closed to the preview box
+    If pdImages(imageBeingClosed).mainLayer.getLayerColorDepth = 24 Then
+        pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
+    Else
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        Dim nWidth As Long, nHeight As Long
+        convertAspectRatio pdImages(imageBeingClosed).Width, pdImages(imageBeingClosed).Height, picPreview.ScaleWidth, picPreview.ScaleHeight, nWidth, nHeight
+        tmpLayer.createFromExistingLayer pdImages(imageBeingClosed).mainLayer, nWidth, nHeight, True
+        tmpLayer.compositeBackgroundColor
+        tmpLayer.renderToPictureBox picPreview
+        tmpLayer.eraseLayer
+        Set tmpLayer = Nothing
+    End If
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
