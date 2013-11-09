@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl colorSelector 
    Appearance      =   0  'Flat
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   1710
    ClientLeft      =   0
@@ -103,10 +104,6 @@ End Sub
 Private Sub UserControl_InitProperties()
     curColor = RGB(255, 255, 255)
     Color = curColor
-End Sub
-
-Private Sub UserControl_Paint()
-    drawControlBorders
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
