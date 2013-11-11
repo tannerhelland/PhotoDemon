@@ -83,7 +83,7 @@ Private Sub UserControl_Click()
 
     'Use the default color dialog to select a new color
     Dim newColor As Long
-    If showColorDialog(newColor, UserControl.hWnd, CLng(curColor)) Then
+    If showColorDialog(newColor, CLng(curColor)) Then
         Color = newColor
     End If
     
@@ -124,12 +124,10 @@ Private Sub drawControlBorders()
     
     UserControl.Cls
     
-    'Activate color management for this box (but during compilation, obviously!)
-    If g_UserModeFix Then
-        assignDefaultColorProfileToObject UserControl.hWnd, UserControl.hDC
-        turnOnColorManagementForDC UserControl.hDC
-    End If
+    'Activate color management for this box (but not during compilation, obviously!)
+    If g_UserModeFix Then turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
     
+    UserControl.BackColor = curColor
     UserControl.Line (0, 0)-(UserControl.ScaleWidth - 1, 0)
     UserControl.Line (UserControl.ScaleWidth - 1, 0)-(UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)
     UserControl.Line (UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)-(0, UserControl.ScaleHeight - 1)

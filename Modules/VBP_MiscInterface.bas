@@ -22,7 +22,7 @@ Attribute VB_Name = "Interface"
 Option Explicit
 
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 'Used to measure the expected length of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -85,6 +85,10 @@ Private hadToChangeSmoothing As Long
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
 Private dpiRatio As Double
 
+'When a modal dialog is displayed, a reference to it is saved in this variable.  If subsequent modal dialogs are displayed (for example,
+' if a tool dialog displays a color selection dialog), the previous modal dialog is given ownership over the new dialog.
+Private currentDialogReference As Form
+Private isSecondaryDialog As Boolean
 
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
@@ -527,6 +531,21 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'Start by loading the form and hiding it
     dialogForm.Visible = False
     
+    'Store a reference to this dialog; if subsequent dialogs are loaded, this dialog will be given ownership over them
+    If (currentDialogReference Is Nothing) Then
+        
+        'This is a regular modal dialog, and the main form should be its owner
+        isSecondaryDialog = False
+        Set currentDialogReference = dialogForm
+                
+    Else
+    
+        'We already have a reference to a modal dialog - that means a modal dialog is raising *another* modal dialog.  Give the previous
+        ' modal dialog ownership over this new dialog!
+        isSecondaryDialog = True
+        
+    End If
+    
     'Retrieve and cache the hWnd; we need access to this even if the form is unloaded, so we can properly deregister it
     ' with the window manager.
     Dim dialogHwnd As Long
@@ -587,6 +606,13 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'De-register this hWnd with the window manager
     g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
     
+    'Release our reference to this dialog
+    If isSecondaryDialog Then
+        isSecondaryDialog = False
+    Else
+        Set currentDialogReference = Nothing
+    End If
+    
     'If the form has not been unloaded, unload it now
     If Not (dialogForm Is Nothing) Then
         Unload dialogForm
@@ -603,17 +629,29 @@ End Sub
 
 'When a modal dialog needs to be raised, we want to set its ownership to the top-most (relevant) window in the program, which may or may
 ' not be the main form.  This function should be called to determine the proper owner of any modal dialog box.
-Public Function getModalOwner() As Form
+'
+'If the caller knows in advance that a modal dialog is owned by another modal dialog (for example, a tool dialog displaying a color
+' selection dialog), it can explicitly mark the assumeSecondaryDialog function as TRUE.
+Public Function getModalOwner(Optional ByVal assumeSecondaryDialog As Boolean = False) As Form
 
-    'If no images have been loaded, the main form owns any dialog boxes.
-    If g_OpenImageCount = 0 Then
-        Set getModalOwner = FormMain
-    
-    'If images HAVE been loaded, make the top-most child the dialog owner
+    'If a modal dialog is already active, it gets ownership over subsequent dialogs
+    If isSecondaryDialog Or assumeSecondaryDialog Then
+        Set getModalOwner = currentDialogReference
+        
+    'No modal dialog is active, making this the only one.  Give the main form or the active image form ownership.
     Else
-        Set getModalOwner = pdImages(g_CurrentImage).containingForm
+        
+        'If no images have been loaded, the main form owns any dialog boxes.
+        If g_OpenImageCount = 0 Then
+            Set getModalOwner = FormMain
+        
+        'If images HAVE been loaded, make the top-most child the dialog owner
+        Else
+            Set getModalOwner = pdImages(g_CurrentImage).containingForm
+        End If
+    
     End If
-
+    
 End Function
 
 'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
@@ -1175,11 +1213,11 @@ End Sub
 Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.X
+    getPixelWidthOfString = txtSize.x
 End Function
 
 Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.Y
+    getPixelHeightOfString = txtSize.y
 End Function

@@ -23,24 +23,31 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 'Present the user with a color selection dialog.  At present, this is just a thin wrapper to the stock Windows color
 ' selector, but in the future it will link to a custom PhotoDemon one.
 ' INPUTS:  1) a Long-type variable that will receive the new color
-'          2) an optional intial color
+'          2) an optional initial color
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showColorDialog(ByRef colorReceive As Long, ByVal ownerHwnd As Long, Optional ByVal initialColor As Long = vbWhite) As Boolean
+Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite) As Boolean
 
-    'For now, use a standard Windows color selector
-    Dim retColor As Long
-    Dim CD1 As cCommonDialog
-    Set CD1 = New cCommonDialog
-    retColor = initialColor
+    'Uncomment this code to use the system color selector
+    'Dim retColor As Long
+    'Dim CD1 As cCommonDialog
+    'Set CD1 = New cCommonDialog
+    'retColor = initialColor
+    '
+    'If CD1.VBChooseColor(retColor, True, True, False, getModalOwner(True).hWnd) Then
+    '    colorReceive = retColor
+    '    showColorDialog = True
+    'Else
+    '    showColorDialog = False
+    'End If
     
-    If CD1.VBChooseColor(retColor, True, True, False, ownerHwnd) Then
-        colorReceive = retColor
+    'As of November 2013, PhotoDemon has its own color selector!
+    If choosePDColor(initialColor, colorReceive) = vbOK Then
         showColorDialog = True
     Else
         showColorDialog = False
     End If
-
+    
 End Function
 
 'Given the number of colors in an image (as supplied by getQuickColorCount, below), return the highest color depth
@@ -232,16 +239,16 @@ Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
 End Function
 
 'Extract the red, green, or blue value from an RGB() Long
-Public Function ExtractR(ByVal CurrentColor As Long) As Integer
-    ExtractR = CurrentColor Mod 256
+Public Function ExtractR(ByVal currentColor As Long) As Integer
+    ExtractR = currentColor Mod 256
 End Function
 
-Public Function ExtractG(ByVal CurrentColor As Long) As Integer
-    ExtractG = (CurrentColor \ 256) And 255
+Public Function ExtractG(ByVal currentColor As Long) As Integer
+    ExtractG = (currentColor \ 256) And 255
 End Function
 
-Public Function ExtractB(ByVal CurrentColor As Long) As Integer
-    ExtractB = (CurrentColor \ 65536) And 255
+Public Function ExtractB(ByVal currentColor As Long) As Integer
+    ExtractB = (currentColor \ 65536) And 255
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
@@ -389,7 +396,124 @@ Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long
    
 End Sub
 
-'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB, per
+'Convert [0,255] RGB values to [0,1] HSV values, with thanks to easyrgb.com for the conversion math
+Public Sub RGBtoHSV(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef h As Double, ByRef s As Double, ByRef v As Double)
+
+    Dim fR As Double, fG As Double, fB As Double
+    fR = r / 255
+    fG = g / 255
+    fB = b / 255
+
+    Dim var_Min As Double, var_Max As Double, del_Max As Double
+    var_Min = Min3Float(fR, fG, fB)
+    var_Max = Max3Float(fR, fG, fB)
+    del_Max = var_Max - var_Min
+    
+    'Value is easy to calculate - it's the largest of R/G/B
+    v = var_Max
+
+    'If the max and min are the same, this is a gray pixel
+    If del_Max = 0 Then
+        h = 0
+        s = 0
+        
+    'If max and min vary, we can calculate a hue component
+    Else
+    
+        s = del_Max / var_Max
+        
+        Dim del_R As Double, del_G As Double, del_B As Double
+        del_R = (((var_Max - fR) / 6) + (del_Max / 2)) / del_Max
+        del_G = (((var_Max - fG) / 6) + (del_Max / 2)) / del_Max
+        del_B = (((var_Max - fB) / 6) + (del_Max / 2)) / del_Max
+
+        If fR = var_Max Then
+            h = del_B - del_G
+        ElseIf fG = var_Max Then
+            h = (1 / 3) + del_R - del_B
+        Else
+            h = (2 / 3) + del_G - del_R
+        End If
+
+        If h < 0 Then h = h + 1
+        If h > 1 Then h = h - 1
+
+    End If
+
+End Sub
+
+'Convert [0,1] HSV values to [0,255] RGB values, with thanks to easyrgb.com for the conversion math
+Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByRef r As Long, ByRef g As Long, ByRef b As Long)
+
+    'If saturation is 0, RGB are calculated identically
+    If s = 0 Then
+        r = v * 255
+        g = v * 255
+        b = v * 255
+    
+    'If saturation is not 0, we have to calculate RGB independently
+    Else
+       
+        Dim var_H As Double
+        var_H = h * 6
+        
+        'To keep our math simple, limit hue to [0, 5.9999999]
+        If var_H >= 6 Then var_H = 0
+        
+        Dim var_I As Long
+        var_I = Int(var_H)
+        
+        Dim var_1 As Double, var_2 As Double, var_3 As Double
+        var_1 = v * (1 - s)
+        var_2 = v * (1 - s * (var_H - var_I))
+        var_3 = v * (1 - s * (1 - (var_H - var_I)))
+
+        Dim var_R As Double, var_G As Double, var_B As Double
+
+        Select Case var_I
+        
+            Case 0
+                var_R = v
+                var_G = var_3
+                var_B = var_1
+                
+            Case 1
+                var_R = var_2
+                var_G = v
+                var_B = var_1
+                
+            Case 2
+                var_R = var_1
+                var_G = v
+                var_B = var_3
+                
+            Case 3
+                var_R = var_1
+                var_G = var_2
+                var_B = v
+            
+            Case 4
+                var_R = var_3
+                var_G = var_1
+                var_B = v
+                
+            Case Else
+                var_R = v
+                var_G = var_1
+                var_B = var_2
+                
+        End Select
+
+        r = var_R * 255
+        g = var_G * 255
+        b = var_B * 255
+        
+    End If
+
+End Sub
+
+
+'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB.
 Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
 
     Dim x As Double, y As Double, z As Double
