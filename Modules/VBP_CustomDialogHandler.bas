@@ -23,6 +23,20 @@ Attribute VB_Name = "Custom_Dialog_Handler"
 
 Option Explicit
 
+'Display a custom color selection dialog
+Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long) As VbMsgBoxResult
+
+    Load dialog_ColorSelector
+    dialog_ColorSelector.showDialog oldColor
+    
+    choosePDColor = dialog_ColorSelector.DialogResult
+    If choosePDColor = vbOK Then newColor = dialog_ColorSelector.newColor
+    
+    Unload dialog_ColorSelector
+    Set dialog_ColorSelector = Nothing
+
+End Function
+
 'Present a dialog box to confirm the closing of an unsaved image
 Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
 

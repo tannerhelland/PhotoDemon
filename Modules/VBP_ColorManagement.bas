@@ -123,6 +123,12 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private currentSystemColorProfile As String
 Private Const MAX_PATH As Long = 260
 
+'Shorthand way to activate color management for anything with a DC
+Public Sub turnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHWnd As Long)
+    assignDefaultColorProfileToObject targetHWnd, targetDC
+    turnOnColorManagementForDC targetDC
+End Sub
+
 'Retrieve the current system color profile directory
 Public Function getSystemColorFolder() As String
 
