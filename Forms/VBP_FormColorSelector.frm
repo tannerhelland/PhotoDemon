@@ -719,6 +719,10 @@ Public Sub showDialog(ByVal initialColor As Long)
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
+    'Manually assign a hand cursor to the main picture box.  Because cursors are assigned on a class basis, this will also assign
+    ' a hand cursor to all other picture boxes on the form.  I'm okay with that.
+    setHandCursor picColor
+    
     'Display the dialog
     showPDDialog vbModal, Me
 
