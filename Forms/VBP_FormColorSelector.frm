@@ -216,6 +216,9 @@ Private m_ToolTip As clsToolTip
 'pdLayer for the primary color box (luminance/saturation) on the left
 Private primaryBox As pdLayer
 
+'pdLayer for the hue box on the rihgt
+Private hueBox As pdLayer
+
 'Currently selected color, including RGB and HSL attributes
 Private curColor As Long
 Private curRed As Long, curGreen As Long, curBlue As Long
@@ -267,7 +270,12 @@ Public Sub showDialog(ByVal initialColor As Long)
     
     'Cache the currentColor parameter so we can access it elsewhere
     oldColor = initialColor
-    picOriginal.BackColor = oldColor
+    
+    'Render the old color to the screen.  Note that we must use a temporary DIB for this; otherwise, the color will
+    ' not be properly color managed.
+    Dim tmpLayer As New pdLayer
+    tmpLayer.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
+    tmpLayer.renderToPictureBox picOriginal
     
     'Sync all current color values to the initial color
     curColor = initialColor
@@ -307,23 +315,27 @@ Private Sub drawHueBox()
     Dim hVal As Double
     Dim r As Long, g As Long, b As Long
     
+    'Because we want the hue box to be color-managed, we must create it as a DIB, then render it to the screen later
+    Set hueBox = New pdLayer
+    hueBox.createBlank picHue.ScaleWidth, picHue.ScaleHeight
+    
     'Simple gradient-ish code implementation of drawing hue
     Dim y As Long
-    For y = 0 To picHue.ScaleHeight
+    For y = 0 To hueBox.getLayerHeight
     
         'Based on our x-position, gradient a value between -1 and 5
-        hVal = y / picHue.ScaleHeight
+        hVal = y / hueBox.getLayerHeight
         
         'Generate a hue for this position (the 1 and 0.5 correspond to full saturation and half luminance, respectively)
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        picHue.Line (0, y)-(picHue.ScaleWidth, y), RGB(r, g, b)
+        drawLineToDC hueBox.getLayerDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
     Next y
     
-    turnOnDefaultColorManagement picHue.hDC, picHue.hWnd
-    picHue.Picture = picHue.Image
+    'Render the hue to the picture box, which will also activate color management
+    hueBox.renderToPictureBox picHue
     
 End Sub
 
@@ -334,20 +346,17 @@ Private Sub syncInterfaceToCurrentColor()
     'Turn on color management for all relevant picture boxes
     turnOnDefaultColorManagement picColor.hDC, picColor.hWnd
     
-    turnOnDefaultColorManagement picCurrent.hDC, picCurrent.hWnd
-    turnOnDefaultColorManagement picOriginal.hDC, picOriginal.hWnd
-
     'Start by drawing the primary box (luminance/saturation) using the current values
     Set primaryBox = New pdLayer
     
     primaryBox.createBlank picColor.ScaleWidth, picColor.ScaleHeight
     
     Dim pImageData() As Byte
-    Dim pSA As SAFEARRAY2D
-    prepSafeArray pSA, primaryBox
-    CopyMemory ByVal VarPtrArray(pImageData()), VarPtr(pSA), 4
+    Dim psa As SAFEARRAY2D
+    prepSafeArray psa, primaryBox
+    CopyMemory ByVal VarPtrArray(pImageData()), VarPtr(psa), 4
     
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     
     Dim tmpR As Long, tmpG As Long, tmpB As Long
     Dim tmpSat As Double, tmpLum As Double
@@ -357,16 +366,16 @@ Private Sub syncInterfaceToCurrentColor()
     loopHeight = primaryBox.getLayerHeight - 1
     
     For x = 0 To loopWidth
-        quickX = x * 3
+        QuickX = x * 3
     For y = 0 To loopHeight
     
         'The x-axis position determines value (0 -> 1)
         'The y-axis position determines saturation (1 -> 0)
         HSVtoRGB curHue, (loopHeight - y) / loopHeight, x / loopWidth, tmpR, tmpG, tmpB
         
-        pImageData(quickX + 2, y) = tmpR
-        pImageData(quickX + 1, y) = tmpG
-        pImageData(quickX, y) = tmpB
+        pImageData(QuickX + 2, y) = tmpR
+        pImageData(QuickX + 1, y) = tmpG
+        pImageData(QuickX, y) = tmpB
     
     Next y
     Next x
@@ -379,9 +388,13 @@ Private Sub syncInterfaceToCurrentColor()
     GDIPlusDrawCanvasCircle primaryBox.getLayerDC, curValue * loopWidth, (1 - curSaturation) * loopHeight, fixDPI(7), 192
         
     'Render the primary color box
-    BitBlt picColor.hDC, 0, 0, primaryBox.getLayerWidth, primaryBox.getLayerHeight, primaryBox.getLayerDC, 0, 0, vbSrcCopy
-    picColor.Picture = picColor.Image
-    picColor.Refresh
+    primaryBox.renderToPictureBox picColor
+    
+    'Render the current color box.  Note that we must use a temporary DIB for this; otherwise, the color will
+    ' not be properly color managed.
+    Dim tmpLayer As New pdLayer
+    tmpLayer.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
+    tmpLayer.renderToPictureBox picCurrent
         
     'Position the arrows along the hue box properly according to the current hue
     Dim hueY As Long
@@ -393,9 +406,6 @@ Private Sub syncInterfaceToCurrentColor()
     Me.Picture = Me.Image
     Me.Refresh
     
-    'Synchronize the "current color" picture box with the current color
-    picCurrent.BackColor = RGB(curRed, curGreen, curBlue)
-
 End Sub
 
 'When the user clicks the hue box (or moves with the mouse button down), this function is called.  It uses the y-value
