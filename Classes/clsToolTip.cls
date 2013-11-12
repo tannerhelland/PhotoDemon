@@ -50,6 +50,7 @@ End Type
 Private Const WM_USER             As Long = &H400
 Private Const TOOLTIPS_CLASS      As String = "tooltips_class32"
 Private Const TTS_ALWAYSTIP       As Long = &H1
+Private Const TTM_SETTITLE As Long = (WM_USER + 32)
 
 #Const WIN32_IE = &H400
 Private Type TOOLINFO
@@ -199,14 +200,14 @@ Private mnlgMaxTip                As Long
 Private m_TTHeader                As String
 Private m_ShowHeader              As Boolean
 Private Declare Function SendMessageT Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal dwLength As Long)
 
 'Added by Tanner: due to complexities with always-on-top windows, we must also make tooltips always-on-top
 Private Const WS_EX_TOPMOST As Long = &H8&
 
-Public Function AddTool(ByRef ctrl As Control, Optional ByVal strText As String) As Boolean
+Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) As Boolean
 
     Dim ti As TOOLINFO
 
@@ -231,7 +232,11 @@ Public Function AddTool(ByRef ctrl As Control, Optional ByVal strText As String)
             ' it's hWnd specified in uId.
             '
             .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
-            .hWnd = ctrl.Container.hWnd
+            If TypeOf ctrl Is Form Then
+                .hWnd = ctrl.hWnd
+            Else
+                .hWnd = ctrl.Container.hWnd
+            End If
             .uId = ctrl.hWnd
             
             If Len(strText) > 0 Then
@@ -375,7 +380,7 @@ Private Function fGetToolInfo(ByVal lnghwndTool As Long, _
 
 End Function
 
-Public Function fIsWindow(ByRef ctrl As Control) As Boolean
+Public Function fIsWindow(ByRef ctrl As Object) As Boolean
 
   On Error GoTo ErrorHandler
   fIsWindow = CBool(ctrl.hWnd)
@@ -523,7 +528,7 @@ Public Property Let MaxTipWidth(ByVal lngWidth As Long)
 
 End Property
 
-Public Function RemoveTool(ByRef ctrl As Control) As Boolean
+Public Function RemoveTool(ByRef ctrl As Object) As Boolean
 
   Dim ti As TOOLINFO
 
@@ -546,7 +551,7 @@ Public Property Get ToolCount() As Long
 
 End Property
 
-Public Property Get ToolText(ByRef ctrl As Control) As String
+Public Property Get ToolText(ByRef ctrl As Object) As String
 
   Dim ti As TOOLINFO
 
@@ -559,7 +564,7 @@ Public Property Get ToolText(ByRef ctrl As Control) As String
 
 End Property
 
-Public Property Let ToolText(ByRef ctrl As Control, _
+Public Property Let ToolText(ByRef ctrl As Object, _
                              ByVal strText As String)
 
   Dim ti As TOOLINFO
@@ -577,7 +582,10 @@ Public Property Let ToolText(ByRef ctrl As Control, _
 'add ToolTipHeader to strText if requested
   If m_ShowHeader Then
     If LenB(m_TTHeader) Then
-      strText = m_TTHeader & vbNewLine & strText
+      SendMessageT mnlgHwndTT, TTM_SETTITLE, 0&, ByVal m_TTHeader
+      'strText = m_TTHeader & vbNewLine & strText
+    Else
+        SendMessageT mnlgHwndTT, TTM_SETTITLE, 0&, ByVal vbNullString
     End If
   End If
   If fGetToolInfo(ctrl.hWnd, ti) Then
