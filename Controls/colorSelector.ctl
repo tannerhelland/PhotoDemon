@@ -121,18 +121,25 @@ End Sub
 
 'For flexibility, we draw our own borders.  I may decide to change this behavior in the future...
 Private Sub drawControlBorders()
+        
+    'For color management to work, we must pre-render the control onto a DIB, then copy the DIB to the screen.
+    ' Using VB's internal draw commands leads to unpredictable results.
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
     
-    UserControl.Cls
+    tmpLayer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, UserControl.BackColor
     
-    'Activate color management for this box (but not during compilation, obviously!)
+    'Use the API to draw borders around the control
+    GDIPlusDrawLineToDC tmpLayer.getLayerDC, 0, 0, UserControl.ScaleWidth - 1, 0, vbBlack
+    GDIPlusDrawLineToDC tmpLayer.getLayerDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, vbBlack
+    GDIPlusDrawLineToDC tmpLayer.getLayerDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, vbBlack
+    GDIPlusDrawLineToDC tmpLayer.getLayerDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
+    
+    'Render the backcolor to the control; doing it this way ensures color management works.  (Note that we use a
+    ' g_UserModeFix check to prevent color management from firing at compile-time.)
     If g_UserModeFix Then turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
-    
-    UserControl.BackColor = curColor
-    UserControl.Line (0, 0)-(UserControl.ScaleWidth - 1, 0)
-    UserControl.Line (UserControl.ScaleWidth - 1, 0)-(UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)
-    UserControl.Line (UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1)-(0, UserControl.ScaleHeight - 1)
-    UserControl.Line (0, UserControl.ScaleHeight - 1)-(0, 0)
-    
+    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+    UserControl.Picture = UserControl.Image
     UserControl.Refresh
     
 End Sub

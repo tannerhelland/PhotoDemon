@@ -248,7 +248,11 @@ End Sub
 'If color selection is allowed, raise that event now
 Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If isColorSelectionAllowed Then
-        curColor = GetPixel(picPreview.hDC, X, Y)
+        
+        curColor = GetPixel(originalImage.getLayerDC, X - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), Y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
+        
+        If curColor = -1 Then curColor = RGB(127, 127, 127)
+        
         If AllowColorSelection Then colorJustClicked = 1
         RaiseEvent ColorSelected
     End If
