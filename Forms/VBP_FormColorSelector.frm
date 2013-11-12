@@ -25,6 +25,23 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.TextBox txtHex 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   360
+      Left            =   6480
+      TabIndex        =   28
+      Text            =   "abcdef"
+      Top             =   3720
+      Width           =   1455
+   End
    Begin VB.PictureBox picSampleHSV 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -326,6 +343,30 @@ Begin VB.Form dialog_ColorSelector
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Label lblColor 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "HTML / CSS:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00000000&
+      Height          =   240
+      Index           =   8
+      Left            =   5310
+      TabIndex        =   27
+      Top             =   3765
+      Width           =   1110
    End
    Begin VB.Label lblColor 
       Alignment       =   1  'Right Justify
@@ -839,6 +880,9 @@ Private Sub redrawAllTextBoxes()
     sSaturation.renderToPictureBox picSampleHSV(1)
     sValue.renderToPictureBox picSampleHSV(2)
     
+    'Update the hex representation box
+    txtHex = getHexStringFromRGB
+    
     'Re-enable syncing
     suspendTextResync = False
     
@@ -1094,5 +1138,80 @@ Private Sub tudRGB_Change(Index As Integer)
         syncInterfaceToCurrentColor
         
     End If
+
+End Sub
+
+'Assuming the curRed/Green/Blue values are valid, this function can be used to retrieve a matching hex representation.
+Private Function getHexStringFromRGB() As String
+    getHexStringFromRGB = getHexFromByte(curRed) & getHexFromByte(curGreen) & getHexFromByte(curBlue)
+End Function
+
+'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.
+Private Function getHexFromByte(ByVal srcByte As Byte) As String
+    If srcByte < 16 Then
+        getHexFromByte = "0" & LCase(Hex$(srcByte))
+    Else
+        getHexFromByte = LCase(Hex$(srcByte))
+    End If
+End Function
+
+Private Sub txtHex_Validate(Cancel As Boolean)
+
+    'Before doing anything else, remove all invalid characters from the text box
+    Dim validChars As String
+    validChars = "0123456789abcdef"
+    
+    Dim curText As String
+    curText = Trim$(txtHex)
+    
+    Dim newText As String
+    newText = ""
+    
+    Dim curChar As String
+    
+    Dim i As Long
+    For i = 1 To Len(curText)
+        curChar = Mid$(curText, i, 1)
+        If InStr(1, validChars, curChar, vbTextCompare) > 0 Then newText = newText & curChar
+    Next i
+        
+    newText = LCase(newText)
+    
+    'newString now contains the contents of the text box, but limited to lowercase hex chars only.
+    
+    'Make sure the length is 1, 3, or 6.  Each case is handled specially.
+    Select Case Len(newText)
+    
+        'One character is treated as a shade of gray; extend it to six characters.  (I don't know if this is actually
+        ' valid CSS, but it doesn't hurt to support it... right?)
+        Case 1
+            newText = String$(6, newText)
+        
+        'Three characters is standard shorthand hex; expand each character as a pair
+        Case 3
+            newText = Left$(newText, 1) & Left$(newText, 1) & Mid$(newText, 2, 1) & Mid$(newText, 2, 1) & Right$(newText, 1) & Right$(newText, 1)
+        
+        'Six characters is already valid, so no need to screw with it further.
+        Case 6
+        
+        Case Else
+            'We can't handle this character string, so reset it
+            newText = getHexStringFromRGB()
+    
+    End Select
+    
+    'Change the text box to match our properly formatted string
+    txtHex = newText
+    
+    'Parse the string to calculate actual numeric values; we can use VB's Val() function for this!
+    curRed = Val("&H" & Left$(newText, 2))
+    curGreen = Val("&H" & Mid$(newText, 3, 2))
+    curBlue = Val("&H" & Right$(newText, 2))
+    
+    'Calculate new HSV values to match
+    RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
+    
+    'Resync the interface to match the new value!
+    syncInterfaceToCurrentColor
 
 End Sub
