@@ -655,7 +655,7 @@ Public Property Get newColor() As Long
 End Property
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     userAnswer = vbCancel
     Me.Hide
@@ -896,6 +896,10 @@ End Sub
 ' of the click to determine new image colors, then refreshes the interface.
 Private Sub hueBoxClicked(ByVal clickY As Long)
 
+    'Restrict mouse clicks to the picture box area
+    If clickY < 0 Then clickY = 0
+    If clickY > picHue.ScaleHeight Then clickY = picHue.ScaleHeight
+
     'Calculate a new hue using the mouse's y-position as our guide
     curHue = clickY / picHue.ScaleHeight
     trimHSV curHue
@@ -1032,6 +1036,10 @@ Private Sub hsvBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
     Dim boxWidth As Long
     boxWidth = picSampleRGB(0).ScaleWidth
+    
+    'Restrict mouse clicks to the picture box area
+    If xPos < 0 Then xPos = 0
+    If xPos > boxWidth Then xPos = boxWidth
 
     Select Case (boxIndex + 3)
     
@@ -1067,6 +1075,10 @@ Private Sub rgbBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
     Dim boxWidth As Long
     boxWidth = picSampleRGB(0).ScaleWidth
+    
+    'Restrict mouse clicks to the picture box area
+    If xPos < 0 Then xPos = 0
+    If xPos > boxWidth Then xPos = boxWidth
 
     Select Case boxIndex
     
