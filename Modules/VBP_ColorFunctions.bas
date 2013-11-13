@@ -507,7 +507,7 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
         r = var_R * 255
         g = var_G * 255
         b = var_B * 255
-        
+                
     End If
 
 End Sub

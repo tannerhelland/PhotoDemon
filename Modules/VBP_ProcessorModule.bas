@@ -234,6 +234,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Print"
             If showDialog Then
                 If Not FormPrint.Visible Then showPDDialog vbModal, FormPrint
+                'If Not FormPrintNew.Visible Then showPDDialog vbModal, FormPrintNew
             End If
             
         Case "Exit program"

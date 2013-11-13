@@ -1,0 +1,473 @@
+VERSION 5.00
+Begin VB.Form FormPrintNew 
+   AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   " Print image"
+   ClientHeight    =   8400
+   ClientLeft      =   45
+   ClientTop       =   315
+   ClientWidth     =   9975
+   LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   560
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   665
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdNext 
+      Caption         =   "&Next"
+      Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   6480
+      TabIndex        =   9
+      Top             =   6915
+      Width           =   1725
+   End
+   Begin VB.CommandButton cmdCancel 
+      Caption         =   "&Cancel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   8460
+      TabIndex        =   8
+      Top             =   6915
+      Width           =   1365
+   End
+   Begin VB.CommandButton cmdPrevious 
+      Caption         =   "&Previous"
+      Enabled         =   0   'False
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   4680
+      TabIndex        =   7
+      Top             =   6915
+      Width           =   1725
+   End
+   Begin VB.PictureBox picPage 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   5655
+      Index           =   0
+      Left            =   120
+      ScaleHeight     =   377
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   649
+      TabIndex        =   2
+      Top             =   960
+      Width           =   9735
+      Begin PhotoDemon.smartOptionButton optPrintJob 
+         Height          =   375
+         Index           =   0
+         Left            =   360
+         TabIndex        =   16
+         Top             =   2880
+         Width           =   2505
+         _ExtentX        =   4419
+         _ExtentY        =   661
+         Caption         =   "one image per page"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.textUpDown tudCopies 
+         Height          =   375
+         Left            =   5160
+         TabIndex        =   14
+         Top             =   1440
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   661
+         Min             =   1
+         Max             =   256
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.ComboBox cmbQuality 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         ItemData        =   "VBP_FormPrintWizard.frx":0000
+         Left            =   360
+         List            =   "VBP_FormPrintWizard.frx":0002
+         Style           =   2  'Dropdown List
+         TabIndex        =   11
+         Top             =   1455
+         Width           =   4335
+      End
+      Begin VB.ComboBox cmbPaperSize 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   5160
+         Style           =   2  'Dropdown List
+         TabIndex        =   5
+         Top             =   480
+         Width           =   4335
+      End
+      Begin VB.ComboBox cmbPrinter 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   3
+         Top             =   480
+         Width           =   4335
+      End
+      Begin PhotoDemon.smartOptionButton optPrintJob 
+         Height          =   375
+         Index           =   1
+         Left            =   360
+         TabIndex        =   17
+         Top             =   3360
+         Width           =   3075
+         _ExtentX        =   5424
+         _ExtentY        =   661
+         Caption         =   "multiple images per page"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optPrintJob 
+         Height          =   375
+         Index           =   2
+         Left            =   360
+         TabIndex        =   18
+         Top             =   3840
+         Width           =   6120
+         _ExtentX        =   10795
+         _ExtentY        =   661
+         Caption         =   "one image spread across multiple pages (poster print)"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "type of print job:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   240
+         TabIndex        =   15
+         Top             =   2400
+         Width           =   1815
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "# of copies:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   5040
+         TabIndex        =   13
+         Top             =   1080
+         Width           =   1290
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "print quality:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   240
+         TabIndex        =   12
+         Top             =   1080
+         Width           =   1365
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "paper size:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   5040
+         TabIndex        =   6
+         Top             =   120
+         Width           =   1155
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "printer:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   240
+         TabIndex        =   4
+         Top             =   120
+         Width           =   795
+      End
+   End
+   Begin VB.Label lblBackground 
+      Height          =   855
+      Left            =   -5640
+      TabIndex        =   10
+      Top             =   6840
+      Width           =   17415
+   End
+   Begin VB.Label lblDescription 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "In the next step, you can specify detailed layout information (margins, etc)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   240
+      TabIndex        =   1
+      Top             =   480
+      Width           =   7920
+   End
+   Begin VB.Label lblWizardTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Step 1 of 2: specify basic print settings"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   120
+      TabIndex        =   0
+      Top             =   120
+      Width           =   4725
+   End
+End
+Attribute VB_Name = "FormPrintNew"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+'***************************************************************************
+'Combined Print / Print Preview Interface
+'Copyright ©2003-2013 by Tanner Helland
+'Created: 4/April/03
+'Last updated: 12/November/13
+'Last update: rewritten from scratch.  Literally.
+'
+'Printing images is an inherently unpleasant process.  With this new print dialog, I hope to make it less painful.
+'
+'After prototyping a whole swath of potential layouts, I simply couldn't find a way to condense everything to one
+' page without it being a complete UX disaster.  Instead, I have chosen to separate the print process into two
+' pages.  This is still better than old "Print preview / print" paradigm, where each dialog is separate.  The
+' user should not be forced to switch between dialogs just to make sure their image printed correctly.
+'
+'In the first page of the new print wizard, the user is asked for the basic print settings that define the rest
+' of the process: most significantly, the printer and page size.  Until we know these items, we cannot provide
+' other layout-related options.
+'
+'In the second step, the user is given additional layout options relevant to their selected print situation.
+' I find this preferable to trying to shoehorn all layout varieties into a single form.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
+
+Option Explicit
+
+'These arrays store paper size information, specifically: names, IDs, and exact dimensions (in mm)
+Private paperSizeNames() As String
+Private paperSizeIDs() As Integer
+Private paperSizeExact() As POINTAPI
+
+Private Sub cmbPrinter_Click()
+    updatePaperSizeList
+End Sub
+
+Private Sub cmdCancel_Click()
+    Unload Me
+End Sub
+
+Private Sub Form_Load()
+
+    'Start by preparing all relevant combo boxes on the form
+    
+    'First, populate all available printers
+    Dim i As Long
+    For i = 0 To Printers.Count - 1
+        cmbPrinter.AddItem Printers(i).DeviceName, i
+    Next i
+
+    'Pre-select the default printer
+    For i = 0 To Printers.Count - 1
+        If Printers(i).DeviceName = Printer.DeviceName Then
+            cmbPrinter.ListIndex = i
+            Exit For
+        End If
+    Next i
+    
+    'Fill our paper size arrays with paper sizes supported by the current printer
+    updatePaperSizeList
+    
+    'Populate the quality combo box
+    cmbQuality.AddItem "Draft (least ink)", 0
+    cmbQuality.AddItem "Good", 1
+    cmbQuality.AddItem "Better", 2
+    cmbQuality.AddItem "Best (most ink)", 3
+    cmbQuality.ListIndex = 3
+    
+End Sub
+
+'The bulk of this function is handled by the matching function in the Printer module
+Private Sub updatePaperSizeList()
+
+    'Retrieve all paper sizes
+    getPaperSizes cmbPrinter.ListIndex, paperSizeNames, paperSizeIDs, paperSizeExact
+    
+    'Clear the combo box, then populate it with the new list of paper sizes
+    cmbPaperSize.Clear
+    
+    Dim i As Long
+    For i = 0 To UBound(paperSizeNames)
+        cmbPaperSize.AddItem paperSizeNames(i), i
+    Next i
+    
+    'Select the default paper size, which can possibly be obtained from the printer, but in my testing
+    ' is always index 0.
+    cmbPaperSize.ListIndex = 0
+
+End Sub
