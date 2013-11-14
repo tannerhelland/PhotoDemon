@@ -149,6 +149,11 @@ Public Function getSaveState() As Boolean
     getSaveState = hasBeenSaved
 End Function
 
+'Returns all layers of the image as a single, composited image (in pdLayer format, of course).
+Public Function getCompositedImage() As pdLayer
+    Set getCompositedImage = mainLayer
+End Function
+
 'In preparation for layers support, I will be switching various external modules to use this function instead of a
 ' direct reference to the mainLayer object.  DO NOT DIRECTLY ACCESS THIS pdImage's MAINLAYER OBJECT IN NEW CODE!
 Public Function getActiveLayer() As pdLayer
@@ -203,7 +208,7 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
         
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(mainLayer.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(getCompositedImage().getLayerDC)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -254,7 +259,11 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
     Else
     
         dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
-        requestThumbnail = GDIPlusResizeLayer(dstThumbnailLayer, tX, tY, tIcoWidth, tIcoHeight, mainLayer, 0, 0, mainLayer.getLayerWidth, mainLayer.getLayerHeight, InterpolationModeHighQualityBilinear)
+        
+        Dim compositedImage As New pdLayer
+        Set compositedImage = getCompositedImage()
+        
+        requestThumbnail = GDIPlusResizeLayer(dstThumbnailLayer, tX, tY, tIcoWidth, tIcoHeight, compositedImage, 0, 0, compositedImage.getLayerWidth, compositedImage.getLayerHeight, InterpolationModeHighQualityBilinear)
     
     End If
 
@@ -322,8 +331,8 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
     
 End Sub
 
-'If the class's size has somehow changed, this can be called to update it.  At present, it simply copies over the size of
-' the main layer, but in the future it may need to take into account multiple layers.
+'If the images's size has somehow changed, this can be called to update it.  (At present, it simply copies over the size of
+' the main layer, but in the future it may need to take into account multiple layers.)
 Public Function updateSize()
     Me.Width = mainLayer.getLayerWidth
     Me.Height = mainLayer.getLayerHeight
@@ -386,7 +395,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     'We now need pointers to three separate sets of image data: destination layer, source layer, and selection mask.
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, mainLayer
+    prepSafeArray srcSA, getActiveLayer()
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim selData() As Byte
@@ -408,7 +417,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     Dim blendAlpha As Double
     
     Dim srcLayerCD As Long, srcQuickX As Long, srcQuickY As Long
-    srcLayerCD = mainLayer.getLayerColorDepth \ 8
+    srcLayerCD = getActiveLayer().getLayerColorDepth \ 8
     
     Dim dstLayerCD As Long, dstQuickX As Long
     dstLayerCD = dstLayer.getLayerColorDepth \ 8

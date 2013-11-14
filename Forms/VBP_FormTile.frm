@@ -404,23 +404,23 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If targetHeight > MaxSize Then targetHeight = MaxSize
     
     'Resize the target picture box to this new size
-    tmpLayer.createBlank targetWidth, targetHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+    tmpLayer.createBlank targetWidth, targetHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
         
     'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
     Dim xLoop As Long, yLoop As Long
     xLoop = CLng(CSng(targetWidth) / CSng(iWidth))
     yLoop = CLng(CSng(targetHeight) / CSng(iHeight))
     
-    If isPreview = False Then SetProgBarMax xLoop
+    If Not isPreview Then SetProgBarMax xLoop
     
     'Using that loop variable, render the original image to the target picture box that many times
     Dim x As Long, y As Long
     
     For x = 0 To xLoop
     For y = 0 To yLoop
-        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
+        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, 0, 0, vbSrcCopy
     Next y
-        If isPreview = False Then SetProgBarVal x
+        If Not isPreview Then SetProgBarVal x
     Next x
     
     If Not isPreview Then
@@ -428,7 +428,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         SetProgBarVal xLoop
     
         'With the tiling complete, copy the temporary layer over the existing layer
-        pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+        pdImages(g_CurrentImage).getActiveLayer().createFromExistingLayer tmpLayer
         
         'Erase the temporary layer to save on memory
         tmpLayer.eraseLayer
@@ -489,7 +489,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage pdImages(g_CurrentImage).mainLayer
+    fxPreview.setOriginalImage pdImages(g_CurrentImage).getActiveLayer()
     
     'Populate the combo box
     cboTarget.AddItem " current screen size", 0

@@ -259,7 +259,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
-    If tmpImage.mainLayer.getLayerColorDepth = 24 Then
+    If tmpImage.getCompositedImage().getLayerColorDepth = 24 Then
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
     Else
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
@@ -310,7 +310,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     tmpImage.forInternalUseOnly = True
     
     'Copy the current selection layer into the temporary image's main layer
-    tmpImage.mainLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
+    tmpImage.getActiveLayer().createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
     tmpImage.updateSize
     
     'Give the selection a basic filename
@@ -349,7 +349,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Set CC = Nothing
     
     'Release our temporary image
-    Set tmpImage.mainLayer = Nothing
+    Set tmpImage.getActiveLayer() = Nothing
     Set tmpImage = Nothing
 
 End Function

@@ -547,7 +547,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             CreateNewImageForm
         
             Set targetImage = pdImages(g_CurrentImage)
-            Set targetLayer = pdImages(g_CurrentImage).mainLayer
+            Set targetLayer = pdImages(g_CurrentImage).getActiveLayer()
         
             g_AllowViewportRendering = False
         
@@ -643,7 +643,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         'Double-check to make sure the image was loaded successfully
-        If ((Not loadSuccessful) Or (targetImage.mainLayer.getLayerWidth = 0) Or (targetImage.mainLayer.getLayerHeight = 0)) And isThisPrimaryImage Then
+        If ((Not loadSuccessful) Or (targetImage.getActiveLayer().getLayerWidth = 0) Or (targetImage.getActiveLayer().getLayerHeight = 0)) And isThisPrimaryImage Then
             Message "Failed to load %1", sFile(thisImage)
             
             'Deactivating the image will remove the reference to the containing form - this is desired behavior, because VB counts object references,
@@ -719,7 +719,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the image has an alpha channel, verify it.  If it contains all 0 or all 255, convert it to 24bpp to conserve resources.
         '*************************************************************************************************************************************
         
-        If targetImage.mainLayer.getLayerColorDepth = 32 Then
+        If targetImage.getActiveLayer().getLayerColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
             If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
@@ -727,12 +727,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
                 'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
-                If Not targetImage.mainLayer.verifyAlphaChannel Then
+                If Not targetImage.getActiveLayer().verifyAlphaChannel Then
                 
                     If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
                 
                     'Transparently convert the main layer to 24bpp
-                    targetImage.mainLayer.convertTo24bpp
+                    targetImage.getActiveLayer().convertTo24bpp
                 
                 Else
                     If isThisPrimaryImage Then Message "Alpha channel verified.  Leaving image in 32bpp mode."
@@ -778,7 +778,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
         
             'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-            targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.mainLayer)
+            targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.getActiveLayer())
             
             If g_IsImageGray Then
                 Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
@@ -1089,7 +1089,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
         'Case 1
         
             'The layer handles the actual loading of the undo data
-            pdImages(g_CurrentImage).mainLayer.createFromFile undoFile
+            pdImages(g_CurrentImage).getActiveLayer().createFromFile undoFile
             pdImages(g_CurrentImage).updateSize
             
         'Selection data

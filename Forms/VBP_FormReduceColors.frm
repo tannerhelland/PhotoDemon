@@ -241,7 +241,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor 255, 255, 255
             fi_DIB = FreeImage_CreateFromDC(workingLayer.getLayerDC)
         Else
-            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).mainLayer.compositeBackgroundColor 255, 255, 255
+            If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then pdImages(g_CurrentImage).mainLayer.compositeBackgroundColor 255, 255, 255
             fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
         End If
         

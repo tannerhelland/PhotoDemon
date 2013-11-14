@@ -30,11 +30,19 @@ Begin VB.Form FormPrint
       TabIndex        =   23
       Top             =   3480
       Width           =   1665
-      _extentx        =   2937
-      _extenty        =   847
-      caption         =   "center on page"
-      font            =   "VBP_FormPrint.frx":0000
-      value           =   1
+      _ExtentX        =   2937
+      _ExtentY        =   847
+      Caption         =   "center on page"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&Print"
@@ -160,9 +168,9 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "VBP_FormPrint.frx":0028
+      ItemData        =   "VBP_FormPrint.frx":0000
       Left            =   4080
-      List            =   "VBP_FormPrint.frx":002A
+      List            =   "VBP_FormPrint.frx":0002
       Style           =   2  'Dropdown List
       TabIndex        =   6
       Top             =   2550
@@ -180,9 +188,9 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "VBP_FormPrint.frx":002C
+      ItemData        =   "VBP_FormPrint.frx":0004
       Left            =   4080
-      List            =   "VBP_FormPrint.frx":002E
+      List            =   "VBP_FormPrint.frx":0006
       Style           =   2  'Dropdown List
       TabIndex        =   4
       Top             =   1575
@@ -258,11 +266,19 @@ Begin VB.Form FormPrint
       TabIndex        =   24
       Top             =   3960
       Width           =   1290
-      _extentx        =   2275
-      _extenty        =   847
-      caption         =   "fit on page"
-      font            =   "VBP_FormPrint.frx":0030
-      value           =   1
+      _ExtentX        =   2275
+      _ExtentY        =   847
+      Caption         =   "fit on page"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblQuality 
       AutoSize        =   -1  'True
@@ -621,7 +637,7 @@ Private Sub Form_Load()
     picOut.Width = pdImages(g_CurrentImage).Width
     picOut.Height = pdImages(g_CurrentImage).Height
     picOut.ScaleMode = vbPixels
-    pdImages(g_CurrentImage).mainLayer.renderToPictureBox picOut
+    pdImages(g_CurrentImage).getCompositedImage().renderToPictureBox picOut
     picOut.ScaleMode = vbTwips
     
     'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
@@ -703,7 +719,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
@@ -871,12 +887,12 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         DrawPreviewImage picThumb, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(g_CurrentImage).mainLayer.previewX, pdImages(g_CurrentImage).mainLayer.previewY, pdImages(g_CurrentImage).mainLayer.previewWidth, pdImages(g_CurrentImage).mainLayer.previewHeight, vbSrcCopy
+        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(g_CurrentImage).getCompositedImage().previewX, pdImages(g_CurrentImage).getCompositedImage().previewY, pdImages(g_CurrentImage).getCompositedImage().previewWidth, pdImages(g_CurrentImage).getCompositedImage().previewHeight, vbSrcCopy
     Else
         DrawPreviewImage picThumb90, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(g_CurrentImage).mainLayer.previewY, pdImages(g_CurrentImage).mainLayer.previewX, pdImages(g_CurrentImage).mainLayer.previewHeight, pdImages(g_CurrentImage).mainLayer.previewWidth, vbSrcCopy
+        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(g_CurrentImage).getCompositedImage().previewY, pdImages(g_CurrentImage).getCompositedImage().previewX, pdImages(g_CurrentImage).getCompositedImage().previewHeight, pdImages(g_CurrentImage).getCompositedImage().previewWidth, vbSrcCopy
     End If
     
     iSrc.Picture = iSrc.Image

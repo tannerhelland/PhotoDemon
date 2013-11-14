@@ -402,7 +402,7 @@ Private Sub Form_Activate()
         lblIDEWarning.Visible = True
     Else
         '32bpp images take longer to process.  Limit the radius to 100 in this case.
-        If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
+        If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
     End If
     
     'Draw a preview of the effect

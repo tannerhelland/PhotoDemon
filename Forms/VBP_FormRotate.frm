@@ -217,7 +217,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         If isPreview Then
             fi_DIB = FreeImage_CreateFromDC(smallLayer.getLayerDC)
         Else
-            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
+            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).getCompositedImage().getLayerDC)
         End If
         
         'Use that handle to request an image rotation

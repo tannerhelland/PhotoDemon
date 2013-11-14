@@ -113,7 +113,7 @@ Private Type ImageCodecInfo
     formatDescription As Long
     FilenameExtension As Long
     MimeType          As Long
-    flags             As Long
+    Flags             As Long
     Version           As Long
     SigCount          As Long
     SigSize           As Long
@@ -265,10 +265,10 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As 
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
 Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal iPixelFormat As Long, ByVal srcBitmap As Long, ByRef dstBitmap As Long) As GDIPlusStatus
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef scan0 As Any, ByRef pBitmap As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gpBitmap As Long, hBmpReturn As Long, ByVal RGBABackground As Long) As GDIPlusStatus
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GDIPlusStatus
-Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, bitmap As Long) As GDIPlusStatus
+Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, BITMAP As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
 Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
@@ -407,9 +407,9 @@ End Type
 Private Type BitmapData
    Width As Long
    Height As Long
-   stride As Long
+   Stride As Long
    PixelFormat As Long
-   scan0 As Long
+   Scan0 As Long
    Reserved As Long
 End Type
 
@@ -792,8 +792,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
             .Width = imgWidth
             .Height = imgHeight
             .PixelFormat = PixelFormat32bppARGB
-            .stride = dstLayer.getLayerArrayWidth
-            .scan0 = dstLayer.getLayerDIBits
+            .Stride = dstLayer.getLayerArrayWidth
+            .Scan0 = dstLayer.getLayerDIBits
         End With
         
         'Next, prepare a clipping rect
@@ -836,7 +836,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     If tmpLayer.getLayerColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current layer

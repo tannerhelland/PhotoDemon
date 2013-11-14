@@ -98,7 +98,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcImage.mainLayer
+    prepSafeArray tmpSA, srcImage.getActiveLayer()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -109,7 +109,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = (srcImage.mainLayer.getLayerColorDepth) \ 8
+    qvDepth = (srcImage.getActiveLayer().getLayerColorDepth) \ 8
     
     'This array will track whether or not a given color has been detected in the image. (I don't know if powers of two
     ' are allocated more efficiently, but it doesn't hurt to stick to that rule.)

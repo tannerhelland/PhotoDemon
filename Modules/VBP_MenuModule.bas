@@ -213,7 +213,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
             If g_LastSaveFilter = -1 Then
             
                 '24bpp layers default to JPEG
-                If pdImages(imageID).mainLayer.getLayerColorDepth = 24 Then
+                If pdImages(imageID).getCompositedImage().getLayerColorDepth = 24 Then
                     g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
                 
                 '32bpp layers default to PNG
