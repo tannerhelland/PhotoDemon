@@ -233,8 +233,19 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Print"
             If showDialog Then
-                If Not FormPrint.Visible Then showPDDialog vbModal, FormPrint
+                
+                'As a temporary workaround, Vista+ users are routed through the default Windows photo printing
+                ' dialog.  XP users get the old PD print dialog.
+                If g_IsVistaOrLater Then
+                    printViaWindowsPhotoPrinter
+                Else
+                    If Not FormPrint.Visible Then showPDDialog vbModal, FormPrint
+                End If
+                
+                'In the future, the print dialog will be replaced with this new version.  However, there are
+                ' bigger priorities for 6.2, so I'm putting this on hold for now...
                 'If Not FormPrintNew.Visible Then showPDDialog vbModal, FormPrintNew
+                
             End If
             
         Case "Exit program"

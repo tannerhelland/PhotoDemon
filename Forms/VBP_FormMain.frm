@@ -1125,18 +1125,18 @@ Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'If a child image window is active, forward all mousewheel events to that window
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, X, Y
+        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
     End If
 
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, X, Y
+        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
     End If
 
 End Sub
@@ -1306,7 +1306,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1342,7 +1342,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1867,7 +1867,7 @@ Private Sub MnuFile_Click(Index As Integer)
         'Print
         Case 13
             Process "Print", True
-        
+            
         '<separator>
         Case 14
         
