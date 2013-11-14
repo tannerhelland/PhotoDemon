@@ -42,7 +42,7 @@ Public Sub ClipboardCopy()
     Else
     
         'If a selection is NOT active, just make a copy of the full image
-        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
+        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).getCompositedImage()
         
     End If
     

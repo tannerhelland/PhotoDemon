@@ -565,7 +565,7 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then
     
         'Hide the background color selectors
         colorPicker.Visible = False
@@ -594,7 +594,7 @@ Private Sub Form_Load()
     tudHeight.Value = pdImages(g_CurrentImage).Height
     
     'If the source image is 32bpp, hide the color selection box and change the text to match
-    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then
         lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
     Else
         lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")

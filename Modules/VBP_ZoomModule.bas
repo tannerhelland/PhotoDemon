@@ -197,7 +197,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'ZOOMED OUT
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If pdImages(curImage).mainLayer.getLayerColorDepth = 32 Then
+        If pdImages(curImage).getCompositedImage().getLayerColorDepth = 32 Then
         
             'Create a blank layer in the parent pdImages object.  (For performance reasons, we create this image at the size
             ' of the viewport.)
@@ -239,11 +239,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
                 hackLayer.createBlank pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, 32
 
                 SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
-                StretchBlt hackLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+                StretchBlt hackLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
 
                 'Next, alphaFixLayer is resized using HALFTONE data.  This results in a good-quality RGB image, but all alpha data is erased.
                 SetStretchBltMode pdImages(curImage).alphaFixLayer.getLayerDC, STRETCHBLT_HALFTONE
-                StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+                StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
 
                 'Use a unique PD function called "compositeBackgroundColorSpecial", which tells alphaFixLayer to borrow the alpha values
                 ' from hackLayer, then composite itself against a checkerboard.  Once this is done, copy the resulting image into the
@@ -259,7 +259,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
-            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).mainLayer.getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             'StretchDIBits pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, srcX, srcY, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDIBits(), pdImages(curImage).mainLayer.getLayerDIBHeader(), 0&, vbSrcCopy
         End If
         
@@ -276,15 +276,15 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         srcHeight = bltHeight / ZoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If pdImages(curImage).mainLayer.getLayerColorDepth = 32 Then
+        If pdImages(curImage).getCompositedImage().getLayerColorDepth = 32 Then
             pdImages(curImage).alphaFixLayer.createBlank bltWidth, bltHeight, 32
             SetStretchBltMode pdImages(curImage).alphaFixLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, bltWidth, bltHeight, pdImages(curImage).mainLayer.getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             pdImages(curImage).alphaFixLayer.compositeBackgroundColor
             BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, bltWidth, bltHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     End If

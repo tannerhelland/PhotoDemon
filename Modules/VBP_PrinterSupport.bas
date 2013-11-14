@@ -112,7 +112,7 @@ Public Sub printViaWindowsPhotoPrinter()
     Dim tmpImage As pdImage
     Set tmpImage = New pdImage
     
-    tmpImage.mainLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
+    tmpImage.getActiveLayer().createFromExistingLayer pdImages(g_CurrentImage).getCompositedImage()
     tmpImage.updateSize
     
     'Mark it as internal-use-only, so that it does not attempt to update the MRU, among other things

@@ -104,13 +104,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-                outputColorDepth = getColorDepthFromColorCount(colorCountCheck, srcPDImage.mainLayer)
+                outputColorDepth = getColorDepthFromColorCount(colorCountCheck, srcPDImage.getCompositedImage())
                 
                 'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
                 ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
                 ' images to be exported as 32bpp.
-                If (outputColorDepth <= 8) And (srcPDImage.mainLayer.getLayerColorDepth = 32) Then
-                    If (Not srcPDImage.mainLayer.isAlphaBinary) Then outputColorDepth = 32
+                If (outputColorDepth <= 8) And (srcPDImage.getCompositedImage().getLayerColorDepth = 32) Then
+                    If (Not srcPDImage.getCompositedImage().isAlphaBinary) Then outputColorDepth = 32
                 End If
                 
                 Message "Color count successful (%1 bpp recommended)", outputColorDepth
@@ -487,7 +487,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
         Message "Saving %1 file...", sFileType
     
         'The layer class is capable of doing this without any outside help.
-        srcPDImage.mainLayer.writeToBitmapFile BMPPath
+        srcPDImage.getCompositedImage().writeToBitmapFile BMPPath
     
         Message "%1 save complete.", sFileType
         
@@ -505,10 +505,10 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
             'Copy the image into a temporary layer
             Dim tmpLayer As pdLayer
             Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+            tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
             
             'If the output color depth is 24 but the current image is 32, composite the image against a white background
-            If (outputColorDepth < 32) And (srcPDImage.mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+            If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
             
             'Convert our current layer to a FreeImage-type DIB
             Dim fi_DIB As Long
@@ -574,7 +574,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Message "Saving %1 image...", sFileType
 
     'First, have the layer write itself to file in BMP format
-    srcPDImage.mainLayer.writeToBitmapFile PDIPath
+    srcPDImage.getCompositedImage().writeToBitmapFile PDIPath
     
     'Then compress the file using zLib
     CompressFile PDIPath
@@ -615,12 +615,12 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     
     'If the current image is 32bpp, we will need to apply some additional actions to the image to prepare the
     ' transparency.  Mark a bool value, because we will reference it in multiple places throughout the save function.
     Dim handleAlpha As Boolean
-    If srcPDImage.mainLayer.getLayerColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
+    If srcPDImage.getCompositedImage().getLayerColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
     
     'If the current image contains transparency, we need to modify it in order to retain the alpha channel.
     If handleAlpha Then
@@ -755,11 +755,11 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.mainLayer.getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -823,10 +823,10 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
     
         'Also, if pngnq is enabled, we will use that for the transformation - so we need to reset the outgoing color depth to 24bpp
-        If (srcPDImage.mainLayer.getLayerColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
+        If (srcPDImage.getCompositedImage().getLayerColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
     
     End If
     
@@ -917,7 +917,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 'Now, add options that the user may have specified.
                 
                 'Alpha extenuation (only relevant for 32bpp images)
-                If srcPDImage.mainLayer.getLayerColorDepth = 32 Then
+                If srcPDImage.getCompositedImage().getLayerColorDepth = 32 Then
                     If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq Alpha Extenuation", False) Then
                         shellPath = shellPath & "-t15 "
                     Else
@@ -1041,7 +1041,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
         
     'Convert our current layer to a FreeImage-type DIB
@@ -1112,11 +1112,11 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.mainLayer.getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -1157,7 +1157,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
     
     End If
     
@@ -1264,7 +1264,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
         
     'Convert our current layer to a FreeImage-type DIB
@@ -1386,11 +1386,11 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.mainLayer.getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -1430,7 +1430,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.mainLayer.getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
     
     End If
     
@@ -1582,10 +1582,10 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     'Copy the image into a temporary layer
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.mainLayer
+    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (srcPDImage.mainLayer.getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
     
     'Convert our current layer to a FreeImage-type DIB
     Dim fi_DIB As Long

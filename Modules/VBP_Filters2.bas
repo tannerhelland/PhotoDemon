@@ -176,7 +176,7 @@ Public Sub MenuFadeLastEffect()
     'Create another array, but point it at the pixel data of the current image
     Dim cImageData() As Byte
     Dim cSA As SAFEARRAY2D
-    prepSafeArray cSA, pdImages(g_CurrentImage).mainLayer
+    prepSafeArray cSA, pdImages(g_CurrentImage).getActiveLayer()
     CopyMemory ByVal VarPtrArray(cImageData()), VarPtr(cSA), 4
     
     'Because the undo file and current image may be different sizes (if the last action was a resize, for example), we need to
@@ -191,7 +191,7 @@ Public Sub MenuFadeLastEffect()
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValUndo As Long, qvDepth As Long, qvDepthUndo As Long
-    qvDepth = pdImages(g_CurrentImage).mainLayer.getLayerColorDepth \ 8
+    qvDepth = pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth \ 8
     qvDepthUndo = tmpLayer.getLayerColorDepth \ 8
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value

@@ -58,10 +58,18 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   2
       Top             =   4005
       Width           =   4875
-      _extentx        =   8599
-      _extenty        =   847
-      caption         =   "Repeat this action for all unsaved images (X in total)"
-      font            =   "VBP_FormUnsavedChanges.frx":0000
+      _ExtentX        =   8599
+      _ExtentY        =   847
+      Caption         =   "Repeat this action for all unsaved images (X in total)"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -286,14 +294,14 @@ End Sub
 Private Sub Form_Activate()
 
     'Draw the image being closed to the preview box
-    If pdImages(imageBeingClosed).mainLayer.getLayerColorDepth = 24 Then
-        pdImages(imageBeingClosed).mainLayer.renderToPictureBox picPreview
+    If pdImages(imageBeingClosed).getCompositedImage().getLayerColorDepth = 24 Then
+        pdImages(imageBeingClosed).getCompositedImage().renderToPictureBox picPreview
     Else
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
         Dim nWidth As Long, nHeight As Long
         convertAspectRatio pdImages(imageBeingClosed).Width, pdImages(imageBeingClosed).Height, picPreview.ScaleWidth, picPreview.ScaleHeight, nWidth, nHeight
-        tmpLayer.createFromExistingLayer pdImages(imageBeingClosed).mainLayer, nWidth, nHeight, True
+        tmpLayer.createFromExistingLayer pdImages(imageBeingClosed).getCompositedImage(), nWidth, nHeight, True
         tmpLayer.compositeBackgroundColor
         tmpLayer.renderToPictureBox picPreview
         tmpLayer.eraseLayer

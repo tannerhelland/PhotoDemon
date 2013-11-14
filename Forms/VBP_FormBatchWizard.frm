@@ -2384,17 +2384,17 @@ End Sub
 'cmdAddFiles allows the user to move files from the source image list box to the batch list box
 Private Sub cmdAddFiles_Click()
     Screen.MousePointer = vbHourglass
-    Dim X As Long
-    For X = 0 To lstSource.ListCount - 1
-        If lstSource.Selected(X) Then addFileToBatchList Dir1.Path & "\" & lstSource.List(X)
-    Next X
+    Dim x As Long
+    For x = 0 To lstSource.ListCount - 1
+        If lstSource.Selected(x) Then addFileToBatchList Dir1.Path & "\" & lstSource.List(x)
+    Next x
     fixHorizontalListBoxScrolling lstFiles, 16
     Screen.MousePointer = vbDefault
     'makeFormPretty Me, m_ToolTip
 End Sub
 
 'Cancel and exit the dialog, with optional prompts as necessary (see Form_QueryUnload)
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
@@ -2752,10 +2752,10 @@ End Sub
 'Remove all selected items from the batch conversion list
 Private Sub cmdRemove_Click()
         
-    Dim X As Long
-    For X = lstFiles.ListCount - 1 To 0 Step -1
-        If lstFiles.Selected(X) Then lstFiles.RemoveItem X
-    Next X
+    Dim x As Long
+    For x = lstFiles.ListCount - 1 To 0 Step -1
+        If lstFiles.Selected(x) Then lstFiles.RemoveItem x
+    Next x
     
     'Because there are no longer any selected entries, disable the "remove selected images" button
     cmdRemove.Enabled = False
@@ -2829,14 +2829,14 @@ Private Function saveCurrentBatchList() As Boolean
         Dim fileNum As Integer
         fileNum = FreeFile
         
-        Dim X As Long
+        Dim x As Long
         
         Open sFile For Output As #fileNum
             Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
             Print #fileNum, Trim(CStr(lstFiles.ListCount))
-            For X = 0 To lstFiles.ListCount - 1
-                Print #fileNum, lstFiles.List(X)
-            Next X
+            For x = 0 To lstFiles.ListCount - 1
+                Print #fileNum, lstFiles.List(x)
+            Next x
             Print #fileNum, "<END OF LIST>"
         Close #fileNum
         
@@ -2876,10 +2876,10 @@ Private Sub cmdSelectAll_Click()
         chkEnablePreview.Value = vbUnchecked
     End If
 
-    Dim X As Long
-    For X = 0 To lstSource.ListCount - 1
-        lstSource.Selected(X) = True
-    Next X
+    Dim x As Long
+    For x = 0 To lstSource.ListCount - 1
+        lstSource.Selected(x) = True
+    Next x
 
     'Restore the user's preference upon completion
     If enablePreviews Then chkEnablePreview.Value = vbChecked
@@ -2934,10 +2934,10 @@ Private Sub cmdSelectNone_Click()
         chkEnablePreview.Value = vbUnchecked
     End If
 
-    Dim X As Long
-    For X = 0 To lstSource.ListCount - 1
-        lstSource.Selected(X) = False
-    Next X
+    Dim x As Long
+    For x = 0 To lstSource.ListCount - 1
+        lstSource.Selected(x) = False
+    Next x
     
     If enablePreviews Then chkEnablePreview.Value = vbChecked
 
@@ -2962,10 +2962,10 @@ Private Sub cmdUseCD_Click()
     
     If PhotoDemon_OpenImageDialog(sFile, Me.hWnd) Then
         
-        Dim X As Long
-        For X = 0 To UBound(sFile)
-            addFileToBatchList sFile(X)
-        Next X
+        Dim x As Long
+        For x = 0 To UBound(sFile)
+            addFileToBatchList sFile(x)
+        Next x
         fixHorizontalListBoxScrolling lstFiles, 16
     End If
 End Sub
@@ -2979,7 +2979,7 @@ Private Sub Drive1_Change()
 End Sub
 
 'Dragged image files must be placed on the batch listbox - not anywhere else.
-Private Sub Form_DragOver(Source As Control, X As Single, Y As Single, State As Integer)
+Private Sub Form_DragOver(Source As Control, x As Single, y As Single, State As Integer)
     If Source = lstSource Then lstSource.DragIcon = picDragDisallow.Picture
 End Sub
 
@@ -3104,24 +3104,24 @@ Private Sub Form_Load()
     If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
         
     'Populate a combo box that will display user-friendly summaries of all possible input image types
-    Dim X As Long
-    For X = 0 To g_ImageFormats.getNumOfInputFormats
-        cmbPattern.AddItem g_ImageFormats.getInputFormatDescription(X), X
-    Next X
+    Dim x As Long
+    For x = 0 To g_ImageFormats.getNumOfInputFormats
+        cmbPattern.AddItem g_ImageFormats.getInputFormatDescription(x), x
+    Next x
     cmbPattern.ListIndex = 0
     
     'Populate a combo box that displays user-friendly summaries of all possible output filetypes
-    For X = 0 To g_ImageFormats.getNumOfOutputFormats
-        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(X), X
-    Next X
+    For x = 0 To g_ImageFormats.getNumOfOutputFormats
+        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(x), x
+    Next x
     
     'Save JPEGs by default
-    For X = 0 To cmbOutputFormat.ListCount
-        If g_ImageFormats.getOutputFormatExtension(X) = "jpg" Then
-            cmbOutputFormat.ListIndex = X
+    For x = 0 To cmbOutputFormat.ListCount
+        If g_ImageFormats.getOutputFormatExtension(x) = "jpg" Then
+            cmbOutputFormat.ListIndex = x
             Exit For
         End If
-    Next X
+    Next x
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True
@@ -3280,7 +3280,7 @@ Private Sub lstFiles_Click()
 End Sub
 
 'Allow dropping of files from the source file list box
-Private Sub lstFiles_DragDrop(Source As Control, X As Single, Y As Single)
+Private Sub lstFiles_DragDrop(Source As Control, x As Single, y As Single)
     
     If Source Is lstSource Then
         Dim i As Long
@@ -3292,12 +3292,12 @@ Private Sub lstFiles_DragDrop(Source As Control, X As Single, Y As Single)
     
 End Sub
 
-Private Sub lstFiles_DragOver(Source As Control, X As Single, Y As Single, State As Integer)
+Private Sub lstFiles_DragOver(Source As Control, x As Single, y As Single, State As Integer)
     If Source = lstSource Then lstSource.DragIcon = picDragAllow.Picture
 End Sub
 
 'This latest version of the batch wizard now supports full drag-and-drop from both Explorer and common dialogs
-Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
@@ -3317,7 +3317,7 @@ Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As I
     
 End Sub
 
-Private Sub lstFiles_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub lstFiles_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
     
     'Check to make sure the type of OLE object is files
     If Data.GetFormat(vbCFFiles) Then
@@ -3416,13 +3416,13 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     novelAddition = True
     
     If Not suppressDuplicatesCheck Then
-        Dim X As Long
-        For X = 0 To lstFiles.ListCount - 1
-            If StrComp(lstFiles.List(X), srcFile, vbTextCompare) = 0 Then
+        Dim x As Long
+        For x = 0 To lstFiles.ListCount - 1
+            If StrComp(lstFiles.List(x), srcFile, vbTextCompare) = 0 Then
                 novelAddition = False
                 Exit For
             End If
-        Next X
+        Next x
     End If
     
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
@@ -3461,7 +3461,7 @@ Private Sub updateBatchListCount()
     
 End Sub
 
-Private Sub lstSource_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lstSource_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Allow drag operations via the RIGHT mouse button
     If Button = vbRightButton Then
@@ -3471,7 +3471,7 @@ Private Sub lstSource_MouseDown(Button As Integer, Shift As Integer, X As Single
     
 End Sub
 
-Private Sub lstSource_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lstSource_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     lstSource.DragIcon = LoadPicture("")
 End Sub
 
@@ -3701,7 +3701,7 @@ Private Sub prepareForBatchConversion()
                         'If it isn't, save as JPEG or PNG contingent on color depth
                         
                         '24bpp images default to JPEG
-                        If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 24 Then
+                        If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 24 Then
                             tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
                             pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
                         

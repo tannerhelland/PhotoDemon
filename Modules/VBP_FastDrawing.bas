@@ -133,11 +133,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         If pdImages(g_CurrentImage).selectionActive Then
             
             'Make a working copy of the image data within the selection
-            workingLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
-            BitBlt workingLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            workingLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
+            BitBlt workingLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
             
         Else
-            workingLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
+            workingLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer()
         End If
     
     'If this IS a preview, more work is involved.
@@ -152,8 +152,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
             srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
         Else
-            srcWidth = pdImages(g_CurrentImage).mainLayer.getLayerWidth
-            srcHeight = pdImages(g_CurrentImage).mainLayer.getLayerHeight
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
         End If
             
         'Now, use that aspect ratio to determine a proper size for our temporary layer
@@ -178,8 +178,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             ' is a preview).  These steps could be combined into one.
             Dim copyLayer As pdLayer
             Set copyLayer = New pdLayer
-            copyLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
-            BitBlt copyLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            copyLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
+            BitBlt copyLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
             workingLayer.createFromExistingLayer copyLayer, newWidth, newHeight
             copyLayer.eraseLayer
             Set copyLayer = Nothing
@@ -244,7 +244,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         
         'If a selection is not currently active, this step is incredibly simple!
         Else
-            workingLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, newWidth, newHeight
+            workingLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer(), newWidth, newHeight
         End If
         
         'Give the preview object a copy of this image data so it can show it to the user if requested
@@ -271,7 +271,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
         .LayerX = 0
         .LayerY = 0
-        .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).mainLayer.getLayerWidth
+        .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
     End With
 
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
@@ -335,7 +335,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             
             Dim dstImageData() As Byte
             Dim dstSA As SAFEARRAY2D
-            prepSafeArray dstSA, pdImages(g_CurrentImage).mainLayer
+            prepSafeArray dstSA, pdImages(g_CurrentImage).getActiveLayer()
             CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
             
             Dim leftOffset As Long, topOffset As Long
@@ -347,7 +347,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Dim blendAlpha As Double
             
             Dim dstQuickVal As Long
-            dstQuickVal = pdImages(g_CurrentImage).mainLayer.getLayerColorDepth \ 8
+            dstQuickVal = pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth \ 8
             
             Dim workingLayerCD As Long
             workingLayerCD = workingLayer.getLayerColorDepth \ 8
@@ -392,8 +392,8 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             
             
         Else
-            If workingLayer.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).mainLayer.convertTo32bpp
-            BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+            If workingLayer.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getActiveLayer().convertTo32bpp
+            BitBlt pdImages(g_CurrentImage).getActiveLayer().getLayerDC, curLayerValues.LayerX, curLayerValues.LayerY, curLayerValues.Width, curLayerValues.Height, workingLayer.getLayerDC, 0, 0, vbSrcCopy
         End If
                 
         'workingLayer has served its purpose, so erase it from memory
@@ -422,7 +422,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
                         
             Dim already32bpp As Boolean
-            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 24 Then already32bpp = False Else already32bpp = True
+            If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 24 Then already32bpp = False Else already32bpp = True
             
             For x = 0 To workingLayer.getLayerWidth - 1
             For y = 0 To workingLayer.getLayerHeight - 1
