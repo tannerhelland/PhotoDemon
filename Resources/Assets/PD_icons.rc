@@ -323,6 +323,11 @@ RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
 RSZ_FITIN    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_inclusive.png
 RSZ_FITEX    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_exclusive.png
 
+//Print mode sample images
+PRNT_1IMAGE  CUSTOM  MOVEABLE        LOADONCALL      print_preview_one_page.png
+PRNT_MLTIMGS CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_images.png
+PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_pages.png
+
 //Control arrows used on either side of the hue box in the color selection dialog
 CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
 CLR_ARROW_R  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_right.png

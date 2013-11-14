@@ -33,7 +33,7 @@ Option Explicit
 '   3) Optional: imageID (if provided, the function can write information about the save to the relevant object in the pdImages array - this primarily exists for legacy reasons)
 '   4) Optional: whether to display a form for the user to input additional save options (JPEG quality, etc)
 '   5) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the preferences file.
-Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1) As Boolean
+Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1, Optional ByVal suspendMetadataActions As Boolean = False, Optional ByVal suspendMRUUpdating As Boolean = False) As Boolean
     
     'Only update the MRU list if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
     ' successfully navigated it, and 3) no errors occured during the export process.  By default, this is set to "do not update."
@@ -194,7 +194,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     '****************************************************************************************************
     
     'If metadata export is enabled, cache the metadata now
-    If g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 3 Then
+    If (g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1) <> 3) And (Not suspendMetadataActions) Then
     
         Message "Caching current image's metadata..."
         
@@ -403,7 +403,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     
     'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
     ' If the file was not written successfully, abandon any attempts at metadata embedding.
-    If updateMRU And g_ExifToolEnabled Then
+    If updateMRU And g_ExifToolEnabled And (Not suspendMetadataActions) Then
         
         'Only attempt to export metadata if ExifTool was able to successfully parse or cache metadata prior to saving
         If srcPDImage.imgMetadata.hasXMLMetadata Or srcPDImage.imgMetadata.hasBinaryMetadata Then
@@ -415,7 +415,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     End If
     
     'UpdateMRU should only be true if the save was successful
-    If updateMRU Then
+    If updateMRU And (Not suspendMRUUpdating) Then
     
         'Additionally, only add this MRU to the list (and generate an accompanying icon) if we are not in the midst
         ' of a batch conversion.
@@ -451,13 +451,16 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     Else
         
         'If we aren't updating the MRU, something went wrong.  Display that the save was canceled and exit.
-        Message "Save canceled."
-        PhotoDemon_SaveImage = False
-        Exit Function
+        ' (One exception to this is if the user requested us to not update the MRU; in this case, there is no error!)
+        If Not suspendMRUUpdating Then
+            Message "Save canceled."
+            PhotoDemon_SaveImage = False
+            Exit Function
+        End If
         
     End If
 
-    Message "Save complete."
+    If Not suspendMRUUpdating Then Message "Save complete."
 
 End Function
 

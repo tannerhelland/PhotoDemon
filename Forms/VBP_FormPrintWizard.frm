@@ -4,14 +4,23 @@ Begin VB.Form FormPrintNew
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print image"
-   ClientHeight    =   8400
+   ClientHeight    =   8565
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9975
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   560
+   ScaleHeight     =   571
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   665
    ShowInTaskbar   =   0   'False
@@ -31,7 +40,7 @@ Begin VB.Form FormPrintNew
       Height          =   615
       Left            =   6480
       TabIndex        =   9
-      Top             =   6915
+      Top             =   7875
       Width           =   1725
    End
    Begin VB.CommandButton cmdCancel 
@@ -48,7 +57,7 @@ Begin VB.Form FormPrintNew
       Height          =   615
       Left            =   8460
       TabIndex        =   8
-      Top             =   6915
+      Top             =   7875
       Width           =   1365
    End
    Begin VB.CommandButton cmdPrevious 
@@ -66,7 +75,7 @@ Begin VB.Form FormPrintNew
       Height          =   615
       Left            =   4680
       TabIndex        =   7
-      Top             =   6915
+      Top             =   7875
       Width           =   1725
    End
    Begin VB.PictureBox picPage 
@@ -74,22 +83,46 @@ Begin VB.Form FormPrintNew
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
-      Height          =   5655
+      Height          =   6735
       Index           =   0
       Left            =   120
-      ScaleHeight     =   377
+      ScaleHeight     =   449
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   649
       TabIndex        =   2
       Top             =   960
       Width           =   9735
+      Begin VB.PictureBox picPrintJobSample 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   2550
+         Left            =   2400
+         ScaleHeight     =   170
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   362
+         TabIndex        =   19
+         Top             =   4080
+         Width           =   5430
+      End
       Begin PhotoDemon.smartOptionButton optPrintJob 
          Height          =   375
          Index           =   0
-         Left            =   360
+         Left            =   480
          TabIndex        =   16
-         Top             =   2880
+         Top             =   2520
          Width           =   2505
          _ExtentX        =   4419
          _ExtentY        =   661
@@ -107,7 +140,7 @@ Begin VB.Form FormPrintNew
       End
       Begin PhotoDemon.textUpDown tudCopies 
          Height          =   375
-         Left            =   5160
+         Left            =   5280
          TabIndex        =   14
          Top             =   1440
          Width           =   1815
@@ -139,7 +172,7 @@ Begin VB.Form FormPrintNew
          ForeColor       =   &H00800000&
          Height          =   360
          ItemData        =   "VBP_FormPrintWizard.frx":0000
-         Left            =   360
+         Left            =   480
          List            =   "VBP_FormPrintWizard.frx":0002
          Style           =   2  'Dropdown List
          TabIndex        =   11
@@ -158,7 +191,7 @@ Begin VB.Form FormPrintNew
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         Left            =   5160
+         Left            =   5280
          Style           =   2  'Dropdown List
          TabIndex        =   5
          Top             =   480
@@ -176,7 +209,7 @@ Begin VB.Form FormPrintNew
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         Left            =   360
+         Left            =   480
          Style           =   2  'Dropdown List
          TabIndex        =   3
          Top             =   480
@@ -185,9 +218,9 @@ Begin VB.Form FormPrintNew
       Begin PhotoDemon.smartOptionButton optPrintJob 
          Height          =   375
          Index           =   1
-         Left            =   360
+         Left            =   480
          TabIndex        =   17
-         Top             =   3360
+         Top             =   3000
          Width           =   3075
          _ExtentX        =   5424
          _ExtentY        =   661
@@ -205,9 +238,9 @@ Begin VB.Form FormPrintNew
       Begin PhotoDemon.smartOptionButton optPrintJob 
          Height          =   375
          Index           =   2
-         Left            =   360
+         Left            =   480
          TabIndex        =   18
-         Top             =   3840
+         Top             =   3480
          Width           =   6120
          _ExtentX        =   10795
          _ExtentY        =   661
@@ -240,7 +273,7 @@ Begin VB.Form FormPrintNew
          Index           =   4
          Left            =   240
          TabIndex        =   15
-         Top             =   2400
+         Top             =   2040
          Width           =   1815
       End
       Begin VB.Label lblTitle 
@@ -329,16 +362,25 @@ Begin VB.Form FormPrintNew
       End
    End
    Begin VB.Label lblBackground 
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   855
       Left            =   -5640
       TabIndex        =   10
-      Top             =   6840
+      Top             =   7800
       Width           =   17415
    End
    Begin VB.Label lblDescription 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "In the next step, you can specify detailed layout information (margins, etc)"
+      Caption         =   "In the next step, you can specify detailed layout information (margins, positioning, etc)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -353,12 +395,12 @@ Begin VB.Form FormPrintNew
       Left            =   240
       TabIndex        =   1
       Top             =   480
-      Width           =   7920
+      Width           =   9240
    End
    Begin VB.Label lblWizardTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Step 1 of 2: specify basic print settings"
+      Caption         =   "Step 1 of 2: basic print settings"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -373,7 +415,7 @@ Begin VB.Form FormPrintNew
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   4725
+      Width           =   3810
    End
 End
 Attribute VB_Name = "FormPrintNew"
@@ -414,6 +456,12 @@ Private paperSizeNames() As String
 Private paperSizeIDs() As Integer
 Private paperSizeExact() As POINTAPI
 
+'To help orient the user, sample output is provided for the three types of print jobs.  These pre-rendered images
+' are stored in the resource section of the executable, and we load them to layers at run-time.
+Private sampleOneImageOnePage As pdLayer
+Private sampleMultipleImagesOnePage As pdLayer
+Private sampleOneImageMultiplePages As pdLayer
+
 Private Sub cmbPrinter_Click()
     updatePaperSizeList
 End Sub
@@ -450,6 +498,17 @@ Private Sub Form_Load()
     cmbQuality.AddItem "Best (most ink)", 3
     cmbQuality.ListIndex = 3
     
+    'Load the print job type sample images from the resource file
+    Set sampleOneImageOnePage = New pdLayer
+    Set sampleMultipleImagesOnePage = New pdLayer
+    Set sampleOneImageMultiplePages = New pdLayer
+    loadResourceToLayer "PRNT_1IMAGE", sampleOneImageOnePage
+    loadResourceToLayer "PRNT_MLTIMGS", sampleMultipleImagesOnePage
+    loadResourceToLayer "PRNT_MLTPGS", sampleOneImageMultiplePages
+    
+    'Display the relevant image for the selected option button
+    updatePrintTypeSampleImage
+    
 End Sub
 
 'The bulk of this function is handled by the matching function in the Printer module
@@ -463,11 +522,42 @@ Private Sub updatePaperSizeList()
     
     Dim i As Long
     For i = 0 To UBound(paperSizeNames)
-        cmbPaperSize.AddItem paperSizeNames(i), i
+        cmbPaperSize.AddItem paperSizeNames(i) & " : " & paperSizeIDs(i), i
     Next i
     
     'Select the default paper size, which can possibly be obtained from the printer, but in my testing
     ' is always index 0.
     cmbPaperSize.ListIndex = 0
+
+End Sub
+
+'When the user selects a different type of print job, we display a pre-rendered sample image to help them understand
+' what the various job types actually do.
+Private Sub updatePrintTypeSampleImage()
+
+    Dim xOffset As Long
+    xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.getLayerWidth) \ 2
+
+    If optPrintJob(0) Then
+        sampleOneImageOnePage.renderToPictureBox picPrintJobSample
+    
+    ElseIf optPrintJob(1) Then
+        sampleMultipleImagesOnePage.renderToPictureBox picPrintJobSample
+    
+    Else
+        picPrintJobSample.Picture = LoadPicture("")
+        sampleOneImageMultiplePages.alphaBlendToDC picPrintJobSample.hDC, 255, xOffset, 0
+        picPrintJobSample.Picture = picPrintJobSample.Image
+        picPrintJobSample.Refresh
+    
+    End If
+
+End Sub
+
+Private Sub optPrintJob_Click(Index As Integer)
+    updatePrintTypeSampleImage
+End Sub
+
+Private Sub testCurrentPrintSettings()
 
 End Sub
