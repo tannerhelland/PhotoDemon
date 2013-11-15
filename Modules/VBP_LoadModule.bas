@@ -287,7 +287,7 @@ Public Sub LoadTheProgram()
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
     initializeIconHandler
     
-    'Before displaying the main window, see if the user wants to restore last-used window location.
+    'Before displaying the main window, check its last-used location and move the window into place.
     restoreMainWindowLocation
         
     'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
@@ -295,6 +295,11 @@ Public Sub LoadTheProgram()
         toolbar_File.cmdZoomIn.Height = toolbar_File.cmdZoomIn.Height + 1
         toolbar_File.cmdZoomOut.Height = toolbar_File.cmdZoomOut.Height + 1
     End If
+    
+    'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
+    ' than re-creating it every time it's needed.
+    Set g_CheckerboardPattern = New pdLayer
+    Drawing.createAlphaCheckerboardLayer g_CheckerboardPattern
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True

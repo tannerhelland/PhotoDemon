@@ -128,10 +128,10 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
     assignDefaultColorProfileToForm formToBuffer
-    turnOnColorManagementForDC formToBuffer.hDC
+    turnOnColorManagementForDC formToBuffer.hdc
     
     'Finally, flip the front buffer to the screen
-    BitBlt formToBuffer.hDC, 0, 0, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt formToBuffer.hdc, 0, 0, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
         
     'If both scrollbars are active, copy a gray square over the small space between them
     If formToBuffer.HScroll.Visible And formToBuffer.VScroll.Visible Then
@@ -143,7 +143,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         End If
         
         'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
-        BitBlt formToBuffer.hDC, formToBuffer.VScroll.Left, formToBuffer.HScroll.Top, cornerFix.getLayerWidth, cornerFix.getLayerHeight, cornerFix.getLayerDC, 0, 0, vbSrcCopy
+        BitBlt formToBuffer.hdc, formToBuffer.VScroll.Left, formToBuffer.HScroll.Top, cornerFix.getLayerWidth, cornerFix.getLayerHeight, cornerFix.getLayerDC, 0, 0, vbSrcCopy
         
     End If
     
@@ -205,6 +205,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 
             'Update 15 Sep 2013: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
             ' if HALFTONE mode is used, and zooming-out requires HALFTONE for properly pretty results.)
+            
+            'NOTE: this is temporarily disabled, because GDI+ resizing screws with the alpha values of the image (for reasons unknown).
+            
 '            If g_GDIPlusAvailable Then
 '
 '                'For performance reasons, crop out the source area of the main image.  (This saves GDI+ from having to copy
@@ -215,12 +218,17 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 '                BitBlt tmpSrcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
 '
 '                'Use GDI+ to apply the resize
-'                GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeBilinear
+'                GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeHighQualityBilinear
 '
 '                'Composite the resized layer against a checkerboard background
 '                pdImages(curImage).alphaFixLayer.compositeBackgroundColor
+'               pdImages(curImage).alphaFixLayer.fixPremultipliedAlpha True
 '
 '                'Copy the composited and resized layer into the back buffer
+'                Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+'                'SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
+'                pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop
+'
 '                BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
 '
 '                'Erase our temporary layer
@@ -228,44 +236,20 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 '                Set tmpSrcLayer = Nothing
 '
 '            Else
+                
+                Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+                pdImages(curImage).getCompositedImage().alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
 
-                'If GDI+ is not available, we must rely on a nasty hack; HALFTONE stretching does not preserve the alpha channel, but
-                ' COLORONCOLOR does.  So make two copies of the image - one created via COLORONCOLOR, from which we'll steal alpha values,
-                ' and the other using HALFTONE, from which we'll steal RGB values.
-
-                'hackLayer is resized using nearest-neighbor interpolation.  This makes RGB data look terrible, but it preserves alpha data.
-                Dim hackLayer As pdLayer
-                Set hackLayer = New pdLayer
-                hackLayer.createBlank pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, 32
-
-                SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
-                StretchBlt hackLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-
-                'Next, alphaFixLayer is resized using HALFTONE data.  This results in a good-quality RGB image, but all alpha data is erased.
-                SetStretchBltMode pdImages(curImage).alphaFixLayer.getLayerDC, STRETCHBLT_HALFTONE
-                StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-
-                'Use a unique PD function called "compositeBackgroundColorSpecial", which tells alphaFixLayer to borrow the alpha values
-                ' from hackLayer, then composite itself against a checkerboard.  Once this is done, copy the resulting image into the
-                ' viewport layer (backBuffer).
-                pdImages(curImage).alphaFixLayer.compositeBackgroundColorSpecial hackLayer
-                BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
-
-                'Remove our temporary layer from memory
-                hackLayer.eraseLayer
-                Set hackLayer = Nothing
-
-            'End If
+'            End If
             
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
             StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-            'StretchDIBits pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, srcX, srcY, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDIBits(), pdImages(curImage).mainLayer.getLayerDIBHeader(), 0&, vbSrcCopy
         End If
         
     Else
     
-        'ZOOMED IN
+        'ZOOMED IN (OR 100%)
         
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
@@ -277,11 +261,18 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
         If pdImages(curImage).getCompositedImage().getLayerColorDepth = 32 Then
+            
+            'Create a temporary streched copy of the image
             pdImages(curImage).alphaFixLayer.createBlank bltWidth, bltHeight, 32
             SetStretchBltMode pdImages(curImage).alphaFixLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
             StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-            pdImages(curImage).alphaFixLayer.compositeBackgroundColor
-            BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
+            
+            'Fill the target area with the alpha checkerboard
+            Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+            
+            'Alpha blend the layer onto the checkerboard background
+            pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_COLORONCOLOR
             StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy

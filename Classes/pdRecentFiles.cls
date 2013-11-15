@@ -513,7 +513,7 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Else
         Dim tmpImage As pdImage
         Set tmpImage = New pdImage
-        Set tmpImage.getActiveLayer() = mruThumb
+        Set tmpImage.mainLayer = mruThumb
         
         If GDIPlusSavePicture(tmpImage, sFilename, ImagePNG, mruThumb.getLayerColorDepth) Then
             Message "Thumbnail saved successfully."
