@@ -450,6 +450,9 @@ Public Sub FilterIsometric()
         Exit Sub
     End If
     
+    'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
+    If dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+    
     'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
     pdImages(g_CurrentImage).mainLayer.eraseLayer
     pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer

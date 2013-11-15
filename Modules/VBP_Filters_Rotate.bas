@@ -399,6 +399,9 @@ Public Sub MenuRotate90Clockwise()
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
+    'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
+    If dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+    
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
     pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
@@ -412,8 +415,11 @@ Public Sub MenuRotate90Clockwise()
     
     Message "Finished. "
     
-    'Redraw the image
-    FitWindowToImage
+    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+        FitWindowToImage
+    Else
+        PrepareViewport pdImages(g_CurrentImage).containingForm, "image rotated"
+    End If
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -510,6 +516,9 @@ Public Sub MenuRotate270Clockwise()
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
+    'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
+    If dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+    
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
     pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
     
@@ -524,7 +533,11 @@ Public Sub MenuRotate270Clockwise()
     Message "Finished. "
     
     'Redraw the image
-    FitWindowToImage
+    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
+        FitWindowToImage
+    Else
+        PrepareViewport pdImages(g_CurrentImage).containingForm, "image rotated"
+    End If
     
     'Reset the progress bar to zero
     SetProgBarVal 0
