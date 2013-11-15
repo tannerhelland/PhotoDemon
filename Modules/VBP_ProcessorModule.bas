@@ -261,7 +261,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Twain32Scan
             
         Case "Screen capture"
-            CaptureScreen
+            If showDialog Then
+                showPDDialog vbModal, FormScreenCapture
+            Else
+                CaptureScreen cParams.GetBool(1), cParams.GetBool(2), cParams.GetLong(3), cParams.GetBool(4), cParams.GetString(5)
+            End If
             
         Case "Internet import"
             If Not FormInternetImport.Visible Then
