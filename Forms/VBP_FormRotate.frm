@@ -269,10 +269,11 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 'Copy the bits from the FreeImage DIB to our DIB
                 SetDIBitsToDevice tmpLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 
-                'If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.compositeBackgroundColor
+                If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.fixPremultipliedAlpha True
                 
                 'Finally, render the preview and erase the temporary layer to conserve memory
-                DrawPreviewImage fxPreview.getPreviewPic, True, tmpLayer
+                tmpLayer.renderToPictureBox fxPreview.getPreviewPic
+                'DrawPreviewImage fxPreview.getPreviewPic, True, tmpLayer
                 fxPreview.setFXImage tmpLayer
                 
                 tmpLayer.eraseLayer
@@ -285,11 +286,14 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 
                 'Copy the bits from the FreeImage DIB to our DIB
                 SetDIBitsToDevice pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
-                  
+                
                 'Update the size variables
                 pdImages(g_CurrentImage).updateSize
                 DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
-            
+                
+                'If the original image is 32bpp, re-apply premultiplication now.
+                If pdImages(g_CurrentImage).getCompositedImage.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
+                
                 'Fit the new image on-screen and redraw it
                 FitImageToViewport
                 FitWindowToImage
@@ -314,6 +318,13 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         
 End Sub
 
+Private Sub cmdBar_CancelClick()
+
+    'If the original image is 32bpp, re-apply premultiplication.
+    If pdImages(g_CurrentImage).getCompositedImage.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
+
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
     If optRotate(0) Then
@@ -321,6 +332,7 @@ Private Sub cmdBar_OKClick()
     Else
         Process "Arbitrary rotation", , buildParams(1, sltAngle)
     End If
+    
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -343,6 +355,9 @@ Private Sub Form_Load()
 
     'Disable previewing until the dialog is fully initialized
     cmdBar.markPreviewStatus False
+    
+    'If the original image is 32bpp, remove premultiplication in advance.  We will reapply it once rotation is complete (or canceled).
+    If pdImages(g_CurrentImage).getCompositedImage.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha
     
     'During the preview stage, we want to rotate a smaller version of the image.  This increases the speed of
     ' previewing immensely (especially for large images, like 10+ megapixel photos)
