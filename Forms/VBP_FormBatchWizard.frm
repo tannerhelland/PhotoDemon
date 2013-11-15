@@ -3378,20 +3378,21 @@ Private Sub updatePreview(ByVal srcImagePath As String)
         
         If Not (tmpImage.mainLayer Is Nothing) And (tmpImage.mainLayer.getLayerWidth > 0) And (tmpImage.mainLayer.getLayerHeight > 0) Then
             
-            If (tmpImage.mainLayer.getLayerWidth > picPreview.ScaleWidth) Or (tmpImage.mainLayer.getLayerHeight > picPreview.ScaleHeight) Then
-                DrawPreviewImage picPreview, True, tmpImage.mainLayer
-                tmpImage.mainLayer.eraseLayer
-            Else
-                'Center the image in the sample area
-                Dim imgWidth As Long, imgHeight As Long
-                imgWidth = tmpImage.mainLayer.getLayerWidth
-                imgHeight = tmpImage.mainLayer.getLayerHeight
-                picPreview.Picture = LoadPicture("")
-                If tmpImage.mainLayer.getLayerColorDepth = 32 Then tmpImage.mainLayer.compositeBackgroundColor
-                BitBlt picPreview.hDC, (picPreview.ScaleWidth \ 2) - (imgWidth \ 2), (picPreview.ScaleHeight \ 2) - (imgHeight \ 2), imgWidth, imgHeight, tmpImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
-                picPreview.Picture = picPreview.Image
-                picPreview.Refresh
-            End If
+            tmpImage.mainLayer.renderToPictureBox picPreview
+            'If (tmpImage.mainLayer.getLayerWidth > picPreview.ScaleWidth) Or (tmpImage.mainLayer.getLayerHeight > picPreview.ScaleHeight) Then
+            '    DrawPreviewImage picPreview, True, tmpImage.mainLayer
+            '    tmpImage.mainLayer.eraseLayer
+            'Else
+            '    'Center the image in the sample area
+            '    Dim imgWidth As Long, imgHeight As Long
+            '    imgWidth = tmpImage.mainLayer.getLayerWidth
+            '    imgHeight = tmpImage.mainLayer.getLayerHeight
+            '    picPreview.Picture = LoadPicture("")
+            '    If tmpImage.mainLayer.getLayerColorDepth = 32 Then tmpImage.mainLayer.compositeBackgroundColor
+            '    BitBlt picPreview.hDC, (picPreview.ScaleWidth \ 2) - (imgWidth \ 2), (picPreview.ScaleHeight \ 2) - (imgHeight \ 2), imgWidth, imgHeight, tmpImage.mainLayer.getLayerDC, 0, 0, vbSrcCopy
+            '    picPreview.Picture = picPreview.Image
+            '    picPreview.Refresh
+            'End If
         Else
             picPreview.Picture = LoadPicture("")
             Dim strToPrint As String
