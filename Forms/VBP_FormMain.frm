@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -94,7 +94,7 @@ Begin VB.Form FormMain
             Caption         =   "-"
          End
          Begin VB.Menu MnuScreenCapture 
-            Caption         =   "Screen capture..."
+            Caption         =   "Screenshot..."
          End
       End
       Begin VB.Menu MnuFile 
