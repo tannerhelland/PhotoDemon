@@ -2601,7 +2601,7 @@ Private Sub cmbMonitors_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     'Restore any settings that may have been changed in real-time
     If g_UseFancyFonts <> originalg_useFancyFonts Then
@@ -2874,6 +2874,10 @@ Private Sub CmdOK_Click()
         'START alpha checkerboard size
             g_AlphaCheckSize = cmbAlphaCheckSize.ListIndex
             g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", g_AlphaCheckSize
+            
+            'Recreate the cached pattern for the alpha background
+            Drawing.createAlphaCheckerboardLayer g_CheckerboardPattern
+            
         'END alpha checkerboard size
     
         'START/END validate incoming alpha channel data
