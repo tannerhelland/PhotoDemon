@@ -561,6 +561,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'By this point, we have loaded the image, and it is guaranteed to be at 24 or 32 bit color depth.  Verify it one final time.
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
+    
+    '****************************************************************************
+    ' PD's new rendering engine requires pre-multiplied alpha values.  Apply premultiplication now.
+    '****************************************************************************
+    
+    If fi_BPP = 32 Then FreeImage_PreMultiplyWithAlpha fi_hDIB
+    
+    
     '****************************************************************************
     ' Create a blank pdLayer, which will receive a copy of the image in DIB format
     '****************************************************************************
@@ -651,6 +659,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         If showMessages Then Message "Restoring alpha data..."
         
         dstLayer.copyAlphaFromExistingLayer tmpAlphaLayer
+        dstLayer.fixPremultipliedAlpha True
         tmpAlphaLayer.eraseLayer
         Set tmpAlphaLayer = Nothing
         

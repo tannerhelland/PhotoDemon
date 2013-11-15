@@ -276,10 +276,10 @@ Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, 
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef imgHeight As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal hImage As Long, ByRef imgPixelFormat As Long) As Long
-Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hDC As Long) As Long
-Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hDC As Long) As Long
-Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal gdipBitmap As Long, gdipRect As RECTL, ByVal gdipFlags As Long, ByVal iPixelFormat As Long, lockedBitmapData As BitmapData) As GDIPlusStatus
-Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal gdipBitmap As Long, lockedBitmapData As BitmapData) As GDIPlusStatus
+Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hdc As Long) As Long
+Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hdc As Long) As Long
+Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal gdipBitmap As Long, gdipRect As RECTL, ByVal gdipFlags As Long, ByVal iPixelFormat As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
+Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal gdipBitmap As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
 
 'Retrieve properties from an image
 'Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As PropertyItem) As Long
@@ -300,7 +300,7 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
 'GDI+ calls related to drawing lines and various shapes
-Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hdc As Long, ByRef mGraphics As Long) As Long
 'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
@@ -331,9 +331,9 @@ Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCa
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 
 'Quality mode constants (only supported by certain functions!)
 Private Enum QualityMode
@@ -434,7 +434,7 @@ Public Function GDIPlusResizeLayer(ByRef dstLayer As pdLayer, ByVal dstX As Long
     If srcLayer.getLayerColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal srcLayer.getLayerDIBits, tBitmap
+        GdipCreateBitmapFromScan0 srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerWidth * 4, PixelFormat32bppPARGB, ByVal srcLayer.getLayerDIBits, tBitmap
     
     Else
     
@@ -781,8 +781,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     
     If hasAlpha Then
     
-        'Make sure the image is in 32bpp non-premultiplied ARGB format
-        If iPixelFormat <> PixelFormat32bppARGB Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppARGB, hImage, hImage
+        'Make sure the image is in 32bpp premultiplied ARGB format
+        If iPixelFormat <> PixelFormat32bppPARGB Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
         
         'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
         
@@ -791,7 +791,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         With copyBitmapData
             .Width = imgWidth
             .Height = imgHeight
-            .PixelFormat = PixelFormat32bppARGB
+            .PixelFormat = PixelFormat32bppPARGB
             .Stride = dstLayer.getLayerArrayWidth
             .Scan0 = dstLayer.getLayerDIBits
         End With
@@ -806,7 +806,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         End With
         
         'Use LockBits to perform the copy for us.
-        GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppARGB, copyBitmapData
+        GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppPARGB, copyBitmapData
         GdipBitmapUnlockBits hImage, copyBitmapData
     
     Else
@@ -861,7 +861,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     If tmpLayer.getLayerColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal tmpLayer.getLayerDIBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerWidth * 4, PixelFormat32bppPARGB, ByVal tmpLayer.getLayerDIBits, hImage)
     
     Else
         GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
