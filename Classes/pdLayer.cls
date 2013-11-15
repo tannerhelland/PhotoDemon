@@ -1106,7 +1106,8 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     If layerColorDepth = 24 Then
         StretchBlt tmpLayer.getLayerDC, 0, 0, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
     
-    'For 32bpp images, we must first apply a background checkerboard pattern, then alphablend the image onto it
+    'For 32bpp images, we must first apply a background checkerboard pattern, then alphablend the image onto it.  (Note
+    ' that this does not currently use HALFTONE stretching - that change is forthcoming.)
     Else
         Drawing.fillLayerWithAlphaCheckerboard tmpLayer, 0, 0, dWidth, dHeight
         alphaBlendToDC tmpLayer.getLayerDC, , 0, 0, dWidth, dHeight

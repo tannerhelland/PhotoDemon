@@ -45,7 +45,14 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     Dim saveFormat As Long
     saveFormat = srcPDImage.currentFileFormat
 
-
+    
+    '****************************************************************************************************
+    ' 32bpp images are premultiplied by default.  Prior to saving, any premultiplication needs to be removed.
+    '****************************************************************************************************
+    
+    If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha
+    
+    
     '****************************************************************************************************
     ' Determine exported color depth
     '****************************************************************************************************
@@ -143,6 +150,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Else
                         PhotoDemon_SaveImage = False
                         Message "Save canceled."
+                        
+                        'Convert back to premultiplied alpha if 32bpp
+                        If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                        
                         Exit Function
                     End If
                 
@@ -245,6 +256,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 Else
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
+                    
+                    'Convert back to premultiplied alpha if 32bpp
+                    If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                        
                     Exit Function
                 End If
                 
@@ -269,6 +284,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Else
                 Message "No %1 encoder found. Save aborted.", "JPEG"
                 PhotoDemon_SaveImage = False
+                
+                'Convert back to premultiplied alpha if 32bpp
+                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
                 Exit Function
             End If
             
@@ -281,6 +300,11 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'If zLib doesn't exist...
                 pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
                 Message "No %1 encoder found. Save aborted.", "PDI"
+                
+                'Convert back to premultiplied alpha if 32bpp
+                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
+                Exit Function
             End If
         
         'GIF
@@ -298,6 +322,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Else
                 Message "No %1 encoder found. Save aborted.", "GIF"
                 PhotoDemon_SaveImage = False
+                
+                'Convert back to premultiplied alpha if 32bpp
+                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
                 Exit Function
             End If
             
@@ -320,6 +348,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Else
                 Message "No %1 encoder found. Save aborted.", "PNG"
                 PhotoDemon_SaveImage = False
+                
+                'Convert back to premultiplied alpha if 32bpp
+                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
                 Exit Function
             End If
             
@@ -348,6 +380,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 Else
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
+                    
+                    'Convert back to premultiplied alpha if 32bpp
+                    If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
                     Exit Function
                 End If
                 
@@ -377,6 +413,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Else
                 Message "No %1 encoder found. Save aborted.", "TIFF"
                 PhotoDemon_SaveImage = False
+                
+                'Convert back to premultiplied alpha if 32bpp
+                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
                 Exit Function
             End If
         
@@ -440,9 +480,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             PhotoDemon_SaveImage = True
             
+            'Convert back to premultiplied alpha if 32bpp
+            If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+            
             'Update the interface to match the newly saved image (e.g. disable the Save button)
             If Not srcPDImage.forInternalUseOnly Then syncInterfaceToCurrentImage
-            
+                        
             'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
             If Not srcPDImage.forInternalUseOnly Then toolbar_ImageTabs.notifyUpdatedImage srcPDImage.imageID
             
@@ -455,6 +498,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         If Not suspendMRUUpdating Then
             Message "Save canceled."
             PhotoDemon_SaveImage = False
+            
+            'Convert back to premultiplied alpha if 32bpp
+            If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                
             Exit Function
         End If
         
