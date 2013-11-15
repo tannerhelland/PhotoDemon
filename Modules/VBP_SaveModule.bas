@@ -692,6 +692,10 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
                 Else
                     tmpLayer.applyAlphaCutoff g_AlphaCutoff
                 End If
+                
+                'If the user decided to completely remove the image's alpha values, change handleAlpha to FALSE
+                If g_AlphaCutoff = 0 Then handleAlpha = False
+                
             Else
                 tmpLayer.applyAlphaCutoff forceAlphaConvert
             End If
