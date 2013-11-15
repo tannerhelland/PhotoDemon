@@ -235,7 +235,7 @@ Public Property Let refLayer(ByRef refLayer As pdLayer)
 End Property
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     'Free up memory
     tmpLayer.eraseLayer
@@ -305,7 +305,7 @@ Private Sub renderPreview()
     tmpLayer.createFromExistingLayer srcLayer
     tmpLayer.applyAlphaCutoff sltThreshold.Value, False
     
-    DrawPreviewImage picPreview, True, tmpLayer
+    tmpLayer.renderToPictureBox picPreview
 
 End Sub
 
