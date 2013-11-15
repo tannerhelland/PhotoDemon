@@ -294,19 +294,7 @@ End Sub
 Private Sub Form_Activate()
 
     'Draw the image being closed to the preview box
-    If pdImages(imageBeingClosed).getCompositedImage().getLayerColorDepth = 24 Then
-        pdImages(imageBeingClosed).getCompositedImage().renderToPictureBox picPreview
-    Else
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        Dim nWidth As Long, nHeight As Long
-        convertAspectRatio pdImages(imageBeingClosed).Width, pdImages(imageBeingClosed).Height, picPreview.ScaleWidth, picPreview.ScaleHeight, nWidth, nHeight
-        tmpLayer.createFromExistingLayer pdImages(imageBeingClosed).getCompositedImage(), nWidth, nHeight, True
-        tmpLayer.compositeBackgroundColor
-        tmpLayer.renderToPictureBox picPreview
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
-    End If
+    pdImages(imageBeingClosed).getCompositedImage().renderToPictureBox picPreview
     
 End Sub
 
