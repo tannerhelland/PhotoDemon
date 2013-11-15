@@ -27,14 +27,18 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
-'API calls for drawing lines to a DC
+'GDI drawing functions
 Private Const PS_SOLID As Long = &H0
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function CreatePatternBrush Lib "gdi32" (ByVal hBitmap As Long) As Long
+Private Declare Function CreateDIBPatternBrushPt Lib "gdi32" (ByVal dibPointer As Long, ByVal iUsage As Long) As Long
+Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
 
 'Basic wrapper to line-drawing via the API
 Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
@@ -71,10 +75,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hdc As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, x, y, hIcon
+    DrawIcon hdc, x, y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -213,4 +217,97 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
         Next y
     End If
     
+End Sub
+
+'Given a source layer, fill it with a 2x2 alpha checkerboard pattern matching the user's current preferences.
+' (The resulting layer size is contingent on the user's checkerboard pattern size preference, FYI.)
+Public Sub createAlphaCheckerboardLayer(ByRef srcLayer As pdLayer)
+
+    'Retrieve the user's preferred alpha checkerboard colors, and convert the longs into individual RGB components
+    Dim chkColorOne As Long, chkColorTwo As Long
+    chkColorOne = g_UserPreferences.GetPref_Long("Transparency", "AlphaCheckOne", RGB(255, 255, 255))
+    chkColorTwo = g_UserPreferences.GetPref_Long("Transparency", "AlphaCheckTwo", RGB(204, 204, 204))
+    
+    Dim r1 As Long, g1 As Long, b1 As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    r1 = ExtractR(chkColorOne)
+    r2 = ExtractR(chkColorTwo)
+    g1 = ExtractG(chkColorOne)
+    g2 = ExtractG(chkColorTwo)
+    b1 = ExtractB(chkColorOne)
+    b2 = ExtractB(chkColorTwo)
+    
+    'Determine a checkerboard block size based on the current user preference
+    Dim chkSize As Long
+    chkSize = g_UserPreferences.GetPref_Long("Transparency", "AlphaCheckSize", 1)
+    
+    Select Case chkSize
+    
+        'Small (4x4 checks)
+        Case 0
+            chkSize = 4
+            
+        'Medium (8x8 checks)
+        Case 1
+            chkSize = 8
+        
+        'Large (16x16 checks)
+        Case Else
+            chkSize = 16
+        
+    End Select
+    
+    'Resize the source layer to fit a 2x2 block pattern of the requested checkerboard pattern
+    srcLayer.createBlank chkSize * 2, chkSize * 2
+    
+    'Point a temporary array directly at the source layer's bitmap bits.
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcLayer
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    'Fill the source layer with the checkerboard pattern
+    Dim x As Long, y As Long, QuickX As Long
+    For x = 0 To srcLayer.getLayerWidth - 1
+        QuickX = x * 3
+    For y = 0 To srcLayer.getLayerHeight - 1
+         
+        If (((x \ chkSize) + (y \ chkSize)) And 1) = 0 Then
+            srcImageData(QuickX + 2, y) = r1
+            srcImageData(QuickX + 1, y) = g1
+            srcImageData(QuickX, y) = b1
+        Else
+            srcImageData(QuickX + 2, y) = r2
+            srcImageData(QuickX + 1, y) = g2
+            srcImageData(QuickX, y) = b2
+        End If
+        
+    Next y
+    Next x
+    
+    'Release our temporary array and exit
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+
+End Sub
+
+'Given a source layer, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
+Public Sub fillLayerWithAlphaCheckerboard(ByRef srcLayer As pdLayer, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long)
+
+    'Create a pattern brush from the public checkerboard image
+    Dim hCheckerboard As Long
+    hCheckerboard = CreatePatternBrush(g_CheckerboardPattern.getLayerDIB)
+    
+    'Select the brush into the target layer's DC
+    Dim hOldBrush As Long
+    hOldBrush = SelectObject(srcLayer.getLayerDC, hCheckerboard)
+    
+    'Paint the layer
+    SetBrushOrgEx srcLayer.getLayerDC, x1, y1, 0&
+    PatBlt srcLayer.getLayerDC, x1, y1, bltWidth, bltHeight, vbPatCopy
+    
+    'Remove and delete the brush
+    SelectObject srcLayer.getLayerDC, hOldBrush
+    DeleteObject hCheckerboard
+
 End Sub
