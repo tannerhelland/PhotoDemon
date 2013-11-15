@@ -2459,9 +2459,6 @@ Private userInitiatedAlphaSelection As Boolean
 'Some settings are odd - I want them to update in real-time, so the user can see the effects of the change.  But if the user presses
 ' "cancel", the original settings need to be returned.  Thus, remember these settings, and restore them upon canceling.
 Dim originalg_useFancyFonts As Boolean
-Dim originalg_AlphaCheckMode As Long
-Dim originalg_AlphaCheckOne As Long
-Dim originalg_AlphaCheckTwo As Long
 Dim originalg_CanvasBackground As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -2492,36 +2489,33 @@ Private Sub cmbAlphaCheck_Click()
     'Only respond to user-generated events
     If userInitiatedAlphaSelection Then
 
+        userInitiatedAlphaSelection = False
+
         'Redraw the sample picture boxes based on the value the user has selected
-        g_AlphaCheckMode = cmbAlphaCheck.ListIndex
         Select Case cmbAlphaCheck.ListIndex
         
             'Case 0 - Highlights
             Case 0
-                g_AlphaCheckOne = RGB(255, 255, 255)
-                g_AlphaCheckTwo = RGB(204, 204, 204)
+                csAlphaOne.Color = RGB(255, 255, 255)
+                csAlphaTwo.Color = RGB(204, 204, 204)
             
             'Case 1 - Midtones
             Case 1
-                g_AlphaCheckOne = RGB(153, 153, 153)
-                g_AlphaCheckTwo = RGB(102, 102, 102)
+                csAlphaOne.Color = RGB(153, 153, 153)
+                csAlphaTwo.Color = RGB(102, 102, 102)
             
             'Case 2 - Shadows
             Case 2
-                g_AlphaCheckOne = RGB(51, 51, 51)
-                g_AlphaCheckTwo = RGB(0, 0, 0)
+                csAlphaOne.Color = RGB(51, 51, 51)
+                csAlphaTwo.Color = RGB(0, 0, 0)
             
             'Case 3 - Custom
             Case 3
-                g_AlphaCheckOne = RGB(255, 204, 246)
-                g_AlphaCheckTwo = RGB(255, 255, 255)
+                csAlphaOne.Color = RGB(255, 204, 246)
+                csAlphaTwo.Color = RGB(255, 255, 255)
             
         End Select
-    
-        'Change the picture boxes to match the current selection
-        userInitiatedAlphaSelection = False
-        csAlphaOne.Color = g_AlphaCheckOne
-        csAlphaTwo.Color = g_AlphaCheckTwo
+        
         userInitiatedAlphaSelection = True
                 
     End If
@@ -2609,12 +2603,10 @@ Private Sub cmdCancel_Click()
         FormMain.requestMakeFormPretty
     End If
     
-    g_AlphaCheckMode = originalg_AlphaCheckMode
-    g_AlphaCheckOne = originalg_AlphaCheckOne
-    g_AlphaCheckTwo = originalg_AlphaCheckTwo
     g_CanvasBackground = originalg_CanvasBackground
     
     Unload Me
+    
 End Sub
 
 'When the preferences category is changed, only display the controls in that category
@@ -2872,8 +2864,7 @@ Private Sub CmdOK_Click()
         'END alpha checkerboard colors
             
         'START alpha checkerboard size
-            g_AlphaCheckSize = cmbAlphaCheckSize.ListIndex
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", g_AlphaCheckSize
+            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", cmbAlphaCheckSize.ListIndex
             
             'Recreate the cached pattern for the alpha background
             Drawing.createAlphaCheckerboardLayer g_CheckerboardPattern
@@ -3303,13 +3294,10 @@ Private Sub LoadAllPreferences()
             cmbAlphaCheck.AddItem " Shadow checks", 2
             cmbAlphaCheck.AddItem " Custom (click boxes to customize)", 3
             
-            cmbAlphaCheck.ListIndex = g_AlphaCheckMode
-            originalg_AlphaCheckMode = g_AlphaCheckMode
+            cmbAlphaCheck.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Mode", 0)
             
-            csAlphaOne.Color = g_AlphaCheckOne
-            csAlphaTwo.Color = g_AlphaCheckTwo
-            originalg_AlphaCheckOne = g_AlphaCheckOne
-            originalg_AlphaCheckTwo = g_AlphaCheckTwo
+            csAlphaOne.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
+            csAlphaTwo.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
             
             cmbAlphaCheck.ToolTipText = g_Language.TranslateMessage("If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors.")
             csAlphaOne.ToolTipText = g_Language.TranslateMessage("Click to change the first checkerboard background color for alpha channels")
@@ -3324,7 +3312,7 @@ Private Sub LoadAllPreferences()
             cmbAlphaCheckSize.AddItem " Medium (8x8 pixels)", 1
             cmbAlphaCheckSize.AddItem " Large (16x16 pixels)", 2
             
-            cmbAlphaCheckSize.ListIndex = g_AlphaCheckSize
+            cmbAlphaCheckSize.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Size", 1)
             
             cmbAlphaCheckSize.ToolTipText = g_Language.TranslateMessage("If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size.")
         'END alpha-channel checkerboard size
@@ -3395,23 +3383,23 @@ End Sub
 
 'When new transparency checkerboard colors are selected, change the corresponding list box to match
 Private Sub csAlphaOne_ColorChanged()
-    g_AlphaCheckOne = csAlphaOne.Color
     
     If userInitiatedAlphaSelection Then
         userInitiatedAlphaSelection = False
         cmbAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
         userInitiatedAlphaSelection = True
     End If
+    
 End Sub
 
 Private Sub csAlphaTwo_ColorChanged()
-    g_AlphaCheckTwo = csAlphaTwo.Color
     
     If userInitiatedAlphaSelection Then
         userInitiatedAlphaSelection = False
         cmbAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
         userInitiatedAlphaSelection = True
     End If
+    
 End Sub
 
 'When a new canvas background color is selected, update the corresponding list box as necessary
