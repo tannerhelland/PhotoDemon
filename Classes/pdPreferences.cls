@@ -266,17 +266,7 @@ Public Sub loadUserSettings()
     
     'Get the canvas drop shadow preference
     g_CanvasDropShadow = GetPref_Boolean("Interface", "CanvasDropShadow", False)
-    
-    'Get the alpha transparency checkerboard color mode (light/moderate/dark/custom)
-    g_AlphaCheckMode = GetPref_Long("Transparency", "AlphaCheckMode", 1)
-    
-    'Get the alpha transparency checkerboard colors
-    g_AlphaCheckOne = GetPref_Long("Transparency", "AlphaCheckOne", RGB(153, 153, 153))
-    g_AlphaCheckTwo = GetPref_Long("Transparency", "AlphaCheckTwo", RGB(102, 102, 102))
-    
-    'Get the alpha checkerboard size
-    g_AlphaCheckSize = GetPref_Long("Transparency", "AlphaCheckSize", 1)
-    
+        
     'Check if the user wants us to prompt them about closing unsaved images
     g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
         

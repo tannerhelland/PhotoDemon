@@ -121,23 +121,6 @@ Public g_AllowViewportRendering As Boolean
 Public g_LastOpenFilter As Long
 Public g_LastSaveFilter As Long
 
-'Checkerboard mode for rendering transparency.  Possible values are:
-' 0 - Light
-' 1 - Midtones
-' 2 - Dark
-' 3 - Custom
-Public g_AlphaCheckMode As Long
-
-'Checkerboard colors for rendering transparency
-Public g_AlphaCheckOne As Long
-Public g_AlphaCheckTwo As Long
-
-'Checkerboard size when rendering transparency.  Possible values are:
-' 0 - Small (4x4 pixels per square)
-' 1 - Medium (8x8 pixels per square)
-' 2 - Large (16x16 pixels per square)
-Public g_AlphaCheckSize As Long
-
 'DIB that contains a 2x2 pattern of the alpha checkerboard.  Use it with CreatePatternBrush to paint the alpha
 ' checkerboard prior to rendering.
 Public g_CheckerboardPattern As pdLayer

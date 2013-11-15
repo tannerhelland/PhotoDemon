@@ -27,14 +27,14 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
 'GDI drawing functions
 Private Const PS_SOLID As Long = &H0
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function CreatePatternBrush Lib "gdi32" (ByVal hBitmap As Long) As Long
 Private Declare Function CreateDIBPatternBrushPt Lib "gdi32" (ByVal dibPointer As Long, ByVal iUsage As Long) As Long
 Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
@@ -75,10 +75,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hdc As Long, ByVal x As Long, ByVal y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hdc, x, y, hIcon
+    DrawIcon hDC, x, y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -121,7 +121,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
             If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 32 Then
                 Set tmpLayer = New pdLayer
                 tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer(), newWidth, newHeight, True
-                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255
                 tmpLayer.renderToPictureBox dstPicture
             Else
                 pdImages(g_CurrentImage).getActiveLayer().renderToPictureBox dstPicture
@@ -136,7 +136,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
             If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 32 Then
-                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255
             End If
             
             tmpLayer.renderToPictureBox dstPicture
@@ -148,7 +148,7 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         If otherPictureSrc.getLayerColorDepth = 32 Then
             Set tmpLayer = New pdLayer
             tmpLayer.createFromExistingLayer otherPictureSrc, newWidth, newHeight, True
-            If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255 Else tmpLayer.compositeBackgroundColor
+            If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255
             tmpLayer.renderToPictureBox dstPicture
         Else
             otherPictureSrc.renderToPictureBox dstPicture

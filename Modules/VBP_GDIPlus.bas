@@ -276,8 +276,8 @@ Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, 
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef imgHeight As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal hImage As Long, ByRef imgPixelFormat As Long) As Long
-Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hdc As Long) As Long
-Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hdc As Long) As Long
+Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hDC As Long) As Long
+Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hDC As Long) As Long
 Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal gdipBitmap As Long, gdipRect As RECTL, ByVal gdipFlags As Long, ByVal iPixelFormat As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
 Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal gdipBitmap As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
 
@@ -300,7 +300,7 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 
 'GDI+ calls related to drawing lines and various shapes
-Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hdc As Long, ByRef mGraphics As Long) As Long
+Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
 'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
@@ -331,9 +331,9 @@ Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCa
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Quality mode constants (only supported by certain functions!)
 Private Enum QualityMode
