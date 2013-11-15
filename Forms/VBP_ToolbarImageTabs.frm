@@ -135,7 +135,6 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
             pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
             updateShadowLayer i
-            imgThumbnails(i).thumbLayer.fixPremultipliedAlpha True
             Exit For
         End If
     Next i
@@ -155,8 +154,6 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     'Create a matching shadow layer
     Set imgThumbnails(numOfThumbnails).thumbShadow = New pdLayer
     updateShadowLayer numOfThumbnails
-    
-    imgThumbnails(numOfThumbnails).thumbLayer.fixPremultipliedAlpha True
     
     'Make a note of this thumbnail's index in the main pdImages array
     imgThumbnails(numOfThumbnails).indexInPDImages = pdImagesIndex
@@ -422,7 +419,6 @@ Private Sub Form_Resize()
             imgThumbnails(i).thumbLayer.eraseLayer
             pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
             updateShadowLayer i
-            imgThumbnails(i).thumbLayer.fixPremultipliedAlpha True
         Next i
     
     End If
