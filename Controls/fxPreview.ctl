@@ -106,7 +106,7 @@ Private originalImage As pdLayer, fxImage As pdLayer
 Private curImageState As Boolean
 
 'GetPixel is used to retrieve colors from the image
-Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'Mouse events are raised with the help of a bluMouseEvents class
 Private WithEvents cMouseEvents As bluMouseEvents
@@ -165,14 +165,14 @@ Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
     
     originalImage.eraseLayer
     originalImage.createFromExistingLayer srcLayer
-    If originalImage.getLayerColorDepth = 32 Then originalImage.compositeBackgroundColor
+    'If originalImage.getLayerColorDepth = 32 Then originalImage.compositeBackgroundColor
 
 End Sub
 
 'Use this to supply the object with a copy of the processed image's data.  The preview object can use this to display
 ' the processed image again if the user clicks the "show original image" link, then clicks it again.
 Public Sub setFXImage(ByRef srcLayer As pdLayer)
-
+56666
     'Note that we have a copy of the original image, so the calling function doesn't attempt to supply it again
     m_HasFX = True
     
@@ -246,10 +246,10 @@ Private Sub lblBeforeToggle_Click()
 End Sub
 
 'If color selection is allowed, raise that event now
-Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If isColorSelectionAllowed Then
         
-        curColor = GetPixel(originalImage.getLayerDC, X - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), Y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
+        curColor = GetPixel(originalImage.getLayerDC, x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
         
         If curColor = -1 Then curColor = RGB(127, 127, 127)
         
@@ -261,7 +261,7 @@ End Sub
 'When the user is selecting a color, we want to give them a preview of how that color will affect the previewed image.
 ' This is handled in the _MouseDown event above.  After the color has been selected, we want to restore the original
 ' image on a subsequent mouse move, in case the user wants to select a different color.
-Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     If colorJustClicked > 0 Then
     
