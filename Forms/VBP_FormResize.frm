@@ -764,6 +764,9 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
         
         Message "Resampling image using the FreeImage plugin..."
         
+        'If the original image is 32bpp, remove premultiplication now
+        If srcLayer.getLayerColorDepth = 32 Then srcLayer.fixPremultipliedAlpha
+        
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
         fi_DIB = FreeImage_CreateFromDC(srcLayer.getLayerDC)
@@ -787,6 +790,9 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
         Else
             FreeLibrary hLib
         End If
+        
+        'If the original image is 32bpp, add back in premultiplication now
+        If srcLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
         
     End If
     
