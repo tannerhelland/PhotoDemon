@@ -217,6 +217,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         If isPreview Then
             fi_DIB = FreeImage_CreateFromDC(smallLayer.getLayerDC)
         Else
+            If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage().fixPremultipliedAlpha
             fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).getCompositedImage().getLayerDC)
         End If
         
@@ -273,7 +274,6 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 
                 'Finally, render the preview and erase the temporary layer to conserve memory
                 tmpLayer.renderToPictureBox fxPreview.getPreviewPic
-                'DrawPreviewImage fxPreview.getPreviewPic, True, tmpLayer
                 fxPreview.setFXImage tmpLayer
                 
                 tmpLayer.eraseLayer
@@ -356,9 +356,6 @@ Private Sub Form_Load()
     'Disable previewing until the dialog is fully initialized
     cmdBar.markPreviewStatus False
     
-    'If the original image is 32bpp, remove premultiplication in advance.  We will reapply it once rotation is complete (or canceled).
-    If pdImages(g_CurrentImage).getCompositedImage.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha
-    
     'During the preview stage, we want to rotate a smaller version of the image.  This increases the speed of
     ' previewing immensely (especially for large images, like 10+ megapixel photos)
     Set smallLayer = New pdLayer
@@ -376,6 +373,9 @@ Private Sub Form_Load()
         
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallLayer
+    
+    'To ensure proper interaction with FreeImage, remove premultiplication from the sample image
+    If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then smallLayer.fixPremultipliedAlpha
     
 End Sub
 
