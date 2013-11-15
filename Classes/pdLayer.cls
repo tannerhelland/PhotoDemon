@@ -888,9 +888,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     DeleteDC TmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
-                    ' black background. We want the background to be white, so perform our own premultiplication.
-                    ' (In the future, this could be a checkerboard pattern or a custom color instead of white.)
-                    'NOTE! This is now handled at draw-time, and the instruction to re-render has been made optional.
+                    ' black background. We typically want the background to be white, so perform a composite if requested.
                     If forceWhiteBackground And (layerColorDepth = 32) Then compositeBackgroundColor
                     
                     'Success!
@@ -1438,7 +1436,7 @@ End Sub
 
 'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
-Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
+Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255, Optional ByVal parentIsPremultiplied As Boolean = False)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If layerColorDepth <> 32 Then Exit Sub
@@ -1448,7 +1446,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     'Dim StartTime As Long
     'Dim numOfRuns As Long
     'StartTime = GetTickCount
-
+    
     'Start, as always, with a SafeArray
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
@@ -1458,67 +1456,18 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
     Dim x As Long, y As Long, QuickX As Long
     Dim checkAlpha As Byte, tmpAlpha As Double
     
-    'If no color is specified, apply a checkerboard pattern
-    Dim r1 As Long, g1 As Long, b1 As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
+    'Because our alpha values are pre-multiplied, we can composite them against the background color via use of a look-up table.
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    
+    'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
+    For x = 0 To 255
         
-    If newR <> -1 Then
-        r1 = newR
-        r2 = newR
-    Else
-        r1 = ExtractR(g_AlphaCheckOne)
-        r2 = ExtractR(g_AlphaCheckTwo)
-    End If
+        tmpAlpha = 1 - (x / 255)
+        rLookup(x) = newR * tmpAlpha
+        gLookup(x) = newG * tmpAlpha
+        bLookup(x) = newB * tmpAlpha
     
-    If newG <> -1 Then
-        g1 = newG
-        g2 = newG
-    Else
-        g1 = ExtractG(g_AlphaCheckOne)
-        g2 = ExtractG(g_AlphaCheckTwo)
-    End If
-    
-    If newB <> -1 Then
-        b1 = newB
-        b2 = newB
-    Else
-        b1 = ExtractB(g_AlphaCheckOne)
-        b2 = ExtractB(g_AlphaCheckTwo)
-    End If
-    
-    'Make sure the user didn't supply us with bad values
-    If r1 < 0 Then r1 = 0
-    If r2 < 0 Then r2 = 0
-    If g1 < 0 Then g1 = 0
-    If g2 < 0 Then g2 = 0
-    If b1 < 0 Then b1 = 0
-    If b2 < 0 Then b2 = 0
-    
-    If r1 > 255 Then r1 = 255
-    If r2 > 255 Then r2 = 255
-    If g1 > 255 Then g1 = 255
-    If g2 > 255 Then g2 = 255
-    If b1 > 255 Then b1 = 255
-    If b2 > 255 Then b2 = 255
-    
-    'Finally, determine a checkerboard size based on the current user preference
-    Dim checkerSize As Byte
-    
-    Select Case g_AlphaCheckSize
-    
-        'Small (4x4 checks)
-        Case 0
-            checkerSize = 4
-            
-        'Medium (8x8 checks)
-        Case 1
-            checkerSize = 8
-        
-        'Large (16x16 checks)
-        Case Else
-            checkerSize = 16
-        
-    End Select
+    Next x
     
     'Loop through the image, blending colors as we go
     For x = 0 To layerWidth - 1
@@ -1531,18 +1480,23 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Long = -1, Optional B
         'Ignore fully opaque pixels. (This makes the routine much faster.)
         If checkAlpha <> 255 Then
             
-            'Convert the alpha value to a floating-point variable
-            tmpAlpha = CSng(checkAlpha) / 255
+            'Use that alpha value to blend the current colors with the newly requested color
+            If parentIsPremultiplied Then
             
-            'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
-            If (((x \ checkerSize) + (y \ checkerSize)) And 1) = 0 Then
-                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
-                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
-                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
+                iData(QuickX + 2, y) = iData(QuickX + 2, y) + rLookup(checkAlpha)
+                iData(QuickX + 1, y) = iData(QuickX + 1, y) + gLookup(checkAlpha)
+                iData(QuickX, y) = iData(QuickX, y) + bLookup(checkAlpha)
+                
             Else
-                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r2, tmpAlpha)
-                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g2, tmpAlpha)
-                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b2, tmpAlpha)
+            
+                'Convert the alpha value to a floating-point variable
+                tmpAlpha = checkAlpha / 255
+            
+                'Use that alpha value to blend the current colors with the newly requested color
+                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), newR, tmpAlpha)
+                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), newG, tmpAlpha)
+                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), newB, tmpAlpha)
+                
             End If
             
         End If
@@ -1566,129 +1520,6 @@ Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef 
     'Alternate blend formula from Robert Rayment - my own testing shows no measurable speed difference between the two methods
     'Blend2Colors = mixRatio * (CInt(Color1) - Color2) + Color2
 End Function
-
-
-'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
-' images itself, this is necessary to give transparent images a white background.
-Public Sub compositeBackgroundColorSpecial(ByRef srcAlpha As pdLayer, Optional ByVal newR As Long = -1, Optional ByVal newG As Long = -1, Optional ByVal newB As Long = -1)
-
-    'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If layerColorDepth <> 32 Then Exit Sub
-
-    'Start, as always, with a SafeArray
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepInternalSafeArray tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-    'Now make a second array that points to the source alpha data
-    Dim aData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepExternalSafeArray srcAlpha, srcSA
-    CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
-    
-    Dim x As Long, y As Long, QuickX As Long
-    Dim checkAlpha As Byte, tmpAlpha As Double
-    
-    'If no color is specified, apply a checkerboard pattern
-    Dim r1 As Long, g1 As Long, b1 As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
-    
-    If newR <> -1 Then
-        r1 = newR
-        r2 = newR
-    Else
-        r1 = ExtractR(g_AlphaCheckOne)
-        r2 = ExtractR(g_AlphaCheckTwo)
-    End If
-    
-    If newG <> -1 Then
-        g1 = newG
-        g2 = newG
-    Else
-        g1 = ExtractG(g_AlphaCheckOne)
-        g2 = ExtractG(g_AlphaCheckTwo)
-    End If
-    
-    If newB <> -1 Then
-        b1 = newB
-        b2 = newB
-    Else
-        b1 = ExtractB(g_AlphaCheckOne)
-        b2 = ExtractB(g_AlphaCheckTwo)
-    End If
-    
-    'Make sure the user didn't supply us with bad values
-    If r1 < 0 Then r1 = 0
-    If r2 < 0 Then r2 = 0
-    If g1 < 0 Then g1 = 0
-    If g2 < 0 Then g2 = 0
-    If b1 < 0 Then b1 = 0
-    If b2 < 0 Then b2 = 0
-    
-    If r1 > 255 Then r1 = 255
-    If r2 > 255 Then r2 = 255
-    If g1 > 255 Then g1 = 255
-    If g2 > 255 Then g2 = 255
-    If b1 > 255 Then b1 = 255
-    If b2 > 255 Then b2 = 255
-    
-    'Finally, determine a checkerboard size based on the current user preference
-    Dim checkerSize As Byte
-    
-    Select Case g_AlphaCheckSize
-    
-        'Small (4x4 checks)
-        Case 0
-            checkerSize = 4
-            
-        'Medium (8x8 checks)
-        Case 1
-            checkerSize = 8
-        
-        'Large (16x16 checks)
-        Case Else
-            checkerSize = 16
-        
-    End Select
-    
-    'Loop through the image, blending colors as we go
-    For x = 0 To layerWidth - 1
-        QuickX = x * 4
-    For y = 0 To layerHeight - 1
-        
-        'Access the alpha data for this pixel
-        checkAlpha = aData(QuickX + 3, y)
-        
-        'Ignore fully opaque pixels. (This makes the routine much faster.)
-        If checkAlpha <> 255 Then
-            
-            'Convert the alpha value to a floating-point variable
-            tmpAlpha = CSng(checkAlpha) / 255
-            
-            'Use that alpha value to blend the current colors with the newly requested color, in a checkerboard pattern
-            If (((x \ checkerSize) + (y \ checkerSize)) And 1) = 0 Then
-                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r1, tmpAlpha)
-                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g1, tmpAlpha)
-                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b1, tmpAlpha)
-            Else
-                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), r2, tmpAlpha)
-                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), g2, tmpAlpha)
-                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), b2, tmpAlpha)
-            End If
-            
-        End If
-        
-    Next y
-    Next x
-    
-    'With our compositing complete, point both arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
-    CopyMemory ByVal VarPtrArray(aData), 0&, 4
-    Erase aData
-
-End Sub
 
 'Check to see if a 32bpp image is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
 ' 255 or all values are set to 0, remove the alpha channel and rebuild this layer in 24bpp mode.)
@@ -1908,6 +1739,6 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 25
         bfParams = customAlpha * &H10000
     End If
     
-    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, layerWidth, newWidth), IIf(newHeight = 0, layerHeight, newHeight), layerDC, 0, 0, layerWidth, layerHeight, bfParams
+    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, layerWidth, newWidth + 1), IIf(newHeight = 0, layerHeight, newHeight + 1), layerDC, 0, 0, layerWidth, layerHeight, bfParams
 
 End Sub
