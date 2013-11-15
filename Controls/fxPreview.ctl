@@ -165,8 +165,7 @@ Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
     
     originalImage.eraseLayer
     originalImage.createFromExistingLayer srcLayer
-    'If originalImage.getLayerColorDepth = 32 Then originalImage.compositeBackgroundColor
-
+    
 End Sub
 
 'Use this to supply the object with a copy of the processed image's data.  The preview object can use this to display
