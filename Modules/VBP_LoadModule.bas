@@ -765,7 +765,17 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the image contains an embedded ICC profile, apply it now (before counting colors, etc).
         '*************************************************************************************************************************************
         
-        If targetImage.ICCProfile.hasICCData Then targetImage.ICCProfile.applyICCtoParentImage targetImage
+        If targetImage.ICCProfile.hasICCData Then
+            
+            '32bpp images must be un-premultiplied before the transformation
+            If targetImage.mainLayer.getLayerColorDepth = 32 Then targetImage.mainLayer.fixPremultipliedAlpha
+            
+            targetImage.ICCProfile.applyICCtoParentImage targetImage
+            
+            '32bpp images must be re-premultiplied after the transformation
+            If targetImage.mainLayer.getLayerColorDepth = 32 Then targetImage.mainLayer.fixPremultipliedAlpha True
+            
+        End If
         
         
         
