@@ -49,12 +49,272 @@ Private Const PROCESS_QUERY_INFORMATION = 1024
 Private Const PROCESS_VM_READ = 16
 Private Const MAX_PATH = 260
 
-Private Declare Function EnumProcesses Lib "PSAPI.DLL" (lpidProcess As Long, ByVal cb As Long, cbNeeded As Long) As Long
-Private Declare Function EnumProcessModules Lib "PSAPI.DLL" (ByVal hProcess As Long, lphModule As Long, ByVal cb As Long, lpcbNeeded As Long) As Long
-Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccessas As Long, ByVal bInheritHandle As Long, ByVal dwProcId As Long) As Long
-Private Declare Function GetModuleFileNameExA Lib "PSAPI.DLL" (ByVal hProcess As Long, ByVal hModule As Long, ByVal ModuleName As String, ByVal nSize As Long) As Long
-Private Declare Function GetProcessMemoryInfo Lib "PSAPI.DLL" (ByVal hProcess As Long, ppsmemCounters As PROCESS_MEMORY_COUNTERS, ByVal cb As Long) As Long
-Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal Handle As Long) As Long
+Private Declare Function EnumProcesses Lib "psapi" (lpidProcess As Long, ByVal cb As Long, cbNeeded As Long) As Long
+Private Declare Function EnumProcessModules Lib "psapi" (ByVal hProcess As Long, lphModule As Long, ByVal cb As Long, lpcbNeeded As Long) As Long
+Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As Long, ByVal bInheritHandle As Long, ByVal dwProcId As Long) As Long
+Private Declare Function GetModuleFileNameExA Lib "psapi" (ByVal hProcess As Long, ByVal hModule As Long, ByVal ModuleName As String, ByVal nSize As Long) As Long
+Private Declare Function GetProcessMemoryInfo Lib "psapi" (ByVal hProcess As Long, ppsmemCounters As PROCESS_MEMORY_COUNTERS, ByVal cb As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As DeviceChecks) As Long
+
+Public Enum DeviceChecks
+    CURVECAPS = 28
+    LINECAPS = 30
+    POLYGONALCAPS = 32
+    TEXTCAPS = 34
+    RASTERCAPS = 38
+    SHADEBLENDCAPS = 45
+    COLORMGMTCAPS = 121
+End Enum
+
+#If False Then
+    Private Const CURVECAPS = 28, LINECAPS = 30, POLYGONALCAPS = 32, TEXTCAPS = 34, RASTERCAPS = 38, SHADEBLENDCAPS = 45, COLORMGMTCAPS = 121
+#End If
+
+'Alpha blend capabilites
+Private Const SB_CONST_ALPHA As Long = 1
+Private Const SB_PIXEL_ALPHA As Long = 2
+
+'Blt hardware capabilities
+Private Const RC_BITBLT As Long = 1
+Private Const RC_BANDING As Long = 2
+Private Const RC_SCALING As Long = 4
+Private Const RC_BITMAP64 As Long = 8
+Private Const RC_GDI20_OUTPUT As Long = &H10
+Private Const RC_DI_BITMAP As Long = &H80
+Private Const RC_PALETTE As Long = &H100
+Private Const RC_DIBTODEV As Long = &H200
+Private Const RC_STRETCHBLT As Long = &H800
+Private Const RC_FLOODFILL As Long = &H1000
+Private Const RC_STRETCHDIB As Long = &H2000
+
+'Color management capabilities
+Private Const CM_NONE As Long = 0
+Private Const CM_DEVICE_ICM As Long = 1
+Private Const CM_GAMMA_RAMP As Long = 2
+Private Const CM_CMYK_COLOR As Long = 4
+
+'Line drawing capabilities
+Private Const LC_NONE As Long = 0
+Private Const LC_POLYLINE As Long = 2
+Private Const LC_MARKER As Long = 4
+Private Const LC_POLYMARKER As Long = 8
+Private Const LC_WIDE As Long = 16
+Private Const LC_STYLED As Long = 32
+Private Const LC_INTERIORS As Long = 128
+Private Const LC_WIDESTYLED As Long = 64
+
+'Curve drawing capabilities
+Private Const CC_NONE As Long = 0
+Private Const CC_CIRCLES As Long = 1
+Private Const CC_PIE As Long = 2
+Private Const CC_CHORD As Long = 4
+Private Const CC_ELLIPSES As Long = 8
+Private Const CC_WIDE As Long = 16
+Private Const CC_STYLED As Long = 32
+Private Const CC_WIDESTYLED As Long = 64
+Private Const CC_INTERIORS As Long = 128
+Private Const CC_ROUNDRECT As Long = 256
+
+'Polygon drawing capabilities
+Private Const PC_NONE As Long = 0
+Private Const PC_POLYGON As Long = 1
+Private Const PC_RECTANGLE As Long = 2
+Private Const PC_WINDPOLYGON As Long = 4
+Private Const PC_SCANLINE As Long = 8
+Private Const PC_WIDE As Long = 16
+Private Const PC_STYLED As Long = 32
+Private Const PC_WIDESTYLED As Long = 64
+Private Const PC_INTERIORS As Long = 128
+
+'Text drawing capabilities
+Private Const TC_OP_CHARACTER As Long = 1
+Private Const TC_OP_STROKE As Long = 2
+Private Const TC_CP_STROKE As Long = 4
+Private Const TC_CR_90 As Long = 8
+Private Const TC_CR_ANY As Long = 10
+Private Const TC_SF_X_YINDEP As Long = 20
+Private Const TC_SA_DOUBLE As Long = 40
+Private Const TC_SA_INTEGER As Long = 80
+Private Const TC_SA_CONTIN As Long = 100
+Private Const TC_EA_DOUBLE As Long = 200
+Private Const TC_IA_ABLE As Long = 400
+Private Const TC_UA_ABLE As Long = 800
+Private Const TC_SO_ABLE As Long = 1000
+Private Const TC_RA_ABLE As Long = 2000
+Private Const TC_VA_ABLE As Long = 4000
+Private Const TC_SCROLLBLT As Long = 10000
+
+
+'Given a type of device capability check, return a string that describes the reported capabilities
+Public Function getDeviceCapsString() As String
+
+    Dim fullString As String
+    fullString = ""
+    
+    Dim hwYes As String, hwNo As String
+    hwYes = ""
+    hwNo = ""
+    
+    Dim supportedCount As Long, totalCount As Long
+    supportedCount = 0
+    totalCount = 0
+    
+    Dim gdcReturn As Long
+    
+    'Start with blitting actions
+    startDevCapsSection fullString, gdcReturn, RASTERCAPS, g_Language.TranslateMessage("General image actions")
+    
+    addToDeviceCapsString gdcReturn, RC_BITBLT, hwYes, hwNo, "BitBlt", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_STRETCHBLT, hwYes, hwNo, "StretchBlt", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_DI_BITMAP, hwYes, hwNo, "DIBs", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_STRETCHDIB, hwYes, hwNo, "StretchDIB", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_DIBTODEV, hwYes, hwNo, "SetDIBitsToDevice", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_BITMAP64, hwYes, hwNo, "64kb+ chunks", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_SCALING, hwYes, hwNo, "general scaling", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, RC_FLOODFILL, hwYes, hwNo, "flood fill", supportedCount, totalCount
+    
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Alpha blending
+    startDevCapsSection fullString, gdcReturn, SHADEBLENDCAPS, g_Language.TranslateMessage("Alpha-blending")
+    
+    addToDeviceCapsString gdcReturn, SB_CONST_ALPHA, hwYes, hwNo, "simple alpha", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, SB_PIXEL_ALPHA, hwYes, hwNo, "per-pixel alpha", supportedCount, totalCount
+    
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Color management
+    startDevCapsSection fullString, gdcReturn, COLORMGMTCAPS, g_Language.TranslateMessage("Color management")
+    
+    addToDeviceCapsString gdcReturn, CM_DEVICE_ICM, hwYes, hwNo, "color transformation", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CM_GAMMA_RAMP, hwYes, hwNo, "gamma ramping", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CM_CMYK_COLOR, hwYes, hwNo, "CMYK", supportedCount, totalCount
+    
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Lines
+    startDevCapsSection fullString, gdcReturn, LINECAPS, g_Language.TranslateMessage("Lines")
+    
+    addToDeviceCapsString gdcReturn, LC_POLYLINE, hwYes, hwNo, "polylines", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, LC_MARKER, hwYes, hwNo, "markers", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, LC_POLYMARKER, hwYes, hwNo, "polymarkers", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, LC_INTERIORS, hwYes, hwNo, "interiors", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, LC_WIDE, hwYes, hwNo, "wide", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, LC_STYLED, hwYes, hwNo, "styled", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, LC_WIDESTYLED, hwYes, hwNo, "wide+styled", supportedCount, totalCount
+    
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Polygons
+    startDevCapsSection fullString, gdcReturn, POLYGONALCAPS, g_Language.TranslateMessage("Polygons")
+    
+    addToDeviceCapsString gdcReturn, PC_RECTANGLE, hwYes, hwNo, "rectangles", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, PC_POLYGON, hwYes, hwNo, "alternate-fill", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, PC_WINDPOLYGON, hwYes, hwNo, "winding-fill", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, PC_INTERIORS, hwYes, hwNo, "interiors", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, PC_WIDE, hwYes, hwNo, "wide", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, PC_STYLED, hwYes, hwNo, "styled", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, PC_WIDESTYLED, hwYes, hwNo, "wide+styled", supportedCount, totalCount
+    
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Curves
+    startDevCapsSection fullString, gdcReturn, CURVECAPS, g_Language.TranslateMessage("Curves")
+    
+    addToDeviceCapsString gdcReturn, CC_CIRCLES, hwYes, hwNo, "circles", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_ELLIPSES, hwYes, hwNo, "ellipses", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_ROUNDRECT, hwYes, hwNo, "rounded rectangles", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_PIE, hwYes, hwNo, "pie wedges", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_INTERIORS, hwYes, hwNo, "interiors", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_CHORD, hwYes, hwNo, "chords", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_WIDE, hwYes, hwNo, "wide", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_STYLED, hwYes, hwNo, "styled", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, CC_WIDESTYLED, hwYes, hwNo, "wide+styled", supportedCount, totalCount
+    
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Text
+    startDevCapsSection fullString, gdcReturn, TEXTCAPS, g_Language.TranslateMessage("Text")
+    
+    addToDeviceCapsString gdcReturn, TC_RA_ABLE, hwYes, hwNo, "raster fonts", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_VA_ABLE, hwYes, hwNo, "vector fonts", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_OP_CHARACTER, hwYes, hwNo, "high-precision characters", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_OP_STROKE, hwYes, hwNo, "high-precision strokes", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_CP_STROKE, hwYes, hwNo, "high-precision clipping", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_SA_CONTIN, hwYes, hwNo, "high-precision scaling", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_SF_X_YINDEP, hwYes, hwNo, "independent x/y scaling", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_CR_90, hwYes, hwNo, "90-degree rotation", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_CR_ANY, hwYes, hwNo, "free rotation", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_EA_DOUBLE, hwYes, hwNo, "bold", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_IA_ABLE, hwYes, hwNo, "italics", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_UA_ABLE, hwYes, hwNo, "underline", supportedCount, totalCount
+    addToDeviceCapsString gdcReturn, TC_SO_ABLE, hwYes, hwNo, "strikeouts", supportedCount, totalCount
+        
+    endDevCapsSection fullString, hwYes, hwNo
+    
+    'Add some summary statistics at the end
+    fullString = fullString & g_Language.TranslateMessage("Final results") & vbCrLf
+    fullString = fullString & "    " & "Accelerated actions: " & supportedCount & " (" & Format((CDbl(supportedCount) / CDbl(totalCount)), "00.0%") & ")" & vbCrLf
+    fullString = fullString & "    " & "Not accelerated actions: " & (totalCount - supportedCount) & " (" & Format((CDbl(totalCount - supportedCount) / CDbl(totalCount)), "00.0%") & ")"
+    
+    getDeviceCapsString = fullString
+
+End Function
+
+'Helper function for getDeviceCapsString, above; used to append text to the start of a new device caps section
+Private Sub startDevCapsSection(ByRef srcString As String, ByRef getDevCapsReturn As Long, ByVal gdcSection As DeviceChecks, ByRef sectionTitle As String)
+    
+    getDevCapsReturn = GetDeviceCaps(GetDC(GetDesktopWindow), gdcSection)
+    
+    srcString = srcString & sectionTitle & vbCrLf
+    
+End Sub
+
+'Helper function for getDeviceCapsString, above; used to append text to the end of a device caps section
+Private Sub endDevCapsSection(ByRef srcString As String, ByRef supportedCaps As String, ByRef unsupportedCaps As String)
+    
+    If Len(supportedCaps) = 0 Then supportedCaps = g_Language.TranslateMessage("none")
+    If Len(unsupportedCaps) = 0 Then unsupportedCaps = g_Language.TranslateMessage("none")
+    
+    srcString = srcString & "    " & g_Language.TranslateMessage("accelerated: ") & supportedCaps & vbCrLf
+    srcString = srcString & "    " & g_Language.TranslateMessage("not accelerated: ") & unsupportedCaps & vbCrLf
+    
+    Dim headerLine As String
+    headerLine = "---------------------------------------"
+    
+    srcString = srcString & headerLine & vbCrLf
+    
+    supportedCaps = ""
+    unsupportedCaps = ""
+    
+End Sub
+
+'Helper function for getDeviceCapsString, above; used to automatically check a given GetDeviceCaps return value, and append the
+' results to a user-friendly string
+Private Sub addToDeviceCapsString(ByVal devCapsReturn As Long, ByVal paramToCheck As Long, ByRef stringIfSupported As String, ByRef stringIfNotSupported As String, ByRef capName As String, ByRef supportedCount As Long, ByRef totalCount As Long)
+    
+    totalCount = totalCount + 1
+    
+    If ((devCapsReturn And paramToCheck) <> 0) Then
+        appendCapToString stringIfSupported, capName
+        supportedCount = supportedCount + 1
+    Else
+        appendCapToString stringIfNotSupported, capName
+    End If
+
+End Sub
+
+'Helper function for addToDeviceCapsString, above; simply appends text to a list with a comma, as necessary
+Private Sub appendCapToString(ByRef oldPart As String, ByRef newPart As String)
+
+    If Len(oldPart) = 0 Then
+        oldPart = newPart
+    Else
+        oldPart = oldPart & ", " & newPart
+    End If
+
+End Sub
 
 'Check for a version >= Vista.
 Public Function getVistaOrLaterStatus() As Boolean
