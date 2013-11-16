@@ -128,10 +128,10 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
     assignDefaultColorProfileToForm formToBuffer
-    turnOnColorManagementForDC formToBuffer.hdc
+    turnOnColorManagementForDC formToBuffer.hDC
     
     'Finally, flip the front buffer to the screen
-    BitBlt formToBuffer.hdc, 0, 0, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt formToBuffer.hDC, 0, 0, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
         
     'If both scrollbars are active, copy a gray square over the small space between them
     If formToBuffer.HScroll.Visible And formToBuffer.VScroll.Visible Then
@@ -143,7 +143,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         End If
         
         'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
-        BitBlt formToBuffer.hdc, formToBuffer.VScroll.Left, formToBuffer.HScroll.Top, cornerFix.getLayerWidth, cornerFix.getLayerHeight, cornerFix.getLayerDC, 0, 0, vbSrcCopy
+        BitBlt formToBuffer.hDC, formToBuffer.VScroll.Left, formToBuffer.HScroll.Top, cornerFix.getLayerWidth, cornerFix.getLayerHeight, cornerFix.getLayerDC, 0, 0, vbSrcCopy
         
     End If
     
@@ -201,7 +201,8 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         
             'Create a blank layer in the parent pdImages object.  (For performance reasons, we create this image at the size
             ' of the viewport.)
-            pdImages(curImage).alphaFixLayer.createBlank pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, 32
+            pdImages(curImage).alphaFixLayer.createBlank srcWidth, srcHeight, 32
+            BitBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
 
             'Update 15 Sep 2013: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
             ' if HALFTONE mode is used, and zooming-out requires HALFTONE for properly pretty results.)
@@ -238,7 +239,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 '            Else
                 
                 Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
-                pdImages(curImage).getCompositedImage().alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+                pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
 
 '            End If
             
