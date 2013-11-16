@@ -17,8 +17,8 @@ Attribute VB_Name = "Screen_Capture"
 Option Explicit
 
 'Various API calls required for screen capturing
-Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function GetDesktopWindow Lib "user32" () As Long
+Public Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -142,15 +142,15 @@ Public Sub getDesktopAsLayer(ByRef dstLayer As pdLayer)
 End Sub
 
 'Copy the visual contents of any hWnd into a layer; window chrome can be optionally included, if desired
-Public Function getHwndContentsAsLayer(ByRef dstLayer As pdLayer, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+Public Function getHwndContentsAsLayer(ByRef dstLayer As pdLayer, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
     'Start by retrieving the necessary dimensions from the target window
     Dim targetRect As winRect
     
     If includeChrome Then
-        GetWindowRect targetHwnd, targetRect
+        GetWindowRect targetHWnd, targetRect
     Else
-        GetClientRect targetHwnd, targetRect
+        GetClientRect targetHWnd, targetRect
     End If
     
     'Check to make sure the window hasn't been unloaded
@@ -164,9 +164,9 @@ Public Function getHwndContentsAsLayer(ByRef dstLayer As pdLayer, ByVal targetHw
     
     'Ask the window in question to paint itself into our layer
     If includeChrome Then
-        PrintWindow targetHwnd, dstLayer.getLayerDC, 0
+        PrintWindow targetHWnd, dstLayer.getLayerDC, 0
     Else
-        PrintWindow targetHwnd, dstLayer.getLayerDC, PW_CLIENTONLY
+        PrintWindow targetHWnd, dstLayer.getLayerDC, PW_CLIENTONLY
     End If
     
     getHwndContentsAsLayer = True
