@@ -292,6 +292,24 @@ Begin VB.Form FormPreferences
       TabIndex        =   16
       Top             =   240
       Width           =   8295
+      Begin PhotoDemon.jcbutton cmdCopyReportClipboard 
+         Height          =   525
+         Left            =   7680
+         TabIndex        =   123
+         Top             =   4170
+         Width           =   525
+         _extentx        =   873
+         _extenty        =   873
+         buttonstyle     =   13
+         font            =   "VBP_FormPreferences.frx":97D0
+         backcolor       =   0
+         caption         =   ""
+         picturenormal   =   "VBP_FormPreferences.frx":97F8
+         pictureeffectonover=   0
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltipbackcolor=   0
+      End
       Begin VB.TextBox txtHardware 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -309,7 +327,7 @@ Begin VB.Form FormPreferences
          ScrollBars      =   2  'Vertical
          TabIndex        =   122
          Top             =   2520
-         Width           =   7815
+         Width           =   7335
       End
       Begin PhotoDemon.smartCheckBox chkLogMessages 
          Height          =   480
@@ -320,7 +338,7 @@ Begin VB.Form FormPreferences
          _extentx        =   5636
          _extenty        =   847
          caption         =   "log all program messages to file "
-         font            =   "VBP_FormPreferences.frx":97D0
+         font            =   "VBP_FormPreferences.frx":A54A
       End
       Begin VB.TextBox TxtTempPath 
          BeginProperty Font 
@@ -340,7 +358,7 @@ Begin VB.Form FormPreferences
          Text            =   "automatically generated at run-time"
          ToolTipText     =   "Folder used for temporary files"
          Top             =   1440
-         Width           =   6975
+         Width           =   7335
       End
       Begin VB.CommandButton cmdTmpPath 
          Caption         =   "..."
@@ -353,12 +371,12 @@ Begin VB.Form FormPreferences
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   375
-         Left            =   7320
+         Height          =   450
+         Left            =   7680
          TabIndex        =   18
          ToolTipText     =   "Click to open a browse-for-folder dialog"
-         Top             =   1440
-         Width           =   765
+         Top             =   1395
+         Width           =   525
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -378,7 +396,7 @@ Begin VB.Form FormPreferences
          Index           =   6
          Left            =   0
          TabIndex        =   121
-         Top             =   2160
+         Top             =   2040
          Width           =   3120
       End
       Begin VB.Label lblMemoryUsageMax 
@@ -439,7 +457,7 @@ Begin VB.Form FormPreferences
          Index           =   5
          Left            =   0
          TabIndex        =   60
-         Top             =   4800
+         Top             =   4920
          Width           =   2130
       End
       Begin VB.Label lblRuntimeSettings 
@@ -528,7 +546,7 @@ Begin VB.Form FormPreferences
          _extentx        =   9313
          _extenty        =   847
          caption         =   "if core plugins cannot be located, offer to download them"
-         font            =   "VBP_FormPreferences.frx":97F8
+         font            =   "VBP_FormPreferences.frx":A572
          value           =   1
       End
       Begin PhotoDemon.smartCheckBox chkProgramUpdates 
@@ -541,7 +559,7 @@ Begin VB.Form FormPreferences
          _extentx        =   9049
          _extenty        =   847
          caption         =   "automatically check for software updates every 10 days"
-         font            =   "VBP_FormPreferences.frx":9820
+         font            =   "VBP_FormPreferences.frx":A59A
          value           =   1
       End
       Begin VB.Label lblTitle 
@@ -608,7 +626,7 @@ Begin VB.Form FormPreferences
          Width           =   1335
          _extentx        =   2355
          _extenty        =   661
-         font            =   "VBP_FormPreferences.frx":9848
+         font            =   "VBP_FormPreferences.frx":A5C2
          min             =   1
          max             =   32
          value           =   10
@@ -632,7 +650,7 @@ Begin VB.Form FormPreferences
          _extentx        =   13097
          _extenty        =   847
          caption         =   "render PhotoDemon text with modern typefaces (only available on Vista or newer)"
-         font            =   "VBP_FormPreferences.frx":9870
+         font            =   "VBP_FormPreferences.frx":A5EA
       End
       Begin PhotoDemon.smartCheckBox chkDropShadow 
          Height          =   480
@@ -644,7 +662,7 @@ Begin VB.Form FormPreferences
          _extentx        =   7726
          _extenty        =   847
          caption         =   "draw drop shadow between image and canvas"
-         font            =   "VBP_FormPreferences.frx":9898
+         font            =   "VBP_FormPreferences.frx":A612
       End
       Begin VB.ComboBox cmbMRUCaption 
          BeginProperty Font 
@@ -945,7 +963,7 @@ Begin VB.Form FormPreferences
          _extentx        =   4868
          _extenty        =   582
          caption         =   "use the system color profile"
-         font            =   "VBP_FormPreferences.frx":98C0
+         font            =   "VBP_FormPreferences.frx":A63A
          value           =   -1  'True
       End
       Begin PhotoDemon.colorSelector csAlphaOne 
@@ -966,7 +984,7 @@ Begin VB.Form FormPreferences
          _extentx        =   8176
          _extenty        =   847
          caption         =   "automatically validate all incoming alpha channels"
-         font            =   "VBP_FormPreferences.frx":98E8
+         font            =   "VBP_FormPreferences.frx":A662
       End
       Begin VB.ComboBox cmbAlphaCheckSize 
          BeginProperty Font 
@@ -1023,7 +1041,7 @@ Begin VB.Form FormPreferences
          _extentx        =   6456
          _extenty        =   582
          caption         =   "use one or more custom color profiles"
-         font            =   "VBP_FormPreferences.frx":9910
+         font            =   "VBP_FormPreferences.frx":A68A
       End
       Begin VB.Label lblColorManagement 
          AutoSize        =   -1  'True
@@ -1228,7 +1246,7 @@ Begin VB.Form FormPreferences
             _extentx        =   8520
             _extenty        =   847
             caption         =   "preserve file's original background color, if available"
-            font            =   "VBP_FormPreferences.frx":9938
+            font            =   "VBP_FormPreferences.frx":A6B2
          End
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   480
@@ -1239,7 +1257,7 @@ Begin VB.Form FormPreferences
             _extentx        =   4286
             _extenty        =   847
             caption         =   "use interlacing (Adam7)"
-            font            =   "VBP_FormPreferences.frx":9960
+            font            =   "VBP_FormPreferences.frx":A6DA
          End
          Begin VB.HScrollBar hsPNGCompression 
             Height          =   330
@@ -1359,7 +1377,7 @@ Begin VB.Form FormPreferences
             _extentx        =   7779
             _extenty        =   847
             caption         =   "use RLE compression when saving TGA images"
-            font            =   "VBP_FormPreferences.frx":9988
+            font            =   "VBP_FormPreferences.frx":A702
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1406,7 +1424,7 @@ Begin VB.Form FormPreferences
             _extentx        =   8625
             _extenty        =   847
             caption         =   "use RLE compression when saving 8bpp BMP images"
-            font            =   "VBP_FormPreferences.frx":99B0
+            font            =   "VBP_FormPreferences.frx":A72A
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1453,7 +1471,7 @@ Begin VB.Form FormPreferences
             _extentx        =   7461
             _extenty        =   847
             caption         =   " save TIFFs as separated CMYK (for printing)"
-            font            =   "VBP_FormPreferences.frx":99D8
+            font            =   "VBP_FormPreferences.frx":A752
          End
          Begin VB.ComboBox cmbTIFFCompression 
             BeginProperty Font 
@@ -1674,7 +1692,7 @@ Begin VB.Form FormPreferences
          _extentx        =   9604
          _extenty        =   847
          caption         =   "when closing images, warn me me about unsaved changes"
-         font            =   "VBP_FormPreferences.frx":9A00
+         font            =   "VBP_FormPreferences.frx":A77A
       End
       Begin VB.ComboBox cmbSaveBehavior 
          BeginProperty Font 
@@ -1998,7 +2016,7 @@ Begin VB.Form FormPreferences
          _extentx        =   11933
          _extenty        =   847
          caption         =   "count unique colors in incoming images (to determine optimal color depth)"
-         font            =   "VBP_FormPreferences.frx":9A28
+         font            =   "VBP_FormPreferences.frx":A7A2
       End
       Begin PhotoDemon.smartCheckBox chkToneMapping 
          Height          =   480
@@ -2009,7 +2027,7 @@ Begin VB.Form FormPreferences
          _extentx        =   12779
          _extenty        =   847
          caption         =   "automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)"
-         font            =   "VBP_FormPreferences.frx":9A50
+         font            =   "VBP_FormPreferences.frx":A7CA
       End
       Begin PhotoDemon.smartCheckBox chkMetadataLoading 
          Height          =   480
@@ -2020,7 +2038,7 @@ Begin VB.Form FormPreferences
          _extentx        =   9022
          _extenty        =   847
          caption         =   "when loading images, also load any available metadata"
-         font            =   "VBP_FormPreferences.frx":9A78
+         font            =   "VBP_FormPreferences.frx":A7F2
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -2210,7 +2228,7 @@ Begin VB.Form FormPreferences
          _extentx        =   11430
          _extenty        =   847
          caption         =   "automatically clear the active selection after ""Crop to Selection"" is used"
-         font            =   "VBP_FormPreferences.frx":9AA0
+         font            =   "VBP_FormPreferences.frx":A81A
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -2494,6 +2512,12 @@ Private Sub cmdColorProfilePath_Click()
         
     End If
 
+End Sub
+
+'Copy the hardware acceleration report to the clipboard
+Private Sub cmdCopyReportClipboard_Click()
+    Clipboard.Clear
+    Clipboard.SetText txtHardware
 End Sub
 
 'OK button

@@ -257,6 +257,8 @@ Public Function getDeviceCapsString() As String
     fullString = fullString & g_Language.TranslateMessage("Final results") & vbCrLf
     fullString = fullString & "    " & "Accelerated actions: " & supportedCount & " (" & Format((CDbl(supportedCount) / CDbl(totalCount)), "00.0%") & ")" & vbCrLf
     fullString = fullString & "    " & "Not accelerated actions: " & (totalCount - supportedCount) & " (" & Format((CDbl(totalCount - supportedCount) / CDbl(totalCount)), "00.0%") & ")"
+    fullString = fullString & vbCrLf & vbCrLf & g_Language.TranslateMessage("Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.")
+    fullString = fullString & vbCrLf & vbCrLf & g_Language.TranslateMessage("For more information on GDI hardware acceleration, visit http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480")
     
     getDeviceCapsString = fullString
 
