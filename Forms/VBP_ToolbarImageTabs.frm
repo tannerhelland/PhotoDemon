@@ -109,6 +109,13 @@ Private shadowBlurRadius As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'If the user loads tons of images, the tabstrip may overflow the available area.  We now allow them to drag-scroll the list.
+' In order to allow that, we must track a few extra things, like initial mouse x/y
+Private m_MouseDown As Boolean, m_ScrollingOccured As Boolean
+Private m_InitX As Long, m_InitY As Long, m_InitOffset As Long
+Private m_ListScrollable As Boolean
+Private m_MouseDistanceTraveled As Long
+
 'When the user switches images, redraw the toolbar to match the change
 Public Sub notifyNewActiveImage(ByVal newPDImageIndex As Long)
     
@@ -217,20 +224,20 @@ End Sub
 
 'Given mouse coordinates over the form, return the thumbnail at that location.  If the cursor is not over a thumbnail,
 ' the function will return -1
-Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
+Private Function getThumbAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     
     Dim hOffset As Long
     hOffset = hsThumbnails.Value
     
-    getThumbAtPosition = (x + hOffset) \ fixDPI(thumbWidth)
+    getThumbAtPosition = (X + hOffset) \ fixDPI(thumbWidth)
     If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     
 End Function
 
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     'Horizontal scrolling - only trigger it if the horizontal scroll bar is actually visible
-    If hsThumbnails.Visible Then
+    If m_ListScrollable Then
   
         If CharsScrolled < 0 Then
             
@@ -240,7 +247,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
         
         ElseIf CharsScrolled > 0 Then
@@ -251,7 +258,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
             
         End If
@@ -268,10 +275,10 @@ Private Sub cMouseEvents_MouseOut()
     cMouseEvents.MousePointer = 0
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     'Vertical scrolling - only trigger it if the horizontal scroll bar is actually visible
-    If hsThumbnails.Visible Then
+    If m_ListScrollable Then
   
         If LinesScrolled < 0 Then
             
@@ -281,7 +288,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
         
         ElseIf LinesScrolled > 0 Then
@@ -292,7 +299,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
             
         End If
@@ -323,6 +330,9 @@ Private Sub Form_Load()
     'Update the drop-shadow blur radius to account for DPI
     shadowBlurRadius = fixDPI(2)
     
+    'If the tabstrip ever becomes long enough to scroll, this will be set to TRUE
+    m_ListScrollable = False
+    
     'Activate the custom tooltip handler
     Set m_ToolTip = New clsToolTip
     m_ToolTip.Create Me
@@ -335,75 +345,163 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+'When the left mouse button is pressed, activate click-to-drag mode for scrolling the tabstrip window
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
+    'Make a note of the initial mouse position
+    If Button = vbLeftButton Then
+        m_MouseDown = True
+        m_InitX = X
+        m_InitY = Y
+        m_MouseDistanceTraveled = 0
+        m_InitOffset = hsThumbnails.Value
+    End If
+    
+    'Reset the "resize in progress" tracker
+    weAreResponsibleForResize = False
+    
+    'Reset the "scrolling occured" tracker
+    m_ScrollingOccured = False
+    
+End Sub
+
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    
+    'We require a few mouse movements to fire before doing anything; otherwise this function will fire constantly.
+    m_MouseDistanceTraveled = m_MouseDistanceTraveled + 1
+    
+    'We handle several different _MouseMove scenarios, in this order:
+    ' 1) If the mouse is near the bottom of the form, and the left button is depressed, activate live resizing.
+    ' 2) If a button is depressed, activate tabstrip scrolling (if the list is long enough)
+    ' 3) If no buttons are depressed, hover the image at the current position (if any)
+    
+    'If the mouse is near the bottom of the toolbar, allow the user to resize the thumbnail toolbar
+    Dim mouseInResizeTerritory As Boolean
+    If (X > 0) And (X < Me.ScaleWidth) And (Y > Me.ScaleHeight - 7) Then mouseInResizeTerritory = True
+    
+    'Check mouse button state; if it's down, check for resize or scrolling of the image list
+    If m_MouseDown Then
+        
+        If mouseInResizeTerritory Then
+        
+            If Button = vbLeftButton Then
+                
+                'Allow resizing
+                weAreResponsibleForResize = True
+                ReleaseCapture
+                SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTBOTTOM, ByVal 0&
+                
+            End If
+        
+        'The mouse is not in resize territory.
+        Else
+        
+            mouseInResizeTerritory = False
+            
+            'If the list is scrollable (due to tons of images being loaded), calculate a new offset now
+            If m_ListScrollable And (m_MouseDistanceTraveled > 5) Then
+            
+                m_ScrollingOccured = True
+            
+                Dim mouseOffsetX As Long
+                mouseOffsetX = (m_InitX - X)
+                
+                'Change the invisible scroll bar to match the new offset
+                Dim newScrollValue As Long
+                newScrollValue = m_InitOffset + mouseOffsetX
+                
+                If newScrollValue < 0 Then
+                    hsThumbnails.Value = 0
+                
+                ElseIf newScrollValue > hsThumbnails.Max Then
+                    hsThumbnails.Value = hsThumbnails.Max
+                    
+                Else
+                    hsThumbnails.Value = newScrollValue
+                    
+                End If
+                
+            
+            End If
+        
+        End If
+    
+    'The left mouse button is not down.  Hover the image beneath the cursor (if any)
+    Else
+    
+        Dim oldThumbHover As Long
+        oldThumbHover = curThumbHover
+        
+        'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
+        curThumbHover = getThumbAtPosition(X, Y)
+        
+        'To prevent flickering, only update the tooltip when absolutely necessary
+        If curThumbHover <> oldThumbHover Then
+        
+            'If the cursor is over a thumbnail, update the tooltip to display that image's filename
+            If curThumbHover <> -1 Then
+                        
+                If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) > 0 Then
+                    m_ToolTip.ToolTipHeader = pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
+                    m_ToolTip.ToolText(Me) = pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk
+                Else
+                    m_ToolTip.ToolTipHeader = g_Language.TranslateMessage("This image does not have a filename.")
+                    m_ToolTip.ToolText(Me) = g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here.")
+                End If
+            
+            'The cursor is not over a thumbnail; let the user know they can hover if they want more information.
+            Else
+            
+                m_ToolTip.ToolTipHeader = ""
+                m_ToolTip.ToolText(Me) = "Hover an image thumbnail to see its name and current file location."
+            
+            End If
+            
+        End If
+        
+    End If
+    
+    'Set a mouse pointer according to the handling above
+    If mouseInResizeTerritory Then
+        cMouseEvents.MousePointer = IDC_SIZENS
+    Else
+    
+        'Display a hand cursor if over an image
+        If curThumbHover = -1 Then cMouseEvents.MousePointer = vbDefault Else cMouseEvents.MousePointer = IDC_HAND
+    
+    End If
+    
+    'Regardless of what happened above, redraw the toolbar to reflect any changes
+    redrawToolbar
+    
+End Sub
+
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+
+    'If the _MouseUp event was triggered by the user, select the image at that position
     If Not weAreResponsibleForResize Then
     
         Dim potentialNewThumb As Long
-        potentialNewThumb = getThumbAtPosition(x, y)
+        potentialNewThumb = getThumbAtPosition(X, Y)
         
         'Notify the program that a new image has been selected; it will then bring that image to the foreground,
-        ' which will automatically trigger a toolbar redraw
-        If potentialNewThumb >= 0 Then
+        ' which will automatically trigger a toolbar redraw.  Also, do not select the image if the user has been
+        ' scrolling the list.
+        If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
             curThumb = potentialNewThumb
             pdImages(imgThumbnails(curThumb).indexInPDImages).containingForm.ActivateWorkaround "user clicked image thumbnail"
         End If
         
     End If
     
-End Sub
+    'Release mouse tracking
+    If m_MouseDown Then
+        m_MouseDown = False
+        m_InitX = 0
+        m_InitY = 0
+        m_MouseDistanceTraveled = 0
+    End If
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    Dim oldThumbHover As Long
-    oldThumbHover = curThumbHover
-    
-    'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
-    curThumbHover = getThumbAtPosition(x, y)
-    
-    'To prevent flickering, only update the tooltip when absolutely necessary
-    If curThumbHover <> oldThumbHover Then
-    
-        'If the cursor is over a thumbnail, update the tooltip to display that image's filename
-        If curThumbHover <> -1 Then
-                    
-            If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) > 0 Then
-                m_ToolTip.ToolTipHeader = pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
-                m_ToolTip.ToolText(Me) = pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk
-            Else
-                m_ToolTip.ToolTipHeader = g_Language.TranslateMessage("This image does not have a filename.")
-                m_ToolTip.ToolText(Me) = g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here.")
-            End If
-        
-        Else
-        
-            m_ToolTip.ToolTipHeader = ""
-            m_ToolTip.ToolText(Me) = "Hover an image thumbnail to see its name and current file location."
-        
-        End If
-        
-    End If
-    
-    'If the mouse is near the bottom of the toolbar, allow the user to resize the thumbnail toolbar
-    If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - 6) Then
-        cMouseEvents.MousePointer = IDC_SIZENS
-        
-        If Button = vbLeftButton Then
-            
-            'Allow resizing
-            weAreResponsibleForResize = True
-            ReleaseCapture
-            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, HTBOTTOM, ByVal 0&
-            
-        End If
-        
-    Else
-        weAreResponsibleForResize = False
-        If curThumbHover = -1 Then cMouseEvents.MousePointer = vbDefault Else cMouseEvents.MousePointer = IDC_HAND
-    End If
-    
-    redrawToolbar
-    
 End Sub
 
 'Any time this window is resized, we need to recreate the thumbnail display
@@ -435,7 +533,7 @@ Private Sub Form_Resize()
     redrawToolbar
     
     'Resize and position the scroll bar
-    hsThumbnails.Move 0, m_BufferHeight - hsThumbnails.Height - 2, m_BufferWidth, hsThumbnails.Height
+    'hsThumbnails.Move 0, m_BufferHeight - hsThumbnails.Height - 2, m_BufferWidth, hsThumbnails.Height
     
     'Notify the window manager that the tab strip has been resized; it will resize image windows to match
     'If Not weAreResponsibleForResize Then
@@ -462,9 +560,9 @@ Private Sub redrawToolbar()
     
     If maxThumbSize < m_BufferWidth Then
         hsThumbnails.Value = 0
-        If hsThumbnails.Visible Then hsThumbnails.Visible = False
+        m_ListScrollable = False
     Else
-        If Not hsThumbnails.Visible Then hsThumbnails.Visible = True
+        m_ListScrollable = True
         hsThumbnails.Max = maxThumbSize - m_BufferWidth
     End If
     
@@ -530,14 +628,6 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         
     End If
 
-End Sub
-
-Private Sub hsThumbnails_Change()
-    redrawToolbar
-End Sub
-
-Private Sub hsThumbnails_Scroll()
-    redrawToolbar
 End Sub
 
 'Whenever a thumbnail has been updated, this sub must be called to regenerate its drop-shadow
