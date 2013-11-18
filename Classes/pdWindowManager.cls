@@ -61,6 +61,7 @@ Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_NCMOUSEMOVE As Long = &HA0
 Private Const WM_SIZING As Long = &H214
 Private Const WM_SIZE As Long = &H5
+Private Const WM_ERASEBKGND As Long = &H14
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WM_ACTIVATE      As Long = &H6
@@ -79,6 +80,7 @@ Private Const SC_MOVE As Long = &HF010&
 'Constants for changing window style (including transparency)
 Private Const LWA_ALPHA As Long = &H2&
 Private Const WS_EX_LAYERED As Long = &H80000
+Private Const WS_EX_COMPOSITED As Long = &H2000000
 Private Const GWL_EXSTYLE As Long = (-20)
 Private Const GWL_STYLE As Long = (-16)
 Private Const GWL_HWNDPARENT As Long = (-8)
@@ -841,7 +843,15 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     End If
     
     'Reposition the window, but note that we do not want it moved - only resized
-    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
+    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOREDRAW
+    UpdateWindow pdWindows(winIndex).hWnd
+    
+    'SOME THOUGHTS:
+    ' The code above still works, but it shouldn't - SetWindowPos is not requesting a redraw, so why is the window being redrawn?
+    ' I need to track down the source of these frequent redraws.
+    '
+    ' Assuming other sources can be removed, it may work better to calculate InvalidateRect ourself prior to SetWindowPos, as we know
+    ' the window's before and after positions already...
     
 End Sub
 
@@ -956,7 +966,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     newWinStyle = WS_BORDER Or WS_CAPTION Or WS_SYSMENU
                     If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW 'Or WS_EX_LAYERED
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.
                     pdWindows(winIndex).previousRenderStyle = FLOAT_STYLE
@@ -1000,7 +1010,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     newWinStyle = WS_CHILD
                     If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE 'Or WS_EX_LAYERED
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidth, pdWindows(winIndex).originalHeight, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
                     
                     'Specify the main window as the parent
@@ -1058,6 +1068,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     
                     'Set the border style to sizable dialog
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_THICKFRAME Or WS_VISIBLE Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
+                    'SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_LAYERED
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.
@@ -1081,6 +1092,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 
                     'Remove the window border
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, WS_VISIBLE Or WS_CHILD
+                    'SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_LAYERED
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
                     
                     'Specify the main window as the parent
@@ -1107,6 +1119,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             newWinStyle = WS_CHILD
             If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
             SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
+            'SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_LAYERED
             SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
             
             'Specify the main form as the tabstrip's parent
@@ -1413,6 +1426,13 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     mainWindowIndex = numOfPDWindows
     pdWindows(numOfPDWindows).typeOfWindow = MAIN_WINDOW
     pdWindows(numOfPDWindows).windowName = parentForm.Name
+    
+    'Apply any unique styles to the parent window
+    Dim newWinStyle As Long
+    newWinStyle = GetWindowLong(parentForm.hWnd, GWL_STYLE)
+    SetWindowLong parentForm.hWnd, GWL_STYLE, newWinStyle Or WS_CLIPCHILDREN
+    newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE)
+    SetWindowLong parentForm.hWnd, GWL_EXSTYLE, newWinStyle Or WS_EX_COMPOSITED
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
@@ -2186,7 +2206,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                          
                         'Calculate the new size and apply it
                         restrictRectToParent childRect, 0
-                        SetWindowPos pdWindows(i).hWnd, 0, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER
+                        SetWindowPos pdWindows(i).hWnd, 0, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOREDRAW
                     
                         'Store the new offset values
                         pdWindows(i).offsetX = childRect.x1 - curWinRect.x1
