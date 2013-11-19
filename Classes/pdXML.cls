@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 30/July/13
-'Last updated: 03/September/13
-'Last update: added getLocationOfParentTag() function, which the translation engine needs for finding the <phrase>
-'             tag that encloses an original/translation text pair
+'Last updated: 18/November/13
+'Last update: fix faulty detection of missing XML entries
 '
 'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
@@ -587,7 +586,7 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tagName) > 0 Then
+    If Len(tmpString) > 0 Then
         getUniqueTag_String = CStr(tmpString)
     Else
         getUniqueTag_String = defaultReturn
@@ -600,7 +599,7 @@ Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaul
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tagName) > 0 Then
+    If Len(tmpString) > 0 Then
         getUniqueTag_Long = CLng(tmpString)
     Else
         getUniqueTag_Long = defaultReturn
@@ -613,7 +612,7 @@ Public Function getUniqueTag_Double(ByVal tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tagName) > 0 Then
+    If Len(tmpString) > 0 Then
         getUniqueTag_Double = CDbl(tmpString)
     Else
         getUniqueTag_Double = defaultReturn
