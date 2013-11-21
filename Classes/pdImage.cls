@@ -258,18 +258,13 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
         
     Else
     
-        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
+        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32, 0
         
         Dim compositedImage As New pdLayer
         Set compositedImage = getCompositedImage()
         
         requestThumbnail = GDIPlusResizeLayer(dstThumbnailLayer, tX, tY, tIcoWidth, tIcoHeight, compositedImage, 0, 0, compositedImage.getLayerWidth, compositedImage.getLayerHeight, InterpolationModeHighQualityBilinear)
-    
-        'GDI+ does weird things to alpha along image edges, so reset alpha premultiplication just to be safe.
-        ' (If we don't do this, distortion may occur when attempting to use AlphaBlend.)
-        dstThumbnailLayer.fixPremultipliedAlpha
-        dstThumbnailLayer.fixPremultipliedAlpha True
-    
+        
     End If
     
 End Function
@@ -417,7 +412,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     leftOffset = mainSelection.boundLeft
     topOffset = mainSelection.boundTop
     
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     Dim thisAlpha As Long
     Dim blendAlpha As Double
     
@@ -427,26 +422,26 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     Dim dstLayerCD As Long, dstQuickX As Long
     dstLayerCD = dstLayer.getLayerColorDepth \ 8
             
-    For X = 0 To dstLayer.getLayerWidth - 1
-        dstQuickX = X * dstLayerCD
-        srcQuickX = (leftOffset + X) * srcLayerCD
-    For Y = 0 To dstLayer.getLayerHeight - 1
+    For x = 0 To dstLayer.getLayerWidth - 1
+        dstQuickX = x * dstLayerCD
+        srcQuickX = (leftOffset + x) * srcLayerCD
+    For y = 0 To dstLayer.getLayerHeight - 1
     
-        srcQuickY = topOffset + Y
-        thisAlpha = selData((leftOffset + X) * 3, srcQuickY)
+        srcQuickY = topOffset + y
+        thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
         
-        dstImageData(dstQuickX, Y) = srcImageData(srcQuickX, srcQuickY)
-        dstImageData(dstQuickX + 1, Y) = srcImageData(srcQuickX + 1, srcQuickY)
-        dstImageData(dstQuickX + 2, Y) = srcImageData(srcQuickX + 2, srcQuickY)
+        dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
+        dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
+        dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
         If srcLayerCD = 4 Then
             blendAlpha = thisAlpha / 255
-            dstImageData(dstQuickX + 3, Y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
+            dstImageData(dstQuickX + 3, y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
         Else
-            dstImageData(dstQuickX + 3, Y) = thisAlpha
+            dstImageData(dstQuickX + 3, y) = thisAlpha
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'Clear all array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

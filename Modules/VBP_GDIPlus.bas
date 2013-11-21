@@ -468,7 +468,7 @@ Public Function GDIPlusResizeLayer(ByRef dstLayer As pdLayer, ByVal dstX As Long
     'Release both the destination graphics object and the source bitmap object
     GdipDeleteGraphics iGraphics
     GdipDisposeImage tBitmap
-
+    
 End Function
 
 'Use GDI+ to blur a layer with variable radius
@@ -861,7 +861,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     If tmpLayer.getLayerColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerWidth * 4, PixelFormat32bppPARGB, ByVal tmpLayer.getLayerDIBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal tmpLayer.getLayerDIBits, hImage)
     
     Else
         GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
