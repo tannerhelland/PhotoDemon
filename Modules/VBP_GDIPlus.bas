@@ -285,6 +285,8 @@ Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal gdipBitmap As
 'Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As PropertyItem) As Long
 Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As Long) As Long
 Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, propSize As Long) As Long
+Private Declare Function GdipGetImageHorizontalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef hResolution As Single) As Long
+Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef vResolution As Single) As Long
 
 'OleCreatePictureIndirect is used to convert GDI+ images to VB's preferred StdPicture
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
@@ -759,6 +761,12 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     'Retrieve the image's size
     Dim imgWidth As Single, imgHeight As Single
     GdipGetImageDimension hImage, imgWidth, imgHeight
+    
+    'Retrieve the image's horizontal and vertical resolution (if any)
+    Dim imgHResolution As Single, imgVResolution As Single
+    GdipGetImageHorizontalResolution hImage, imgHResolution
+    GdipGetImageVerticalResolution hImage, imgVResolution
+    dstImage.setDPI imgHResolution, imgVResolution
     
     'Retrieve the image's alpha channel data (if any)
     Dim hasAlpha As Boolean
