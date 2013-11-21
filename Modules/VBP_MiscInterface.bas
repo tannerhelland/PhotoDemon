@@ -687,9 +687,47 @@ Public Function getKeyboardDelay() As Double
     getKeyboardDelay = (keyDelayIndex + 1) * 0.25
 End Function
 
+Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants)
+    
+    'Reset the menu checkmarks
+    Dim curMenuIndex As Long
+    
+    Select Case newAlignment
+    
+        Case vbAlignLeft
+            curMenuIndex = 4
+        
+        Case vbAlignTop
+            curMenuIndex = 5
+        
+        Case vbAlignRight
+            curMenuIndex = 6
+        
+        Case vbAlignBottom
+            curMenuIndex = 7
+        
+    End Select
+    
+    Dim i As Long
+    For i = 4 To 7
+        If i = curMenuIndex Then
+            FormMain.MnuWindowTabstrip(i).Checked = True
+        Else
+            FormMain.MnuWindowTabstrip(i).Checked = False
+        End If
+    Next i
+    
+    'Write the preference out to file.
+    g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
+    
+    'Notify the window manager of the change
+    g_WindowManager.setImageTabstripAlignment newAlignment
+    
+End Sub
+
 'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will
 ' automatically handle syncing with the preferences file.
-Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long)
+Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressInterfaceSync As Boolean = False)
 
     'Start by synchronizing menu checkmarks to the selected option
     Dim i As Long
@@ -706,7 +744,7 @@ Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long)
     
     'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
     ' currently open images.
-    syncInterfaceToCurrentImage
+    If Not suppressInterfaceSync Then syncInterfaceToCurrentImage
     
     'If images are loaded, we may need to redraw their viewports because the available client area may have changed.
     If (g_NumOfImagesLoaded > 0) And (Not g_WindowManager.getFloatState(IMAGE_WINDOW)) Then

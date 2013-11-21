@@ -226,6 +226,12 @@ Public Sub LoadTheProgram()
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     
+    'Retrieve two additional settings for the image tabstrip menu: when to display the image tabstrip...
+    toggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True
+        
+    '...and the alignment of the tabstrip
+    toggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop)
+    
     
     
     '*************************************************************************************************************************************
