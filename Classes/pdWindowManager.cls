@@ -2394,6 +2394,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'Resize each child window, while retaining its current offset
                     For i = 0 To numOfPDWindows - 1
                         requestWindowRedraw i, curWinRect
+                        
+                        'Toolbar windows may not redraw properly after restoration, so forcibly update them now
+                        If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then forceFullWindowRefresh i
+                        
                     Next i
                     
                     'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
