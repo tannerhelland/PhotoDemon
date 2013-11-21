@@ -409,11 +409,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "PLUGIN", 7, 6          'Plugin Manager
     
     'Window Menu
-    addMenuIcon "NEXTIMAGE", 8, 6       'Next image
-    addMenuIcon "PREVIMAGE", 8, 7       'Previous image
-    addMenuIcon "CASCADE", 8, 9         'Cascade
-    addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
-    addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
+    addMenuIcon "NEXTIMAGE", 8, 7       'Next image
+    addMenuIcon "PREVIMAGE", 8, 8       'Previous image
+    addMenuIcon "CASCADE", 8, 10         'Cascade
+    addMenuIcon "TILEVER", 8, 11        'Tile Horizontally
+    addMenuIcon "TILEHOR", 8, 12        'Tile Vertically
     
     'Help Menu
     addMenuIcon "FAVORITE", 9, 0        'Donate
