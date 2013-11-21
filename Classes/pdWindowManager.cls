@@ -591,7 +591,7 @@ End Sub
 'Toolbox windows can be hidden (but not unloaded!) via this sub.  It's important to note that toolbox windows should *not* be
 ' unloaded, because many aspects of PD interact with the toolboxes - for example, en/disabling buttons on the file toolbar as
 ' necessary - and if the toolbox is unloaded, those statements will cause errors.
-Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boolean)
+Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boolean, Optional ByVal suppressImageRedraws As Boolean = False)
     
     'Find this entry in the windows array, and mark its visibility status
     Dim winIndex As Long
@@ -621,15 +621,19 @@ Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     End If
     
     'The available client area for the main form may have changed.  Refresh all relevant windows.
-    For i = 0 To numOfPDWindows - 1
-        
-        'If images are floating, we may need to move them into the proper client area.  Do so now.
-        If imagesFloating And pdWindows(i).typeOfWindow = IMAGE_WINDOW Then
-            moveChildInsideParent i
-        End If
-        
-        If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
-    Next i
+    If Not suppressImageRedraws Then
+    
+        For i = 0 To numOfPDWindows - 1
+            
+            'If images are floating, we may need to move them into the proper client area.  Do so now.
+            If imagesFloating And pdWindows(i).typeOfWindow = IMAGE_WINDOW Then
+                moveChildInsideParent i
+            End If
+            
+            If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
+        Next i
+    
+    End If
     
     'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
     restoreActiveImageToForeground "float status of toolbars or images changed"
