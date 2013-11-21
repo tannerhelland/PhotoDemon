@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1001,7 +1001,6 @@ Begin VB.Form FormMain
          End
          Begin VB.Menu MnuWindowTabstrip 
             Caption         =   "Show when 2+ images are loaded"
-            Checked         =   -1  'True
             Index           =   1
          End
          Begin VB.Menu MnuWindowTabstrip 
@@ -1018,7 +1017,6 @@ Begin VB.Form FormMain
          End
          Begin VB.Menu MnuWindowTabstrip 
             Caption         =   "Top"
-            Checked         =   -1  'True
             Index           =   5
          End
          Begin VB.Menu MnuWindowTabstrip 
@@ -2991,15 +2989,19 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
         
         'Align left
         Case 4
+            toggleImageTabstripAlignment vbAlignLeft
         
         'Align top
         Case 5
+            toggleImageTabstripAlignment vbAlignTop
         
         'Align right
         Case 6
+            toggleImageTabstripAlignment vbAlignRight
         
         'Align bottom
         Case 7
+            toggleImageTabstripAlignment vbAlignBottom
     
     End Select
 

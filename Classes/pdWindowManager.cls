@@ -338,7 +338,7 @@ Private numOfExtraWindows As Long
 
 'When the user changes the image tabstrip's alignment, this function must be called.  It will make all necessary adjustments
 ' inside the window manager and automatically reposition the tabstrip.
-Public Sub changeImageTabstripAlignment(ByVal newAlignment As AlignConstants)
+Public Sub setImageTabstripAlignment(ByVal newAlignment As AlignConstants)
 
     'Make a copy of the current alignment
     Dim prevAlign As pdWindowAlignment
@@ -390,11 +390,24 @@ Public Sub changeImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     
     End Select
     
-    'Request a redraw of the window, which will handle any additional resizing
+    'Request a redraw of the window, which will handle any additional resizing of the tabstrip
     Dim curMainFormRect As winRect
     GetWindowRect pdWindows(mainWindowIndex).hWnd, curMainFormRect
     
     requestWindowRedraw imageTabstripIndex, curMainFormRect
+    
+    'The available client area for the main form may have changed.  Refresh all relevant image windows.
+    Dim i As Long
+    For i = 0 To numOfPDWindows - 1
+            
+        'If images are floating, we may need to move them into the proper client area.  Do so now.
+        If imagesFloating And pdWindows(i).typeOfWindow = IMAGE_WINDOW Then
+            moveChildInsideParent i
+        End If
+        
+        If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then updateWindowStyle i
+    
+    Next i
 
 End Sub
 
