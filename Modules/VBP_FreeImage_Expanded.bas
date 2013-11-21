@@ -278,6 +278,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         
         
     '****************************************************************************
+    ' Retrieve generic metadata, like X and Y resolution (if available)
+    '****************************************************************************
+    
+    dstImage.setDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
+    
+    
+        
+    '****************************************************************************
     ' Retrieve format-specific information, like PNG background color
     '****************************************************************************
     

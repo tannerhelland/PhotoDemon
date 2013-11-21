@@ -56,6 +56,12 @@ Option Explicit
     Public Width As Long
     Public Height As Long
     
+    'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
+    ' use the imageDPI value, which will return the average resolution of the two.
+    Private xResolution As Long
+    Private yResolution As Long
+    Private imageDPI As Long
+    
     'Current index of the zoom combo box
     Public currentZoomValue As Long
     
@@ -142,6 +148,32 @@ Option Explicit
     
     'All ICC Profile interactions are handled through a publicly available ICCProfile class
     Public ICCProfile As pdICCProfile
+
+'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
+' differ, PD will average them when image DPI is requested.
+Public Function getDPI() As Long
+    
+    If imageDPI = 0 Then
+        getDPI = 96
+    Else
+        getDPI = imageDPI
+    End If
+    
+End Function
+
+Public Sub setDPI(ByVal xRes As Long, ByVal yRes As Long)
+    
+    'Many image types do not store resolution information; default to 96 in this case
+    If xRes = 0 Then xRes = 96
+    If yRes = 0 Then yRes = 96
+    
+    xResolution = xRes
+    yResolution = yRes
+    
+    'It is extremely rare for x/y resolution to differ, but just in case, calculate an average resolution as well
+    imageDPI = (xRes + yRes) \ 2
+
+End Sub
 
 'If the image has been saved to file in its current state, this will return TRUE.  Use this value to determine
 ' whether to enable a Save button, for example.
