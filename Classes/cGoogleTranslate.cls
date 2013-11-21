@@ -165,6 +165,11 @@ RetryTranslation:
     processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
     processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
     
+    'Thanks to Zhu JY for pointing out that «/» are not handled properly under some localizations, so use their
+    ' character codes instead.
+    processedHTML = Replace(processedHTML, Chr$(174), "'", 1, , vbTextCompare)
+    processedHTML = Replace(processedHTML, Chr$(175), "'", 1, , vbTextCompare)
+    
     'Return the translated data
     getGoogleTranslation = processedHTML
     
