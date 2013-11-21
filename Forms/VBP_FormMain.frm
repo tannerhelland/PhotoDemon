@@ -41,9 +41,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   1440
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -993,46 +993,84 @@ Begin VB.Form FormMain
          Index           =   1
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
+         Caption         =   "Image tabstrip"
          Index           =   2
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Always show"
+            Index           =   0
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Show when 2+ images are loaded"
+            Checked         =   -1  'True
+            Index           =   1
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Never show"
+            Index           =   2
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "-"
+            Index           =   3
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Left"
+            Index           =   4
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Top"
+            Checked         =   -1  'True
+            Index           =   5
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Right"
+            Index           =   6
+         End
+         Begin VB.Menu MnuWindowTabstrip 
+            Caption         =   "Bottom"
+            Index           =   7
+         End
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "-"
+         Index           =   3
       End
       Begin VB.Menu MnuWindow 
          Caption         =   "Floating toolboxes"
          Checked         =   -1  'True
-         Index           =   3
+         Index           =   4
       End
       Begin VB.Menu MnuWindow 
          Caption         =   "Floating image windows"
          Checked         =   -1  'True
-         Index           =   4
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "-"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
+         Caption         =   "-"
          Index           =   6
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Previous image"
+         Caption         =   "Next image"
          Index           =   7
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
+         Caption         =   "Previous image"
          Index           =   8
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "&Cascade"
+         Caption         =   "-"
          Index           =   9
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &horizontally"
+         Caption         =   "&Cascade"
          Index           =   10
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &vertically"
+         Caption         =   "Tile &horizontally"
          Index           =   11
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "Tile &vertically"
+         Index           =   12
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -2808,33 +2846,36 @@ Private Sub MnuWindow_Click(Index As Integer)
         Case 1
             toggleToolbarVisibility SELECTION_TOOLBOX
         
-        '<separator>
+        '<top-level Image tabstrip>
         Case 2
+        
+        '<separator>
+        Case 3
     
         'Floating toolbars
-        Case 3
-            toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(3).Checked
+        Case 4
+            toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(4).Checked
             
         'Floating image windows
-        Case 4
-            toggleWindowFloating IMAGE_WINDOW, Not FormMain.MnuWindow(4).Checked
+        Case 5
+            toggleWindowFloating IMAGE_WINDOW, Not FormMain.MnuWindow(5).Checked
             
         '<separator>
-        Case 5
+        Case 6
         
         'Next image
-        Case 6
+        Case 7
             moveToNextChildWindow True
             
         'Previous image
-        Case 7
+        Case 8
             moveToNextChildWindow False
     
         '<separator>
-        Case 8
+        Case 9
         
         'Cascade
-        Case 9
+        Case 10
             
             g_WindowManager.cascadeImageWindows
             
@@ -2850,7 +2891,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             pdImages(prevActiveWindow).containingForm.ActivateWorkaround
         
         'Tile horizontally
-        Case 10
+        Case 11
             
             g_WindowManager.tileImageWindows True
             
@@ -2866,7 +2907,7 @@ Private Sub MnuWindow_Click(Index As Integer)
             pdImages(prevActiveWindow).containingForm.ActivateWorkaround
     
         'Tile vertically
-        Case 11
+        Case 12
             
             g_WindowManager.tileImageWindows False
             
@@ -2924,6 +2965,43 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
         End If
                 
     Loop
+
+End Sub
+
+'Unlike other toolbars, the image tabstrip has a more complicated window menu, because it is viewable under a variety
+' of conditions, and we allow the user to specify any alignment.
+Private Sub MnuWindowTabstrip_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Always display image tabstrip
+        Case 0
+            toggleImageTabstripVisibility Index
+        
+        'Display tabstrip for 2+ images (default)
+        Case 1
+            toggleImageTabstripVisibility Index
+        
+        'Never display image tabstrip
+        Case 2
+            toggleImageTabstripVisibility Index
+        
+        '<separator>
+        Case 3
+        
+        'Align left
+        Case 4
+        
+        'Align top
+        Case 5
+        
+        'Align right
+        Case 6
+        
+        'Align bottom
+        Case 7
+    
+    End Select
 
 End Sub
 

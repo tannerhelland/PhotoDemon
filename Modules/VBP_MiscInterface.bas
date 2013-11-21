@@ -263,20 +263,45 @@ Public Sub syncInterfaceToCurrentImage()
         
     End If
     
-    'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, including the
-    ' image tabstrip and the "Next/Previous" image menu items.
-    If g_OpenImageCount >= 2 Then
-        If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
-        Else
-            g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
-        End If
-        FormMain.MnuWindow(6).Enabled = True
-        FormMain.MnuWindow(7).Enabled = True
-    Else
+    'Perform a special check for the image tabstrip.  Its appearance is contingent on a setting provided by the user, coupled
+    ' with the number of presently open images.
+    
+    'A setting of 2 equates to index 2 in the menu, specifically "Never show image tabstrip".  Hide the tabstrip.
+    If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 2 Then
         g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
-        FormMain.MnuWindow(6).Enabled = False
+    Else
+        
+        'A setting of 1 equates to index 1 in the menu, specifically "Show for 2+ loaded images".  Check image count and
+        ' set visibility accordingly.
+        If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 1 Then
+            
+            If g_OpenImageCount > 1 Then
+                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+            Else
+                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+            End If
+        
+        'A setting of 0 equates to index 0 in the menu, specifically "always show tabstrip".
+        Else
+        
+            If g_OpenImageCount > 0 Then
+                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+            Else
+                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+            End If
+        
+        End If
+    
+    End If
+    
+    'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
+    ' the "Next/Previous" Window menu items.
+    If g_OpenImageCount >= 2 Then
+        FormMain.MnuWindow(7).Enabled = True
+        FormMain.MnuWindow(8).Enabled = True
+    Else
         FormMain.MnuWindow(7).Enabled = False
+        FormMain.MnuWindow(8).Enabled = False
     End If
     
 End Sub
@@ -662,6 +687,38 @@ Public Function getKeyboardDelay() As Double
     getKeyboardDelay = (keyDelayIndex + 1) * 0.25
 End Function
 
+'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will
+' automatically handle syncing with the preferences file.
+Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long)
+
+    'Start by synchronizing menu checkmarks to the selected option
+    Dim i As Long
+    For i = 0 To 2
+        If newSetting = i Then
+            FormMain.MnuWindowTabstrip(i).Checked = True
+        Else
+            FormMain.MnuWindowTabstrip(i).Checked = False
+        End If
+    Next i
+
+    'Write the matching preference out to file
+    g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
+    
+    'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
+    ' currently open images.
+    syncInterfaceToCurrentImage
+    
+    'If images are loaded, we may need to redraw their viewports because the available client area may have changed.
+    If (g_NumOfImagesLoaded > 0) And (Not g_WindowManager.getFloatState(IMAGE_WINDOW)) Then
+        For i = 0 To g_NumOfImagesLoaded
+            If (Not pdImages(i) Is Nothing) Then
+                If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image tabstrip visibility toggled"
+            End If
+        Next i
+    End If
+
+End Sub
+
 'Both toolbars and image windows can be floated or docked.  Because some behind-the-scenes maintenance has to be applied whenever
 ' this setting is changed, all float toggle operations should wrap this singular function.
 Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal floatStatus As Boolean, Optional ByVal suspendMenuRefresh As Boolean = False)
@@ -675,7 +732,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
     Select Case whichWindowType
     
         Case TOOLBAR_WINDOW
-            FormMain.MnuWindow(3).Checked = floatStatus
+            FormMain.MnuWindow(4).Checked = floatStatus
             g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", floatStatus
             g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus
             
@@ -691,7 +748,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             End If
             
         Case IMAGE_WINDOW
-            FormMain.MnuWindow(4).Checked = floatStatus
+            FormMain.MnuWindow(5).Checked = floatStatus
             g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", floatStatus
             
             'If image windows are floating, do not display the image tabstrip
@@ -723,8 +780,8 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             'If image windows are docked, there's no reason to display extra Window menu items like "Cascade" or "Minimize all windows".
             ' En/disable those menu entries as necessary.
             
-            '(The 8 here is a magic number corresponding to the index of the Cascade menu entry.
-            For i = 8 To FormMain.MnuWindow.Count - 1
+            '(The 9 here is a magic number corresponding to the index of the Cascade menu entry.
+            For i = 9 To FormMain.MnuWindow.Count - 1
                 FormMain.MnuWindow(i).Visible = g_WindowManager.getFloatState(IMAGE_WINDOW)
             Next i
             
