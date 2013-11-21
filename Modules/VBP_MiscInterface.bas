@@ -723,6 +723,9 @@ Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     'Notify the window manager of the change
     g_WindowManager.setImageTabstripAlignment newAlignment
     
+    '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
+    toolbar_ImageTabs.forceRedraw
+    
 End Sub
 
 'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will

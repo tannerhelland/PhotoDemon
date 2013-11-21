@@ -309,7 +309,7 @@ Private Sub Form_Load()
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
     Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach Me.hWnd, FormMain.hWnd
+    cMouseEvents.Attach Me.hWnd
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
