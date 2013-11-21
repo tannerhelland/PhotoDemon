@@ -1160,19 +1160,29 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
-'If a child image window is active, forward all mousewheel events to that window
+'Forward mousewheel events to the relevant window
 Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+        If g_MouseOverImageTabstrip Then
+            toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+        Else
+            pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+        End If
     End If
 
 End Sub
 
 Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
+    Message "scroll received"
+
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+        If g_MouseOverImageTabstrip Then
+            toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+        Else
+            pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+        End If
     End If
 
 End Sub

@@ -336,6 +336,20 @@ Private mainFormTriggeredChange As Boolean
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
 
+'Retrieve the current tabstrip alignment
+Public Function getImageTabstripAlignment() As AlignConstants
+
+    With pdWindows(imageTabstripIndex).alignmentOptions
+    
+        If .alignLeft Then getImageTabstripAlignment = vbAlignLeft
+        If .alignTop Then getImageTabstripAlignment = vbAlignTop
+        If .alignRight Then getImageTabstripAlignment = vbAlignRight
+        If .alignBottom Then getImageTabstripAlignment = vbAlignBottom
+    
+    End With
+
+End Function
+
 'When the user changes the image tabstrip's alignment, this function must be called.  It will make all necessary adjustments
 ' inside the window manager and automatically reposition the tabstrip.
 Public Sub setImageTabstripAlignment(ByVal newAlignment As AlignConstants)
@@ -380,12 +394,16 @@ Public Sub setImageTabstripAlignment(ByVal newAlignment As AlignConstants)
         Case vbAlignTop, vbAlignBottom
             If prevAlign.alignLeft Or prevAlign.alignRight Then
                 SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.x2 - curRect.x1, curRect.x2 - curRect.x1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
+            Else
+                SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.y2 - curRect.y1, curRect.y2 - curRect.y1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
             End If
             
         'Check for top/bottom alignment changing to left/right alignment
         Case vbAlignLeft, vbAlignRight
             If prevAlign.alignTop Or prevAlign.alignBottom Then
                 SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.y2 - curRect.y1, curRect.y2 - curRect.y1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
+            Else
+                SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.x2 - curRect.x1, curRect.x2 - curRect.x1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
             End If
     
     End Select
