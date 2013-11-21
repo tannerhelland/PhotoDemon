@@ -123,6 +123,10 @@ Private m_MouseDistanceTraveled As Long
 ' of the tabstrip.
 Private verticalLayout As Boolean
 
+'When resizing, it is almost certain that the user will move the mouse outside the form.  Track this, and use it to notify
+' the mouse handler that the user is not click-dragging the image list.
+Public nowResizing As Boolean
+
 'External functions can force a full redraw by calling this sub
 Public Sub forceRedraw()
     Form_Resize
@@ -300,7 +304,7 @@ Private Sub cMouseEvents_MouseIn()
 End Sub
 
 Private Sub cMouseEvents_MouseOut()
-    
+        
     g_MouseOverImageTabstrip = False
     
     If curThumbHover <> -1 Then
@@ -462,7 +466,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     If m_MouseDown Then
         
         If mouseInResizeTerritory Then
-        
+                
             If Button = vbLeftButton Then
                 
                 'Allow resizing
@@ -478,7 +482,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             mouseInResizeTerritory = False
             
             'If the list is scrollable (due to tons of images being loaded), calculate a new offset now
-            If m_ListScrollable And (m_MouseDistanceTraveled > 5) Then
+            If m_ListScrollable And (m_MouseDistanceTraveled > 5) And (Not weAreResponsibleForResize) Then
             
                 m_ScrollingOccured = True
             
