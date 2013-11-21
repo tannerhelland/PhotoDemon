@@ -1175,8 +1175,6 @@ End Sub
 
 Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
-    Message "scroll received"
-
     If g_OpenImageCount > 0 Then
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
