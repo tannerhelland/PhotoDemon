@@ -3,10 +3,10 @@ Begin VB.Form dialog_ExportJP2
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG 2000 Export Options"
-   ClientHeight    =   3180
+   ClientHeight    =   7815
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   7335
+   ClientWidth     =   9255
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,45 +19,23 @@ Begin VB.Form dialog_ExportJP2
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   212
+   ScaleHeight     =   521
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   489
+   ScaleWidth      =   617
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   4320
-      TabIndex        =   0
-      Top             =   2550
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   5790
-      TabIndex        =   1
-      Top             =   2550
-      Width           =   1365
+   Begin VB.PictureBox picPreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Left            =   240
+      ScaleHeight     =   311
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   583
+      TabIndex        =   5
+      Top             =   120
+      Width           =   8775
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -71,19 +49,19 @@ Begin VB.Form dialog_ExportJP2
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   600
+      Left            =   480
       Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   630
-      Width           =   6135
+      TabIndex        =   0
+      Top             =   5430
+      Width           =   8295
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   495
-      Left            =   480
-      TabIndex        =   7
-      Top             =   1200
-      Width           =   6375
-      _ExtentX        =   11245
+      Left            =   360
+      TabIndex        =   4
+      Top             =   6000
+      Width           =   8535
+      _ExtentX        =   15055
       _ExtentY        =   873
       Min             =   1
       Max             =   256
@@ -98,12 +76,24 @@ Begin VB.Form dialog_ExportJP2
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
       Left            =   0
       TabIndex        =   6
-      Top             =   2400
-      Width           =   7335
+      Top             =   7065
+      Width           =   9255
+      _ExtentX        =   16325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblBefore 
       AutoSize        =   -1  'True
@@ -120,9 +110,9 @@ Begin VB.Form dialog_ExportJP2
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   600
-      TabIndex        =   5
-      Top             =   1680
+      Left            =   480
+      TabIndex        =   3
+      Top             =   6480
       Width           =   1545
    End
    Begin VB.Label lblAfter 
@@ -141,9 +131,9 @@ Begin VB.Form dialog_ExportJP2
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   4410
-      TabIndex        =   4
-      Top             =   1680
+      Left            =   6240
+      TabIndex        =   2
+      Top             =   6480
       Width           =   1470
    End
    Begin VB.Label lblTitle 
@@ -162,9 +152,9 @@ Begin VB.Form dialog_ExportJP2
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   360
-      TabIndex        =   3
-      Top             =   240
+      Left            =   240
+      TabIndex        =   1
+      Top             =   5040
       Width           =   2700
    End
 End
@@ -177,8 +167,8 @@ Attribute VB_Exposed = False
 'JPEG-2000 (JP2) Export Dialog
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 04/December/12
-'Last updated: 13/April/13
-'Last update: added a new text/slider custom control
+'Last updated: 22/November/13
+'Last update: added live previews!
 '
 'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
@@ -193,20 +183,25 @@ Option Explicit
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
-'The pdImage object being exported
-Private imageBeingExported As pdImage
+'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
+Public imageBeingExported As pdImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
+' store one in this layer (at the size of the preview) and simply re-use it when we need to render a preview.
+Private origImageCopy As pdLayer
+Private previewWidth As Long, previewHeight As Long
+
+'As a further optimizations, we keep a persistent copy of the image in FreeImage format; FreeImage is used to save the
+' JP2 in-memory, then render it back out to the picture box.  As JP2 encoding/decoding is an intensive process,
+' anything we can do to alleviate its burden is helpful.
+Private fi_Handle As Long, fi_DIB As Long
+
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
-End Property
-
-'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
-Public Property Let srcImage(srcImage As pdImage)
-    imageBeingExported = srcImage
 End Property
 
 'QUALITY combo box - when adjusted, change the scroll bar to match
@@ -233,17 +228,13 @@ Private Sub CmbSaveQuality_Click()
     
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    
+Private Sub cmdBar_CancelClick()
     userAnswer = vbCancel
     Me.Hide
-    
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
-        
+Private Sub cmdBar_OKClick()
+
     'Determine the compression ratio for the JPEG2000 wavelet transformation
     If sltQuality.IsValid Then
         g_JP2Compression = Abs(sltQuality)
@@ -253,15 +244,27 @@ Private Sub CmdOK_Click()
      
     userAnswer = vbOK
     Me.Hide
-    
+
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+
     ReleaseFormTheming Me
+    
+    'Release any remaining FreeImage handles
+    If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
+    If fi_Handle <> 0 Then FreeLibrary fi_Handle
+    If Not origImageCopy Is Nothing Then Set origImageCopy = Nothing
+    
 End Sub
 
 Private Sub sltQuality_Change()
     updateComboBox
+    updatePreview
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
@@ -312,11 +315,77 @@ Public Sub showDialog()
     
     Message "Waiting for user to specify JPEG-2000 export options... "
         
+    'Make a copy of the main image; we'll use this to render the preview image
+    Set origImageCopy = New pdLayer
+    convertAspectRatio imageBeingExported.Width, imageBeingExported.Height, picPreview.Width, picPreview.Height, previewWidth, previewHeight
+    origImageCopy.createFromExistingLayer imageBeingExported.getActiveLayer, previewWidth, previewHeight
+    If origImageCopy.getLayerColorDepth = 32 Then origImageCopy.convertTo24bpp
+    
+    'FreeImage is required to perform the live JPEG-2000 transformation.
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'Convert our DIB into FreeImage-format; we will maintain this copy to improve JPEG preview performance.
+        fi_Handle = LoadLibrary(g_PluginPath & "FreeImage.dll")
+        fi_DIB = FreeImage_CreateFromDC(origImageCopy.getLayerDC)
+        
+    'If FreeImage is not available, notify the user.  (It should not be possible to trigger this dialog without
+    ' FreeImage being present, but it doesn't hurt to provide this fallback!)
+    Else
+        
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        tmpLayer.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
+    
+        Dim notifyFont As pdFont
+        Set notifyFont = New pdFont
+        notifyFont.setFontFace g_InterfaceFont
+        notifyFont.setFontSize 14
+        notifyFont.setFontColor 0
+        notifyFont.setFontBold True
+        notifyFont.setTextAlignment vbCenter
+        notifyFont.createFontObject
+        notifyFont.attachToDC tmpLayer.getLayerDC
+    
+        notifyFont.fastRenderText tmpLayer.getLayerWidth \ 2, tmpLayer.getLayerHeight \ 2, g_Language.TranslateMessage("Live previews require the FreeImage plugin.")
+        tmpLayer.renderToPictureBox picPreview
+        Set tmpLayer = Nothing
+        
+    End If
+        
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
+    'Update the preview
+    updatePreview
+    
     'Display the dialog
     showPDDialog vbModal, Me
+
+End Sub
+
+'Render a new JPEG-2000 preview
+Private Sub updatePreview()
+
+    If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+        
+        'Perform a live, in-memory conversion to JP2 using FreeImage.  Basically, we ask it to save the image
+        ' in JP2 format to a byte array; we then hand that byte array back to it and request a decompression.
+        Dim jp2Array() As Byte
+        Dim fi_Check As Long
+        fi_Check = FreeImage_SaveToMemoryEx(FIF_JP2, fi_DIB, jp2Array, Abs(sltQuality.Value), False)
+        
+        Dim tmpFI_DIB As Long
+        tmpFI_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0)
+        
+        'Copy the newly decompressed JPEG-2000 into our original pdLayer object.
+        SetDIBitsToDevice origImageCopy.getLayerDC, 0, 0, origImageCopy.getLayerWidth, origImageCopy.getLayerHeight, 0, 0, 0, origImageCopy.getLayerHeight, ByVal FreeImage_GetBits(tmpFI_DIB), ByVal FreeImage_GetInfo(tmpFI_DIB), 0&
+        
+        'Paint the final image to screen and release all temporary objects
+        origImageCopy.renderToPictureBox picPreview
+        FreeImage_Unload tmpFI_DIB
+        Erase jp2Array
+    
+    End If
 
 End Sub

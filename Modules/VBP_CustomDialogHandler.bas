@@ -1,10 +1,10 @@
-Attribute VB_Name = "Custom_Dialog_Handler"
+Attribute VB_Name = "Dialog_Handler"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2012-2013 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 12/February/13
-'Last update: added support for the new language selection dialog
+'Last updated: 22/November/13
+'Last update: added an image reference to the JPEG-2000 export dialog, so it can provide live previews
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -82,12 +82,15 @@ Public Function promptJPEGSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various JPEG-2000 (JP2) export settings
-Public Function promptJP2Settings() As VbMsgBoxResult
+Public Function promptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
 
     Load dialog_ExportJP2
+    Set dialog_ExportJP2.imageBeingExported = srcImage
     dialog_ExportJP2.showDialog
 
     promptJP2Settings = dialog_ExportJP2.DialogResult
+    
+    Set dialog_ExportJP2.imageBeingExported = Nothing
     
     Unload dialog_ExportJP2
     Set dialog_ExportJP2 = Nothing
