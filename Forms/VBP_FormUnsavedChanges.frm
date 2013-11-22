@@ -294,7 +294,11 @@ End Sub
 Private Sub Form_Activate()
 
     'Draw the image being closed to the preview box
-    pdImages(imageBeingClosed).getCompositedImage().renderToPictureBox picPreview
+    If (Not pdImages(imageBeingClosed) Is Nothing) And (Not pdImages(imageBeingClosed).getCompositedImage Is Nothing) Then
+        pdImages(imageBeingClosed).getCompositedImage().renderToPictureBox picPreview
+    Else
+        Unload Me
+    End If
     
 End Sub
 

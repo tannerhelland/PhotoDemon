@@ -1474,10 +1474,9 @@ Private Sub Form_Unload(Cancel As Integer)
     
     ReleaseFormTheming Me
     
-    'Release the window manager
+    'Release this form from the window manager, and write out all window data to file
     g_WindowManager.unregisterForm Me
     g_WindowManager.saveAllWindowLocations
-    Set g_WindowManager = Nothing
     
     'As a final failsafe, forcibly unload any remaining forms
     Dim tmpForm As Form
