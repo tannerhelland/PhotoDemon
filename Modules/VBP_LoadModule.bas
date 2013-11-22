@@ -61,6 +61,9 @@ Public Sub LoadTheProgram()
     g_IsVistaOrLater = getVistaOrLaterStatus
     g_IsWin7OrLater = getWin7OrLaterStatus
     
+    'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
+    If g_IsWin7OrLater Then prepWin7Features
+    
     
     
     '*************************************************************************************************************************************
