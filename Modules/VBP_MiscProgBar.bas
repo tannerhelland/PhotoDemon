@@ -52,6 +52,10 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
     If MacroStatus <> MacroBATCH Then
         g_ProgBar.Value = pbVal
         g_ProgBar.Draw
+        
+        'On Windows 7 (or later), we also update the taskbar to reflect the current progress
+        If g_IsWin7OrLater Then SetTaskbarProgressValue pbVal, getProgBarMax
+        
     End If
 End Sub
 
