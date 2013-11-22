@@ -387,7 +387,7 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
     
-    'Release any remaining FreeImage handles; we will maintain this copy to improve JPEG preview performance.
+    'Release any remaining FreeImage handles
     If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
     If fi_Handle <> 0 Then FreeLibrary fi_Handle
     If Not origImageCopy Is Nothing Then Set origImageCopy = Nothing

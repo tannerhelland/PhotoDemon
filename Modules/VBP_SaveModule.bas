@@ -371,7 +371,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If loadRelevantForm = True Then
                 
                 Dim gotJP2Settings As VbMsgBoxResult
-                gotJP2Settings = promptJP2Settings()
+                gotJP2Settings = promptJP2Settings(srcPDImage)
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJP2Settings = vbOK Then

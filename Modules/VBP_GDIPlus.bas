@@ -788,7 +788,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     ' 32bpp images are quite a bit more complicated.
     
     If hasAlpha Then
-    
+        
         'Make sure the image is in 32bpp premultiplied ARGB format
         If iPixelFormat <> PixelFormat32bppPARGB Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
         
