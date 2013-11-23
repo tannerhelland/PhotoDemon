@@ -1392,7 +1392,11 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
     'Window data was not found.  Move the window to a new location using the preferred location param.
     Else
     
-        requestIdealPosition pdWindows(windowIndex).hWnd, preferredLocationIfNecessary
+        If pdWindows(windowIndex).typeOfWindow = IMAGE_TABSTRIP Then
+            pdWindows(windowIndex).alignmentOptions.alignTop = True
+        Else
+            requestIdealPosition pdWindows(windowIndex).hWnd, preferredLocationIfNecessary
+        End If
     
     End If
 
