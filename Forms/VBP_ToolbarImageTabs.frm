@@ -3,7 +3,7 @@ Begin VB.Form toolbar_ImageTabs
    AutoRedraw      =   -1  'True
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   0  'None
-   Caption         =   "Form1"
+   Caption         =   "Images"
    ClientHeight    =   1140
    ClientLeft      =   0
    ClientTop       =   0
