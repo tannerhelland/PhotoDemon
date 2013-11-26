@@ -569,8 +569,25 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
         End If
-            
-            
+        
+        
+        
+        '*************************************************************************************************************************************
+        ' If the ExifTool plugin is available, initiate a separate thread for metadata extraction
+        '*************************************************************************************************************************************
+        
+        'Note that metadata extraction is handled asynchronously (e.g. in parallel to the core image loading process), which is
+        ' why we launch it so early in the load process.  If the image load fails, we simply ignore any received metadata.
+        ' ExifTool is extremely robust, so any errors it experiences during processing will not affect PD.
+                
+        Set targetImage.imgMetadata = New pdMetadata
+        
+        If g_ExifToolEnabled And isThisPrimaryImage Then
+            Message "Starting separate metadata extraction thread..."
+            startMetadataProcessing sFile(thisImage), targetImage.originalFileFormat
+        End If
+        
+        
             
         '*************************************************************************************************************************************
         ' Call the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture)
@@ -854,24 +871,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.setSaveState False
             
         End If
-        
-        
-        
-        '*************************************************************************************************************************************
-        ' If the ExifTool plugin is available, and user preferences allow, extract any possible metadata from the image file
-        '*************************************************************************************************************************************
-        
-        Set targetImage.imgMetadata = New pdMetadata
-        
-        If g_ExifToolEnabled And isThisPrimaryImage Then
-                
-            'A user preference determines whether we loda metadata now, or suspend it until requested (e.g. save or browse time)
-            If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-                Message "Compiling metadata..."
-                targetImage.imgMetadata.loadAllMetadata sFile(thisImage), targetImage.originalFileFormat
-            End If
-            
-        End If
+
         
         
         '*************************************************************************************************************************************
@@ -896,6 +896,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Synchronize all other interface elements to match the newly loaded image
             syncInterfaceToCurrentImage
+        
         
         
         '*************************************************************************************************************************************
@@ -953,9 +954,33 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
         End If
         
+        '*************************************************************************************************************************************
+        ' Hopefully metadata processing has finished, but if it hasn't, wait for it to complete.
+        '*************************************************************************************************************************************
+        
+        'Ask the metadata handler if it has finished parsing the image
+        If g_ExifToolEnabled And isThisPrimaryImage Then
+        
+            'Wait for metadata parsing to finish...
+            If Not isMetadataFinished Then
+                
+                Do While Not isMetadataFinished
+                    DoEvents
+                Loop
+                
+            End If
+                
+            Message "Metadata retrieved successfully."
+            targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
+            
+            'I hate doing this, but we need to resync the interface to match any metadata discoveries
+            syncInterfaceToCurrentImage
+        
+        End If
+        
         
         '*************************************************************************************************************************************
-        ' Image loaded successfully.
+        ' Image loaded successfully.  Carry on.
         '*************************************************************************************************************************************
         
         targetImage.loadedSuccessfully = True

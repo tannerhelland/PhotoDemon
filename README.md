@@ -107,4 +107,5 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License) (http://www.sno.phy.queensu.ca/~phil/exiftool/)
 * Bernhard Stockmann for his many excellent GIMP tutorials (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)
 * Paul Bourke for references on miscellaneous image distortions (http://paulbourke.net/miscellaneous/)
+* vbForums.com user dilettante for an asynchronous piping custom control (http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control)
 * All those who have contributed patches, bug reports, and donations, with extra special thanks to: Abhijit Mhapsekar, Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.

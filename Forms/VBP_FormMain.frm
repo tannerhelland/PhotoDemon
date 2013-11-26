@@ -40,10 +40,16 @@ Begin VB.Form FormMain
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
-      Top             =   1440
+      Top             =   9240
       _ExtentX        =   1191
       _ExtentY        =   1058
       Enabled         =   0   'False
+   End
+   Begin PhotoDemon.ShellPipe shellPipeMain 
+      Left            =   960
+      Top             =   9480
+      _ExtentX        =   635
+      _ExtentY        =   635
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1452,6 +1458,9 @@ Private Sub Form_Unload(Cancel As Integer)
     'Release GDIPlus (if applicable)
     If g_ImageFormats.GDIPlusEnabled Then releaseGDIPlus
     
+    'Release ExifTool (if available)
+    If g_ExifToolEnabled Then terminateExifTool
+    
     'Stop tracking hotkeys
     ctlAccelerator.Enabled = False
     
@@ -2230,7 +2239,7 @@ Private Sub MnuMetadata_Click(Index As Integer)
         
             'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
             If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
-                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
+                'pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
                 
                 'Update the interface to reflect any changes to the metadata menu (for example, if we found GPS data
                 ' during the metadata load process)
@@ -2262,7 +2271,7 @@ Private Sub MnuMetadata_Click(Index As Integer)
             
                 'Attempt to load it now...
                 Message "Loading metadata for this image..."
-                pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
+                'pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
                 
                 'Determine whether metadata is present, and dis/enable metadata menu items accordingly
                 syncInterfaceToCurrentImage
@@ -3093,4 +3102,17 @@ Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
     End If
     
     makeFormPretty Me, m_ToolTip, , useDoEvents
+End Sub
+
+'Append any new data to our master metadata string
+Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
+    
+    Dim receivedData As String
+    receivedData = shellPipeMain.GetData()
+    
+    newMetadataReceived receivedData
+    
+    'DEBUG ONLY!
+    'Debug.Print "New data: " & receivedData
+    
 End Sub
