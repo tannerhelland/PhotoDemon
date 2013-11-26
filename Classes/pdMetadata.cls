@@ -15,17 +15,20 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 20/September/13
-'Last update: full support for caching binary metadata (necessary when attempting to losslessly preserve metadata)
+'Last updated: 26/November/13
+'Last update: huge metadata rewrite.  Loading/saving is now asynchronous, meaning it does not interfere with normal
+'              program operation!  Also the option to "preserve all metadata, regardless of relevance" has been removed.
+'              The reasons for this are many, but basically there is *no physical way* to preserve metadata exactly, so
+'              it is misleading to claim to do so.  PD is better off not providing options like that, so I have reworked
+'              the metadata handler to only operate on relevant data.  Irrelevant or invalid data is now forcibly removed.
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'Because metadata handling is complicated, I have created this dedicated metadata handler class.  Each pdImage object
 ' has one (1) metadata class called "imgMetadata".  That class is publicly accessible.  If metadata is available at
-' load-time, and user preferences allow, the imgMetadata object will automatically be filled with any metadata found
-' in the source file.  If the user disables this option, but has "export metadata" as a preference, metadata will be
-' loaded at export time (e.g. immediately prior to saving).
+' load-time, the imgMetadata object will automatically (and asynchronously) be filled with any metadata found in the
+' source file.
 '
 'At present, metadata handling is 100% tied to the ExifTool plugin (see the "Plugin_ExifTool_Interface" module for more
 ' detail).  Because metadata is insanely complex to both read and write - if you want it done correctly - I have no
@@ -52,12 +55,6 @@ Private originalMetadataXML As String
 Private hasGPSCoordinates As Boolean
 Private gpsIndex As Long
 
-'If the user elects to "copy all metadata" for an image, we run into a problem at save-time: if the user is saving this image
-' OVER the one with the metadata they want, we need to cache the original image's metadata before it's overwritten!  We do that
-' by exporting the full metadata to a side file, then caching that file in memory.  Then we save the new file over the old,
-' then restore the metadata using this cached copy.
-Private cachedMetadata() As Byte
-
 'Given an index and a source metadata object, fill that object with the contents of the matching entry in the iMetadata() array
 Friend Function getMetadataEntry(ByVal objIndex As Long) As mdItem
 
@@ -79,18 +76,6 @@ Public Function hasXMLMetadata() As Boolean
         hasXMLMetadata = False
     Else
         hasXMLMetadata = True
-    End If
-    
-End Function
-
-'PD now supports a few different metadata storage methods.  This will return TRUE if binary metadata is present.
-Public Function hasBinaryMetadata() As Boolean
-    
-    'If metadata has been loaded in XML format, maxMetadataCount will be > 0.
-    If UBound(cachedMetadata) > 0 Then
-        hasBinaryMetadata = True
-    Else
-        hasBinaryMetadata = False
     End If
     
 End Function
@@ -160,28 +145,9 @@ Private Function retrieveModifiedXMLString() As String
     
 End Function
 
-'Given an image path, export all metadata to ExifTool's preferred MIE sidecar format, than store the full contents of that MIE file
-' in an array.  This is the fastest/easiest way to fully preserve metadata for a file.
-Public Function quickCacheMetadata(ByVal srcFile As String) As Boolean
-
-    'If the ExifTool plugin can't be found, abandon all metadata loading attempts
-    If Not g_ExifToolEnabled Then
-        Message "ExifTool plugin missing.  Metadata import abandoned."
-        Exit Function
-    End If
-    
-    'Request a metadata export from ExifTool.
-    If cacheMetadata(srcFile, cachedMetadata) Then
-        quickCacheMetadata = True
-    Else
-        quickCacheMetadata = False
-    End If
-
-End Function
-
-'Given an image path, attempt to load all metadata from that file.
+'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
 ' (The image's format is also passed to this function, which may be helpful in the future for enabling certain options on a per-format basis.)
-Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
+Public Sub loadAllMetadata(ByVal mdString As String)
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If Not g_ExifToolEnabled Then
@@ -191,10 +157,6 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     
     maxMetadataCount = 0
     hasGPSCoordinates = False: gpsIndex = 0
-    
-    'ExifTool will return all metadata in one enormous string, which we will have to parse manually.
-    Dim mdString As String
-    mdString = getMetadata(srcFile, srcFormat)
     
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
@@ -377,8 +339,11 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
                 iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("General")
             End If
             
-            'Next, ExifTool breaks down EXIF tags into their individual IDF blocks.  Simplify all those under a single "Exif" header.
-            If InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then
+            'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all those under a single "Exif" header.
+            If InStr(1, tmpString, "IFD1", vbTextCompare) > 0 Then
+                iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
+                iMetadata(maxMetadataCount).Group = "Exif (thumbnail)"
+            ElseIf InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then
                 iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
                 iMetadata(maxMetadataCount).Group = "Exif"
             End If
@@ -414,6 +379,32 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
             'Next come .Value checks.  Certain values may be invalid - if so, ignore this tag.
             tmpString = iMetadata(maxMetadataCount).Value
             
+            'REMOVE JFIF DUPLICATES
+            
+            'There is no technical prohibition against duplicate metadata tags - and in fact, some software may choose
+            ' to deliberately add duplicate tags in multiple groups (IPTC, EXIF, XMP, etc) to maximize compatibility
+            ' with other software packages.
+            
+            'PhotoDemon allows the presence of multiple tags everywhere except in JFIF headers.  Embedded thumbnails may have
+            ' their own JFIF header, which includes information like x/y resolution that is totally irrelevant.  Thus we check
+            ' for duplicate JFIF tags, and remove them as necessary.
+            If (InStr(1, iMetadata(maxMetadataCount).Group, "JFIF", vbTextCompare) > 0) And (Not ignoreThisTag) Then
+            
+                'Check the metadata list up to this point.  If a matching group and technical tag name are found,
+                ' move this tag into a separate "thumbnail" category.
+                Dim i As Long
+                For i = 0 To maxMetadataCount - 1
+                    If StrComp(iMetadata(i).FullGroupAndName, iMetadata(maxMetadataCount).FullGroupAndName, vbTextCompare) = 0 Then
+                    
+                        'Regroup this tag into a new group: JFIF (thumbnail)
+                        iMetadata(maxMetadataCount).Group = "JFIF (thumbnail)"
+                        Exit For
+                    
+                    End If
+                Next i
+            
+            End If
+            
             'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
             'If InStr(1, tmpString, "Binary data", vbTextCompare) > 0 Then ignoreThisTag = True
             
@@ -438,16 +429,16 @@ Public Sub loadAllMetadata(ByVal srcFile As String, ByVal srcFormat As Long)
     
 End Sub
 
-
 'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a Long-type value specifying what metadata to save,
-' copy over any relevant metadata.  (Note: this needs to be done immediately following a save, and is generally handled by the
+' embed all relevant metadata.  (Note: this needs to be done immediately following a save, and is generally handled by the
 ' PhotoDemon_SaveImage function.)
 Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions As Long, ByRef srcPDImage As pdImage) As Boolean
     
     'Metadata only needs to be written out if it exists (obviously)
     If hasXMLMetadata Then
         
-        Dim etReturn As String, newXMLString As String, tmpXMLPath As String
+        Dim etReturn As Boolean
+        Dim newXMLString As String, tmpXMLPath As String
         Dim fileNum As Integer
         
         Dim cSHA2 As CSHA256
@@ -456,64 +447,21 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
         'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel
         Select Case saveOptions
             
-            'Save as much metadata as possible - basically, copy all tags from the original file to the new one
-            Case 0
+            'Save all relevant metadata.  Previously, we provided an option for "save all metadata, regardless of relevance",
+            ' but that has since been removed (for a variety of reasons).  If someone previously specified that option, we
+            ' treat it the same as "save all relevant metadata".
+            
+            'Save as much relevant metadata as possible (default action)
+            Case 0, 1
             
                 Message "Embedding metadata..."
                 
-                'Presumably, we have already cached the original file's metadata.  If not, warn the user and exit.
-                If UBound(cachedMetadata) > 0 Then
-                
-                    'Dump the cached metadata into a temp file
-                    Dim tmpOutputFile As String
-                    tmpOutputFile = g_UserPreferences.getTempPath
-    
-                    'Append a partial hash to the temporary filename to avoid overwriting any existing metadata files in the temp folder (highly unlikely,
-                    ' but we play it safe anyway!)
-                    tmpOutputFile = tmpOutputFile & "pdmd_" & Left$(cSHA2.SHA256(outputPath), 16) & ".mie"
-                    
-                    'Using that temp filename + location, export the metadata byte array
-                    fileNum = FreeFile
-                    
-                    Open tmpOutputFile For Binary Access Write As #fileNum
-                        Put #fileNum, 1, cachedMetadata
-                    Close #fileNum
-                    
-                    'The next part is easy - supply the original location on disk to ExifTool, and request a copying of metadata
-                    ' from that file to the new one.  Note that any number of irrelevant tags - including stuff like old thumbnails -
-                    ' will be copied over, but this option is called "copy all metadata" for a reason.
-                    etReturn = writeMetadata(tmpOutputFile, outputPath, srcPDImage)
-                    
-                    'Delete our temporary file
-                    If FileExist(tmpOutputFile) Then Kill tmpOutputFile
-                    
-                    'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
-                    ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
-                    ' we don't need to do any specialized damage control.
-                    If InStr(1, etReturn, "1 image files updated") > 0 Then
-                        Message "Metadata embedded successfully."
-                        
-                    Else
-                        Message "Unexpected message returned: %1", etReturn
-                        Message "Metadata may not have been embedded (but saved image still written successfully)."
-                    End If
-                
-                Else
-                    Message "Unexpected message returned: %1", g_Language.TranslateMessage("No cached metadata found.")
-                    Message "Metadata may not have been embedded (but saved image still written successfully)."
-                End If
-            
-            'Save as much RELEVANT metadata as possible (default action)
-            Case 1
-            
-                Message "Embedding metadata..."
-                
-                'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for this test,
+                'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for now,
                 ' simply dump the full original XML contents to a temp file.
                 newXMLString = originalMetadataXML
                 
                 ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                tmpXMLPath = getDirectory(outputPath)
+                tmpXMLPath = g_UserPreferences.getTempPath
                 
                 'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
                 tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
@@ -527,23 +475,12 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                 Close #fileNum
                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                etReturn = writeMetadata(tmpXMLPath, outputPath, srcPDImage)
-                
-                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
-                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
-                ' we don't need to do any specialized damage control.
-                If InStr(1, etReturn, "1 image files updated") > 0 Then
+                If writeMetadata(tmpXMLPath, outputPath, srcPDImage) Then
                     Message "Metadata embedded successfully."
                     
                 Else
-                    Message "Unexpected message returned: %1", etReturn
                     Message "Metadata may not have been embedded (but saved image still written successfully)."
                 End If
-                
-                'Delete our temporary XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                
-                'NEED TO TEST: is JPEG thumbnail overwritten??
                 
             'Save metadata, but remove items with potential privacy concerns (GPS coordinates, serial numbers, etc)
             Case 2
@@ -617,22 +554,12 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
                 Close #fileNum
                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                etReturn = writeMetadata(tmpXMLPath, outputPath, srcPDImage, True)
-                
-                'If successful, ExifTool will return a string saying "1 image files updated".  If the string does not include this, something
-                ' probably went wrong.  ExifTool is kind enough to NOT overwrite the file if it couldn't write metadata successfully, so
-                ' we don't need to do any specialized damage control.
-                If InStr(1, etReturn, "1 image files updated") > 0 Then
+                If writeMetadata(tmpXMLPath, outputPath, srcPDImage, True) Then
                     Message "Metadata embedded successfully."
-                    
                 Else
-                    Message "Unexpected message returned: %1", etReturn
                     Message "Metadata may not have been embedded (but saved image still written successfully)."
                 End If
-                
-                'Delete our temporary XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-            
+                            
             'Do not save metadata.  This is by far the easiest method.  :)
             Case 3
         

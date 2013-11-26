@@ -195,29 +195,8 @@ Public Sub syncInterfaceToCurrentImage()
         End If
         
         'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-        ' NOTE: if metadata loading uses the "on-demand" preference, we always set metadata browsing to TRUE so the user can
-        ' browse it at their leisure.  If they have chosen to process metadata at load time, we can enable those menu items
-        ' contingent on the actual presence of metadata in this image.
-        If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-            
-            'We are NOT using the on-demand model.  Determine whether metadata is present, and dis/enable metadata menu items accordingly.
-            metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-            metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
-            
-        Else
-        
-            'We ARE using the on-demand model.  Always leave "browse metadata" set to TRUE, and same for GPS metadata, unless we
-            ' have attempted to find GPS metadata (either by saving the image or the user manually loading metadata) but not found any.
-            ' In that rare case, we can enable the GPS menu correctly.
-            metaToggle tMetadata, True
-            
-            If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
-            Else
-                metaToggle tGPSMetadata, True
-            End If
-                    
-        End If
+        metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+        metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
         
         'Display the size of this image in the status bar
         If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
@@ -489,20 +468,12 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tImgMode32bpp
             FormMain.MnuTransparency(3).Enabled = newState
         
-        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  Otherwise, its enablement will change depending
-        ' on the user's preferences for when to load metadata.
+        'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
+        ' reading/browsing/writing metadata.)
         Case tMetadata
         
             If g_ExifToolEnabled Then
-            
-                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
-                ' we will leave the metadata menu always enabled.
-                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-                    If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
-                Else
-                    If Not FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = True
-                End If
-                
+                If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
             Else
                 If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
             End If
@@ -510,22 +481,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tGPSMetadata
         
             If g_ExifToolEnabled Then
-            
-                'If the user has specified that they want metadata loaded "on-demand" instead of by default when a new image is loaded,
-                ' we will leave the metadata menu always enabled.
-                If g_UserPreferences.GetPref_Boolean("Loading", "Automatically Load Metadata", True) Then
-                    If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
-                Else
-                    
-                    'If an on-demand model is being used, check to see if the user has attempted to load metadata for this image.
-                    ' If they have, set the toggle to match the GPS metadata's state.
-                    If pdImages(g_CurrentImage).imgMetadata.haveAttemptedToFindGPSData Then
-                        If FormMain.MnuMetadata(3).Enabled <> pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then FormMain.MnuMetadata(3).Enabled = pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata
-                    Else
-                        If Not FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = True
-                    End If
-                End If
-                
+                If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
             Else
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
             End If
