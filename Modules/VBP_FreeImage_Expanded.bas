@@ -46,10 +46,6 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         Exit Function
     End If
     
-    'Load the FreeImage library from the plugin directory
-    Dim hFreeImgLib As Long
-    hFreeImgLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
     '****************************************************************************
     ' Determine image format
     '****************************************************************************
@@ -67,10 +63,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
     If Not FreeImage_FIFSupportsReading(fileFIF) Then
+    
         If showMessages Then Message "Filetype not supported by FreeImage.  Import abandoned."
-        FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False
         Exit Function
+        
     End If
     
     'Store this file format inside the relevant pdImage object
@@ -269,10 +266,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'If an empty handle is returned, abandon the import attempt.
     If fi_hDIB = 0 Then
+    
         If showMessages Then Message "Import via FreeImage failed (blank handle)."
-        FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False
         Exit Function
+        
     End If
         
         
@@ -596,7 +594,6 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
     ' - but it prevents a hard program crash, so I consider it the lesser of two evils.)
     If (fi_Width > 1000000) Or (fi_Height > 1000000) Then
-        FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False
         Exit Function
     Else
@@ -614,7 +611,6 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             If (fi_multi_hDIB <> 0) Then FreeImage_CloseMultiBitmap fi_multi_hDIB
         End If
         
-        FreeLibrary hFreeImgLib
         LoadFreeImageV3_Advanced = False
         Exit Function
     End If
@@ -628,6 +624,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
+    
     '****************************************************************************
     ' Before unloading FreeImage, copy any attached ICC profiles into the pdImage's ICC manager
     '****************************************************************************
@@ -638,7 +635,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         dstImage.ICCProfile.loadICCFromFreeImage fi_hDIB
     
     End If
-        
+    
+    
     '****************************************************************************
     ' Release all FreeImage-specific structures and links
     '****************************************************************************
@@ -650,11 +648,9 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
         FreeImage_CloseMultiBitmap fi_multi_hDIB
     End If
-        
-    'Release the FreeImage library
-    FreeLibrary hFreeImgLib
     
     If showMessages Then Message "Image load successful.  FreeImage released."
+    
     
     '****************************************************************************
     ' If necessary, restore any lost alpha data
@@ -693,9 +689,6 @@ FreeImageV3_AdvancedError:
     'Release the FreeImage DIB if available
     If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
     
-    'Release the FreeImage library
-    If hFreeImgLib <> 0 Then FreeLibrary hFreeImgLib
-    
     'Display a relevant error message
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
     
@@ -712,15 +705,11 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
     On Error GoTo isMultiImage_Error
     
     'Double-check that FreeImage.dll was located at start-up
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         isMultiImage = 0
         Exit Function
     End If
-    
-    'Load the FreeImage library from the plugin directory
-    Dim hFreeImgLib As Long
-    hFreeImgLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
+        
     'Determine the file type.  (Currently, this feature only works on animated GIFs and multipage TIFFs.)
     Dim fileFIF As FREE_IMAGE_FORMAT
     fileFIF = FreeImage_GetFileType(srcFilename)

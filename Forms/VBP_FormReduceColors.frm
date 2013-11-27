@@ -227,10 +227,6 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
 
     'Make sure we found the FreeImage plug-in when the program was loaded
     If g_ImageFormats.FreeImageEnabled Then
-    
-        'Load the FreeImage dll into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
         If Not toPreview Then Message "Quantizing image using the FreeImage library..."
         
@@ -263,8 +259,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            FreeLibrary hLib
-     
+            
             'If this is a preview, draw the new image to the picture box and exit.  Otherwise, render the new main image layer.
             If toPreview Then
                 finalizeImageData toPreview, dstPic
