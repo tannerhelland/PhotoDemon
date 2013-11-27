@@ -206,10 +206,6 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     If g_ImageFormats.FreeImageEnabled Then
         
         If Not isPreview Then Message "Rotating image (this may take a few seconds)..."
-        
-        'Load the FreeImage dll into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
                 
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -303,10 +299,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
-            FreeLibrary hLib
             
-        Else
-            FreeLibrary hLib
         End If
         
         If Not isPreview Then Message "Rotation complete."

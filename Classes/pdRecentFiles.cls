@@ -477,10 +477,6 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     
     'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
     If g_ImageFormats.FreeImageEnabled Then
-    
-        'Load FreeImage into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
         'Convert the temporary layer to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -506,9 +502,6 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
             Message "Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
         End If
         
-        'Release FreeImage from memory
-        FreeLibrary hLib
-    
     'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
     Else
         Dim tmpImage As pdImage

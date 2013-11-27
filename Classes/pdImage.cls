@@ -234,10 +234,6 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
     ' provides superior results, but if it is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
         
-        'Load the FreeImage plugin into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-        
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
         fi_DIB = FreeImage_CreateFromDC(getCompositedImage().getLayerDC)
@@ -279,12 +275,9 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
                 
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            FreeLibrary hLib
-            
             requestThumbnail = True
         
         Else
-            FreeLibrary hLib
             requestThumbnail = False
         End If
         

@@ -197,7 +197,7 @@ Private previewWidth As Long, previewHeight As Long
 'As a further optimizations, we keep a persistent copy of the image in FreeImage format; FreeImage is used to save the
 ' JP2 in-memory, then render it back out to the picture box.  As JP2 encoding/decoding is an intensive process,
 ' anything we can do to alleviate its burden is helpful.
-Private fi_Handle As Long, fi_DIB As Long
+Private fi_DIB As Long
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -257,7 +257,6 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Release any remaining FreeImage handles
     If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
-    If fi_Handle <> 0 Then FreeLibrary fi_Handle
     If Not origImageCopy Is Nothing Then Set origImageCopy = Nothing
     
 End Sub
@@ -325,7 +324,6 @@ Public Sub showDialog()
     If g_ImageFormats.FreeImageEnabled Then
     
         'Convert our DIB into FreeImage-format; we will maintain this copy to improve JPEG preview performance.
-        fi_Handle = LoadLibrary(g_PluginPath & "FreeImage.dll")
         fi_DIB = FreeImage_CreateFromDC(origImageCopy.getLayerDC)
         
     'If FreeImage is not available, notify the user.  (It should not be possible to trigger this dialog without

@@ -4,8 +4,6 @@ Attribute VB_Name = "modMain"
 'This module is required for theming via embedded manifest.  Many thanks to LaVolpe for the automated tool that coincides
 ' with this fine piece of code.  Download it yourself at: http://www.vbforums.com/showthread.php?t=606736
 
-Private Declare Function LoadLibraryA Lib "kernel32.dll" (ByVal lpLibFileName As String) As Long
-Private Declare Function FreeLibrary Lib "kernel32.dll" (ByVal hLibModule As Long) As Long
 Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (iccex As InitCommonControlsExStruct) As Boolean
 
 Private Declare Sub InitCommonControls Lib "comctl32.dll" ()
@@ -52,7 +50,7 @@ Public Sub Main()
     
     'The following block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
     Dim hMod As Long
-    hMod = LoadLibraryA("shell32.dll")
+    hMod = LoadLibrary("shell32.dll")
     InitCommonControlsEx iccex
     
     'If an error occurs, attempt to initiate the Win9x version

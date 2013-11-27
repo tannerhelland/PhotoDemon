@@ -298,10 +298,6 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     ' quick-and-dirty estimation using basic geometry.
     Dim hScaleAmount As Long, vScaleAmount As Long
     If g_ImageFormats.FreeImageEnabled Then
-    
-        'Load the FreeImage dll into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
                 
         'Convert our current layer to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -332,8 +328,6 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         If hScaleAmount < 0 Then hScaleAmount = 0
         If vScaleAmount < 0 Then vScaleAmount = 0
         
-        FreeLibrary hLib
-    
     Else
         
         'This is basically a worst-case estimation of the final image size, and because of that, the function will

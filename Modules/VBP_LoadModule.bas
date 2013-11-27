@@ -1493,6 +1493,11 @@ Public Sub LoadPlugins()
             g_ImageFormats.FreeImageEnabled = False
         Else
             g_ImageFormats.FreeImageEnabled = True
+            
+            'Because FreeImage is used so frequently throughout PhotoDemon, we only load it once - now - rather than having each
+            ' individual function load it.
+            g_FreeImageHandle = LoadLibrary(g_PluginPath & "FreeImage.dll")
+            
         End If
         
     Else

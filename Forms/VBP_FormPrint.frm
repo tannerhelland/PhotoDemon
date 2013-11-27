@@ -719,7 +719,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
@@ -904,11 +904,7 @@ End Sub
 Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
     
     'FreeImage is used to rotate the image; if it's not installed, previewing is automatically disabled
-    If g_ImageFormats.FreeImageEnabled = True Then
-    
-        'Load the FreeImage library from the plugin directory
-        Dim hFreeImgLib As Long
-        hFreeImgLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
+    If g_ImageFormats.FreeImageEnabled Then
     
         'We're now going to create two temporary buffers; one contains the image resized to fit the "sheet of paper" preview
         ' on the left.  This is portrait mode.  The second buffer will contain the same thing, but rotated 90 degrees -
@@ -938,9 +934,6 @@ Private Sub RebuildPreview(Optional forceDPI As Boolean = False)
         'Initiate a redraw of the preview according to the print settings currently specified by the user
         UpdatePrintPreview forceDPI
         
-        'Release the FreeImage library
-        FreeLibrary hFreeImgLib
-    
     End If
         
 End Sub

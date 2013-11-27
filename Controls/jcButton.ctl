@@ -482,8 +482,6 @@ End Type
 Private TrackUser32     As Boolean
 
 'Kernel32 declares used by the Subclasser
-Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
-Private Declare Function LoadLibraryA Lib "kernel32" (ByVal lpLibFileName As String) As Long
 Private Declare Function TRACKMOUSEEVENT Lib "user32" Alias "TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 Private Declare Function TrackMouseEventComCtl Lib "comctl32" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
@@ -2649,7 +2647,7 @@ Dim OS               As OSVERSIONINFO
     Next
 
     ' --Get the operating system version for text drawing purposes.
-    m_hMode = LoadLibraryA("shell32.dll")
+    m_hMode = LoadLibrary("shell32.dll")
     OS.dwOSVersionInfoSize = Len(OS)
     GetVersionEx OS
     m_WindowsNT = ((OS.dwPlatformId And VER_PLATFORM_WIN32_NT) = VER_PLATFORM_WIN32_NT)
@@ -3335,8 +3333,8 @@ End Function
 Private Function IsDLLPresent(ByVal sDLL As String) As Boolean
 
     On Error GoTo NotPresent
-Dim hLib             As Long
-    hLib = LoadLibraryA(sDLL)
+    Dim hLib As Long
+    hLib = LoadLibrary(sDLL)
     If hLib <> 0 Then
         FreeLibrary hLib
         IsDLLPresent = True
@@ -3375,11 +3373,11 @@ End Property
 
 Private Function IsFunctionSupported(ByVal sFunction As String, ByVal sModule As String) As Boolean
 
-Dim lngModule As Long
+    Dim lngModule As Long
 
     lngModule = GetModuleHandle(sModule)
 
-    If lngModule = 0 Then lngModule = LoadLibraryA(sModule)
+    If lngModule = 0 Then lngModule = LoadLibrary(sModule)
 
     If lngModule Then
         IsFunctionSupported = GetProcAddress(lngModule, sFunction)

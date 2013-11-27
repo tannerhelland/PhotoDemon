@@ -757,10 +757,6 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
     
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
-    
-        'Load the FreeImage dll into memory
-        Dim hLib As Long
-        hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
         
         Message "Resampling image using the FreeImage plugin..."
         
@@ -785,10 +781,7 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
      
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            FreeLibrary hLib
             
-        Else
-            FreeLibrary hLib
         End If
         
         'If the original image is 32bpp, add back in premultiplication now

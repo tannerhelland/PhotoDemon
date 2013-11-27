@@ -552,10 +552,6 @@ Public Function getIconFromLayer(ByRef srcLayer As pdLayer, Optional iconSize As
         Exit Function
     End If
     
-    'Load FreeImage, and pass it a copy of the current thumbnail.
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(srcLayer.getLayerDC)
     
@@ -593,10 +589,9 @@ Public Function getIconFromLayer(ByRef srcLayer As pdLayer, Optional iconSize As
         getIconFromLayer = 0
     End If
     
-    'Release both FreeImage and its copy of the source layer
+    'Release FreeImage's copy of the source layer
     FreeImage_UnloadEx fi_DIB
-    FreeLibrary hLib
-
+    
 End Function
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)

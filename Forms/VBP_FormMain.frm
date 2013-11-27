@@ -1461,6 +1461,9 @@ Private Sub Form_Unload(Cancel As Integer)
     'Release ExifTool (if available)
     If g_ExifToolEnabled Then terminateExifTool
     
+    'Releast FreeImage (if available)
+    If Not (g_FreeImageHandle = 0) Then FreeLibrary g_FreeImageHandle
+    
     'Stop tracking hotkeys
     ctlAccelerator.Enabled = False
     

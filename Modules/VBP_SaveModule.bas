@@ -511,10 +511,6 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     
         If g_ImageFormats.FreeImageEnabled Then
             
-            'Load FreeImage into memory
-            Dim hLib As Long
-            hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-            
             Message "Preparing %1 image...", sFileType
             
             'Copy the image into a temporary layer
@@ -541,25 +537,25 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If fi_DIB <> 0 Then
+                
                 Dim fi_Check As Long
                 fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, BMPflags, outputColorDepth, , , , , True)
-                If fi_Check = False Then
+                
+                If fi_Check Then
+                    Message "%1 save complete.", sFileType
+                Else
                     Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-                    FreeLibrary hLib
                     SaveBMP = False
                     Exit Function
-                Else
-                    Message "%1 save complete.", sFileType
                 End If
+                
             Else
+            
                 Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
                 SaveBMP = False
-                FreeLibrary hLib
                 Exit Function
+                
             End If
-    
-            'Release FreeImage from memory
-            FreeLibrary hLib
             
         Else
             GDIPlusSavePicture srcPDImage, BMPPath, ImageBMP, outputColorDepth
@@ -571,8 +567,6 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     Exit Function
     
 SaveBMPError:
-
-    If hLib <> 0 Then FreeLibrary hLib
 
     SaveBMP = False
     
@@ -614,16 +608,12 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     sFileType = "GIF"
 
     'Make sure we found the plug-in when we loaded the program
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveGIFImage = False
         Exit Function
     End If
-    
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing %1 image...", sFileType
     
@@ -678,6 +668,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
+    
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -705,30 +696,27 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
         
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , True)
-        If fi_Check = False Then
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            FreeLibrary hLib
             SaveGIFImage = False
             Exit Function
-        Else
-            Message "%1 save complete.", sFileType
         End If
+        
     Else
+    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
         SaveGIFImage = False
-        FreeLibrary hLib
         Exit Function
+        
     End If
-    
-    'Release FreeImage from memory
-    FreeLibrary hLib
     
     SaveGIFImage = True
     Exit Function
     
 SaveGIFError:
-
-    If hLib <> 0 Then FreeLibrary hLib
 
     SaveGIFImage = False
     
@@ -754,7 +742,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     sFileType = "PNG"
 
     'Make sure we found the plug-in when we loaded the program
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SavePNGImage = False
@@ -764,11 +752,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     'Before doing anything else, make a special note of the outputColorDepth.  If it is 8bpp, we will use pngnq-s9 to help with the save.
     Dim output8BPP As Boolean
     If outputColorDepth = 8 Then output8BPP = True Else output8BPP = False
-    
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    
+        
     Message "Preparing %1 image...", sFileType
     
     'Copy the image into a temporary layer
@@ -859,6 +843,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     'If the image contains alpha and pngnq is not available, we need to manually convert the FreeImage copy of the image to 8bpp.
     ' Then we need to apply alpha using the cut-off established earlier in this section.
     If handleAlpha And (Not g_ImageFormats.pngnqEnabled) Then
+    
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -908,15 +893,15 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, PNGFlags, outputColorDepth, , , , , True)
         
-        If fi_Check = False Then
+        If Not fi_Check Then
+            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            FreeLibrary hLib
             SavePNGImage = False
             Exit Function
         
+        'Save was successful.  'If pngnq is being used to help with the 8bpp reduction, now is when we use it.
         Else
             
-            'If pngnq is being used to help with the 8bpp reduction, now is when we need to use it.
             If g_ImageFormats.pngnqEnabled And output8BPP Then
             
                 'Build a full shell path for the pngnq operation
@@ -996,6 +981,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                     Else
                         Message "Pngnq-s9 could not write file.  Saving 32bpp image instead..."
                     End If
+                    
                 Else
                     Message "Pngnq-s9 could not write file.  Saving 32bpp image instead..."
                 End If
@@ -1003,22 +989,21 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
             End If
             
             Message "%1 save complete.", sFileType
+            
         End If
+        
     Else
+        
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
         SavePNGImage = False
-        FreeLibrary hLib
         Exit Function
+        
     End If
     
-    'Release FreeImage from memory
-    FreeLibrary hLib
     SavePNGImage = True
     Exit Function
     
 SavePNGError:
-
-    If hLib <> 0 Then FreeLibrary hLib
 
     SavePNGImage = False
     
@@ -1040,16 +1025,12 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     sFileType = "PPM"
 
     'Make sure we found the plug-in when we loaded the program
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SavePPMImage = False
         Exit Function
     End If
-
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing %1 image...", sFileType
     
@@ -1069,32 +1050,33 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
         
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
+    
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, ppm_Encoding, FICD_24BPP, , , , , True)
-        If fi_Check = False Then
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+        
             Message "PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
-            FreeLibrary hLib
             SavePPMImage = False
             Exit Function
-        Else
-            Message "%1 save complete.", sFileType
+            
         End If
+        
     Else
+    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        FreeLibrary hLib
         SavePPMImage = False
         Exit Function
+        
     End If
-    
-    'Release FreeImage from memory
-    FreeLibrary hLib
     
     SavePPMImage = True
     Exit Function
         
 SavePPMError:
 
-    If hLib <> 0 Then FreeLibrary hLib
     SavePPMImage = False
         
 End Function
@@ -1115,16 +1097,12 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     sFileType = "TGA"
     
     'Make sure we found the plug-in when we loaded the program
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveTGAImage = False
         Exit Function
     End If
-
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing %1 image...", sFileType
     
@@ -1186,6 +1164,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
+    
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -1213,37 +1192,36 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     TGAflags = TARGA_DEFAULT
             
     If TGACompression Then TGAflags = TARGA_SAVE_RLE
-            
     
     'Use that handle to save the image to TGA format
     If fi_DIB <> 0 Then
         
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, TGAflags, outputColorDepth, , , , , True)
-        If fi_Check = False Then
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+        
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            FreeLibrary hLib
             SaveTGAImage = False
             Exit Function
-        Else
-            Message "%1 save complete.", sFileType
+            
         End If
+        
     Else
+    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        FreeLibrary hLib
         SaveTGAImage = False
         Exit Function
+        
     End If
-    
-    'Release FreeImage from memory
-    FreeLibrary hLib
     
     SaveTGAImage = True
     Exit Function
     
 SaveTGAError:
 
-    If hLib <> 0 Then FreeLibrary hLib
     SaveTGAImage = False
 
 End Function
@@ -1262,21 +1240,20 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     
     'If FreeImage is not available, fall back to GDI+.  If that is not available, fail the function.
     If Not g_ImageFormats.FreeImageEnabled Then
+    
         If g_ImageFormats.GDIPlusEnabled Then
             SaveJPEGImage = GDIPlusSavePicture(srcPDImage, JPEGPath, ImageJPEG, 24, jpegFlags)
         Else
             SaveJPEGImage = False
             Message "No %1 encoder found. Save aborted.", "JPEG"
         End If
+        
         Exit Function
+        
     End If
     
     Dim sFileType As String
     sFileType = "JPEG"
-    
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing %1 image...", sFileType
     
@@ -1293,13 +1270,18 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     'If the image is grayscale, instruct FreeImage to internally mark the image as such
     Dim outputColorDepth As Long
     Message "Analyzing image color content..."
+    
     If tmpLayer.isLayerGrayscale Then
+    
         Message "No color found.  Saving 8bpp grayscale JPEG."
         outputColorDepth = 8
         fi_DIB = FreeImage_ConvertToGreyscale(fi_DIB)
+        
     Else
+    
         Message "Color found.  Saving 24bpp full-color JPEG."
         outputColorDepth = 24
+        
     End If
         
     'Combine all received flags into one
@@ -1322,32 +1304,33 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
         
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
+    
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
-        If fi_Check = False Then
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            FreeLibrary hLib
             SaveJPEGImage = False
             Exit Function
-        Else
-            Message "%1 save complete.", sFileType
+            
         End If
+        
     Else
+    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        FreeLibrary hLib
         SaveJPEGImage = False
         Exit Function
+        
     End If
-    
-    'Release FreeImage from memory
-    FreeLibrary hLib
     
     SaveJPEGImage = True
     Exit Function
     
 SaveJPEGError:
 
-    If hLib <> 0 Then FreeLibrary hLib
     SaveJPEGImage = False
     
 End Function
@@ -1371,16 +1354,14 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     sFileType = "TIFF"
     
     'Make sure we found the plug-in when we loaded the program
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
+        
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveTIFImage = False
         Exit Function
+        
     End If
-
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing %1 image...", sFileType
     
@@ -1462,6 +1443,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
+    
         fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
@@ -1532,39 +1514,41 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         
         'If the user has requested CMYK encoding of TIFF files, add that flag and convert the image to 32bpp CMYK
         If (outputColorDepth = 24) And tiffUseCMYK Then
+        
             outputColorDepth = 32
             TIFFFlags = (TIFFFlags Or TIFF_CMYK)
             FreeImage_UnloadEx fi_DIB
             tmpLayer.convertToCMYK32
             fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+            
         End If
         
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
-        If fi_Check = False Then
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            FreeLibrary hLib
             SaveTIFImage = False
             Exit Function
-        Else
-            Message "%1 save complete.", sFileType
+            
         End If
+        
     Else
+    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        FreeLibrary hLib
         SaveTIFImage = False
         Exit Function
+        
     End If
-    
-    'Release FreeImage from memory
-    FreeLibrary hLib
     
     SaveTIFImage = True
     Exit Function
     
 SaveTIFError:
 
-    If hLib <> 0 Then FreeLibrary hLib
     SaveTIFImage = False
         
 End Function
@@ -1585,16 +1569,14 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     sFileType = "JPEG-2000"
     
     'Make sure we found the plug-in when we loaded the program
-    If g_ImageFormats.FreeImageEnabled = False Then
+    If Not g_ImageFormats.FreeImageEnabled Then
+        
         pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveJP2Image = False
         Exit Function
+        
     End If
-
-    'Load FreeImage into memory
-    Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "FreeImage.dll")
     
     Message "Preparing %1 image...", sFileType
     
@@ -1615,30 +1597,30 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
                 
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, outputColorDepth, , , , , True)
-        If fi_Check = False Then
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            FreeLibrary hLib
             SaveJP2Image = False
             Exit Function
-        Else
-            Message "%1 save complete.", sFileType
+            
         End If
+        
     Else
+    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        FreeLibrary hLib
         SaveJP2Image = False
         Exit Function
+        
     End If
-    
-    'Release FreeImage from memory
-    FreeLibrary hLib
     
     SaveJP2Image = True
     Exit Function
     
 SaveJP2Error:
 
-    If hLib <> 0 Then FreeLibrary hLib
     SaveJP2Image = False
     
 End Function
