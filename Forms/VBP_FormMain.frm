@@ -36,6 +36,7 @@ Begin VB.Form FormMain
       TabIndex        =   0
       TabStop         =   0   'False
       Top             =   9960
+      Visible         =   0   'False
       Width           =   17205
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 

@@ -13,6 +13,8 @@ Attribute VB_Name = "ProgressBar_Support_Functions"
 
 Option Explicit
 
+
+'API calls for our custom DoEvents replacement
 Private Type winMsg
     hWnd As Long
     sysMsg As Long
@@ -22,9 +24,13 @@ Private Type winMsg
     ptX As Long
     ptY As Long
 End Type
+
 Private Declare Function TranslateMessage Lib "user32" (lpMsg As winMsg) As Long
 Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As winMsg) As Long
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+
+'This object is used to render a system progress bar onto a given picture box
+Private curProgBar As cProgressBarOfficial
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.
@@ -41,22 +47,61 @@ End Sub
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
 Public Sub SetProgBarMax(ByVal pbVal As Long)
-    If MacroStatus <> MacroBATCH Then g_ProgBar.Max = pbVal
+    
+    If MacroStatus <> MacroBATCH Then
+        
+        Dim prevProgBarValue As Long
+        
+        'Create a new progress bar as necessary
+        If curProgBar Is Nothing Then
+            Set curProgBar = New cProgressBarOfficial
+            
+            'Show the progress bar container and assign the progress bar to it
+            With pdImages(g_CurrentImage).containingForm.picProgressBar
+                If Not .Visible Then .Visible = True
+                curProgBar.CreateProgressBar .hWnd, 0, 0, .ScaleWidth, .ScaleHeight, True, True, True, True
+            End With
+            
+            prevProgBarValue = 0
+            
+        Else
+            prevProgBarValue = curProgBar.Value
+        End If
+        
+        'Set max and min values
+        curProgBar.Min = 0
+        curProgBar.Max = pbVal
+        
+        'Set the progress bar's current value
+        If prevProgBarValue <= curProgBar.Max Then
+            curProgBar.Value = prevProgBarValue
+        Else
+            curProgBar.Value = 0
+            curProgBar.Refresh
+        End If
+        
+    End If
+    
 End Sub
 
 Public Function getProgBarMax() As Long
-    getProgBarMax = g_ProgBar.Max
+    If Not curProgBar Is Nothing Then getProgBarMax = curProgBar.Max Else getProgBarMax = 1
 End Function
 
 Public Sub SetProgBarVal(ByVal pbVal As Long)
+    
     If MacroStatus <> MacroBATCH Then
-        g_ProgBar.Value = pbVal
-        g_ProgBar.Draw
+        
+        If Not curProgBar Is Nothing Then
+            curProgBar.Value = pbVal
+            curProgBar.Refresh
+        End If
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
         If g_IsWin7OrLater Then SetTaskbarProgressValue pbVal, getProgBarMax
         
     End If
+    
 End Sub
 
 'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to the progress bar
@@ -80,3 +125,16 @@ Public Function findBestProgBarValue() As Long
     
 End Function
 
+'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
+Public Sub releaseProgressBar()
+
+    'Briefly display a full progress bar before exiting
+    curProgBar.Value = curProgBar.Max
+    curProgBar.Refresh
+    
+    'Release the progress bar and container picture box
+    Set curProgBar = Nothing
+    If pdImages(g_CurrentImage).containingForm.picProgressBar.Visible Then pdImages(g_CurrentImage).containingForm.picProgressBar.Visible = False
+    If g_IsWin7OrLater Then SetTaskbarProgressState TBPF_NOPROGRESS
+    
+End Sub

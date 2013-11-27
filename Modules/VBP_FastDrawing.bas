@@ -407,7 +407,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Set workingLayerBackup = Nothing
                 
         'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
-        SetProgBarVal 0
+        releaseProgressBar
         
         'Pass control to the viewport renderer, which will perform the actual rendering
         ScrollViewport pdImages(g_CurrentImage).containingForm

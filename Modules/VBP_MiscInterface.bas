@@ -1111,7 +1111,7 @@ End Sub
 Public Sub RedrawMainForm()
     
     'Redraw the progress bar
-    FormMain.picProgBar.Refresh
+    If FormMain.picProgBar.Visible Then FormMain.picProgBar.Refresh
     g_ProgBar.Draw
     
 End Sub

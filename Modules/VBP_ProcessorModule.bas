@@ -1180,7 +1180,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         pdImages(g_CurrentImage).undoManager.rollBackLastUndo
         
         'Reset any interface elements that may still be in "processing" mode.
-        SetProgBarVal 0
+        releaseProgressBar
         Message "Action canceled."
     
         'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.

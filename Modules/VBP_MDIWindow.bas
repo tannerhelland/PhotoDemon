@@ -49,7 +49,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     newImageForm.Tag = g_NumOfImagesLoaded
     
     'Remember this ID in the associated image class
-    pdImages(g_NumOfImagesLoaded).isActive = True
+    pdImages(g_NumOfImagesLoaded).IsActive = True
     pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
     
     'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
@@ -72,6 +72,9 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'Previously we used the .Show event here to display the form, but we now rely on the window manager to handle this
     ' later in the load process.  (This reduces flicker while loading images.)
     newImageForm.Show vbModeless, FormMain
+    
+    'Synchronize the color of the progress bar and the window back color
+    newImageForm.picProgressBar.BackColor = g_CanvasBackground
     
     'Use the window manager to properly assign the main form ownership over this window
     'g_WindowManager.requestNewOwner newImageForm.hWnd, FormMain.hWnd
