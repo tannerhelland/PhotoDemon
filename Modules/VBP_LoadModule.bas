@@ -1523,7 +1523,15 @@ Public Sub LoadPlugins()
         If g_UserPreferences.GetPref_Boolean("Plugins", "Force ExifTool Disable", False) Then
             g_ExifToolEnabled = False
         Else
-            g_ExifToolEnabled = True
+            
+            'Attempt to start ExifTool.  Because we interact with it asynchronously, we do not need to wait for an image to be loaded
+            ' before executing it.
+            If startExifTool() Then
+                g_ExifToolEnabled = True
+            Else
+                g_ExifToolEnabled = False
+            End If
+            
         End If
         
     Else

@@ -32,7 +32,7 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 '
 'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
-'Those code modules are no longer relevant to the current implementation, but I thought it worthwhile to still mention them.
+'Those code modules are no longer relevant to the current implementation, but I thought it worthwhile to mention them.
 '
 'This project was originally designed against v9.37 of ExifTool (14 Sep '13).  While I do test newer versions, it's
 ' impossible to test all metadata possibilities, so problems may arise if used with other versions of the software.
@@ -118,7 +118,7 @@ End Type
 ' on FormMain is active and connected to ExifTool, and can be used to send/receive input and output.
 Private isExifToolRunning As Boolean
 
-'Because ExifTool parses metadata asynchronously, we will gather it as it comes.  This string will hold whatever
+'Because ExifTool parses metadata asynchronously, we will gather its output as it comes.  This string will hold whatever
 ' XML data ExifTool has returned so far.
 Private curMetadataString As String
 
@@ -133,7 +133,8 @@ Private verificationString As String
 ' a source file when writing metadata out to file; the alternative is to manually request the writing of each tag in turn,
 ' but if we do this, we lose many built-in utilities like automatically removing duplicate tags, and reassigning invalid
 ' tags to preferred categories.)  Because writing out metadata is asynchronous, we have to wait for ExifTool to finish
-' before deleting the temp file, so we keep a copy of the file's path here.
+' before deleting the temp file, so we keep a copy of the file's path here.  The stopVerificationMode (which is
+' automatically triggered by the newMetadataReceived function as necessary) will remove the file at this location.
 Private tmpMetadataFilePath As String
 
 'The FormMain.ShellPipeMain user control will asynchronously trigger this function whenever it receives new metadata
@@ -158,6 +159,8 @@ Private Sub startVerificationMode()
     verificationString = ""
 End Sub
 
+'When verification mode ends (as triggered by an automatic check in newMetadataReceived), we must also remove the temporary
+' file we created that held the data being exported via ExifTool.
 Private Sub stopVerificationMode()
     
     verificationModeActive = False
@@ -256,8 +259,8 @@ Public Function getExifToolVersion() As String
     
 End Function
 
-'Start an ExifTool instance (if one isn't already active), and let it process the input file.  Because we now run ExifTool
-' asynchronously, this should be done early in the load process.
+'Start an ExifTool instance (if one isn't already active), and have it process an image file.  Because we now run ExifTool
+' asynchronously, this should be done early in the image load process.
 Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat As Long) As Boolean
 
     'If ExifTool is not running, start it.  If it cannot be started, exit.
@@ -326,7 +329,8 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     
 End Function
 
-'Given a path to a valid metadata file, and a second path to a valid image file, copy the metadata file into the image file.
+'Given a path to a valid metadata file, and a second path to a valid image file, use ExifTool to write the contents of
+' the metadata file into the image file.
 Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal removeGPS As Boolean = False) As Boolean
     
     'If ExifTool is not running, start it.  If it cannot be started, exit.
@@ -388,10 +392,10 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
 End Function
 
-
 'Start ExifTool.  We now use FormMain.shellPipeMain (a user control of type ShellPipe) to pass data to/from ExifTool.  This greatly
-' reduces the overhead involved in repeatedly starting new ExifTool onstances.
-Private Function startExifTool() As Boolean
+' reduces the overhead involved in repeatedly starting new ExifTool instances.  It also means that we can asynchronously start
+' ExifTool early in the load process, rather than waiting for an image to be loaded.
+Public Function startExifTool() As Boolean
     
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
@@ -459,9 +463,10 @@ Public Sub terminateExifTool()
 
 End Sub
 
-'Capture output from the requested command-line executable and return it as a string
-' NOTE: This function is a heavily modified version of code originally written by Joacim Andersson. A download link to his original
-' version is available at the top of this module.
+'Capture output from the requested command-line executable and return it as a string.  At present, this is only used to check the
+' ExifTool version number, which is only done on-demand if the Plugin Manager is loaded.
+' ALSO NOTE: This function is a heavily modified version of code originally written by Joacim Andersson. A download link to his
+' original version is available at the top of this module.
 Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLineParams As String, ByRef dstString As String, Optional bShowWindow As Boolean = False) As Boolean
 
     Dim hPipeRead As Long, hPipeWrite As Long
