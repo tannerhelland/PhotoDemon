@@ -235,8 +235,8 @@ Public Property Get dontAutoLoadLastPreset() As Boolean
     dontAutoLoadLastPreset = suspendLastUsedAutoLoad
 End Property
 
-Public Property Let dontAutoLoadLastPreset(ByVal newValue As Boolean)
-    suspendLastUsedAutoLoad = newValue
+Public Property Let dontAutoLoadLastPreset(ByVal NewValue As Boolean)
+    suspendLastUsedAutoLoad = NewValue
     PropertyChanged "dontAutoLoadLastPreset"
 End Property
 
@@ -529,6 +529,11 @@ Private Sub CmdCancel_Click()
     If dontShutdownYet Then
         dontShutdownYet = False
         Exit Sub
+    End If
+    
+    'If the current form's progress bar is visible, hide it
+    If g_OpenImageCount > 0 Then
+        If pdImages(g_CurrentImage).containingForm.picProgressBar.Visible Then pdImages(g_CurrentImage).containingForm.picProgressBar.Visible = False
     End If
     
     'Automatically unload our parent

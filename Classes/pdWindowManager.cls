@@ -733,10 +733,7 @@ Friend Sub getActualMainFormClientRect(ByRef modifiedRect As winRect, Optional B
         Next i
         
     End If
-    
-    'Always subtract the progress bar's size from the client area
-    clientRect.y2 = clientRect.y2 - FormMain.picProgBar.ScaleHeight
-    
+        
     'If the image tabstrip is visible, remove its size as well
     If pdWindows(imageTabstripIndex).isVisible And (Not ignoreTabstrip) Then
     
@@ -801,7 +798,7 @@ Public Function requestActualMainFormClientHeight() As Long
 
     Dim clientRect As winRect
     GetClientRect mainWindowHwnd, clientRect
-    requestActualMainFormClientHeight = clientRect.y2 - FormMain.picProgBar.ScaleHeight
+    requestActualMainFormClientHeight = clientRect.y2
     
     'If the image tabstrip is visible and top- or bottom-aligned, remove its height as well
     If pdWindows(imageTabstripIndex).isVisible Then
@@ -842,10 +839,7 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
     'Retrieve the client area of the main form
     Dim mainClientRect As winRect
     GetClientRect mainWindowHwnd, mainClientRect
-    
-    'For now, subtract the progress bar's height as well
-    mainClientRect.y2 = mainClientRect.y2 - getClientHeight(FormMain.picProgBar.hWnd)
-    
+        
     'For all windows but the file toolbox, offset them to the right (to account for the file toolbox's width)
     Dim i As Long, fileToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
@@ -913,7 +907,7 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
 
     'Resize the window to fit inside the parent form, but not overlap the progress bar at the bottom
     Dim clientWidth As Long, clientHeight As Long
-    clientHeight = getClientHeight(mainWindowHwnd) - FormMain.picProgBar.ScaleHeight
+    clientHeight = getClientHeight(mainWindowHwnd)
     clientWidth = getClientWidth(mainWindowHwnd)
     
     'In rare circumstances, it's possible for the user to shrink the main form horizontally to the point that the main menu overflows

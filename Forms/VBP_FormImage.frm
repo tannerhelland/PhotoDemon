@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "Image Window"
-   ClientHeight    =   2295
+   ClientHeight    =   5025
    ClientLeft      =   120
    ClientTop       =   345
-   ClientWidth     =   5430
+   ClientWidth     =   8355
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,15 +20,31 @@ Begin VB.Form FormImage
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   153
+   ScaleHeight     =   335
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   362
+   ScaleWidth      =   557
    Visible         =   0   'False
+   Begin VB.PictureBox picProgressBar 
+      Align           =   2  'Align Bottom
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   225
+      Left            =   0
+      ScaleHeight     =   15
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   557
+      TabIndex        =   2
+      Top             =   4800
+      Visible         =   0   'False
+      Width           =   8355
+   End
    Begin VB.HScrollBar HScroll 
       Height          =   255
       LargeChange     =   10
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       TabStop         =   0   'False
       Top             =   3720
       Visible         =   0   'False
@@ -38,39 +54,11 @@ Begin VB.Form FormImage
       Height          =   3615
       LargeChange     =   10
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   1
       TabStop         =   0   'False
       Top             =   120
       Visible         =   0   'False
       Width           =   255
-   End
-   Begin VB.PictureBox picIcon 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FF00FF&
-      BorderStyle     =   0  'None
-      ClipControls    =   0   'False
-      FillColor       =   &H00FFFFFF&
-      FillStyle       =   0  'Solid
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FFFFFF&
-      Height          =   240
-      Left            =   3960
-      ScaleHeight     =   16
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   16
-      TabIndex        =   0
-      Top             =   2640
-      Visible         =   0   'False
-      Width           =   240
    End
 End
 Attribute VB_Name = "FormImage"
