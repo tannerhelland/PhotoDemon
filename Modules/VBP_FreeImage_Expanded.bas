@@ -282,6 +282,18 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     dstImage.setDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
     
     
+    
+    '****************************************************************************
+    ' Retrieve any attached ICC profiles, and copy their contents into this pdImage's ICC manager
+    '****************************************************************************
+    
+    If FreeImage_HasICCProfile(fi_hDIB) Then
+    
+        'This image has an attached profile.  Retrieve it and stick it inside the image.
+        dstImage.ICCProfile.loadICCFromFreeImage fi_hDIB
+    
+    End If
+    
         
     '****************************************************************************
     ' Retrieve format-specific information, like PNG background color
@@ -624,17 +636,6 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
-    
-    '****************************************************************************
-    ' Before unloading FreeImage, copy any attached ICC profiles into the pdImage's ICC manager
-    '****************************************************************************
-    
-    If FreeImage_HasICCProfile(fi_hDIB) Then
-    
-        'This image has an attached profile.  Retrieve it and stick it inside the image.
-        dstImage.ICCProfile.loadICCFromFreeImage fi_hDIB
-    
-    End If
     
     
     '****************************************************************************
