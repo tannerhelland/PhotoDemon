@@ -497,45 +497,51 @@ Public Sub resetMenuIcons()
         addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 2
     End If
     
-    'Clear the current MRU icon cache
-    cMRUIcons.Clear
-    Dim tmpFilename As String
-    
-    'Load a placeholder image for missing MRU entries
-    cMRUIcons.AddImageFromStream LoadResData("MRUHOLDER", "CUSTOM")
-    
-    'This counter will be used to track the current position of loaded thumbnail images into the icon collection
-    Dim iconLocation As Long
-    iconLocation = 0
-    
-    'Loop through the MRU list, and attempt to load thumbnail images for each entry
-    Dim i As Long
-    For i = 0 To numOfMRUFiles
-    
-        'Start by seeing if an image exists for this MRU entry
-        tmpFilename = g_RecentFiles.getMRUThumbnailPath(i)
+    'Clear the current MRU icon cache.
+    ' (Note added 01 Jan 2013 - RR has reported an IDE error on the following line, which means this function is somehow being
+    '  triggered before loadMenuIcons above.  I cannot reproduce this behavior, so instead, we now perform a single initialization
+    '  check before attempting to load MRU icons.)
+    If Not cMRUIcons Is Nothing Then
+        cMRUIcons.Clear
+        Dim tmpFilename As String
         
-        'If the file exists, add it to the MRU icon handler
-        If FileExist(tmpFilename) Then
-                
-            iconLocation = iconLocation + 1
-            cMRUIcons.AddImageFromFile tmpFilename
-            cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
+        'Load a placeholder image for missing MRU entries
+        cMRUIcons.AddImageFromStream LoadResData("MRUHOLDER", "CUSTOM")
         
-        'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
-        Else
-            If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
+        'This counter will be used to track the current position of loaded thumbnail images into the icon collection
+        Dim iconLocation As Long
+        iconLocation = 0
+        
+        'Loop through the MRU list, and attempt to load thumbnail images for each entry
+        Dim i As Long
+        For i = 0 To numOfMRUFiles
+        
+            'Start by seeing if an image exists for this MRU entry
+            tmpFilename = g_RecentFiles.getMRUThumbnailPath(i)
+            
+            'If the file exists, add it to the MRU icon handler
+            If FileExist(tmpFilename) Then
+                    
+                iconLocation = iconLocation + 1
+                cMRUIcons.AddImageFromFile tmpFilename
+                cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
+            
+            'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
+            Else
+                If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
+            End If
+            
+        Next i
+            
+        'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
+        If g_IsVistaOrLater Then
+            cMRUIcons.AddImageFromStream LoadResData("LOADALLLRG", "CUSTOM")
+            cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 1
+            
+            cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
+            cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 1
         End If
         
-    Next i
-        
-    'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
-    If g_IsVistaOrLater Then
-        cMRUIcons.AddImageFromStream LoadResData("LOADALLLRG", "CUSTOM")
-        cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 1
-        
-        cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
-        cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 1
     End If
         
 End Sub
