@@ -89,6 +89,7 @@ Private Const INDEX_DONT_CARE As Long = 0&
 Private Const BM_RGBTRIPLETS As Long = &H2
 Private Const BM_BGRTRIPLETS As Long = &H4
 Private Const BM_xBGRQUADS As Long = &H10
+Private Const BM_xRGBQUADS As Long = &H8
 
 'Various ICC-related APIs are needed to open profiles and transform data between them
 Private Declare Function OpenColorProfile Lib "mscms" Alias "OpenColorProfileA" (ByRef pProfile As Any, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal dwCreationMode As Long) As Long
@@ -393,7 +394,7 @@ Public Function applyColorTransformToLayer(ByVal srcTransform As Long, ByRef dst
         'NOTE: note that I use BM_RGBTRIPLETS below, despite pdLayer DIBs most definitely being in BGR order.  This is an
         '       undocumented bug with Windows' color management engine!
         Dim bitDepthIdentifier As Long
-        If .getLayerColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xBGRQUADS
+        If .getLayerColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
         
         'TranslateBitmapBits handles the actual transformation for us.
         transformCheck = TranslateBitmapBits(srcTransform, ByVal .getLayerDIBits, bitDepthIdentifier, .getLayerWidth, .getLayerHeight, .getLayerArrayWidth, ByVal .getLayerDIBits, bitDepthIdentifier, .getLayerArrayWidth, ByVal 0&, 0&)
