@@ -372,10 +372,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    'Display the previewed effect in the neighboring window
-    updatePreview
-    
+        
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
