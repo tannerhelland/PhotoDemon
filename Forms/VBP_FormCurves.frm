@@ -198,8 +198,9 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright ©2008-2013 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 17/August/13
-'Last update: minor fixes to the command bar interface (don't write out the [0] curve point entry, as it's irrelevant)
+'Last updated: 03/December/13
+'Last update: store curve nodes as relative values rather than absolute ones.  This fixes an extremely rare error when
+'              the user has stored curve presets (or last-used settings), changes their monitor DPI, then re-loads PD.
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -398,13 +399,20 @@ Private Sub cmdBar_AddCustomPresetData()
     'Write the number of nodes to file
     cmdBar.addPresetData "NodeCount", CStr(numOfNodes)
     
-    'Next, place all node data in one giant string
+    'Next, place all node data in one giant string.
+    ' UPDATE 03 Dec 2013: instead of storing absolute coordinates, store relative ones per the size of the
+    '                     curve box.  This fixes an extremely rare error when the user changes DPI for their
+    '                     monitor while having a previously stored set of curve coordinates.
     Dim nodeString As String
     nodeString = ""
     
+    Dim nodeBoxWidth As Long, nodeBoxHeight As Long
+    nodeBoxWidth = picDraw.ScaleWidth
+    nodeBoxHeight = picDraw.ScaleHeight
+    
     Dim i As Long
     For i = 1 To numOfNodes
-        nodeString = nodeString & CStr(cNodes(i).pX) & "," & CStr(cNodes(i).pY)
+        nodeString = nodeString & CStr(cNodes(i).pX / nodeBoxWidth) & "," & CStr(cNodes(i).pY / nodeBoxHeight)
         If i < numOfNodes Then nodeString = nodeString & "|"
     Next i
     
@@ -464,13 +472,34 @@ Private Sub cmdBar_ReadCustomPresetData()
     Set cParams = New pdParamString
     cParams.setParamString Replace(tmpString, ",", "|")
     
+    'UPDATE 03 Dec 2013: instead of storing absolute coordinates, we now store relative ones per the size of
+    '                    the curve box.  This fixes an extremely rare error when the user changes DPI for
+    '                    their monitor while having a previously stored set of curve coordinates.
+    Dim nodeBoxWidth As Long, nodeBoxHeight As Long
+    nodeBoxWidth = picDraw.ScaleWidth
+    nodeBoxHeight = picDraw.ScaleHeight
+    
     Dim i As Long
     For i = 1 To numOfNodes
         
         'Retrieve this node's x and y values
-        cNodes(i).pX = cParams.GetLong((i - 1) * 2 + 1)
-        cNodes(i).pY = cParams.GetLong((i - 1) * 2 + 2)
+        cNodes(i).pX = cParams.GetDouble((i - 1) * 2 + 1)
+        cNodes(i).pY = cParams.GetDouble((i - 1) * 2 + 2)
         
+        'Old preset values may store the node values as absolutes rather than relatives.  Check for this, and
+        ' adjust node values accordingly.
+        If cNodes(i).pX > 1 Then
+        
+            If cNodes(i).pX > nodeBoxWidth Then cNodes(i).pX = nodeBoxWidth
+            If cNodes(i).pY > nodeBoxHeight Then cNodes(i).pY = nodeBoxHeight
+        
+        Else
+        
+            cNodes(i).pX = cNodes(i).pX * nodeBoxWidth
+            cNodes(i).pY = cNodes(i).pY * nodeBoxHeight
+        
+        End If
+                
     Next i
     
 End Sub
