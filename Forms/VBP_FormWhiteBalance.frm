@@ -147,10 +147,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    'Render a preview
-    updatePreview
-    
+        
 End Sub
 
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
