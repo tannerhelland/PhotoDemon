@@ -501,8 +501,8 @@ End Function
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set cmdOK.Font = mFont
-    Set cmdCancel.Font = mFont
+    Set CmdOK.Font = mFont
+    Set CmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -690,8 +690,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd cmdOK.hWnd
-    setHandCursorToHwnd cmdCancel.hWnd
+    setHandCursorToHwnd CmdOK.hWnd
+    setHandCursorToHwnd CmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -762,8 +762,11 @@ Private Sub UserControl_Resize()
     updateControlLayout
 End Sub
 
-'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size.
+'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
+' the current monitor's DPI setting.
 Private Sub updateControlLayout()
+
+    On Error GoTo skipUpdateLayout
 
     'Force a standard user control size
     UserControl.Height = fixDPI(50) * Screen.TwipsPerPixelY
@@ -774,10 +777,15 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
         
         'Right-align the Cancel and OK buttons
-        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
-        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
+        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
+        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
         
     End If
+    
+'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
+'       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
+'       will fail every time a command bar is unloaded (e.g. on almost every tool).
+skipUpdateLayout:
 
 End Sub
 
@@ -795,8 +803,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -805,8 +813,8 @@ Private Sub UserControl_Show()
         End With
         
         'Translate all control captions
-        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
-        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
+        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
+        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
         
         'In the IDE, we also need to translate the left-hand buttons
         If Not g_IsProgramCompiled Then
