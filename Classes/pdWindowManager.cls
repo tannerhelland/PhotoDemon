@@ -336,6 +336,54 @@ Private mainFormTriggeredChange As Boolean
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
 
+'Display the progress bar window.  Note that moveProgressBarIntoPosition, below, should be called prior to this.
+' The progress bar's z-order will be determined by the active image window (if one is present) or the main form.
+Public Sub displayProgressBar(ByRef progBarForm As Form)
+
+    'On Error GoTo doNotMakeFormVisible
+
+    Dim hWndAfterParam As Long
+    
+    'An image has been loaded; position the progress bar above it
+    If (g_OpenImageCount > 0) Then
+        hWndAfterParam = pdImages(g_CurrentImage).containingForm.hWnd
+    
+    'No image is loaded; position the progress bar on the main form
+    Else
+        hWndAfterParam = mainWindowHwnd
+    
+    End If
+    
+    'Display the window, but do not move or resize it (as its position and size have already been set)
+    progBarForm.Visible = True
+    SetWindowPos progBarForm.hWnd, hWndAfterParam, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_SHOWWINDOW Or SWP_NOACTIVATE
+    
+doNotMakeFormVisible:
+
+End Sub
+
+'Calculate an on-screen position for the progress bar window.  If an image has been loaded, the progress bar will appear over the bottom
+' portion of that window.  If an image has not been loaded, it will appear at the bottom of the main form's client area.
+Public Sub moveProgressBarIntoPosition(ByRef progBarForm As Form)
+
+    Dim curWinRect As winRect
+
+    'An image has been loaded; use its rect to position the progress bar
+    If (g_OpenImageCount > 0) Then
+    
+        'Find the active image in our window array and restore it
+        getClientCoordsRelativeToScreen pdImages(g_CurrentImage).containingForm.hWnd, curWinRect
+        
+    'No image has been loaded; use the main form's client rect to position the progress bar
+    Else
+        getActualMainFormClientRect curWinRect
+    End If
+    
+    'Silently move the window into position.
+    MoveWindow progBarForm.hWnd, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, fixDPI(15), 1
+    
+End Sub
+
 'Retrieve the current tabstrip alignment
 Public Function getImageTabstripAlignment() As AlignConstants
 

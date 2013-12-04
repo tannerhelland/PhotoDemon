@@ -237,8 +237,10 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax finalX
-    progBarCheck = findBestProgBarValue()
+    If Not toPreview Then
+        SetProgBarMax finalX
+        progBarCheck = findBestProgBarValue()
+    End If
     
     'The number of pixels in the current median box are tracked dynamically.
     Dim NumOfPixels As Long

@@ -155,12 +155,14 @@ Public Function CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Doubl
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'The number of pixels in the current median box are tracked dynamically.
     Dim NumOfPixels As Long
@@ -488,12 +490,14 @@ Public Function WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Color values
     Dim r As Long, g As Long, b As Long
@@ -703,12 +707,14 @@ Public Function CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLa
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Color variables
     Dim tmpColor As Long, tMin As Long
@@ -802,12 +808,14 @@ Public Function AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Color values
     Dim r As Long, g As Long, b As Long
@@ -1062,7 +1070,7 @@ Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadiu
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If modifyProgBarMax = -1 Then modifyProgBarMax = gaussLayer.getLayerWidth * 3 + gaussLayer.getLayerHeight * 3
-    SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
     progBarCheck = findBestProgBarValue()
     
@@ -1178,12 +1186,14 @@ Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLay
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalY + finalY
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalY + finalY
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Create a one-dimensional Gaussian kernel using the requested radius
     Dim gKernel() As Double
@@ -1543,12 +1553,14 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
@@ -1774,12 +1786,14 @@ Public Function CreateXSwappedPolarCoordLayer(ByVal conversionMethod As Long, By
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
@@ -2004,12 +2018,14 @@ Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius A
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     Dim xRadius As Long
     xRadius = finalX - initX
@@ -2164,12 +2180,14 @@ Public Function CreateVerticalBlurLayer(ByVal uRadius As Long, ByVal dRadius As 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalY
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalY
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     Dim yRadius As Long
     yRadius = finalY - initY
@@ -2323,12 +2341,14 @@ Public Function CreateRotatedLayer(ByVal rotateAngle As Double, ByVal edgeHandli
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then
-        SetProgBarMax finalX
-    Else
-        SetProgBarMax modifyProgBarMax
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
     End If
-    progBarCheck = findBestProgBarValue()
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
