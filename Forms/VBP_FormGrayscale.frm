@@ -557,8 +557,10 @@ Public Sub fGrayscaleCustomDither(ByVal numOfShades As Long, Optional ByVal toPr
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax finalY
-    progBarCheck = findBestProgBarValue()
+    If Not toPreview Then
+        SetProgBarMax finalY
+        progBarCheck = findBestProgBarValue()
+    End If
     
     'Color variables
     Dim r As Long, g As Long, b As Long, grayVal As Long

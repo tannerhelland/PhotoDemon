@@ -48,7 +48,7 @@ End Sub
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
 Public Sub SetProgBarMax(ByVal pbVal As Long)
     
-    If MacroStatus <> MacroBATCH Then
+    If (MacroStatus <> MacroBATCH) And (pbVal <> 0) Then
         
         Dim prevProgBarValue As Long
         
@@ -56,11 +56,17 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
         If curProgBar Is Nothing Then
             Set curProgBar = New cProgressBarOfficial
             
-            'Show the progress bar container and assign the progress bar to it
-            With pdImages(g_CurrentImage).containingForm.picProgressBar
-                If Not .Visible Then .Visible = True
+            'Create the progress bar form and position it properly (at the bottom of the main form's client area).
+            special_ProgressBar.Visible = False
+            g_WindowManager.moveProgressBarIntoPosition special_ProgressBar
+            
+            'Assign the progress bar control to its container form
+            With special_ProgressBar
                 curProgBar.CreateProgressBar .hWnd, 0, 0, .ScaleWidth, .ScaleHeight, True, True, True, True
             End With
+            
+            'Use the window manager to display the progress bar form.  (It will do some extra work to ensure z-order is correct.)
+            g_WindowManager.displayProgressBar special_ProgressBar
             
             prevProgBarValue = 0
             
@@ -95,6 +101,7 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
         If Not curProgBar Is Nothing Then
             curProgBar.Value = pbVal
             curProgBar.Refresh
+            Replacement_DoEvents special_ProgressBar.hWnd
         End If
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
@@ -134,7 +141,7 @@ Public Sub releaseProgressBar()
     
     'Release the progress bar and container picture box
     Set curProgBar = Nothing
-    If pdImages(g_CurrentImage).containingForm.picProgressBar.Visible Then pdImages(g_CurrentImage).containingForm.picProgressBar.Visible = False
+    If special_ProgressBar.Visible Then Unload special_ProgressBar
     If g_IsWin7OrLater Then SetTaskbarProgressState TBPF_NOPROGRESS
     
 End Sub

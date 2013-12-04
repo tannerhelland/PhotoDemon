@@ -237,8 +237,10 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax finalX * 2
-    progBarCheck = findBestProgBarValue()
+    If Not toPreview Then
+        SetProgBarMax finalX * 2
+        progBarCheck = findBestProgBarValue()
+    End If
     
     'Color variables
     Dim r As Long, g As Long, b As Long

@@ -211,8 +211,10 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax finalY * 2 + finalX * 2
-    progBarCheck = findBestProgBarValue()
+    If Not toPreview Then
+        SetProgBarMax finalY * 2 + finalX * 2
+        progBarCheck = findBestProgBarValue()
+    End If
         
     'Noise variables
     Dim nColor As Long

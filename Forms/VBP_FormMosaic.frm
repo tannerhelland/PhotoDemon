@@ -235,8 +235,10 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax xLoop
-    progBarCheck = findBestProgBarValue()
+    If Not toPreview Then
+        SetProgBarMax xLoop
+        progBarCheck = findBestProgBarValue()
+    End If
     
     'A number of other variables are required for the nested For..Next loops
     Dim dstXLoop As Long, dstYLoop As Long

@@ -120,7 +120,7 @@ End Sub
 '
 'Finally, the calling routine can optionally specify a different progress bar maximum value.  By default, this is the current
 ' layer's width, but some routines run vertically and the progress bar needs to be changed accordingly.
-Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1)
+Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     cancelCurrentAction = False
@@ -239,7 +239,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     End With
 
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
-    If Not isPreview Then
+    If (Not isPreview) And (Not doNotTouchProgressBar) Then
         If newProgBarMax = -1 Then
             SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
         Else

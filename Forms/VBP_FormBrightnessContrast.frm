@@ -223,13 +223,13 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     'If the brightness value is anything but 0, process it
     If (Bright <> 0) Then
         
-        If toPreview = False Then
+        If Not toPreview Then
         
             Message "Adjusting image brightness..."
         
             'Because contrast and brightness are handled together, set the progress bar maximum value
             ' contingent on whether we're handling just brightness, or both brightness AND contrast.
-            If Contrast <> 0 Then
+            If (Contrast <> 0) Then
                 SetProgBarMax finalX * 2
                 progBarCheck = findBestProgBarValue()
             End If

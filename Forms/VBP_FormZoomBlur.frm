@@ -219,8 +219,10 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    SetProgBarMax Abs(zDistance)
-    progBarCheck = findBestProgBarValue()
+    If Not toPreview Then
+        SetProgBarMax Abs(zDistance)
+        progBarCheck = findBestProgBarValue()
+    End If
     
     'AlphaBlend has two limitations we have to work around: it only stretches using nearest-neighbor interpolation (which
     ' creates very obvious blocking along the lines where the algorithm stretches), and it is incapable of rendering from

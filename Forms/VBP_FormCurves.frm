@@ -31,17 +31,9 @@ Begin VB.Form FormCurves
       TabIndex        =   0
       Top             =   7455
       Width           =   13095
-      _ExtentX        =   23098
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   23098
+      _extenty        =   1323
+      font            =   "VBP_FormCurves.frx":0000
    End
    Begin VB.ComboBox cboHistogram 
       Appearance      =   0  'Flat
@@ -83,8 +75,8 @@ Begin VB.Form FormCurves
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkGrid 
       Height          =   480
@@ -92,19 +84,11 @@ Begin VB.Form FormCurves
       TabIndex        =   7
       Top             =   6360
       Width           =   1350
-      _ExtentX        =   2381
-      _ExtentY        =   847
-      Caption         =   "display grid"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2381
+      _extenty        =   847
+      caption         =   "display grid"
+      font            =   "VBP_FormCurves.frx":0028
+      value           =   1
    End
    Begin PhotoDemon.smartCheckBox chkDiagonal 
       Height          =   480
@@ -112,19 +96,11 @@ Begin VB.Form FormCurves
       TabIndex        =   8
       Top             =   6840
       Width           =   3465
-      _ExtentX        =   6112
-      _ExtentY        =   847
-      Caption         =   "display original curve (diagonal line)"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   6112
+      _extenty        =   847
+      caption         =   "display original curve (diagonal line)"
+      font            =   "VBP_FormCurves.frx":0050
+      value           =   1
    End
    Begin VB.Label lblTitle 
       Alignment       =   1  'Right Justify
@@ -300,7 +276,7 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
     
     prepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
