@@ -62,7 +62,7 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
             
             'Assign the progress bar control to its container form
             With special_ProgressBar
-                curProgBar.CreateProgressBar .hWnd, 0, 0, .ScaleWidth, .ScaleHeight, True, True, True, True
+                curProgBar.CreateProgressBar .hWnd, 0, 0, .ScaleWidth, .ScaleHeight, True, False, False, True
             End With
             
             'Use the window manager to display the progress bar form.  (It will do some extra work to ensure z-order is correct.)
@@ -101,7 +101,6 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
         If Not curProgBar Is Nothing Then
             curProgBar.Value = pbVal
             curProgBar.Refresh
-            Replacement_DoEvents special_ProgressBar.hWnd
         End If
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress

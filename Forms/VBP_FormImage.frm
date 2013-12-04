@@ -24,39 +24,39 @@ Begin VB.Form FormImage
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   557
    Visible         =   0   'False
-   Begin VB.PictureBox picProgressBar 
-      Align           =   2  'Align Bottom
+   Begin VB.PictureBox picStatusBar 
+      Align           =   1  'Align Top
       Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000016&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   225
+      Height          =   390
       Left            =   0
-      ScaleHeight     =   15
+      ScaleHeight     =   26
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   557
       TabIndex        =   2
-      Top             =   4800
-      Visible         =   0   'False
+      Top             =   0
       Width           =   8355
    End
    Begin VB.HScrollBar HScroll 
       Height          =   255
       LargeChange     =   10
-      Left            =   120
+      Left            =   480
       TabIndex        =   0
       TabStop         =   0   'False
-      Top             =   3720
+      Top             =   4320
       Visible         =   0   'False
       Width           =   5415
    End
    Begin VB.VScrollBar VScroll 
       Height          =   3615
       LargeChange     =   10
-      Left            =   6240
+      Left            =   5880
       TabIndex        =   1
       TabStop         =   0   'False
-      Top             =   120
+      Top             =   720
       Visible         =   0   'False
       Width           =   255
    End

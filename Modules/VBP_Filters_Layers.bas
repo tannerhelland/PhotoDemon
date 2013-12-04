@@ -2320,7 +2320,7 @@ Public Function CreateRotatedLayer(ByVal rotateAngle As Double, ByVal edgeHandli
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
+    ' (This is necessary to prevent rotated pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     prepSafeArray srcSA, srcLayer
