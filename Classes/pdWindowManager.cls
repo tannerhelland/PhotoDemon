@@ -380,7 +380,7 @@ Public Sub moveProgressBarIntoPosition(ByRef progBarForm As Form)
     End If
     
     'Silently move the window into position.
-    MoveWindow progBarForm.hWnd, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, fixDPI(15), 1
+    MoveWindow progBarForm.hWnd, curWinRect.x1, curWinRect.y2 - fixDPI(15), curWinRect.x2 - curWinRect.x1, fixDPI(15), 1
     
 End Sub
 

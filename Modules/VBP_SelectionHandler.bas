@@ -449,10 +449,18 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     'Grab the current zoom value
     Dim ZoomVal As Double
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).currentZoomValue)
-
+    
+    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
+    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
+    If srcForm.picStatusBar.Visible Then y1 = y1 - srcForm.picStatusBar.Height
+    
     'Calculate x and y positions, while taking into account zoom and scroll values
     x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
     y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    
+    'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
+    Dim horzOffset As Long, vertOffset As Long
+    If srcForm.picStatusBar.Visible Then vertOffset = srcForm.picStatusBar.ScaleHeight
     
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
     Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
