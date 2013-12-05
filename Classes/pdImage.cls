@@ -110,13 +110,7 @@ Option Explicit
     'Track the current window state; if the image's containing form goes from maximized to normal, all images need their
     ' buffer refreshed (as scroll bars may then be needed)
     Public WindowState As Long
-    
-    'Variables related to drawing the buffer on-screen; these are set by PrepareViewport and read by ScrollViewport
-    Public targetWidth As Long
-    Public targetHeight As Long     'Formerly the width and height of the .FrontBuffer picture box
-    Public targetTop As Long
-    Public targetLeft As Long       'Formerly the left and top of the .FrontBuffer picture box
-    
+        
     'A copy of the form's current icon
     Public curFormIcon32 As Long, curFormIcon16 As Long
     
@@ -148,6 +142,9 @@ Option Explicit
     
     'All ICC Profile interactions are handled through a publicly available ICCProfile class
     Public ICCProfile As pdICCProfile
+    
+    'Various viewport actions are now handled through a separate pdViewport class
+    Public imgViewport As pdViewport
 
 'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
 ' differ, PD will average them when image DPI is requested.
@@ -328,6 +325,9 @@ Public Sub deactivateImage()
         Set undoManager = Nothing
     End If
     
+    'Release the viewport renderer
+    If Not (imgViewport Is Nothing) Then Set imgViewport = Nothing
+    
     'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
     originalFileName = ""
     originalFileNameAndExtension = ""
@@ -398,6 +398,9 @@ Private Sub Class_Initialize()
     
     'Initialize the ICC profile manager
     Set ICCProfile = New pdICCProfile
+    
+    'Initialize the viewport manager
+    Set imgViewport = New pdViewport
         
 End Sub
 
@@ -480,7 +483,3 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     retrieveProcessedSelection = True
 
 End Function
-
-
-
-

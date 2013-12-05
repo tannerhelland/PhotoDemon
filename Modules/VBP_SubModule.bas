@@ -114,8 +114,11 @@ End Sub
 'Let a form know whether the mouse pointer is over its image or just the viewport
 Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form) As Boolean
 
-    If (x1 >= pdImages(srcForm.Tag).targetLeft) And (x1 <= pdImages(srcForm.Tag).targetLeft + pdImages(srcForm.Tag).targetWidth) Then
-        If (y1 >= pdImages(srcForm.Tag).targetTop) And (y1 <= pdImages(srcForm.Tag).targetTop + pdImages(srcForm.Tag).targetHeight) Then
+    Dim imgID As Long
+    imgID = CLng(srcForm.Tag)
+
+    If (x1 >= pdImages(imgID).imgViewport.targetLeft) And (x1 <= pdImages(imgID).imgViewport.targetLeft + pdImages(imgID).imgViewport.targetWidth) Then
+        If (y1 >= pdImages(imgID).imgViewport.targetTop) And (y1 <= pdImages(imgID).imgViewport.targetTop + pdImages(imgID).imgViewport.targetHeight) Then
             isMouseOverImage = True
             Exit Function
         Else
@@ -131,17 +134,20 @@ End Function
 ' coordinates (e.g. location on the image) of the current mouse position.
 Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcForm As Form, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
 
+    Dim imageID As Long
+    imageID = srcForm.Tag
+    
     'Grab the current zoom value
     Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).currentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(imageID).currentZoomValue)
                 
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    If srcForm.picStatusBar.Visible Then y1 = y1 - srcForm.picStatusBar.Height
+    y1 = y1 - pdImages(imageID).imgViewport.getVerticalOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / ZoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / ZoomVal)
             
     'If the user has requested copies of these coordinates, assign them now
     If copyX Then copyX = x1
@@ -160,8 +166,8 @@ Public Sub findNearestImageCoordinates(ByRef x1 As Double, ByRef y1 As Double, B
     ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).currentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).imgViewport.targetLeft) / ZoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).imgViewport.targetTop) / ZoomVal)
     
     'Force any invalid values to their nearest matching point in the image
     If x1 < 0 Then x1 = 0

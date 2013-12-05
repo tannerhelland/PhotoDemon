@@ -58,6 +58,9 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     'Give the relevant pdImage object a reference to this form
     Set pdImages(g_NumOfImagesLoaded).containingForm = newImageForm
     
+    'Note the current vertical offset of the viewport
+    pdImages(g_NumOfImagesLoaded).imgViewport.setVerticalOffset newImageForm.picStatusBar.ScaleHeight
+    
     'Set a default zoom of 100% (this is likely to change, assuming the user has auto-zoom enabled)
     pdImages(g_NumOfImagesLoaded).currentZoomValue = ZOOM_100_PERCENT
     

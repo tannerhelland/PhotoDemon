@@ -1318,7 +1318,7 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     
     'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
     Dim horzOffset As Long, vertOffset As Long
-    If dstForm.picStatusBar.Visible Then vertOffset = dstForm.picStatusBar.ScaleHeight
+    vertOffset = pdImages(dstForm.Tag).imgViewport.getVerticalOffset
     
     'Add offsets to the destination locations
     If vertOffset > 0 Then
