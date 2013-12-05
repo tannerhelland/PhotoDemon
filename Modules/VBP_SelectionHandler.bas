@@ -440,41 +440,44 @@ End Sub
 ' 9 - interior of selection, not near a corner or edge
 Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form) As Long
 
+    Dim imageID As Long
+    imageID = CLng(srcForm.Tag)
+    
     'If the current selection is NOT transformable, return 0.
-    If Not pdImages(srcForm.Tag).mainSelection.isTransformable Then
+    If Not pdImages(imageID).mainSelection.isTransformable Then
         findNearestSelectionCoordinates = 0
         Exit Function
     End If
 
     'Grab the current zoom value
     Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).currentZoomValue)
+    ZoomVal = g_Zoom.ZoomArray(pdImages(imageID).currentZoomValue)
     
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    If srcForm.picStatusBar.Visible Then y1 = y1 - srcForm.picStatusBar.Height
+    y1 = y1 - pdImages(imageID).imgViewport.getVerticalOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).targetLeft) / ZoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).targetTop) / ZoomVal)
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / ZoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / ZoomVal)
     
     'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
     Dim horzOffset As Long, vertOffset As Long
-    If srcForm.picStatusBar.Visible Then vertOffset = srcForm.picStatusBar.ScaleHeight
+    vertOffset = pdImages(imageID).imgViewport.getVerticalOffset
     
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
     Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
     
-    If (pdImages(srcForm.Tag).mainSelection.getSelectionShape = sRectangle) Or (pdImages(srcForm.Tag).mainSelection.getSelectionShape = sCircle) Then
-        tLeft = pdImages(srcForm.Tag).mainSelection.selLeft
-        tTop = pdImages(srcForm.Tag).mainSelection.selTop
-        tRight = pdImages(srcForm.Tag).mainSelection.selLeft + pdImages(srcForm.Tag).mainSelection.selWidth
-        tBottom = pdImages(srcForm.Tag).mainSelection.selTop + pdImages(srcForm.Tag).mainSelection.selHeight
+    If (pdImages(imageID).mainSelection.getSelectionShape = sRectangle) Or (pdImages(imageID).mainSelection.getSelectionShape = sCircle) Then
+        tLeft = pdImages(imageID).mainSelection.selLeft
+        tTop = pdImages(imageID).mainSelection.selTop
+        tRight = pdImages(imageID).mainSelection.selLeft + pdImages(imageID).mainSelection.selWidth
+        tBottom = pdImages(imageID).mainSelection.selTop + pdImages(imageID).mainSelection.selHeight
     Else
-        tLeft = pdImages(srcForm.Tag).mainSelection.boundLeft
-        tTop = pdImages(srcForm.Tag).mainSelection.boundTop
-        tRight = pdImages(srcForm.Tag).mainSelection.boundLeft + pdImages(srcForm.Tag).mainSelection.boundWidth
-        tBottom = pdImages(srcForm.Tag).mainSelection.boundTop + pdImages(srcForm.Tag).mainSelection.boundHeight
+        tLeft = pdImages(imageID).mainSelection.boundLeft
+        tTop = pdImages(imageID).mainSelection.boundTop
+        tRight = pdImages(imageID).mainSelection.boundLeft + pdImages(imageID).mainSelection.boundWidth
+        tBottom = pdImages(imageID).mainSelection.boundTop + pdImages(imageID).mainSelection.boundHeight
     End If
     
     'Adjust the mouseAccuracy value based on the current zoom value
@@ -494,7 +497,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     Dim closestPoint As Long
     
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
-    Select Case pdImages(srcForm.Tag).mainSelection.getSelectionShape
+    Select Case pdImages(imageID).mainSelection.getSelectionShape
     
         Case SELECT_RECT, SELECT_CIRC
     
@@ -585,10 +588,10 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
             
             closestPoint = 0
             
-            pdImages(srcForm.Tag).mainSelection.getSelectionCoordinates 1, xCoord, yCoord
+            pdImages(imageID).mainSelection.getSelectionCoordinates 1, xCoord, yCoord
             firstDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
             
-            pdImages(srcForm.Tag).mainSelection.getSelectionCoordinates 2, xCoord, yCoord
+            pdImages(imageID).mainSelection.getSelectionCoordinates 2, xCoord, yCoord
             secondDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
                         
             If firstDist <= minDistance Then closestPoint = 1

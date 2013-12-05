@@ -74,7 +74,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(curImage).selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        pdImages(curImage).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, toolbar_Selections.cmbSelRender(0).ListIndex
+        pdImages(curImage).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight, toolbar_Selections.cmbSelRender(0).ListIndex
     
     End If
         
@@ -85,11 +85,11 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         If Not formToBuffer.VScroll.Visible Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, rendering drop shadows is a waste of time
-            If pdImages(curImage).targetTop <> 0 Then
+            If pdImages(curImage).imgViewport.targetTop <> 0 Then
                 'Top edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop - PD_CANVASSHADOWSIZE, pdImages(curImage).targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
                 'Bottom edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop + pdImages(curImage).targetHeight, pdImages(curImage).targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop + pdImages(curImage).imgViewport.targetHeight, pdImages(curImage).imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
             End If
         
         End If
@@ -98,11 +98,11 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         If Not formToBuffer.HScroll.Visible Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
-            If pdImages(curImage).targetLeft <> 0 Then
+            If pdImages(curImage).imgViewport.targetLeft <> 0 Then
                 'Left edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).targetTop, PD_CANVASSHADOWSIZE, pdImages(curImage).targetHeight, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetTop, PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetHeight, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
                 'Right edge
-                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft + pdImages(curImage).targetWidth, pdImages(curImage).targetTop, PD_CANVASSHADOWSIZE, pdImages(curImage).targetHeight, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+                StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft + pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetTop, PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetHeight, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
             End If
         
         End If
@@ -111,13 +111,13 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
         If (Not formToBuffer.VScroll.Visible) And (Not formToBuffer.HScroll.Visible) Then
         
             'NW corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'NE corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft + pdImages(curImage).targetWidth, pdImages(curImage).targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft + pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SW corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).targetTop + pdImages(curImage).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetTop + pdImages(curImage).imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SE corner
-            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).targetLeft + pdImages(curImage).targetWidth, pdImages(curImage).targetTop + pdImages(curImage).targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft + pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetTop + pdImages(curImage).imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
         
         End If
     
@@ -153,7 +153,7 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If pdImages(curImage).selectionActive And pdImages(curImage).mainSelection.isTransformable Then
     
         'If it is, composite the selection against the temporary buffer
-        pdImages(curImage).mainSelection.renderTransformNodes formToBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop
+        pdImages(curImage).mainSelection.renderTransformNodes formToBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop
     
     End If
     
@@ -182,8 +182,8 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).currentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-    srcWidth = pdImages(curImage).targetWidth / ZoomVal
-    srcHeight = pdImages(curImage).targetHeight / ZoomVal
+    srcWidth = pdImages(curImage).imgViewport.targetWidth / ZoomVal
+    srcHeight = pdImages(curImage).imgViewport.targetHeight / ZoomVal
         
     'These variables are the offset, as determined by the scroll bar values
     If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
@@ -219,18 +219,18 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 '                BitBlt tmpSrcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
 '
 '                'Use GDI+ to apply the resize
-'                GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeHighQualityBilinear
+'                GDIPlusResizeLayer pdImages(curImage).alphaFixLayer, 0, 0, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight, tmpSrcLayer, 0, 0, srcWidth, srcHeight, InterpolationModeHighQualityBilinear
 '
 '                'Composite the resized layer against a checkerboard background
 '                pdImages(curImage).alphaFixLayer.compositeBackgroundColor
 '               pdImages(curImage).alphaFixLayer.fixPremultipliedAlpha True
 '
 '                'Copy the composited and resized layer into the back buffer
-'                Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+'                Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
 '                'SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
-'                pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop
+'                pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop
 '
-'                BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
+'                BitBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight, pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, vbSrcCopy
 '
 '                'Erase our temporary layer
 '                tmpSrcLayer.eraseLayer
@@ -238,14 +238,14 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 '
 '            Else
                 
-                Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
-                pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+                Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
+                pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
 
 '            End If
             
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_HALFTONE
-            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     Else
@@ -255,9 +255,9 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
         Dim bltWidth As Long, bltHeight As Long
-        bltWidth = pdImages(curImage).targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
+        bltWidth = pdImages(curImage).imgViewport.targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
         srcWidth = bltWidth / ZoomVal
-        bltHeight = pdImages(curImage).targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
+        bltHeight = pdImages(curImage).imgViewport.targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
         srcHeight = bltHeight / ZoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
@@ -269,14 +269,14 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             StretchBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             
             'Fill the target area with the alpha checkerboard
-            Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+            Drawing.fillLayerWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
             
             'Alpha blend the layer onto the checkerboard background
-            pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, pdImages(curImage).targetWidth, pdImages(curImage).targetHeight
+            pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
 
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).targetLeft, pdImages(curImage).targetTop, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     End If
@@ -335,7 +335,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     'Calculate the vertical offset of the viewport.  This changes according to the height of the top-aligned status bar,
     ' and in the future, it will also change if rulers are visible.
     Dim verticalOffset As Long
-    verticalOffset = formToBuffer.picStatusBar.Height
+    verticalOffset = pdImages(curImage).imgViewport.getVerticalOffset
     
     'Grab the form dimensions; these are necessary for rendering the scroll bars
     Dim FormWidth As Long, FormHeight As Long
@@ -412,10 +412,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
             
         'Resize the buffer and store the relevant painting information into this pdImages object
         pdImages(curImage).backBuffer.createBlank FormWidth, FormHeight, 24, g_CanvasBackground
-        pdImages(curImage).targetLeft = viewportLeft
-        pdImages(curImage).targetTop = viewportTop
-        pdImages(curImage).targetWidth = viewportWidth
-        pdImages(curImage).targetHeight = viewportHeight
+        pdImages(curImage).imgViewport.targetLeft = viewportLeft
+        pdImages(curImage).imgViewport.targetTop = viewportTop
+        pdImages(curImage).imgViewport.targetWidth = viewportWidth
+        pdImages(curImage).imgViewport.targetHeight = viewportHeight
         
         'Pass control to the viewport renderer
         ScrollViewport formToBuffer
@@ -496,10 +496,10 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If (Not pdImages(curImage).backBuffer Is Nothing) Then pdImages(curImage).backBuffer.eraseLayer
     pdImages(curImage).backBuffer.createBlank newVWidth, newVHeight, 24, g_CanvasBackground
     
-    pdImages(curImage).targetLeft = viewportLeft
-    pdImages(curImage).targetTop = viewportTop
-    pdImages(curImage).targetWidth = viewportWidth
-    pdImages(curImage).targetHeight = viewportHeight
+    pdImages(curImage).imgViewport.targetLeft = viewportLeft
+    pdImages(curImage).imgViewport.targetTop = viewportTop
+    pdImages(curImage).imgViewport.targetWidth = viewportWidth
+    pdImages(curImage).imgViewport.targetHeight = viewportHeight
         
     'Pass control to the viewport renderer (found at the top of this module)
     ScrollViewport formToBuffer
