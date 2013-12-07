@@ -86,10 +86,12 @@ Private Const INDEX_DONT_CARE As Long = 0&
 
 'When it comes time to actually apply the transformation to the image data, the transform needs to know the image's
 ' color depth.  PD only operates in 24 and 32bpp mode, so we only need two constants here.
-Private Const BM_RGBTRIPLETS As Long = &H2
-Private Const BM_BGRTRIPLETS As Long = &H4
-Private Const BM_xBGRQUADS As Long = &H10
-Private Const BM_xRGBQUADS As Long = &H8
+Public Const BM_RGBTRIPLETS As Long = &H2
+Public Const BM_BGRTRIPLETS As Long = &H4
+Public Const BM_xBGRQUADS As Long = &H10
+Public Const BM_xRGBQUADS As Long = &H8
+Public Const BM_CMYKQUADS As Long = &H20
+Public Const BM_KYMCQUADS As Long = &H305
 
 'Various ICC-related APIs are needed to open profiles and transform data between them
 Private Declare Function OpenColorProfile Lib "mscms" Alias "OpenColorProfileA" (ByRef pProfile As Any, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal dwCreationMode As Long) As Long
@@ -98,7 +100,7 @@ Private Declare Function IsColorProfileValid Lib "mscms" (ByVal hProfile As Long
 Private Declare Function GetStandardColorSpaceProfile Lib "mscms" Alias "GetStandardColorSpaceProfileA" (ByVal pcStr As String, ByVal dwProfileID As Long, ByVal pProfileName As Long, ByRef pdwSize As Long) As Long
 Private Declare Function CreateMultiProfileTransform Lib "mscms" (ByRef pProfile As Any, ByVal nProfiles As Long, ByRef pIntents As Long, ByVal nIntents As Long, ByVal dwFlags As Long, ByVal indexPreferredCMM As Long) As Long
 Private Declare Function DeleteColorTransform Lib "mscms" (ByVal hTransform As Long) As Long
-Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByRef srcBits As Any, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByRef dstBits As Any, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
+Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByVal srcBitsPointer As Long, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByVal dstBitsPointer As Long, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
 Private Declare Function GetColorDirectory Lib "mscms" Alias "GetColorDirectoryA" (ByVal pMachineName As Long, ByVal pBuffer As Long, ByRef pdwSize As Long) As Long
 
 'Windows handles color management on a per-DC basis.  Use SetICMMode and these constants to activate/deactivate or query a DC.
@@ -397,7 +399,7 @@ Public Function applyColorTransformToLayer(ByVal srcTransform As Long, ByRef dst
         If .getLayerColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
         
         'TranslateBitmapBits handles the actual transformation for us.
-        transformCheck = TranslateBitmapBits(srcTransform, ByVal .getLayerDIBits, bitDepthIdentifier, .getLayerWidth, .getLayerHeight, .getLayerArrayWidth, ByVal .getLayerDIBits, bitDepthIdentifier, .getLayerArrayWidth, ByVal 0&, 0&)
+        transformCheck = TranslateBitmapBits(srcTransform, .getLayerDIBits, bitDepthIdentifier, .getLayerWidth, .getLayerHeight, .getLayerArrayWidth, .getLayerDIBits, bitDepthIdentifier, .getLayerArrayWidth, ByVal 0&, 0&)
         
     End With
     
@@ -416,6 +418,33 @@ Public Function applyColorTransformToLayer(ByVal srcTransform As Long, ByRef dst
         
     Else
         applyColorTransformToLayer = True
+    End If
+
+End Function
+
+'Given a color transformation and two layers, fill one layer with a transformed copy of the other!  Returns TRUE if successful.
+Public Function applyColorTransformToTwoLayers(ByVal srcTransform As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
+
+    Dim transformCheck As Long
+    
+    'TranslateBitmapBits handles the actual transformation for us.
+    transformCheck = TranslateBitmapBits(srcTransform, srcLayer.getLayerDIBits, srcFormat, srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerArrayWidth, dstLayer.getLayerDIBits, dstFormat, dstLayer.getLayerArrayWidth, ByVal 0&, 0&)
+    
+    If transformCheck = 0 Then
+        applyColorTransformToTwoLayers = False
+        
+        'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
+        ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
+        ' automatically converted the image to RGB at load-time.  Because the ICC profile is CMYK-specific, Windows will
+        ' not be able to apply it to the image, as it is no longer in CMYK format!
+        If CLng(Err.LastDllError) = 2021 Then
+            Debug.Print "ICC profile could not be applied, because requested color spaces did not match supplied profile spaces."
+        Else
+            Debug.Print "ICC profile could not be applied.  Image remains in original profile. (Error #" & Err.LastDllError & ")."
+        End If
+        
+    Else
+        applyColorTransformToTwoLayers = True
     End If
 
 End Function

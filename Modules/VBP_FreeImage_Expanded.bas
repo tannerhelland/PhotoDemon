@@ -87,12 +87,74 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     ' but when performing a batch conversion choose the reverse (speed over accuracy).  Also, if the showMessages parameter
     ' is false, we know that preview-quality is acceptable - so load the image as quickly as possible.
     If fileFIF = FIF_JPEG Then
+        
         If (MacroStatus = MacroBATCH) Or (Not showMessages) Then
             fi_ImportFlags = FILO_JPEG_FAST Or FILO_JPEG_EXIFROTATE
         Else
             fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
         End If
+        
     End If
+    
+    'Check for CMYK JPEGs, TIFFs, and PSD files.  If an image is CMYK and an ICC profile is present, ask FreeImage to load the
+    ' raw CMYK data. If no ICC profile is present, FreeImage is free to perform the CMYK -> RGB translation for us.
+    Dim isCMYK As Boolean
+    isCMYK = False
+    
+    If (fileFIF = FIF_JPEG) Or (fileFIF = FIF_PSD) Or (fileFIF = FIF_TIFF) Then
+    
+        'To speed up the load process, only load the file header, and explicitly instruct FreeImage to leave CMYK images
+        ' in CMYK format (otherwise we can't detect CMYK, as it will be auto-converted to RGB!).
+        Dim additionalFlags As Long
+        additionalFlags = FILO_LOAD_NOPIXELS
+        
+        Select Case fileFIF
+        
+            Case FIF_JPEG
+                additionalFlags = additionalFlags Or FILO_JPEG_CMYK
+            
+            Case FIF_PSD
+                additionalFlags = additionalFlags Or FILO_PSD_CMYK
+            
+            Case FIF_TIFF
+                additionalFlags = additionalFlags Or TIFF_CMYK
+        
+        End Select
+    
+        Dim tmpFIHandle As Long
+        tmpFIHandle = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags Or additionalFlags)
+        
+        'Check the file's color type
+        If FreeImage_GetColorType(tmpFIHandle) = FIC_CMYK Then
+        
+            'File is CMYK.  Check for an ICC profile.
+            If FreeImage_HasICCProfile(tmpFIHandle) Then
+            
+                'CMYK + ICC profile means we want FreeImage to load the data in CMYK format, and we'll perform the conversion to sRGB ourselves.
+                isCMYK = True
+                
+                Select Case fileFIF
+        
+                    Case FIF_JPEG
+                        fi_ImportFlags = fi_ImportFlags Or FILO_JPEG_CMYK
+                    
+                    Case FIF_PSD
+                        fi_ImportFlags = fi_ImportFlags Or FILO_PSD_CMYK
+                    
+                    Case FIF_TIFF
+                        fi_ImportFlags = fi_ImportFlags Or TIFF_CMYK
+                
+                End Select
+                
+            End If
+        
+        End If
+        
+        'Release our header-only copy of the image
+        FreeImage_Unload tmpFIHandle
+        
+    End If
+    
     
     'FreeImage is crazy slow at loading RAW-format files, so custom flags are specified to speed up the process
     If fileFIF = FIF_RAW Then
@@ -291,7 +353,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
         'This image has an attached profile.  Retrieve it and stick it inside the image.
         dstImage.ICCProfile.loadICCFromFreeImage fi_hDIB
-    
+        
     End If
     
         
@@ -477,11 +539,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         
     End If
     
+    
     '****************************************************************************
     ' Now that we have filtered out > 32bpp images, store the current color depth of the image.
     '****************************************************************************
     
     dstImage.originalColorDepth = FreeImage_GetBPP(fi_hDIB)
+    
     
     '****************************************************************************
     ' If the image is < 24bpp, upsample it to 24bpp or 32bpp
@@ -578,6 +642,53 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     'By this point, we have loaded the image, and it is guaranteed to be at 24 or 32 bit color depth.  Verify it one final time.
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
+    
+    
+    '****************************************************************************
+    ' Perform a special check for CMYK images.  They require additional handling.
+    '****************************************************************************
+    
+    If isCMYK Then
+    
+        If showMessages Then Message "CMYK image detected.  Preparing transform into RGB space..."
+        
+        'Copy the CMYK data into a 32bpp DIB.  (Note that we could pass the FreeImage DIB copy directly into the function, but the resulting
+        ' image would be top-down instead of bottom-up.  It's easier to just use our own PD-specific DIB object.)
+        Dim tmpCMYKLayer As pdLayer
+        Set tmpCMYKLayer = New pdLayer
+        tmpCMYKLayer.createBlank FreeImage_GetWidth(fi_hDIB), FreeImage_GetHeight(fi_hDIB), 32
+        SetDIBitsToDevice tmpCMYKLayer.getLayerDC, 0, 0, tmpCMYKLayer.getLayerWidth, tmpCMYKLayer.getLayerHeight, 0, 0, 0, tmpCMYKLayer.getLayerHeight, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
+        
+        'Prepare a blank 24bpp layer to receive the transformed sRGB data
+        Dim tmpRGBLayer As pdLayer
+        Set tmpRGBLayer = New pdLayer
+        tmpRGBLayer.createBlank tmpCMYKLayer.getLayerWidth, tmpCMYKLayer.getLayerHeight, 24
+        
+        'Apply the transformation using the dedicated CMYK transform handler
+        If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKLayer, tmpRGBLayer) Then
+        
+            Message "Copying newly transformed sRGB data..."
+        
+            'The transform was successful.  Copy the new sRGB data back into the FreeImage object, so the load process can continue.
+            FreeImage_Unload fi_hDIB
+            fi_hDIB = FreeImage_CreateFromDC(tmpRGBLayer.getLayerDC)
+            fi_BPP = FreeImage_GetBPP(fi_hDIB)
+            
+        'Something went horribly wrong.  Re-load the image and use FreeImage to apply the CMYK -> RGB transform.
+        Else
+        
+            Message "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+        
+            FreeImage_Unload fi_hDIB
+            fi_hDIB = FreeImage_Load(fileFIF, srcFilename, FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE)
+            fi_BPP = FreeImage_GetBPP(fi_hDIB)
+        
+        End If
+        
+        Set tmpCMYKLayer = Nothing
+        Set tmpRGBLayer = Nothing
+    
+    End If
     
     
     '****************************************************************************
@@ -746,5 +857,79 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
 isMultiImage_Error:
 
     isMultiImage = 0
+
+End Function
+
+'Apply a CMYK transform between a 32bpp CMYK layer and a 24bpp sRGB layer.
+Private Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKLayer As pdLayer, ByRef dstRGBLayer As pdLayer) As Boolean
+
+    Message "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
+    
+    'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
+    ' this function will also validate the profile for us.
+    Dim srcProfile As Long
+    srcProfile = loadICCProfileFromMemory(iccProfilePointer, iccProfileSize)
+    
+    'If we successfully opened and validated our source profile, continue on to the next step!
+    If srcProfile <> 0 Then
+    
+        'Now it is time to determine our destination profile.  Because PhotoDemon operates on DIBs that default
+        ' to the sRGB space, that's the profile we want to use for transformation.
+            
+        'Use the Color_Management module to request a standard sRGB profile.
+        Dim dstProfile As Long
+        dstProfile = loadStandardICCProfile(LCS_sRGB)
+        
+        'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
+        ' returned handle before continuing.
+        If dstProfile <> 0 Then
+            
+            'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
+            ' the DIB's RGB values.
+            Dim iccTransformation As Long
+            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL)
+            
+            'If the transformation was generated successfully, carry on!
+            If iccTransformation <> 0 Then
+                
+                'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
+                ' the API with direct access to our DIB bits.
+                
+                Message "CMYK to sRGB transform data created successfully.  Applying transform..."
+                
+                'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
+                ' color depth.
+                Dim transformCheck As Boolean
+                transformCheck = applyColorTransformToTwoLayers(iccTransformation, srcCMYKLayer, dstRGBLayer, BM_KYMCQUADS, BM_RGBTRIPLETS)
+                
+                'If the transform was successful, pat ourselves on the back.
+                If transformCheck Then
+                    Message "CMYK to sRGB transformation successful."
+                    applyCMYKTransform = True
+                Else
+                    Message "sRGB transform could not be applied.  Image remains in CMYK format."
+                End If
+                
+                'Release our transformation
+                releaseColorTransform iccTransformation
+                                
+            Else
+                Message "Both ICC profiles loaded successfully, but CMYK transformation could not be created."
+                applyCMYKTransform = False
+            End If
+        
+            releaseICCProfile dstProfile
+        
+        Else
+            Message "Could not obtain standard sRGB color profile.  CMYK transform abandoned."
+            applyCMYKTransform = False
+        End If
+        
+        releaseICCProfile srcProfile
+    
+    Else
+        Message "Embedded ICC profile is invalid.  CMYK transform could not be performed."
+        applyCMYKTransform = False
+    End If
 
 End Function

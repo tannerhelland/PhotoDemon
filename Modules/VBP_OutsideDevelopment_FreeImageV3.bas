@@ -299,8 +299,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dX As Long, _
-    ByVal dY As Long, _
+    ByVal dx As Long, _
+    ByVal dy As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal Scan As Long, _
@@ -313,8 +313,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dX As Long, _
-    ByVal dY As Long, _
+    ByVal dx As Long, _
+    ByVal dy As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
@@ -1354,6 +1354,18 @@ End Type
 
 Public Type ScanLinesRGBTRIBLE
    Scanline() As ScanLineRGBTRIBLE
+End Type
+
+Private Type SAVEARRAY2D
+   cDims As Integer
+   fFeatures As Integer
+   cbElements As Long
+   cLocks As Long
+   pvData As Long
+   cElements1 As Long
+   lLbound1 As Long
+   cElements2 As Long
+   lLbound2 As Long
 End Type
 
 '--------------------------------------------------------------------------------
@@ -4454,9 +4466,65 @@ Dim bIsTransparent As Boolean
 
 End Function
 
-
-
 '--------------------------------------------------------------------------------
+' Pixel access functions
+'--------------------------------------------------------------------------------
+
+Public Function FreeImage_GetBitsEx(ByVal BITMAP As Long) As Byte()
+
+Dim tSA As SAVEARRAY2D
+Dim lpSA As Long
+
+   ' This function returns a two dimensional Byte array containing a DIB's
+   ' data-bits. This is done by wrapping a true VB array around the memory
+   ' block the returned pointer of FreeImage_GetBits() is pointing to. So, the
+   ' array returned provides full read and write acces to the image's data.
+
+   ' To reuse the caller's array variable, this function's result was assigned to,
+   ' before it goes out of scope, the caller's array variable must be destroyed with
+   ' the FreeImage_DestroyLockedArray() function.
+
+   If (BITMAP) Then
+      
+      ' create a proper SAVEARRAY descriptor
+      With tSA
+         .cbElements = 1                           ' size in bytes per array element
+         .cDims = 2                                ' the array has 2 dimensions
+         .cElements1 = FreeImage_GetHeight(BITMAP) ' the number of elements in y direction (height of Bitmap)
+         .cElements2 = FreeImage_GetPitch(BITMAP)  ' the number of elements in x direction (byte width of Bitmap)
+         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
+                                                   ' so the array can not be modified in size
+                                                   ' or erased; according to Matthew Curland never
+                                                   ' use FIXEDSIZE alone
+         .pvData = FreeImage_GetBits(BITMAP)       ' let the array point to the memory block, the
+                                                   ' FreeImage scanline data pointer points to
+      End With
+      
+      ' allocate memory for an array descriptor
+      ' we cannot use the memory block used by tSA, since it is
+      ' released when tSA goes out of scope, leaving us with an
+      ' array with zeroed descriptor
+      ' we use nearly the same method that VB uses, so VB is able
+      ' to cleanup the array variable and it's descriptor; the
+      ' array data is not touched when cleaning up, since both AUTO
+      ' and FIXEDSIZE flags are set
+      Call SafeArrayAllocDescriptor(2, lpSA)
+      
+      ' copy our own array descriptor over the descriptor allocated
+      ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
+      ' location
+      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
+      
+      ' the implicit variable named like the function is an array
+      ' variable in VB
+      ' make it point to the allocated array descriptor
+      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetBitsEx), lpSA, 4)
+   End If
+
+End Function
+
+
+'--------------------------------------------------------------------------------el a
 ' HBITMAP conversion functions
 '--------------------------------------------------------------------------------
 

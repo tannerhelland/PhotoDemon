@@ -56,6 +56,16 @@ Private iccData() As Byte
 'CopyMemory is used to shuttle around ICC data in memory
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDestination As Any, ByRef lpSource As Any, ByVal Length As Long)
 
+'The external CMYK transform code performs its own special transform using the stored ICC profile; as such, it requires a
+' pointer to the stored ICC profile data.
+Public Function getICCDataPointer() As Long
+    getICCDataPointer = VarPtr(iccData(0))
+End Function
+
+Public Function getICCDataSize() As Long
+    getICCDataSize = UBound(iccData) + 1
+End Function
+
 'If an ICC profile is present, apply it to the parent pdImage object.  The parent must be explicitly passed, as this
 ' small class does not maintain a persistent link on its own.
 Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
