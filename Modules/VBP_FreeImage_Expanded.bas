@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 'FreeImage Interface (Advanced)
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 23/May/13
-'Last update: image metadata is now processed at load-time and stored inside the pdImage's imgMetadata class
+'Last updated: 07/December/13
+'Last update: if CMYK files have an embedded ICC profile, retrieve the raw CMYK bits and apply the sRGB conversion ourselves.
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
@@ -673,6 +673,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
             FreeImage_Unload fi_hDIB
             fi_hDIB = FreeImage_CreateFromDC(tmpRGBLayer.getLayerDC)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
+            dstImage.ICCProfile.markSuccessfulProfileApplication
             
         'Something went horribly wrong.  Re-load the image and use FreeImage to apply the CMYK -> RGB transform.
         Else
@@ -857,79 +858,5 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
 isMultiImage_Error:
 
     isMultiImage = 0
-
-End Function
-
-'Apply a CMYK transform between a 32bpp CMYK layer and a 24bpp sRGB layer.
-Private Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKLayer As pdLayer, ByRef dstRGBLayer As pdLayer) As Boolean
-
-    Message "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
-    
-    'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
-    ' this function will also validate the profile for us.
-    Dim srcProfile As Long
-    srcProfile = loadICCProfileFromMemory(iccProfilePointer, iccProfileSize)
-    
-    'If we successfully opened and validated our source profile, continue on to the next step!
-    If srcProfile <> 0 Then
-    
-        'Now it is time to determine our destination profile.  Because PhotoDemon operates on DIBs that default
-        ' to the sRGB space, that's the profile we want to use for transformation.
-            
-        'Use the Color_Management module to request a standard sRGB profile.
-        Dim dstProfile As Long
-        dstProfile = loadStandardICCProfile(LCS_sRGB)
-        
-        'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
-        ' returned handle before continuing.
-        If dstProfile <> 0 Then
-            
-            'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
-            ' the DIB's RGB values.
-            Dim iccTransformation As Long
-            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL)
-            
-            'If the transformation was generated successfully, carry on!
-            If iccTransformation <> 0 Then
-                
-                'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
-                ' the API with direct access to our DIB bits.
-                
-                Message "CMYK to sRGB transform data created successfully.  Applying transform..."
-                
-                'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
-                ' color depth.
-                Dim transformCheck As Boolean
-                transformCheck = applyColorTransformToTwoLayers(iccTransformation, srcCMYKLayer, dstRGBLayer, BM_KYMCQUADS, BM_RGBTRIPLETS)
-                
-                'If the transform was successful, pat ourselves on the back.
-                If transformCheck Then
-                    Message "CMYK to sRGB transformation successful."
-                    applyCMYKTransform = True
-                Else
-                    Message "sRGB transform could not be applied.  Image remains in CMYK format."
-                End If
-                
-                'Release our transformation
-                releaseColorTransform iccTransformation
-                                
-            Else
-                Message "Both ICC profiles loaded successfully, but CMYK transformation could not be created."
-                applyCMYKTransform = False
-            End If
-        
-            releaseICCProfile dstProfile
-        
-        Else
-            Message "Could not obtain standard sRGB color profile.  CMYK transform abandoned."
-            applyCMYKTransform = False
-        End If
-        
-        releaseICCProfile srcProfile
-    
-    Else
-        Message "Embedded ICC profile is invalid.  CMYK transform could not be performed."
-        applyCMYKTransform = False
-    End If
 
 End Function

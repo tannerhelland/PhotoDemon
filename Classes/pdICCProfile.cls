@@ -47,6 +47,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Once we have converted the image to the sRGB working space, this will be set to TRUE.
+Private iccProfileHasBeenApplied As Boolean
+
 'If we are able to successfully load an ICC profile for this image, this will be set to TRUE.
 Private iccDataPresent As Boolean
 
@@ -55,6 +58,17 @@ Private iccData() As Byte
 
 'CopyMemory is used to shuttle around ICC data in memory
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDestination As Any, ByRef lpSource As Any, ByVal Length As Long)
+
+'If a profile has been successfully applied to the parent image, this will return TRUE.
+Public Function hasProfileBeenApplied() As Boolean
+    hasProfileBeenApplied = iccProfileHasBeenApplied
+End Function
+
+'If external functions (such as our new CMYK conversion code) apply a profile independently, they can use this function
+' to mark the image as successfully converted.  This saves us the extra work of checking again in the PreLoadImage function.
+Public Sub markSuccessfulProfileApplication()
+    iccProfileHasBeenApplied = True
+End Sub
 
 'The external CMYK transform code performs its own special transform using the stored ICC profile; as such, it requires a
 ' pointer to the stored ICC profile data.
@@ -116,6 +130,7 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
                     Message "ICC profile transformation successful.  Image is now sRGB."
+                    iccProfileHasBeenApplied = True
                 Else
                     Message "ICC profile could not be applied.  Image remains in original profile."
                 End If
@@ -200,4 +215,5 @@ End Function
 
 Private Sub Class_Initialize()
     iccDataPresent = False
+    iccProfileHasBeenApplied = False
 End Sub
