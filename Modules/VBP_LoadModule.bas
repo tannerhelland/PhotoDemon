@@ -3,8 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2013 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 16/October/13
-'Last update: register newly loaded images with the image thumbnail control
+'Last updated: 07/December/13
+'Last update: if an external function has already applied an image's ICC profile (as needed for proper CMYK conversion), don't attempt
+'             to apply it again.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -791,7 +792,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the image contains an embedded ICC profile, apply it now (before counting colors, etc).
         '*************************************************************************************************************************************
         
-        If targetImage.ICCProfile.hasICCData Then
+        If targetImage.ICCProfile.hasICCData And (Not targetImage.ICCProfile.hasProfileBeenApplied) Then
             
             '32bpp images must be un-premultiplied before the transformation
             If targetImage.mainLayer.getLayerColorDepth = 32 Then targetImage.mainLayer.fixPremultipliedAlpha

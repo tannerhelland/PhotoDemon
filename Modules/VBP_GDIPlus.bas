@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 04/November/13
-'Last update: added support for ICC profile extraction when loading images via GDI+.  Surprisingly simple!
+'Last updated: 07/December/13
+'Last update: added support for true ICC-profile-based CMYK conversion when loading images via GDI+.  Surprisingly simple!
 '
 'This interface provides a means for interacting with the unnecessarily complex (and overwrought) GDI+ module.  GDI+ was
 ' originally used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time it has become
@@ -98,7 +98,7 @@ Private Enum EncoderValue
     [EncoderValueColorTypeRGB] = 25
 End Enum
 
-Private Type clsid
+Private Type CLSID
     Data1         As Long
     Data2         As Integer
     Data3         As Integer
@@ -106,8 +106,8 @@ Private Type clsid
 End Type
 
 Private Type ImageCodecInfo
-    ClassID           As clsid
-    FormatID          As clsid
+    ClassID           As CLSID
+    FormatID          As CLSID
     CodecName         As Long
     DllName           As Long
     formatDescription As Long
@@ -122,7 +122,7 @@ Private Type ImageCodecInfo
 End Type
 
 Private Type EncoderParameter
-    Guid           As clsid
+    Guid           As CLSID
     NumberOfValues As Long
     encType           As EncoderParameterValueType
     Value          As Long
@@ -153,6 +153,7 @@ Private Const PixelFormat32bppARGB = &H26200A
 Private Const PixelFormat32bppPARGB = &HE200B
 Private Const PixelFormatAlpha = &H40000
 Private Const PixelFormatPremultipliedAlpha = &H80000
+Private Const PixelFormat32bppCMYK = &H200F
 
 'Now that PD supports the loading of ICC profiles, we use this constant to retrieve it
 Private Const PropertyTagICCProfile As Long = &H8773&
@@ -264,6 +265,7 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
 Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
+Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpBitmap As Long, ByRef gpFlags As Long) As Long
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal iPixelFormat As Long, ByVal srcBitmap As Long, ByRef dstBitmap As Long) As GDIPlusStatus
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gpBitmap As Long, hBmpReturn As Long, ByVal RGBABackground As Long) As GDIPlusStatus
@@ -271,7 +273,7 @@ Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) A
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, BITMAP As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
-Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
+Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As CLSID, encoderParams As Any) As GDIPlusStatus
 Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Long) As Long
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef imgHeight As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
@@ -292,7 +294,7 @@ Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hIm
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
 
 'CLSIDFromString is used to convert a mimetype into a CLSID required by the GDI+ image encoder
-Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, pclsid As clsid) As Long
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, pclsid As CLSID) As Long
 
 'Necessary for converting between ASCII and UNICODE strings
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
@@ -742,11 +744,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     End If
     
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
-    Dim profileSize As Long
+    Dim profileSize As Long, hasProfile As Boolean
     GdipGetPropertyItemSize hImage, PropertyTagICCProfile, profileSize
     
     'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
     If profileSize > 0 Then
+    
+        hasProfile = True
     
         Dim iccProfileBuffer() As Byte
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
@@ -757,7 +761,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         Erase iccProfileBuffer
         
     End If
-    
+        
     'Retrieve the image's size
     Dim imgWidth As Single, imgHeight As Single
     GdipGetImageDimension hImage, imgWidth, imgHeight
@@ -777,6 +781,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     If (iPixelFormat And PixelFormatAlpha) <> 0 Then hasAlpha = True
     If (iPixelFormat And PixelFormatPremultipliedAlpha) <> 0 Then hasAlpha = True
     
+    'Check for CMYK images
+    Dim isCMYK As Boolean
+    If (iPixelFormat = PixelFormat32bppCMYK) Then isCMYK = True
+    
     'Create a blank layer with matching size and alpha channel
     If hasAlpha Then
         dstLayer.createBlank CLng(imgWidth), CLng(imgHeight), 32
@@ -784,9 +792,12 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         dstLayer.createBlank CLng(imgWidth), CLng(imgHeight), 24
     End If
     
-    'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
-    ' 32bpp images are quite a bit more complicated.
+    Dim copyBitmapData As BitmapData
+    Dim tmpRect As RECTL
+    Dim iGraphics As Long
     
+    'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
+    ' 32bpp (including CMYK) images require a bit of extra work.
     If hasAlpha Then
         
         'Make sure the image is in 32bpp premultiplied ARGB format
@@ -795,7 +806,6 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
         
         'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
-        Dim copyBitmapData As BitmapData
         With copyBitmapData
             .Width = imgWidth
             .Height = imgHeight
@@ -805,12 +815,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         End With
         
         'Next, prepare a clipping rect
-        Dim tmpRect As RECTL
         With tmpRect
             .Left = 0
             .Top = 0
-            .Width = imgWidth - 1
-            .Height = imgHeight - 1
+            .Width = imgWidth
+            .Height = imgHeight
         End With
         
         'Use LockBits to perform the copy for us.
@@ -819,11 +828,65 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     
     Else
     
-        'Render the GDI+ image directly onto the newly created layer
-        Dim iGraphics As Long
-        GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
-        GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
-        GdipDeleteGraphics iGraphics
+        'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
+        ' Note that if a CMYK profile is not present, we allow GDI+ to convert the image to RGB for us.
+        If (isCMYK And hasProfile) Then
+        
+            'Create a blank 32bpp DIB, which will hold the CMYK data
+            Dim tmpCMYKLayer As pdLayer
+            Set tmpCMYKLayer = New pdLayer
+            tmpCMYKLayer.createBlank imgWidth, imgHeight, 32
+        
+            'Next, prepare a BitmapData variable with instructions on where GDI+ should paste the bitmap data
+            With copyBitmapData
+                .Width = imgWidth
+                .Height = imgHeight
+                .PixelFormat = PixelFormat32bppCMYK
+                .Stride = tmpCMYKLayer.getLayerArrayWidth
+                .Scan0 = tmpCMYKLayer.getLayerDIBits
+            End With
+            
+            'Next, prepare a clipping rect
+            With tmpRect
+                .Left = 0
+                .Top = 0
+                .Width = imgWidth
+                .Height = imgHeight
+            End With
+            
+            'Use LockBits to perform the copy for us.
+            GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppCMYK, copyBitmapData
+            GdipBitmapUnlockBits hImage, copyBitmapData
+            
+            'Apply the transformation using the dedicated CMYK transform handler
+            If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKLayer, dstLayer) Then
+            
+                Message "Copying newly transformed sRGB data..."
+            
+                'The transform was successful, and the destination layer is ready to go!
+                dstImage.ICCProfile.markSuccessfulProfileApplication
+                
+            'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
+            Else
+            
+                Message "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+            
+                GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+                GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
+                GdipDeleteGraphics iGraphics
+            
+            End If
+            
+            Set tmpCMYKLayer = Nothing
+        
+        Else
+            
+            'Render the GDI+ image directly onto the newly created layer
+            GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+            GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
+            GdipDeleteGraphics iGraphics
+            
+        End If
     
     End If
     
@@ -940,7 +1003,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End If
     
     'Request an encoder from GDI+ based on the type passed to this routine
-    Dim uEncCLSID As clsid
+    Dim uEncCLSID As CLSID
     Dim uEncParams As EncoderParameters
     Dim aEncParams() As Byte
 
@@ -1102,7 +1165,7 @@ End Function
 
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As Long
+Private Function pvGetEncoderClsID(strMimeType As String, ClassID As CLSID) As Long
 
   Dim Num      As Long
   Dim Size     As Long
@@ -1139,7 +1202,7 @@ Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As L
     Erase Buffer
 End Function
 
-Private Function pvDEFINE_GUID(ByVal sGuid As String) As clsid
+Private Function pvDEFINE_GUID(ByVal sGuid As String) As CLSID
 '-- Courtesy of: Dana Seaman
 '   Helper routine to convert a CLSID(aka GUID) string to a structure
 '   Example ImageFormatBMP = {B96B3CAB-0728-11D3-9D7B-0000F81EF32E}
