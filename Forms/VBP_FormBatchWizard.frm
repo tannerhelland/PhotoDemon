@@ -115,279 +115,6 @@ Begin VB.Form FormBatchWizard
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   7500
-      Index           =   1
-      Left            =   3480
-      ScaleHeight     =   500
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   8
-      Top             =   720
-      Width           =   11775
-      Begin VB.ComboBox cmbPattern 
-         ForeColor       =   &H00800000&
-         Height          =   315
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   25
-         Top             =   510
-         Width           =   3645
-      End
-      Begin VB.DriveListBox Drive1 
-         Appearance      =   0  'Flat
-         ForeColor       =   &H00800000&
-         Height          =   315
-         Left            =   240
-         TabIndex        =   24
-         Top             =   1080
-         Width           =   3645
-      End
-      Begin VB.DirListBox Dir1 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00FFFFFF&
-         ForeColor       =   &H00800000&
-         Height          =   2565
-         Left            =   240
-         TabIndex        =   23
-         Top             =   1440
-         Width           =   3615
-      End
-      Begin VB.ListBox lstFiles 
-         ForeColor       =   &H00800000&
-         Height          =   2400
-         Left            =   240
-         MultiSelect     =   2  'Extended
-         OLEDragMode     =   1  'Automatic
-         OLEDropMode     =   1  'Manual
-         TabIndex        =   22
-         Top             =   5040
-         Width           =   7575
-      End
-      Begin VB.PictureBox picPreview 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00808080&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FFFFFF&
-         Height          =   2445
-         Left            =   8160
-         ScaleHeight     =   161
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   231
-         TabIndex        =   20
-         Top             =   1080
-         Width           =   3495
-      End
-      Begin VB.CommandButton cmdAddFiles 
-         Caption         =   "Add selected image(s) to batch list"
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   4200
-         TabIndex        =   19
-         Top             =   4110
-         Width           =   3615
-      End
-      Begin VB.CommandButton cmdSelectAll 
-         Caption         =   "Select all"
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   4200
-         TabIndex        =   18
-         Top             =   360
-         Width           =   1695
-      End
-      Begin VB.CommandButton cmdSelectNone 
-         Caption         =   "Select none"
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   6120
-         TabIndex        =   17
-         Top             =   360
-         Width           =   1695
-      End
-      Begin VB.CommandButton cmdUseCD 
-         Caption         =   "Add images using ""Open Image"" dialog..."
-         Height          =   615
-         Left            =   8145
-         TabIndex        =   16
-         Top             =   360
-         Width           =   3525
-      End
-      Begin VB.CommandButton cmdLoadList 
-         Caption         =   "Load list..."
-         Height          =   615
-         Left            =   8160
-         TabIndex        =   15
-         Top             =   6600
-         Width           =   1695
-      End
-      Begin VB.CommandButton cmdSaveList 
-         Caption         =   "Save current list..."
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   9960
-         TabIndex        =   14
-         Top             =   6600
-         Width           =   1695
-      End
-      Begin VB.CommandButton cmdRemove 
-         Caption         =   "Remove selected image(s)"
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   8160
-         TabIndex        =   13
-         Top             =   5400
-         Width           =   1695
-      End
-      Begin VB.CommandButton cmdRemoveAll 
-         Caption         =   "Remove all images"
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   9960
-         TabIndex        =   12
-         Top             =   5400
-         Width           =   1695
-      End
-      Begin VB.ListBox lstSource 
-         ForeColor       =   &H00400000&
-         Height          =   2940
-         IntegralHeight  =   0   'False
-         Left            =   4200
-         MultiSelect     =   2  'Extended
-         TabIndex        =   11
-         Top             =   1080
-         Width           =   3615
-      End
-      Begin PhotoDemon.smartCheckBox chkEnablePreview 
-         Height          =   480
-         Left            =   8160
-         TabIndex        =   21
-         Top             =   3600
-         Width           =   2235
-         _ExtentX        =   3942
-         _ExtentY        =   847
-         Caption         =   "show image previews"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblFiles 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "potential source images:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   120
-         TabIndex        =   29
-         Top             =   0
-         Width           =   2595
-      End
-      Begin VB.Label lblTargetFiles 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "batch list:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   120
-         TabIndex        =   28
-         Top             =   4680
-         Width           =   1215
-      End
-      Begin VB.Label lblModify 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "modify batch list:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   8040
-         TabIndex        =   27
-         Top             =   5040
-         Width           =   1845
-      End
-      Begin VB.Label lblLoadSaveList 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "load / save batch list:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   8040
-         TabIndex        =   26
-         Top             =   6240
-         Width           =   2265
-      End
-      Begin VB.Line Line1 
-         BorderColor     =   &H8000000D&
-         Index           =   2
-         X1              =   8
-         X2              =   264
-         Y1              =   296
-         Y2              =   296
-      End
-      Begin VB.Line Line1 
-         BorderColor     =   &H8000000D&
-         Index           =   1
-         X1              =   536
-         X2              =   776
-         Y1              =   296
-         Y2              =   296
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
       Height          =   7455
       Index           =   3
       Left            =   3480
@@ -2109,6 +1836,279 @@ Begin VB.Form FormBatchWizard
          Width           =   2040
       End
    End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7500
+      Index           =   1
+      Left            =   3480
+      ScaleHeight     =   500
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   8
+      Top             =   720
+      Width           =   11775
+      Begin VB.ComboBox cmbPattern 
+         ForeColor       =   &H00800000&
+         Height          =   315
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   25
+         Top             =   510
+         Width           =   3645
+      End
+      Begin VB.DriveListBox Drive1 
+         Appearance      =   0  'Flat
+         ForeColor       =   &H00800000&
+         Height          =   315
+         Left            =   240
+         TabIndex        =   24
+         Top             =   1080
+         Width           =   3645
+      End
+      Begin VB.DirListBox Dir1 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         ForeColor       =   &H00800000&
+         Height          =   2565
+         Left            =   240
+         TabIndex        =   23
+         Top             =   1440
+         Width           =   3615
+      End
+      Begin VB.ListBox lstFiles 
+         ForeColor       =   &H00800000&
+         Height          =   2400
+         Left            =   240
+         MultiSelect     =   2  'Extended
+         OLEDragMode     =   1  'Automatic
+         OLEDropMode     =   1  'Manual
+         TabIndex        =   22
+         Top             =   5040
+         Width           =   7575
+      End
+      Begin VB.PictureBox picPreview 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00808080&
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00FFFFFF&
+         Height          =   2445
+         Left            =   8160
+         ScaleHeight     =   161
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   231
+         TabIndex        =   20
+         Top             =   1080
+         Width           =   3495
+      End
+      Begin VB.CommandButton cmdAddFiles 
+         Caption         =   "Add selected image(s) to batch list"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   4200
+         TabIndex        =   19
+         Top             =   4110
+         Width           =   3615
+      End
+      Begin VB.CommandButton cmdSelectAll 
+         Caption         =   "Select all"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   4200
+         TabIndex        =   18
+         Top             =   360
+         Width           =   1695
+      End
+      Begin VB.CommandButton cmdSelectNone 
+         Caption         =   "Select none"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   6120
+         TabIndex        =   17
+         Top             =   360
+         Width           =   1695
+      End
+      Begin VB.CommandButton cmdUseCD 
+         Caption         =   "Add images using ""Open Image"" dialog..."
+         Height          =   615
+         Left            =   8145
+         TabIndex        =   16
+         Top             =   360
+         Width           =   3525
+      End
+      Begin VB.CommandButton cmdLoadList 
+         Caption         =   "Load list..."
+         Height          =   615
+         Left            =   8160
+         TabIndex        =   15
+         Top             =   6600
+         Width           =   1695
+      End
+      Begin VB.CommandButton cmdSaveList 
+         Caption         =   "Save current list..."
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   9960
+         TabIndex        =   14
+         Top             =   6600
+         Width           =   1695
+      End
+      Begin VB.CommandButton cmdRemove 
+         Caption         =   "Remove selected image(s)"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   8160
+         TabIndex        =   13
+         Top             =   5400
+         Width           =   1695
+      End
+      Begin VB.CommandButton cmdRemoveAll 
+         Caption         =   "Remove all images"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   9960
+         TabIndex        =   12
+         Top             =   5400
+         Width           =   1695
+      End
+      Begin VB.ListBox lstSource 
+         ForeColor       =   &H00400000&
+         Height          =   2940
+         IntegralHeight  =   0   'False
+         Left            =   4200
+         MultiSelect     =   2  'Extended
+         TabIndex        =   11
+         Top             =   1080
+         Width           =   3615
+      End
+      Begin PhotoDemon.smartCheckBox chkEnablePreview 
+         Height          =   480
+         Left            =   8160
+         TabIndex        =   21
+         Top             =   3600
+         Width           =   2235
+         _ExtentX        =   3942
+         _ExtentY        =   847
+         Caption         =   "show image previews"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblFiles 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "potential source images:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   29
+         Top             =   0
+         Width           =   2595
+      End
+      Begin VB.Label lblTargetFiles 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "batch list:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   28
+         Top             =   4680
+         Width           =   1215
+      End
+      Begin VB.Label lblModify 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "modify batch list:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   8040
+         TabIndex        =   27
+         Top             =   5040
+         Width           =   1845
+      End
+      Begin VB.Label lblLoadSaveList 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "load / save batch list:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   8040
+         TabIndex        =   26
+         Top             =   6240
+         Width           =   2265
+      End
+      Begin VB.Line Line1 
+         BorderColor     =   &H8000000D&
+         Index           =   2
+         X1              =   8
+         X2              =   264
+         Y1              =   296
+         Y2              =   296
+      End
+      Begin VB.Line Line1 
+         BorderColor     =   &H8000000D&
+         Index           =   1
+         X1              =   536
+         X2              =   776
+         Y1              =   296
+         Y2              =   296
+      End
+   End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       Index           =   0
@@ -2394,7 +2394,7 @@ Private Sub cmdAddFiles_Click()
 End Sub
 
 'Cancel and exit the dialog, with optional prompts as necessary (see Form_QueryUnload)
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
@@ -3523,7 +3523,7 @@ End Sub
 'When the user presses "Start Conversion", this routine is triggered.
 Private Sub prepareForBatchConversion()
 
-    Me.Visible = False
+    'Me.Visible = False
     
     'Before doing anything, save relevant folder locations to the preferences file
     g_UserPreferences.SetPref_String "Batch Process", "Drive Box", Drive1
@@ -3735,9 +3735,10 @@ Private Sub prepareForBatchConversion()
                 End If
             
                 'Kill the next-to-last form (better than killing the current one, because of the constant GD flickering)
-                If (curBatchFile > 0) Or (curPage > 0) Then
-                    If Not pdImages(g_CurrentImage - 1).containingForm Is Nothing Then Unload pdImages(g_CurrentImage - 1).containingForm
-                End If
+                'If (curBatchFile > 0) Or (curPage > 0) Then
+                '    If Not pdImages(g_CurrentImage - 1).containingForm Is Nothing Then Unload pdImages(g_CurrentImage - 1).containingForm
+                'End If
+                If Not pdImages(g_CurrentImage).containingForm Is Nothing Then Unload pdImages(g_CurrentImage).containingForm
             
             Next curPage
             
@@ -3794,7 +3795,7 @@ Private Sub prepareForBatchConversion()
     Next curBatchFile
     
     'Unload the last form we processed
-    If Not pdImages(g_CurrentImage).containingForm Is Nothing Then Unload pdImages(g_CurrentImage).containingForm
+    'If Not pdImages(g_CurrentImage).containingForm Is Nothing Then Unload pdImages(g_CurrentImage).containingForm
     
     MacroStatus = MacroSTOP
     
