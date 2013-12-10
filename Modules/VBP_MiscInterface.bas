@@ -118,12 +118,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tEffects, False
         metaToggle tMacro, False
         metaToggle tZoom, False
-        
-        toolbar_File.lblImgSize.ForeColor = &HD1B499
-        toolbar_File.lblCoordinates.ForeColor = &HD1B499
-        toolbar_File.lblImgSize.Caption = ""
-        toolbar_File.lblCoordinates.Caption = ""
-        
+                
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
         'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
@@ -167,10 +162,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tImageOps, True
         metaToggle tEffects, True
         metaToggle tMacro, True
-        
-        toolbar_File.lblImgSize.ForeColor = &H544E43
-        toolbar_File.lblCoordinates.ForeColor = &H544E43
-        
+                
         'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
         ' the image has not already been saved in its current state.
         
@@ -1119,8 +1111,10 @@ End Sub
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     
-    toolbar_File.lblImgSize.Caption = g_Language.TranslateMessage("size") & ":" & vbCrLf & iWidth & "x" & iHeight
-    toolbar_File.lblImgSize.Refresh
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).containingForm.lblImgSize.Caption = g_Language.TranslateMessage("size") & ": " & iWidth & " x " & iHeight
+        pdImages(g_CurrentImage).containingForm.lblImgSize.Refresh
+    End If
     
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
     ' now is an excellent time to update them.
@@ -1215,10 +1209,12 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
     
     If MacroStatus <> MacroBATCH Then
-        If FormMain.Visible Then
-            g_ProgBar.Text = newString
-            g_ProgBar.Draw
+    
+        If g_OpenImageCount > 0 Then
+            pdImages(g_CurrentImage).containingForm.lblMessages.Caption = newString
+            pdImages(g_CurrentImage).containingForm.lblMessages.Refresh
         End If
+        
     End If
     
     If Not g_IsProgramCompiled Then Debug.Print newString
@@ -1246,8 +1242,10 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    toolbar_File.lblCoordinates.Caption = ""
-    toolbar_File.lblCoordinates.Refresh
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).containingForm.lblCoordinates.Caption = ""
+        pdImages(g_CurrentImage).containingForm.lblCoordinates.Refresh
+    End If
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.

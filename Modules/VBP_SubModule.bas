@@ -172,8 +172,10 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     If copyX Then copyX = x1
     If copyY Then copyY = y1
     
-    toolbar_File.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-    toolbar_File.lblCoordinates.Refresh
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).containingForm.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
+        pdImages(g_CurrentImage).containingForm.lblCoordinates.Refresh
+    End If
     
 End Sub
 

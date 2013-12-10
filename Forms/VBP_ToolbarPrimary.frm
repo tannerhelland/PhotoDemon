@@ -259,38 +259,6 @@ Begin VB.Form toolbar_File
       ToolTip         =   "Use this button to decrease image zoom."
       TooltipTitle    =   "Zoom Out"
    End
-   Begin VB.Label lblImgSize 
-      Alignment       =   2  'Center
-      BackStyle       =   0  'Transparent
-      Caption         =   "size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00D1B499&
-      Height          =   675
-      Left            =   0
-      TabIndex        =   11
-      Top             =   5460
-      Width           =   990
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblCoordinates 
-      Alignment       =   2  'Center
-      BackStyle       =   0  'Transparent
-      Caption         =   "(X, Y)"
-      ForeColor       =   &H00808080&
-      Height          =   195
-      Left            =   0
-      TabIndex        =   10
-      Top             =   6240
-      Width           =   990
-   End
    Begin VB.Label lblRecording 
       Alignment       =   2  'Center
       Appearance      =   0  'Flat

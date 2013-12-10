@@ -304,7 +304,7 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     
     'Request that binary data be processed.  We have no use for this data within PD, but when it comes time to write
     ' our metadata back out to file, we need to have a copy of it.
-    cmdParams = cmdParams & "-b" & vbCrLf
+    'cmdParams = cmdParams & "-b" & vbCrLf
     
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
     ' so deny them specifically.
