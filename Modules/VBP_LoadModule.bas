@@ -534,10 +534,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' Before attempting to load this image, make sure it exists
         '*************************************************************************************************************************************
     
-        If isThisPrimaryImage Then Message "Verifying that file exists..."
+        'If isThisPrimaryImage Then Message "Verifying that file exists..."
     
         If isThisPrimaryImage And (Not FileExist(sFile(thisImage))) Then
-            Message "File not found (%1). Image load canceled.", sFile(thisImage)
+            'Message "File not found (%1). Image load canceled.", sFile(thisImage)
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
@@ -557,7 +557,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         If isThisPrimaryImage Then
             
-            Message "Image found. Initializing blank form..."
+            'Message "Image found. Initializing blank form..."
 
             CreateNewImageForm
         

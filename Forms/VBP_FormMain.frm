@@ -2420,7 +2420,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
     'Check - just in case - to make sure the path isn't empty
     If tmpString <> "" Then
         
-        Message "Preparing to load recent file entry..."
+        'Message "Preparing to load recent file entry..."
         
         'Because PreLoadImage requires a string array, create an array to pass it
         Dim sFile(0) As String

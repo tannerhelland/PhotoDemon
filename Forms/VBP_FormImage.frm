@@ -3,10 +3,10 @@ Begin VB.Form FormImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "Image Window"
-   ClientHeight    =   5025
+   ClientHeight    =   6870
    ClientLeft      =   120
    ClientTop       =   345
-   ClientWidth     =   8355
+   ClientWidth     =   13275
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,9 +20,9 @@ Begin VB.Form FormImage
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   335
+   ScaleHeight     =   458
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   557
+   ScaleWidth      =   885
    Visible         =   0   'False
    Begin VB.PictureBox picStatusBar 
       Align           =   1  'Align Top
@@ -35,10 +35,101 @@ Begin VB.Form FormImage
       Left            =   0
       ScaleHeight     =   26
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   557
+      ScaleWidth      =   885
       TabIndex        =   2
       Top             =   0
-      Width           =   8355
+      Width           =   13275
+      Begin VB.Label lblMessages 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "(messages will appear here at run-time)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   210
+         Left            =   9810
+         TabIndex        =   5
+         Top             =   90
+         Width           =   3255
+      End
+      Begin VB.Line lineStatusBar 
+         BorderColor     =   &H8000000D&
+         Index           =   2
+         X1              =   240
+         X2              =   240
+         Y1              =   1
+         Y2              =   25
+      End
+      Begin VB.Label lblCoordinates 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "(X, Y)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   210
+         Left            =   1920
+         TabIndex        =   4
+         Top             =   90
+         Width           =   1545
+      End
+      Begin VB.Line lineStatusBar 
+         BorderColor     =   &H8000000D&
+         Index           =   0
+         X1              =   0
+         X2              =   0
+         Y1              =   1
+         Y2              =   25
+      End
+      Begin VB.Line lineStatusBar 
+         BorderColor     =   &H8000000D&
+         Index           =   1
+         X1              =   120
+         X2              =   120
+         Y1              =   1
+         Y2              =   25
+      End
+      Begin VB.Label lblImgSize 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "size:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   210
+         Left            =   120
+         TabIndex        =   3
+         Top             =   90
+         Width           =   1545
+      End
    End
    Begin VB.HScrollBar HScroll 
       Height          =   255
@@ -844,6 +935,10 @@ End Sub
 
 Private Sub HScroll_Scroll()
     ScrollViewport Me
+End Sub
+
+Private Sub picStatusBar_Resize()
+    lblMessages.Move picStatusBar.ScaleWidth - lblMessages.Width - 12
 End Sub
 
 Private Sub VScroll_Change()
