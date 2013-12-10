@@ -135,11 +135,14 @@ End Function
 Public Sub releaseProgressBar()
 
     'Briefly display a full progress bar before exiting
-    curProgBar.Value = curProgBar.Max
-    curProgBar.Refresh
+    If Not curProgBar Is Nothing Then
+        curProgBar.Value = curProgBar.Max
+        curProgBar.Refresh
     
-    'Release the progress bar and container picture box
-    Set curProgBar = Nothing
+        'Release the progress bar and container picture box
+        Set curProgBar = Nothing
+    End If
+    
     If special_ProgressBar.Visible Then Unload special_ProgressBar
     If g_IsWin7OrLater Then SetTaskbarProgressState TBPF_NOPROGRESS
     

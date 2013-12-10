@@ -74,7 +74,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     
     'Previously we used the .Show event here to display the form, but we now rely on the window manager to handle this
     ' later in the load process.  (This reduces flicker while loading images.)
-    newImageForm.Show vbModeless, FormMain
+    If MacroStatus <> MacroBATCH Then newImageForm.Show vbModeless, FormMain
     
     'Use the window manager to properly assign the main form ownership over this window
     'g_WindowManager.requestNewOwner newImageForm.hWnd, FormMain.hWnd
