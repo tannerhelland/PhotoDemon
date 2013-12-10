@@ -340,7 +340,7 @@ Private numOfExtraWindows As Long
 ' The progress bar's z-order will be determined by the active image window (if one is present) or the main form.
 Public Sub displayProgressBar(ByRef progBarForm As Form)
 
-    'On Error GoTo doNotMakeFormVisible
+    On Error GoTo doNotMakeFormVisible
 
     Dim hWndAfterParam As Long
     
