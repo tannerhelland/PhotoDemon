@@ -34,7 +34,7 @@ Option Explicit
 Private m_strBuffer As String
 Private m_lngInUse As Long
 Private m_blnHasLine As Boolean
-Private Const CHUNK_SIZE As Long = 1000
+Private Const CHUNK_SIZE As Long = 32768
 Private Const CHUNK_SOFT_LIMIT As Long = CHUNK_SIZE * 10
 
 Public Sub Append(ByVal Text As String)

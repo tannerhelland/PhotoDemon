@@ -36,6 +36,25 @@ Private Const PM_REMOVE As Long = &H1
 
 Public cancelCurrentAction As Boolean
 
+'Wait for (n) milliseconds, while still providing some interactivity via DoEvents.  Thank you to vbforums user "anhn" for the
+' original version of this function, available here: http://www.vbforums.com/showthread.php?546633-VB6-Sleep-Function.
+' Please note that his original code has been modified for use in PhotoDemon.
+Public Sub PauseProgram(ByRef secsDelay As Double)
+   
+   Dim TimeOut   As Double
+   Dim PrevTimer As Double
+   
+   PrevTimer = Timer
+   TimeOut = PrevTimer + secsDelay
+   Do While PrevTimer < TimeOut
+      Sleep 2 '-- Timer is only updated every 1/128 sec
+      DoEvents
+      If Timer < PrevTimer Then TimeOut = TimeOut - 86400 '-- pass midnight
+      PrevTimer = Timer
+   Loop
+   
+End Sub
+
 'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
 ' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
 Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
