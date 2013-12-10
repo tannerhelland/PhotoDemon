@@ -427,7 +427,7 @@ Public Function FinishChild(Optional ByVal WaitMs As Long = 500, _
         If blnProcessActive Then
             If WaitForSingleObject(piProc.hProcess, WaitMs) <> WAIT_OBJECT_0 Then
                 TerminateProcess piProc.hProcess, KillReturnCode
-                WaitForSingleObject piProc.hProcess, INFINITE
+                'WaitForSingleObject piProc.hProcess, INFINITE
             End If
             blnProcessActive = False
             tmrCheck.Enabled = False

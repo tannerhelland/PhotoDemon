@@ -111,3 +111,6 @@ Public Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT
 Public Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Public Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+
+'Wait for external actions to finish by using Sleep
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
