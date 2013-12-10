@@ -456,6 +456,9 @@ Public Sub terminateExifTool()
         'Submit the order
         FormMain.shellPipeMain.SendData cmdParams
         
+        'Wait a little bit for ExifTool to receive the order and shut down on its own
+        Sleep 500
+        
         'Close our own pipe handles and exit
         FormMain.shellPipeMain.FinishChild
         

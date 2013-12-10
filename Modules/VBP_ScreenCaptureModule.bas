@@ -27,7 +27,6 @@ Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Const PW_CLIENTONLY As Long = &H1
-Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long

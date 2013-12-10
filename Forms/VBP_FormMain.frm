@@ -3117,6 +3117,6 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     newMetadataReceived receivedData
     
     'DEBUG ONLY!
-    'Debug.Print "New data: " & receivedData
+    Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
     
 End Sub
