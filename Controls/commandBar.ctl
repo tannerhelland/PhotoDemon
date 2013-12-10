@@ -533,7 +533,7 @@ Private Sub CmdCancel_Click()
     
     'If the current form's progress bar is visible, hide it
     If g_OpenImageCount > 0 Then
-        If pdImages(g_CurrentImage).containingForm.picProgressBar.Visible Then pdImages(g_CurrentImage).containingForm.picProgressBar.Visible = False
+        'If pdImages(g_CurrentImage).containingForm.picProgressBar.Visible Then pdImages(g_CurrentImage).containingForm.picProgressBar.Visible = False
     End If
     
     'Automatically unload our parent
