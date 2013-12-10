@@ -51,6 +51,7 @@ Begin VB.Form FormMain
       Top             =   9480
       _ExtentX        =   635
       _ExtentY        =   635
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -3117,6 +3118,6 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     newMetadataReceived receivedData
     
     'DEBUG ONLY!
-    Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
     
 End Sub

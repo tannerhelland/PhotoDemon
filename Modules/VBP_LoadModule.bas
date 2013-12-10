@@ -956,27 +956,48 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         End If
         
         '*************************************************************************************************************************************
-        ' Hopefully metadata processing has finished, but if it hasn't, wait for it to complete.
+        ' Hopefully metadata processing has finished, but if it hasn't, start a timer on the main form, which will wait for it to complete.
         '*************************************************************************************************************************************
         
         'Ask the metadata handler if it has finished parsing the image
         If g_ExifToolEnabled And isThisPrimaryImage Then
         
             'Wait for metadata parsing to finish...
-            If Not isMetadataFinished Then
+            If isMetadataFinished Then
                 
-                Do While Not isMetadataFinished
-                    DoEvents
-                Loop
-                
-            End If
-                
-            Message "Metadata retrieved successfully."
-            targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
+                Message "Metadata retrieved successfully."
+                targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
             
-            'I hate doing this, but we need to resync the interface to match any metadata discoveries
-            syncInterfaceToCurrentImage
-        
+                'I hate doing this, but we need to resync the interface to match any metadata discoveries
+                syncInterfaceToCurrentImage
+                
+            Else
+            
+                Message "Finishing image metadata parsing..."
+            
+                'Forcibly disable the main form to avoid DoEvents allowing click-through
+                FormMain.Enabled = False
+            
+                'Pause for 1/2 second
+                Do
+                    PauseProgram 0.5
+                    
+                    'If the user shuts down the program while we are still waiting for input, exit immediately
+                    If g_ProgramShuttingDown Then Exit Sub
+                    
+                Loop While (Not isMetadataFinished)
+                
+                'Re-enable the main form
+                FormMain.Enabled = True
+                
+                Message "Metadata retrieved successfully."
+                targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
+            
+                'I hate doing this, but we need to resync the interface to match any metadata discoveries
+                syncInterfaceToCurrentImage
+            
+            End If
+            
         End If
         
         
