@@ -374,13 +374,16 @@ Public Sub moveProgressBarIntoPosition(ByRef progBarForm As Form)
         'Find the active image in our window array and restore it
         getClientCoordsRelativeToScreen pdImages(g_CurrentImage).containingForm.hWnd, curWinRect
         
+        'Compensate for any chrome that may be in the way, such as the image window's status bar
+        curWinRect.y1 = curWinRect.y1 + pdImages(g_CurrentImage).imgViewport.getVerticalOffset
+        
     'No image has been loaded; use the main form's client rect to position the progress bar
     Else
         getActualMainFormClientRect curWinRect
     End If
     
     'Silently move the window into position.
-    MoveWindow progBarForm.hWnd, curWinRect.x1, curWinRect.y2 - fixDPI(15), curWinRect.x2 - curWinRect.x1, fixDPI(15), 1
+    MoveWindow progBarForm.hWnd, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, fixDPI(15), 1
     
 End Sub
 
