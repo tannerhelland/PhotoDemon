@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2012-2013 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 17/November/13
-'Last update: do not attempt to restore last-used width/height for specific toolbars; instead, rely on their default size.
+'Last updated: 13/December/13
+'Last update: added specialized "track minimized mode" code to prevent window offsets and size being set to 0 by minimize events
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2013, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
@@ -335,6 +335,11 @@ Private mainFormTriggeredChange As Boolean
 'If the program has registered an extra window that it wants made top-most, any hWnds will be stored in this array.
 Private extraWindowHwnds() As Long
 Private numOfExtraWindows As Long
+
+'When the main form is minimized, a flurry of window messages are sent to all child windows, including instructions to resize to (0, 0).
+' To prevent this size from being synched as the "last-known window size", we track minimize mode, and disregard all location and
+' size synching while it is active.
+Private insideMinimizeMode As Boolean
 
 'Display the progress bar window.  Note that moveProgressBarIntoPosition, below, should be called prior to this.
 ' The progress bar's z-order will be determined by the active image window (if one is present) or the main form.
@@ -728,6 +733,8 @@ End Sub
 
 'If external (or internal) functions move windows around on their own, they can manually request resyncing the window's offset.
 Public Sub requestWindowResync(ByVal winIndex As Long)
+    
+    If insideMinimizeMode Then Exit Sub
     
     'Get the parent's window rect
     Dim parentRect As winRect
@@ -1619,8 +1626,9 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SYSCOMMAND, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE ', WM_MOVE - adding WM_MOVE causes freezing at present, and I'm not sure why, so leave it unsubclassed for the time being
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE  ', WM_MOVE - adding WM_MOVE causes freezing at present, and I'm not sure why, so leave it unsubclassed for the time being
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_SYSCOMMAND
     
     'Because I care about PD being a good "desktop citizen", I deactivate top-most status of all toolbars (and other windows, as necessary),
     ' when PD loses focus.  To do that successfully, we must intercept app activation messages.
@@ -2117,6 +2125,41 @@ Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boo
 
 End Sub
 
+'As the name implies, move a given window to the last offset and size stored in its pdWindows entry.  This is helpful after a
+' minimize/restore of the main window, for example, if either images or toolbars are floating.
+Private Sub moveWindowToLastKnownLocation(ByVal windowIndex As Long, ByRef mainFormRect As winRect, Optional ByVal alsoRestoreSize As Boolean = False)
+
+    Dim childRect As winRect
+    GetWindowRect pdWindows(windowIndex).hWnd, childRect
+    
+    If alsoRestoreSize Then
+        childRect = pdWindows(windowIndex).lastPosition
+    End If
+    
+    'NOTE: Win 7 classic theme will need extra debugging, as I have just discovered.  Desktop redraws are handled COMPLETELY differently,
+    ' so optimizations for Aero can cause all kinds of horrible distortions on classic theme!  Ugh....
+    Select Case pdWindows(windowIndex).typeOfWindow
+    
+        Case TOOLBAR_WINDOW
+            If toolbarsFloating Then MoveWindow pdWindows(windowIndex).hWnd, mainFormRect.x1 + pdWindows(windowIndex).offsetX, mainFormRect.y1 + pdWindows(windowIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(windowIndex).isVisible, 1, 0)
+            
+        Case IMAGE_WINDOW
+            If imagesFloating Then
+                MoveWindow pdWindows(windowIndex).hWnd, mainFormRect.x1 + pdWindows(windowIndex).offsetX, mainFormRect.y1 + pdWindows(windowIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(windowIndex).isVisible, 1, 0)
+            
+            'Images are not floating, so they will not receive WM_MOVE notifications.  Notify them that they may have changed
+            ' monitors, so they will need to re-check their color management settings.
+            Else
+                If pdWindows(windowIndex).isVisible Then pdWindows(windowIndex).formReference.checkParentMonitor
+            End If
+    
+    End Select
+    
+    'Previously we would request a resync of position after this, but that is no longer necessary.
+    'requestWindowResync i
+
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -2173,18 +2216,26 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'The window has moved
             Case WM_MOVE, WM_SIZE
             
-                'If images are floating but toolbars are docked, give an MDI-like experience by restricting child size and position
-                ' to the main form's client area.
-                If imagesFloating And (Not toolbarsFloating) Then
-                    If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then moveChildInsideParent winIndex
-                End If
-                If Not mainFormTriggeredChange Then requestWindowResync winIndex
+                If Not insideMinimizeMode Then
+            
+                    Debug.Print "Received move or size event for " & pdWindows(winIndex).formReference.Caption
                 
-                'Notify the child window that it may have changed monitors, so it may need to redraw itself with a new color profile
-                If (pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then pdWindows(winIndex).formReference.checkParentMonitor
+                    'If images are floating but toolbars are docked, give an MDI-like experience by restricting child size and position
+                    ' to the main form's client area.
+                    If imagesFloating And (Not toolbarsFloating) Then
+                        If pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW Then moveChildInsideParent winIndex
+                    End If
+                    If Not mainFormTriggeredChange Then requestWindowResync winIndex
+                    
+                    'Notify the child window that it may have changed monitors, so it may need to redraw itself with a new color profile
+                    If (pdWindows(winIndex).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then pdWindows(winIndex).formReference.checkParentMonitor
+                    
+                End If
             
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
+                
+                Debug.Print "Received moving or sizing event for " & pdWindows(winIndex).formReference.Caption
                 
                 'If mainFormTriggeredChange Then Exit Sub
                 
@@ -2301,28 +2352,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Move each child window, while retaining the current offset.  Note that docked (child) windows do not have to
                 ' be manually moved - Windows takes care of this for us.
                 For i = 0 To numOfPDWindows - 1
-                    GetWindowRect pdWindows(i).hWnd, childRect
-                    
-                    'NOTE: Win 7 classic theme will need extra debugging, as I have just discovered.  Desktop redraws are handled COMPLETELY differently,
-                    ' so optimizations for Aero can cause all kinds of horrible distortions on classic theme!  Ugh....
-                    Select Case pdWindows(i).typeOfWindow
-                    
-                        Case TOOLBAR_WINDOW
-                            If toolbarsFloating Then MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
-                            
-                        Case IMAGE_WINDOW
-                            If imagesFloating Then
-                                MoveWindow pdWindows(i).hWnd, curWinRect.x1 + pdWindows(i).offsetX, curWinRect.y1 + pdWindows(i).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(i).isVisible, 1, 0)
-                            
-                            'Images are not floating, so they will not receive WM_MOVE notifications.  Notify them that they may have changed
-                            ' monitors, so they will need to re-check their color management settings.
-                            Else
-                                If pdWindows(i).isVisible Then pdWindows(i).formReference.checkParentMonitor
-                            End If
-                    
-                    End Select
-                    
-                    'requestWindowResync i
+                    moveWindowToLastKnownLocation i, curWinRect
                 Next i
                 
                 mainFormTriggeredChange = False
@@ -2425,82 +2455,113 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' in completely unpredictable ways.  This code block (which can be safely commented out) is helpful for seeing
                 ' what messages the window manager receives from different actions.
                 If Not g_IsProgramCompiled Then
-                    If (wParam = SC_MAXIMIZE) Then Debug.Print "Received system maximize message"
-                    If (wParam = SC_RESTORE) Then Debug.Print "Received system restore window message"
-                    If (wParam = SC_SIZE) Then Debug.Print "Received system window size message"
-                    If (wParam = SC_MOVE) Then Debug.Print "Received system window move message"
+                    If (wParam = SC_MAXIMIZE) Then Debug.Print "Received system maximize message " & bBefore
+                    If (wParam = SC_RESTORE) Then Debug.Print "Received system restore window message " & bBefore
+                    If (wParam = SC_SIZE) Then Debug.Print "Received system window size message " & bBefore
+                    If (wParam = SC_MOVE) Then Debug.Print "Received system window move message " & bBefore
                 End If
                 
                 If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE) Then
                     
-                    'If the window was previously minimized, restore any child windows now
-                    For i = 0 To numOfPDWindows - 1
-                        If pdWindows(i).forciblyMinimized Then
-                            pdWindows(i).forciblyMinimized = False
-                            pdWindows(i).formReference.WindowState = vbNormal
+                    If Not bBefore Then
+                        
+                        'Manually retrieve the new window position.
+                        GetWindowRect lng_hWnd, curWinRect
+                        
+                        'If the window was previously minimized, restore any child windows now
+                        For i = 0 To numOfPDWindows - 1
+                            If pdWindows(i).forciblyMinimized Then
+                                pdWindows(i).forciblyMinimized = False
+                                pdWindows(i).formReference.WindowState = vbNormal
+                                moveWindowToLastKnownLocation i, curWinRect, True
+                            End If
+                        Next i
+                        
+                        'Resize each child window, while retaining its current offset
+                        For i = 0 To numOfPDWindows - 1
+                            requestWindowRedraw i, curWinRect
+                            
+                            'Toolbar windows may not redraw properly after restoration, so forcibly update them now
+                            If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then forceFullWindowRefresh i
+                            
+                        Next i
+                        
+                        If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Then
+                            Debug.Print "LEAVING MINIMIZED MODE"
+                            insideMinimizeMode = False
                         End If
-                    Next i
-                
-                    'Manually retrieve the new window position.
-                    GetWindowRect lng_hWnd, curWinRect
-                    
-                    'Resize each child window, while retaining its current offset
-                    For i = 0 To numOfPDWindows - 1
-                        requestWindowRedraw i, curWinRect
                         
-                        'Toolbar windows may not redraw properly after restoration, so forcibly update them now
-                        If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then forceFullWindowRefresh i
-                        
-                    Next i
-                    
-                    'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-                    restoreActiveImageToForeground "PD maximized or restored"
+                        'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
+                        restoreActiveImageToForeground "PD maximized or restored"
+                                            
+                    End If
                     
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now
                 ElseIf wParam = SC_MINIMIZE Then
                 
-                    For i = 0 To numOfPDWindows - 1
-                        If Not (pdWindows(i).formReference Is Nothing) Then
-                            If pdWindows(i).formReference.WindowState <> vbMinimized Then
-                                pdWindows(i).forciblyMinimized = True
-                                pdWindows(i).formReference.WindowState = vbMinimized
+                    If bBefore Then
+                
+                        Debug.Print "ENTERING MINIMIZED MODE"
+                        insideMinimizeMode = True
+                    
+                        For i = 0 To numOfPDWindows - 1
+                            If Not (pdWindows(i).formReference Is Nothing) Then
+                                If pdWindows(i).formReference.WindowState <> vbMinimized Then
+                                    Debug.Print "forcibly minimizing window: " & pdWindows(i).formReference.Caption
+                                    
+                                    'Update the window's location before minimizing it
+                                    requestWindowResync i
+                                    pdWindows(i).forciblyMinimized = True
+                                    pdWindows(i).formReference.WindowState = vbMinimized
+                                    
+                                End If
                             End If
-                        End If
-                    Next i
-                
+                        Next i
+                    
+                    End If
+                    
                 End If
-                
+                    
             'Mouse has been moved.  If toolbars are floating, make them translucent.
             Case WM_MOUSEMOVE, WM_NCMOUSEMOVE
-                For i = 0 To numOfPDWindows - 1
-                    If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) And toolbarsFloating Then
-                        pdWindows(i).hasBeenMadeTransparent = True
-                        setWindowTranslucency pdWindows(i).hWnd, INACTIVE_TOOLBOX_OPACITY
-                    End If
-                Next i
+            
+                If Not bBefore Then
+                
+                    For i = 0 To numOfPDWindows - 1
+                        If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) And toolbarsFloating Then
+                            pdWindows(i).hasBeenMadeTransparent = True
+                            setWindowTranslucency pdWindows(i).hWnd, INACTIVE_TOOLBOX_OPACITY
+                        End If
+                    Next i
+                    
+                End If
                 
             'The user is switching to or from PD and another application
             Case WM_ACTIVATEAPP
             
-                'wParam contains a notification of whether we are gaining or losing focus.
-                Select Case wParam
-                
-                    'PD is losing focus; make all top-most windows not topmost
-                    Case WA_INACTIVE
-                        Debug.Print "> PhotoDemon lost focus! <"
-                        resetTopmostForAllWindows False
-                        isPDDeactivated = True
-                        
-                    'PD is gaining focus
-                    Case Else
-                        Debug.Print "> PhotoDemon regained focus! <"
-                        
-                        If isPDDeactivated Then
-                            resetTopmostForAllWindows True
-                            isPDDeactivated = False
-                        End If
-                        
-                End Select
+                If bBefore Then
+            
+                    'wParam contains a notification of whether we are gaining or losing focus.
+                    Select Case wParam
+                    
+                        'PD is losing focus; make all top-most windows not topmost
+                        Case WA_INACTIVE
+                            Debug.Print "> PhotoDemon lost focus! <"
+                            resetTopmostForAllWindows False
+                            isPDDeactivated = True
+                            
+                        'PD is gaining focus
+                        Case Else
+                            Debug.Print "> PhotoDemon regained focus! <"
+                            
+                            If isPDDeactivated Then
+                                resetTopmostForAllWindows True
+                                isPDDeactivated = False
+                            End If
+                            
+                    End Select
+                    
+                End If
                         
         End Select
     
