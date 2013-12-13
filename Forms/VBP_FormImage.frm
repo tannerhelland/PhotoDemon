@@ -30,7 +30,7 @@ Begin VB.Form FormImage
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000016&
       BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+      ForeColor       =   &H00808080&
       Height          =   390
       Left            =   0
       ScaleHeight     =   26
@@ -59,11 +59,11 @@ Begin VB.Form FormImage
          Height          =   210
          Left            =   9810
          TabIndex        =   5
-         Top             =   90
+         Top             =   75
          Width           =   3255
       End
       Begin VB.Line lineStatusBar 
-         BorderColor     =   &H8000000D&
+         BorderColor     =   &H00808080&
          Index           =   2
          X1              =   240
          X2              =   240
@@ -73,8 +73,7 @@ Begin VB.Form FormImage
       Begin VB.Label lblCoordinates 
          Alignment       =   2  'Center
          Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
+         BackColor       =   &H80000016&
          Caption         =   "(X, Y)"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -89,19 +88,11 @@ Begin VB.Form FormImage
          Height          =   210
          Left            =   1920
          TabIndex        =   4
-         Top             =   90
+         Top             =   75
          Width           =   1545
       End
       Begin VB.Line lineStatusBar 
-         BorderColor     =   &H8000000D&
-         Index           =   0
-         X1              =   0
-         X2              =   0
-         Y1              =   1
-         Y2              =   25
-      End
-      Begin VB.Line lineStatusBar 
-         BorderColor     =   &H8000000D&
+         BorderColor     =   &H00808080&
          Index           =   1
          X1              =   120
          X2              =   120
@@ -127,7 +118,7 @@ Begin VB.Form FormImage
          Height          =   210
          Left            =   120
          TabIndex        =   3
-         Top             =   90
+         Top             =   75
          Width           =   1545
       End
    End
