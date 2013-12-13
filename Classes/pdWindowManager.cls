@@ -465,6 +465,10 @@ Public Sub setImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     
     requestWindowRedraw imageTabstripIndex, curMainFormRect
     
+    'Request a redraw of the main window; because it clips children, it needs to be notified of non-standard redraws like this to
+    ' avoid leftover artifacts along the tabstrip's borders.
+    requestWindowRedraw mainWindowIndex, curMainFormRect
+    
     'The available client area for the main form may have changed.  Refresh all relevant image windows.
     Dim i As Long
     For i = 0 To numOfPDWindows - 1
