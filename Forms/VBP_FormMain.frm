@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormMain 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   10455
