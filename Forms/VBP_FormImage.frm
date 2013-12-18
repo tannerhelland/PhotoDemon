@@ -843,7 +843,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     
-    Message "Closing image..."
+    If Me.Visible And pdImages(Me.Tag).loadedSuccessfully Then Message "Closing image..."
     
     'Unload the mouse tracker
     Set cMouseEvents = Nothing
