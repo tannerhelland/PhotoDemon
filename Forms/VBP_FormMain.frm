@@ -2765,9 +2765,9 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
         
     'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
     ' to cancel batch conversions, but in the future it should be applied elsewhere.
-    If ctlAccelerator.Key(nIndex) = "Escape" Then
-        If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
-    End If
+    'If ctlAccelerator.Key(nIndex) = "Escape" Then
+    '    If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
+    'End If
     
     'MRU files
     Dim i As Integer
