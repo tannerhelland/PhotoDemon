@@ -342,35 +342,6 @@ Public Sub LoadTheProgram()
     syncInterfaceToCurrentImage
     
     
-    
-    '*************************************************************************************************************************************
-    ' To avoid relying on OCXs, we use a custom progress bar control.  Initialize it now.
-    '*************************************************************************************************************************************
-    
-    LoadMessage "Initializing progress bar..."
-    
-    Set g_ProgBar = New cProgressBar
-    
-    With g_ProgBar
-        .DrawObject = FormMain.picProgBar
-        .BarColor = RGB(48, 117, 255)
-        .Min = 0
-        .Max = 100
-        .xpStyle = True
-        .TextAlignX = EVPRGcenter
-        .TextAlignY = EVPRGcenter
-        .ShowText = True
-        .Font.Name = g_InterfaceFont
-        .Font.Size = 9
-        .Text = g_Language.TranslateMessage("Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)")
-        .Draw
-    End With
-        
-    'Clear the newly built progress bar
-    SetProgBarVal 0
-        
-    
-    
     '*************************************************************************************************************************************
     ' Finally, before loading the final interface, analyze the command line and load any image files (if present).
     '*************************************************************************************************************************************
@@ -952,6 +923,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                         
             'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
+            
+            'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
+            targetImage.containingForm.fixChromeLayout
             
         End If
         

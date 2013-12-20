@@ -42,7 +42,6 @@ Begin VB.Form FormImage
       Begin VB.Label lblMessages 
          Alignment       =   1  'Right Justify
          Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "(messages will appear here at run-time)"
@@ -56,11 +55,11 @@ Begin VB.Form FormImage
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   210
-         Left            =   9810
+         Height          =   270
+         Left            =   3810
          TabIndex        =   5
          Top             =   30
-         Width           =   3255
+         Width           =   9255
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -85,7 +84,7 @@ Begin VB.Form FormImage
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   210
+         Height          =   270
          Left            =   1920
          TabIndex        =   4
          Top             =   30
@@ -115,7 +114,7 @@ Begin VB.Form FormImage
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   210
+         Height          =   270
          Left            =   120
          TabIndex        =   3
          Top             =   30
@@ -237,6 +236,9 @@ Public Sub ActivateWorkaround(Optional ByRef reasonForActivation As String = "")
         
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
         PrepareViewport Me, "Form received focus"
+        
+        'Reflow any image-window-specific chrome (status bar, rulers, etc)
+        fixChromeLayout
     
         'Use the window manager to bring the window to the foreground
         g_WindowManager.notifyChildReceivedFocus Me
@@ -717,7 +719,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     Debug.Print "(Image #" & Me.Tag & " received a Query_Unload trigger)"
-
+    
+    'Failsafe to make sure the form was properly initialized
+    If Len(Me.Tag) = 0 Then Exit Sub
+    
     'If the user wants to be prompted about unsaved images, do it now
     If g_ConfirmClosingUnsaved And pdImages(Me.Tag).IsActive And (Not pdImages(Me.Tag).forInternalUseOnly) Then
     
@@ -823,6 +828,9 @@ Private Sub Form_Resize()
             'New test as of 16 Oct '13 - do not redraw the viewport unless it is the active one.
             If g_CurrentImage = CLng(Me.Tag) Then PrepareViewport Me, "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
             
+            'Reflow any image-window-specific chrome (status bar, rulers, etc)
+            fixChromeLayout
+            
         End If
         
     End If
@@ -842,6 +850,9 @@ Private Sub Form_Resize()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    
+    'Failsafe to make sure the form was loaded successfully
+    If Len(Me.Tag) = 0 Then Exit Sub
     
     If Me.Visible And pdImages(Me.Tag).loadedSuccessfully Then Message "Closing image..."
     
@@ -926,26 +937,6 @@ End Sub
 
 Private Sub HScroll_Scroll()
     ScrollViewport Me
-End Sub
-
-'When the status bar is resized, we must reflow certain elements.
-Private Sub picStatusBar_Resize()
-    
-    'Move the message label into position (right-aligned, with a slight margin)
-    lblMessages.Move picStatusBar.ScaleWidth - lblMessages.Width - 12
-    
-    'If the message label will overflow other elements of the statuts bar, shrink it as necessary
-    Dim newMessageArea As Long
-    newMessageArea = (lblMessages.Left + lblMessages.Width) - lineStatusBar(2).x1 - 13
-    
-    If newMessageArea < 0 Then
-        lblMessages.Visible = False
-    Else
-        lblMessages.Left = lineStatusBar(2).x1 + 12
-        lblMessages.Width = newMessageArea
-        lblMessages.Visible = True
-    End If
-    
 End Sub
 
 Private Sub VScroll_Change()
@@ -1049,4 +1040,26 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     metaToggle tSelection, True
     metaToggle tSelectionTransform, True
                         
+End Sub
+
+'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).  Call this function
+' to do so.
+Public Sub fixChromeLayout()
+    
+    'Move the message label into position (right-aligned, with a slight margin)
+    Dim newLeft As Long
+    newLeft = lineStatusBar(2).x1 + fixDPI(13)
+    If lblMessages.Left <> newLeft Then lblMessages.Left = newLeft
+    
+    'If the message label will overflow other elements of the status bar, shrink it as necessary
+    Dim newMessageArea As Long
+    newMessageArea = (Me.ScaleWidth - lblMessages.Left) - fixDPI(12)
+    
+    If newMessageArea < 0 Then
+        lblMessages.Visible = False
+    Else
+        lblMessages.Width = newMessageArea
+        lblMessages.Visible = True
+    End If
+
 End Sub

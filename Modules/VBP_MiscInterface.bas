@@ -674,6 +674,9 @@ Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
     toolbar_ImageTabs.forceRedraw
     
+    'Re-select the current image
+    If g_OpenImageCount > 0 Then g_WindowManager.notifyChildReceivedFocus pdImages(g_CurrentImage).containingForm
+    
 End Sub
 
 'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will
@@ -1097,15 +1100,6 @@ End Sub
 Public Sub ReleaseFormTheming(ByRef tForm As Object)
     g_Themer.releaseContainerSubclass tForm.hWnd
     Set tForm = Nothing
-End Sub
-
-'Perform any drawing routines related to the main form
-Public Sub RedrawMainForm()
-    
-    'Redraw the progress bar
-    If FormMain.picProgBar.Visible Then FormMain.picProgBar.Refresh
-    g_ProgBar.Draw
-    
 End Sub
 
 'Display the specified size in the main form's status bar
