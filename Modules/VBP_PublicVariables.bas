@@ -36,9 +36,6 @@ Public g_ImageFormats As pdFormats
 'Main language and translation handler
 Public g_Language As pdTranslate
 
-'Progress bar class
-Public g_ProgBar As cProgressBar
-
 'Currently selected tool, previous tool
 Public g_CurrentTool As PDTools
 Public g_PreviousTool As PDTools
