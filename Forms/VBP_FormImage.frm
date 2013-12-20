@@ -31,13 +31,13 @@ Begin VB.Form FormImage
       BackColor       =   &H80000016&
       BorderStyle     =   0  'None
       ForeColor       =   &H00808080&
-      Height          =   390
+      Height          =   300
       Left            =   0
-      ScaleHeight     =   26
+      ScaleHeight     =   20
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   885
       TabIndex        =   2
-      Top             =   6480
+      Top             =   6570
       Width           =   13275
       Begin VB.Label lblMessages 
          Alignment       =   1  'Right Justify
@@ -59,7 +59,7 @@ Begin VB.Form FormImage
          Height          =   210
          Left            =   9810
          TabIndex        =   5
-         Top             =   75
+         Top             =   30
          Width           =   3255
       End
       Begin VB.Line lineStatusBar 
@@ -68,7 +68,7 @@ Begin VB.Form FormImage
          X1              =   240
          X2              =   240
          Y1              =   1
-         Y2              =   25
+         Y2              =   19
       End
       Begin VB.Label lblCoordinates 
          Alignment       =   2  'Center
@@ -88,7 +88,7 @@ Begin VB.Form FormImage
          Height          =   210
          Left            =   1920
          TabIndex        =   4
-         Top             =   75
+         Top             =   30
          Width           =   1545
       End
       Begin VB.Line lineStatusBar 
@@ -97,7 +97,7 @@ Begin VB.Form FormImage
          X1              =   120
          X2              =   120
          Y1              =   1
-         Y2              =   25
+         Y2              =   19
       End
       Begin VB.Label lblImgSize 
          Alignment       =   2  'Center
@@ -118,7 +118,7 @@ Begin VB.Form FormImage
          Height          =   210
          Left            =   120
          TabIndex        =   3
-         Top             =   75
+         Top             =   30
          Width           =   1545
       End
    End
@@ -928,8 +928,24 @@ Private Sub HScroll_Scroll()
     ScrollViewport Me
 End Sub
 
+'When the status bar is resized, we must reflow certain elements.
 Private Sub picStatusBar_Resize()
+    
+    'Move the message label into position (right-aligned, with a slight margin)
     lblMessages.Move picStatusBar.ScaleWidth - lblMessages.Width - 12
+    
+    'If the message label will overflow other elements of the statuts bar, shrink it as necessary
+    Dim newMessageArea As Long
+    newMessageArea = (lblMessages.Left + lblMessages.Width) - lineStatusBar(2).x1 - 13
+    
+    If newMessageArea < 0 Then
+        lblMessages.Visible = False
+    Else
+        lblMessages.Left = lineStatusBar(2).x1 + 12
+        lblMessages.Width = newMessageArea
+        lblMessages.Visible = True
+    End If
+    
 End Sub
 
 Private Sub VScroll_Change()
