@@ -3,8 +3,8 @@ Attribute VB_Name = "Image_Window_Handler"
 'Image Window Handler
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 12/October/13
-'Last update: all functions have been rewritten to interact properly with the new window manager class.
+'Last updated: 20/December/13
+'Last update: fix various functions to properly account for the presence of an image window status bar
 '
 'This module contains functions relating to the creation, sizing, and maintenance of the windows (forms) associated with
 ' each image loaded by the user.  Even in single-window mode, each loaded image receives its own form.  This form is
@@ -144,6 +144,9 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
             maxBottom = g_cMonitors.DesktopHeight
         End If
         
+        'Remove any other chrome (status bar, rulers) from the maximum bottom size
+        'maxBottom = maxBottom - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
+        
         'Regardless of when this function is run, we do not allow it to cover the main window's menu bar.
         ' Determine a max left/top position accordingly.
         Dim maxLeft As Long, maxTop As Long
@@ -158,6 +161,9 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         'Start our calculations by setting the new width/height to equal the image's current size (while accounting for zoom)
         curWidth = wDif + (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(toolbar_File.CmbZoom.ListIndex))
         curHeight = hDif + (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(toolbar_File.CmbZoom.ListIndex))
+        
+        'Height also needs to consider any image-window-specific chrome (status bar, rulers, etc)
+        curHeight = curHeight + pdImages(g_CurrentImage).imgViewport.getVerticalOffset
         
         'We now handle the fit operation in two possible ways:
         ' 1) If the image is being loaded for the first time, constrain its location to the main form's client area.
