@@ -455,7 +455,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    y1 = y1 - pdImages(imageID).imgViewport.getVerticalOffset
+    y1 = y1 - pdImages(imageID).imgViewport.getTopOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
     x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / ZoomVal)

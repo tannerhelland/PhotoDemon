@@ -49,11 +49,28 @@ Public targetLeft As Long
 Private verticalOffset As Long
 Private horizontalOffset As Long
 
+'The vertical and horizontal offsets can be further broken down into specific sides/directions
+Private topOffset As Long
+Private bottomOffset As Long
+
 'Get/set the horizontal and vertical offset values
 Public Function getVerticalOffset() As Long
-    getVerticalOffset = verticalOffset
+    getVerticalOffset = topOffset + bottomOffset
 End Function
 
-Public Sub setVerticalOffset(ByVal newOffset As Long)
-    verticalOffset = newOffset
-End Sub
+'Get/set specific directional offsets
+Public Function getTopOffset() As Long
+    getTopOffset = topOffset
+End Function
+
+Public Function setTopOffset(ByVal newOffset As Long) As Long
+    topOffset = newOffset
+End Function
+
+Public Function getBottomOffset() As Long
+    getBottomOffset = bottomOffset
+End Function
+
+Public Function setBottomOffset(ByVal newOffset As Long) As Long
+    bottomOffset = newOffset
+End Function

@@ -1322,8 +1322,8 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     
     'Add offsets to the destination locations
     If vertOffset > 0 Then
-        dstTop = dstTop + vertOffset
-        dstBottom = dstBottom + vertOffset
+        dstTop = dstTop + pdImages(dstForm.Tag).imgViewport.getTopOffset
+        dstBottom = dstBottom + pdImages(dstForm.Tag).imgViewport.getTopOffset
     End If
     
     'If this selection is transformable, we can now draw transform circles at appropriate locations for the selection's shape.

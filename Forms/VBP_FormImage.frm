@@ -25,7 +25,7 @@ Begin VB.Form FormImage
    ScaleWidth      =   885
    Visible         =   0   'False
    Begin VB.PictureBox picStatusBar 
-      Align           =   1  'Align Top
+      Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000016&
@@ -37,7 +37,7 @@ Begin VB.Form FormImage
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   885
       TabIndex        =   2
-      Top             =   0
+      Top             =   6480
       Width           =   13275
       Begin VB.Label lblMessages 
          Alignment       =   1  'Right Justify
