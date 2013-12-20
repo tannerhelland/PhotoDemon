@@ -131,7 +131,8 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     turnOnColorManagementForDC formToBuffer.hDC
     
     'Finally, flip the front buffer to the screen
-    BitBlt formToBuffer.hDC, 0, 26, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
+    'BitBlt formToBuffer.hDC, 0, 26, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt formToBuffer.hDC, 0, pdImages(curImage).imgViewport.getTopOffset, frontBuffer.getLayerWidth, frontBuffer.getLayerHeight, frontBuffer.getLayerDC, 0, 0, vbSrcCopy
         
     'If both scrollbars are active, copy a gray square over the small space between them
     If formToBuffer.HScroll.Visible And formToBuffer.VScroll.Visible Then
@@ -470,7 +471,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'Horizontal scroll bar gets rendered first...
     If hScrollEnabled Then
-        formToBuffer.HScroll.Move 0, FormHeight + verticalOffset - formToBuffer.HScroll.Height, viewportWidth, formToBuffer.HScroll.Height
+        formToBuffer.HScroll.Move 0, FormHeight - formToBuffer.HScroll.Height, viewportWidth, formToBuffer.HScroll.Height
         If (Not formToBuffer.HScroll.Visible) Then formToBuffer.HScroll.Visible = True
     Else
         formToBuffer.HScroll.Value = 0
@@ -479,7 +480,7 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'Then vertical scroll bar...
     If vScrollEnabled Then
-        formToBuffer.VScroll.Move FormWidth - formToBuffer.VScroll.Width, verticalOffset, formToBuffer.VScroll.Width, viewportHeight
+        formToBuffer.VScroll.Move FormWidth - formToBuffer.VScroll.Width, pdImages(curImage).imgViewport.getTopOffset, formToBuffer.VScroll.Width, viewportHeight
         If (Not formToBuffer.VScroll.Visible) Then formToBuffer.VScroll.Visible = True
     Else
         formToBuffer.VScroll.Value = 0
