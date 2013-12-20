@@ -23,33 +23,16 @@ Begin VB.Form FormMain
    ScaleHeight     =   10455
    ScaleWidth      =   17205
    StartUpPosition =   3  'Windows Default
-   Begin VB.PictureBox picProgBar 
-      Align           =   2  'Align Bottom
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   0
-      ScaleHeight     =   33
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1147
-      TabIndex        =   0
-      TabStop         =   0   'False
-      Top             =   9960
-      Visible         =   0   'False
-      Width           =   17205
-   End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
-      Top             =   9240
+      Top             =   120
       _ExtentX        =   1191
       _ExtentY        =   1058
       Enabled         =   0   'False
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
-      Top             =   9480
+      Top             =   360
       _ExtentX        =   635
       _ExtentY        =   635
       PollInterval    =   5
@@ -1342,9 +1325,6 @@ Private Sub Form_Load()
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
     Set cMouseEvents = New bluMouseEvents
     cMouseEvents.Attach Me.hWnd
-    
-    'Render the main form with any extra visual styles we've decided to apply
-    RedrawMainForm
     
     'TODO: As of 17 Oct '13, I am removing the interface warning.  I think things are now "stable enough" for people to once again
     '       play with nightly builds.
@@ -3038,15 +3018,6 @@ End Sub
 
 Private Sub MnuZoomOut_Click()
     If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
-End Sub
-
-'When the form is resized, the progress bar at bottom needs to be manually redrawn.  Unfortunately, VB doesn't trigger
-' the Resize() event properly for MDI parent forms, so we use the pic_ProgBar resize event instead.
-Private Sub picProgBar_Resize()
-    
-    'When this main form is resized, reapply any custom visual styles
-    If FormMain.Visible Then RedrawMainForm
-    
 End Sub
 
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
