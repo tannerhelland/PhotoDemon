@@ -811,10 +811,12 @@ Friend Sub getActualMainFormClientRect(ByRef modifiedRect As winRect, Optional B
     End If
     
     'Provide a 1px border around the client area
-    clientRect.x1 = clientRect.x1 + 1
-    clientRect.x2 = clientRect.x2 - 1
-    clientRect.y1 = clientRect.y1 + 1
-    clientRect.y2 = clientRect.y2 - 1
+    'NOTE: this has been removed as of 20 Dec 13, but I'm leaving the code as comments in case it ever becomes prudent
+    '      to reinstate the border.
+    'clientRect.x1 = clientRect.x1 + 1
+    'clientRect.x2 = clientRect.x2 - 1
+    'clientRect.y1 = clientRect.y1 + 1
+    'clientRect.y2 = clientRect.y2 - 1
     
     modifiedRect = clientRect
 
