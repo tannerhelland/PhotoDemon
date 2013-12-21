@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPluginDownloader 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Plugin Downloader"
-   ClientHeight    =   7320
+   ClientHeight    =   7305
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   12405
+   ClientWidth     =   12375
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,12 +18,13 @@ Begin VB.Form FormPluginDownloader
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   7320
-   ScaleWidth      =   12405
+   ScaleHeight     =   7305
+   ScaleWidth      =   12375
    ShowInTaskbar   =   0   'False
    Begin VB.PictureBox picInitial 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7335
@@ -123,6 +124,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "ExifTool 9.29"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -182,7 +184,7 @@ Begin VB.Form FormPluginDownloader
          Left            =   480
          TabIndex        =   19
          Top             =   720
-         Width           =   9735
+         Width           =   11415
          WordWrap        =   -1  'True
       End
       Begin VB.Label lblDescription 
@@ -246,7 +248,7 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H00404040&
          Height          =   735
          Index           =   1
-         Left            =   4440
+         Left            =   4680
          TabIndex        =   16
          Top             =   2520
          Width           =   3600
@@ -275,6 +277,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "pngnq-s9 2.0.1"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -297,6 +300,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "zLib 1.2.8"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -319,6 +323,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "EZTwain 1.18"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -341,6 +346,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "FreeImage 3.15.4"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -363,6 +369,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblPermission 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "Would you like PhotoDemon to download these plugins for you?"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -403,6 +410,7 @@ Begin VB.Form FormPluginDownloader
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
          Caption         =   "Core Plugins Missing - Download Recommended"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -444,8 +452,9 @@ Begin VB.Form FormPluginDownloader
          ForeColor       =   &H80000008&
          Height          =   375
          Left            =   2640
-         ScaleHeight     =   375
-         ScaleWidth      =   9495
+         ScaleHeight     =   25
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   633
          TabIndex        =   6
          TabStop         =   0   'False
          Top             =   1200
@@ -555,7 +564,7 @@ Dim numOfFiles As Long, curNumOfFiles As Long
 Dim hInternetSession As Long
 
 'The progress bar class we'll use to update the user on download progress
-Dim dProgBar As cProgressBar
+Dim dProgBar As cProgressBarOfficial
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -616,10 +625,10 @@ Private Sub Form_Load()
     'If the user is NOT connected, adjust the text accordingly
     If hInternetSession = 0 Then
         isInternetConnected = False
-        lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please connect to the Internet, then allow the program to automatically download the following free, open-source plugin(s):")
+        lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s):")
     Else
         isInternetConnected = True
-        lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more required plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please allow the program to automatically download the following free, open-source plugin(s):")
+        lblExplanation.Caption = g_Language.TranslateMessage("Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated." & vbCrLf & vbCrLf & "To improve your user experience, please allow the program to automatically download these free, open-source plugin(s):")
     End If
     
     'This string will be used to hold the locations of the files to be downloaded
@@ -786,17 +795,12 @@ Private Function downloadAllPlugins() As Boolean
     picYes.Top = 0
         
     'Set up a progress bar control
-    Set dProgBar = New cProgressBar
-    dProgBar.DrawObject = FormPluginDownloader.picProgBar
-    dProgBar.BarColor = RGB(48, 117, 255)
+    Set dProgBar = New cProgressBarOfficial
+    dProgBar.CreateProgressBar FormPluginDownloader.picProgBar.hWnd, 0, 0, FormPluginDownloader.picProgBar.ScaleWidth, FormPluginDownloader.picProgBar.ScaleHeight, True, True, True, True
     dProgBar.Min = 0
-    dProgBar.Max = 100
-    dProgBar.xpStyle = True
-    dProgBar.ShowText = False
-    dProgBar.Draw
-    
     dProgBar.Max = totalDownloadSize
     dProgBar.Value = 0
+    dProgBar.Refresh
     FormPluginDownloader.Height = 2475
     picYes.Visible = True
     
@@ -875,6 +879,7 @@ Private Function downloadAllPlugins() As Boolean
     End If
     
     dProgBar.Value = dProgBar.Max
+    dProgBar.Refresh
     
     If hInternetSession Then InternetCloseHandle hInternetSession
     
@@ -976,7 +981,10 @@ Private Function downloadPlugin(ByVal pluginURL As String, ByVal curNumFile As L
             curDownloadSize = curDownloadSize + numOfBytesRead
             
             If downloadSize <> 0 Then
-                If curDownloadSize < dProgBar.Max Then dProgBar.Value = curDownloadSize
+                If curDownloadSize < dProgBar.Max Then
+                    dProgBar.Value = curDownloadSize
+                    dProgBar.Refresh
+                End If
                 lblDownloadInfo.Caption = g_Language.TranslateMessage("Downloading file %1 of %2 (%3 of %4 bytes received)...", curNumFile, maxNumFile, totalBytesRead, downloadSize)
                 lblDownloadInfo.Refresh
             End If
