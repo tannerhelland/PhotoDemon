@@ -23,9 +23,6 @@ Attribute VB_Name = "Viewport_Handler"
 
 Option Explicit
 
-'This is the ListIndex of the FormMain zoom combo box that corresponds to 100%
-Public Const ZOOM_100_PERCENT As Long = 11
-
 'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
 ' and the zoom value is 200%, zWidth and zHeight will be 200.)
 Private zWidth As Double, zHeight As Double
@@ -34,7 +31,7 @@ Private zWidth As Double, zHeight As Double
 Private srcWidth As Double, srcHeight As Double
 
 'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-Private ZoomVal As Double
+Private zoomVal As Double
 
 'These variables are the offset, as determined by the scroll bar values
 Private srcX As Long, srcY As Long
@@ -180,11 +177,11 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     curImage = CLng(formToBuffer.Tag)
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(pdImages(curImage).currentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-    srcWidth = pdImages(curImage).imgViewport.targetWidth / ZoomVal
-    srcHeight = pdImages(curImage).imgViewport.targetHeight / ZoomVal
+    srcWidth = pdImages(curImage).imgViewport.targetWidth / zoomVal
+    srcHeight = pdImages(curImage).imgViewport.targetHeight / zoomVal
         
     'These variables are the offset, as determined by the scroll bar values
     If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
@@ -193,7 +190,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
     'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
     
-    If ZoomVal < 1 Then
+    If zoomVal < 1 Then
         
         'ZOOMED OUT
         
@@ -256,10 +253,10 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
         Dim bltWidth As Long, bltHeight As Long
-        bltWidth = pdImages(curImage).imgViewport.targetWidth + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetWidth Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
-        srcWidth = bltWidth / ZoomVal
-        bltHeight = pdImages(curImage).imgViewport.targetHeight + (Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetHeight Mod Int(g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue))))
-        srcHeight = bltHeight / ZoomVal
+        bltWidth = pdImages(curImage).imgViewport.targetWidth + (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetWidth Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
+        srcWidth = bltWidth / zoomVal
+        bltHeight = pdImages(curImage).imgViewport.targetHeight + (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
+        srcHeight = bltHeight / zoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
         If pdImages(curImage).getCompositedImage().getLayerColorDepth = 32 Then
@@ -326,12 +323,12 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     On Error GoTo ZoomErrorHandler
     
     'Get the mathematical zoom multiplier (based on the current combo box setting - for example, 0.50 for "50% zoom")
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(curImage).currentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(pdImages(curImage).currentZoomValue)
     
     'Calculate the width and height of a full-size viewport based on the current zoom value
-    zWidth = (pdImages(curImage).Width * ZoomVal)
-    zHeight = (pdImages(curImage).Height * ZoomVal)
+    zWidth = (pdImages(curImage).Width * zoomVal)
+    zHeight = (pdImages(curImage).Height * zoomVal)
     
     'Calculate the vertical offset of the viewport.  This changes according to the height of the top-aligned status bar,
     ' and in the future, it will also change if rulers are visible.
@@ -432,11 +429,11 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If hScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
-        If ZoomVal <= 1 Then
-            newScrollMax = pdImages(curImage).Width - Int(viewportWidth * g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
+        If zoomVal <= 1 Then
+            newScrollMax = pdImages(curImage).Width - Int(viewportWidth * g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(curImage).Width - Int(viewportWidth / g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
+            newScrollMax = pdImages(curImage).Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
         End If
         
         If formToBuffer.HScroll.Value > newScrollMax Then formToBuffer.HScroll.Value = newScrollMax
@@ -451,11 +448,11 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If vScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
-        If ZoomVal <= 1 Then
-            newScrollMax = pdImages(curImage).Height - Int(viewportHeight * g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
+        If zoomVal <= 1 Then
+            newScrollMax = pdImages(curImage).Height - Int(viewportHeight * g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(curImage).Height - Int(viewportHeight / g_Zoom.ZoomFactor(pdImages(curImage).currentZoomValue) + 0.5)
+            newScrollMax = pdImages(curImage).Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
         End If
         
         If formToBuffer.VScroll.Value > newScrollMax Then formToBuffer.VScroll.Value = newScrollMax
@@ -529,126 +526,4 @@ Public Sub eraseViewportBuffers()
         frontBuffer.eraseLayer
         Set frontBuffer = Nothing
     End If
-End Sub
-
-'When the program is first loaded, we need to populate a number of viewport-related values.
-Public Sub initializeViewportEngine()
-
-    'This list of zoom values is (effectively) arbitrary.  I've based this list off similar lists (Paint.NET, GIMP)
-    ' while including a few extra values for convenience's sake
-    
-    'Total number of available zoom values
-    g_Zoom.ZoomCount = 25
-    
-    ReDim g_Zoom.ZoomArray(0 To g_Zoom.ZoomCount) As Double
-    ReDim g_Zoom.ZoomFactor(0 To g_Zoom.ZoomCount) As Double
-    
-    'Manually create a list of user-friendly zoom values
-    toolbar_File.CmbZoom.AddItem "3200%", 0
-        g_Zoom.ZoomArray(0) = 32
-        g_Zoom.ZoomFactor(0) = 32
-        
-    toolbar_File.CmbZoom.AddItem "2400%", 1
-        g_Zoom.ZoomArray(1) = 24
-        g_Zoom.ZoomFactor(1) = 24
-        
-    toolbar_File.CmbZoom.AddItem "1600%", 2
-        g_Zoom.ZoomArray(2) = 16
-        g_Zoom.ZoomFactor(2) = 16
-        
-    toolbar_File.CmbZoom.AddItem "1200%", 3
-        g_Zoom.ZoomArray(3) = 12
-        g_Zoom.ZoomFactor(3) = 12
-        
-    toolbar_File.CmbZoom.AddItem "800%", 4
-        g_Zoom.ZoomArray(4) = 8
-        g_Zoom.ZoomFactor(4) = 8
-        
-    toolbar_File.CmbZoom.AddItem "700%", 5
-        g_Zoom.ZoomArray(5) = 7
-        g_Zoom.ZoomFactor(5) = 7
-        
-    toolbar_File.CmbZoom.AddItem "600%", 6
-        g_Zoom.ZoomArray(6) = 6
-        g_Zoom.ZoomFactor(6) = 6
-        
-    toolbar_File.CmbZoom.AddItem "500%", 7
-        g_Zoom.ZoomArray(7) = 5
-        g_Zoom.ZoomFactor(7) = 5
-        
-    toolbar_File.CmbZoom.AddItem "400%", 8
-        g_Zoom.ZoomArray(8) = 4
-        g_Zoom.ZoomFactor(8) = 4
-        
-    toolbar_File.CmbZoom.AddItem "300%", 9
-        g_Zoom.ZoomArray(9) = 3
-        g_Zoom.ZoomFactor(9) = 3
-        
-    toolbar_File.CmbZoom.AddItem "200%", 10
-        g_Zoom.ZoomArray(10) = 2
-        g_Zoom.ZoomFactor(10) = 2
-        
-    toolbar_File.CmbZoom.AddItem "100%", 11
-        g_Zoom.ZoomArray(11) = 1
-        g_Zoom.ZoomFactor(11) = 1
-        
-    toolbar_File.CmbZoom.AddItem "75%", 12
-        g_Zoom.ZoomArray(12) = 3 / 4
-        g_Zoom.ZoomFactor(12) = 4 / 3
-        
-    toolbar_File.CmbZoom.AddItem "67%", 13
-        g_Zoom.ZoomArray(13) = 2 / 3
-        g_Zoom.ZoomFactor(13) = 3 / 2
-        
-    toolbar_File.CmbZoom.AddItem "50%", 14
-        g_Zoom.ZoomArray(14) = 0.5
-        g_Zoom.ZoomFactor(14) = 2
-        
-    toolbar_File.CmbZoom.AddItem "33%", 15
-        g_Zoom.ZoomArray(15) = 1 / 3
-        g_Zoom.ZoomFactor(15) = 3
-        
-    toolbar_File.CmbZoom.AddItem "25%", 16
-        g_Zoom.ZoomArray(16) = 0.25
-        g_Zoom.ZoomFactor(16) = 4
-        
-    toolbar_File.CmbZoom.AddItem "20%", 17
-        g_Zoom.ZoomArray(17) = 0.2
-        g_Zoom.ZoomFactor(17) = 5
-        
-    toolbar_File.CmbZoom.AddItem "16%", 18
-        g_Zoom.ZoomArray(18) = 0.16
-        g_Zoom.ZoomFactor(18) = 100 / 16
-        
-    toolbar_File.CmbZoom.AddItem "12%", 19
-        g_Zoom.ZoomArray(19) = 0.12
-        g_Zoom.ZoomFactor(19) = 100 / 12
-        
-    toolbar_File.CmbZoom.AddItem "8%", 20
-        g_Zoom.ZoomArray(20) = 0.08
-        g_Zoom.ZoomFactor(20) = 100 / 8
-        
-    toolbar_File.CmbZoom.AddItem "6%", 21
-        g_Zoom.ZoomArray(21) = 0.06
-        g_Zoom.ZoomFactor(21) = 100 / 6
-        
-    toolbar_File.CmbZoom.AddItem "4%", 22
-        g_Zoom.ZoomArray(22) = 0.04
-        g_Zoom.ZoomFactor(22) = 25
-        
-    toolbar_File.CmbZoom.AddItem "3%", 23
-        g_Zoom.ZoomArray(23) = 0.03
-        g_Zoom.ZoomFactor(23) = 100 / 0.03
-        
-    toolbar_File.CmbZoom.AddItem "2%", 24
-        g_Zoom.ZoomArray(24) = 0.02
-        g_Zoom.ZoomFactor(24) = 50
-        
-    toolbar_File.CmbZoom.AddItem "1%", 25
-        g_Zoom.ZoomArray(25) = 0.01
-        g_Zoom.ZoomFactor(25) = 100
-    
-    'Set the main form's zoom combo box to display "100%"
-    toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
-
 End Sub

@@ -2558,7 +2558,7 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
         Case 3
             If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 10
         Case 4
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
+            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = g_Zoom.getZoom100Index
         Case 5
             If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 14
         Case 6
@@ -2782,7 +2782,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Actual size
     If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
+        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = g_Zoom.getZoom100Index
     End If
     
     'Various zoom values

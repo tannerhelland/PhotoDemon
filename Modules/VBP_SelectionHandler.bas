@@ -450,16 +450,16 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     End If
 
     'Grab the current zoom value
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(imageID).currentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(pdImages(imageID).currentZoomValue)
     
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
     y1 = y1 - pdImages(imageID).imgViewport.getTopOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / ZoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / ZoomVal)
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / zoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / zoomVal)
     
     'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
     Dim horzOffset As Long, vertOffset As Long
@@ -482,7 +482,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = MOUSESELACCURACY * (1 / ZoomVal)
+    mouseAccuracy = MOUSESELACCURACY * (1 / zoomVal)
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
     'If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then

@@ -157,16 +157,16 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     imageID = srcForm.Tag
     
     'Grab the current zoom value
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(imageID).currentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(pdImages(imageID).currentZoomValue)
                 
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
     y1 = y1 - pdImages(imageID).imgViewport.getTopOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / ZoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / ZoomVal)
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / zoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / zoomVal)
             
     'If the user has requested copies of these coordinates, assign them now
     If copyX Then copyX = x1
@@ -183,12 +183,12 @@ End Sub
 Public Sub findNearestImageCoordinates(ByRef x1 As Double, ByRef y1 As Double, ByRef srcForm As Form)
 
     'Grab the current zoom value
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(srcForm.Tag).currentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(pdImages(srcForm.Tag).currentZoomValue)
 
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).imgViewport.targetLeft) / ZoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).imgViewport.targetTop) / ZoomVal)
+    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).imgViewport.targetLeft) / zoomVal)
+    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).imgViewport.targetTop) / zoomVal)
     
     'Force any invalid values to their nearest matching point in the image
     If x1 < 0 Then x1 = 0
