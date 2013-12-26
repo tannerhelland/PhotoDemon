@@ -62,7 +62,7 @@ Public Sub CreateNewImageForm(Optional ByVal forInternalUse As Boolean = False)
     pdImages(g_NumOfImagesLoaded).imgViewport.setBottomOffset newImageForm.picStatusBar.ScaleHeight
     
     'Set a default zoom of 100% (this is likely to change, assuming the user has auto-zoom enabled)
-    pdImages(g_NumOfImagesLoaded).currentZoomValue = ZOOM_100_PERCENT
+    pdImages(g_NumOfImagesLoaded).currentZoomValue = g_Zoom.getZoom100Index
     
     'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
     Dim mainClientRect As winRect
@@ -159,8 +159,8 @@ Public Sub FitWindowToImage(Optional ByVal suppressRendering As Boolean = False,
         hDif = g_WindowManager.getVerticalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
         
         'Start our calculations by setting the new width/height to equal the image's current size (while accounting for zoom)
-        curWidth = wDif + (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(toolbar_File.CmbZoom.ListIndex))
-        curHeight = hDif + (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(toolbar_File.CmbZoom.ListIndex))
+        curWidth = wDif + (pdImages(g_CurrentImage).Width * g_Zoom.getZoomValue(toolbar_File.CmbZoom.ListIndex))
+        curHeight = hDif + (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(toolbar_File.CmbZoom.ListIndex))
         
         'Height also needs to consider any image-window-specific chrome (status bar, rulers, etc)
         curHeight = curHeight + pdImages(g_CurrentImage).imgViewport.getVerticalOffset
@@ -338,7 +338,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     'Use this to track the zoom value required to fit the image on-screen; we will start at 100%, then move downward until we find an ideal zoom.
     Dim zVal As Long
-    zVal = ZOOM_100_PERCENT
+    zVal = g_Zoom.getZoom100Index
     
     Dim i As Long
     
@@ -346,9 +346,9 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     If pdImages(g_CurrentImage).Width > maxWidth Then
         
         'The image is larger than the maximum available area.  Loop backwards through all possible zoom values until we find one that fits.
-        For i = ZOOM_100_PERCENT To g_Zoom.ZoomCount Step 1
+        For i = g_Zoom.getZoom100Index To g_Zoom.getZoomCount Step 1
         
-            If (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
+            If (pdImages(g_CurrentImage).Width * g_Zoom.getZoomValue(i)) < maxWidth Then
                 zVal = i
                 Exit For
             End If
@@ -357,10 +357,10 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     End If
     
     'Repeat the above step, but for height.  Note that we start our "find best zoom" search from whatever zoom the horizontal search found.
-    If (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(zVal)) > maxHeight Then
+    If (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(zVal)) > maxHeight Then
     
-        For i = zVal To g_Zoom.ZoomCount Step 1
-            If (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
+        For i = zVal To g_Zoom.getZoomCount Step 1
+            If (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(i)) < maxHeight Then
                 zVal = i
                 Exit For
             End If
@@ -413,16 +413,16 @@ Public Sub FitOnScreen()
     Dim i As Long
     
     'Run a loop backwards through the possible zoom values, until we find one that fits the current image
-    For i = 0 To g_Zoom.ZoomCount Step 1
-        If (pdImages(g_CurrentImage).Width * g_Zoom.ZoomArray(i)) < maxWidth Then
+    For i = 0 To g_Zoom.getZoomCount Step 1
+        If (pdImages(g_CurrentImage).Width * g_Zoom.getZoomValue(i)) < maxWidth Then
             zVal = i
             Exit For
         End If
     Next i
     
     'Now do the same thing for the height, starting at whatever zoom value we previously found
-    For i = zVal To g_Zoom.ZoomCount Step 1
-        If (pdImages(g_CurrentImage).Height * g_Zoom.ZoomArray(i)) < maxHeight Then
+    For i = zVal To g_Zoom.getZoomCount Step 1
+        If (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(i)) < maxHeight Then
             zVal = i
             Exit For
         End If

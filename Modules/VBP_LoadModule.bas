@@ -202,7 +202,12 @@ Public Sub LoadTheProgram()
     'Initialize our current zoom method
     LoadMessage "Initializing viewport engine..."
     
-    initializeViewportEngine
+    'Create the program's primary zoom handler
+    Set g_Zoom = New pdZoom
+    g_Zoom.initializeViewportEngine
+    
+    'Populate the main form's zoom drop-down
+    g_Zoom.populateZoomComboBox toolbar_File.CmbZoom
     
     
     

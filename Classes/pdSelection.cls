@@ -1294,8 +1294,8 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
     '   on the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when scroll
     '   and zoom parameters are in effect.)
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).currentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(pdImages(dstForm.Tag).currentZoomValue)
     
     Dim hScrollVal As Long, vScrollVal As Long
     hScrollVal = dstForm.HScroll.Value
@@ -1305,15 +1305,15 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     Dim dstTop As Double, dstBottom As Double
     
     If (sShape = sRectangle) Or (sShape = sCircle) Then
-        dstLeft = ((selLeft - hScrollVal) * ZoomVal) + imgLeft
-        dstRight = ((selLeft + selWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
-        dstTop = ((selTop - vScrollVal) * ZoomVal) + imgTop
-        dstBottom = ((selTop + selHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+        dstLeft = ((selLeft - hScrollVal) * zoomVal) + imgLeft
+        dstRight = ((selLeft + selWidth - hScrollVal) * zoomVal) + imgLeft + 0.5
+        dstTop = ((selTop - vScrollVal) * zoomVal) + imgTop
+        dstBottom = ((selTop + selHeight - vScrollVal) * zoomVal) + imgTop + 0.5
     Else
-        dstLeft = ((x1 - hScrollVal) * ZoomVal) + imgLeft
-        dstRight = ((x2 - hScrollVal) * ZoomVal) + imgLeft + 0.5
-        dstTop = ((y1 - vScrollVal) * ZoomVal) + imgTop
-        dstBottom = ((y2 - vScrollVal) * ZoomVal) + imgTop + 0.5
+        dstLeft = ((x1 - hScrollVal) * zoomVal) + imgLeft
+        dstRight = ((x2 - hScrollVal) * zoomVal) + imgLeft + 0.5
+        dstTop = ((y1 - vScrollVal) * zoomVal) + imgTop
+        dstBottom = ((y2 - vScrollVal) * zoomVal) + imgTop + 0.5
     End If
     
     'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
@@ -1382,8 +1382,8 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
     '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
     '   in effect.)
-    Dim ZoomVal As Double
-    ZoomVal = g_Zoom.ZoomArray(pdImages(dstForm.Tag).currentZoomValue)
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(pdImages(dstForm.Tag).currentZoomValue)
     
     Dim hScrollVal As Long, vScrollVal As Long
     hScrollVal = dstForm.HScroll.Value
@@ -1392,10 +1392,10 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
         
-    dstLeft = ((boundLeft - hScrollVal) * ZoomVal) + imgLeft
-    dstRight = ((boundLeft + boundWidth - hScrollVal) * ZoomVal) + imgLeft + 0.5
-    dstTop = ((boundTop - vScrollVal) * ZoomVal) + imgTop
-    dstBottom = ((boundTop + boundHeight - vScrollVal) * ZoomVal) + imgTop + 0.5
+    dstLeft = ((boundLeft - hScrollVal) * zoomVal) + imgLeft
+    dstRight = ((boundLeft + boundWidth - hScrollVal) * zoomVal) + imgLeft + 0.5
+    dstTop = ((boundTop - vScrollVal) * zoomVal) + imgTop
+    dstBottom = ((boundTop + boundHeight - vScrollVal) * zoomVal) + imgTop + 0.5
     
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte
@@ -1453,7 +1453,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             ' every pixel inside the loop.
             ReDim xLookup(imgLeft To rightBound) As Long
             For x = imgLeft To rightBound
-                tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
+                tmpCalculation = hScrollVal + Int((x - imgLeft) / zoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
                 xLookup(x) = tmpCalculation * 3
@@ -1461,7 +1461,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             
             ReDim yLookup(imgTop To bottomBound) As Long
             For y = imgTop To bottomBound
-                tmpCalculation = vScrollVal + Int((y - imgTop) / ZoomVal)
+                tmpCalculation = vScrollVal + Int((y - imgTop) / zoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
                 yLookup(y) = tmpCalculation
@@ -1537,7 +1537,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             ' such values for every pixel inside the loop.
             ReDim xLookup(imgLeft To rightBound) As Long
             For x = imgLeft To rightBound
-                tmpCalculation = hScrollVal + Int((x - imgLeft) / ZoomVal)
+                tmpCalculation = hScrollVal + Int((x - imgLeft) / zoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
                 xLookup(x) = tmpCalculation * 3
@@ -1545,7 +1545,7 @@ Public Sub renderCustom(ByRef dstLayer As pdLayer, ByRef dstForm As Form, ByVal 
             
             ReDim yLookup(imgTop To bottomBound) As Long
             For y = imgTop To bottomBound
-                tmpCalculation = vScrollVal + Int((y - imgTop) / ZoomVal)
+                tmpCalculation = vScrollVal + Int((y - imgTop) / zoomVal)
                 If tmpCalculation < 0 Then tmpCalculation = 0
                 If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
                 yLookup(y) = tmpCalculation

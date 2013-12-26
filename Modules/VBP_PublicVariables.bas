@@ -53,8 +53,6 @@ End Enum
     Const SELECT_LINE = 2
 #End If
 
-'Selection variables
-
 'How should the selection be rendered?
 Public Enum SelectionRender
     sLightbox = 0
@@ -63,15 +61,8 @@ Public Enum SelectionRender
     sInvertRect = 3
 End Enum
 
-
-'Zoom data
-Public Type ZoomData
-    ZoomCount As Byte
-    ZoomArray() As Double
-    ZoomFactor() As Double
-End Type
-
-Public g_Zoom As ZoomData
+'Primary zoom handler for the program
+Public g_Zoom As pdZoom
 
 'Whether or not to resize large images to fit on-screen (0 means "yes," 1 means "no")
 Public g_AutozoomLargeImages As Long

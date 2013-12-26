@@ -486,7 +486,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not newState Then toolbar_File.CmbZoom.ListIndex = ZOOM_100_PERCENT
+            If Not newState Then toolbar_File.CmbZoom.ListIndex = g_Zoom.getZoom100Index
             
     End Select
     
