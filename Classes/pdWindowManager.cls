@@ -2220,7 +2220,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
                 If Not insideMinimizeMode Then
             
-                    Debug.Print "Received move or size event for " & pdWindows(winIndex).formReference.Caption
+                    'Debug.Print "Received move or size event for " & pdWindows(winIndex).formReference.Caption
                 
                     'If images are floating but toolbars are docked, give an MDI-like experience by restricting child size and position
                     ' to the main form's client area.
@@ -2237,7 +2237,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'The window is currently being moved
             Case WM_MOVING, WM_SIZING
                 
-                Debug.Print "Received moving or sizing event for " & pdWindows(winIndex).formReference.Caption
+                'Debug.Print "Received moving or sizing event for " & pdWindows(winIndex).formReference.Caption
                 
                 'If mainFormTriggeredChange Then Exit Sub
                 
