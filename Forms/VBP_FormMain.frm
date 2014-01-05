@@ -1118,13 +1118,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README.txt file for additional information regarding licensing and redistribution.
 
-'PhotoDemon is Copyright ©1999-2013 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright ©1999-2014 by Tanner Helland, tannerhelland.com
 
 'Please visit photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Main Program Form
-'Copyright ©2002-2013 by Tanner Helland
+'Copyright ©2002-2014 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 16/October/13
 'Last update: use the system setting for keyboard delay when processing back-to-back accelerators

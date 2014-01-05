@@ -1,7 +1,7 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 23/October/13
 'Last update: new syncInterfaceToCurrentImage function, which should be universally used throughout PD in place of

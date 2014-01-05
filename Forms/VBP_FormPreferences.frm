@@ -2458,7 +2458,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright ©2002-2013 by Tanner Helland
+'Copyright ©2002-2014 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 04/September/13
 'Last update: huge code overhaul.  This dialog lacked any sort of code organization, which made it extremely difficult

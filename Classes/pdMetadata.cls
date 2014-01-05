@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Handler
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 23/May/13
 'Last updated: 26/November/13
 'Last update: huge metadata rewrite.  Loading/saving is now asynchronous, meaning it does not interfere with normal

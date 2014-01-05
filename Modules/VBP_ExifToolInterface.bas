@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_ExifTool_Interface"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 26/November/13
 'Last update: huge metadata rewrite.  Loading/saving is now asynchronous, meaning it does not interfere with normal

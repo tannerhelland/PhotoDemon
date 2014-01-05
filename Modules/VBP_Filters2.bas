@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Miscellaneous"
 '***************************************************************************
 'Filter Module
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 23/July/13
 'Last update: added a public function for filling histogram arrays with data.  This should allow me to trim unnecessary

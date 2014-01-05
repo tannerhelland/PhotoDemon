@@ -332,7 +332,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Spherize" Distortion
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/June/13
 'Last updated: 08/June/13
 'Last update: performance optimizations; speed was improved ~15-25% with some lookup tables and precalculation tricks

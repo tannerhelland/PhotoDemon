@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter Support Class
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/January/13
 'Last updated: 08/August/13
 'Last update: improve edge interpolation for certain edge handling modes (wrap, most notably).  Instead of a harsh
@@ -38,25 +38,25 @@ Private m_Interpolate As Boolean
 Private m_DstX As Long, m_DstY As Long
 
 'A function may want to force parts of an image to a certain color.  This simplified function can be used to do that.
-Public Sub forcePixels(ByRef X As Long, ByRef Y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
+Public Sub forcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
 
     Dim QuickVal As Long
-    QuickVal = X * m_ColorDepth
-    dstData(QuickVal, Y) = newB
-    dstData(QuickVal + 1, Y) = newG
-    dstData(QuickVal + 2, Y) = newR
-    If m_ColorDepth = 4 Then dstData(QuickVal + 3, Y) = newA
+    QuickVal = x * m_ColorDepth
+    dstData(QuickVal, y) = newB
+    dstData(QuickVal + 1, y) = newG
+    dstData(QuickVal + 2, y) = newR
+    If m_ColorDepth = 4 Then dstData(QuickVal + 3, y) = newA
 
 End Sub
 
 
 'After a transform has generate a set of reverse-mapped pixel coordinates, they are passed to this function.
 ' Based on already established parameters (such as interpolation, edge handling, etc), new pixel values are set.
-Public Sub setPixels(ByRef X As Long, ByRef Y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
+Public Sub setPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
 
     If m_EdgeMethod = EDGE_ORIGINAL Then
-        m_DstX = X
-        m_DstY = Y
+        m_DstX = x
+        m_DstY = y
     End If
 
     Dim fixDistort As Boolean
@@ -67,24 +67,24 @@ Public Sub setPixels(ByRef X As Long, ByRef Y As Long, ByRef srcX As Double, ByR
     'Now, interpolate as necessary
     Dim i As Long, QuickVal As Long, QuickVal2 As Long
     
-    QuickVal = X * m_ColorDepth
+    QuickVal = x * m_ColorDepth
     
     'fixDistort will only be set to TRUE when the current pixel needs to be erased
     If fixDistort Then
         For i = 0 To m_ColorDepthLoop
-            dstData(QuickVal + i, Y) = 0
+            dstData(QuickVal + i, y) = 0
         Next i
     Else
         If m_Interpolate Then
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, Y) = pInterpolate(srcX, srcY, srcData, i)
+                dstData(QuickVal + i, y) = pInterpolate(srcX, srcY, srcData, i)
             Next i
         Else
     
             QuickVal2 = Int(srcX) * m_ColorDepth
         
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, Y) = srcData(QuickVal2 + i, Int(srcY))
+                dstData(QuickVal + i, y) = srcData(QuickVal2 + i, Int(srcY))
             Next i
         End If
     End If

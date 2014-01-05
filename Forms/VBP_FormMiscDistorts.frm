@@ -202,7 +202,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Miscellaneous Distort Tools
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 07/June/13
 'Last updated: 07/June/13
 'Last update: initial build

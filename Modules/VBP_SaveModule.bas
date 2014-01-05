@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 20/September/13
 'Last update: Implemented full support for metadata caching.  If metadata is not loaded at image load-time, the save function will now

@@ -268,7 +268,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'Copyright ©2002-2013 by Tanner Helland
+'Copyright ©2002-2014 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 22/August/13
 'Last update: add new command bar user control

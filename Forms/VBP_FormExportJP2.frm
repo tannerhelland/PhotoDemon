@@ -165,7 +165,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG-2000 (JP2) Export Dialog
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 04/December/12
 'Last updated: 22/November/13
 'Last update: added live previews!

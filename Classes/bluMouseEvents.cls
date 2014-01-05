@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.  If you wish to use it in your own project, please
-' download the original from this link (good as of August 2013):
+' download the original from this link (good as of August 2014):
 ' https://github.com/Kroc/MaSS1VE
 
 'This class was originally written by Kroc Camen of camendesign.com. Many thanks to him for an excellent mouse
@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 '======================================================================================
-'MaSS1VE : The Master System Sonic 1 Visual Editor; Copyright (C) Kroc Camen, 2013
+'MaSS1VE : The Master System Sonic 1 Visual Editor; Copyright (C) Kroc Camen, 2014
 'Licenced under a Creative Commons 3.0 Attribution Licence
 'http://creativecommons.org/licenses/by/3.0/
 '--You may use and modify this code how you see fit as long as you give credit
@@ -74,8 +74,8 @@ End Enum
 'A point _
  <msdn.microsoft.com/en-us/library/windows/desktop/dd162805%28v=vs.85%29.aspx>
 Private Type POINT
-   X As Long
-   Y As Long
+   x As Long
+   y As Long
 End Type
 
 'A rectangle _
@@ -117,8 +117,8 @@ Private Declare Function user32_GetWindowRect Lib "user32" Alias "GetWindowRect"
  <msdn.microsoft.com/en-us/library/windows/desktop/dd162882%28v=vs.85%29.aspx>
 Private Declare Function user32_PtInRect Lib "user32" Alias "PtInRect" ( _
     ByRef InRect As RECT, _
-    ByVal X As Long, _
-    ByVal Y As Long _
+    ByVal x As Long, _
+    ByVal y As Long _
 ) As BOOL
 
 'Load a mouse cursor _
@@ -228,30 +228,30 @@ Event MouseIn()
 Event MouseHover( _
     ByVal Button As VBRUN.MouseButtonConstants, _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal X As Single, ByVal Y As Single _
+    ByVal x As Single, ByVal y As Single _
 )
 'Mouse wheel scroll
 Event MouseVScroll( _
     ByVal LinesScrolled As Single, _
     ByVal Button As VBRUN.MouseButtonConstants, _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal X As Single, ByVal Y As Single _
+    ByVal x As Single, ByVal y As Single _
 )
 Event MouseHScroll( _
     ByVal CharsScrolled As Single, _
     ByVal Button As VBRUN.MouseButtonConstants, _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal X As Single, ByVal Y As Single _
+    ByVal x As Single, ByVal y As Single _
 )
 
 'Mouse X-buttons
 Event MouseBackButtonDown( _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal X As Single, ByVal Y As Single _
+    ByVal x As Single, ByVal y As Single _
 )
 Event MouseForwardButtonDown( _
     ByVal Shift As VBRUN.ShiftConstants, _
-    ByVal X As Single, ByVal Y As Single _
+    ByVal x As Single, ByVal y As Single _
 )
 
 'CLASS Initialize _
@@ -371,7 +371,7 @@ Private Sub GetMouseStateFromParam( _
     ByVal wParam As Long, ByVal lParam As Long, _
     ByRef Button As VBRUN.MouseButtonConstants, _
     ByRef Shift As VBRUN.ShiftConstants, _
-    ByRef X As Single, ByRef Y As Single _
+    ByRef x As Single, ByRef y As Single _
 )
     'TODO: Alt mask?
     If (wParam And MK.MK_LBUTTON) <> 0 Then Button = Button Or vbLeftButton
@@ -381,8 +381,8 @@ Private Sub GetMouseStateFromParam( _
     If (wParam And MK.MK_SHIFT) <> 0 Then Shift = Shift Or vbShiftMask
     
     'The X and Y mouse coords are in the Long value as upper and lower 16-bits
-    X = lParam And &HFFFF&
-    Y = lParam \ &H10000
+    x = lParam And &HFFFF&
+    y = lParam \ &H10000
 End Sub
 
 '/// SUBCLASS /////////////////////////////////////////////////////////////////////////
@@ -406,7 +406,7 @@ Private Sub SubclassWindowProcedure( _
      (mouse button, ctrl/shift key state and mouse X / Y)
     Dim Button As VBRUN.MouseButtonConstants
     Dim Shift As VBRUN.ShiftConstants
-    Dim X As Single, Y As Single
+    Dim x As Single, y As Single
     
     '`WM_MOUSEWHEEL`: _
      <msdn.microsoft.com/en-us/library/windows/desktop/ms645617%28v=vs.85%29.aspx>
@@ -434,12 +434,12 @@ Private Sub SubclassWindowProcedure( _
         If hndParentForm <> 0 Then user32_GetWindowRect hndParentForm, WindowRECT
         
         'Determine which mouse button / meta keys are pressed
-        GetMouseStateFromParam wParam, lParam, Button, Shift, X, Y
-        If user32_PtInRect(WindowRECT, X, Y) = API_FALSE Then Exit Sub
+        GetMouseStateFromParam wParam, lParam, Button, Shift, x, y
+        If user32_PtInRect(WindowRECT, x, y) = API_FALSE Then Exit Sub
         
         'The upper bytes of the `wParam` contain the amount the wheel scrolled, _
          which will be some fraction or multiple of 120 _
-         <blogs.msdn.com/b/oldnewthing/archive/2013/01/23/10387366.aspx>
+         <blogs.msdn.com/b/oldnewthing/archive/2014/01/23/10387366.aspx>
         Dim Delta As Long
         Delta = wParam \ &H10000
         
@@ -464,12 +464,12 @@ Private Sub SubclassWindowProcedure( _
             Dim CharsScrolled As Single
             CharsScrolled = WheelScrollChars * (Delta / 120)
             'Alert the controller so it can do the scrolling
-            RaiseEvent MouseHScroll(CharsScrolled, Button, Shift, X, Y)
+            RaiseEvent MouseHScroll(CharsScrolled, Button, Shift, x, y)
         Else
             Dim LinesScrolled As Single
             LinesScrolled = WheelScrollLines * (Delta / 120)
             'Alert the controller so it can do the scrolling
-            RaiseEvent MouseVScroll(LinesScrolled, Button, Shift, X - clientOffsetX, Y - clientOffsetY)
+            RaiseEvent MouseVScroll(LinesScrolled, Button, Shift, x - clientOffsetX, y - clientOffsetY)
         End If
         
         ReturnValue = 0
@@ -483,8 +483,8 @@ Private Sub SubclassWindowProcedure( _
         IsTracking = False
         
         'Determine which mouse button / meta keys are pressed
-        GetMouseStateFromParam wParam, lParam, Button, Shift, X, Y
-        RaiseEvent MouseHover(Button, Shift, X, Y)
+        GetMouseStateFromParam wParam, lParam, Button, Shift, x, y
+        RaiseEvent MouseHover(Button, Shift, x, y)
         
         ReturnValue = 0
         Handled = True
@@ -535,13 +535,13 @@ Private Sub SubclassWindowProcedure( _
         
         'Determine which meta keys are pressed, this doesn't determine _
          the mouse X buttons but fills in everything else we need
-        Call GetMouseStateFromParam(wParam, lParam, Button, Shift, X, Y)
+        Call GetMouseStateFromParam(wParam, lParam, Button, Shift, x, y)
                 
         'Now test which X button
         If (wParam And MK.MK_XBUTTON1) <> 0 Then
-            RaiseEvent MouseBackButtonDown(Shift, X, Y)
+            RaiseEvent MouseBackButtonDown(Shift, x, y)
         ElseIf (wParam And MK.MK_XBUTTON2) <> 0 Then
-            RaiseEvent MouseForwardButtonDown(Shift, X, Y)
+            RaiseEvent MouseForwardButtonDown(Shift, x, y)
         End If
         
         Let ReturnValue = 1

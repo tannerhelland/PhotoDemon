@@ -204,7 +204,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Replace color dialog
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 29/October/13
 'Last updated: 30/October/13
 'Last update: finished initial build
@@ -287,7 +287,7 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -335,14 +335,14 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     Dim newAlpha As Long
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Convert the color to the L*a*b* color space
         RGBtoLAB r, g, b, labL, labA, labB
@@ -354,9 +354,9 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
         'If the distance is below the erasure threshold, replace it completely
         If cDistance < eraseThreshold Then
         
-            ImageData(QuickVal + 2, Y) = newR
-            ImageData(QuickVal + 1, Y) = newG
-            ImageData(QuickVal, Y) = newB
+            ImageData(QuickVal + 2, y) = newR
+            ImageData(QuickVal + 1, y) = newG
+            ImageData(QuickVal, y) = newB
             
         'If the color is between the replace and blend threshold, feather it against the new color and
         ' color-correct it to remove any "color fringing" from the replaced color.
@@ -382,20 +382,20 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
             If b < 0 Then b = 0
             
             'Assign the new color and alpha values
-            ImageData(QuickVal + 2, Y) = BlendColors(r, newR, cDistance)
-            ImageData(QuickVal + 1, Y) = BlendColors(g, newG, cDistance)
-            ImageData(QuickVal, Y) = BlendColors(b, newB, cDistance)
+            ImageData(QuickVal + 2, y) = BlendColors(r, newR, cDistance)
+            ImageData(QuickVal + 1, y) = BlendColors(g, newG, cDistance)
+            ImageData(QuickVal, y) = BlendColors(b, newB, cDistance)
                 
         End If
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

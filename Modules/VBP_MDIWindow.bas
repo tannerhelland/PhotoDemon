@@ -1,7 +1,7 @@
 Attribute VB_Name = "Image_Window_Handler"
 '***************************************************************************
 'Image Window Handler
-'Copyright ©2002-2013 by Tanner Helland
+'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 05/January/13
 'Last update: further improve intelligence of various functions when accounting for the presence of vertical chrome

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_pngnq_Interface"
 '***************************************************************************
 'pngnq-s9 Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 19/December/12
 'Last updated: 26/December/12
 'Last update: added mechanism for version checking

@@ -330,7 +330,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright ©2012-2013 by audioglider and Tanner Helland
+'Copyright ©2013-2014 by audioglider and Tanner Helland
 'Created: 08/June/13
 'Last updated: 18/August/13
 'Last update: add command bar support.  This was a messy one because there are a whole bunch of stored values that

@@ -13,12 +13,12 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 30/July/13
 'Last updated: 18/November/13
 'Last update: fix faulty detection of missing XML entries
 '
-'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
+'In 2014, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
 ' two projects, a decision was made to switch all custom PhotoDemon filetypes to XML format.  This should provide
 ' excellent interoperability with 3rd-party projects, as well as provide a measure of future-proofing, since new

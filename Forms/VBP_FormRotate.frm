@@ -166,7 +166,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 24/August/13
 'Last update: add command bar

@@ -61,7 +61,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Smart" Check Box custom control
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 29/January/13
 'Last updated: 13/September/13
 'Last update: fix non-96dpi layout issues
@@ -106,12 +106,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
-    UserControl.Enabled = newValue
-    chkBox.Enabled = newValue
+Public Property Let Enabled(ByVal NewValue As Boolean)
+    UserControl.Enabled = NewValue
+    chkBox.Enabled = NewValue
     
     'Also change the label color to help indicate disablement
-    If newValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
+    If NewValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
     PropertyChanged "Enabled"
 End Property
 
@@ -161,8 +161,8 @@ Attribute Value.VB_UserMemId = 0
     Value = chkBox.Value
 End Property
 
-Public Property Let Value(ByVal newValue As CheckBoxConstants)
-    chkBox.Value = newValue
+Public Property Let Value(ByVal NewValue As CheckBoxConstants)
+    chkBox.Value = NewValue
     PropertyChanged "Value"
     RaiseEvent Click
 End Property

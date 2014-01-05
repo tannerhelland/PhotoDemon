@@ -242,7 +242,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 25/February/13
 'Last update: Rewrote the color balance formula so that max values (+/-100) result in a completely colorized image.

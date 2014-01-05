@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_Scanner_Interface"
 '***************************************************************************
 'Scanner Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 1/10/01
 'Last updated: 10/May/13
 'Last update: add trailing parentheses to suggested scanner filename (e.g. "Scanned Image (dd MM YY)")

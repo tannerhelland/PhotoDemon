@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 02/June/13
 'Last update: remove Soften, Soften More, Blur, and Blur More filters.  These have all been superseded by the far
@@ -23,10 +23,10 @@ Option Explicit
 Public Const CUSTOM_FILTER_ID As String * 4 = "DScf"
 Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
 Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
-Public Const CUSTOM_FILTER_VERSION_2013 As String = "8.2013"
+Public Const CUSTOM_FILTER_VERSION_2014 As String = "8.2014"
 
 'The omnipotent DoFilter routine - it takes whatever is in g_FM() - the "filter matrix" and applies it to the image
-'REWRITING AUGUST 2013:
+'REWRITING AUGUST 2014:
 ' DoFilter will now use a param string, like everything else.  Custom save/load code is also disappearing in favor of
 ' the standard save/load preset manager.
 ' ParamString format is as follows:

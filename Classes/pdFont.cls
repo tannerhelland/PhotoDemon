@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Font Manager (and Renderer)
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 31/May/13
 'Last update: initial build
@@ -134,8 +134,8 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
@@ -306,13 +306,13 @@ End Sub
 Public Function getWidthOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
-    getWidthOfString = txtSize.X
+    getWidthOfString = txtSize.x
 End Function
 
 Public Function getHeightOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
-    getHeightOfString = txtSize.Y
+    getHeightOfString = txtSize.y
 End Function
 
 'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently

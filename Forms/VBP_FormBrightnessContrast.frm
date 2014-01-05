@@ -160,7 +160,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brightness and Contrast Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/6/01
 'Last updated: 16/August/13
 'Last update: this dialog is my testbed for the new command bar user control, so it received a number of changes

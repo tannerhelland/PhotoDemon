@@ -251,7 +251,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Figured Glass" Distortion
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 08/January/13
 'Last updated: 15/September/13
 'Last update: fix the preview to show the same distortion size as the final effect.  (It should be almost 1:1 perfect now!)

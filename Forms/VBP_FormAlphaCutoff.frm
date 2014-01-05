@@ -190,7 +190,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Alpha Cut-Off Dialog
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 24/April/13
 'Last update: rewrote the dialog against the new slider/text combo control
@@ -235,7 +235,7 @@ Public Property Let refLayer(ByRef refLayer As pdLayer)
 End Property
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     'Free up memory
     tmpLayer.eraseLayer

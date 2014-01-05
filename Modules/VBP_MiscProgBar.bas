@@ -1,7 +1,7 @@
 Attribute VB_Name = "ProgressBar_Support_Functions"
 '***************************************************************************
 'Miscellaneous Functions Related to the Progress Bar
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 03/October/12
 'Last update: First build

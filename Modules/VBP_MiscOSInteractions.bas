@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS_Interactions"
 '***************************************************************************
 'Miscellaneous OS Interaction Handler
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2011-2014 by Tanner Helland
 'Created: 27/November/12
 'Last updated: 27/November/12
 'Last update: added function for returning PhotoDemon's current memory usage

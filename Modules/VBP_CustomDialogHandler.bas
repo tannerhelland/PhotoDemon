@@ -1,7 +1,7 @@
 Attribute VB_Name = "Dialog_Handler"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 22/November/13
 'Last update: added an image reference to the JPEG-2000 export dialog, so it can provide live previews

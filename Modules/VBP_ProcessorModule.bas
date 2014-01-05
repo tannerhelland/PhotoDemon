@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 22/August/13
 'Last update: finish organizing processor calls by category.  They now match their menu order, and I will try to keep it that way.
@@ -25,7 +25,7 @@ Attribute VB_Name = "Processor"
 Option Explicit
 Option Compare Text
 
-'Data type for tracking processor calls - used for macros (NOTE: this is the 2013 model; older models are no longer supported.)
+'Data type for tracking processor calls - used for macros (NOTE: this is the 2014 model; older models are no longer supported.)
 Public Type ProcessCall
     Id As String
     Dialog As Boolean

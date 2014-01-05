@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'Program/File Loading Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 07/December/13
 'Last update: if an external function has already applied an image's ICC profile (as needed for proper CMYK conversion), don't attempt

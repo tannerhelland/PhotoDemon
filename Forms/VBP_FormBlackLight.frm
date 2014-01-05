@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Blacklight Form
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: some time 2001
 'Last updated: 01/October/13
 'Last update: use a floating-point slider for more precise results

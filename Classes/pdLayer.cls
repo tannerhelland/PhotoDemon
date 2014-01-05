@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Layer class
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2011-2014 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 05/November/13
 'Last update: whenever the layer is created anew (and thus acquires a new DC), activate color management for that DC.

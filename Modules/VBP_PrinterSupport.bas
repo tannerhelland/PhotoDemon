@@ -1,14 +1,14 @@
 Attribute VB_Name = "Printing"
 '***************************************************************************
 'Printer support functions
-'Copyright ©2003-2013 by Tanner Helland
+'Copyright ©2003-2014 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 12/November/13
 'Last update: added a temporary workaround for Vista+ users by simply routing them through the default
 '              Windows photo printing tool.
 '
 'This module includes code based off an article written by Cassandra Roads of Professional Logics Corporation (PLC).
-' You can download the original, unmodified version of Cassandra's code from this link (good as of 12 Nov 2013):
+' You can download the original, unmodified version of Cassandra's code from this link (good as of 12 Nov 2014):
 ' http://www.tek-tips.com/faqs.cfm?fid=3603
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 07/December/13
 'Last update: if CMYK files have an embedded ICC profile, retrieve the raw CMYK bits and apply the sRGB conversion ourselves.

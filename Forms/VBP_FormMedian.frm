@@ -161,7 +161,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median Filter Tool
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 08/Feb/13
 'Last updated: 23/August/13
 'Last update: added a mode-tracking variable to help with the new command bar addition

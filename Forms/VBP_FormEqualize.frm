@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Equalization Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 19/September/12
 'Last updated: 22/August/13
 'Last update: add command bar user control

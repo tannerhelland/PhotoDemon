@@ -58,7 +58,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Splash Screen
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 13/September/13
 'Last update: logos are now stored in the resource file.  No more picture box placeholders!

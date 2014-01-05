@@ -252,7 +252,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Shear Distortion
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/April/13
 'Last updated: 28/April/13
 'Last update: double the strength of the "shear" calculation to allow for more extreme shearing

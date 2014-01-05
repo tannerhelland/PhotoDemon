@@ -1,7 +1,7 @@
 Attribute VB_Name = "Icon_and_Cursor_Handler"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 13/October/13
 'Last update: rework custom form icon code to be much cleaner and self-contained
@@ -12,7 +12,7 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 ' See the clsMenuImage class for details on how this works. (A link to Leandro's original project can also be found there.)
 '
 'This module also handles the rendering of dynamic form, program, and taskbar icons.  (When an image is loaded and active,
-' those icons can change to match the current image.)  As of February 2013, custom form icon generation has now been reworked
+' those icons can change to match the current image.)  As of February 2014, custom form icon generation has now been reworked
 ' based off this MSDN article: http://support.microsoft.com/kb/318876
 ' The new code is much leaner (and cleaner!) than past incarnations.
 '
@@ -498,7 +498,7 @@ Public Sub resetMenuIcons()
     End If
     
     'Clear the current MRU icon cache.
-    ' (Note added 01 Jan 2013 - RR has reported an IDE error on the following line, which means this function is somehow being
+    ' (Note added 01 Jan 2014 - RR has reported an IDE error on the following line, which means this function is somehow being
     '  triggered before loadMenuIcons above.  I cannot reproduce this behavior, so instead, we now perform a single initialization
     '  check before attempting to load MRU icons.)
     If Not cMRUIcons Is Nothing Then

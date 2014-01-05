@@ -1839,7 +1839,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 20/September/13
 'Last update: expected version strings for each plugin are now declared in the Public_Constants module.

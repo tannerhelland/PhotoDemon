@@ -1,7 +1,7 @@
 Attribute VB_Name = "Color_Management"
 '***************************************************************************
 'PhotoDemon ICC (International Color Consortium) Profile Support Module
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/November/13
 'Last updated: 05/November/13
 'Last update: moved some code elements out of the pdICCProfile class and into this standalone support module.

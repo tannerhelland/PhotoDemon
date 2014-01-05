@@ -103,7 +103,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tool Dialog Command Bar custom control
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 24/September/13
 'Last update: translate all control text when a translation is active.  (Can't believe I missed this before!)
@@ -848,7 +848,7 @@ Private Sub UserControl_Show()
         findAllXMLPresets
         
         'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
-        ' (Update 25 Aug 2013 - check to see if the parent dialog has disabled this behavior.)
+        ' (Update 25 Aug 2014 - check to see if the parent dialog has disabled this behavior.)
         If Not suspendLastUsedAutoLoad Then
         
             'Attempt to load last-used settings.  If none were found, fire the Reset event, which will supply proper

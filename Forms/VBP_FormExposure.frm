@@ -136,7 +136,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright ©2012-2013 by audioglider and Tanner Helland
+'Copyright ©2013-2014 by audioglider and Tanner Helland
 'Created: 13/July/13
 'Last updated: 09/August/13
 'Last update: rewrote the exposure calculation to operate on a "stops" (power-of-2) scale

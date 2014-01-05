@@ -1,7 +1,7 @@
 Attribute VB_Name = "Clipboard_Handler"
 '***************************************************************************
 'Clipboard Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 19/August/13
 'Last update: removed all references to metafile handling; there are no plans for me to restore EMF/WMF clipboard support

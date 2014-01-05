@@ -67,7 +67,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Effect Preview custom control
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 10/January/13
 'Last updated: 07/November/13
 'Last update: apply color management to anything rendered on the preview picture box

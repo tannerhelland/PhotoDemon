@@ -76,7 +76,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Smart" Option Button custom control
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/January/13
 'Last updated: 13/September/13
 'Last update: fix non-96dpi layout issues
@@ -139,12 +139,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
-    UserControl.Enabled = newValue
-    optButton.Enabled = newValue
+Public Property Let Enabled(ByVal NewValue As Boolean)
+    UserControl.Enabled = NewValue
+    optButton.Enabled = NewValue
     
     'Also change the label color to help indicate disablement
-    If newValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
+    If NewValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
     PropertyChanged "Enabled"
 End Property
 
@@ -179,8 +179,8 @@ Attribute Value.VB_UserMemId = 0
     Value = optButton.Value
 End Property
 
-Public Property Let Value(ByVal newValue As Boolean)
-    optButton.Value = newValue
+Public Property Let Value(ByVal NewValue As Boolean)
+    optButton.Value = NewValue
     updateValue
     PropertyChanged "Value"
     If Value Then
@@ -233,7 +233,7 @@ End Sub
 ' the control is set to TRUE, there is no need for a focus rectangle.  But if it isn't TRUE, the focus rectangle makes
 ' sense, because the user needs to be notified what control will be toggled.
 
-'UPDATE 27 Aug 2013 - I am disabling focus rendering until I can solve why VB doesn't generate Enter and ExitFocus
+'UPDATE 27 Aug 2014 - I am disabling focus rendering until I can solve why VB doesn't generate Enter and ExitFocus
 ' events correctly.  The focus rectangle is being drawn randomly and not removed, and it's driving me nuts...
 Private Sub UserControl_EnterFocus()
     'If Not g_IsProgramCompiled Then lblCaption.Font.Underline = True

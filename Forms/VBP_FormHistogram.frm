@@ -600,7 +600,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 30/September/13
 'Last update: when drawing cubic spline histograms, cache various GDI+ handles to improve performance.
@@ -804,7 +804,7 @@ Public Sub DrawHistogram()
                 Dim xCalc As Long
                 
                 'Run a loop through every histogram value...
-                Dim x As Long, Y As Long
+                Dim x As Long, y As Long
                 For x = 0 To picH.ScaleWidth
             
                     'The y-value of the histogram is drawn as a percentage (RData(x) / MaxVal) * tHeight) with tHeight being
@@ -815,20 +815,20 @@ Public Sub DrawHistogram()
                     
                     'Use logarithmic values if requested by the user
                     If CBool(chkLog) Then
-                        Y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
+                        y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
                     Else
-                        Y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
+                        y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
                     End If
                     
                     'Draw a line from the last (x,y) to the current (x,y)
-                    picH.Line (LastX, LastY + 2)-(x, Y + 2)
+                    picH.Line (LastX, LastY + 2)-(x, y + 2)
                         
                     'If "fill curve" is selected, fill the area beneath this point.  (Note that luminance curve is never filled!)
-                    If hType < 3 And CBool(chkFillCurve) Then GDIPlusDrawLineToDC picH.hDC, x, Y + 2, x, picH.ScaleHeight, picH.ForeColor, 64, 1, False
+                    If hType < 3 And CBool(chkFillCurve) Then GDIPlusDrawLineToDC picH.hDC, x, y + 2, x, picH.ScaleHeight, picH.ForeColor, 64, 1, False
                         
                     'Update the LastX/Y values
                     LastX = x
-                    LastY = Y
+                    LastY = y
                     
                 Next x
             
@@ -904,7 +904,7 @@ End Sub
 
 'When the mouse moves over the histogram, display the level and count for the histogram
 'entry at the x-value over which the mouse passes
-Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub picH_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim xCalc As Long
     xCalc = Int((x / picH.ScaleWidth) * 256)
     If xCalc > 255 Then xCalc = 255
@@ -1167,7 +1167,7 @@ Public Sub StretchHistogram()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curLayerValues.Left
     initY = curLayerValues.Top
     finalX = curLayerValues.Right
@@ -1196,12 +1196,12 @@ Public Sub StretchHistogram()
     'Loop through each pixel in the image, checking max/min values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For Y = initY To finalY
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         If r < rMin Then rMin = r
         If r > rMax Then rMax = r
@@ -1210,7 +1210,7 @@ Public Sub StretchHistogram()
         If b < bMin Then bMin = b
         If b > bMax Then bMax = b
         
-    Next Y
+    Next y
     Next x
     
     Message "Stretching histogram..."
@@ -1253,18 +1253,18 @@ Public Sub StretchHistogram()
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For Y = initY To finalY
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
-        ImageData(QuickVal + 2, Y) = rLookup(r)
-        ImageData(QuickVal + 1, Y) = gLookup(g)
-        ImageData(QuickVal, Y) = bLookup(b)
+        ImageData(QuickVal + 2, y) = rLookup(r)
+        ImageData(QuickVal + 1, y) = gLookup(g)
+        ImageData(QuickVal, y) = bLookup(b)
         
-    Next Y
+    Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
     

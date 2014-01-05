@@ -291,7 +291,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fix Lens Distort Tool
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 22/January/13
 'Last updated: 05/June/13
 'Last update: fix typo that prevented zoom slider from being validated

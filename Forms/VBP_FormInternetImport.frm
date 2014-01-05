@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Internet Interface (for importing images directly from a URL)
-'Copyright ©2011-2013 by Tanner Helland
+'Copyright ©2011-2014 by Tanner Helland
 'Created: 08/June/12
 'Last updated: 03/December/12
 'Last update: made some slight modifications to ImportImageFromInternet so it can be used by external callers.
@@ -283,7 +283,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     
     'Unique to this particular import is remembering the full filename + extension (because this method of import
     ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-    If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).OriginalFileNameAndExtension = tmpFilename
+    If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
     
     SetProgBarVal 0
     

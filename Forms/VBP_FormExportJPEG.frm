@@ -242,7 +242,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export Dialog
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 03/December/12
 'Last update: converted this into a true "dialog", in that it can be called from anywhere, and it will return

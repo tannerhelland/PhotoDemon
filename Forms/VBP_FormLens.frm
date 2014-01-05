@@ -208,7 +208,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Lens Correction and Distortion
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 26/April/13
 'Last update: simplify code by relying on new slider/text custom control

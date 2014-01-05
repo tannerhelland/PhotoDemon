@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selection_Handler"
 '***************************************************************************
 'Selection Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 03/August/13
 'Last update: fix some initialization behavior to get selections working with macros
