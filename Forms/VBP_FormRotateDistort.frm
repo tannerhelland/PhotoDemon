@@ -228,7 +228,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rotate Distort Effect Interface (separate from image rotation for a reason - see below)
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 22/August/13
 'Last updated: 26/August/13
 'Last update: convert area rotation to an external function, and make this just a thin wrapper

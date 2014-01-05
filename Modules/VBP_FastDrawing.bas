@@ -1,7 +1,7 @@
 Attribute VB_Name = "FastDrawing"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 15/September/13
 'Last update: during a preview, clients should not have to track and calculate the difference between preview dimensions

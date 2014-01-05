@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color Selector custom control
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 17/August/13
 'Last updated: 04/September/13
 'Last update: external displayColorSelection function, which forces the control to display the color selection

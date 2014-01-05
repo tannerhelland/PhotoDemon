@@ -1,13 +1,13 @@
 Attribute VB_Name = "Color_Functions"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 13/August/13
 'Last update: added XYZ and CieLAB color conversions
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
-' until June 2013.  This module is now used to store all the random bits of specialized color processing code
+' until June 2014.  This module is now used to store all the random bits of specialized color processing code
 ' required by the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -41,7 +41,7 @@ Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initi
     '    showColorDialog = False
     'End If
     
-    'As of November 2013, PhotoDemon has its own color selector!
+    'As of November 2014, PhotoDemon has its own color selector!
     If choosePDColor(initialColor, colorReceive) = vbOK Then
         showColorDialog = True
     Else

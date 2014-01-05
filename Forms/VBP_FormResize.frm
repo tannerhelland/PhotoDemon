@@ -487,7 +487,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 25/August/13
 'Last update: added command bar, and redesigned the dialog to accommodate its large width

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Preferences Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 21/October/13
 'Last update: added additional debug code to individual GetPref subs, to help track down some obscure errors

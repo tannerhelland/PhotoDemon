@@ -329,7 +329,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Ripple" Distortion
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 06/January/13
 'Last updated: 15/September/13
 'Last update: fixed preview wavelength calculation, so the preview now accurately reflects the final image.

@@ -329,7 +329,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Waves" Distortion
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 07/January/13
 'Last updated: 15/September/13
 'Last update: fix preview calculations; they are now properly modified, so the final image actually matches the preview

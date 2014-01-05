@@ -299,12 +299,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Primary Toolbar
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 03/October/13
 'Last update: minor bug-fixes
 '
-'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
+'This form was initially integrated into the main MDI form.  In fall 2014, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own

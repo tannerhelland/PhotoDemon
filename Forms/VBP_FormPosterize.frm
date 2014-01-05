@@ -222,7 +222,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Posterizing Effect Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 24/August/13
 'Last update: completely removed the old posterize code in favor of the per-channel approach (which was taken from

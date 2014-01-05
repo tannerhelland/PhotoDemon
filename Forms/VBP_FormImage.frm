@@ -149,7 +149,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Form (no longer an MDI child, but still specially handled by PhotoDemon's window manager class)
-'Copyright ©2002-2013 by Tanner Helland
+'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 21/October/13
 'Last update: Improve "select next image" logic when an image is unloaded, but other images are still active.
@@ -801,7 +801,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 
                 'I think this "Unload Me" statement may be causing some kind of infinite recursion - perhaps because it triggers this very
                 ' QueryUnload statement? Not sure, but I may need to revisit it if the problems don't go away...
-                'UPDATE 26 Aug 2013: after changing my subclassing code, the problem seems to have disappeared, but I'm leaving
+                'UPDATE 26 Aug 2014: after changing my subclassing code, the problem seems to have disappeared, but I'm leaving
                 ' this comment here until I'm absolutely certain the problem has been resolved.
                 Unload Me
                 'Set Me = Nothing

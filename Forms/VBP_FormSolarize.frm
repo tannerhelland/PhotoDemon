@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Solarizing Effect Handler
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/14/01
 'Last updated: 24/August/13
 'Last update: added command bar

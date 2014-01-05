@@ -1,7 +1,7 @@
 Attribute VB_Name = "File_And_Path_Handling"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 12/September/13
 'Last update: merged file functions from other modules into this one
@@ -20,7 +20,7 @@ Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As 
 
 'Used to shell an external program, then wait until it completes
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
-Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessId As Long) As Long
+Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessID As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
 Private Const SYNCHRONIZE = &H100000

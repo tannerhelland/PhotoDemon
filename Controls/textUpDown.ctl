@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Text / UpDown custom control
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 13/September/13
 'Last update: fix non-96dpi layout issues
@@ -77,7 +77,7 @@ Attribute VB_Exposed = False
 ' This got the job done, but it had a number of limitations - such as requiring an enormous amount of time if
 ' changes ever needed to be made, and custom code being required in every form to handle text / scroll synching.
 '
-'In April 2013, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
+'In April 2014, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
 ' for float values.  Rather than go through and add custom support for this to every damn form, I finally did
 ' the smart thing and built a custom text/scroll user control.  This effectively replaces all other text/scroll
 ' combos in the program.
@@ -142,10 +142,10 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
-    UserControl.Enabled = newValue
-    vsPrimary.Enabled = -newValue
-    txtPrimary.Enabled = newValue
+Public Property Let Enabled(ByVal NewValue As Boolean)
+    UserControl.Enabled = NewValue
+    vsPrimary.Enabled = -NewValue
+    txtPrimary.Enabled = NewValue
     PropertyChanged "Enabled"
 End Property
 
@@ -191,13 +191,13 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal newValue As Double)
+Public Property Let Value(ByVal NewValue As Double)
     
     'Don't make any changes unless the new value deviates from the existing one
-    If newValue <> controlVal Then
+    If NewValue <> controlVal Then
     
         'Internally track the value of the control
-        controlVal = newValue
+        controlVal = NewValue
         
         'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
         ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
@@ -230,9 +230,9 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal newValue As Double)
+Public Property Let Min(ByVal NewValue As Double)
     
-    controlMin = newValue
+    controlMin = NewValue
     vsPrimary.Max = -1 * controlMin * (10 ^ significantDigits)
     
     'If the current control .Value is less than the new minimum, change it to match
@@ -252,9 +252,9 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal newValue As Double)
+Public Property Let Max(ByVal NewValue As Double)
     
-    controlMax = newValue
+    controlMax = NewValue
     vsPrimary.Min = -1 * controlMax * (10 ^ significantDigits)
     
     'If the current control .Value is greater than the new max, change it to match
@@ -274,9 +274,9 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal newValue As Long)
+Public Property Let SigDigits(ByVal NewValue As Long)
     
-    significantDigits = newValue
+    significantDigits = NewValue
     
     'Update the scroll bar's min and max values accordingly
     vsPrimary.Max = -1 * controlMin * (10 ^ significantDigits)

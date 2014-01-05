@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macro_Interface"
 '***************************************************************************
 'PhotoDemon Macro Interface
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 10/21/01
 'Last updated: 02/August/13
 'Last update: Rewrote all macro operations against the new, much-improved XML macro file format.
@@ -14,7 +14,7 @@ Attribute VB_Name = "Macro_Interface"
 'PhotoDemon's batch processing wizard allows use of macros, so that any combination of actions can be applied to any combination of
 ' images automatically.  This is a trademark feature of the program.
 '
-'As of 2013, the macro engine has been rewritten in significant ways.  Macros now rely on PhotoDemon's new string-based param
+'As of 2014, the macro engine has been rewritten in significant ways.  Macros now rely on PhotoDemon's new string-based param
 ' design, and all macro settings are saved out to valid XML files.  This makes the human-readable and human-editable, but it also
 ' means that old macro files are no longer supported.  Users of old macro files are automatically warned of this change if they try
 ' to load an outdated macro file.
@@ -29,7 +29,7 @@ Option Explicit
 'Macro loading information
 
 'The current macro version string, which must be embedded in every saved macro file.
-Public Const MACRO_VERSION_2013 As String = "8.2013"
+Public Const MACRO_VERSION_2014 As String = "8.2014"
 
 'Macro recording information
 Public MacroStatus As Byte
@@ -99,7 +99,7 @@ SaveMacroAgain:
         xmlEngine.prepareNewXML "Macro"
         
         'Write out the XML version we're using for this macro
-        xmlEngine.writeTag "pdMacroVersion", MACRO_VERSION_2013
+        xmlEngine.writeTag "pdMacroVersion", MACRO_VERSION_2014
         
         'We now want to count the number of actual processes that we will be writing to file.  A valid process meets
         ' the following criteria:
@@ -227,7 +227,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
         Select Case verCheck
         
             'The current macro version (e.g. the first draft of the new XML format)
-            Case MACRO_VERSION_2013
+            Case MACRO_VERSION_2014
             
                 'Retrieve the number of processes in this macro
                 ProcessCount = xmlEngine.getUniqueTag_Long("processCount")

@@ -204,7 +204,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Unsharp Masking Tool
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 03/March/01
 'Last updated: 17/January/13
 'Last update: rewrote as a full tool, instead of a single hard-coded 5x5 implementation

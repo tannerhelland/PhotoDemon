@@ -1,14 +1,14 @@
 Attribute VB_Name = "Math_Functions"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 13/June/13
 'Last update: added a function by VB6 coder LaVolpe that converts decimals to fractions.  PhotoDemon uses this function to
 '             approximate image aspect ratios from width/height values.
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
-' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
+' until June 2014.  This module is now used to store all the random bits of specialized math required by the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -20,7 +20,7 @@ Option Explicit
 
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
-' You can download the original at this link (good as of 13 June 2013): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
+' You can download the original at this link (good as of 13 June 2014): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
 Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
 
     Const MaxTerms As Integer = 50          'Limit to prevent infinite loop

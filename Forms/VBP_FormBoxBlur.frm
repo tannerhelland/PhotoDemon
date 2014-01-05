@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Box Blur Tool
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: some time 2000
 'Last updated: 17/September/13
 'Last update: replace on the old accumulation technique with separable horizontal and vertical blurs.  Hot damn,

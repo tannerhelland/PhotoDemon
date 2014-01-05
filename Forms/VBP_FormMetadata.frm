@@ -139,7 +139,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Browser
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/13
 'Last updated: 21/September/13
 'Last update: fix mousewheel behavior to give preference to the main list box, without requiring a click to obtain focus.

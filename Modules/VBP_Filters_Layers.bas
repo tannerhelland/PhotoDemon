@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Layers"
 '***************************************************************************
 'Layer Filters Module
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/February/13
 'Last updated: 17/September/13
 'Last update: removed the old dedicated box blur routine.  A horizontal/vertical two-pass is waaaaay faster!

@@ -218,7 +218,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 08/April/13
 'Last updated: 30/August/13
 'Last update: added an option for forward or reverse transformations.  I was hesitant to do this previously, because

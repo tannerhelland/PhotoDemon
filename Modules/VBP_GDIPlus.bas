@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 'GDI+ Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 07/December/13
 'Last update: added support for true ICC-profile-based CMYK conversion when loading images via GDI+.  Surprisingly simple!

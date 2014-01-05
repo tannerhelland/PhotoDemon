@@ -31,9 +31,17 @@ Begin VB.Form FormCurves
       TabIndex        =   0
       Top             =   7455
       Width           =   13095
-      _extentx        =   23098
-      _extenty        =   1323
-      font            =   "VBP_FormCurves.frx":0000
+      _ExtentX        =   23098
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.ComboBox cboHistogram 
       Appearance      =   0  'Flat
@@ -75,8 +83,8 @@ Begin VB.Form FormCurves
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkGrid 
       Height          =   480
@@ -84,11 +92,19 @@ Begin VB.Form FormCurves
       TabIndex        =   7
       Top             =   6360
       Width           =   1350
-      _extentx        =   2381
-      _extenty        =   847
-      caption         =   "display grid"
-      font            =   "VBP_FormCurves.frx":0028
-      value           =   1
+      _ExtentX        =   2381
+      _ExtentY        =   847
+      Caption         =   "display grid"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkDiagonal 
       Height          =   480
@@ -96,11 +112,19 @@ Begin VB.Form FormCurves
       TabIndex        =   8
       Top             =   6840
       Width           =   3465
-      _extentx        =   6112
-      _extenty        =   847
-      caption         =   "display original curve (diagonal line)"
-      font            =   "VBP_FormCurves.frx":0050
-      value           =   1
+      _ExtentX        =   6112
+      _ExtentY        =   847
+      Caption         =   "display original curve (diagonal line)"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       Alignment       =   1  'Right Justify
@@ -172,7 +196,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Curves Adjustment Dialog
-'Copyright ©2008-2013 by Tanner Helland
+'Copyright ©2008-2014 by Tanner Helland
 'Created: sometime 2008
 'Last updated: 03/December/13
 'Last update: store curve nodes as relative values rather than absolute ones.  This fixes an extremely rare error when
@@ -376,7 +400,7 @@ Private Sub cmdBar_AddCustomPresetData()
     cmdBar.addPresetData "NodeCount", CStr(numOfNodes)
     
     'Next, place all node data in one giant string.
-    ' UPDATE 03 Dec 2013: instead of storing absolute coordinates, store relative ones per the size of the
+    ' UPDATE 03 Dec 2014: instead of storing absolute coordinates, store relative ones per the size of the
     '                     curve box.  This fixes an extremely rare error when the user changes DPI for their
     '                     monitor while having a previously stored set of curve coordinates.
     Dim nodeString As String
@@ -448,7 +472,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     Set cParams = New pdParamString
     cParams.setParamString Replace(tmpString, ",", "|")
     
-    'UPDATE 03 Dec 2013: instead of storing absolute coordinates, we now store relative ones per the size of
+    'UPDATE 03 Dec 2014: instead of storing absolute coordinates, we now store relative ones per the size of
     '                    the curve box.  This fixes an extremely rare error when the user changes DPI for
     '                    their monitor while having a previously stored set of curve coordinates.
     Dim nodeBoxWidth As Long, nodeBoxHeight As Long

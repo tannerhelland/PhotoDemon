@@ -13,13 +13,13 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 13/December/13
 'Last update: added specialized "track minimized mode" code to prevent window offsets and size being set to 0 by minimize events
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
-' 2013, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
+' 2014, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
 ' the "stock" MDI implementation.  (MDI has a lot of interaction problems, not to mention a host of known bugs that will
 ' never be fixed because Microsoft is - rightfully - moving away from the MDI model.  PD still allows for multiple document
 ' windows via a custom floating-window system.)

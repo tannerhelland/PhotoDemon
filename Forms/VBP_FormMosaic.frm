@@ -161,7 +161,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pixelate filter interface (formerly "mosaic")
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 8/5/00
 'Last updated: 23/August/13
 'Last update: add command bar

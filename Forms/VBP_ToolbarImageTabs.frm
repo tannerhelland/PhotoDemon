@@ -44,12 +44,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Selection ("Tab") Toolbar
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/October/13
 'Last updated: 21/October/13
 'Last update: fix syncing of curThumb and g_CurrentImage when an inactive image is unloaded via the taskbar
 '
-'In fall 2013, PhotoDemon left behind the MDI model in favor of fully dockable/floatable tool and image windows.
+'In fall 2014, PhotoDemon left behind the MDI model in favor of fully dockable/floatable tool and image windows.
 ' This required quite a new features, including a way to switch between loaded images when image windows are docked -
 ' which is where this form comes in.
 '

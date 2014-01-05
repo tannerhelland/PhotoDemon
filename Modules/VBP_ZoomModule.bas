@@ -1,7 +1,7 @@
 Attribute VB_Name = "Viewport_Handler"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 15/September/13
 'Last update: Optimize viewport scrolling if GDI+ is available.
@@ -202,7 +202,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             pdImages(curImage).alphaFixLayer.createBlank srcWidth, srcHeight, 32
             BitBlt pdImages(curImage).alphaFixLayer.getLayerDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainLayer.getLayerDC, srcX, srcY, vbSrcCopy
 
-            'Update 15 Sep 2013: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
+            'Update 15 Sep 2014: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
             ' if HALFTONE mode is used, and zooming-out requires HALFTONE for properly pretty results.)
             
             'NOTE: this is temporarily disabled, because GDI+ resizing screws with the alpha values of the image (for reasons unknown).

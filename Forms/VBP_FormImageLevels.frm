@@ -305,7 +305,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright ©2006-2013 by Tanner Helland
+'Copyright ©2006-2014 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 26/April/13
 'Last update: redesigned the entire form around the new slider/text custom control.  This should make it much more

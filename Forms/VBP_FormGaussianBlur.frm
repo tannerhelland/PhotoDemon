@@ -204,7 +204,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gaussian Blur Tool
-'Copyright ©2010-2013 by Tanner Helland
+'Copyright ©2010-2014 by Tanner Helland
 'Created: 01/July/10
 'Last updated: 17/September/13
 'Last update: provide options for "fast instead of accurate"; this is a huge speed gain (~20x for "good" vs "best")

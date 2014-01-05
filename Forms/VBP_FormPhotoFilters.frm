@@ -147,7 +147,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Photo Filter Application Tool
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/June/13
 'Last updated: 23/August/13
 'Last update: fixed non-96 dpi issues with the custom list box

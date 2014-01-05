@@ -2234,7 +2234,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright ©2007-2013 by Tanner Helland
+'Copyright ©2007-2014 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 18/December/13
 'Last update: added a final panel, which now displays batch conversion proess

@@ -575,7 +575,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Selection Dialog
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 11/November/13
 'Last updated: 11/November/13
 'Last update: initial build
@@ -655,7 +655,7 @@ Public Property Get newColor() As Long
 End Property
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     userAnswer = vbCancel
     Me.Hide

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 16/September/13
 'Last update: fix bug where feathering radius was still used to calculate selection boundaries, if feathering had been
@@ -41,7 +41,7 @@ Option Explicit
 
 'Used when writing/reading selection data to/from a file
 Private Const SELECTION_IDENTIFIER As String * 4 = "PDsd"
-Private Const SELECTION_FILE_VERSION_2013 As Long = &H1002
+Private Const SELECTION_FILE_VERSION_2014 As Long = &H1002
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Private Type SAFEARRAYBOUND
@@ -1777,7 +1777,7 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
     
         'Identifiers
         Put #fileNum, 1, SELECTION_IDENTIFIER
-        Put #fileNum, , SELECTION_FILE_VERSION_2013
+        Put #fileNum, , SELECTION_FILE_VERSION_2014
         
         'Size of the attached image.  This is used to resize the selection mask as necessary if the selection is saved in raster format,
         ' and its original image was a different size from this one.

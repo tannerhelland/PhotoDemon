@@ -142,7 +142,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Reduction Form
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 24/August/13
 'Last update: move all manual reduction routines to the Posterize form, where they make more sense

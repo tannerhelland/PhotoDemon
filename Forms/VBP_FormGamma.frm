@@ -248,7 +248,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gamma Correction Handler
-'Copyright ©2000-2013 by Tanner Helland
+'Copyright ©2000-2014 by Tanner Helland
 'Created: 12/May/01
 'Last updated: 23/April/13
 'Last update: replaced all scroll bars and text boxes with my new combo text/scroll control.  Floating-point entry is

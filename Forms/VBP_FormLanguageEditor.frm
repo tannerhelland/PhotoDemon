@@ -883,7 +883,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (Translation) Editor
-'Copyright ©2012-2013 by Frank Donckers and Tanner Helland
+'Copyright ©2013-2014 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
 'Last updated: 12/September/13
 'Last update: completed initial build

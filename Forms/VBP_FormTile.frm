@@ -255,7 +255,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tile Rendering Interface
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 25/August/12
 'Last updated: 24/August/13
 'Last update: clean up and modernize all code; install new text up/down user controls, add command bar

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_zLib_Interface"
 '***************************************************************************
 'File Compression Interface (via zLib)
-'Copyright ©2002-2013 by Tanner Helland
+'Copyright ©2002-2014 by Tanner Helland
 'Created: 3/02/02
 'Last updated: 05/August/13
 'Last update: standalone functions for compressing and decompressing arrays.  I still need to tie the compress/decompress file

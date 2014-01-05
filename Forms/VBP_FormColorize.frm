@@ -132,7 +132,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright ©2006-2013 by Tanner Helland
+'Copyright ©2006-2014 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 09/September/12
 'Last update: added "maintain saturation" check box

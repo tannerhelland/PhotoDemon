@@ -72,7 +72,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'About Form
-'Copyright ©2001-2013 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 13/September/13
 'Last update: all logos are now stored in the resource file.  Added a mask for more "legit" credit rendering. :)
@@ -145,7 +145,7 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
-    GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2013 Tanner Helland"
+    GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2014 Tanner Helland"
     GenerateThankyou g_Language.TranslateMessage("the fast, free, portable photo editor"), ""
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""

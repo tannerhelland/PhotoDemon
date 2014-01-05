@@ -173,7 +173,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Make color transparent ("green screen") tool dialog
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 21/August/13
 'Last update: gave this tool its own dialog, in keeping with the "do one thing and do it well" philosophy of PD dialogs
