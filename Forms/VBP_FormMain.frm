@@ -30,6 +30,12 @@ Begin VB.Form FormMain
       _ExtentY        =   1058
       Enabled         =   0   'False
    End
+   Begin PhotoDemon.bluDownload updateChecker 
+      Left            =   120
+      Top             =   840
+      _ExtentX        =   847
+      _ExtentY        =   847
+   End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
       Top             =   360
@@ -1152,6 +1158,12 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+'When download of the update information is complete, write out the current date to the preferences file
+Private Sub updateChecker_Complete()
+    Debug.Print "Update file download complete.  Update information has been saved at " & g_UserPreferences.getDataPath & "updates.xml"
+    g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
+End Sub
+
 'Forward mousewheel events to the relevant window
 Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
@@ -1194,10 +1206,12 @@ Private Sub Form_Load()
     ' and I'm working on a solution to that.)
     Me.Visible = True
     
+    'Register all toolbox forms with the window manager
     g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
     g_WindowManager.registerChildForm toolbar_Selections, TOOLBAR_WINDOW, 3, SELECTION_TOOLBOX
     g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
     
+    'Display the file and tool toolboxes per the user's display settings
     toolbar_File.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_File.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     toolbar_Selections.Show vbModeless, Me
@@ -1260,33 +1274,54 @@ Private Sub Form_Load()
     
     End If
     
-    'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates)
+    'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates,
+    ' as it is assumed the user already has an updated copy of the software - and we don't want to bother them already!)
     If allowedToUpdate And (Not g_IsFirstRun) Then
     
-        Message "Checking for software updates (this feature can be disabled from the Tools -> Options menu)..."
+        Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
+        
+        'Prior to January 2014, PhotoDemon updates were downloaded synchronously (meaning all other PD operations were
+        ' suspended until the update completed).  In Jan 14, I moved to an asynchronous method, which means that updates
+        ' are downloaded transparently in the background.
+        
+        'This means that all we need to do at this stage is initiate the update file download (from its standard location
+        ' of photodemon.org/downloads/updates.xml).  If successful, the downloader will place the completed update file
+        ' in the /Data subfolder.  On exit (or subsequent program runs), we can simply check for the presence of that file.
+        FormMain.updateChecker.Download "http://photodemon.org/downloads/updates.xml", g_UserPreferences.getDataPath & "updates.xml", vbAsyncReadForceUpdate
+                
+    End If
+    
+    'It's possible that a past program instance downloaded update information for us; check for an update file now.
+    If (Not g_IsFirstRun) Then
+    
+        Message "Checking for previously downloaded update data..."
     
         Dim updateNeeded As UpdateCheck
         updateNeeded = CheckForSoftwareUpdate
         
-        'CheckForSoftwareUpdate can return one of three values:
-        ' UPDATE_ERROR - something went wrong (no Internet connection, etc)
-        ' UPDATE_NOT_NEEDED - the check was successful, but this version is up-to-date
-        ' UPDATE_AVAILABLE - the check was successful, and an update is available
+        'CheckForSoftwareUpdate can return one of four values:
+        ' UPDATE_ERROR - something went wrong
+        ' UPDATE_NOT_NEEDED - an update file was found, but the current software version is already up-to-date
+        ' UPDATE_AVAILABLE - an update file was found, and an updated PD copy is available
+        ' UPDATE_UNAVAILABLE - no update file was found (this is the most common occurrence, as updates are only checked every 10 days)
         
         Select Case updateNeeded
         
             Case UPDATE_ERROR
-                Message "An error occurred while checking for updates.  Please make sure you have an active Internet connection."
+                Message "An error occurred while looking for an update file."
             
             Case UPDATE_NOT_NEEDED
-                Message "Software is up-to-date."
+                Message "Update data found, but this copy of PhotoDemon is already up-to-date."
                 
                 'Because the software is up-to-date, we can mark this as a successful check in the preferences file
                 g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
                 
             Case UPDATE_AVAILABLE
-                Message "Software update found!  Launching update notifier..."
+                Message "New PhotoDemon update found!  Launching update notifier..."
                 showPDDialog vbModal, FormSoftwareUpdate
+                
+            Case Else
+                Message "No update file found; next update check will be at least ten days after %1.", CStr(lastCheckDate)
             
         End Select
             
@@ -1948,7 +1983,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             Message "Checking for software updates..."
     
             Dim updateNeeded As Long
-            updateNeeded = CheckForSoftwareUpdate
+            updateNeeded = CheckForSoftwareUpdate(True)
     
             'CheckForSoftwareUpdate can return one of three values:
             ' 0 - something went wrong (no Internet connection, etc)
@@ -1957,10 +1992,10 @@ Private Sub MnuHelp_Click(Index As Integer)
             Select Case updateNeeded
         
                 Case 0
-                    Message "An error occurred while checking for updates.  Please try again later."
+                    pdMsgBox "An error occurred while checking for updates.  Please try again later.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates"
                     
                 Case 1
-                    Message "This copy of PhotoDemon is the newest available.  (Version %1.%2.%3)", App.Major, App.Minor, App.Revision
+                    pdMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                         
                     'Because the software is up-to-date, we can mark this as a successful check in the preferences file
                     g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
@@ -1968,7 +2003,7 @@ Private Sub MnuHelp_Click(Index As Integer)
                 Case 2
                     Message "Software update found!  Launching update notifier..."
                     showPDDialog vbModal, FormSoftwareUpdate
-                
+                    
             End Select
         
         'Submit feedback
