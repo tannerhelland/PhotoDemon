@@ -3,8 +3,9 @@ Attribute VB_Name = "Image_Window_Handler"
 'Image Window Handler
 'Copyright ©2002-2013 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 20/December/13
-'Last update: fix various functions to properly account for the presence of an image window status bar
+'Last updated: 05/January/13
+'Last update: further improve intelligence of various functions when accounting for the presence of vertical chrome
+'              (e.g. image window status bars)
 '
 'This module contains functions relating to the creation, sizing, and maintenance of the windows (forms) associated with
 ' each image loaded by the user.  Even in single-window mode, each loaded image receives its own form.  This form is
@@ -330,6 +331,9 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     maxWidth = g_WindowManager.requestActualMainFormClientWidth
     maxHeight = g_WindowManager.requestActualMainFormClientHeight
     
+    'Remove any additional per-window chrome from the available space (rulers, status bar, etc)
+    maxHeight = maxHeight - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
+    
     'If image windows are floating, we need to factor window chrome (borders) into the maximum available size
     If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
         maxWidth = maxWidth - g_WindowManager.getHorizontalChromeSize(pdImages(g_CurrentImage).containingForm.hWnd)
@@ -399,6 +403,9 @@ Public Sub FitOnScreen()
     Dim maxWidth As Long, maxHeight As Long
     maxWidth = g_WindowManager.requestActualMainFormClientWidth
     maxHeight = g_WindowManager.requestActualMainFormClientHeight
+    
+    'Remove any additional per-window chrome from the available space (rulers, status bar, etc)
+    maxHeight = maxHeight - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
     
     'If image windows are floating, we need to factor window chrome (borders) into the maximum available size
     If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
