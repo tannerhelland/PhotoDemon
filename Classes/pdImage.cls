@@ -405,7 +405,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Return a layer that contains the currently selected area, fully processed according to the selection mask
-Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
+Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer, Optional ByVal preMultipliedAlphaState As Boolean = False) As Boolean
 
     'If this image does not contain an active selection, exit now.
     If (Not IsActive) Or (Not selectionActive) Then
@@ -441,7 +441,8 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     topOffset = mainSelection.boundTop
     
     Dim x As Long, y As Long
-    Dim thisAlpha As Long
+    Dim r As Long, g As Long, b As Long
+    Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
     Dim srcLayerCD As Long, srcQuickX As Long, srcQuickY As Long
@@ -458,13 +459,44 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
         srcQuickY = topOffset + y
         thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
         
-        dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
-        dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
-        dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
+        'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
+        ' alpha value of the destination pixel.  If the source data is 32bpp, use only the selection mask data.
         If srcLayerCD = 4 Then
+        
+            'Source pixel data will be premultiplied, so we must un-premultiply it now
+            origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
+            If origAlpha > 0 Then
+                blendAlpha = 255 / origAlpha
+            Else
+                blendAlpha = 0
+            End If
+            
+            r = srcImageData(srcQuickX + 2, srcQuickY)
+            g = srcImageData(srcQuickX + 1, srcQuickY)
+            b = srcImageData(srcQuickX, srcQuickY)
+            
+            r = r * blendAlpha
+            g = g * blendAlpha
+            b = b * blendAlpha
+            
+            If r > 255 Then r = 255
+            If g > 255 Then g = 255
+            If b > 255 Then b = 255
+            
+            dstImageData(dstQuickX + 2, y) = r
+            dstImageData(dstQuickX + 1, y) = g
+            dstImageData(dstQuickX, y) = b
+            
+            'We have now set un-premultiplied alpha data to the destination.  Finish our work by calculating
+            ' a new alpha channel value for this pixel, which is a blend of the original alpha value, and the
+            ' selection mask value at this location.
             blendAlpha = thisAlpha / 255
-            dstImageData(dstQuickX + 3, y) = srcImageData(srcQuickX + 3, srcQuickY) * blendAlpha
+            dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+            
         Else
+            dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
+            dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
+            dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
             dstImageData(dstQuickX + 3, y) = thisAlpha
         End If
         
@@ -480,6 +512,9 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer) As Boolean
     Erase dstImageData
     Erase selData
     
+    'If the calling function requested premultiplied alpha, apply it now
+    If preMultipliedAlphaState Then dstLayer.fixPremultipliedAlpha True
+        
     retrieveProcessedSelection = True
 
 End Function
