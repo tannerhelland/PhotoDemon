@@ -213,26 +213,27 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "GREENSCREEN", 3, 2, 1      'Color to alpha
         addMenuIcon "REMOVETRANS", 3, 2, 3   'Remove alpha channel
     addMenuIcon "RESIZE", 3, 4         'Resize
-    addMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
+    'addMenuIcon "SMRTRESIZE", 3, 5     'Smart resize
+    addMenuIcon "CANVASSIZE", 3, 6     'Canvas resize
     addMenuIcon "CROPSEL", 3, 7        'Crop to Selection
-    addMenuIcon "AUTOCROP", 3, 8       'Autocrop
-    addMenuIcon "ROTATECW", 3, 10      'Rotate top-level
+    addMenuIcon "AUTOCROP", 3, 9      'Autocrop
+    addMenuIcon "ROTATECW", 3, 11      'Rotate top-level
         '--> Rotate sub-menu
-        addMenuIcon "ROTATECW", 3, 10, 0     'Rotate Clockwise
-        addMenuIcon "ROTATECCW", 3, 10, 1    'Rotate Counter-clockwise
-        addMenuIcon "ROTATE180", 3, 10, 2    'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 10, 3   'Rotate Arbitrary
-    addMenuIcon "MIRROR", 3, 11        'Mirror
-    addMenuIcon "FLIP", 3, 12          'Flip
-    addMenuIcon "ISOMETRIC", 3, 13     'Isometric
-    addMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
-    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(15).Enabled = True Else FormMain.MnuImage(15).Enabled = False
-    addMenuIcon "TILE", 3, 16          'Tile
-    addMenuIcon "METADATA", 3, 18      'Metadata (top-level)
+        addMenuIcon "ROTATECW", 3, 11, 0     'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 3, 11, 1    'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 3, 11, 2    'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 11, 3   'Rotate Arbitrary
+    addMenuIcon "MIRROR", 3, 12        'Mirror
+    addMenuIcon "FLIP", 3, 13          'Flip
+    addMenuIcon "ISOMETRIC", 3, 14     'Isometric
+    addMenuIcon "REDUCECOLORS", 3, 16  'Indexed color (Reduce Colors)
+    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(16).Enabled = True Else FormMain.MnuImage(16).Enabled = False
+    addMenuIcon "TILE", 3, 17          'Tile
+    addMenuIcon "METADATA", 3, 19      'Metadata (top-level)
         '--> Metadata sub-menu
-        addMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
-        addMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
-        addMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
+        addMenuIcon "BROWSEMD", 3, 19, 0     'Browse metadata
+        addMenuIcon "COUNTCOLORS", 3, 19, 2  'Count Colors
+        addMenuIcon "MAPPHOTO", 3, 19, 3     'Map photo location
     
     'Select Menu
     addMenuIcon "SELECTALL", 4, 0       'Select all

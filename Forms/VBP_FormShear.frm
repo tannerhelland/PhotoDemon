@@ -341,7 +341,7 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
        
         srcX = x + ((finalY - y) * sinX) * 2
         srcY = y + (x * sinY) * 2
-        
+                
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 

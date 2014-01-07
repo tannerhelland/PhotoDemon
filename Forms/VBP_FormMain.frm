@@ -26,15 +26,15 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -276,28 +276,32 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Canvas size..."
+         Caption         =   "Smart resize..."
          Index           =   5
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Canvas size..."
          Index           =   6
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Crop to selection"
+         Caption         =   "-"
          Index           =   7
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Autocrop"
+         Caption         =   "Crop to selection"
          Index           =   8
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Autocrop"
          Index           =   9
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Rotate"
+         Caption         =   "-"
          Index           =   10
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Rotate"
+         Index           =   11
          Begin VB.Menu MnuRotate 
             Caption         =   "90° clockwise"
             Index           =   0
@@ -317,35 +321,35 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Flip horizontal"
-         Index           =   11
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Flip vertical"
          Index           =   12
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Convert to isometric view"
+         Caption         =   "Flip vertical"
          Index           =   13
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Convert to isometric view"
          Index           =   14
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Indexed color..."
+         Caption         =   "-"
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
+         Caption         =   "Indexed color..."
          Index           =   16
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Tile..."
          Index           =   17
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "-"
          Index           =   18
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   19
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -2097,56 +2101,60 @@ Private Sub MnuImage_Click(Index As Integer)
         'Resize
         Case 4
             Process "Resize", True
+            
+        'Smart resize
+        Case 5
+            Process "Smart resize", True
         
         'Canvas resize
-        Case 5
+        Case 6
             Process "Canvas size", True
                 
         'Separator
-        Case 6
+        Case 7
             
         'Crop to selection
-        Case 7
+        Case 8
             Process "Crop"
         
         'Autocrop
-        Case 8
+        Case 9
             Process "Autocrop"
         
         'Separator
-        Case 9
-        
-        'Top-level Rotate
         Case 10
         
-        'Flip horizontal (mirror)
+        'Top-level Rotate
         Case 11
+        
+        'Flip horizontal (mirror)
+        Case 12
             Process "Flip horizontal"
         
         'Flip vertical
-        Case 12
+        Case 13
             Process "Flip vertical"
         
         'Isometric view
-        Case 13
+        Case 14
             Process "Isometric conversion"
             
         'Separator
-        Case 14
+        Case 15
         
         'Indexed color
-        Case 15
+        Case 16
             Process "Reduce colors", True
         
         'Tile
-        Case 16
+        Case 17
             Process "Tile", True
             
         'Separator
-        Case 17
+        Case 18
         
         'Metadata top-level
-        Case 18
+        Case 19
     
     End Select
 
