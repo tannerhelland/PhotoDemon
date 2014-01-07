@@ -27,9 +27,10 @@ PhotoDemon provides full macro support. Simply click “Record Macro”, then perfor
 ### It emphasizes usability
 Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built with input from professional designers – not just software engineers – and small touches like unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and forward-back button support, and descriptive menu icons make PhotoDemon useful to novices and professionals alike.
 
-### It provides a comprehensive selection of editing tools
-* Support for every image format known to mankind, including all major RAW formats (via LibRaw).
+### It provides a comprehensive selection of pro-grade features and tools
+* Support for every relevant image format, including all major RAW formats (via LibRaw).
 * Powerful selection tools, with full support for antialiasing, feathering, and on-canvas sizing/moving.
+* Fully color-managed workflow, including support for embedded ICC profiles (even CMYK ones!).
 * 2D transformations: resize, crop, autocrop, rotate, shear, tiling.
 * Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram, green screen, Wratten filters, and many more.
 * Filters and effects: context-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, film grain, and many more.
@@ -37,8 +38,8 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 
 ### What doesn't PhotoDemon do?
 
-* PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but they have not been added... yet.
-* PhotoDemon does not provide advanced color management (ICC profiles). More specifically, it ignores embedded ICC profiles. Even MORE specifically, it relies on DIB sections via the Windows GDI, which default to the sRGB space - see http://technet.microsoft.com/en-us/query/ms536845
+* PhotoDemon does not support layers, but layer support is actively being developed as of January 2014.
+* PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but work on them has been postponed in favor of layers.
 * PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later.
 
 ### How can I get involved? 
@@ -66,7 +67,7 @@ Questions regarding licensing should be directed to: http://photodemon.org/about
 
 Full text of BSD license follows.
 
-Copyright (c) 2013, Tanner Helland.
+Copyright (c) 2014, Tanner Helland.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
