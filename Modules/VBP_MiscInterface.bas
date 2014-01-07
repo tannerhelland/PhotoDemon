@@ -443,7 +443,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
-            If FormMain.MnuImage(7).Enabled <> newState Then FormMain.MnuImage(7).Enabled = newState
+            If FormMain.MnuImage(8).Enabled <> newState Then FormMain.MnuImage(8).Enabled = newState
             
         'Transformable selection controls specifically
         Case tSelectionTransform
