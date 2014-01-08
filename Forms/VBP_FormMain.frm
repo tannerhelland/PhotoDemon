@@ -26,15 +26,15 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -276,7 +276,7 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Smart resize..."
+         Caption         =   "Liquid resize..."
          Index           =   5
       End
       Begin VB.Menu MnuImage 
@@ -2102,9 +2102,9 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 4
             Process "Resize", True
             
-        'Smart resize
+        'Liquid resize
         Case 5
-            Process "Smart resize", True
+            Process "Liquid resize", True
         
         'Canvas resize
         Case 6

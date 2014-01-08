@@ -213,7 +213,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "GREENSCREEN", 3, 2, 1      'Color to alpha
         addMenuIcon "REMOVETRANS", 3, 2, 3   'Remove alpha channel
     addMenuIcon "RESIZE", 3, 4         'Resize
-    'addMenuIcon "SMRTRESIZE", 3, 5     'Smart resize
+    'addMenuIcon "SMRTRESIZE", 3, 5     'Liquid resize
     addMenuIcon "CANVASSIZE", 3, 6     'Canvas resize
     addMenuIcon "CROPSEL", 3, 7        'Crop to Selection
     addMenuIcon "AUTOCROP", 3, 9      'Autocrop

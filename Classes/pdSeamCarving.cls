@@ -96,10 +96,10 @@ Public Sub setEnergyImage(ByRef srcLayer As pdLayer)
     Dim x As Long, y As Long, QuickVal As Long
     Dim r As Long, g As Long, b As Long
     
-    Dim grayLookup(0 To 765) As Byte
+    Dim grayLookUp(0 To 765) As Byte
     
     For x = 0 To 765
-        grayLookup(x) = x \ 3
+        grayLookUp(x) = x \ 3
     Next x
     
     For x = 0 To srcLayer.getLayerWidth - 1
@@ -108,7 +108,7 @@ Public Sub setEnergyImage(ByRef srcLayer As pdLayer)
         r = energyData(QuickVal + 2, y)
         g = energyData(QuickVal + 1, y)
         b = energyData(QuickVal, y)
-        energyData(QuickVal, y) = grayLookup(r + g + b)
+        energyData(QuickVal, y) = grayLookUp(r + g + b)
     Next y
     Next x
     
@@ -119,7 +119,7 @@ End Sub
 'Generate a vertical seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
 ' re-scanned while ignoring irrelevant pixels.
-Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long)
+Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minRow As Long)
 
     'Resize the seam map to the requested dimensions
     ReDim seamMap(0 To finalX, 0 To finalY) As Long
@@ -131,7 +131,6 @@ Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
     CopyMemory ByVal VarPtrArray(energyData()), VarPtr(energySA), 4
     
     Dim x As Long, y As Long, xCheck As Long
-    Dim r As Long, g As Long, b As Long
     
     'Populate the first row of the energy array by simply copying over the relevant energy values
     For y = 0 To finalY
@@ -201,36 +200,34 @@ Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
     Next y
     Next x
     
+    'Release our energy data pointer
+    CopyMemory ByVal VarPtrArray(energyData), 0&, 4
+    
     'The seamMap array now contains a cumulative energy map for the image, which we can reverse-track to
     ' find out which seams should be removed!
     
     'As a convenience to subsequent functions, this function also returns the maximum value of the seam map.
     ' Processed pixels can be set to this value, which prevents them from being re-selected on subsequent runs.
     maxVal = 0
+    minVal = LONG_MAX
     For y = 0 To finalY
-        If seamMap(finalX, y) > maxVal Then maxVal = seamMap(finalX, y)
+        curEnergy = seamMap(finalX, y)
+        If curEnergy > maxVal Then maxVal = curEnergy
+        
+        If curEnergy < minVal Then
+            minVal = curEnergy
+            minRow = y
+        End If
+        
     Next y
-    
-    'Release our energy data pointer
-    CopyMemory ByVal VarPtrArray(energyData), 0&, 4
-    
+        
 End Sub
 
 'Given a valid seam map, remove one horizontal seam (which will result in a 1px smaller vertical image)
-Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long)
+Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
 
     'Start by finding the smallest energy value in the final column of the seam map
     Dim x As Long, y As Long
-    Dim rowIndex As Long, minVal As Long
-    rowIndex = 0
-    minVal = maxVal
-    
-    For y = 0 To finalY
-        If seamMap(finalX, y) < minVal Then
-            minVal = seamMap(finalX, y)
-            rowIndex = y
-        End If
-    Next y
     
     Dim xCheck As Long
     Dim leftUp As Long, leftMiddle As Long, leftDown As Long
@@ -311,7 +308,7 @@ End Function
 'Generate a horizontal seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
 ' re-scanned while ignoring irrelevant pixels.
-Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long)
+Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minColumn As Long)
 
     'Resize the seam map to the requested dimensions
     ReDim seamMap(0 To finalX, 0 To finalY) As Long
@@ -323,7 +320,6 @@ Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, B
     CopyMemory ByVal VarPtrArray(energyData()), VarPtr(energySA), 4
     
     Dim x As Long, y As Long, yCheck As Long
-    Dim r As Long, g As Long, b As Long
     
     'Populate the first row of the energy array by simply copying over the relevant energy values
     For x = 0 To finalX
@@ -398,8 +394,16 @@ Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, B
     'As a convenience to subsequent functions, this function also returns the maximum value of the seam map.
     ' Processed pixels can be set to this value, which prevents them from being re-selected on subsequent runs.
     maxVal = 0
+    minVal = LONG_MAX
     For x = 0 To finalX
-        If seamMap(x, finalY) > maxVal Then maxVal = seamMap(x, finalY)
+        curEnergy = seamMap(x, finalY)
+        If curEnergy > maxVal Then maxVal = curEnergy
+        
+        If curEnergy < minVal Then
+            minVal = curEnergy
+            minColumn = x
+        End If
+        
     Next x
     
     'Release our energy data pointer
@@ -408,20 +412,10 @@ Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, B
 End Sub
 
 'Given a valid seam map, remove one vertical seam (which will result in a 1px smaller horizontal image)
-Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long)
+Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
 
     'Start by finding the smallest energy value in the final row of the seam map
     Dim x As Long, y As Long
-    Dim columnIndex As Long, minVal As Long
-    columnIndex = 0
-    minVal = maxVal
-    
-    For x = 0 To finalX
-        If seamMap(x, finalY) < minVal Then
-            minVal = seamMap(x, finalY)
-            columnIndex = x
-        End If
-    Next x
     
     Dim yCheck As Long
     Dim topLeft As Long, topMiddle As Long, topRight As Long
@@ -527,7 +521,7 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     End If
     
     'We must generate at least one (and possibly more) seam constructs using the image energy as our guide
-    Dim seamData() As Long, seamMax As Long
+    Dim seamData() As Long, seamMax As Long, seamMin As Long, seamIndex As Long
     
     Dim i As Long
     
@@ -557,10 +551,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             For i = 1 To srcWidth - newWidth
             
                 'Retrieve an updated horizontal seam map of the image
-                getHorizontalSeamMap seamData, srcWidth - i, srcHeight - 1, seamMax
+                getHorizontalSeamMap seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 'Shrink the image by a single pixel in the horizontal direction
-                shrinkHorizontally seamData, srcWidth - i, srcHeight - 1, seamMax
+                shrinkHorizontally seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 If (i And 8) = 0 Then SetProgBarVal i
                 
@@ -594,10 +588,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             For i = 1 To srcHeight - newHeight
             
                 'Retrieve an updated vertical seam map of the image
-                getVerticalSeamMap seamData, srcWidth - 1, srcHeight - i, seamMax
+                getVerticalSeamMap seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex
                 
                 'Shrink the image by a single pixel in the vertical direction
-                shrinkVertically seamData, srcWidth - 1, srcHeight - i, seamMax
+                shrinkVertically seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex
                 
                 If (i And 8) = 0 Then SetProgBarVal hDiff + i
                 

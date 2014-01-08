@@ -361,11 +361,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
         
-        Case "Smart resize"
+        Case "Liquid resize"
             If showDialog Then
-                showPDDialog vbModal, FormSmartResize
+                showPDDialog vbModal, FormLiquidResize
             Else
-                FormSmartResize.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2)
+                FormLiquidResize.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2)
             End If
         
         Case "Canvas size"
