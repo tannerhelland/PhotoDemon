@@ -209,3 +209,59 @@ Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As 
     
     
 End Function
+
+'Determine if the program should check online for update information.  This will return true IFF the following
+' criteria are met:
+' 1) User preferences allow us to check for updates (e.g. the user has not forcibly disabled such checks)
+' 2) At least 10 days have passed since the last update check...
+' 3) ...or 10 days haven't passed, but we have never checked for updates before, and this is NOT the first time the user
+'    is running the program
+Public Function isItTimeForAnUpdate() As Boolean
+
+    'Locale settings can sometimes screw with the DateDiff function in unpredictable ways.  If something goes
+    ' wrong, disable update checks for this session
+    On Error GoTo noUpdates
+
+    Dim allowedToUpdate As Boolean
+    allowedToUpdate = g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True)
+        
+    'If updates ARE allowed, see when we last checked.  To be polite, only check once every 10 days.
+    If allowedToUpdate Then
+    
+        Dim lastCheckDate As String
+        lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check", "")
+        
+        'If the last update check date was not found, request an update check now
+        If Len(lastCheckDate) = 0 Then
+        
+            allowedToUpdate = True
+        
+        'If a last update check date was found, check to see how much time has elapsed since that check
+        Else
+        
+            Dim currentDate As Date
+            currentDate = Format$(Now, "Medium Date")
+            
+            'If 10 days have elapsed, allow an update check
+            If CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= 10 Then
+                allowedToUpdate = True
+            
+            'If 10 days haven't passed, prevent an update
+            Else
+                Message "Update check postponed (a check has been performed in the last 10 days)"
+                allowedToUpdate = False
+            End If
+                    
+        End If
+    
+    End If
+    
+    isItTimeForAnUpdate = allowedToUpdate
+    
+    Exit Function
+    
+noUpdates:
+
+    isItTimeForAnUpdate = False
+    
+End Function
