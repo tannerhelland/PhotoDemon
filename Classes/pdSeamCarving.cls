@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Image seam carving (smart resize/"content-aware scale"/"liquid rescale") Engine
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/January/14
-'Last updated: 06/January/14
-'Last update: initial build
+'Last updated: 08/January/14
+'Last update: finished work on enlarging support
 '
 'Content-aware scaling is a very exciting addition to PhotoDemon 6.2.  (As a comparison, PhotoShop didn't gain this
 ' feature until CS4, so it's pretty cutting-edge stuff!)
@@ -37,8 +37,6 @@ Attribute VB_Exposed = False
 ' my current implementation is quite slow (though still faster than many other implementations!) on account of all the
 ' seam finding operations that must be performed.  I am investigating ways to further improve the algorithm's performance,
 ' but I remain worried that this task may prove a bit much for VB6.  We'll see.
-'
-'Image *enlarging* remains to be implemented!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -137,17 +135,17 @@ Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
         seamMap(0, y) = energyData(0, y)
     Next y
     
-    Dim LeftUp As Long, leftMiddle As Long, leftDown As Long, curEnergy As Long, quickX As Long
+    Dim LeftUp As Long, leftMiddle As Long, leftDown As Long, curEnergy As Long, QuickX As Long
     
     'Now we can start traversing the energy array.  At each point, generate a new energy for the pixel using
     ' the smallest energy value above said pixel
     For x = 1 To finalX
         xCheck = (x - 1)
-        quickX = x * 3
+        QuickX = x * 3
     For y = 0 To finalY
         
         leftMiddle = seamMap(xCheck, y)
-        curEnergy = energyData(quickX, y)
+        curEnergy = energyData(QuickX, y)
         
         'Note that we must check edge pixels differently; hence the nested IF statements here
         If y > 0 Then
@@ -586,6 +584,8 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
                 columnIndex = x
             End If
         Next x
+        
+        If (i And 8) = 0 Then SetProgBarVal i
     
     Next i
     
@@ -686,7 +686,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
 End Function
 
 'Given a valid seam map, add n horizontal seams (which will result in an n-px larger vertical image)
-Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
+Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long, ByRef progBarOffset As Long)
 
     'Due to limitations of the seam carving algorithm, this function can only add [imageheight] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
@@ -778,6 +778,8 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
                 rowIndex = y
             End If
         Next y
+        
+        If (i And 8) = 0 Then SetProgBarVal progBarOffset + i
     
     Next i
     
@@ -814,7 +816,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     prepSafeArray dstEnergySA, newEnergyMap
     CopyMemory ByVal VarPtrArray(dstEnergy()), VarPtr(dstEnergySA), 4
     
-    Dim quickX As Long, quickY As Long, yOffset As Long
+    Dim QuickX As Long, QuickY As Long, yOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
     If m_SourceImage.getLayerColorDepth = 32 Then
@@ -833,25 +835,25 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
         'Loop through each pixel in the SOURCE image
         For y = 0 To finalY
         
-            quickX = x * colorDepthOffset
+            QuickX = x * colorDepthOffset
             
-            quickY = y + yOffset
+            QuickY = y + yOffset
             
             'Copy pixels from the source image to the destination image, using the visibility map to duplicate pixels as necessary
             For i = 0 To visibilityMap(x, y)
                 
                 'Remap RGB data to the destination image
-                dstImageData(quickX, quickY + i) = srcImageData(quickX, y)
-                dstImageData(quickX + 1, quickY + i) = srcImageData(quickX + 1, y)
-                dstImageData(quickX + 2, quickY + i) = srcImageData(quickX + 2, y)
+                dstImageData(QuickX, QuickY + i) = srcImageData(QuickX, y)
+                dstImageData(QuickX + 1, QuickY + i) = srcImageData(QuickX + 1, y)
+                dstImageData(QuickX + 2, QuickY + i) = srcImageData(QuickX + 2, y)
                 
                 'If present, remap alpha data as well
                 If alphaPresent Then
-                    dstImageData(quickX + 3, quickY + i) = srcImageData(quickX + 3, y)
+                    dstImageData(QuickX + 3, QuickY + i) = srcImageData(QuickX + 3, y)
                 End If
                 
                 'Because energy data only uses the blue channel, we can copy it more easily
-                dstEnergy(quickX, quickY + i) = srcEnergy(quickX, y)
+                dstEnergy(QuickX, QuickY + i) = srcEnergy(QuickX, y)
                 
             Next i
             
@@ -1014,7 +1016,7 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 getVerticalSeamMap seamData, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 'Grow the image vertically, using the newly generated seam map as our guide
-                growVertically seamData, newHeight - srcHeight, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
+                growVertically seamData, newHeight - srcHeight, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, hDiff
                 
                 'Update the source height, in case this function must be called again
                 srcHeight = m_SourceImage.getLayerHeight

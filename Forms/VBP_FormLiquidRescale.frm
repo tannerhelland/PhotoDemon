@@ -30,10 +30,18 @@ Begin VB.Form FormLiquidResize
       TabIndex        =   0
       Top             =   2670
       Width           =   9705
-      _extentx        =   17119
-      _extenty        =   1323
-      font            =   "VBP_FormLiquidRescale.frx":0000
-      autoloadlastpreset=   -1
+      _ExtentX        =   17119
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
@@ -41,10 +49,18 @@ Begin VB.Form FormLiquidResize
       TabIndex        =   1
       Top             =   705
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   714
-      font            =   "VBP_FormLiquidRescale.frx":0028
-      max             =   32767
+      _ExtentX        =   2117
+      _ExtentY        =   714
+      Max             =   32767
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
@@ -52,10 +68,18 @@ Begin VB.Form FormLiquidResize
       TabIndex        =   2
       Top             =   1335
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   714
-      font            =   "VBP_FormLiquidRescale.frx":0050
-      max             =   32767
+      _ExtentX        =   2117
+      _ExtentY        =   714
+      Max             =   32767
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblWarning 
       Appearance      =   0  'Flat
@@ -219,11 +243,11 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Liquid Resize(e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
+'Content-Aware Resize(e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/January/14
-'Last updated: 06/January/14
-'Last update: initial build
+'Last updated: 08/January/14
+'Last update: finished work on enlarging support
 '
 'Content-aware scaling is a very exciting addition to PhotoDemon 6.2.  (As a comparison, PhotoShop didn't gain this
 ' feature until CS4, so it's pretty cutting-edge stuff!)
@@ -245,8 +269,6 @@ Attribute VB_Exposed = False
 ' seam finding operations that must be performed.  I am investigating ways to further improve the algorithm's performance,
 ' but I remain worried that this task may prove a bit much for VB6.  We'll see.
 '
-'Image *enlarging* remains to be implemented!
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -263,7 +285,7 @@ Dim m_ToolTip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Liquid resize", , buildParams(tudWidth, tudHeight)
+    Process "Content-aware resize", , buildParams(tudWidth, tudHeight)
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
@@ -332,7 +354,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "Liquid resize"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "Content-aware resize"
     
     Message "Finished."
 
@@ -349,7 +371,7 @@ Public Function SeamCarveLayer(ByRef srcLayer As pdLayer, ByVal iWidth As Long, 
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
     
-    Message "Initializing smart resize engine..."
+    Message "Initializing content-aware resize engine..."
     
     'Before starting on seam carving, we must first generate an "energy map" for the image.  This can be done many ways,
     ' but since PD has a nice artistic contour algorithm already available, let's use that.
@@ -369,7 +391,7 @@ Public Function SeamCarveLayer(ByRef srcLayer As pdLayer, ByVal iWidth As Long, 
     'We no longer need a copy of the energy image, so release it.
     Set energyLayer = Nothing
     
-    Message "Applying smart resize..."
+    Message "Applying content-aware resize..."
     
     'This initial seam-carving algorithm is not particularly well-implemented, but that's okay.  It's a starting point!
     seamCarver.startSeamCarve iWidth, iHeight
