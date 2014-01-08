@@ -48,6 +48,9 @@ Public Const PI_DOUBLE As Double = 6.28318530717958
 Public Const PI_DIV_180 As Double = 0.017453292519943
 Public Const EULER As Double = 2.71828182845905
 
+'Data constants
+Public Const LONG_MAX As Long = 2147483647
+
 'Edge-handling methods for distort-style filters
 Public Enum EDGE_OPERATOR
     EDGE_CLAMP = 0

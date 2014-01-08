@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormSmartResize 
+Begin VB.Form FormLiquidResize 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Smart resize (content-aware scale)"
+   Caption         =   " Liquid resize (content-aware scaling)"
    ClientHeight    =   3420
    ClientLeft      =   45
    ClientTop       =   225
@@ -30,18 +30,10 @@ Begin VB.Form FormSmartResize
       TabIndex        =   0
       Top             =   2670
       Width           =   9705
-      _ExtentX        =   17119
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      AutoloadLastPreset=   -1  'True
+      _extentx        =   17119
+      _extenty        =   1323
+      font            =   "VBP_FormLiquidRescale.frx":0000
+      autoloadlastpreset=   -1
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
@@ -49,18 +41,10 @@ Begin VB.Form FormSmartResize
       TabIndex        =   1
       Top             =   705
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Max             =   32767
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   714
+      font            =   "VBP_FormLiquidRescale.frx":0028
+      max             =   32767
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
@@ -68,18 +52,10 @@ Begin VB.Form FormSmartResize
       TabIndex        =   2
       Top             =   1335
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Max             =   32767
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   714
+      font            =   "VBP_FormLiquidRescale.frx":0050
+      max             =   32767
    End
    Begin VB.Label lblWarning 
       Appearance      =   0  'Flat
@@ -237,13 +213,13 @@ Begin VB.Form FormSmartResize
       Width           =   675
    End
 End
-Attribute VB_Name = "FormSmartResize"
+Attribute VB_Name = "FormLiquidResize"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Smart Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
+'Liquid Resize(e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 06/January/14
@@ -287,7 +263,7 @@ Dim m_ToolTip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Smart resize", , buildParams(tudWidth, tudHeight)
+    Process "Liquid resize", , buildParams(tudWidth, tudHeight)
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
@@ -356,7 +332,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "Smart resize"
+    PrepareViewport pdImages(g_CurrentImage).containingForm, "Liquid resize"
     
     Message "Finished."
 
