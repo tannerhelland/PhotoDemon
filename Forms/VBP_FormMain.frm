@@ -26,15 +26,15 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1243,44 +1243,13 @@ Private Sub Form_Load()
     
     End If
     
-    'Start by seeing if we're allowed to check for software updates
+    'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
-    allowedToUpdate = g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True)
-        
-    'If updates ARE allowed, see when we last checked.  To be polite, only check once every 10 days.
-    If allowedToUpdate Then
-    
-        Dim lastCheckDate As String
-        lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check", "")
-        
-        'If the last update check date was not found, request an update check now
-        If lastCheckDate = "" Then
-        
-            allowedToUpdate = True
-        
-        'If a last update check date was found, check to see how much time has elapsed since that check
-        Else
-        
-            Dim currentDate As Date
-            currentDate = Format$(Now, "Medium Date")
-            
-            'If 10 days have elapsed, allow an update check
-            If CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= 10 Then
-                allowedToUpdate = True
-            
-            'If 10 days haven't passed, prevent an update
-            Else
-                Message "Update check postponed (a check has been performed in the last 10 days)"
-                allowedToUpdate = False
-            End If
-                    
-        End If
-    
-    End If
+    allowedToUpdate = Software_Updater.isItTimeForAnUpdate()
     
     'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates,
     ' as it is assumed the user already has an updated copy of the software - and we don't want to bother them already!)
-    If allowedToUpdate And (Not g_IsFirstRun) Then
+    If allowedToUpdate Then
     
         Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
         
@@ -1296,6 +1265,7 @@ Private Sub Form_Load()
     End If
     
     'It's possible that a past program instance downloaded update information for us; check for an update file now.
+    ' (Note that this check can be skipped the first time the program is run, as we are guaranteed to not have update data yet!)
     If (Not g_IsFirstRun) Then
     
         Message "Checking for previously downloaded update data..."
@@ -1325,7 +1295,7 @@ Private Sub Form_Load()
                 showPDDialog vbModal, FormSoftwareUpdate
                 
             Case Else
-                Message "No update file found; next update check will be at least ten days after %1.", CStr(lastCheckDate)
+                'No update data found - which is fine!  (This is actually the most common occurrence.)
             
         End Select
             
