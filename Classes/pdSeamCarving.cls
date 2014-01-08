@@ -493,6 +493,198 @@ Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Lon
 
 End Function
 
+'Given a valid seam map, add n vertical seams (which will result in an n-px larger horizontal image)
+Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
+
+    'Due to limitations of the seam carving algorithm, this function can only add [imagewidth] number of seams at a time.
+    ' If the user has selected a larger resize than that, this function must be called again.
+    If numOfAddedSeams > m_SourceImage.getLayerWidth / 2 Then numOfAddedSeams = m_SourceImage.getLayerWidth / 2
+    
+    Dim x As Long, y As Long, i As Long
+    
+    'Growing seams is a bit of a different approach from removing seams.  Because added seams will always have minimal energy,
+    ' we must vary the order in which seams are added.  To do this, we generate a "visibility map".  This map (a 2D array the size
+    ' of the image) will store how many times each source pixel is duplicated in the destination image.  Eventually it would be nice
+    ' to add some interpolation capabilities to this function, but for now, we only do blind pixel insertion.
+    Dim visibilityMap() As Long
+    ReDim visibilityMap(0 To finalX, 0 To finalY) As Long
+    
+    Dim yCheck As Long
+    Dim topLeft As Long, topMiddle As Long, topRight As Long, curEnergy As Long
+    
+    Dim lastProcessedColumn As Long
+    
+    'Repeat the tracing process for each seam
+    For i = 1 To numOfAddedSeams
+        
+        lastProcessedColumn = columnIndex
+        
+        'columnIndex initially contains the x coordinate of the minimum energy seam terminus.  Starting there, traverse the
+        ' image upward, marking lowest-energy values as we go in the visibility map.
+        For y = finalY To 0 Step -1
+        
+            visibilityMap(columnIndex, y) = visibilityMap(columnIndex, y) + 1
+            
+            'Artificially increase the energy of this position, to reduce the chances of it being selected again in the future
+            seamMap(columnIndex, y) = seamMap(columnIndex, y) + 64
+            
+            'Find the minimum value of the next row up.
+            If y > 0 Then
+            
+                yCheck = y - 1
+                topMiddle = seamMap(columnIndex, yCheck)
+            
+                'Note that we must check edge pixels differently; hence the nested IF statements here
+                If columnIndex > 0 Then
+            
+                    topLeft = seamMap(columnIndex - 1, yCheck)
+            
+                    If columnIndex < finalX Then
+                    
+                        topRight = seamMap(columnIndex + 1, yCheck)
+                    
+                        'This is not a left or right edge pixel.  Check all three pixels above for a minimum value.
+                        If topLeft < topMiddle Then
+                            If topLeft < topRight Then
+                                columnIndex = columnIndex - 1
+                            Else
+                                columnIndex = columnIndex + 1
+                            End If
+                        Else
+                            If topMiddle > topRight Then columnIndex = columnIndex + 1
+                        End If
+                    
+                    Else
+                    
+                        'This is a right edge pixel.  Check only two pixels above.
+                        If topLeft < topMiddle Then columnIndex = columnIndex - 1
+                        
+                    End If
+                
+                'This is a left edge pixel.  Check only two pixels above.
+                Else
+                
+                    topRight = seamMap(columnIndex + 1, yCheck)
+                
+                    If topMiddle > topRight Then columnIndex = columnIndex + 1
+                    
+                End If
+                
+            End If
+        
+        Next y
+        
+        'Mark the initial pixel for this seam as having max energy, which will prevent it from being re-selected by future seam analyses
+        seamMap(lastProcessedColumn, finalY) = maxVal + 1
+        
+        'Find the next-smallest row, which will be the source of our next pixel insertion
+        minVal = LONG_MAX
+        For x = 0 To finalX
+            curEnergy = seamMap(x, finalY)
+            If curEnergy < minVal Then
+                minVal = curEnergy
+                columnIndex = x
+            End If
+        Next x
+    
+    Next i
+    
+    'We now have a completed visibility map for this image.  Next, we will use that visibility map to construct a new destination image.
+    
+    'Create a blank destination image
+    Dim tmpImage As pdLayer
+    Set tmpImage = New pdLayer
+    tmpImage.createBlank finalX + 1 + numOfAddedSeams, finalY + 1, m_SourceImage.getLayerColorDepth
+    
+    'Obtain a pointer to the raw DIB bits of both the source and destination images
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, m_SourceImage
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, tmpImage
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Note that if the image is going to be resized again in the future, we also need to update the energy map
+    Dim newEnergyMap As pdLayer
+    Set newEnergyMap = New pdLayer
+    newEnergyMap.createBlank finalX + 1 + numOfAddedSeams, finalY + 1, 24
+    
+    Dim srcEnergy() As Byte
+    Dim srcEnergySA As SAFEARRAY2D
+    prepSafeArray srcEnergySA, m_EnergyImage
+    CopyMemory ByVal VarPtrArray(srcEnergy()), VarPtr(srcEnergySA), 4
+    
+    Dim dstEnergy() As Byte
+    Dim dstEnergySA As SAFEARRAY2D
+    prepSafeArray dstEnergySA, newEnergyMap
+    CopyMemory ByVal VarPtrArray(dstEnergy()), VarPtr(dstEnergySA), 4
+    
+    Dim quickSrcX As Long, quickDstX As Long, xOffset As Long
+    
+    Dim alphaPresent As Boolean, colorDepthOffset As Long
+    If m_SourceImage.getLayerColorDepth = 32 Then
+        alphaPresent = True
+        colorDepthOffset = 4
+    Else
+        alphaPresent = False
+        colorDepthOffset = 3
+    End If
+    
+    For y = 0 To finalY
+    
+        'Reset the offset for each line
+        xOffset = 0
+    
+        'Loop through each pixel in the SOURCE image
+        For x = 0 To finalX
+        
+            quickSrcX = x * colorDepthOffset
+            quickDstX = (x + xOffset) * colorDepthOffset
+            
+            'Copy pixels from the source image to the destination image, using the visibility map to duplicate pixels as necessary
+            For i = 0 To visibilityMap(x, y)
+                
+                'Remap RGB data to the destination image
+                dstImageData(quickDstX + (i * 3), y) = srcImageData(quickSrcX, y)
+                dstImageData(quickDstX + (i * 3) + 1, y) = srcImageData(quickSrcX + 1, y)
+                dstImageData(quickDstX + (i * 3) + 2, y) = srcImageData(quickSrcX + 2, y)
+                
+                'If present, remap alpha data as well
+                If alphaPresent Then
+                    dstImageData(quickDstX + (i * 3) + 3, y) = srcImageData(quickSrcX + 3, y)
+                End If
+                
+                'Because energy data only uses the blue channel, we can copy it more easily
+                dstEnergy((x + xOffset) * 3, y) = srcEnergy(quickSrcX, y)
+                
+            Next i
+            
+            'Permanently increase the destination offset by the visibility map value at this position
+            xOffset = xOffset + visibilityMap(x, y)
+        
+        Next x
+    
+    Next y
+    
+    'Release our image pointers
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(srcEnergy), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstEnergy), 0&, 4
+    
+    'Replace the source image with the newly generated destination image
+    m_SourceImage.createFromExistingLayer tmpImage
+    Set tmpImage = Nothing
+    
+    'Replace the energy image with this new copy
+    m_EnergyImage.createFromExistingLayer newEnergyMap
+    Set newEnergyMap = Nothing
+
+End Function
+
 'Though they share some similar elements, shrinking and enlarging an image in either direction are handled separately.
 Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) As Boolean
 
@@ -571,6 +763,22 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     
         'Horizontal size is growing
         Case ScaleLarger
+        
+            Do
+            
+                'Retrieve an updated horizontal seam map of the image
+                getHorizontalSeamMap seamData, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
+                
+                'Grow the image horizontally, using the newly generated seam map as our guide
+                growHorizontally seamData, newWidth - srcWidth, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
+                
+                'Update the source width, in case this function must be called again
+                srcWidth = m_SourceImage.getLayerWidth
+            
+            Loop While m_SourceImage.getLayerWidth < newWidth
+            
+            'Update the temp image (which may be used by subsequent vertical resize functions)
+            tmpLayer.createFromExistingLayer m_SourceImage
     
     End Select
     
