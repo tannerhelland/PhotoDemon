@@ -1,17 +1,17 @@
 # PhotoDemon 6.2 beta
 
-![PhotoDemon Screenshot] (http://photodemon.org/images/screenshot.jpg)
+![PhotoDemon Screenshot] (http://photodemon.org/images/screenshot_6-2a1.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive selection of photo editing tools - including a full-featured macro recorder and batch processor - in a tiny 7 MB download.  It runs on any Windows machine (XP through Win 8) and it *does not* require installation.  It can easily be run from a portable USB drive or memory card.  English, Dutch, French, German, and Italian translations are included.
+It provides a comprehensive selection of photo editing tools in a tiny 7 MB download.  It runs on any Windows machine (XP through Win 8.1) and *does not* require installation.  It can easily be run from a portable USB drive or SD card.  English, Dutch, French, German, and Italian translations are currently provided.
 
 PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its performance will surprise you!)  Outside contributions from both coders and translators are always welcome.
 
-For information on the most recent release, please visit:
+For information on the most recent official release, please visit:
 http://photodemon.org
 
-Finally, note that PhotoDemon's GitHub repository *does not contain a compiled EXE.*  If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and plugins), updated nightly, from:
+Finally, note that PhotoDemon's GitHub repository *does not contain a compiled EXE.*  If you don't have access to a VB6 compiler, you can download a compiled .exe (including language files and core plugins), updated nightly, from:
 http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
 
 ***
@@ -19,27 +19,27 @@ http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
 ## What makes PhotoDemon unique?
 
 ### It is lightweight and completely portable
-PhotoDemon is designed to be run as a standalone .exe. No installer is provided or required. It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.
+PhotoDemon is designed to be run as a standalone program. No installer is provided or required. It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.1.
 
 ### It integrates macro recording and batch processing
-PhotoDemon provides full macro support. Simply click “Record Macro”, then perform as many actions as you’d like. When finished, save that macro to the hard drive (in human-readable XML format) so you can repeat it at any point in the future. Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
+Automating complex editing actions is as simple as clicking “Record Macro”, then performing whatever actions you’d like. When finished, click "Stop Macro" to save that macro to the hard drive (in human-readable XML format), and then can repeat it at any point in the future. Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
 
 ### It emphasizes usability
-Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built with input from professional designers – not just software engineers – and small touches like unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and forward-back button support, and descriptive menu icons make PhotoDemon useful to novices and professionals alike.
+Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built by designers, not engineers, and small touches like save/load presets on all tools, automatic last-used settings preservation, unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and forward-back button support, and descriptive menu icons make PhotoDemon easy to use for both novices and professionals.
 
 ### It provides a comprehensive selection of pro-grade features and tools
-* Support for every relevant image format, including all major RAW formats (via LibRaw).
+* Extensive file format support, including all major RAW formats (via LibRaw).
 * Powerful selection tools, with full support for antialiasing, feathering, and on-canvas sizing/moving.
 * Fully color-managed workflow, including support for embedded ICC profiles (even CMYK ones!).
-* 2D transformations: resize, crop, autocrop, rotate, shear, tiling.
+* 2D transformations:  advanced resize (Sinc, Catmull-Rom, etc), content-aware scaling, crop (including autocrop), rotate, shear, tiling.
 * Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram, green screen, Wratten filters, and many more.
-* Filters and effects: context-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, film grain, and many more.
+* Filters and effects: content-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, film grain, and many more.
 * 100+ tools are provided in the current build, plus a custom filter tool that allows you to construct your own convolution filters.
 
 ### What doesn't PhotoDemon do?
 
 * PhotoDemon does not support layers, but layer support is actively being developed as of January 2014.
-* PhotoDemon does not provide any on-canvas painting tools. These are on the roadmap, but work on them has been postponed in favor of layers.
+* PhotoDemon does not provide any on-canvas painting tools.  Many have been prototyped, but their integration has been postponed pending a final layers implementation.
 * PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later.
 
 ### How can I get involved? 
@@ -85,7 +85,7 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * audioglider for the Channel Mixer, Vibrance, and Exposure tools (https://github.com/audioglider)
 * Robert Rayment for detailed research and bug-testing on a variety of features (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1)
 * Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class (http://www.vb-helper.com/howto_multi_line_tooltip.html)
-* Kroc of camendesign.com for the bluMouseEvents library (http://camendesign.com)
+* Kroc of camendesign.com for the bluMouseEvents and bluDownload libraries (http://camendesign.com)
 * chrfb of deviantart.com for PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0) (http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546)
 * Juned Chhipa for the 'jcButton 1.7' customizable command button replacement control (http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1)
 * Steve McMahon for an excellent CommonDialog interface, accelerator key handler, and progress bar replacement (http://www.vbaccelerator.com/home/VB/index.asp)
@@ -109,4 +109,4 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Bernhard Stockmann for his many excellent GIMP tutorials (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)
 * Paul Bourke for references on miscellaneous image distortions (http://paulbourke.net/miscellaneous/)
 * vbForums.com user dilettante for an asynchronous piping custom control (http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control)
-* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Abhijit Mhapsekar, Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
+* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Mohammad Reza, Abhijit Mhapsekar, Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
