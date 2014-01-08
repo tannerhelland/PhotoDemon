@@ -58,8 +58,9 @@ ADDTRANS     CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_plus.png
 GREENSCREEN  CUSTOM  MOVEABLE        LOADONCALL      user_black_female_green.png
 REMOVETRANS  CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_cross.png
 //
-CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
 RESIZE       CUSTOM  MOVEABLE        LOADONCALL      image_resize.png
+SMRTRESIZE   CUSTOM  MOVEABLE        LOADONCALL      image_contentaware_resize.png
+CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
 CROPSEL      CUSTOM  MOVEABLE        LOADONCALL      image_crop.png
 AUTOCROP     CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
 //--> Rotate sub-menu
