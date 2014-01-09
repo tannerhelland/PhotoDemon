@@ -1739,6 +1739,6 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 25
         bfParams = customAlpha * &H10000
     End If
     
-    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, layerWidth, newWidth), IIf(newHeight = 0, layerHeight, newHeight), layerDC, 0, 0, layerWidth, layerHeight, bfParams
-
+    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, layerWidth, newWidth + 1), IIf(newHeight = 0, layerHeight, newHeight + 1), layerDC, 0, 0, layerWidth, layerHeight, bfParams
+    
 End Sub
