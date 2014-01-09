@@ -2156,9 +2156,12 @@ Private Sub mnuLanguages_Click(Index As Integer)
     'Because loading a language can take some time, display a wait screen to discourage attempted interaction
     displayWaitScreen g_Language.TranslateMessage("Please wait while the new language is applied..."), Me
     
-    'Remove the existing translation
+    'Remove the existing translation from any visible windows
     Message "Removing existing translation..."
     g_Language.undoTranslations FormMain, True
+    g_Language.undoTranslations toolbar_File, True
+    g_Language.undoTranslations toolbar_ImageTabs, True
+    g_Language.undoTranslations toolbar_Selections, True
     
     'Apply the new translation
     Message "Applying new translation..."
