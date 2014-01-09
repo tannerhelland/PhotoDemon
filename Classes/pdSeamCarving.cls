@@ -943,9 +943,15 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 'Shrink the image by a single pixel in the horizontal direction
                 shrinkHorizontally seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex
                 
-                If (i And 8) = 0 Then SetProgBarVal i
+                If (i And 8) = 0 Then
+                    SetProgBarVal i
+                    If userPressedESC() Then Exit For
+                End If
                 
             Next i
+            
+            'Check for user cancellation (by pressing ESC)
+            If cancelCurrentAction Then Exit Function
             
             'All necessary horizontal seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
@@ -996,9 +1002,15 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 'Shrink the image by a single pixel in the vertical direction
                 shrinkVertically seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex
                 
-                If (i And 8) = 0 Then SetProgBarVal hDiff + i
+                If (i And 8) = 0 Then
+                    SetProgBarVal hDiff + i
+                    If userPressedESC() Then Exit For
+                End If
                 
             Next i
+            
+            'Check for user cancellation (by pressing ESC)
+            If cancelCurrentAction Then Exit Function
             
             'All necessary vertical seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
@@ -1039,39 +1051,4 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     
     Exit Function
     
-    'TESTING ONLY!!!  Fill the original image with a copy of the seam map!  We can use this to see if we're generating
-    ' the map correctly.
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent already embossed pixels from screwing up our results for later pixels.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, m_SourceImage
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    Dim x As Long, y As Long, QuickVal As Long
-    
-    'Start by finding a maximum energy value
-    Dim maxEnergy As Long, curEnergy As Long
-    maxEnergy = 0
-    For x = 0 To srcWidth - 1
-    For y = 0 To srcHeight - 1
-        If seamData(x, y) > maxEnergy Then maxEnergy = seamData(x, y)
-    Next y
-    Next x
-    
-    For x = 0 To srcWidth - 1
-        QuickVal = x * 3
-    For y = 0 To srcHeight - 1
-        curEnergy = (seamData(x, y) / maxEnergy) * 255
-        srcImageData(QuickVal, y) = curEnergy
-        srcImageData(QuickVal + 1, y) = curEnergy
-        srcImageData(QuickVal + 2, y) = curEnergy
-    Next y
-    Next x
-    
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    
-    Set m_DestinationImage = New pdLayer
-    m_DestinationImage.createFromExistingLayer m_SourceImage
-
 End Function
