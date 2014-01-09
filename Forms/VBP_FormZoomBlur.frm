@@ -50,6 +50,7 @@ Begin VB.Form FormZoomBlur
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
       Height          =   495
@@ -459,3 +460,9 @@ End Sub
 Private Sub sltDistance_Change()
     updatePreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+

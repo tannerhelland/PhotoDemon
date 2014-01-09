@@ -326,3 +326,10 @@ End Sub
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, fxPreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+

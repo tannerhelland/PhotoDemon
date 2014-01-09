@@ -70,6 +70,7 @@ Begin VB.Form FormSpherize
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -594,3 +595,9 @@ End Sub
 Private Sub sltOffsetY_Change()
     updatePreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+

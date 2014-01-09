@@ -147,7 +147,7 @@ Begin VB.Form FormTransparency_FromColor
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "color to erase (click the preview to select):"
+      Caption         =   "color to erase (right-click preview to select):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -163,7 +163,7 @@ Begin VB.Form FormTransparency_FromColor
       Left            =   6000
       TabIndex        =   2
       Top             =   1320
-      Width           =   4485
+      Width           =   4665
    End
 End
 Attribute VB_Name = "FormTransparency_FromColor"
@@ -390,3 +390,9 @@ End Sub
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then colorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, fxPreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+

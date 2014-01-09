@@ -72,6 +72,7 @@ Begin VB.Form FormTwins
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton optTwins 
       Height          =   375
@@ -270,3 +271,9 @@ End Sub
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then GenerateTwins optTwins(1), True, fxPreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+

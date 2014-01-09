@@ -156,7 +156,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub chkInvert_Click()
-    UpdateDescriptions
+    updatePreview
 End Sub
 
 'OK button
@@ -186,7 +186,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    UpdateDescriptions
+    updatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -201,7 +201,7 @@ Private Sub Form_Activate()
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     cmdBar.markPreviewStatus True
-    UpdateDescriptions
+    updatePreview
     
 End Sub
 
@@ -454,13 +454,13 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub LstEdgeOptions_Click()
-    UpdateDescriptions
+    updatePreview
 End Sub
 
 'Show the user a brief explanation of the algorithm in question.  Yes, the PhotoDemon routine descriptions are bullshit -
 ' I know that already.  :)  But the descriptions make them sound more impressive than they actually are.
 ' This sub also handles redrawing the edge detection preview.
-Private Sub UpdateDescriptions()
+Private Sub updatePreview()
     
     If cmdBar.previewsAllowed Then
     
@@ -499,4 +499,10 @@ Private Sub UpdateDescriptions()
     End If
     
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
 
