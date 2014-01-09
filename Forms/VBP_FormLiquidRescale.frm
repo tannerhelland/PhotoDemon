@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormLiquidResize 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Liquid resize (content-aware scaling)"
+   Caption         =   "Content-aware resize"
    ClientHeight    =   3420
    ClientLeft      =   45
    ClientTop       =   225
@@ -45,7 +45,7 @@ Begin VB.Form FormLiquidResize
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
-      Left            =   4320
+      Left            =   3960
       TabIndex        =   1
       Top             =   705
       Width           =   1200
@@ -64,7 +64,7 @@ Begin VB.Form FormLiquidResize
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
-      Left            =   4320
+      Left            =   3960
       TabIndex        =   2
       Top             =   1335
       Width           =   1200
@@ -100,6 +100,7 @@ Begin VB.Form FormLiquidResize
       Left            =   120
       TabIndex        =   9
       Top             =   720
+      Visible         =   0   'False
       Width           =   2775
       WordWrap        =   -1  'True
    End
@@ -143,9 +144,9 @@ Begin VB.Form FormLiquidResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   3495
+      Left            =   3135
       TabIndex        =   7
-      Top             =   1950
+      Top             =   2040
       Width           =   2490
    End
    Begin VB.Label lblHeightUnit 
@@ -164,7 +165,7 @@ Begin VB.Form FormLiquidResize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   375
-      Left            =   5610
+      Left            =   5250
       TabIndex        =   6
       Top             =   1365
       Width           =   855
@@ -185,7 +186,7 @@ Begin VB.Form FormLiquidResize
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   480
-      Left            =   5610
+      Left            =   5250
       TabIndex        =   5
       Top             =   735
       Width           =   855
@@ -208,7 +209,7 @@ Begin VB.Form FormLiquidResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   3480
+      Left            =   3120
       TabIndex        =   4
       Top             =   1365
       Width           =   750
@@ -231,7 +232,7 @@ Begin VB.Form FormLiquidResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   3480
+      Left            =   3120
       TabIndex        =   3
       Top             =   735
       Width           =   675
@@ -396,8 +397,8 @@ Public Function SeamCarveLayer(ByRef srcLayer As pdLayer, ByVal iWidth As Long, 
     'This initial seam-carving algorithm is not particularly well-implemented, but that's okay.  It's a starting point!
     seamCarver.startSeamCarve iWidth, iHeight
     
-    'TESTING ONLY!!!  Replace srcLayer with an energy map of the seam carve function
-    srcLayer.createFromExistingLayer seamCarver.getCarvedImage()
+    'Check for user cancellation; if none occurred, copy the seam-carved image into place
+    If Not cancelCurrentAction Then srcLayer.createFromExistingLayer seamCarver.getCarvedImage()
     
 End Function
 
