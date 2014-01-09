@@ -29,13 +29,21 @@ Begin VB.Form FormBlackLight
       TabIndex        =   3
       Top             =   2760
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormBlackLight.frx":0000
-      forecolor       =   0
-      min             =   1
-      sigdigits       =   2
-      value           =   2
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      SigDigits       =   2
+      Value           =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   0
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -43,8 +51,8 @@ Begin VB.Form FormBlackLight
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -53,9 +61,17 @@ Begin VB.Form FormBlackLight
       TabIndex        =   0
       Top             =   5790
       Width           =   12030
-      _extentx        =   21220
-      _extenty        =   1323
-      font            =   "VBP_FormBlackLight.frx":0028
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -215,7 +231,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'If the user changes the position and/or zoom of the preview viewport, the image must be redrawn
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
