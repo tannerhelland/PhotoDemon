@@ -438,3 +438,9 @@ End Sub
 Private Sub sltDistance_Change()
     updatePreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+

@@ -287,13 +287,13 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Preview the current grayscale conversion technique
-Private Sub drawGrayscalePreview()
+Private Sub updatePreview()
     If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), True, fxPreview
 End Sub
 
 Private Sub cboMethod_Click()
     UpdateVisibleControls
-    drawGrayscalePreview
+    updatePreview
 End Sub
 
 'Certain algorithms require additional user input.  This routine enables/disables the controls associated with a given algorithm.
@@ -422,7 +422,7 @@ End Function
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdateVisibleControls
-    drawGrayscalePreview
+    updatePreview
 End Sub
 
 'Recommend ITU grayscale correction by default
@@ -440,7 +440,7 @@ Private Sub Form_Activate()
     
     'Draw the initial preview
     cmdBar.markPreviewStatus True
-    drawGrayscalePreview
+    updatePreview
     
 End Sub
 
@@ -1033,13 +1033,20 @@ End Sub
 
 'When option buttons are used, update the preview accordingly
 Private Sub optChannel_Click(Index As Integer)
-    drawGrayscalePreview
+    updatePreview
 End Sub
 
 Private Sub optDecompose_Click(Index As Integer)
-    drawGrayscalePreview
+    updatePreview
 End Sub
 
 Private Sub sltShades_Change()
-    drawGrayscalePreview
+    updatePreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+

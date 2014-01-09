@@ -1029,3 +1029,10 @@ Private Sub fillResultsArray()
     ' and also to apply the curve to the image.
 
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+

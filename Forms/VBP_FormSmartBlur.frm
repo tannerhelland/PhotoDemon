@@ -451,3 +451,9 @@ End Sub
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then SmartBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+

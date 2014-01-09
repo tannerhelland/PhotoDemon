@@ -142,6 +142,10 @@ Public Event ColorSelected()
 Private isColorSelectionAllowed As Boolean, curColor As Long
 Private colorJustClicked As Long
 
+'Because some tools believe they are always operating on a full image (e.g. perspective transform), it may be necessary
+' to disable zoom toggle on those controls
+Private disableZoomPanAbility As Boolean
+
 'Has this control been given a copy of the original image?
 Private m_HasOriginal As Boolean, m_HasFX As Boolean
 
@@ -251,6 +255,18 @@ Public Property Let AllowColorSelection(ByVal isAllowed As Boolean)
     PropertyChanged "AllowColorSelection"
 End Property
 
+'At design-time, use this property to prevent the user from changing the preview area between zoom/pan and fit mode.
+Public Property Get AllowZoomPan() As Boolean
+    AllowZoomPan = Not disableZoomPanAbility
+End Property
+
+Public Property Let AllowZoomPan(ByVal isAllowed As Boolean)
+    disableZoomPanAbility = Not isAllowed
+    PropertyChanged "DisableZoomPan"
+    redrawControl
+    UserControl.Refresh
+End Property
+
 'Use this to supply the preview with a copy of the original image's data.  The preview object can use this to display
 ' the original image when the user clicks the "show original image" link.
 Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
@@ -348,19 +364,26 @@ End Sub
 Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     If Not viewportFitFullImage Then
-        m_InitX = x
-        m_InitY = y
-        setSizeAllCursor picPreview
+        If Button = vbLeftButton Then
+            m_InitX = x
+            m_InitY = y
+            setSizeAllCursor picPreview
+        End If
     End If
     
     If isColorSelectionAllowed Then
         
-        curColor = GetPixel(originalImage.getLayerDC, x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
+        If Button = vbRightButton Then
         
-        If curColor = -1 Then curColor = RGB(127, 127, 127)
+            curColor = GetPixel(originalImage.getLayerDC, x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
+            
+            If curColor = -1 Then curColor = RGB(127, 127, 127)
+            
+            If AllowColorSelection Then colorJustClicked = 1
+            RaiseEvent ColorSelected
+            
+        End If
         
-        If AllowColorSelection Then colorJustClicked = 1
-        RaiseEvent ColorSelected
     End If
     
 End Sub
@@ -374,6 +397,9 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
     If Not viewportFitFullImage Then
         
         If Button = vbLeftButton Then
+        
+            'Make sure the move cursor remains accurate
+            setSizeAllCursor picPreview
                 
             'Store new offsets for the image
             m_OffsetX = m_InitX - x
@@ -382,15 +408,15 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
             'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
             m_HasOriginal = False
             m_HasFX = False
-        
-            'Make sure the move cursor remains accurate
-            setSizeAllCursor picPreview
-        
+            
             'Raise an external viewport change event that tool dialogs can use to refresh their effect preview
             RaiseEvent ViewportChanged
             
+        Else
+            If Not isColorSelectionAllowed Then setHandCursor picPreview
         End If
-        
+    Else
+        'setArrowCursorToObject picPreview
     End If
     
     If colorJustClicked > 0 Then
@@ -501,12 +527,16 @@ Private Sub UserControl_InitProperties()
     'By default, the control cannot be used for color selection
     isColorSelectionAllowed = False
     
+    'By default, the control allows the user to zoom/pan the transformation
+    disableZoomPanAbility = False
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     
     With PropBag
         AllowColorSelection = .ReadProperty("ColorSelection", False)
+        disableZoomPanAbility = .ReadProperty("DisableZoomPan", False)
     End With
     
 End Sub
@@ -528,6 +558,9 @@ Private Sub UserControl_Show()
     'Reset the mouse cursors
     setArrowCursorToHwnd picPreview.hWnd
     setArrowCursorToHwnd UserControl.hWnd
+    
+    'Ensure the control is redrawn at least once
+    redrawControl
     
     'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
     If g_UserModeFix Then
@@ -583,6 +616,13 @@ Private Sub redrawControl()
     'Adjust the preview picture box's height to be just above the "show original image" link
     lblBeforeToggle.Top = ScaleHeight - fixDPI(24)
     picPreview.Height = lblBeforeToggle.Top - (ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
+    
+    'Align the fit/100% toggle button
+    cmdFit.Left = ScaleWidth - cmdFit.Width
+    cmdFit.Top = picPreview.Height + ((ScaleHeight - (picPreview.Height + cmdFit.Height)) / 2)
+    
+    'If zoom/pan is not allowed, hide that button entirely
+    If disableZoomPanAbility Then cmdFit.Visible = False Else cmdFit.Visible = True
         
 End Sub
 
@@ -591,6 +631,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "ColorSelection", AllowColorSelection, False
+        .WriteProperty "DisableZoomPan", disableZoomPanAbility, False
     End With
     
 End Sub

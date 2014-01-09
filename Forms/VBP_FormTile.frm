@@ -70,6 +70,7 @@ Begin VB.Form FormTile
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
@@ -563,3 +564,9 @@ Private Sub updatePreview()
         GenerateTile cboTarget.ListIndex, tudWidth, tudHeight, True
     End If
 End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
