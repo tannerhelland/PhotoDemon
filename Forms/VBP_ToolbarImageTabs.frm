@@ -813,3 +813,8 @@ End Sub
 Private Sub hsThumbnails_Scroll()
     redrawToolbar
 End Sub
+
+'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
+Public Sub requestMakeFormPretty()
+    makeFormPretty Me, m_ToolTip
+End Sub

@@ -295,6 +295,11 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         'Resync the interface to redraw any remaining text and/or buttons
         syncInterfaceToCurrentImage
         
+        'Redraw any/all toolbars as well
+        toolbar_File.requestMakeFormPretty
+        toolbar_ImageTabs.requestMakeFormPretty
+        toolbar_Selections.requestMakeFormPretty
+        
     End If
         
 End Sub
@@ -696,7 +701,13 @@ Public Sub restoreFormCaption(ByRef srcForm As Form)
     newString = getOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then srcForm.Caption = " " & newString
+    If Len(newString) > 0 Then
+        If Not (g_WindowManager Is Nothing) Then
+            g_WindowManager.requestWindowCaptionChange srcForm, " " & newString
+        Else
+            srcForm.Caption = " " & newString
+        End If
+    End If
     
 End Sub
 
@@ -713,7 +724,13 @@ Public Sub translateFormCaption(ByRef srcForm As Form)
     End If
     
     'If a new string was found, apply it to the object's caption
-    If newString <> "" Then srcForm.Caption = " " & newString
+    If Len(newString) > 0 Then
+        If Not (g_WindowManager Is Nothing) Then
+            g_WindowManager.requestWindowCaptionChange srcForm, " " & newString
+        Else
+            srcForm.Caption = " " & newString
+        End If
+    End If
     
 End Sub
 
