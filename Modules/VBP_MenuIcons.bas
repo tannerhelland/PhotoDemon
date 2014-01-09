@@ -825,7 +825,7 @@ Public Sub setCrossCursor(ByRef tControl As Form)
 End Sub
     
 'Set a single form to use the Size All cursor
-Public Sub setSizeAllCursor(ByRef tControl As Form)
+Public Sub setSizeAllCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEALL)
 End Sub
 

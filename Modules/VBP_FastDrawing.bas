@@ -116,7 +116,7 @@ End Sub
 'In one of the better triumphs of PD's design, this function is used for both previews and actual filter applications.
 ' The isPreview parameter is used to notify the function of the intended purpose of a given call.  If isPreview is TRUE,
 ' the image will automatically be scaled to the size of the preview area, which allows the tool dialog to render much faster.
-' Note that for thsi to work, an fxPreview control must be passed to the function.
+' Note that for this to work, an fxPreview control must be passed to the function.
 '
 'Finally, the calling routine can optionally specify a different progress bar maximum value.  By default, this is the current
 ' layer's width, but some routines run vertically and the progress bar needs to be changed accordingly.
@@ -153,21 +153,54 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     ' dimensions of the preview area (which are not assumed to be universal!).
     Else
     
-        'Start by calculating the source area for the preview.  Generally this is the entire image, unless a selection is active;
-        ' in that case, we only want to preview the selected area.  (I may change this behavior in the future.)
-        If pdImages(g_CurrentImage).selectionActive Then
-            srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-            srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+        'Start by calculating the source area for the preview.  This changes based on several criteria:
+        ' 1) Is the preview area set to "fit full image" or "100% zoom"?
+        ' 2) Is a selection is active?  If so, we only want to preview the selected area.  (I may change this behavior in the future,
+        '     so the user can actually see the fully composited result of any changes.)
+        
+        'The full image is being previewed.  Retrieve the entire thing.
+        If previewTarget.viewportFitFullImage Then
+        
+            If pdImages(g_CurrentImage).selectionActive Then
+                srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+            Else
+                srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+                srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+            End If
+        
+        'Only a section of the image is being preview (at 100% zoom).  Retrieve just that section.
         Else
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+        
+            srcWidth = previewTarget.getPreviewWidth
+            srcHeight = previewTarget.getPreviewHeight
+            
+            'If the preview area is larger than the image itself, just retrieve the full image.
+            If pdImages(g_CurrentImage).selectionActive Then
+                If pdImages(g_CurrentImage).mainSelection.boundWidth < srcWidth Then
+                    srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                    srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+                ElseIf pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight Then
+                    srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+                    srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                End If
+            Else
+                If pdImages(g_CurrentImage).getActiveLayer().getLayerWidth < srcWidth Then
+                    srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+                    srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+                ElseIf pdImages(g_CurrentImage).getActiveLayer().getLayerHeight < srcHeight Then
+                    srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+                    srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+                End If
+            End If
+            
         End If
         
         'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.  The only
         ' exception to this is when the image is actually smaller than the preview area - in that case use the whole image.
-        dstWidth = previewTarget.getPreviewPic.ScaleWidth
-        dstHeight = previewTarget.getPreviewPic.ScaleHeight
-        
+        dstWidth = previewTarget.getPreviewWidth
+        dstHeight = previewTarget.getPreviewHeight
+                
         If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
             convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
         Else
@@ -175,13 +208,20 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             newHeight = srcHeight
         End If
         
-        'Next, we will create the temporary object (called "workingLayer") at the calculated preview dimensions.
+        'The area may be offset from the (0, 0) position if the user has elected to drag the preview area
+        Dim hOffset As Long, vOffset As Long
+        
+        'Next, we will create the temporary object (called "workingLayer") at the calculated preview dimensions.  All editing
+        ' actions are applied to this layer; if the user does not cancel the action, that layer will be copied over the
+        ' primary image.  If they cancel, we'll simply discard the temporary layer.
         
         'Just like with a full image, if a selection is active, we only want to process the selected area.
         If pdImages(g_CurrentImage).selectionActive Then
         
             'Start by chopping out the full rectangular bounding area of the selection, and placing it inside a temporary object.
-            ' This is done at the same color depth as the source image.
+            ' This is done at the same color depth as the source image.  (Note that we do not do any preprocessing of the selection
+            ' area at this juncture.  The full bounding rect of the selection is processed as-is, and it as at the *draw* step
+            ' that we do any further processing.)
             Dim tmpLayer As pdLayer
             Set tmpLayer = New pdLayer
             tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
@@ -190,8 +230,22 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             'If the source area is 32bpp, we want to remove premultiplication before doing any resizing
             'If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.fixPremultipliedAlpha
             
-            'We now want to shrink the selected area to the size of the preview box
-            workingLayer.createFromExistingLayer tmpLayer, newWidth, newHeight
+            'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
+            If previewTarget.viewportFitFullImage Then
+                workingLayer.createFromExistingLayer tmpLayer, newWidth, newHeight
+            
+            'The user is operating at 100% zoom.  Retrieve a subsection of the selected area, but do not scale it.
+            Else
+            
+                'Calculate offsets, if any, for the selected area
+                hOffset = previewTarget.OffsetX
+                vOffset = previewTarget.OffsetY
+                
+                workingLayer.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
+                BitBlt workingLayer.getLayerDC, 0, 0, dstWidth, dstHeight, tmpLayer.getLayerDC, hOffset, vOffset, vbSrcCopy
+            
+            End If
+            
             
             'Release our temporary layer
             tmpLayer.eraseLayer
@@ -199,7 +253,23 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         
         'If a selection is not currently active, this step is incredibly simple!
         Else
-            workingLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer(), newWidth, newHeight
+            
+            'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
+            If previewTarget.viewportFitFullImage Then
+                workingLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer(), newWidth, newHeight
+                
+            'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
+            Else
+            
+                'Calculate offsets, if any, for the image
+                hOffset = previewTarget.OffsetX
+                vOffset = previewTarget.OffsetY
+                
+                workingLayer.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
+                BitBlt workingLayer.getLayerDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, hOffset, vOffset, vbSrcCopy
+                
+            End If
+            
         End If
         
         'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
@@ -235,7 +305,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
         .LayerX = 0
         .LayerY = 0
-        .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+        If previewTarget.viewportFitFullImage Then
+            .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+        Else
+            .previewModifier = 1#
+        End If
     End With
 
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
@@ -300,7 +374,22 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Set tmpLayer = New pdLayer
             tmpLayer.createFromExistingLayer selMaskCopy
             
-            GDIPlusResizeLayer selMaskCopy, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, tmpLayer, 0, 0, tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, InterpolationModeHighQualityBilinear
+            'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
+            If previewTarget.viewportFitFullImage Then
+                GDIPlusResizeLayer selMaskCopy, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, tmpLayer, 0, 0, tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, InterpolationModeHighQualityBilinear
+            
+            'The preview is a 100% copy of the image.  Copy only the relevant part of the selection mask into the
+            ' selection processing layer.
+            Else
+                
+                Dim hOffset As Long, vOffset As Long
+                hOffset = previewTarget.OffsetX
+                vOffset = previewTarget.OffsetY
+                
+                selMaskCopy.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight
+                BitBlt selMaskCopy.getLayerDC, 0, 0, selMaskCopy.getLayerWidth, selMaskCopy.getLayerHeight, pdImages(g_CurrentImage).mainSelection.selMask.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy
+                
+            End If
             
             tmpLayer.eraseLayer
             Set tmpLayer = Nothing

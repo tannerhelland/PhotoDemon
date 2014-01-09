@@ -21,6 +21,32 @@ Begin VB.UserControl fxPreviewCtl
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   384
    ToolboxBitmap   =   "fxPreview.ctx":0000
+   Begin PhotoDemon.jcbutton cmdFit 
+      Height          =   450
+      Left            =   5160
+      TabIndex        =   2
+      Top             =   5160
+      Width           =   450
+      _ExtentX        =   794
+      _ExtentY        =   794
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   ""
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "fxPreview.ctx":0312
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -36,6 +62,22 @@ Begin VB.UserControl fxPreviewCtl
       TabStop         =   0   'False
       Top             =   0
       Width           =   5760
+      Begin VB.VScrollBar vsOffsetY 
+         Height          =   1335
+         Left            =   5280
+         TabIndex        =   4
+         Top             =   3360
+         Visible         =   0   'False
+         Width           =   255
+      End
+      Begin VB.HScrollBar hsOffsetX 
+         Height          =   255
+         Left            =   3840
+         TabIndex        =   3
+         Top             =   4680
+         Visible         =   0   'False
+         Width           =   1455
+      End
    End
    Begin VB.Label lblBeforeToggle 
       AutoSize        =   -1  'True
@@ -53,7 +95,7 @@ Begin VB.UserControl fxPreviewCtl
       ForeColor       =   &H00C07031&
       Height          =   210
       Left            =   120
-      MouseIcon       =   "fxPreview.ctx":0312
+      MouseIcon       =   "fxPreview.ctx":1064
       MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5280
@@ -92,6 +134,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Preview boxes now let the user switch between "full image" and "100% zoom" states
+Public Event ViewportChanged()
+
 'Some preview boxes allow the user to click and select a color from the source image
 Public Event ColorSelected()
 Private isColorSelectionAllowed As Boolean, curColor As Long
@@ -112,13 +157,37 @@ Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Lon
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+'If the viewport is not set to "fit 100%", the user can click-drag around the image.  To do this successfully,
+' we must track mouse position and offsets.
+Private m_initX As Long, m_initY As Long
+Private m_OffsetX As Long, m_OffsetY As Long
+Private m_PrevOffsetX As Long, m_PrevOffsetY As Long
+
+'Is the image large enough that the user is allowed to scroll?
+Private m_HScrollAllowed As Boolean, m_VScrollAllowed As Boolean
+
+Private Sub cmdFit_Click()
+    
+    'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
+    m_HasOriginal = False
+    m_HasFX = False
+    
+    'Raise a viewport change event so the containing form can redraw itself accordingly
+    RaiseEvent ViewportChanged
+    
+End Sub
+
 'Mouse enter/leave events will be handled by the bluMouseEvents object
 Private Sub cMouseEvents_MouseIn()
     
     'If this preview control instance allows the user to select a color, display the original image upon mouse entrance
-    If AllowColorSelection Then
-        setPNGCursorToHwnd picPreview.hWnd, "C_PIPETTE", 0, 0
-        If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+    If viewportFitFullImage Then
+        If AllowColorSelection Then
+            setPNGCursorToHwnd picPreview.hWnd, "C_PIPETTE", 0, 0
+            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+        End If
+    Else
+        setHandCursorToHwnd picPreview.hWnd
     End If
     
 End Sub
@@ -138,12 +207,41 @@ Private Sub cMouseEvents_MouseOut()
     
 End Sub
 
-'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+'If we don't expose an hWnd, any embedded jcButton controls will throw errors
+Public Property Get OffsetX() As Long
+    If m_HScrollAllowed Then
+        OffsetX = validateXOffset(hsOffsetX.Value + m_OffsetX)
+    Else
+        OffsetX = 0
+    End If
+End Property
+
+'If we don't expose an hWnd, any embedded jcButton controls will throw errors
+Public Property Get OffsetY() As Long
+    If m_VScrollAllowed Then
+        OffsetY = validateYOffset(vsOffsetY.Value + m_OffsetY)
+    Else
+        OffsetY = 0
+    End If
+End Property
+
+'If we don't expose an hWnd, any embedded jcButton controls will throw errors
+Public Property Get viewportFitFullImage() As Boolean
+    viewportFitFullImage = CBool(cmdFit.Value)
+End Property
+
+'If we don't expose an hWnd, any embedded jcButton controls will throw errors
+Public Property Get hWnd() As Long
+    hWnd = UserControl.hWnd
+End Property
+
+'External functions may need to access the color selected by the preview control
 Public Property Get SelectedColor() As Long
     SelectedColor = curColor
 End Property
 
-'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+'At design-time, use this property to determine whether the user is allowed to select colors directly from the
+' preview window (helpful for tools like green screen, etc).
 Public Property Get AllowColorSelection() As Boolean
     AllowColorSelection = isColorSelectionAllowed
 End Property
@@ -166,12 +264,14 @@ Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
     originalImage.eraseLayer
     originalImage.createFromExistingLayer srcLayer
     
+    If originalImage.getLayerColorDepth = 32 Then originalImage.fixPremultipliedAlpha True
+    
 End Sub
 
 'Use this to supply the object with a copy of the processed image's data.  The preview object can use this to display
 ' the processed image again if the user clicks the "show original image" link, then clicks it again.
 Public Sub setFXImage(ByRef srcLayer As pdLayer)
-56666
+
     'Note that we have a copy of the original image, so the calling function doesn't attempt to supply it again
     m_HasFX = True
     
@@ -246,6 +346,13 @@ End Sub
 
 'If color selection is allowed, raise that event now
 Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    If Not viewportFitFullImage Then
+        m_initX = x
+        m_initY = y
+        setSizeAllCursor picPreview
+    End If
+    
     If isColorSelectionAllowed Then
         
         curColor = GetPixel(originalImage.getLayerDC, x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
@@ -255,12 +362,36 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         If AllowColorSelection Then colorJustClicked = 1
         RaiseEvent ColorSelected
     End If
+    
 End Sub
 
 'When the user is selecting a color, we want to give them a preview of how that color will affect the previewed image.
 ' This is handled in the _MouseDown event above.  After the color has been selected, we want to restore the original
 ' image on a subsequent mouse move, in case the user wants to select a different color.
 Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    'If the viewport is not set to "fit to screen", then we must determine offsets based on the mouse position
+    If Not viewportFitFullImage Then
+        
+        If Button = vbLeftButton Then
+                
+            'Store new offsets for the image
+            m_OffsetX = m_initX - x
+            m_OffsetY = m_initY - y
+            
+            'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
+            m_HasOriginal = False
+            m_HasFX = False
+        
+            'Make sure the move cursor remains accurate
+            setSizeAllCursor picPreview
+        
+            'Raise an external viewport change event that tool dialogs can use to refresh their effect preview
+            RaiseEvent ViewportChanged
+            
+        End If
+        
+    End If
     
     If colorJustClicked > 0 Then
     
@@ -275,6 +406,36 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
     End If
     
 End Sub
+
+Private Sub picPreview_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    If Not viewportFitFullImage Then
+        setHandCursor picPreview
+        
+        hsOffsetX.Value = validateXOffset(hsOffsetX.Value + m_OffsetX)
+        m_OffsetX = 0
+        
+        vsOffsetY.Value = validateYOffset(vsOffsetY.Value + m_OffsetY)
+        m_OffsetY = 0
+        
+    End If
+
+End Sub
+
+'X and Y offsets for the image preview are generated dynamically by the user's mouse movements.  As multiple functions
+' need to validate those offsets to make sure they don't result in an offset outside the image, these standardized
+' validation functions were created.
+Private Function validateXOffset(ByVal currentOffset As Long) As Long
+    If currentOffset < 0 Then currentOffset = 0
+    If currentOffset > hsOffsetX.Max Then currentOffset = hsOffsetX.Max
+    validateXOffset = currentOffset
+End Function
+
+Private Function validateYOffset(ByVal currentOffset As Long) As Long
+    If currentOffset < 0 Then currentOffset = 0
+    If currentOffset > vsOffsetY.Max Then currentOffset = vsOffsetY.Max
+    validateYOffset = currentOffset
+End Function
 
 'I haven't made up my mind on whether to use AutoRedraw or not; just to be safe, I've added handling code to the _Paint
 ' event so that AutoRedraw can be turned off without trouble.
@@ -367,6 +528,37 @@ Private Sub UserControl_Show()
     'Reset the mouse cursors
     setArrowCursorToHwnd picPreview.hWnd
     setArrowCursorToHwnd UserControl.hWnd
+    
+    'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
+    Dim maxHOffset As Long, maxVOffset As Long
+    
+    Dim srcWidth As Long, srcHeight As Long
+    If pdImages(g_CurrentImage).selectionActive Then
+        srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+        srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+    Else
+        srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
+        srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+    End If
+    
+    maxHOffset = srcWidth - picPreview.ScaleWidth
+    maxVOffset = srcHeight - picPreview.ScaleHeight
+    
+    If maxHOffset > 0 Then
+        hsOffsetX.Max = maxHOffset
+        m_HScrollAllowed = True
+    Else
+        hsOffsetX.Max = 1
+        m_HScrollAllowed = False
+    End If
+    
+    If maxVOffset > 0 Then
+        vsOffsetY.Max = maxVOffset
+        m_VScrollAllowed = True
+    Else
+        vsOffsetY.Max = 1
+        m_VScrollAllowed = False
+    End If
     
 End Sub
 
