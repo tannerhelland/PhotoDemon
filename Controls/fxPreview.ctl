@@ -159,7 +159,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 
 'If the viewport is not set to "fit 100%", the user can click-drag around the image.  To do this successfully,
 ' we must track mouse position and offsets.
-Private m_initX As Long, m_initY As Long
+Private m_InitX As Long, m_InitY As Long
 Private m_OffsetX As Long, m_OffsetY As Long
 Private m_PrevOffsetX As Long, m_PrevOffsetY As Long
 
@@ -208,20 +208,20 @@ Private Sub cMouseEvents_MouseOut()
 End Sub
 
 'If we don't expose an hWnd, any embedded jcButton controls will throw errors
-Public Property Get OffsetX() As Long
+Public Property Get offsetX() As Long
     If m_HScrollAllowed Then
-        OffsetX = validateXOffset(hsOffsetX.Value + m_OffsetX)
+        offsetX = validateXOffset(hsOffsetX.Value + m_OffsetX)
     Else
-        OffsetX = 0
+        offsetX = 0
     End If
 End Property
 
 'If we don't expose an hWnd, any embedded jcButton controls will throw errors
-Public Property Get OffsetY() As Long
+Public Property Get offsetY() As Long
     If m_VScrollAllowed Then
-        OffsetY = validateYOffset(vsOffsetY.Value + m_OffsetY)
+        offsetY = validateYOffset(vsOffsetY.Value + m_OffsetY)
     Else
-        OffsetY = 0
+        offsetY = 0
     End If
 End Property
 
@@ -348,8 +348,8 @@ End Sub
 Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     If Not viewportFitFullImage Then
-        m_initX = x
-        m_initY = y
+        m_InitX = x
+        m_InitY = y
         setSizeAllCursor picPreview
     End If
     
@@ -376,8 +376,8 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
         If Button = vbLeftButton Then
                 
             'Store new offsets for the image
-            m_OffsetX = m_initX - x
-            m_OffsetY = m_initY - y
+            m_OffsetX = m_InitX - x
+            m_OffsetY = m_InitY - y
             
             'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
             m_HasOriginal = False
@@ -530,34 +530,38 @@ Private Sub UserControl_Show()
     setArrowCursorToHwnd UserControl.hWnd
     
     'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
-    Dim maxHOffset As Long, maxVOffset As Long
+    If g_UserModeFix Then
     
-    Dim srcWidth As Long, srcHeight As Long
-    If pdImages(g_CurrentImage).selectionActive Then
-        srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-        srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-    Else
-        srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
-        srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
-    End If
+        Dim maxHOffset As Long, maxVOffset As Long
+        
+        Dim srcWidth As Long, srcHeight As Long
+        If pdImages(g_CurrentImage).selectionActive Then
+            srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+            srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+        Else
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+        End If
+        
+        maxHOffset = srcWidth - picPreview.ScaleWidth
+        maxVOffset = srcHeight - picPreview.ScaleHeight
+        
+        If maxHOffset > 0 Then
+            hsOffsetX.Max = maxHOffset
+            m_HScrollAllowed = True
+        Else
+            hsOffsetX.Max = 1
+            m_HScrollAllowed = False
+        End If
+        
+        If maxVOffset > 0 Then
+            vsOffsetY.Max = maxVOffset
+            m_VScrollAllowed = True
+        Else
+            vsOffsetY.Max = 1
+            m_VScrollAllowed = False
+        End If
     
-    maxHOffset = srcWidth - picPreview.ScaleWidth
-    maxVOffset = srcHeight - picPreview.ScaleHeight
-    
-    If maxHOffset > 0 Then
-        hsOffsetX.Max = maxHOffset
-        m_HScrollAllowed = True
-    Else
-        hsOffsetX.Max = 1
-        m_HScrollAllowed = False
-    End If
-    
-    If maxVOffset > 0 Then
-        vsOffsetY.Max = maxVOffset
-        m_VScrollAllowed = True
-    Else
-        vsOffsetY.Max = 1
-        m_VScrollAllowed = False
     End If
     
 End Sub

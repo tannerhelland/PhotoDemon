@@ -175,23 +175,25 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             srcWidth = previewTarget.getPreviewWidth
             srcHeight = previewTarget.getPreviewHeight
             
+            Dim curAspectRatio As Double
+            
             'If the preview area is larger than the image itself, just retrieve the full image.
             If pdImages(g_CurrentImage).selectionActive Then
-                If pdImages(g_CurrentImage).mainSelection.boundWidth < srcWidth Then
+            
+                If (pdImages(g_CurrentImage).mainSelection.boundWidth < srcWidth) Then
                     srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                ElseIf (pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight) Then
                     srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-                ElseIf pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight Then
-                    srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-                    srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
                 End If
+                
             Else
+            
                 If pdImages(g_CurrentImage).getActiveLayer().getLayerWidth < srcWidth Then
                     srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
-                    srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
                 ElseIf pdImages(g_CurrentImage).getActiveLayer().getLayerHeight < srcHeight Then
                     srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
-                    srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
                 End If
+                
             End If
             
         End If
@@ -238,8 +240,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             Else
             
                 'Calculate offsets, if any, for the selected area
-                hOffset = previewTarget.OffsetX
-                vOffset = previewTarget.OffsetY
+                hOffset = previewTarget.offsetX
+                vOffset = previewTarget.offsetY
                 
                 workingLayer.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
                 BitBlt workingLayer.getLayerDC, 0, 0, dstWidth, dstHeight, tmpLayer.getLayerDC, hOffset, vOffset, vbSrcCopy
@@ -262,8 +264,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             Else
             
                 'Calculate offsets, if any, for the image
-                hOffset = previewTarget.OffsetX
-                vOffset = previewTarget.OffsetY
+                hOffset = previewTarget.offsetX
+                vOffset = previewTarget.offsetY
                 
                 workingLayer.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
                 BitBlt workingLayer.getLayerDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, hOffset, vOffset, vbSrcCopy
@@ -305,8 +307,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
         .LayerX = 0
         .LayerY = 0
-        If previewTarget.viewportFitFullImage Then
-            .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+        If isPreview Then
+            If previewTarget.viewportFitFullImage Then
+                .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+            Else
+                .previewModifier = 1#
+            End If
         Else
             .previewModifier = 1#
         End If
@@ -383,8 +389,8 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Else
                 
                 Dim hOffset As Long, vOffset As Long
-                hOffset = previewTarget.OffsetX
-                vOffset = previewTarget.OffsetY
+                hOffset = previewTarget.offsetX
+                vOffset = previewTarget.offsetY
                 
                 selMaskCopy.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight
                 BitBlt selMaskCopy.getLayerDC, 0, 0, selMaskCopy.getLayerWidth, selMaskCopy.getLayerHeight, pdImages(g_CurrentImage).mainSelection.selMask.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy
