@@ -178,7 +178,7 @@ Begin VB.Form FormReplaceColor
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "color to replace (click the preview to select):"
+      Caption         =   "color to replace (right-click preview to select):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -194,7 +194,7 @@ Begin VB.Form FormReplaceColor
       Left            =   6000
       TabIndex        =   2
       Top             =   480
-      Width           =   4680
+      Width           =   4860
    End
 End
 Attribute VB_Name = "FormReplaceColor"

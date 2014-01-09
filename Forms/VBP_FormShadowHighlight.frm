@@ -128,7 +128,7 @@ Begin VB.Form FormShadowHighlight
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "midtone target color (click box to change):"
+      Caption         =   "midtone target color (right-click preview to change):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -143,7 +143,7 @@ Begin VB.Form FormShadowHighlight
       Left            =   6000
       TabIndex        =   4
       Top             =   2280
-      Width           =   4530
+      Width           =   5550
    End
    Begin VB.Label Label1 
       Appearance      =   0  'Flat
