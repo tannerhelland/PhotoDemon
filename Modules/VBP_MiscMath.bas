@@ -124,10 +124,10 @@ Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, B
     
     If aspectLarger Then
         newWidth = dstWidth
-        newHeight = CSng(srcHeight / srcWidth) * newWidth + 0.5
+        newHeight = CDbl(srcHeight / srcWidth) * newWidth '+ 0.5
     Else
         newHeight = dstHeight
-        newWidth = CSng(srcWidth / srcHeight) * newHeight + 0.5
+        newWidth = CDbl(srcWidth / srcHeight) * newHeight '+ 0.5
     End If
     
 End Sub

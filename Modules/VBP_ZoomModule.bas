@@ -252,10 +252,12 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         
         'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
         ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
+        ' NOTE: I have removed that stretching fix, because it causes invalid rendering later down the chain.  As it's not
+        '       a particularly pressing concern, I will revisit at some point in the future (ETA to be determined).
         Dim bltWidth As Long, bltHeight As Long
-        bltWidth = pdImages(curImage).imgViewport.targetWidth + (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetWidth Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
+        bltWidth = pdImages(curImage).imgViewport.targetWidth '+ (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetWidth Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
         srcWidth = bltWidth / zoomVal
-        bltHeight = pdImages(curImage).imgViewport.targetHeight + (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
+        bltHeight = pdImages(curImage).imgViewport.targetHeight '+ (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
         srcHeight = bltHeight / zoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
@@ -271,7 +273,7 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
             
             'Alpha blend the layer onto the checkerboard background
             pdImages(curImage).alphaFixLayer.alphaBlendToDC pdImages(curImage).backBuffer.getLayerDC, 255, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
-
+            
         Else
             SetStretchBltMode pdImages(curImage).backBuffer.getLayerDC, STRETCHBLT_COLORONCOLOR
             StretchBlt pdImages(curImage).backBuffer.getLayerDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getLayerDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
