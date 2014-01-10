@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormLiquidResize 
+Begin VB.Form FormResizeContentAware 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Content-aware resize"
@@ -238,7 +238,7 @@ Begin VB.Form FormLiquidResize
       Width           =   675
    End
 End
-Attribute VB_Name = "FormLiquidResize"
+Attribute VB_Name = "FormResizeContentAware"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
