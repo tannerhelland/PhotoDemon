@@ -59,7 +59,7 @@ Begin VB.Form FormPoke
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   4
-      Top             =   3045
+      Top             =   3645
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -71,13 +71,14 @@ Begin VB.Form FormPoke
       _ExtentX        =   9922
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   0
       Left            =   6120
       TabIndex        =   6
-      Top             =   3960
+      Top             =   4560
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -98,7 +99,7 @@ Begin VB.Form FormPoke
       Index           =   1
       Left            =   7920
       TabIndex        =   7
-      Top             =   3960
+      Top             =   4560
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -117,7 +118,7 @@ Begin VB.Form FormPoke
       Height          =   495
       Left            =   6000
       TabIndex        =   8
-      Top             =   2010
+      Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -134,6 +135,81 @@ Begin VB.Form FormPoke
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   1320
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Height          =   495
+      Left            =   9000
+      TabIndex        =   10
+      Top             =   1320
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "center position (x, y)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   4
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   960
+      Width           =   2205
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      ForeColor       =   &H00404040&
+      Height          =   435
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   11
+      Top             =   1890
+      Width           =   5655
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -153,7 +229,7 @@ Begin VB.Form FormPoke
       Index           =   5
       Left            =   6000
       TabIndex        =   5
-      Top             =   2640
+      Top             =   3240
       Width           =   4170
    End
    Begin VB.Label lblInterpolation 
@@ -175,7 +251,7 @@ Begin VB.Form FormPoke
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   3570
+      Top             =   4170
       Width           =   1845
    End
    Begin VB.Label lblStrength 
@@ -197,7 +273,7 @@ Begin VB.Form FormPoke
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   1680
+      Top             =   2280
       Width           =   960
    End
 End
@@ -210,8 +286,8 @@ Attribute VB_Exposed = False
 'Poke Distort Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/June/13
-'Last updated: 23/August/13
-'Last update: added command bar
+'Last updated: 10/January/14
+'Last update: added support for user-selected custom center point
 '
 'I'm not sold on the "poke" moniker for this tool, but I couldn't come up with a better visualization for how
 ' the tool works.  When I use it, I envision an imaginary finger poking through the screen.  :)
@@ -242,9 +318,9 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Correct lens distortion in an image
-Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Poking image..."
+    If Not toPreview Then Message "Poking image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -288,12 +364,10 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
           
     'Poking requires a number of specialized variables
     
-    'Calculate the center of the image
-    Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
-    midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
-    midY = midY + initY
+    'Because the algorithm normalizes the image data to the range [-1,1] for an operation around [0], we actually
+    ' need to double the centerX and Y values
+    centerX = centerX * 2
+    centerY = centerY * 2
     
     'Rotation values
     Dim theta As Double, r As Double
@@ -309,6 +383,21 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     tWidth = curLayerValues.Width
     tHeight = curLayerValues.Height
     
+    'It's faster to precalculate lookup coordinates for x and y values, rather than re-calculate them
+    ' for each pixel.  Note that in this function, we basically remap the coordinates around a center
+    ' point of the user's choosing, with all values normalized to the range (-1, 1) (assuming a center
+    ' point of 0)
+    Dim xLookup() As Single, yLookup() As Single
+    ReDim xLookup(initX To finalX) As Single, yLookup(initY To finalY) As Single
+    
+    For x = initX To finalX
+        xLookup(x) = (2 * x) / tWidth - centerX
+    Next x
+    
+    For y = initY To finalY
+        yLookup(y) = (2 * y) / tHeight - centerY
+    Next y
+    
     'To avoid divide-by-zero errors, fix the input value to a non-zero value as necessary
     If pokeStrength = 0 Then pokeStrength = 0.00000001
     
@@ -316,10 +405,10 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-                            
-        'Remap the coordinates around a center point of (0, 0), and normalize them to (-1, 1)
-        nX = (2 * x) / tWidth - 1
-        nY = (2 * y) / tHeight - 1
+        
+        'UPDATE 10 Jan 2014 - center the poke around whatever coordinates the user wants!
+        nX = xLookup(x)
+        nY = yLookup(y)
         
         'Next, map them to polar coordinates and apply the stretch
         r = Sqr(nX * nX + nY * nY)
@@ -329,9 +418,9 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
         
         'Convert them back to the Cartesian plane
         nX = r * Cos(theta)
-        srcX = (tWidth * (nX + 1)) / 2
+        srcX = (tWidth * (nX + centerX)) / 2
         nY = r * Sin(theta)
-        srcY = (tHeight * (nY + 1)) / 2
+        srcY = (tHeight * (nY + centerY)) / 2
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
@@ -359,7 +448,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -367,6 +456,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltXCenter.Value = 0.5
+    sltYCenter.Value = 0.5
     cmbEdges.ListIndex = EDGE_CLAMP
     sltStrength.Value = 1
 End Sub
@@ -408,11 +499,30 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+'The user can right-click the preview area to select a new center point
+Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+    
+    cmdBar.markPreviewStatus False
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
+    cmdBar.markPreviewStatus True
+    updatePreview
+
+End Sub
+
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
     updatePreview
 End Sub
 
