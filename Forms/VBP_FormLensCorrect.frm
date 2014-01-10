@@ -70,6 +70,7 @@ Begin VB.Form FormLensCorrect
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
