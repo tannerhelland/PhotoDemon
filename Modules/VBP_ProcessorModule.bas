@@ -877,7 +877,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormRipple
             Else
-                FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6)
+                FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetBool(6), cParams.GetDouble(7), cParams.GetDouble(8)
             End If
             
         Case "Rotate"
