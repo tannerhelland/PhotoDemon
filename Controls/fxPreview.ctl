@@ -111,8 +111,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 07/November/13
-'Last update: apply color management to anything rendered on the preview picture box
+'Last updated: 09/January/13
+'Last update: new "click-to-raise-point-selection-event" feature; see Effects -> Stylize -> Vignetting for a nice
+'              example of the functionality this provides.
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -120,12 +121,21 @@ Attribute VB_Exposed = False
 ' system, because any changes have to be mirrored across a huge number of forms.
 '
 'Thus, this control was born.  It is now used on every single effect form in place of a regular picture box.  This
-' allows me to add preview-related features just once - to the base control - and every tool will automatically
+' allows me to add preview-related features just once - to the base control - and have every tool automatically
 ' reap the benefits.
 '
-'At present, there isn't much to the control.  It is capable of storing a copy of the original image and any
-' filter-modified versions of the image.  The user can toggle between these by using the command link below the
-' main picture box, or by pressing Alt+T.  This replaces the side-by-side "before and after" of past versions.
+'The control is capable of storing a copy of the original image and any filter-modified versions of the image.
+' The user can toggle between these by using the command link below the main picture box, or by pressing Alt+T.
+' This replaces the side-by-side "before and after" of past versions.
+'
+'A few other extra features have been implemented, which can be enabled on a tool-by-tool basis.  Specifically:
+' 1) The user can toggle between "fit image" and "100% zoom + click-drag-to-scroll" modes.  Note that 100% zoom
+'    is not appropriate for some tools (i.e. perspective transformations and other algorithms that only operate
+'    on the full image area).
+' 2) Click-to-select color functionality.  This is helpful for tools that rely on color information within the
+'    image for their operation, e.g. green screen.
+' 3) Click-to-select-coordinate functionality.  This is helpful for giving the user an easy way to select a
+'    location on the image as, say, a center point for a filter (e.g. vignetting works great with this).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -134,8 +144,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Preview boxes now let the user switch between "full image" and "100% zoom" states
+'Preview boxes can now let the user switch between "full image" and "100% zoom" states
 Public Event ViewportChanged()
+
+'Some preview boxes will let the user click to set a new centerpoint for a filter or effect.
+Public Event PointSelected(xRatio As Double, yRatio As Double)
+Private isPointSelectionAllowed As Boolean
 
 'Some preview boxes allow the user to click and select a color from the source image
 Public Event ColorSelected()
@@ -255,6 +269,17 @@ Public Property Let AllowColorSelection(ByVal isAllowed As Boolean)
     PropertyChanged "AllowColorSelection"
 End Property
 
+'At design-time, use this property to determine whether the user is allowed to select new center points for a filter
+' or effect by clicking the preview window.
+Public Property Get AllowPointSelection() As Boolean
+    AllowPointSelection = isPointSelectionAllowed
+End Property
+
+Public Property Let AllowPointSelection(ByVal isAllowed As Boolean)
+    isPointSelectionAllowed = isAllowed
+    PropertyChanged "AllowPointSelection"
+End Property
+
 'At design-time, use this property to prevent the user from changing the preview area between zoom/pan and fit mode.
 Public Property Get AllowZoomPan() As Boolean
     AllowZoomPan = Not disableZoomPanAbility
@@ -363,6 +388,7 @@ End Sub
 'If color selection is allowed, raise that event now
 Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
+    'If viewport scrolling is allowed, initialize it now
     If Not viewportFitFullImage Then
         If Button = vbLeftButton Then
             m_InitX = x
@@ -371,6 +397,7 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         End If
     End If
     
+    'If color selection is allowed, initialize it now
     If isColorSelectionAllowed Then
         
         If Button = vbRightButton Then
@@ -384,6 +411,25 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
             
         End If
         
+    End If
+    
+    'If point selection is allowed, initialize it now
+    If isPointSelectionAllowed Then
+    
+        If (Button = vbRightButton) Or (Button = vbLeftButton) Then
+        
+            'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
+            Dim retX As Double, retY As Double
+            retX = x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2)
+            retY = y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2)
+            
+            retX = retX / originalImage.getLayerWidth
+            retY = retY / originalImage.getLayerHeight
+            
+            RaiseEvent PointSelected(retX, retY)
+        
+        End If
+    
     End If
     
 End Sub
@@ -429,6 +475,27 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
             If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
         End If
         
+    End If
+    
+    'If point selection is allowed, continue firing events while the mouse is moving (as a convenience to the user)
+    If isPointSelectionAllowed Then
+    
+        setHandCursorToHwnd picPreview.hWnd
+    
+        If (Button = vbRightButton) Or (Button = vbLeftButton) Then
+        
+            'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
+            Dim retX As Double, retY As Double
+            retX = x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2)
+            retY = y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2)
+            
+            retX = retX / originalImage.getLayerWidth
+            retY = retY / originalImage.getLayerHeight
+            
+            RaiseEvent PointSelected(retX, retY)
+        
+        End If
+    
     End If
     
 End Sub
@@ -530,12 +597,16 @@ Private Sub UserControl_InitProperties()
     'By default, the control allows the user to zoom/pan the transformation
     disableZoomPanAbility = False
     
+    'By default, the control does not allow for selecting coordinate points by clicking
+    isPointSelectionAllowed = False
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     
     With PropBag
         AllowColorSelection = .ReadProperty("ColorSelection", False)
+        AllowPointSelection = .ReadProperty("PointSelection", False)
         disableZoomPanAbility = .ReadProperty("DisableZoomPan", False)
     End With
     
@@ -632,6 +703,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "ColorSelection", AllowColorSelection, False
         .WriteProperty "DisableZoomPan", disableZoomPanAbility, False
+        .WriteProperty "PointSelection", AllowPointSelection, False
     End With
     
 End Sub
