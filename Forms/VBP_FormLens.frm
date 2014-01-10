@@ -52,13 +52,14 @@ Begin VB.Form FormLens
       _ExtentX        =   9922
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   0
       Left            =   6120
       TabIndex        =   5
-      Top             =   3885
+      Top             =   4485
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -79,7 +80,7 @@ Begin VB.Form FormLens
       Index           =   1
       Left            =   7920
       TabIndex        =   6
-      Top             =   3885
+      Top             =   4485
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -98,7 +99,7 @@ Begin VB.Form FormLens
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   2970
+      Top             =   3450
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -119,7 +120,7 @@ Begin VB.Form FormLens
       Height          =   495
       Left            =   6000
       TabIndex        =   8
-      Top             =   2130
+      Top             =   2490
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -136,6 +137,81 @@ Begin VB.Form FormLens
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   1200
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Height          =   495
+      Left            =   9000
+      TabIndex        =   10
+      Top             =   1200
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      ForeColor       =   &H00404040&
+      Height          =   435
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   12
+      Top             =   1770
+      Width           =   5655
+      WordWrap        =   -1  'True
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "center position (x, y)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   840
+      Width           =   2205
    End
    Begin VB.Label lblHeight 
       AutoSize        =   -1  'True
@@ -154,7 +230,7 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   2640
+      Top             =   3120
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -176,7 +252,7 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   3480
+      Top             =   4080
       Width           =   1845
    End
    Begin VB.Label lblAmount 
@@ -198,7 +274,7 @@ Begin VB.Form FormLens
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   1800
+      Top             =   2160
       Width           =   3330
    End
 End
@@ -211,16 +287,15 @@ Attribute VB_Exposed = False
 'Lens Correction and Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 26/April/13
-'Last update: simplify code by relying on new slider/text custom control
+'Last updated: 10/January/14
+'Last update: add support for custom center-point selection by the user
 '
 'This tool allows the user to apply a lens distortion to an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for high-quality lensing.
 '
 'For correcting lens distortion, please see FormLensCorrect.
 '
-'At present, the tool assumes that you want to refract the image around its centerpoint.  The code is already set up to handle
-' alternative center points - there simply needs to be a good user interface technique for establishing the center.
+'As of January '14, the user can now set a custom center point by clicking the image or using the x/y sliders.
 '
 'Finally, the transformation used by this tool is a modified version of a transformation originally written by
 ' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
@@ -237,11 +312,11 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Apply a new lens distortion to an image
-Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     refractiveIndex = 1 / refractiveIndex
 
-    If toPreview = False Then Message "Projecting image through simulated lens..."
+    If Not toPreview Then Message "Projecting image through simulated lens..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -287,9 +362,9 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) * centerX
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) * centerY
     midY = midY + initY
     
     'Calculation values
@@ -362,7 +437,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -384,7 +459,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value)
+    Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -392,6 +467,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltXCenter.Value = 0.5
+    sltYCenter.Value = 0.5
     sltRadius.Value = 50
 End Sub
 
@@ -424,7 +501,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyLensDistortion sltIndex, sltRadius, OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyLensDistortion sltIndex, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -432,4 +509,21 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+'The user can right-click the preview area to select a new center point
+Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+    
+    cmdBar.markPreviewStatus False
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
+    cmdBar.markPreviewStatus True
+    updatePreview
 
+End Sub
+
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
+    updatePreview
+End Sub
