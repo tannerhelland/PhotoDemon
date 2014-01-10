@@ -363,9 +363,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Content-aware resize"
             If showDialog Then
-                showPDDialog vbModal, FormLiquidResize
+                showPDDialog vbModal, FormResizeContentAware
             Else
-                FormLiquidResize.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2)
+                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2)
             End If
         
         Case "Canvas size"
@@ -856,7 +856,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormPinch
             Else
-                FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
+                FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5), cParams.GetDouble(6), cParams.GetDouble(7)
             End If
             
         Case "Poke"

@@ -59,7 +59,7 @@ Begin VB.Form FormPinch
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   3855
+      Top             =   4335
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -71,13 +71,14 @@ Begin VB.Form FormPinch
       _ExtentX        =   9922
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   0
       Left            =   6120
       TabIndex        =   8
-      Top             =   4800
+      Top             =   5280
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -98,7 +99,7 @@ Begin VB.Form FormPinch
       Index           =   1
       Left            =   7920
       TabIndex        =   9
-      Top             =   4800
+      Top             =   5280
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -117,7 +118,7 @@ Begin VB.Form FormPinch
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   2130
+      Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -138,7 +139,7 @@ Begin VB.Form FormPinch
       Height          =   495
       Left            =   6000
       TabIndex        =   11
-      Top             =   2970
+      Top             =   3450
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -159,7 +160,7 @@ Begin VB.Form FormPinch
       Height          =   495
       Left            =   6000
       TabIndex        =   12
-      Top             =   1290
+      Top             =   1770
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -176,6 +177,81 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Height          =   495
+      Left            =   9000
+      TabIndex        =   14
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      ForeColor       =   &H00404040&
+      Height          =   435
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   16
+      Top             =   1050
+      Width           =   5655
+      WordWrap        =   -1  'True
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "center position (x, y)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   4
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   120
+      Width           =   2205
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -195,7 +271,7 @@ Begin VB.Form FormPinch
       Index           =   5
       Left            =   6000
       TabIndex        =   7
-      Top             =   3480
+      Top             =   3960
       Width           =   3315
    End
    Begin VB.Label lblTitle 
@@ -216,7 +292,7 @@ Begin VB.Form FormPinch
       Index           =   3
       Left            =   6000
       TabIndex        =   4
-      Top             =   960
+      Top             =   1440
       Width           =   1545
    End
    Begin VB.Label lblTitle 
@@ -237,7 +313,7 @@ Begin VB.Form FormPinch
       Index           =   1
       Left            =   6000
       TabIndex        =   3
-      Top             =   2640
+      Top             =   3120
       Width           =   2145
    End
    Begin VB.Label lblTitle 
@@ -260,7 +336,7 @@ Begin VB.Form FormPinch
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   4410
+      Top             =   4890
       Width           =   1845
    End
    Begin VB.Label lblTitle 
@@ -283,7 +359,7 @@ Begin VB.Form FormPinch
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   1800
+      Top             =   2280
       Width           =   1260
    End
 End
@@ -325,9 +401,9 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Apply a "pinch and whirl" effect to an image
-Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Pinching and whirling image..."
+    If Not toPreview Then Message "Pinching and whirling image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -373,9 +449,9 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) * centerX
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) * centerY
     midY = midY + initY
     
     'Pinch variables
@@ -471,7 +547,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -479,6 +555,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltXCenter.Value = 0.5
+    sltYCenter.Value = 0.5
     cmbEdges.ListIndex = EDGE_CLAMP
     sltRadius.Value = 100
 End Sub
@@ -528,7 +606,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -536,3 +614,21 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+'The user can right-click the preview area to select a new center point
+Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+    
+    cmdBar.markPreviewStatus False
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
+    cmdBar.markPreviewStatus True
+    updatePreview
+
+End Sub
+
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
+    updatePreview
+End Sub
