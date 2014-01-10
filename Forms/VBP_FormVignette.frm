@@ -24,6 +24,27 @@ Begin VB.Form FormVignette
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -48,7 +69,7 @@ Begin VB.Form FormVignette
       Index           =   0
       Left            =   6120
       TabIndex        =   7
-      Top             =   4440
+      Top             =   5340
       Width           =   1500
       _ExtentX        =   2646
       _ExtentY        =   635
@@ -72,15 +93,15 @@ Begin VB.Form FormVignette
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-      ColorSelection  =   -1  'True
       DisableZoomPan  =   -1  'True
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton optShape 
       Height          =   360
       Index           =   1
       Left            =   8880
       TabIndex        =   8
-      Top             =   4440
+      Top             =   5340
       Width           =   1050
       _ExtentX        =   1852
       _ExtentY        =   635
@@ -99,7 +120,7 @@ Begin VB.Form FormVignette
       Height          =   495
       Left            =   6000
       TabIndex        =   9
-      Top             =   810
+      Top             =   1770
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -120,7 +141,7 @@ Begin VB.Form FormVignette
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   1650
+      Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -141,7 +162,7 @@ Begin VB.Form FormVignette
       Height          =   495
       Left            =   6000
       TabIndex        =   11
-      Top             =   2490
+      Top             =   3450
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -162,11 +183,65 @@ Begin VB.Form FormVignette
       Height          =   495
       Left            =   6120
       TabIndex        =   12
-      Top             =   3480
+      Top             =   4350
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   873
       curColor        =   0
+   End
+   Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Height          =   495
+      Left            =   9000
+      TabIndex        =   15
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      ForeColor       =   &H00404040&
+      Height          =   435
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   16
+      Top             =   1050
+      Width           =   5655
+      WordWrap        =   -1  'True
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "center position (x, y)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   120
+      Width           =   2205
    End
    Begin VB.Label lblShape 
       AutoSize        =   -1  'True
@@ -185,7 +260,7 @@ Begin VB.Form FormVignette
       Height          =   285
       Left            =   6000
       TabIndex        =   6
-      Top             =   4080
+      Top             =   4980
       Width           =   705
    End
    Begin VB.Label lblColor 
@@ -205,7 +280,7 @@ Begin VB.Form FormVignette
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   3000
+      Top             =   3960
       Width           =   4020
    End
    Begin VB.Label lblFeathering 
@@ -225,7 +300,7 @@ Begin VB.Form FormVignette
       Height          =   285
       Left            =   6000
       TabIndex        =   4
-      Top             =   1320
+      Top             =   2280
       Width           =   945
    End
    Begin VB.Label lblTransparency 
@@ -245,7 +320,7 @@ Begin VB.Form FormVignette
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   2160
+      Top             =   3120
       Width           =   960
    End
    Begin VB.Label lblRadius 
@@ -265,7 +340,7 @@ Begin VB.Form FormVignette
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   480
+      Top             =   1440
       Width           =   2145
    End
 End
@@ -278,10 +353,11 @@ Attribute VB_Exposed = False
 'Image Vignette tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 24/August/13
-'Last update: added command bar
+'Last updated: 09/January/14
+'Last update: added center-point selection capabilities
 '
-'This tool allows the user to apply vignetting to an image.
+'This tool allows the user to apply vignetting to an image.  Many options are available, and all should be
+' self-explanatory!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -294,9 +370,9 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Apply vignetting to an image
-Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double, ByVal vTransparency As Double, ByVal vMode As Boolean, ByVal newColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double, ByVal vTransparency As Double, ByVal vMode As Boolean, ByVal newColor As Long, Optional ByVal centerPosX As Double = 0.5, Optional ByVal centerPosY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Applying vignetting..."
+    If Not toPreview Then Message "Applying vignetting..."
         
     'Extract the RGB values of the vignetting color
     Dim newR As Byte, newG As Byte, newB As Byte
@@ -329,11 +405,11 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) * centerPosX
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) * centerPosY
     midY = midY + initY
-        
+            
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
     Dim nX2 As Double, nY2 As Double
@@ -459,7 +535,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color)
+    Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -467,6 +543,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltXCenter.Value = 0.5
+    sltYCenter.Value = 0.5
     sltRadius.Value = 60
     sltFeathering.Value = 30
     sltTransparency.Value = 80
@@ -497,6 +575,17 @@ Private Sub fxPreview_ColorSelected()
     updatePreview
 End Sub
 
+'The user can right-click the preview area to select a new center point
+Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+    
+    cmdBar.markPreviewStatus False
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
 Private Sub optShape_Click(Index As Integer)
     updatePreview
 End Sub
@@ -515,7 +604,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -523,3 +612,10 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
+    updatePreview
+End Sub
