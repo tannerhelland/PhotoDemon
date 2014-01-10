@@ -162,8 +162,8 @@ Attribute VB_Exposed = False
 'Trace Contour (Outline) Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/Feb/13
-'Last updated: 10/May/13
-'Last update: allow the user to cancel at any time by pressing ESC
+'Last updated: 10/January/14
+'Last update: greatly improve performance by switching to approximate gaussian blur function
 '
 'Contour tracing is performed by "stacking" a series of filters together:
 ' 1) Gaussian blur to smooth out fine details
@@ -214,16 +214,16 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
     If useSmoothing Then
     
         'Blur the current layer
-        If CreateGaussianBlurLayer(cRadius, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 3) Then
+        If CreateApproximateGaussianBlurLayer(cRadius, srcLayer, workingLayer, 3, toPreview, finalX * 6 + finalY * 3) Then
         
             'Use the median filter to round out edges
-            If CreateMedianLayer(cRadius, 50, workingLayer, srcLayer, toPreview, finalY * 2 + finalX * 3, finalY * 2) Then
+            If CreateMedianLayer(cRadius, 50, workingLayer, srcLayer, toPreview, finalX * 6 + finalY * 3, finalX * 3 + finalY * 3) Then
         
                 'Next, create a contour of the layer
-                If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 3, finalY * 2 + finalX) Then
+                If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalX * 6 + finalY * 3, finalX * 4 + finalY * 3) Then
             
                     'Finally, white balance the resulting layer
-                    WhiteBalanceLayer 0.01, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2 + finalX * 2
+                    WhiteBalanceLayer 0.01, workingLayer, toPreview, finalX * 6 + finalY * 3, finalX * 5 + finalY * 3
                     
                 End If
             End If
@@ -231,13 +231,13 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
     Else
         
         'Blur the current layer
-        If CreateGaussianBlurLayer(cRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX * 2) Then
+        If CreateApproximateGaussianBlurLayer(cRadius, workingLayer, srcLayer, 3, toPreview, finalX * 5 + finalY * 3) Then
         
             'Next, create a contour of the layer
-            If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2) Then
+            If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalX * 5 + finalY * 3, finalX * 3 + finalY * 3) Then
             
                 'Finally, white balance the resulting layer
-                WhiteBalanceLayer 0.01, workingLayer, toPreview, finalY * 2 + finalX * 2, finalY * 2 + finalX
+                WhiteBalanceLayer 0.01, workingLayer, toPreview, finalX * 5 + finalY * 3, finalX * 4 + finalY * 3
                 
             End If
         End If

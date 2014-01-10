@@ -1069,7 +1069,7 @@ Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadiu
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussLayer.getLayerWidth * 3 + gaussLayer.getLayerHeight * 3
+    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussLayer.getLayerWidth * numIterations + gaussLayer.getLayerHeight * numIterations
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
     progBarCheck = findBestProgBarValue()
