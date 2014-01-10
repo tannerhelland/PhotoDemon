@@ -349,7 +349,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     rotateLayer.createBlank tmpClampLayer.getLayerWidth, tmpClampLayer.getLayerHeight, tmpClampLayer.getLayerColorDepth
     
     'Start by rotating the image by the requested amount.  Clamped edges are used to improve the blur output below
-    If CreateRotatedLayer(bAngle, EDGE_CLAMP, useBilinear, tmpClampLayer, rotateLayer, toPreview, tmpClampLayer.getLayerWidth * 3) Then
+    If CreateRotatedLayer(bAngle, EDGE_CLAMP, useBilinear, tmpClampLayer, rotateLayer, 0.5, 0.5, toPreview, tmpClampLayer.getLayerWidth * 3) Then
     
         'Next, apply a horizontal blur, using the blur radius supplied by the user
         Dim rightRadius As Long
@@ -358,7 +358,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         If CreateHorizontalBlurLayer(bDistance, rightRadius, rotateLayer, tmpClampLayer, toPreview, tmpClampLayer.getLayerWidth * 3, tmpClampLayer.getLayerWidth) Then
             
             'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion
-            CreateRotatedLayer -bAngle, EDGE_CLAMP, useBilinear, tmpClampLayer, rotateLayer, toPreview, tmpClampLayer.getLayerWidth * 3, tmpClampLayer.getLayerWidth * 2
+            CreateRotatedLayer -bAngle, EDGE_CLAMP, useBilinear, tmpClampLayer, rotateLayer, 0.5, 0.5, toPreview, tmpClampLayer.getLayerWidth * 3, tmpClampLayer.getLayerWidth * 2
             
             'Erase the temporary clamp layer
             tmpClampLayer.eraseLayer
