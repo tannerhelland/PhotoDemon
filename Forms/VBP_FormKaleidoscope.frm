@@ -51,13 +51,15 @@ Begin VB.Form FormKaleidoscope
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
       Index           =   0
       Left            =   6120
       TabIndex        =   7
-      Top             =   4605
+      Top             =   5205
       Width           =   1005
       _ExtentX        =   1773
       _ExtentY        =   635
@@ -78,7 +80,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   1
       Left            =   7920
       TabIndex        =   8
-      Top             =   4605
+      Top             =   5205
       Width           =   975
       _ExtentX        =   1720
       _ExtentY        =   635
@@ -97,7 +99,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   495
       Left            =   6000
       TabIndex        =   9
-      Top             =   1170
+      Top             =   1770
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -118,7 +120,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   2010
+      Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -138,7 +140,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   495
       Left            =   6000
       TabIndex        =   11
-      Top             =   2850
+      Top             =   3450
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -158,7 +160,7 @@ Begin VB.Form FormKaleidoscope
       Height          =   495
       Left            =   6000
       TabIndex        =   12
-      Top             =   3705
+      Top             =   4305
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -174,6 +176,81 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Height          =   495
+      Left            =   9000
+      TabIndex        =   14
+      Top             =   480
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "center position (x, y)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   16
+      Top             =   120
+      Width           =   2205
+   End
+   Begin VB.Label lblExplanation 
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      ForeColor       =   &H00404040&
+      Height          =   435
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   15
+      Top             =   1050
+      Width           =   5655
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -195,7 +272,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   4
       Left            =   6000
       TabIndex        =   6
-      Top             =   2535
+      Top             =   3135
       Width           =   1800
    End
    Begin VB.Label lblTitle 
@@ -216,7 +293,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   3
       Left            =   6000
       TabIndex        =   4
-      Top             =   840
+      Top             =   1440
       Width           =   2055
    End
    Begin VB.Label lblTitle 
@@ -237,7 +314,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   1
       Left            =   6000
       TabIndex        =   3
-      Top             =   3390
+      Top             =   3990
       Width           =   2145
    End
    Begin VB.Label lblTitle 
@@ -260,7 +337,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   4200
+      Top             =   4800
       Width           =   1845
    End
    Begin VB.Label lblTitle 
@@ -283,7 +360,7 @@ Begin VB.Form FormKaleidoscope
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   1680
+      Top             =   2280
       Width           =   1560
    End
 End
@@ -296,16 +373,14 @@ Attribute VB_Exposed = False
 'Image "Kaleiodoscope" Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 26/April/13
-'Last update: greatly simplified code by relying on new slider/text custom control
+'Last updated: 10/January/14
+'Last update: add support for custom center-point selection by the user
 '
 'This tool allows the user to apply a simulated kaleidoscope distort to the image.  A number of variables can be
 ' set as part of the transformation; simply playing with the sliders should give a good indication of how they
 ' all work.
 '
-'At present, the tool assumes that you want to apply the kaleidoscope effect around the center of the image.
-' The code is already set up to handle alternative center points - there simply needs to be a good user interface
-' technique for establishing the center.
+'As of January '14, the user can now select any center point for the effect.
 '
 'Finally, the transformation used by this tool is a modified version of a transformation originally written by
 ' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
@@ -322,9 +397,9 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Apply a "kaleidoscope" effect to an image
-Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Peering at image through imaginary kaleidoscope..."
+    If Not toPreview Then Message "Peering at image through imaginary kaleidoscope..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -374,9 +449,9 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) * centerX
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) * centerY
     midY = midY + initY
     
     'Additional kaleidoscope variables
@@ -431,7 +506,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -453,7 +528,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value)
+    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -461,6 +536,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltXCenter.Value = 0.5
+    sltYCenter.Value = 0.5
     sltMirrors.Value = 3
     sltRadius.Value = 100
 End Sub
@@ -502,7 +579,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'Return a repeating triangle shape in the range [0, 1] with wavelength 1
@@ -519,4 +596,22 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+'The user can right-click the preview area to select a new center point
+Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+    
+    cmdBar.markPreviewStatus False
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
+    cmdBar.markPreviewStatus True
+    updatePreview
+
+End Sub
+
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
+    updatePreview
+End Sub
 
