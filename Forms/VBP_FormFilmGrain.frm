@@ -80,8 +80,8 @@ Begin VB.Form FormFilmGrain
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
       Max             =   25
+      SigDigits       =   1
       Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -144,22 +144,22 @@ Attribute VB_Exposed = False
 'Add Film Grain Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 22/August/13
-'Last update: added command bar user control
+'Last updated: 11/January/14
+'Last update: convert softness to floating point; minor performance improvements
 '
-'Tool for simulating film grain.  For aesthetic reasons, film grain is restricted to monochromatic noise
+'Tool for simulating film grain. For aesthetic reasons, film grain is restricted to monochromatic noise
 ' (luminance only) to better mimic traditional film grain.
 '
 'The separate standalone Gaussian Blur function is used for noise smoothing.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
+' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
 Option Explicit
 
-'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
+'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
 
@@ -168,7 +168,7 @@ Dim m_ToolTip As clsToolTip
 
 'Subroutine for adding noise to an image
 ' Inputs: Amount of noise, monochromatic or not, preview settings
-Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     If Not toPreview Then Message "Generating film grain texture..."
     
@@ -176,7 +176,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
-    'Create a separate source DIB.  This will contain the a copy of the current image, and we will use it as our source reference
+    'Create a separate source DIB. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent adjusted pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -208,7 +208,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If Not toPreview Then
@@ -223,7 +223,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     'Double the amount of noise we plan on using (so we can add noise above or below the current color value)
     gStrength2 = gStrength * 2
     
-    'Although it's slow, we're stuck using random numbers for noise addition.  Seed the generator with a pseudo-random value.
+    'Although it's slow, we're stuck using random numbers for noise addition. Seed the generator with a pseudo-random value.
     Randomize Timer
     
     'Loop through each pixel in the image, converting values as we go
@@ -240,7 +240,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         dstImageData(QuickVal, y) = nColor
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -259,12 +259,8 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     
         'If this is a preview, we need to adjust the softening radius to match the size of the preview box
         If toPreview Then
-            If iWidth > iHeight Then
-                gSoftness = (gSoftness / iWidth) * curDIBValues.Width
-            Else
-                gSoftness = (gSoftness / iHeight) * curDIBValues.Height
-            End If
-            If gSoftness = 0 Then gSoftness = 1
+            gSoftness = gSoftness * curDIBValues.previewModifier
+            If gSoftness = 0 Then gSoftness = 0.1
         End If
     
         gaussDIB.createFromExistingDIB workingDIB
@@ -282,7 +278,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     
     If Not cancelCurrentAction Then
     
-        'We now have a softened noise DIB.  Next, create three arrays - one pointing at the original image data, one pointing at
+        'We now have a softened noise DIB. Next, create three arrays - one pointing at the original image data, one pointing at
         ' the noise data, and one pointing at the destination data.
         prepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
@@ -414,5 +410,3 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
-
-
