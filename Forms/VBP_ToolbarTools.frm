@@ -35,11 +35,11 @@ Begin VB.Form toolbar_Selections
       _extentx        =   1270
       _extenty        =   1058
       buttonstyle     =   7
-      font            =   "TBP_ToolbarSelections.frx":0000
+      font            =   "VBP_ToolbarTools.frx":0000
       backcolor       =   -2147483643
       caption         =   ""
       handpointer     =   -1
-      picturenormal   =   "TBP_ToolbarSelections.frx":0028
+      picturenormal   =   "VBP_ToolbarTools.frx":0028
       pictureeffectondown=   0
       captioneffects  =   0
       mode            =   1
@@ -76,9 +76,9 @@ Begin VB.Form toolbar_Selections
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "TBP_ToolbarSelections.frx":0C0A
+         ItemData        =   "VBP_ToolbarTools.frx":0C0A
          Left            =   120
-         List            =   "TBP_ToolbarSelections.frx":0C0C
+         List            =   "VBP_ToolbarTools.frx":0C0C
          Style           =   2  'Dropdown List
          TabIndex        =   20
          TabStop         =   0   'False
@@ -99,9 +99,9 @@ Begin VB.Form toolbar_Selections
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "TBP_ToolbarSelections.frx":0C0E
+         ItemData        =   "VBP_ToolbarTools.frx":0C0E
          Left            =   8340
-         List            =   "TBP_ToolbarSelections.frx":0C10
+         List            =   "VBP_ToolbarTools.frx":0C10
          Style           =   2  'Dropdown List
          TabIndex        =   2
          TabStop         =   0   'False
@@ -123,9 +123,9 @@ Begin VB.Form toolbar_Selections
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "TBP_ToolbarSelections.frx":0C12
+         ItemData        =   "VBP_ToolbarTools.frx":0C12
          Left            =   5640
-         List            =   "TBP_ToolbarSelections.frx":0C14
+         List            =   "VBP_ToolbarTools.frx":0C14
          Style           =   2  'Dropdown List
          TabIndex        =   1
          TabStop         =   0   'False
@@ -142,7 +142,7 @@ Begin VB.Form toolbar_Selections
          Width           =   2670
          _extentx        =   4710
          _extenty        =   873
-         font            =   "TBP_ToolbarSelections.frx":0C16
+         font            =   "VBP_ToolbarTools.frx":0C16
          max             =   10000
       End
       Begin PhotoDemon.textUpDown tudSel 
@@ -154,7 +154,7 @@ Begin VB.Form toolbar_Selections
          Width           =   1320
          _extentx        =   2328
          _extenty        =   714
-         font            =   "TBP_ToolbarSelections.frx":0C3E
+         font            =   "VBP_ToolbarTools.frx":0C3E
          min             =   -30000
          max             =   30000
       End
@@ -167,7 +167,7 @@ Begin VB.Form toolbar_Selections
          Width           =   1320
          _extentx        =   2328
          _extenty        =   714
-         font            =   "TBP_ToolbarSelections.frx":0C66
+         font            =   "VBP_ToolbarTools.frx":0C66
          min             =   -30000
          max             =   30000
       End
@@ -180,7 +180,7 @@ Begin VB.Form toolbar_Selections
          Width           =   1320
          _extentx        =   2328
          _extenty        =   714
-         font            =   "TBP_ToolbarSelections.frx":0C8E
+         font            =   "VBP_ToolbarTools.frx":0C8E
          min             =   -30000
          max             =   30000
       End
@@ -193,7 +193,7 @@ Begin VB.Form toolbar_Selections
          Width           =   1320
          _extentx        =   2328
          _extenty        =   714
-         font            =   "TBP_ToolbarSelections.frx":0CB6
+         font            =   "VBP_ToolbarTools.frx":0CB6
          min             =   -30000
          max             =   30000
       End
@@ -207,7 +207,7 @@ Begin VB.Form toolbar_Selections
          Width           =   2670
          _extentx        =   4710
          _extenty        =   873
-         font            =   "TBP_ToolbarSelections.frx":0CDE
+         font            =   "VBP_ToolbarTools.frx":0CDE
          min             =   1
          max             =   10000
          value           =   1
@@ -221,7 +221,7 @@ Begin VB.Form toolbar_Selections
          Width           =   2670
          _extentx        =   4710
          _extenty        =   873
-         font            =   "TBP_ToolbarSelections.frx":0D06
+         font            =   "VBP_ToolbarTools.frx":0D06
          max             =   100
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
@@ -233,7 +233,7 @@ Begin VB.Form toolbar_Selections
          Width           =   2670
          _extentx        =   4710
          _extenty        =   873
-         font            =   "TBP_ToolbarSelections.frx":0D2E
+         font            =   "VBP_ToolbarTools.frx":0D2E
          min             =   1
          max             =   10000
          value           =   10
@@ -387,11 +387,11 @@ Begin VB.Form toolbar_Selections
       _extentx        =   1270
       _extenty        =   1058
       buttonstyle     =   7
-      font            =   "TBP_ToolbarSelections.frx":0D56
+      font            =   "VBP_ToolbarTools.frx":0D56
       backcolor       =   -2147483643
       caption         =   ""
       handpointer     =   -1
-      picturenormal   =   "TBP_ToolbarSelections.frx":0D7E
+      picturenormal   =   "VBP_ToolbarTools.frx":0D7E
       pictureeffectondown=   0
       captioneffects  =   0
       mode            =   1
@@ -407,11 +407,11 @@ Begin VB.Form toolbar_Selections
       _extentx        =   1270
       _extenty        =   1058
       buttonstyle     =   7
-      font            =   "TBP_ToolbarSelections.frx":1960
+      font            =   "VBP_ToolbarTools.frx":1960
       backcolor       =   -2147483643
       caption         =   ""
       handpointer     =   -1
-      picturenormal   =   "TBP_ToolbarSelections.frx":1988
+      picturenormal   =   "VBP_ToolbarTools.frx":1988
       pictureeffectondown=   0
       captioneffects  =   0
       mode            =   1
