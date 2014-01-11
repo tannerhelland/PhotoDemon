@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 13/December/13
-'Last update: added specialized "track minimized mode" code to prevent window offsets and size being set to 0 by minimize events
+'Last updated: 11/January/14
+'Last update: fix z-order issues with floating toolboxes after tool dialogs are raised
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2014, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
@@ -1671,8 +1671,24 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
         .offsetX = childRect.x1 - parentRect.x1
         .offsetY = childRect.y1 - parentRect.y1
         .optionalToolbarType = toolbarType
-        .originalWidth = getClientWidth(pdWindows(numOfPDWindows).hWnd)
-        .originalHeight = getClientHeight(pdWindows(numOfPDWindows).hWnd)
+        
+        'The width and height of toolbars is handled differently.  Instead of storing last-used width and height
+        ' (which may be incorrect if monitor DPI has changed since the last session), force them to their initial
+        ' width/height, which VB will have automatically resolved to match the current DPI setting.
+        If whatWindowType = TOOLBAR_WINDOW Then
+            
+            If getFloatState(TOOLBAR_WINDOW) Then
+                .originalWidth = getWindowWidth(pdWindows(numOfPDWindows).hWnd)
+                .originalHeight = getWindowHeight(pdWindows(numOfPDWindows).hWnd)
+            Else
+                .originalWidth = getClientWidth(pdWindows(numOfPDWindows).hWnd)
+                .originalHeight = getClientHeight(pdWindows(numOfPDWindows).hWnd)
+            End If
+        Else
+            .originalWidth = getClientWidth(pdWindows(numOfPDWindows).hWnd)
+            .originalHeight = getClientHeight(pdWindows(numOfPDWindows).hWnd)
+        End If
+        
         .hasBeenMadeTransparent = False
         .typeOfWindow = whatWindowType
         .windowName = childForm.Name
@@ -1746,7 +1762,7 @@ Public Sub allImageWindowsUnloaded()
 End Sub
 
 Public Sub requestActivation(ByVal hWndToActivate As Long)
-    SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW
+    SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER
 End Sub
 
 'When an image window receives focus, we use the API to bring it to the foreground
