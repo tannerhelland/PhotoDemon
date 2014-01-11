@@ -2896,7 +2896,7 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", cmbAlphaCheckSize.ListIndex
             
             'Recreate the cached pattern for the alpha background
-            Drawing.createAlphaCheckerboardLayer g_CheckerboardPattern
+            Drawing.createAlphaCheckerboardDIB g_CheckerboardPattern
             
         'END alpha checkerboard size
     

@@ -547,24 +547,24 @@ Public Sub resetMenuIcons()
         
 End Sub
 
-'Convert a layer - any layer! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
-' at the current image's size (though you can specify a custom size if you wish).  Ideally, the passed layer will have been created using
+'Convert a DIB - any DIB! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
+' at the current image's size (though you can specify a custom size if you wish).  Ideally, the passed DIB will have been created using
 ' the pdImage function "requestThumbnail".
 'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.
-Public Function getIconFromLayer(ByRef srcLayer As pdLayer, Optional iconSize As Long = 0) As Long
+Public Function getIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long
 
     If Not g_ImageFormats.FreeImageEnabled Then
-        getIconFromLayer = 0
+        getIconFromDIB = 0
         Exit Function
     End If
     
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(srcLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
     
-    'If the iconSize parameter is 0, use the current layer's dimensions.  Otherwise, resize it as requested.
+    'If the iconSize parameter is 0, use the current DIB's dimensions.  Otherwise, resize it as requested.
     If iconSize = 0 Then
-        iconSize = srcLayer.getLayerWidth
+        iconSize = srcDIB.getDIBWidth
     Else
         fi_DIB = FreeImage_RescaleByPixel(fi_DIB, iconSize, iconSize, True, FILTER_BILINEAR)
     End If
@@ -586,17 +586,17 @@ Public Function getIconFromLayer(ByRef srcLayer As pdLayer, Optional iconSize As
             .hbmColor = FreeImage_GetBitmapForDevice(fi_DIB)
         End With
         
-        getIconFromLayer = CreateIconIndirect(icoInfo)
+        getIconFromDIB = CreateIconIndirect(icoInfo)
         
         'Delete the temporary monochrome mask and DDB
         DeleteObject monoBmp
         DeleteObject icoInfo.hbmColor
     
     Else
-        getIconFromLayer = 0
+        getIconFromDIB = 0
     End If
     
-    'Release FreeImage's copy of the source layer
+    'Release FreeImage's copy of the source DIB
     FreeImage_UnloadEx fi_DIB
     
 End Function
@@ -611,14 +611,14 @@ Public Sub createCustomFormIcon(ByRef imgForm As FormImage)
     'Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.
     Dim hIcon32 As Long, hIcon16 As Long
     
-    Dim thumbLayer As pdLayer
-    Set thumbLayer = New pdLayer
+    Dim thumbDIB As pdDIB
+    Set thumbDIB = New pdDIB
     
     'Request a 32x32 thumbnail version of the current image
-    If pdImages(imgForm.Tag).requestThumbnail(thumbLayer, 32) Then
+    If pdImages(imgForm.Tag).requestThumbnail(thumbDIB, 32) Then
         
         'Request an icon-format version of the generated thumbnail
-        hIcon32 = getIconFromLayer(thumbLayer)
+        hIcon32 = getIconFromDIB(thumbDIB)
         
         'Assign the new icon to the taskbar
         setNewTaskbarIcon hIcon32, imgForm.hWnd
@@ -630,7 +630,7 @@ Public Sub createCustomFormIcon(ByRef imgForm As FormImage)
         pdImages(imgForm.Tag).curFormIcon32 = hIcon32
         
         'Now repeat the same steps, but for a 16x16 icon to be used in the form's title bar.
-        hIcon16 = getIconFromLayer(thumbLayer, 16)
+        hIcon16 = getIconFromDIB(thumbDIB, 16)
         addIconToList hIcon16
         pdImages(imgForm.Tag).curFormIcon16 = hIcon16
                 
@@ -895,9 +895,9 @@ Private Function requestCustomCursor(ByVal CursorName As String, Optional ByVal 
 
 End Function
 
-'Given an image in the .exe's resource section (typically a PNG image), load it to a pdLayer object.
-' The calling function is responsible for deleting the layer once they are done with it.
-Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As pdLayer, Optional ByVal vbSupportedFormat As Boolean = False) As Boolean
+'Given an image in the .exe's resource section (typically a PNG image), load it to a pdDIB object.
+' The calling function is responsible for deleting the DIB once they are done with it.
+Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal vbSupportedFormat As Boolean = False) As Boolean
     
     'If the requested image is in a VB-compatible format (e.g. BMP), we don't need to use GDI+
     If vbSupportedFormat Then
@@ -907,11 +907,11 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
         Set tmppic = New StdPicture
         Set tmppic = LoadResPicture(resTitle, 0)
         
-        'Copy that image into the supplied layer
-        If dstLayer.CreateFromPicture(tmppic) Then
-            loadResourceToLayer = True
+        'Copy that image into the supplied DIB
+        If dstDIB.CreateFromPicture(tmppic) Then
+            loadResourceToDIB = True
         Else
-            loadResourceToLayer = False
+            loadResourceToDIB = False
         End If
         
         Exit Function
@@ -940,26 +940,26 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
                 Dim gdiPixelFormat As Long
                 GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
                 
-                'If the image has an alpha channel, create a 32bpp layer to receive it
+                'If the image has an alpha channel, create a 32bpp DIB to receive it
                 If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                    dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
+                    dstDIB.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
                 Else
-                    dstLayer.createBlank tmpRect.fWidth, tmpRect.fHeight, 24
+                    dstDIB.createBlank tmpRect.fWidth, tmpRect.fHeight, 24
                 End If
                 
                 'Convert the GDI+ bitmap to a standard Windows hBitmap
                 If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
                 
-                    'Select the hBitmap into a new DC so we can BitBlt it into the layer
+                    'Select the hBitmap into a new DC so we can BitBlt it into the DIB
                     Dim gdiDC As Long
                     gdiDC = CreateCompatibleDC(0)
                     SelectObject gdiDC, hBitmap
                     
-                    'Copy the GDI+ bitmap into the layer
-                    BitBlt dstLayer.getLayerDC, 0, 0, tmpRect.fWidth, tmpRect.fHeight, gdiDC, 0, 0, vbSrcCopy
+                    'Copy the GDI+ bitmap into the DIB
+                    BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.fWidth, tmpRect.fHeight, gdiDC, 0, 0, vbSrcCopy
                     
                     'Verify the alpha channel
-                    If Not dstLayer.verifyAlphaChannel Then dstLayer.convertTo24bpp
+                    If Not dstDIB.verifyAlphaChannel Then dstDIB.convertTo24bpp
                     
                     'Release the Windows-format bitmap and temporary device context
                     DeleteObject hBitmap
@@ -971,26 +971,26 @@ Public Function loadResourceToLayer(ByVal resTitle As String, ByRef dstLayer As 
                     'Free the memory stream
                     Set IStream = Nothing
                     
-                    loadResourceToLayer = True
+                    loadResourceToDIB = True
                     Exit Function
                 
                 End If
                 
                 'Release the GDI+ bitmap and mark the load as failed
                 GdipDisposeImage gdiBitmap
-                loadResourceToLayer = False
+                loadResourceToDIB = False
                 Exit Function
                     
             End If
         
             'Free the memory stream
             Set IStream = Nothing
-            loadResourceToLayer = False
+            loadResourceToDIB = False
             Exit Function
         
         End If
         
-        loadResourceToLayer = False
+        loadResourceToDIB = False
         Exit Function
     
     End If

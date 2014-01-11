@@ -1,12 +1,12 @@
 Attribute VB_Name = "Filters_Layers"
 '***************************************************************************
-'Layer Filters Module
+'DIB Filters Module
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/February/13
 'Last updated: 17/September/13
 'Last update: removed the old dedicated box blur routine.  A horizontal/vertical two-pass is waaaaay faster!
 '
-'Some filters in PhotoDemon are capable of operating "on-demand" on any supplied layers.  In a perfect world, *all*
+'Some filters in PhotoDemon are capable of operating "on-demand" on any supplied DIBs.  In a perfect world, *all*
 ' filters would work this way - but alas I did not design the program very well up front.  Going forward I will be
 ' moving more filters to an "on-demand" model.
 '
@@ -27,72 +27,72 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
-'Pad a layer with blank space.  This will (obviously) resize the layer as necessary.
-Public Function padLayer(ByRef srcLayer As pdLayer, ByVal paddingSize As Long) As Boolean
+'Pad a DIB with blank space.  This will (obviously) resize the DIB as necessary.
+Public Function padDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Boolean
 
-    'Make a copy of the current layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcLayer
+    'Make a copy of the current DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcDIB
     
-    'Resize the source layer to accommodate the new padding
-    srcLayer.createBlank srcLayer.getLayerWidth + paddingSize * 2, srcLayer.getLayerHeight + paddingSize * 2, srcLayer.getLayerColorDepth, 0, 0
+    'Resize the source DIB to accommodate the new padding
+    srcDIB.createBlank srcDIB.getDIBWidth + paddingSize * 2, srcDIB.getDIBHeight + paddingSize * 2, srcDIB.getDIBColorDepth, 0, 0
     
-    'Copy the old layer into the center of the new layer
-    BitBlt srcLayer.getLayerDC, paddingSize, paddingSize, tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+    'Copy the old DIB into the center of the new DIB
+    BitBlt srcDIB.getDIBDC, paddingSize, paddingSize, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
     
-    'Erase the temporary layer
-    Set tmpLayer = Nothing
+    'Erase the temporary DIB
+    Set tmpDIB = Nothing
     
-    padLayer = True
+    padDIB = True
 
 End Function
 
-'If the application needs to quickly blur a layer and it doesn't care how, use this function.  It will lean on GDI+ if
+'If the application needs to quickly blur a DIB and it doesn't care how, use this function.  It will lean on GDI+ if
 ' available (unless otherwise requested), or fall back to a high-speed internal box blur.
-Public Function quickBlurLayer(ByRef srcLayer As pdLayer, ByVal blurRadius As Long, Optional ByVal useGDIPlusIfAvailable As Boolean = True) As Boolean
+Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Optional ByVal useGDIPlusIfAvailable As Boolean = True) As Boolean
 
     If blurRadius > 0 Then
     
         'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to one of our internal blur functions.
         If g_GDIPlusFXAvailable And useGDIPlusIfAvailable Then
-            GDIPlusBlurLayer srcLayer, blurRadius * 2, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight
+            GDIPlusBlurDIB srcDIB, blurRadius * 2, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight
         Else
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer srcLayer
-            CreateApproximateGaussianBlurLayer blurRadius, tmpLayer, srcLayer, 1, True
-            Set tmpLayer = Nothing
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB srcDIB
+            CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
+            Set tmpDIB = Nothing
         End If
     
     End If
     
-    quickBlurLayer = True
+    quickBlurDIB = True
     
 End Function
 
-'Given a 32bpp layer, return a "shadow" version.  (It's pretty simple, really - black out the layer but retain alpha values.)
-Public Function createShadowLayer(ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer) As Boolean
+'Given a 32bpp DIB, return a "shadow" version.  (It's pretty simple, really - black out the DIB but retain alpha values.)
+Public Function createShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
 
-    'If the source layer is not 32bpp, exit.
-    If srcLayer.getLayerColorDepth <> 32 Then
-        createShadowLayer = False
+    'If the source DIB is not 32bpp, exit.
+    If srcDIB.getDIBColorDepth <> 32 Then
+        createShadowDIB = False
         Exit Function
     End If
 
-    'Start by copying the source layer into the destination
-    dstLayer.createFromExistingLayer srcLayer
+    'Start by copying the source DIB into the destination
+    dstDIB.createFromExistingDIB srcDIB
     
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, finalX As Long, finalY As Long, QuickX As Long
-    finalX = dstLayer.getLayerWidth - 1
-    finalY = dstLayer.getLayerHeight - 1
+    finalX = dstDIB.getDIBWidth - 1
+    finalY = dstDIB.getDIBHeight - 1
     
     'Loop through all pixels in the destination image and set them to black.  Easy as pie!
     For x = 0 To finalX
@@ -110,33 +110,33 @@ Public Function createShadowLayer(ByRef srcLayer As pdLayer, ByRef dstLayer As p
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    createShadowLayer = True
+    createShadowDIB = True
 
 End Function
 
-'Given two layers, fill one with a median-filtered version of the other.
+'Given two DIBs, fill one with a median-filtered version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent median-calculated pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
     
     'Just to be safe, make sure the radius isn't larger than the image itself
     If (finalY - initY) < (finalX - initX) Then
@@ -150,7 +150,7 @@ Public Function CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Doubl
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -461,31 +461,31 @@ Public Function CreateMedianLayer(ByVal mRadius As Long, ByVal mPercent As Doubl
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateMedianLayer = 0 Else CreateMedianLayer = 1
+    If cancelCurrentAction Then CreateMedianDIB = 0 Else CreateMedianDIB = 1
 
 End Function
 
-'White balance a given layer.
+'White balance a given DIB.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcLayer
+    prepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -671,38 +671,38 @@ Public Function WhiteBalanceLayer(ByVal percentIgnore As Double, ByRef srcLayer 
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then WhiteBalanceLayer = 0 Else WhiteBalanceLayer = 1
+    If cancelCurrentAction Then WhiteBalanceDIB = 0 Else WhiteBalanceDIB = 1
     
 End Function
 
-'Given two layers, fill one with an artistically contoured (edge detect) version of the other.
+'Given two DIBs, fill one with an artistically contoured (edge detect) version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
  
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already embossed pixels from screwing up our results for later pixels.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, z As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 1
     initY = 1
-    finalX = srcLayer.getLayerWidth - 2
-    finalY = srcLayer.getLayerHeight - 2
+    finalX = srcDIB.getDIBWidth - 2
+    finalY = srcDIB.getDIBHeight - 2
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValRight As Long, QuickValLeft As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -779,31 +779,31 @@ Public Function CreateContourLayer(ByVal blackBackground As Boolean, ByRef srcLa
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateContourLayer = 0 Else CreateContourLayer = 1
+    If cancelCurrentAction Then CreateContourDIB = 0 Else CreateContourDIB = 1
     
 End Function
 
-'Make shadows, midtone, and/or highlight adjustments to a given layer.
+'Make shadows, midtone, and/or highlight adjustments to a given DIB.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function AdjustDIBShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcLayer
+    prepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1046,11 +1046,11 @@ Public Function AdjustLayerShadowHighlight(ByVal shadowClipping As Double, ByVal
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then AdjustLayerShadowHighlight = 0 Else AdjustLayerShadowHighlight = 1
+    If cancelCurrentAction Then AdjustDIBShadowHighlight = 0 Else AdjustDIBShadowHighlight = 1
     
 End Function
 
-'Given two layers, fill one with an approximated gaussian-blur version of the other.
+'Given two DIBs, fill one with an approximated gaussian-blur version of the other.
 ' Per the Central Limit Theorem, a Gaussian function can be approximated within 3% by three iterations of a matching box function.
 ' Gaussian blur and a 3x box blur are thus "roughly" identical, but there are some trade-offs - PD's Gaussian Blur uses a modified
 ' standard deviation function, which results in a higher-quality blur.  It also supports floating-point radii.  Both these options
@@ -1058,18 +1058,18 @@ End Function
 ' for all but the most stringent blur needs.
 '
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal numIterations As Long = 3, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal numIterations As Long = 3, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
-    'Create an extra temp layer.  This will contain the intermediate copy of our horizontal/vertical blurs.
-    Dim gaussLayer As pdLayer
-    Set gaussLayer = New pdLayer
-    gaussLayer.createFromExistingLayer srcLayer
-    dstLayer.createFromExistingLayer gaussLayer
+    'Create an extra temp DIB.  This will contain the intermediate copy of our horizontal/vertical blurs.
+    Dim gaussDIB As pdDIB
+    Set gaussDIB = New pdDIB
+    gaussDIB.createFromExistingDIB srcDIB
+    dstDIB.createFromExistingDIB gaussDIB
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussLayer.getLayerWidth * numIterations + gaussLayer.getLayerHeight * numIterations
+    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussDIB.getDIBWidth * numIterations + gaussDIB.getDIBHeight * numIterations
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
     progBarCheck = findBestProgBarValue()
@@ -1096,12 +1096,12 @@ Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadiu
     'Box blurs require a radius of at least 1, so force it to that
     If comparableRadius < 1 Then comparableRadius = 1
     
-    'Iterate a box blur, switching between the gauss and destination layers as we go
+    'Iterate a box blur, switching between the gauss and destination DIBs as we go
     Dim i As Long
     For i = 1 To numIterations
     
-        If CreateHorizontalBlurLayer(comparableRadius, comparableRadius, dstLayer, gaussLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussLayer.getLayerWidth * (i - 1)) + (gaussLayer.getLayerHeight * (i - 1))) > 0 Then
-            If CreateVerticalBlurLayer(comparableRadius, comparableRadius, gaussLayer, dstLayer, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussLayer.getLayerWidth * i) + (gaussLayer.getLayerHeight * (i - 1))) = 0 Then
+        If CreateHorizontalBlurDIB(comparableRadius, comparableRadius, dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.getDIBWidth * (i - 1)) + (gaussDIB.getDIBHeight * (i - 1))) > 0 Then
+            If CreateVerticalBlurDIB(comparableRadius, comparableRadius, gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.getDIBWidth * i) + (gaussDIB.getDIBHeight * (i - 1))) = 0 Then
                 Exit For
             End If
         Else
@@ -1110,50 +1110,50 @@ Public Function CreateApproximateGaussianBlurLayer(ByVal equivalentGaussianRadiu
     
     Next i
     
-    'Erase the temporary layer and exit
-    gaussLayer.eraseLayer
-    Set gaussLayer = Nothing
+    'Erase the temporary DIB and exit
+    gaussDIB.eraseDIB
+    Set gaussDIB = Nothing
     
-    If cancelCurrentAction Then CreateApproximateGaussianBlurLayer = 0 Else CreateApproximateGaussianBlurLayer = 1
+    If cancelCurrentAction Then CreateApproximateGaussianBlurDIB = 0 Else CreateApproximateGaussianBlurDIB = 1
 
 End Function
 
-'Given two layers, fill one with a gaussian-blur version of the other.
+'Given two DIBs, fill one with a gaussian-blur version of the other.
 ' This is an extremely optimized, integer-based version of a standard gaussian blur routine.  It uses some standard optimizations
 ' (e.g. separable kernels) as well as a number of VB-specific optimizations.  As such, it may not be appropriate for direct translation to
 ' other languages.
 '
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
             
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Do the same for the source image
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Create one more local array.  This will contain the intermediate copy of the gaussian blur, as it must be done in two passes.
-    Dim gaussLayer As pdLayer
-    Set gaussLayer = New pdLayer
-    gaussLayer.createFromExistingLayer srcLayer
+    Dim gaussDIB As pdDIB
+    Set gaussDIB = New pdDIB
+    gaussDIB.createFromExistingDIB srcDIB
     
     Dim GaussImageData() As Byte
     Dim gaussSA As SAFEARRAY2D
-    prepSafeArray gaussSA, gaussLayer
+    prepSafeArray gaussSA, gaussDIB
     CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
     
     'Make sure we were passed a valid radius
     If userRadius < 0.1 Then userRadius = 0.1
@@ -1178,7 +1178,7 @@ Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLay
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     Dim chkAlpha As Boolean
     If qvDepth = 4 Then chkAlpha = True Else chkAlpha = False
@@ -1297,11 +1297,11 @@ Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLay
     'Next, prepare 1D arrays that will be used to point at source and destination pixel data.  VB accesses 1D arrays more quickly
     ' than 2D arrays, and this technique shaves precious time off the final calculation.
     Dim scanlineSize As Long
-    scanlineSize = srcLayer.getLayerArrayWidth
+    scanlineSize = srcDIB.getDIBArrayWidth
     Dim origDIBPointer As Long
-    origDIBPointer = srcLayer.getLayerDIBits
+    origDIBPointer = srcDIB.getActualDIBBits
     Dim dstDIBPointer As Long
-    dstDIBPointer = gaussLayer.getLayerDIBits
+    dstDIBPointer = gaussDIB.getActualDIBBits
     
     Dim tmpImageData() As Byte
     Dim tmpSA As SAFEARRAY1D
@@ -1423,11 +1423,11 @@ Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLay
         CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(GaussImageData()), 0&, 4
-        CreateGaussianBlurLayer = 0
+        CreateGaussianBlurDIB = 0
         Exit Function
     End If
     
-    dstDIBPointer = dstLayer.getLayerDIBits
+    dstDIBPointer = dstDIB.getActualDIBBits
     tmpDstSA.pvData = dstDIBPointer
     
     'The source array now contains a horizontally convolved image.  We now need to convolve it vertically.
@@ -1513,42 +1513,42 @@ Public Function CreateGaussianBlurLayer(ByVal userRadius As Double, ByRef srcLay
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    'We can also erase our intermediate gaussian layer
-    gaussLayer.eraseLayer
-    Set gaussLayer = Nothing
+    'We can also erase our intermediate gaussian DIB
+    gaussDIB.eraseDIB
+    Set gaussDIB = Nothing
     
-    If cancelCurrentAction Then CreateGaussianBlurLayer = 0 Else CreateGaussianBlurLayer = 1
+    If cancelCurrentAction Then CreateGaussianBlurDIB = 0 Else CreateGaussianBlurDIB = 1
     
 End Function
 
-'Given two layers, fill one with a polar-coordinate conversion of the other.
+'Given two DIBs, fill one with a polar-coordinate conversion of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1748,40 +1748,40 @@ Public Function CreatePolarCoordLayer(ByVal conversionMethod As Long, ByVal pola
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreatePolarCoordLayer = 0 Else CreatePolarCoordLayer = 1
+    If cancelCurrentAction Then CreatePolarCoordDIB = 0 Else CreatePolarCoordDIB = 1
 
 End Function
 
-'Given two layers, fill one with a polar-coordinate conversion of the other.
+'Given two DIBs, fill one with a polar-coordinate conversion of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 ' NOTE: unlike the traditional polar conversion function above, this one swaps x and y values.  There is no canonical definition for
 '       how to polar convert an image, so we allow the user to choose whichever method they prefer.
-Public Function CreateXSwappedPolarCoordLayer(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1981,39 +1981,39 @@ Public Function CreateXSwappedPolarCoordLayer(ByVal conversionMethod As Long, By
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateXSwappedPolarCoordLayer = 0 Else CreateXSwappedPolarCoordLayer = 1
+    If cancelCurrentAction Then CreateXSwappedPolarCoordDIB = 0 Else CreateXSwappedPolarCoordDIB = 1
 
 End Function
 
-'Given two layers, fill one with a horizontally blurred version of the other.  A highly-optimized modified accumulation algorithm
+'Given two DIBs, fill one with a horizontally blurred version of the other.  A highly-optimized modified accumulation algorithm
 ' is used to improve performance.
 'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
-Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2143,39 +2143,39 @@ Public Function CreateHorizontalBlurLayer(ByVal lRadius As Long, ByVal rRadius A
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateHorizontalBlurLayer = 0 Else CreateHorizontalBlurLayer = 1
+    If cancelCurrentAction Then CreateHorizontalBlurDIB = 0 Else CreateHorizontalBlurDIB = 1
     
 End Function
 
-'Given two layers, fill one with a vertically blurred version of the other.  A highly-optimized modified accumulation algorithm
+'Given two DIBs, fill one with a vertically blurred version of the other.  A highly-optimized modified accumulation algorithm
 ' is used to improve performance.
 'Input: up and down distance to blur (I call these radii, because the final box size is (upoffset + downoffset + 1)
-Public Function CreateVerticalBlurLayer(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2305,38 +2305,38 @@ Public Function CreateVerticalBlurLayer(ByVal uRadius As Long, ByVal dRadius As 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateVerticalBlurLayer = 0 Else CreateVerticalBlurLayer = 1
+    If cancelCurrentAction Then CreateVerticalBlurDIB = 0 Else CreateVerticalBlurDIB = 1
     
 End Function
 
-'Given two layers, fill one with a rotated version of the other.
+'Given two DIBs, fill one with a rotated version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateRotatedLayer(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent rotated pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2421,47 +2421,47 @@ Public Function CreateRotatedLayer(ByVal rotateAngle As Double, ByVal edgeHandli
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateRotatedLayer = 0 Else CreateRotatedLayer = 1
+    If cancelCurrentAction Then CreateRotatedDIB = 0 Else CreateRotatedDIB = 1
 
 End Function
 
-'Given two layers, fill one with an enlarged and edge-extended version of the other.  (This is often useful when something
+'Given two DIBs, fill one with an enlarged and edge-extended version of the other.  (This is often useful when something
 ' needs to be done to an image and edge output is tough to handle.  By extending image borders and clamping the extended
 ' area to the nearest valid pixels, the function can be run without specialized edge handling.)
 'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateExtendedLayer(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer) As Long
+Public Function CreateExtendedDIB(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
 
-    'Start by resizing the destination layer
-    dstLayer.createBlank srcLayer.getLayerWidth + hExtend * 2, srcLayer.getLayerHeight + vExtend * 2, srcLayer.getLayerColorDepth
+    'Start by resizing the destination DIB
+    dstDIB.createBlank srcDIB.getDIBWidth + hExtend * 2, srcDIB.getDIBHeight + vExtend * 2, srcDIB.getDIBColorDepth
     
     'Copy the valid part of the source image into the center of the destination image
-    BitBlt dstLayer.getLayerDC, hExtend, vExtend, srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.getDIBDC, hExtend, vExtend, srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
     
     'We now need to fill the blank areas (borders) of the destination canvas with clamped values from the source image.  We do this
     ' by extending the nearest valid pixels across the empty area.
     
     'Start with the four edges, and use COLORONCOLOR as we don't want to waste time with interpolation
-    SetStretchBltMode dstLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
+    SetStretchBltMode dstDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
     
     'Top, bottom
-    StretchBlt dstLayer.getLayerDC, hExtend, 0, srcLayer.getLayerWidth, vExtend, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, 1, vbSrcCopy
-    StretchBlt dstLayer.getLayerDC, hExtend, vExtend + srcLayer.getLayerHeight, srcLayer.getLayerWidth, vExtend, srcLayer.getLayerDC, 0, srcLayer.getLayerHeight - 1, srcLayer.getLayerWidth, 1, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, hExtend, 0, srcDIB.getDIBWidth, vExtend, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, 1, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, hExtend, vExtend + srcDIB.getDIBHeight, srcDIB.getDIBWidth, vExtend, srcDIB.getDIBDC, 0, srcDIB.getDIBHeight - 1, srcDIB.getDIBWidth, 1, vbSrcCopy
     
     'Left, right
-    StretchBlt dstLayer.getLayerDC, 0, vExtend, hExtend, srcLayer.getLayerHeight, srcLayer.getLayerDC, 0, 0, 1, srcLayer.getLayerHeight, vbSrcCopy
-    StretchBlt dstLayer.getLayerDC, srcLayer.getLayerWidth + hExtend, vExtend, hExtend, srcLayer.getLayerHeight, srcLayer.getLayerDC, srcLayer.getLayerWidth - 1, 0, 1, srcLayer.getLayerHeight, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, 0, vExtend, hExtend, srcDIB.getDIBHeight, srcDIB.getDIBDC, 0, 0, 1, srcDIB.getDIBHeight, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, vExtend, hExtend, srcDIB.getDIBHeight, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, 0, 1, srcDIB.getDIBHeight, vbSrcCopy
     
     'Next, the four corners
     
     'Top-left, top-right
-    StretchBlt dstLayer.getLayerDC, 0, 0, hExtend, vExtend, srcLayer.getLayerDC, 0, 0, 1, 1, vbSrcCopy
-    StretchBlt dstLayer.getLayerDC, srcLayer.getLayerWidth + hExtend, 0, hExtend, vExtend, srcLayer.getLayerDC, srcLayer.getLayerWidth - 1, 0, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, 0, 0, hExtend, vExtend, srcDIB.getDIBDC, 0, 0, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, 0, 1, 1, vbSrcCopy
     
     'Bottom-left, bottom-right
-    StretchBlt dstLayer.getLayerDC, 0, srcLayer.getLayerHeight + vExtend, hExtend, vExtend, srcLayer.getLayerDC, 0, srcLayer.getLayerHeight - 1, 1, 1, vbSrcCopy
-    StretchBlt dstLayer.getLayerDC, srcLayer.getLayerWidth + hExtend, srcLayer.getLayerHeight + vExtend, hExtend, vExtend, srcLayer.getLayerDC, srcLayer.getLayerWidth - 1, srcLayer.getLayerHeight - 1, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, 0, srcDIB.getDIBHeight + vExtend, hExtend, vExtend, srcDIB.getDIBDC, 0, srcDIB.getDIBHeight - 1, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, srcDIB.getDIBHeight + vExtend, hExtend, vExtend, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, srcDIB.getDIBHeight - 1, 1, 1, vbSrcCopy
     
-    'The destination layer now contains a fully clamped, extended copy of the original image
-    CreateExtendedLayer = 1
+    'The destination DIB now contains a fully clamped, extended copy of the original image
+    CreateExtendedDIB = 1
     
 End Function

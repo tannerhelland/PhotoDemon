@@ -24,9 +24,9 @@ Attribute VB_Exposed = False
 ' in the MDIWindow module.
 '
 'The purpose of this class is to store a bunch of variables related to a given image - things like size, zoom,
-' name, file path, format containing form, Undo/Redo tracking - as well as a reference to a pdLayer object
-' called "mainLayer", which contains an in-memory copy of the relevant image's data.  In the future,
-' additional layers may be utilized within each image.
+' name, file path, format containing form, Undo/Redo tracking - as well as a reference to a pdDIB object
+' called "mainDIB", which contains an in-memory copy of the relevant image's data.  In the future,
+' additional DIBs may be utilized within each image.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -117,14 +117,14 @@ Option Explicit
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
     
-    'Image's actual image data (stored as a DIB inside the mainLayer object)
-    Public mainLayer As pdLayer
+    'Image's actual image data (stored as a DIB inside the mainDIB object)
+    Public mainDIB As pdDIB
     
     'Image's back buffer (also a DIB; this is used to hold the final composite before everything is rendered on-screen
-    Public backBuffer As pdLayer
+    Public backBuffer As pdDIB
     
     'If this image is 32bpp then it requires a specialized compositing layer for rendering the transparency
-    Public alphaFixLayer As pdLayer
+    Public alphaFixDIB As pdDIB
     
     'Image's selection data (stored and handled by a mainSelection object)
     Public mainSelection As pdSelection
@@ -178,15 +178,15 @@ Public Function getSaveState() As Boolean
     getSaveState = hasBeenSaved
 End Function
 
-'Returns all layers of the image as a single, composited image (in pdLayer format, of course).
-Public Function getCompositedImage() As pdLayer
-    Set getCompositedImage = mainLayer
+'Returns all layers of the image as a single, composited image (in pdDIB format, of course).
+Public Function getCompositedImage() As pdDIB
+    Set getCompositedImage = mainDIB
 End Function
 
 'In preparation for layers support, I will be switching various external modules to use this function instead of a
-' direct reference to the mainLayer object.  DO NOT DIRECTLY ACCESS THIS pdImage's MAINLAYER OBJECT IN NEW CODE!
-Public Function getActiveLayer() As pdLayer
-    Set getActiveLayer = mainLayer
+' direct reference to the mainDIB object.  DO NOT DIRECTLY ACCESS THIS pdImage's MAINLAYER OBJECT IN NEW CODE!
+Public Function getActiveDIB() As pdDIB
+    Set getActiveDIB = mainDIB
 End Function
 
 'External functions can use this function to request a thumbnail version of the contained image.  Previously, thumbnail
@@ -195,7 +195,7 @@ End Function
 ' before passing along a thumbnail version.)
 '
 'FreeImage is required for thumbnail resizing.
-Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
@@ -231,9 +231,9 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
     ' provides superior results, but if it is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
         
-        'Convert our current layer to a FreeImage-type DIB
+        'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(getCompositedImage().getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(getCompositedImage().getDIBDC)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -266,9 +266,9 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
             'Unload the original DIB
             If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
                 
-            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination layer.
-            dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32
-            SetDIBitsToDevice dstThumbnailLayer.getLayerDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
+            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination DIB.
+            dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32
+            SetDIBitsToDevice dstThumbnailDIB.getDIBDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
                 
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
@@ -280,36 +280,36 @@ Public Function requestThumbnail(ByRef dstThumbnailLayer As pdLayer, Optional By
         
     Else
     
-        dstThumbnailLayer.createBlank thumbnailSize, thumbnailSize, 32, 0
+        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
         
-        Dim compositedImage As New pdLayer
+        Dim compositedImage As New pdDIB
         Set compositedImage = getCompositedImage()
         
-        requestThumbnail = GDIPlusResizeLayer(dstThumbnailLayer, tX, tY, tIcoWidth, tIcoHeight, compositedImage, 0, 0, compositedImage.getLayerWidth, compositedImage.getLayerHeight, InterpolationModeHighQualityBilinear)
+        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositedImage, 0, 0, compositedImage.getDIBWidth, compositedImage.getDIBHeight, InterpolationModeHighQualityBilinear)
         
     End If
     
 End Function
 
-'When this layer is no longer being used, we can deactivate it to save on resources.
+'When this DIB is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
     
-    'Erase the main layer
-    If Not (mainLayer Is Nothing) Then
-        mainLayer.eraseLayer
-        Set mainLayer = Nothing
+    'Erase the main DIB
+    If Not (mainDIB Is Nothing) Then
+        mainDIB.eraseDIB
+        Set mainDIB = Nothing
     End If
     
     'Erase the back buffer
     If Not (backBuffer Is Nothing) Then
-        backBuffer.eraseLayer
+        backBuffer.eraseDIB
         Set backBuffer = Nothing
     End If
     
-    'If the alpha adjustment layer exists, erase it too
-    If Not (alphaFixLayer Is Nothing) Then
-        alphaFixLayer.eraseLayer
-        Set alphaFixLayer = Nothing
+    'If the alpha adjustment DIB exists, erase it too
+    If Not (alphaFixDIB Is Nothing) Then
+        alphaFixDIB.eraseDIB
+        Set alphaFixDIB = Nothing
     End If
     
     'If a selection exists, wipe it
@@ -357,10 +357,10 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
 End Sub
 
 'If the images's size has somehow changed, this can be called to update it.  (At present, it simply copies over the size of
-' the main layer, but in the future it may need to take into account multiple layers.)
+' the main DIB, but in the future it may need to take into account multiple layers.)
 Public Function updateSize()
-    Me.Width = mainLayer.getLayerWidth
-    Me.Height = mainLayer.getLayerHeight
+    Me.Width = mainDIB.getDIBWidth
+    Me.Height = mainDIB.getDIBHeight
 End Function
 
 'INITIALIZE class
@@ -374,14 +374,14 @@ Private Sub Class_Initialize()
     hasSeenJPEGPrompt = False
     pngBackgroundColor = -1
     
-    'Initialize the main layer (currently, just the image data - layers aren't actually implemented)
-    Set mainLayer = New pdLayer
+    'Initialize the main DIB (currently, just the image data - layers aren't actually implemented)
+    Set mainDIB = New pdDIB
     
     'Initialize the back buffer
-    Set backBuffer = New pdLayer
+    Set backBuffer = New pdDIB
     
     'Initialize the alpha composite layer
-    Set alphaFixLayer = New pdLayer
+    Set alphaFixDIB = New pdDIB
     
     'Initialize the main selection
     Set mainSelection = New pdSelection
@@ -404,8 +404,8 @@ Private Sub Class_Initialize()
         
 End Sub
 
-'Return a layer that contains the currently selected area, fully processed according to the selection mask
-Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer, Optional ByVal preMultipliedAlphaState As Boolean = False) As Boolean
+'Return a DIB that contains the currently selected area, fully processed according to the selection mask
+Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False) As Boolean
 
     'If this image does not contain an active selection, exit now.
     If (Not IsActive) Or (Not selectionActive) Then
@@ -414,16 +414,16 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer, Optional B
     End If
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
-    ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp layers.
+    ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
     
-    'Start by initializing the destination layer to the size of the active selection
-    Set dstLayer = New pdLayer
-    dstLayer.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32
+    'Start by initializing the destination DIB to the size of the active selection
+    Set dstDIB = New pdDIB
+    dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32
     
-    'We now need pointers to three separate sets of image data: destination layer, source layer, and selection mask.
+    'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, getActiveLayer()
+    prepSafeArray srcSA, getActiveDIB()
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim selData() As Byte
@@ -433,7 +433,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer, Optional B
             
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim leftOffset As Long, topOffset As Long
@@ -445,23 +445,23 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer, Optional B
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
-    Dim srcLayerCD As Long, srcQuickX As Long, srcQuickY As Long
-    srcLayerCD = getActiveLayer().getLayerColorDepth \ 8
+    Dim srcDIBCD As Long, srcQuickX As Long, srcQuickY As Long
+    srcDIBCD = getActiveDIB().getDIBColorDepth \ 8
     
-    Dim dstLayerCD As Long, dstQuickX As Long
-    dstLayerCD = dstLayer.getLayerColorDepth \ 8
+    Dim dstDIBCD As Long, dstQuickX As Long
+    dstDIBCD = dstDIB.getDIBColorDepth \ 8
             
-    For x = 0 To dstLayer.getLayerWidth - 1
-        dstQuickX = x * dstLayerCD
-        srcQuickX = (leftOffset + x) * srcLayerCD
-    For y = 0 To dstLayer.getLayerHeight - 1
+    For x = 0 To dstDIB.getDIBWidth - 1
+        dstQuickX = x * dstDIBCD
+        srcQuickX = (leftOffset + x) * srcDIBCD
+    For y = 0 To dstDIB.getDIBHeight - 1
     
         srcQuickY = topOffset + y
         thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
         
         'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
         ' alpha value of the destination pixel.  If the source data is 32bpp, use only the selection mask data.
-        If srcLayerCD = 4 Then
+        If srcDIBCD = 4 Then
         
             'Source pixel data will be premultiplied, so we must un-premultiply it now
             origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
@@ -513,7 +513,7 @@ Public Function retrieveProcessedSelection(ByRef dstLayer As pdLayer, Optional B
     Erase selData
     
     'If the calling function requested premultiplied alpha, apply it now
-    If preMultipliedAlphaState Then dstLayer.fixPremultipliedAlpha True
+    If preMultipliedAlphaState Then dstDIB.fixPremultipliedAlpha True
         
     retrieveProcessedSelection = True
 

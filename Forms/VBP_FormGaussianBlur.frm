@@ -255,9 +255,9 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
     'If the quality is set to 1 ("better" quality), and the radius is under 30, simply use quality 0.  There is no reason
     ' to distinguish between them at that level, as differences really aren't noticeable until much larger amounts.
@@ -265,7 +265,7 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        gRadius = gRadius * curLayerValues.previewModifier
+        gRadius = gRadius * curDIBValues.previewModifier
         If gRadius = 0 Then gRadius = 0.1
     End If
         
@@ -277,22 +277,22 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
     
         '3 iteration box blur
         Case 0
-            CreateApproximateGaussianBlurLayer gRadius, srcLayer, workingLayer, 3, toPreview
+            CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
         
         '5 iteration box blur
         Case 1
-            CreateApproximateGaussianBlurLayer gRadius, srcLayer, workingLayer, 5, toPreview
+            CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 5, toPreview
         
         'True Gaussian
         Case 2
-            CreateGaussianBlurLayer gRadius, srcLayer, workingLayer, toPreview
+            CreateGaussianBlurDIB gRadius, srcDIB, workingDIB, toPreview
         
     End Select
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
             
 End Sub

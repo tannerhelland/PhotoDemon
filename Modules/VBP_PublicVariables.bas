@@ -116,7 +116,7 @@ Public g_LastSaveFilter As Long
 
 'DIB that contains a 2x2 pattern of the alpha checkerboard.  Use it with CreatePatternBrush to paint the alpha
 ' checkerboard prior to rendering.
-Public g_CheckerboardPattern As pdLayer
+Public g_CheckerboardPattern As pdDIB
 
 'Is the current system running Vista, Windows 7, or later?  (Used to determine availability of certain system features)
 Public g_IsVistaOrLater As Boolean

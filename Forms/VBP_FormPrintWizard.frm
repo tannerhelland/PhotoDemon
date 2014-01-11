@@ -457,10 +457,10 @@ Private paperSizeIDs() As Integer
 Private paperSizeExact() As POINTAPI
 
 'To help orient the user, sample output is provided for the three types of print jobs.  These pre-rendered images
-' are stored in the resource section of the executable, and we load them to layers at run-time.
-Private sampleOneImageOnePage As pdLayer
-Private sampleMultipleImagesOnePage As pdLayer
-Private sampleOneImageMultiplePages As pdLayer
+' are stored in the resource section of the executable, and we load them to DIBs at run-time.
+Private sampleOneImageOnePage As pdDIB
+Private sampleMultipleImagesOnePage As pdDIB
+Private sampleOneImageMultiplePages As pdDIB
 
 Private Sub cmbPrinter_Click()
     updatePaperSizeList
@@ -499,12 +499,12 @@ Private Sub Form_Load()
     cmbQuality.ListIndex = 3
     
     'Load the print job type sample images from the resource file
-    Set sampleOneImageOnePage = New pdLayer
-    Set sampleMultipleImagesOnePage = New pdLayer
-    Set sampleOneImageMultiplePages = New pdLayer
-    loadResourceToLayer "PRNT_1IMAGE", sampleOneImageOnePage
-    loadResourceToLayer "PRNT_MLTIMGS", sampleMultipleImagesOnePage
-    loadResourceToLayer "PRNT_MLTPGS", sampleOneImageMultiplePages
+    Set sampleOneImageOnePage = New pdDIB
+    Set sampleMultipleImagesOnePage = New pdDIB
+    Set sampleOneImageMultiplePages = New pdDIB
+    loadResourceToDIB "PRNT_1IMAGE", sampleOneImageOnePage
+    loadResourceToDIB "PRNT_MLTIMGS", sampleMultipleImagesOnePage
+    loadResourceToDIB "PRNT_MLTPGS", sampleOneImageMultiplePages
     
     'Display the relevant image for the selected option button
     updatePrintTypeSampleImage
@@ -536,7 +536,7 @@ End Sub
 Private Sub updatePrintTypeSampleImage()
 
     Dim xOffset As Long
-    xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.getLayerWidth) \ 2
+    xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.getDIBWidth) \ 2
 
     If optPrintJob(0) Then
         sampleOneImageOnePage.renderToPictureBox picPrintJobSample

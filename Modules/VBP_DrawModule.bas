@@ -27,23 +27,18 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
 'GDI drawing functions
 Private Const PS_SOLID As Long = &H0
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function CreatePatternBrush Lib "gdi32" (ByVal hBitmap As Long) As Long
 Private Declare Function CreateDIBPatternBrushPt Lib "gdi32" (ByVal dibPointer As Long, ByVal iUsage As Long) As Long
-Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
-
-'If a layer is smaller than a picture box set to receive it, use this function
-Public Function getDrawCoordinatesForSmallLayer(ByRef srcLayer As pdLayer, ByRef dstObject As Object, ByRef drawX As Long, ByRef drawY As Long) As Boolean
-
-End Function
 
 'Basic wrapper to line-drawing via the API
 Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
@@ -80,16 +75,16 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal X As Long, ByVal Y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, X, Y, hIcon
+    DrawIcon hDC, x, y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
-Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdLayer, Optional forceWhiteBackground As Boolean = False)
+Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdDIB, Optional forceWhiteBackground As Boolean = False)
     
-    Dim tmpLayer As pdLayer
+    Dim tmpDIB As pdDIB
     
     'Start by calculating the aspect ratio of both the current image and the previewing picture box
     Dim dstWidth As Double, dstHeight As Double
@@ -100,19 +95,19 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     If useOtherPictureSrc Then
-        srcWidth = otherPictureSrc.getLayerWidth
-        srcHeight = otherPictureSrc.getLayerHeight
+        srcWidth = otherPictureSrc.getDIBWidth
+        srcHeight = otherPictureSrc.getDIBHeight
     Else
         If pdImages(g_CurrentImage).selectionActive Then
             srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
             srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
         Else
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+            srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
+            srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
         End If
     End If
             
-    'Now, use that aspect ratio to determine a proper size for our temporary layer
+    'Now, use that aspect ratio to determine a proper size for our temporary DIB
     Dim newWidth As Long, newHeight As Long
     
     convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
@@ -123,38 +118,38 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         'Check to see if a selection is active; if it isn't, simply render the full form
         If Not pdImages(g_CurrentImage).selectionActive Then
         
-            If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 32 Then
-                Set tmpLayer = New pdLayer
-                tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer(), newWidth, newHeight, True
-                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255
-                tmpLayer.renderToPictureBox dstPicture
+            If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
+                Set tmpDIB = New pdDIB
+                tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight, True
+                If forceWhiteBackground Then tmpDIB.compositeBackgroundColor 255, 255, 255
+                tmpDIB.renderToPictureBox dstPicture
             Else
-                pdImages(g_CurrentImage).getActiveLayer().renderToPictureBox dstPicture
+                pdImages(g_CurrentImage).getActiveDIB().renderToPictureBox dstPicture
             End If
         
         Else
         
-            'Copy the current selection into a temporary layer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
-            BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            'Copy the current selection into a temporary DIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+            BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
-            If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 32 Then
-                If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255
+            If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
+                If forceWhiteBackground Then tmpDIB.compositeBackgroundColor 255, 255, 255
             End If
             
-            tmpLayer.renderToPictureBox dstPicture
+            tmpDIB.renderToPictureBox dstPicture
             
         End If
         
     Else
     
-        If otherPictureSrc.getLayerColorDepth = 32 Then
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer otherPictureSrc, newWidth, newHeight, True
-            If forceWhiteBackground Then tmpLayer.compositeBackgroundColor 255, 255, 255
-            tmpLayer.renderToPictureBox dstPicture
+        If otherPictureSrc.getDIBColorDepth = 32 Then
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB otherPictureSrc, newWidth, newHeight, True
+            If forceWhiteBackground Then tmpDIB.compositeBackgroundColor 255, 255, 255
+            tmpDIB.renderToPictureBox dstPicture
         Else
             otherPictureSrc.renderToPictureBox dstPicture
         End If
@@ -168,7 +163,7 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
 
     'Calculation variables (used to interpolate between the gradient colors)
     Dim VR As Double, VG As Double, VB As Double
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
     Dim r As Long, g As Long, b As Long
@@ -207,26 +202,26 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
-        For X = 0 To tmpWidth
-            r2 = r + VR * X
-            g2 = g + VG * X
-            b2 = b + VB * X
-            DstPicBox.Line (X, 0)-(X, tmpHeight), RGB(r2, g2, b2)
-        Next X
+        For x = 0 To tmpWidth
+            r2 = r + VR * x
+            g2 = g + VG * x
+            b2 = b + VB * x
+            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
+        Next x
     Else
-        For Y = 0 To tmpHeight
-            r2 = r + VR * Y
-            g2 = g + VG * Y
-            b2 = b + VB * Y
-            DstPicBox.Line (0, Y)-(tmpWidth, Y), RGB(r2, g2, b2)
-        Next Y
+        For y = 0 To tmpHeight
+            r2 = r + VR * y
+            g2 = g + VG * y
+            b2 = b + VB * y
+            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
+        Next y
     End If
     
 End Sub
 
-'Given a source layer, fill it with a 2x2 alpha checkerboard pattern matching the user's current preferences.
-' (The resulting layer size is contingent on the user's checkerboard pattern size preference, FYI.)
-Public Sub createAlphaCheckerboardLayer(ByRef srcLayer As pdLayer)
+'Given a source DIB, fill it with a 2x2 alpha checkerboard pattern matching the user's current preferences.
+' (The resulting DIB size is contingent on the user's checkerboard pattern size preference, FYI.)
+Public Sub createAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
 
     'Retrieve the user's preferred alpha checkerboard colors, and convert the longs into individual RGB components
     Dim chkColorOne As Long, chkColorTwo As Long
@@ -262,33 +257,33 @@ Public Sub createAlphaCheckerboardLayer(ByRef srcLayer As pdLayer)
         
     End Select
     
-    'Resize the source layer to fit a 2x2 block pattern of the requested checkerboard pattern
-    srcLayer.createBlank chkSize * 2, chkSize * 2
+    'Resize the source DIB to fit a 2x2 block pattern of the requested checkerboard pattern
+    srcDIB.createBlank chkSize * 2, chkSize * 2
     
-    'Point a temporary array directly at the source layer's bitmap bits.
+    'Point a temporary array directly at the source DIB's bitmap bits.
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    'Fill the source layer with the checkerboard pattern
-    Dim X As Long, Y As Long, QuickX As Long
-    For X = 0 To srcLayer.getLayerWidth - 1
-        QuickX = X * 3
-    For Y = 0 To srcLayer.getLayerHeight - 1
+    'Fill the source DIB with the checkerboard pattern
+    Dim x As Long, y As Long, QuickX As Long
+    For x = 0 To srcDIB.getDIBWidth - 1
+        QuickX = x * 3
+    For y = 0 To srcDIB.getDIBHeight - 1
          
-        If (((X \ chkSize) + (Y \ chkSize)) And 1) = 0 Then
-            srcImageData(QuickX + 2, Y) = r1
-            srcImageData(QuickX + 1, Y) = g1
-            srcImageData(QuickX, Y) = b1
+        If (((x \ chkSize) + (y \ chkSize)) And 1) = 0 Then
+            srcImageData(QuickX + 2, y) = r1
+            srcImageData(QuickX + 1, y) = g1
+            srcImageData(QuickX, y) = b1
         Else
-            srcImageData(QuickX + 2, Y) = r2
-            srcImageData(QuickX + 1, Y) = g2
-            srcImageData(QuickX, Y) = b2
+            srcImageData(QuickX + 2, y) = r2
+            srcImageData(QuickX + 1, y) = g2
+            srcImageData(QuickX, y) = b2
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'Release our temporary array and exit
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -296,23 +291,23 @@ Public Sub createAlphaCheckerboardLayer(ByRef srcLayer As pdLayer)
 
 End Sub
 
-'Given a source layer, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
-Public Sub fillLayerWithAlphaCheckerboard(ByRef srcLayer As pdLayer, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long)
+'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
+Public Sub fillDIBWithAlphaCheckerboard(ByRef srcDIB As pdDIB, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long)
 
     'Create a pattern brush from the public checkerboard image
     Dim hCheckerboard As Long
-    hCheckerboard = CreatePatternBrush(g_CheckerboardPattern.getLayerDIB)
+    hCheckerboard = CreatePatternBrush(g_CheckerboardPattern.getDIBHandle)
     
-    'Select the brush into the target layer's DC
+    'Select the brush into the target DIB's DC
     Dim hOldBrush As Long
-    hOldBrush = SelectObject(srcLayer.getLayerDC, hCheckerboard)
+    hOldBrush = SelectObject(srcDIB.getDIBDC, hCheckerboard)
     
-    'Paint the layer
-    SetBrushOrgEx srcLayer.getLayerDC, x1, y1, 0&
-    PatBlt srcLayer.getLayerDC, x1, y1, bltWidth, bltHeight, vbPatCopy
+    'Paint the DIB
+    SetBrushOrgEx srcDIB.getDIBDC, x1, y1, 0&
+    PatBlt srcDIB.getDIBDC, x1, y1, bltWidth, bltHeight, vbPatCopy
     
     'Remove and delete the brush
-    SelectObject srcLayer.getLayerDC, hOldBrush
+    SelectObject srcDIB.getDIBDC, hOldBrush
     DeleteObject hCheckerboard
 
 End Sub

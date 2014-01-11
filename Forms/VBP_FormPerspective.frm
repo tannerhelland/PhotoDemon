@@ -306,24 +306,24 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'Parse the incoming parameter string into individual (x, y) pairs
     Dim cParams As pdParamString
@@ -341,7 +341,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, cParams.GetLong(10), cParams.GetBool(11), curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, cParams.GetLong(10), cParams.GetBool(11), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -730,7 +730,7 @@ Private Sub redrawPreviewBox()
         If cmdBar.previewsAllowed Then
             Dim tmpSA As SAFEARRAY2D
             prepImageData tmpSA, True, fxPreview
-            StretchBlt picDraw.hDC, m_oPoints(0).pX, m_oPoints(0).pY, m_oPoints(1).pX - m_oPoints(0).pX, m_oPoints(2).pY - m_oPoints(0).pY, workingLayer.getLayerDC, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, vbSrcCopy
+            StretchBlt picDraw.hDC, m_oPoints(0).pX, m_oPoints(0).pY, m_oPoints(1).pX - m_oPoints(0).pX, m_oPoints(2).pY - m_oPoints(0).pY, workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, vbSrcCopy
         End If
     End If
     

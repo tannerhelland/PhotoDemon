@@ -4,7 +4,7 @@ Attribute VB_Name = "Filters_Edge"
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 05/September/12
-'Last update: rewrote and optimized all filters against the new layer class.
+'Last update: rewrote and optimized all filters against the new DIB class.
 '
 'Runs all edge-related filters (edge detection, relief, etc.).
 '

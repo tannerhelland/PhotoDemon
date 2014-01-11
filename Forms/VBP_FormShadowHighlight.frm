@@ -281,9 +281,9 @@ Public Sub ApplyShadowHighlight(Optional ByVal shadowClipping As Double = 0.05, 
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
-    AdjustLayerShadowHighlight shadowClipping, highlightClipping, targetMidtone, workingLayer, toPreview
+    AdjustDIBShadowHighlight shadowClipping, highlightClipping, targetMidtone, workingDIB, toPreview
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub
@@ -308,15 +308,15 @@ Private Sub CalculateOptimalMidtone()
                 
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
                     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
             
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -348,8 +348,8 @@ Private Sub CalculateOptimalMidtone()
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
-    workingLayer.eraseLayer
-    Set workingLayer = Nothing
+    workingDIB.eraseDIB
+    Set workingDIB = Nothing
             
     'Divide the number of pixels by two
     NumOfPixels = NumOfPixels \ 2

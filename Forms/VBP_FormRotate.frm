@@ -185,8 +185,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This temporary layer will be used for rendering the preview
-Dim smallLayer As pdLayer
+'This temporary DIB will be used for rendering the preview
+Dim smallDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -208,14 +208,14 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         
         If Not isPreview Then Message "Rotating image (this may take a few seconds)..."
                 
-        'Convert our current layer to a FreeImage-type DIB
+        'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
                 
         If isPreview Then
-            fi_DIB = FreeImage_CreateFromDC(smallLayer.getLayerDC)
+            fi_DIB = FreeImage_CreateFromDC(smallDIB.getDIBDC)
         Else
-            If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage().fixPremultipliedAlpha
-            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).getCompositedImage().getLayerDC)
+            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage().fixPremultipliedAlpha
+            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).getCompositedImage().getDIBDC)
         End If
         
         'Use that handle to request an image rotation
@@ -243,8 +243,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                     Dim cx As Double, cy As Double
                     
                     If isPreview Then
-                        cx = smallLayer.getLayerWidth / 2
-                        cy = smallLayer.getLayerHeight / 2
+                        cx = smallDIB.getDIBWidth / 2
+                        cy = smallDIB.getDIBHeight / 2
                     Else
                         cx = pdImages(g_CurrentImage).Width / 2
                         cy = pdImages(g_CurrentImage).Height / 2
@@ -260,36 +260,36 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             'If this is only a preview, use a temporary object to hold the rotated image
             If isPreview Then
             
-                Dim tmpLayer As pdLayer
-                Set tmpLayer = New pdLayer
-                tmpLayer.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                tmpDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
             
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice tmpLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 
-                If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.fixPremultipliedAlpha True
+                If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha True
                 
-                'Finally, render the preview and erase the temporary layer to conserve memory
-                tmpLayer.renderToPictureBox fxPreview.getPreviewPic
-                fxPreview.setFXImage tmpLayer
+                'Finally, render the preview and erase the temporary DIB to conserve memory
+                tmpDIB.renderToPictureBox fxPreview.getPreviewPic
+                fxPreview.setFXImage tmpDIB
                 
-                tmpLayer.eraseLayer
-                Set tmpLayer = Nothing
+                tmpDIB.eraseDIB
+                Set tmpDIB = Nothing
             
             Else
                 
-                'Resize the image's main layer in preparation for the transfer
-                pdImages(g_CurrentImage).mainLayer.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+                'Resize the image's main DIB in preparation for the transfer
+                pdImages(g_CurrentImage).mainDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
                 
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 
                 'Update the size variables
                 pdImages(g_CurrentImage).updateSize
                 DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
                 
                 'If the original image is 32bpp, re-apply premultiplication now.
-                If pdImages(g_CurrentImage).getCompositedImage.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
+                If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
                 
                 'Fit the new image on-screen and redraw it
                 FitImageToViewport
@@ -315,7 +315,7 @@ End Sub
 Private Sub cmdBar_CancelClick()
 
     'If the original image is 32bpp, re-apply premultiplication.
-    If pdImages(g_CurrentImage).getCompositedImage.getLayerColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
+    If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
 
 End Sub
 
@@ -352,7 +352,7 @@ Private Sub Form_Load()
     
     'During the preview stage, we want to rotate a smaller version of the image.  This increases the speed of
     ' previewing immensely (especially for large images, like 10+ megapixel photos)
-    Set smallLayer = New pdLayer
+    Set smallDIB = New pdDIB
             
     'Determine a new image size that preserves the current aspect ratio
     Dim dWidth As Long, dHeight As Long
@@ -360,16 +360,16 @@ Private Sub Form_Load()
             
     'Create a new, smaller image at those dimensions
     If (dWidth < pdImages(g_CurrentImage).Width) Or (dHeight < pdImages(g_CurrentImage).Height) Then
-        smallLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, dWidth, dHeight, True
+        smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, dWidth, dHeight, True
     Else
-        smallLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
+        smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
     End If
         
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage smallLayer
+    fxPreview.setOriginalImage smallDIB
     
     'To ensure proper interaction with FreeImage, remove premultiplication from the sample image
-    If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then smallLayer.fixPremultipliedAlpha
+    If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then smallDIB.fixPremultipliedAlpha
     
 End Sub
 

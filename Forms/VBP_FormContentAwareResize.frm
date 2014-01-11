@@ -338,17 +338,17 @@ End Sub
 'Small wrapper for the seam carve function
 Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
 
-    'Create a temporary layer, which will be passed to the master SeamCarveLayer function
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer
+    'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
     
-    'Pass the temporary layer to the master seam carve function
-    SeamCarveLayer tmpLayer, iWidth, iHeight
+    'Pass the temporary DIB to the master seam carve function
+    SeamCarveDIB tmpDIB, iWidth, iHeight
     
-    'Copy the newly resized layer back into its parent image
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-    Set tmpLayer = Nothing
+    'Copy the newly resized DIB back into its parent image
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    Set tmpDIB = Nothing
     
     'Update the main image's size values
     pdImages(g_CurrentImage).updateSize
@@ -361,8 +361,8 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
 
 End Sub
 
-'Resize a layer via seam carving ("content-aware resize" in Photoshop, or "liquid rescale" in GIMP).
-Public Function SeamCarveLayer(ByRef srcLayer As pdLayer, ByVal iWidth As Long, ByVal iHeight As Long) As Boolean
+'Resize a DIB via seam carving ("content-aware resize" in Photoshop, or "liquid rescale" in GIMP).
+Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal iHeight As Long) As Boolean
 
     'For more information on how seam-carving works, visit http://en.wikipedia.org/wiki/Seam_carving
 
@@ -376,21 +376,21 @@ Public Function SeamCarveLayer(ByRef srcLayer As pdLayer, ByVal iWidth As Long, 
     
     'Before starting on seam carving, we must first generate an "energy map" for the image.  This can be done many ways,
     ' but since PD has a nice artistic contour algorithm already available, let's use that.
-    Dim energyLayer As pdLayer
-    Set energyLayer = New pdLayer
-    energyLayer.createFromExistingLayer srcLayer
-    CreateContourLayer True, srcLayer, energyLayer, True
+    Dim energyDIB As pdDIB
+    Set energyDIB = New pdDIB
+    energyDIB.createFromExistingDIB srcDIB
+    CreateContourDIB True, srcDIB, energyDIB, True
     
     'Create a seam carver class, which will handle the technical details of the carve
     Dim seamCarver As pdSeamCarving
     Set seamCarver = New pdSeamCarving
     
     'Give the seam carving class a copy of our source and energy images
-    seamCarver.setSourceImage srcLayer
-    seamCarver.setEnergyImage energyLayer
+    seamCarver.setSourceImage srcDIB
+    seamCarver.setEnergyImage energyDIB
     
     'We no longer need a copy of the energy image, so release it.
-    Set energyLayer = Nothing
+    Set energyDIB = Nothing
     
     Message "Applying content-aware resize..."
     
@@ -398,7 +398,7 @@ Public Function SeamCarveLayer(ByRef srcLayer As pdLayer, ByVal iWidth As Long, 
     seamCarver.startSeamCarve iWidth, iHeight
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
-    If Not cancelCurrentAction Then srcLayer.createFromExistingLayer seamCarver.getCarvedImage()
+    If Not cancelCurrentAction Then srcDIB.createFromExistingDIB seamCarver.getCarvedImage()
     
 End Function
 

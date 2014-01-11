@@ -244,25 +244,25 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
     'By dividing blur radius by 360 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
     Dim actualBlurSize As Long
-    actualBlurSize = (bRadius / 360) * curLayerValues.Width
+    actualBlurSize = (bRadius / 360) * curDIBValues.Width
     If actualBlurSize < 1 Then actualBlurSize = 1
     
     Dim finalX As Long, finalY As Long
-    finalX = workingLayer.getLayerWidth
-    finalY = workingLayer.getLayerHeight
+    finalX = workingDIB.getDIBWidth
+    finalY = workingDIB.getDIBHeight
     
     'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
     Dim newProgBarMax As Long
-    newProgBarMax = finalX * 2 + (workingLayer.getLayerWidth + actualBlurSize * 2)
+    newProgBarMax = finalX * 2 + (workingDIB.getDIBWidth + actualBlurSize * 2)
     
     'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-    If CreatePolarCoordLayer(1, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, newProgBarMax) Then
+    If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax) Then
     
         'We now need to do something a little unconventional.  When converting to polar coordinates, the line running from
         ' the top-center of the image to the center point ends up being separated onto the full left and right sides of the
@@ -276,8 +276,8 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         
         'Start by calculating the temporary image's size and offset
         Dim srcWidth As Long, srcHeight As Long
-        srcWidth = workingLayer.getLayerWidth
-        srcHeight = workingLayer.getLayerHeight
+        srcWidth = workingDIB.getDIBWidth
+        srcHeight = workingDIB.getDIBHeight
         
         Dim dstWidth As Long
         dstWidth = srcWidth + actualBlurSize * 2
@@ -285,50 +285,50 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         Dim dstX As Long
         dstX = (dstWidth - srcWidth) \ 2
         
-        'Create a temporary layer to hold the blurred image
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.createBlank dstWidth, srcHeight, workingLayer.getLayerColorDepth
+        'Create a temporary DIB to hold the blurred image
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank dstWidth, srcHeight, workingDIB.getDIBColorDepth
         
         'Bitblt the original image onto the center of the temporary canvas
-        BitBlt tmpLayer.getLayerDC, dstX, 0, srcWidth, srcHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        BitBlt tmpDIB.getDIBDC, dstX, 0, srcWidth, srcHeight, workingDIB.getDIBDC, 0, 0, vbSrcCopy
         
         'Apply two more blts - each of these will mirror an edge section of the source image
-        BitBlt tmpLayer.getLayerDC, 0, 0, dstX, srcHeight, workingLayer.getLayerDC, srcWidth - dstX, 0, vbSrcCopy
-        BitBlt tmpLayer.getLayerDC, dstX + srcWidth, 0, dstX, srcHeight, workingLayer.getLayerDC, 0, 0, vbSrcCopy
+        BitBlt tmpDIB.getDIBDC, 0, 0, dstX, srcHeight, workingDIB.getDIBDC, srcWidth - dstX, 0, vbSrcCopy
+        BitBlt tmpDIB.getDIBDC, dstX + srcWidth, 0, dstX, srcHeight, workingDIB.getDIBDC, 0, 0, vbSrcCopy
         
-        'Change the srcLayer to be the same size as this working layer, so it can receive the fully blurred image
-        srcLayer.createBlank tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, workingLayer.getLayerColorDepth
+        'Change the srcDIB to be the same size as this working DIB, so it can receive the fully blurred image
+        srcDIB.createBlank tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, workingDIB.getDIBColorDepth
     
-        'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
+        'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
         Dim leftRadius As Long
         If blurSymmetrically Then leftRadius = actualBlurSize Else leftRadius = 0
         
-        If CreateHorizontalBlurLayer(leftRadius, actualBlurSize, tmpLayer, srcLayer, toPreview, newProgBarMax, finalX) Then
+        If CreateHorizontalBlurDIB(leftRadius, actualBlurSize, tmpDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
         
-            'Copy the blurred results of the source layer back into the temporary layer
-            tmpLayer.createFromExistingLayer srcLayer
+            'Copy the blurred results of the source DIB back into the temporary DIB
+            tmpDIB.createFromExistingDIB srcDIB
             
-            'Resize the source layer to match the original image
-            srcLayer.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight, workingLayer.getLayerColorDepth
+            'Resize the source DIB to match the original image
+            srcDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, workingDIB.getDIBColorDepth
             
-            'Copy the correct chunk of the temporary layer into the source layer
-            BitBlt srcLayer.getLayerDC, 0, 0, srcWidth, srcHeight, tmpLayer.getLayerDC, dstX, 0, vbSrcCopy
-            tmpLayer.eraseLayer
+            'Copy the correct chunk of the temporary DIB into the source DIB
+            BitBlt srcDIB.getDIBDC, 0, 0, srcWidth, srcHeight, tmpDIB.getDIBDC, dstX, 0, vbSrcCopy
+            tmpDIB.eraseDIB
             
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-            CreatePolarCoordLayer 0, 100, EDGE_CLAMP, useBilinear, srcLayer, workingLayer, toPreview, newProgBarMax, finalX + dstWidth
+            CreatePolarCoordDIB 0, 100, EDGE_CLAMP, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + dstWidth
             
         End If
         
-        Set tmpLayer = Nothing
+        Set tmpDIB = Nothing
         
     End If
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub

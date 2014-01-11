@@ -206,7 +206,7 @@ Public Sub syncInterfaceToCurrentImage()
         
         'Check the image's color depth, and check/uncheck the matching Image Mode setting
         If Not (pdImages(g_CurrentImage).getCompositedImage() Is Nothing) Then
-            If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
         End If
         
         'Restore the zoom value for this particular image (again, only if the form has been initialized)

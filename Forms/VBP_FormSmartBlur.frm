@@ -268,49 +268,49 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    Dim gaussLayer As pdLayer
-    Set gaussLayer = New pdLayer
-    gaussLayer.createFromExistingLayer workingLayer
+    Dim gaussDIB As pdDIB
+    Set gaussDIB = New pdDIB
+    gaussDIB.createFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        gRadius = gRadius * curLayerValues.previewModifier
+        gRadius = gRadius * curDIBValues.previewModifier
         If gRadius = 0 Then gRadius = 0.1
     End If
     
-    'Smart blur requires a gaussian blur layer to operate.  Create that layer now.
-    If CreateGaussianBlurLayer(gRadius, srcLayer, gaussLayer, toPreview, finalY * 2 + finalX) Then
+    'Smart blur requires a gaussian blur DIB to operate.  Create that DIB now.
+    If CreateGaussianBlurDIB(gRadius, srcDIB, gaussDIB, toPreview, finalY * 2 + finalX) Then
             
-        'Now that we have a gaussian layer created in gaussLayer, we can point arrays toward it and the source layer
+        'Now that we have a gaussian DIB created in gaussDIB, we can point arrays toward it and the source DIB
         Dim dstImageData() As Byte
         prepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcLayer
+        prepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
         Dim GaussImageData() As Byte
         Dim gaussSA As SAFEARRAY2D
-        prepSafeArray gaussSA, gaussLayer
+        prepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
                 
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
         Dim QuickVal As Long, qvDepth As Long
-        qvDepth = curLayerValues.BytesPerPixel
+        qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
@@ -378,8 +378,8 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
         Erase GaussImageData
         
-        gaussLayer.eraseLayer
-        Set gaussLayer = Nothing
+        gaussDIB.eraseDIB
+        Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData

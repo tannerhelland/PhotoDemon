@@ -107,7 +107,7 @@ Public Sub createUndoData(ByVal processID As String, Optional ByVal processType 
     
         'Pixel data
         'Case 1
-            parentPDImage.getActiveLayer().writeToFile getCurrentUndoFilename(), False
+            parentPDImage.getActiveDIB().writeToFile getCurrentUndoFilename(), False
             
         'Selection data
         'Case 2
@@ -185,7 +185,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
         
             'Pixel undo data
             'Case 1
-                parentPDImage.getActiveLayer().writeToFile getCurrentUndoFilename(), False
+                parentPDImage.getActiveDIB().writeToFile getCurrentUndoFilename(), False
             
             'Selection undo data
             'Case 2

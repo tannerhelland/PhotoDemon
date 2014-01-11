@@ -241,7 +241,7 @@ Private Sub fxPreview_ColorSelected()
     updatePreview
 End Sub
 
-'Convert a layer from 24bpp to 32bpp, based on the supplied convertType value:
+'Convert a DIB from 24bpp to 32bpp, based on the supplied convertType value:
 ' 0: use the supplied convertConstant value, and set the entire alpha channel to that
 ' 1: color-based.  Remove the color specified by convertColor, according to the thresholds supplied in eraseThreshold and blendThreshold
 Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -253,24 +253,24 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     Dim tmpSA As SAFEARRAY2D
     prepImageData tmpSA, toPreview, dstPic
     
-    'Before doing anything else, convert this layer to 32bpp.
-    workingLayer.convertTo32bpp
+    'Before doing anything else, convert this DIB to 32bpp.
+    workingDIB.convertTo32bpp
     
     'Create a local array and point it at the pixel data we want to operate on
-    prepSafeArray tmpSA, workingLayer
+    prepSafeArray tmpSA, workingDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = workingLayer.getLayerColorDepth \ 8
+    qvDepth = workingDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

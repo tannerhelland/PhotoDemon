@@ -234,17 +234,17 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
     tmpImage.forInternalUseOnly = True
     
-    'Copy the current selection layer into the temporary image's main layer.  (NOTE: for reasons known, I can't provide tmpImage.mainLayer
-    ' directly without the function failing.  No idea why.  Hence the need for creating a temporary layer first.)
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    'Copy the current selection DIB into the temporary image's main DIB.  (NOTE: for reasons known, I can't provide tmpImage.mainDIB
+    ' directly without the function failing.  No idea why.  Hence the need for creating a temporary DIB first.)
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
-    pdImages(g_CurrentImage).retrieveProcessedSelection tmpLayer
-    Set tmpImage.mainLayer = tmpLayer
+    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB
+    Set tmpImage.mainDIB = tmpDIB
     tmpImage.updateSize
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not tmpImage.mainLayer.verifyAlphaChannel Then tmpImage.mainLayer.convertTo24bpp
+    If Not tmpImage.mainDIB.verifyAlphaChannel Then tmpImage.mainDIB.convertTo24bpp
     
     'Give the selection a basic filename
     tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
@@ -259,7 +259,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
-    If tmpImage.getCompositedImage().getLayerColorDepth = 24 Then
+    If tmpImage.getCompositedImage().getDIBColorDepth = 24 Then
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
     Else
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
@@ -286,8 +286,8 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Set CC = Nothing
     
     'Release our temporary image
-    Set tmpLayer = Nothing
-    Set tmpImage.mainLayer = Nothing
+    Set tmpDIB = Nothing
+    Set tmpImage.mainDIB = Nothing
     Set tmpImage = Nothing
     
 End Function
@@ -309,8 +309,8 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
     tmpImage.forInternalUseOnly = True
     
-    'Copy the current selection layer into the temporary image's main layer
-    tmpImage.getActiveLayer().createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
+    'Copy the current selection DIB into the temporary image's main DIB
+    tmpImage.getActiveDIB().createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
     tmpImage.updateSize
     
     'Give the selection a basic filename
@@ -349,7 +349,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Set CC = Nothing
     
     'Release our temporary image
-    Set tmpImage.getActiveLayer() = Nothing
+    Set tmpImage.getActiveDIB() = Nothing
     Set tmpImage = Nothing
 
 End Function
@@ -648,14 +648,14 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
-        CreateApproximateGaussianBlurLayer featherRadius, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, 3, False
-        'CreateGaussianBlurLayer featherRadius, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        CreateApproximateGaussianBlurDIB featherRadius, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, 3, False
+        'CreateGaussianBlurDIB featherRadius, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -737,13 +737,13 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
-        CreateMedianLayer growSize, 100, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        CreateMedianDIB growSize, 100, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -784,13 +784,13 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainSelection.selMask
-        CreateMedianLayer shrinkSize, 1, tmpLayer, pdImages(g_CurrentImage).mainSelection.selMask, False
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        CreateMedianDIB shrinkSize, 1, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -830,7 +830,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         pdImages(g_CurrentImage).mainSelection.lockRelease
         pdImages(g_CurrentImage).selectionActive = False
         
-        'Ask the layer to border itself
+        'Ask the DIB to border itself
         pdImages(g_CurrentImage).mainSelection.borderSelection borderRadius
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as

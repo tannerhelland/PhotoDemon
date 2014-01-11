@@ -197,56 +197,56 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        cRadius = cRadius * curLayerValues.previewModifier
+        cRadius = cRadius * curDIBValues.previewModifier
         If cRadius = 0 Then cRadius = 1
     End If
     
     Dim finalX As Long, finalY As Long
-    finalX = workingLayer.getLayerWidth
-    finalY = workingLayer.getLayerHeight
+    finalX = workingDIB.getDIBWidth
+    finalY = workingDIB.getDIBHeight
         
     If useSmoothing Then
     
-        'Blur the current layer
-        If CreateApproximateGaussianBlurLayer(cRadius, srcLayer, workingLayer, 3, toPreview, finalX * 6 + finalY * 3) Then
+        'Blur the current DIB
+        If CreateApproximateGaussianBlurDIB(cRadius, srcDIB, workingDIB, 3, toPreview, finalX * 6 + finalY * 3) Then
         
             'Use the median filter to round out edges
-            If CreateMedianLayer(cRadius, 50, workingLayer, srcLayer, toPreview, finalX * 6 + finalY * 3, finalX * 3 + finalY * 3) Then
+            If CreateMedianDIB(cRadius, 50, workingDIB, srcDIB, toPreview, finalX * 6 + finalY * 3, finalX * 3 + finalY * 3) Then
         
-                'Next, create a contour of the layer
-                If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalX * 6 + finalY * 3, finalX * 4 + finalY * 3) Then
+                'Next, create a contour of the DIB
+                If CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, finalX * 6 + finalY * 3, finalX * 4 + finalY * 3) Then
             
-                    'Finally, white balance the resulting layer
-                    WhiteBalanceLayer 0.01, workingLayer, toPreview, finalX * 6 + finalY * 3, finalX * 5 + finalY * 3
+                    'Finally, white balance the resulting DIB
+                    WhiteBalanceDIB 0.01, workingDIB, toPreview, finalX * 6 + finalY * 3, finalX * 5 + finalY * 3
                     
                 End If
             End If
         End If
     Else
         
-        'Blur the current layer
-        If CreateApproximateGaussianBlurLayer(cRadius, workingLayer, srcLayer, 3, toPreview, finalX * 5 + finalY * 3) Then
+        'Blur the current DIB
+        If CreateApproximateGaussianBlurDIB(cRadius, workingDIB, srcDIB, 3, toPreview, finalX * 5 + finalY * 3) Then
         
-            'Next, create a contour of the layer
-            If CreateContourLayer(useBlackBackground, srcLayer, workingLayer, toPreview, finalX * 5 + finalY * 3, finalX * 3 + finalY * 3) Then
+            'Next, create a contour of the DIB
+            If CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, finalX * 5 + finalY * 3, finalX * 3 + finalY * 3) Then
             
-                'Finally, white balance the resulting layer
-                WhiteBalanceLayer 0.01, workingLayer, toPreview, finalX * 5 + finalY * 3, finalX * 4 + finalY * 3
+                'Finally, white balance the resulting DIB
+                WhiteBalanceDIB 0.01, workingDIB, toPreview, finalX * 5 + finalY * 3, finalX * 4 + finalY * 3
                 
             End If
         End If
     End If
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
         
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
 
 End Sub

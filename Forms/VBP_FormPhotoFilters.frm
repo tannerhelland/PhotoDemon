@@ -214,7 +214,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Dim m_ToolTip As clsToolTip
 
 'Extra variables for custom list rendering
-Dim bufferLayer As pdLayer
+Dim bufferDIB As pdDIB
 Dim m_BufferWidth As Long, m_BufferHeight As Long
 
 'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
@@ -232,7 +232,7 @@ Private Sub redrawFilterList()
     Dim scrollOffset As Long
     scrollOffset = vsFilter.Value
     
-    bufferLayer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    bufferDIB.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
     
     Dim i As Long
     For i = 0 To numOfFilters - 1
@@ -240,7 +240,7 @@ Private Sub redrawFilterList()
     Next i
     
     'Copy the buffer to the main form
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
     
@@ -266,7 +266,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         
             SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FillRect bufferLayer.getLayerDC, tmpRect, hBrush
+            FillRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
             
             'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
@@ -282,7 +282,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         If (blockIndex <> curFilter) And (blockIndex = curFilterHover) Then
             SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
+            FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
         End If
         
@@ -296,21 +296,21 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         SetRect tmpRect, offsetX + fixDPI(4), offsetY + ((fixDPI(BLOCKHEIGHT) - colorHeight) \ 2), offsetX + fixDPI(4) + colorWidth, offsetY + ((fixDPI(BLOCKHEIGHT) - colorHeight) \ 2) + colorHeight
         
         hBrush = CreateSolidBrush(fArray(blockIndex).RGBColor)
-        FillRect bufferLayer.getLayerDC, tmpRect, hBrush
+        FillRect bufferDIB.getDIBDC, tmpRect, hBrush
         DeleteObject hBrush
         hBrush = CreateSolidBrush(RGB(64, 64, 64))
-        FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
+        FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
         DeleteObject hBrush
             
         'Render the Wratten ID and name fields
-        firstFont.attachToDC bufferLayer.getLayerDC
+        firstFont.attachToDC bufferDIB.getDIBDC
         firstFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4), drawString
                 
         'Below that, add the description text
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
         drawString = fArray(blockIndex).Description
         
-        secondFont.attachToDC bufferLayer.getLayerDC
+        secondFont.attachToDC bufferDIB.getDIBDC
         secondFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4) + mHeight, drawString
         
     End If
@@ -399,8 +399,8 @@ Private Sub Form_Load()
     cMouseEvents.MousePointer = IDC_HAND
     
     'Create a background buffer the same size as the buffer picture box
-    Set bufferLayer = New pdLayer
-    bufferLayer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    Set bufferDIB = New pdDIB
+    bufferDIB.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
     
     'Initialize a few other variables now (for performance reasons)
     m_BufferWidth = picBuffer.ScaleWidth
@@ -553,15 +553,15 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

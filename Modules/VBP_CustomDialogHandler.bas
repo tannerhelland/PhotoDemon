@@ -113,10 +113,10 @@ End Function
 
 'Present a dialog box to ask the user for an alpha-cutoff value.  This is used when reducing a complex (32bpp)
 ' alpha channel to a simple (8bpp) one.
-Public Function promptAlphaCutoff(ByRef srcLayer As pdLayer) As VbMsgBoxResult
+Public Function promptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
 
     Load dialog_AlphaCutoff
-    dialog_AlphaCutoff.refLayer = srcLayer
+    dialog_AlphaCutoff.refDIB = srcDIB
     dialog_AlphaCutoff.showDialog
 
     promptAlphaCutoff = dialog_AlphaCutoff.DialogResult

@@ -298,13 +298,13 @@ End Sub
 'Live previews of the screen capture are now provided
 Private Sub updatePreview()
 
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
 
     'Full screen capture was requested
     If optSource(0) Then
-        Screen_Capture.getDesktopAsLayer tmpLayer
-        tmpLayer.renderToPictureBox picPreview
+        Screen_Capture.getDesktopAsDIB tmpDIB
+        tmpDIB.renderToPictureBox picPreview
     
     'Specific window capture was requested
     Else
@@ -312,8 +312,8 @@ Private Sub updatePreview()
             
             'Make sure the function returns successfully; if a window is unloaded after the listbox has been
             ' filled, the function will (obviously) fail to capture the screen contents.
-            If Screen_Capture.getHwndContentsAsLayer(tmpLayer, lstWindows.ItemData(lstWindows.ListIndex), chkChrome) Then
-                tmpLayer.renderToPictureBox picPreview
+            If Screen_Capture.getHwndContentsAsDIB(tmpDIB, lstWindows.ItemData(lstWindows.ListIndex), chkChrome) Then
+                tmpDIB.renderToPictureBox picPreview
             Else
                 lstWindows.RemoveItem lstWindows.ListIndex
                 displayScreenCaptureError
@@ -328,9 +328,9 @@ End Sub
 'If the user attempts to capture a window after it's been unloaded, warn them via this function
 Private Sub displayScreenCaptureError()
 
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
     
     Dim notifyFont As pdFont
     Set notifyFont = New pdFont
@@ -339,11 +339,11 @@ Private Sub displayScreenCaptureError()
     notifyFont.setFontColor 0
     notifyFont.setTextAlignment vbCenter
     notifyFont.createFontObject
-    notifyFont.attachToDC tmpLayer.getLayerDC
+    notifyFont.attachToDC tmpDIB.getDIBDC
     
     notifyFont.fastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2 - notifyFont.getHeightOfString("ABCjqy"), g_Language.TranslateMessage("Unfortunately, that program has exited.")
     notifyFont.fastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2, g_Language.TranslateMessage("Please select another one.")
-    tmpLayer.renderToPictureBox picPreview
-    Set tmpLayer = Nothing
+    tmpDIB.renderToPictureBox picPreview
+    Set tmpDIB = Nothing
 
 End Sub

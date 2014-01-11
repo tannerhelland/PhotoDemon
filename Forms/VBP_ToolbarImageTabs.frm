@@ -66,8 +66,8 @@ Option Explicit
 
 'A collection of all currently active thumbnails; this is dynamically resized as thumbnails are added/removed.
 Private Type thumbEntry
-    thumbLayer As pdLayer
-    thumbShadow As pdLayer
+    thumbDIB As pdDIB
+    thumbShadow As pdDIB
     indexInPDImages As Long
 End Type
 
@@ -82,7 +82,7 @@ Private thumbWidth As Long, thumbHeight As Long
 Private Const thumbBorder As Long = 5
 
 'The back buffer we use to hold the thumbnail display
-Private bufferLayer As pdLayer
+Private bufferDIB As pdDIB
 Private m_BufferWidth As Long, m_BufferHeight As Long
 
 'An outside class provides access to mousewheel events for scrolling the filter view
@@ -104,7 +104,7 @@ Private Const HTBOTTOM As Long = 15
 Private weAreResponsibleForResize As Boolean
 
 'As a convenience to the user, we provide a small notification when an image has unsaved changes
-Private unsavedChangesLayer As pdLayer
+Private unsavedChangesDIB As pdDIB
 
 'Drop-shadows on the thumbnails have a variable radius that changes based on the user's DPI settings
 Private shadowBlurRadius As Long
@@ -152,18 +152,18 @@ End Sub
 'When the user somehow changes an image, they need to notify the toolbar, so that a new thumbnail can be rendered
 Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
     
-    'Find the matching thumbnail entry, and update its thumbnail layer
+    'Find the matching thumbnail entry, and update its thumbnail DIB
     Dim i As Long
     For i = 0 To numOfThumbnails
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
             
             If verticalLayout Then
-                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
             Else
-                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
             End If
             
-            updateShadowLayer i
+            updateShadowDIB i
             Exit For
         End If
     Next i
@@ -177,17 +177,17 @@ End Sub
 Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     
     'Request a thumbnail from the relevant pdImage object, and premultiply it to allow us to blit it more quickly
-    Set imgThumbnails(numOfThumbnails).thumbLayer = New pdLayer
+    Set imgThumbnails(numOfThumbnails).thumbDIB = New pdDIB
     
     If verticalLayout Then
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbLayer, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
     Else
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbLayer, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
     End If
     
-    'Create a matching shadow layer
-    Set imgThumbnails(numOfThumbnails).thumbShadow = New pdLayer
-    updateShadowLayer numOfThumbnails
+    'Create a matching shadow DIB
+    Set imgThumbnails(numOfThumbnails).thumbShadow = New pdDIB
+    updateShadowDIB numOfThumbnails
     
     'Make a note of this thumbnail's index in the main pdImages array
     imgThumbnails(numOfThumbnails).indexInPDImages = pdImagesIndex
@@ -217,15 +217,15 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long)
     Next i
     
     'thumbIndex is now equal to the matching thumbnail.  Remove that entry, then shift all thumbnails after that point down.
-    If Not (imgThumbnails(thumbIndex).thumbLayer Is Nothing) Then
-        imgThumbnails(thumbIndex).thumbLayer.eraseLayer
-        Set imgThumbnails(thumbIndex).thumbLayer = Nothing
-        imgThumbnails(thumbIndex).thumbShadow.eraseLayer
+    If Not (imgThumbnails(thumbIndex).thumbDIB Is Nothing) Then
+        imgThumbnails(thumbIndex).thumbDIB.eraseDIB
+        Set imgThumbnails(thumbIndex).thumbDIB = Nothing
+        imgThumbnails(thumbIndex).thumbShadow.eraseDIB
         Set imgThumbnails(thumbIndex).thumbShadow = Nothing
     End If
     
     For i = thumbIndex To numOfThumbnails - 1
-        Set imgThumbnails(i).thumbLayer = imgThumbnails(i + 1).thumbLayer
+        Set imgThumbnails(i).thumbDIB = imgThumbnails(i + 1).thumbDIB
         Set imgThumbnails(i).thumbShadow = imgThumbnails(i + 1).thumbShadow
         imgThumbnails(i).indexInPDImages = imgThumbnails(i + 1).indexInPDImages
     Next i
@@ -377,8 +377,8 @@ Private Sub Form_Load()
     End If
     
     'Retrieve the unsaved image notification icon from the resource file
-    Set unsavedChangesLayer = New pdLayer
-    loadResourceToLayer "NTFY_UNSAVED", unsavedChangesLayer
+    Set unsavedChangesDIB = New pdDIB
+    loadResourceToDIB "NTFY_UNSAVED", unsavedChangesDIB
     
     'Update the drop-shadow blur radius to account for DPI
     shadowBlurRadius = fixDPI(2)
@@ -616,9 +616,9 @@ Private Sub Form_Resize()
         thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
     
         For i = 0 To numOfThumbnails - 1
-            imgThumbnails(i).thumbLayer.eraseLayer
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
-            updateShadowLayer i
+            imgThumbnails(i).thumbDIB.eraseDIB
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+            updateShadowDIB i
         Next i
     
     End If
@@ -629,9 +629,9 @@ Private Sub Form_Resize()
         thumbWidth = g_WindowManager.getClientWidth(Me.hWnd)
         
         For i = 0 To numOfThumbnails - 1
-            imgThumbnails(i).thumbLayer.eraseLayer
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbLayer, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
-            updateShadowLayer i
+            imgThumbnails(i).thumbDIB.eraseDIB
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+            updateShadowDIB i
         Next i
     
     End If
@@ -668,8 +668,8 @@ End Sub
 Private Sub redrawToolbar()
 
     'Recreate the toolbar buffer
-    Set bufferLayer = New pdLayer
-    bufferLayer.createBlank m_BufferWidth, m_BufferHeight, 24, ConvertSystemColor(vb3DShadow)
+    Set bufferDIB = New pdDIB
+    bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24, ConvertSystemColor(vb3DShadow)
     
     'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
     ' of image tabs currently visible is long enough that it needs to be scrollable).
@@ -723,16 +723,16 @@ Private Sub redrawToolbar()
     Select Case g_WindowManager.getImageTabstripAlignment
     
         Case vbAlignLeft
-            GDIPlusDrawLineToDC bufferLayer.getLayerDC, m_BufferWidth - 1, 0, m_BufferWidth - 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
+            GDIPlusDrawLineToDC bufferDIB.getDIBDC, m_BufferWidth - 1, 0, m_BufferWidth - 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
         
         Case vbAlignTop
-            GDIPlusDrawLineToDC bufferLayer.getLayerDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, ConvertSystemColor(vb3DLight), 255, 2, False
+            GDIPlusDrawLineToDC bufferDIB.getDIBDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, ConvertSystemColor(vb3DLight), 255, 2, False
         
         Case vbAlignRight
-            GDIPlusDrawLineToDC bufferLayer.getLayerDC, 1, 0, 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
+            GDIPlusDrawLineToDC bufferDIB.getDIBDC, 1, 0, 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
         
         Case vbAlignBottom
-            GDIPlusDrawLineToDC bufferLayer.getLayerDC, 0, 1, m_BufferWidth, 1, ConvertSystemColor(vb3DLight), 255, 2, False
+            GDIPlusDrawLineToDC bufferDIB.getDIBDC, 0, 1, m_BufferWidth, 1, ConvertSystemColor(vb3DLight), 255, 2, False
     
     End Select
     
@@ -741,7 +741,7 @@ Private Sub redrawToolbar()
     turnOnColorManagementForDC Me.hDC
     
     'Copy the buffer to the form
-    BitBlt Me.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt Me.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
     Me.Picture = Me.Image
     Me.Refresh
     
@@ -769,7 +769,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         If thumbIndex = curThumb Then
             SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
             hBrush = CreateSolidBrush(ConvertSystemColor(vb3DLight))
-            FillRect bufferLayer.getLayerDC, tmpRect, hBrush
+            FillRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
         End If
         
@@ -777,19 +777,19 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         If (thumbIndex <> curThumb) And (thumbIndex = curThumbHover) Then
             SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
+            FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
             SetRect tmpRect, tmpRect.Left + 1, tmpRect.Top + 1, tmpRect.Right - 1, tmpRect.Bottom - 1
-            FrameRect bufferLayer.getLayerDC, tmpRect, hBrush
+            FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
         End If
     
         'Render the matching thumbnail shadow and thumbnail into this block
-        imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferLayer.getLayerDC, 192, offsetX, offsetY + fixDPI(1)
-        imgThumbnails(thumbIndex).thumbLayer.alphaBlendToDC bufferLayer.getLayerDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
+        imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferDIB.getDIBDC, 192, offsetX, offsetY + fixDPI(1)
+        imgThumbnails(thumbIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
         
         'If the parent image has unsaved changes, also render a notification icon
         If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState Then
-            unsavedChangesLayer.alphaBlendToDC bufferLayer.getLayerDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + fixDPI(thumbHeight) - fixDPI(thumbBorder) - unsavedChangesLayer.getLayerHeight - fixDPI(2)
+            unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + fixDPI(thumbHeight) - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
         End If
         
     End If
@@ -797,11 +797,11 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
 End Sub
 
 'Whenever a thumbnail has been updated, this sub must be called to regenerate its drop-shadow
-Private Sub updateShadowLayer(ByVal imgThumbnailIndex As Long)
-    imgThumbnails(imgThumbnailIndex).thumbShadow.eraseLayer
-    createShadowLayer imgThumbnails(imgThumbnailIndex).thumbLayer, imgThumbnails(imgThumbnailIndex).thumbShadow
-    padLayer imgThumbnails(imgThumbnailIndex).thumbShadow, fixDPI(thumbBorder)
-    quickBlurLayer imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
+Private Sub updateShadowDIB(ByVal imgThumbnailIndex As Long)
+    imgThumbnails(imgThumbnailIndex).thumbShadow.eraseDIB
+    createShadowDIB imgThumbnails(imgThumbnailIndex).thumbDIB, imgThumbnails(imgThumbnailIndex).thumbShadow
+    padDIB imgThumbnails(imgThumbnailIndex).thumbShadow, fixDPI(thumbBorder)
+    quickBlurDIB imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
     imgThumbnails(imgThumbnailIndex).thumbShadow.fixPremultipliedAlpha True
 End Sub
 

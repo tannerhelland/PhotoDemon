@@ -270,8 +270,8 @@ Private hMax() As Double
 Private hMaxLog() As Double
 Private hMaxPosition() As Byte
 
-'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these layers.
-Private hLayer As pdLayer, hLogLayer As pdLayer
+'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these DIBs.
+Private hDIB As pdDIB, hLogDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -303,15 +303,15 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -544,33 +544,33 @@ Private Sub Form_Activate()
     'Fill the histogram arrays
     fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
-    'Initialize the background histogram image layers
-    Set hLayer = New pdLayer
-    Set hLogLayer = New pdLayer
-    hLayer.createBlank picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
-    hLogLayer.createFromExistingLayer hLayer
+    'Initialize the background histogram image DIBs
+    Set hDIB = New pdDIB
+    Set hLogDIB = New pdDIB
+    hDIB.createBlank picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+    hLogDIB.createFromExistingDIB hDIB
     
     'Build a look-up table of x-positions for the histogram data
     Dim hLookupX(0 To 255) As Double
     Dim i As Long
     
     For i = 0 To 255
-        hLookupX(i) = (CDbl(i) / 255) * hLayer.getLayerWidth
+        hLookupX(i) = (CDbl(i) / 255) * hDIB.getDIBWidth
     Next i
     
-    'Render the luminance histogram data to each layer (one for regular, one for logarithmic)
+    'Render the luminance histogram data to each DIB (one for regular, one for logarithmic)
     Dim yMax As Double
-    yMax = 0.9 * hLayer.getLayerHeight
+    yMax = 0.9 * hDIB.getDIBHeight
     
     For i = 1 To 255
-        GDIPlusDrawLineToDC hLayer.getLayerDC, hLookupX(i - 1), hLayer.getLayerHeight - (hData(3, i - 1) / hMax(3)) * yMax, hLookupX(i), hLayer.getLayerHeight - (hData(3, i) / hMax(3)) * yMax, RGB(192, 192, 192), 255
-        GDIPlusDrawLineToDC hLogLayer.getLayerDC, hLookupX(i - 1), hLayer.getLayerHeight - (hDataLog(3, i - 1) / hMaxLog(3)) * yMax, hLookupX(i), hLayer.getLayerHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax, RGB(192, 192, 192), 255
+        GDIPlusDrawLineToDC hDIB.getDIBDC, hLookupX(i - 1), hDIB.getDIBHeight - (hData(3, i - 1) / hMax(3)) * yMax, hLookupX(i), hDIB.getDIBHeight - (hData(3, i) / hMax(3)) * yMax, RGB(192, 192, 192), 255
+        GDIPlusDrawLineToDC hLogDIB.getDIBDC, hLookupX(i - 1), hDIB.getDIBHeight - (hDataLog(3, i - 1) / hMaxLog(3)) * yMax, hLookupX(i), hDIB.getDIBHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax, RGB(192, 192, 192), 255
     Next i
     
     'Beneath each line, add an even lighter "filled" version of the line
     For i = 0 To 255
-        GDIPlusDrawLineToDC hLayer.getLayerDC, hLookupX(i), hLayer.getLayerHeight - (hData(3, i) / hMax(3)) * yMax - 1, hLookupX(i), hLayer.getLayerHeight, RGB(192, 192, 192), 128
-        GDIPlusDrawLineToDC hLogLayer.getLayerDC, hLookupX(i), hLayer.getLayerHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax - 1, hLookupX(i), hLayer.getLayerHeight, RGB(192, 192, 192), 128
+        GDIPlusDrawLineToDC hDIB.getDIBDC, hLookupX(i), hDIB.getDIBHeight - (hData(3, i) / hMax(3)) * yMax - 1, hLookupX(i), hDIB.getDIBHeight, RGB(192, 192, 192), 128
+        GDIPlusDrawLineToDC hLogDIB.getDIBDC, hLookupX(i), hDIB.getDIBHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax - 1, hLookupX(i), hDIB.getDIBHeight, RGB(192, 192, 192), 128
     Next i
         
     'Assign the system hand cursor to all relevant objects
@@ -659,11 +659,11 @@ Private Sub redrawPreviewBox()
         
         'Normal histogram
         Case 1
-            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hLayer.getLayerWidth, hLayer.getLayerHeight, hLayer.getLayerDC, 0, 0, vbSrcCopy
+            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB.getDIBWidth, hDIB.getDIBHeight, hDIB.getDIBDC, 0, 0, vbSrcCopy
         
         'Logarithmic histogram
         Case 2
-            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hLayer.getLayerWidth, hLayer.getLayerHeight, hLogLayer.getLayerDC, 0, 0, vbSrcCopy
+            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB.getDIBWidth, hDIB.getDIBHeight, hLogDIB.getDIBDC, 0, 0, vbSrcCopy
         
     End Select
     

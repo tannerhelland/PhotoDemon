@@ -289,9 +289,9 @@ Public Sub showDialog()
     If g_ImageFormats.isColorDepthSupported(outputFormat, 32) Then optColorDepth(4).Enabled = True Else optColorDepth(4).Enabled = False
         
     'Out of politeness, set the default color depth to the current image's color depth
-    If (pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 24) And (optColorDepth(3).Enabled) Then
+    If (pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 24) And (optColorDepth(3).Enabled) Then
         optColorDepth(3).Value = True
-    ElseIf (pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32) And (optColorDepth(4).Enabled) Then
+    ElseIf (pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32) And (optColorDepth(4).Enabled) Then
         optColorDepth(4).Value = True
     Else
         'If both 24 and 32bpp are disabled (not possible at present, but whatever), select the highest possible

@@ -32,7 +32,7 @@ Public Function isFreeImageAvailable() As Boolean
 End Function
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
+Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
 
     On Error GoTo FreeImageV3_AdvancedError
     
@@ -398,13 +398,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     Dim fi_BPP As Long
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
-    'If a high bit-depth image is incoming, we need to use a temporary layer to hold the image's alpha data (which will
+    'If a high bit-depth image is incoming, we need to use a temporary DIB to hold the image's alpha data (which will
     ' be erased by the tone-mapping algorithm we'll use).  This is that object
     Dim tmpAlphaRequired As Boolean, tmpAlphaCopySuccess As Boolean
     tmpAlphaRequired = False
     tmpAlphaCopySuccess = False
     
-    Dim tmpAlphaLayer As pdLayer
+    Dim tmpAlphaDIB As pdDIB
     
     'A number of other variables may be required as we adjust the bit-depth of the image to match PhotoDemon's internal requirements.
     Dim new_hDIB As Long
@@ -654,24 +654,24 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         
         'Copy the CMYK data into a 32bpp DIB.  (Note that we could pass the FreeImage DIB copy directly into the function, but the resulting
         ' image would be top-down instead of bottom-up.  It's easier to just use our own PD-specific DIB object.)
-        Dim tmpCMYKLayer As pdLayer
-        Set tmpCMYKLayer = New pdLayer
-        tmpCMYKLayer.createBlank FreeImage_GetWidth(fi_hDIB), FreeImage_GetHeight(fi_hDIB), 32
-        SetDIBitsToDevice tmpCMYKLayer.getLayerDC, 0, 0, tmpCMYKLayer.getLayerWidth, tmpCMYKLayer.getLayerHeight, 0, 0, 0, tmpCMYKLayer.getLayerHeight, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
+        Dim tmpCMYKDIB As pdDIB
+        Set tmpCMYKDIB = New pdDIB
+        tmpCMYKDIB.createBlank FreeImage_GetWidth(fi_hDIB), FreeImage_GetHeight(fi_hDIB), 32
+        SetDIBitsToDevice tmpCMYKDIB.getDIBDC, 0, 0, tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 0, 0, 0, tmpCMYKDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
         
-        'Prepare a blank 24bpp layer to receive the transformed sRGB data
-        Dim tmpRGBLayer As pdLayer
-        Set tmpRGBLayer = New pdLayer
-        tmpRGBLayer.createBlank tmpCMYKLayer.getLayerWidth, tmpCMYKLayer.getLayerHeight, 24
+        'Prepare a blank 24bpp DIB to receive the transformed sRGB data
+        Dim tmpRGBDIB As pdDIB
+        Set tmpRGBDIB = New pdDIB
+        tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKLayer, tmpRGBLayer) Then
+        If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB) Then
         
             Message "Copying newly transformed sRGB data..."
         
             'The transform was successful.  Copy the new sRGB data back into the FreeImage object, so the load process can continue.
             FreeImage_Unload fi_hDIB
-            fi_hDIB = FreeImage_CreateFromDC(tmpRGBLayer.getLayerDC)
+            fi_hDIB = FreeImage_CreateFromDC(tmpRGBDIB.getDIBDC)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
             dstImage.ICCProfile.markSuccessfulProfileApplication
             
@@ -686,8 +686,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         
         End If
         
-        Set tmpCMYKLayer = Nothing
-        Set tmpRGBLayer = Nothing
+        Set tmpCMYKDIB = Nothing
+        Set tmpRGBDIB = Nothing
     
     End If
     
@@ -700,14 +700,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
     
     '****************************************************************************
-    ' Create a blank pdLayer, which will receive a copy of the image in DIB format
+    ' Create a blank pdDIB, which will receive a copy of the image in DIB format
     '****************************************************************************
     
     'We are now finally ready to load the image.
     
     If showMessages Then Message "Requesting memory for image transfer..."
     
-    'Get width and height from the file, and create a new layer to match
+    'Get width and height from the file, and create a new DIB to match
     Dim fi_Width As Long, fi_Height As Long
     fi_Width = FreeImage_GetWidth(fi_hDIB)
     fi_Height = FreeImage_GetHeight(fi_hDIB)
@@ -721,7 +721,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
         LoadFreeImageV3_Advanced = False
         Exit Function
     Else
-        creationSuccess = dstLayer.createBlank(fi_Width, fi_Height, fi_BPP)
+        creationSuccess = dstDIB.createBlank(fi_Width, fi_Height, fi_BPP)
     End If
     
     'Make sure the blank DIB creation worked
@@ -740,13 +740,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     End If
     
     '****************************************************************************
-    ' Copy the data from the FreeImage object to the pdLayer object
+    ' Copy the data from the FreeImage object to the pdDIB object
     '****************************************************************************
     
     If showMessages Then Message "Memory secured.  Finalizing image load..."
         
     'Copy the bits from the FreeImage DIB to our DIB
-    SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
+    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
     
     
@@ -775,10 +775,10 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstL
     
         If showMessages Then Message "Restoring alpha data..."
         
-        dstLayer.copyAlphaFromExistingLayer tmpAlphaLayer
-        dstLayer.fixPremultipliedAlpha True
-        tmpAlphaLayer.eraseLayer
-        Set tmpAlphaLayer = Nothing
+        dstDIB.copyAlphaFromExistingDIB tmpAlphaDIB
+        dstDIB.fixPremultipliedAlpha True
+        tmpAlphaDIB.eraseDIB
+        Set tmpAlphaDIB = Nothing
         
         If showMessages Then Message "Alpha data restored successfully."
         

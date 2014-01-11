@@ -277,19 +277,19 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     
     If Not toPreview Then Message "Applying motion blur..."
     
-    'Call prepImageData, which will initialize a workingLayer object for us (with all selection tool masks applied)
+    'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        bDistance = bDistance * curLayerValues.previewModifier
+        bDistance = bDistance * curDIBValues.previewModifier
         If bDistance = 0 Then bDistance = 1
     End If
     
     Dim finalX As Long, finalY As Long
-    finalX = workingLayer.getLayerWidth
-    finalY = workingLayer.getLayerHeight
+    finalX = workingDIB.getDIBWidth
+    finalY = workingDIB.getDIBHeight
     
     'Before doing any rotating or blurring, we need to increase the size of the image we're working with.  If we
     ' don't do this, the rotation will chop off the image's corners, and the resulting motion blur will look terrible.
@@ -299,9 +299,9 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     Dim hScaleAmount As Long, vScaleAmount As Long
     If g_ImageFormats.FreeImageEnabled Then
                 
-        'Convert our current layer to a FreeImage-type DIB
+        'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(workingLayer.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
         
         'Use that handle to request an image rotation, then store the new image's width and height
         Dim nWidth As Long, nHeight As Long
@@ -317,13 +317,13 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
             FreeImage_Unload fi_DIB
     
         Else
-            nWidth = workingLayer.getLayerWidth * 2
-            nHeight = workingLayer.getLayerHeight * 2
+            nWidth = workingDIB.getDIBWidth * 2
+            nHeight = workingDIB.getDIBHeight * 2
         End If
         
         'Use the returned size to calculate optimal offsets
-        hScaleAmount = (nWidth - workingLayer.getLayerWidth) \ 2
-        vScaleAmount = (nHeight - workingLayer.getLayerHeight) \ 2
+        hScaleAmount = (nWidth - workingDIB.getDIBWidth) \ 2
+        vScaleAmount = (nHeight - workingDIB.getDIBHeight) \ 2
         
         If hScaleAmount < 0 Then hScaleAmount = 0
         If vScaleAmount < 0 Then vScaleAmount = 0
@@ -332,51 +332,51 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         
         'This is basically a worst-case estimation of the final image size, and because of that, the function will
         ' be quite slow.  This is a very fringe case, however, as most users should have FreeImage available.
-        hScaleAmount = Sqr(workingLayer.getLayerWidth * workingLayer.getLayerWidth + workingLayer.getLayerHeight * workingLayer.getLayerHeight)
+        hScaleAmount = Sqr(workingDIB.getDIBWidth * workingDIB.getDIBWidth + workingDIB.getDIBHeight * workingDIB.getDIBHeight)
         If toPreview Then hScaleAmount = hScaleAmount \ 4 Else hScaleAmount = hScaleAmount \ 2
         vScaleAmount = hScaleAmount
         
     End If
     
     'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
-    Dim tmpClampLayer As pdLayer
-    Set tmpClampLayer = New pdLayer
-    CreateExtendedLayer hScaleAmount, vScaleAmount, workingLayer, tmpClampLayer
+    Dim tmpClampDIB As pdDIB
+    Set tmpClampDIB = New pdDIB
+    CreateExtendedDIB hScaleAmount, vScaleAmount, workingDIB, tmpClampDIB
     
-    'Create a second layer, which will receive the results of this one
-    Dim rotateLayer As pdLayer
-    Set rotateLayer = New pdLayer
-    rotateLayer.createBlank tmpClampLayer.getLayerWidth, tmpClampLayer.getLayerHeight, tmpClampLayer.getLayerColorDepth
+    'Create a second DIB, which will receive the results of this one
+    Dim rotateDIB As pdDIB
+    Set rotateDIB = New pdDIB
+    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth
     
     'Start by rotating the image by the requested amount.  Clamped edges are used to improve the blur output below
-    If CreateRotatedLayer(bAngle, EDGE_CLAMP, useBilinear, tmpClampLayer, rotateLayer, 0.5, 0.5, toPreview, tmpClampLayer.getLayerWidth * 3) Then
+    If CreateRotatedDIB(bAngle, EDGE_CLAMP, useBilinear, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3) Then
     
         'Next, apply a horizontal blur, using the blur radius supplied by the user
         Dim rightRadius As Long
         If blurSymmetrically Then rightRadius = bDistance Else rightRadius = 0
         
-        If CreateHorizontalBlurLayer(bDistance, rightRadius, rotateLayer, tmpClampLayer, toPreview, tmpClampLayer.getLayerWidth * 3, tmpClampLayer.getLayerWidth) Then
+        If CreateHorizontalBlurDIB(bDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
             
             'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion
-            CreateRotatedLayer -bAngle, EDGE_CLAMP, useBilinear, tmpClampLayer, rotateLayer, 0.5, 0.5, toPreview, tmpClampLayer.getLayerWidth * 3, tmpClampLayer.getLayerWidth * 2
+            CreateRotatedDIB -bAngle, EDGE_CLAMP, useBilinear, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
             
-            'Erase the temporary clamp layer
-            tmpClampLayer.eraseLayer
-            Set tmpClampLayer = Nothing
+            'Erase the temporary clamp DIB
+            tmpClampDIB.eraseDIB
+            Set tmpClampDIB = Nothing
             
-            'rotateLayer now contains the image we want, but it also has all the (now-useless) padding from
-            ' the rotate operation.  Chop out the valid section and copy it into workingLayer.
-            BitBlt workingLayer.getLayerDC, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, rotateLayer.getLayerDC, hScaleAmount, vScaleAmount, vbSrcCopy
+            'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
+            ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
+            BitBlt workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
             
-            'Erase the temporary rotation layer
-            rotateLayer.eraseLayer
-            Set rotateLayer = Nothing
+            'Erase the temporary rotation DIB
+            rotateDIB.eraseDIB
+            Set rotateDIB = Nothing
             
         End If
         
     End If
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub

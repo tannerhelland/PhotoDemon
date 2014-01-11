@@ -862,7 +862,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1
         
-    'Deactivate this layer (note that this will take care of additional actions, like clearing the Undo/Redo cache
+    'Deactivate this DIB (note that this will take care of additional actions, like clearing the Undo/Redo cache
     ' for this image)
     pdImages(Me.Tag).deactivateImage
     

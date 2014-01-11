@@ -125,7 +125,7 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
                 Dim transformCheck As Boolean
-                transformCheck = applyColorTransformToLayer(iccTransformation, parentPDImage.getActiveLayer)
+                transformCheck = applyColorTransformToDIB(iccTransformation, parentPDImage.getActiveDIB)
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then

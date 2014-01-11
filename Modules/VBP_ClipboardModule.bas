@@ -28,27 +28,27 @@ Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 'Copy image
 Public Sub ClipboardCopy()
     
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
     'Check for an active selection
     If pdImages(g_CurrentImage).selectionActive Then
     
-        'Fill the temporary layer with the selection
-        'tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
-        'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
-        pdImages(g_CurrentImage).retrieveProcessedSelection tmpLayer
+        'Fill the temporary DIB with the selection
+        'tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+        'BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB
         
     Else
     
         'If a selection is NOT active, just make a copy of the full image
-        tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).getCompositedImage()
+        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getCompositedImage()
         
     End If
     
-    'Copy the temporary layer to the clipboard, then erase it
-    tmpLayer.copyLayerToClipboard
-    tmpLayer.eraseLayer
+    'Copy the temporary DIB to the clipboard, then erase it
+    tmpDIB.copyDIBToClipboard
+    tmpDIB.eraseDIB
     
 End Sub
 
@@ -117,19 +117,19 @@ Public Sub ClipboardPaste()
         Dim tmpPicture As StdPicture
         Set tmpPicture = Clipboard.GetData(2)
         
-        'Create a temporary layer and copy the temporary StdPicture object into it
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.CreateFromPicture tmpPicture
+        'Create a temporary DIB and copy the temporary StdPicture object into it
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateFromPicture tmpPicture
         
-        'Ask the layer to write its contents to file in BMP format
+        'Ask the DIB to write its contents to file in BMP format
         tmpClipboardFile = g_UserPreferences.getTempPath & "PDClipboard.tmp"
-        tmpLayer.writeToBitmapFile tmpClipboardFile
+        tmpDIB.writeToBitmapFile tmpClipboardFile
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects
         Set tmpPicture = Nothing
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
         
         'Use the standard image load routine to import the temporary file
         

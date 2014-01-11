@@ -30,14 +30,14 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     Message "Analyzing top edge of image..."
     
     'Make a copy of the current image
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, tmpLayer
+    prepSafeArray srcSA, tmpDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -48,7 +48,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = pdImages(g_CurrentImage).mainLayer.getLayerColorDepth \ 8
+    qvDepth = pdImages(g_CurrentImage).mainDIB.getDIBColorDepth \ 8
 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -205,15 +205,15 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         Message "Cropping image to new dimensions..."
         SetProgBarVal 4
         
-        'Resize the current image's main layer
-        pdImages(g_CurrentImage).mainLayer.createBlank newRight - newLeft, newBottom - newTop, tmpLayer.getLayerColorDepth
+        'Resize the current image's main DIB
+        pdImages(g_CurrentImage).mainDIB.createBlank newRight - newLeft, newBottom - newTop, tmpDIB.getDIBColorDepth
         
-        'Copy the autocropped area to the new main layer
-        BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerHeight, tmpLayer.getLayerDC, newLeft, newTop, vbSrcCopy
+        'Copy the autocropped area to the new main DIB
+        BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBHeight, tmpDIB.getDIBDC, newLeft, newTop, vbSrcCopy
     
-        'Erase the temporary layer
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        'Erase the temporary DIB
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
     
         'Update the current image size
         pdImages(g_CurrentImage).updateSize
@@ -240,10 +240,10 @@ Public Sub MenuCropToSelection()
     
     Message "Cropping image to selected area..."
     
-    'Create a new layer the size of the active selection
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    pdImages(g_CurrentImage).retrieveProcessedSelection tmpLayer, True
+    'Create a new DIB the size of the active selection
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, True
     
     'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
     ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square
@@ -252,16 +252,16 @@ Public Sub MenuCropToSelection()
     'The old code will be left here few a few releases, in case I decide to provide a preference for alternate behavior, per user request.
     ' (Note: comment added for the 6.0 release; consider removing by 6.4 if no complaints received.)
     '
-    'Copy the selection area to the temporary layer
-    'tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
-    'BitBlt tmpLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+    'Copy the selection area to the temporary DIB
+    'tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+    'BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
     
-    'Transfer the newly cropped image back into the main layer object
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+    'Transfer the newly cropped image back into the main DIB object
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     
-    'Erase the temporary layer
-    tmpLayer.eraseLayer
-    Set tmpLayer = Nothing
+    'Erase the temporary DIB
+    tmpDIB.eraseDIB
+    Set tmpDIB = Nothing
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize
@@ -304,7 +304,7 @@ Public Sub MenuFlip()
     End If
     
     Message "Flipping image..."
-    StretchBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
+    StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
     ScrollViewport pdImages(g_CurrentImage).containingForm
@@ -321,7 +321,7 @@ Public Sub MenuMirror()
     End If
 
     Message "Mirroring image..."
-    StretchBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
+    StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
     ScrollViewport pdImages(g_CurrentImage).containingForm
@@ -350,25 +350,25 @@ Public Sub MenuRotate90Clockwise()
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     
-    Dim dstLayer As pdLayer
-    Set dstLayer = New pdLayer
-    dstLayer.createBlank pdImages(g_CurrentImage).mainLayer.getLayerHeight, pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+    Dim dstDIB As pdDIB
+    Set dstDIB = New pdDIB
+    dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
     
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, i As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long, QuickValY
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     Dim iWidth As Long, iHeight As Long
     iWidth = finalX * qvDepth
@@ -400,14 +400,14 @@ Public Sub MenuRotate90Clockwise()
     Erase dstImageData
     
     'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
-    If dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+    If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
     
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
     
-    'With that transfer complete, we can erase our temporary layer
-    dstLayer.eraseLayer
-    Set dstLayer = Nothing
+    'With that transfer complete, we can erase our temporary DIB
+    dstDIB.eraseDIB
+    Set dstDIB = Nothing
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize
@@ -438,7 +438,7 @@ Public Sub MenuRotate180()
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
         
-    StretchBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainLayer.getLayerDC, pdImages(g_CurrentImage).Width - 1, pdImages(g_CurrentImage).Height - 1, -pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
+    StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, pdImages(g_CurrentImage).Height - 1, -pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
         
     Message "Finished. "
     
@@ -468,25 +468,25 @@ Public Sub MenuRotate270Clockwise()
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     
-    Dim dstLayer As pdLayer
-    Set dstLayer = New pdLayer
-    dstLayer.createBlank pdImages(g_CurrentImage).mainLayer.getLayerHeight, pdImages(g_CurrentImage).mainLayer.getLayerWidth, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+    Dim dstDIB As pdDIB
+    Set dstDIB = New pdDIB
+    dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
     
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, i As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long, QuickValY
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     Dim iWidth As Long
     iWidth = finalX * qvDepth
@@ -517,14 +517,14 @@ Public Sub MenuRotate270Clockwise()
     Erase dstImageData
     
     'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
-    If dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+    If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
     
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
     
-    'With that transfer complete, we can erase our temporary layer
-    dstLayer.eraseLayer
-    Set dstLayer = Nothing
+    'With that transfer complete, we can erase our temporary DIB
+    dstDIB.eraseDIB
+    Set dstDIB = Nothing
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize

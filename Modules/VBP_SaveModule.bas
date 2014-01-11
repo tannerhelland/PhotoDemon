@@ -23,7 +23,7 @@ Attribute VB_Name = "Saving"
 Option Explicit
 
 
-'This routine will blindly save the mainLayer contents (from the pdImage object specified by srcPDImage) to dstPath.
+'This routine will blindly save the mainDIB contents (from the pdImage object specified by srcPDImage) to dstPath.
 ' It is up to the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
 ' at dstPath, so BE VERY CAREFUL with what you send here!)
 '
@@ -50,7 +50,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     ' 32bpp images are premultiplied by default.  Prior to saving, any premultiplication needs to be removed.
     '****************************************************************************************************
     
-    If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha
+    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha
     
     
     '****************************************************************************************************
@@ -116,7 +116,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
                 ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
                 ' images to be exported as 32bpp.
-                If (outputColorDepth <= 8) And (srcPDImage.getCompositedImage().getLayerColorDepth = 32) Then
+                If (outputColorDepth <= 8) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then
                     If (Not srcPDImage.getCompositedImage().isAlphaBinary) Then outputColorDepth = 32
                 End If
                 
@@ -152,7 +152,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                         Message "Save canceled."
                         
                         'Convert back to premultiplied alpha if 32bpp
-                        If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                        If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                         
                         Exit Function
                     End If
@@ -224,7 +224,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Message "Save canceled."
                     
                     'Convert back to premultiplied alpha if 32bpp
-                    If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                         
                     Exit Function
                 End If
@@ -252,7 +252,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 PhotoDemon_SaveImage = False
                 
                 'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -268,7 +268,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 Message "No %1 encoder found. Save aborted.", "PDI"
                 
                 'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -290,7 +290,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 PhotoDemon_SaveImage = False
                 
                 'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -316,7 +316,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 PhotoDemon_SaveImage = False
                 
                 'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -348,7 +348,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Message "Save canceled."
                     
                     'Convert back to premultiplied alpha if 32bpp
-                    If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                     Exit Function
                 End If
@@ -381,7 +381,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 PhotoDemon_SaveImage = False
                 
                 'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -449,7 +449,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             PhotoDemon_SaveImage = True
             
             'Convert back to premultiplied alpha if 32bpp
-            If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+            If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
             
             'Update the interface to match the newly saved image (e.g. disable the Save button)
             If Not srcPDImage.forInternalUseOnly Then syncInterfaceToCurrentImage
@@ -468,7 +468,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             PhotoDemon_SaveImage = False
             
             'Convert back to premultiplied alpha if 32bpp
-            If srcPDImage.getCompositedImage.getLayerColorDepth = 32 Then srcPDImage.mainLayer.fixPremultipliedAlpha True
+            If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
             Exit Function
         End If
@@ -501,7 +501,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     
         Message "Saving %1 file...", sFileType
     
-        'The layer class is capable of doing this without any outside help.
+        'The DIB class is capable of doing this without any outside help.
         srcPDImage.getCompositedImage().writeToBitmapFile BMPPath
     
         Message "%1 save complete.", sFileType
@@ -513,17 +513,17 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
             
             Message "Preparing %1 image...", sFileType
             
-            'Copy the image into a temporary layer
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
+            'Copy the image into a temporary DIB
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
             
             'If the output color depth is 24 but the current image is 32, composite the image against a white background
-            If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+            If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
             
-            'Convert our current layer to a FreeImage-type DIB
+            'Convert our current DIB to a FreeImage-type DIB
             Dim fi_DIB As Long
-            fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+            fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
                         
             'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
             If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
@@ -582,7 +582,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     Message "Saving %1 image...", sFileType
 
-    'First, have the layer write itself to file in BMP format
+    'First, have the DIB write itself to file in BMP format
     srcPDImage.getCompositedImage().writeToBitmapFile PDIPath
     
     'Then compress the file using zLib
@@ -617,54 +617,54 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
     
     'If the current image is 32bpp, we will need to apply some additional actions to the image to prepare the
     ' transparency.  Mark a bool value, because we will reference it in multiple places throughout the save function.
     Dim handleAlpha As Boolean
-    If srcPDImage.getCompositedImage().getLayerColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
+    If srcPDImage.getCompositedImage().getDIBColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
     
     'If the current image contains transparency, we need to modify it in order to retain the alpha channel.
     If handleAlpha Then
     
-        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpLayer.isAlphaBinary Then
-            tmpLayer.applyAlphaCutoff
+        'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpDIB.isAlphaBinary Then
+            tmpDIB.applyAlphaCutoff
         Else
             If forceAlphaConvert = -1 Then
                 Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = promptAlphaCutoff(tmpLayer)
+                alphaCheck = promptAlphaCutoff(tmpDIB)
                 
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
                 
-                    tmpLayer.eraseLayer
-                    Set tmpLayer = Nothing
+                    tmpDIB.eraseDIB
+                    Set tmpDIB = Nothing
                     SaveGIFImage = False
                     Exit Function
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                    tmpDIB.applyAlphaCutoff g_AlphaCutoff
                 End If
                 
                 'If the user decided to completely remove the image's alpha values, change handleAlpha to FALSE
                 If g_AlphaCutoff = 0 Then handleAlpha = False
                 
             Else
-                tmpLayer.applyAlphaCutoff forceAlphaConvert
+                tmpDIB.applyAlphaCutoff forceAlphaConvert
             End If
             
         End If
     
     End If
     
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
@@ -673,7 +673,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpLayer.getTransparentLocation transpX, transpY
+        tmpDIB.getTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -687,7 +687,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
         
     End If
     
@@ -755,14 +755,14 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -784,33 +784,33 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         'Pngnq can handle all types of transparency for us.  If pngnq cannot be found, we must rely on our own routines.
         If Not g_ImageFormats.pngnqEnabled Then
         
-            'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-            If tmpLayer.isAlphaBinary Then
-                tmpLayer.applyAlphaCutoff
+            'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+            If tmpDIB.isAlphaBinary Then
+                tmpDIB.applyAlphaCutoff
             Else
             
                 'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
                 ' Thus, use a default cut-off of 127 and continue on.
                 If MacroStatus = MacroBATCH Then
-                    tmpLayer.applyAlphaCutoff
+                    tmpDIB.applyAlphaCutoff
                 
                 'We're not in a batch conversion, so ask the user which cut-off they would like to use.
                 Else
             
                     Dim alphaCheck As VbMsgBoxResult
-                    alphaCheck = promptAlphaCutoff(tmpLayer)
+                    alphaCheck = promptAlphaCutoff(tmpDIB)
                     
                     'If the alpha dialog is canceled, abandon the entire save
                     If alphaCheck = vbCancel Then
                     
-                        tmpLayer.eraseLayer
-                        Set tmpLayer = Nothing
+                        tmpDIB.eraseDIB
+                        Set tmpDIB = Nothing
                         SavePNGImage = False
                         Exit Function
                     
                     'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                     Else
-                        tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                        tmpDIB.applyAlphaCutoff g_AlphaCutoff
                     End If
                 
                 End If
@@ -826,16 +826,16 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
         'Also, if pngnq is enabled, we will use that for the transformation - so we need to reset the outgoing color depth to 24bpp
-        If (srcPDImage.getCompositedImage().getLayerColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
+        If (srcPDImage.getCompositedImage().getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
     
     End If
     
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
     
     'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
@@ -848,7 +848,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpLayer.getTransparentLocation transpX, transpY
+        tmpDIB.getTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -862,7 +862,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
         
     End If
         
@@ -921,7 +921,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 'Now, add options that the user may have specified.
                 
                 'Alpha extenuation (only relevant for 32bpp images)
-                If srcPDImage.getCompositedImage().getLayerColorDepth = 32 Then
+                If srcPDImage.getCompositedImage().getDIBColorDepth = 32 Then
                     If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq Alpha Extenuation", False) Then
                         shellPath = shellPath & "-t15 "
                     Else
@@ -1038,15 +1038,15 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     Dim ppm_Encoding As FREE_IMAGE_SAVE_OPTIONS
     If ppmFormat = 0 Then ppm_Encoding = FISO_PNM_SAVE_RAW Else ppm_Encoding = FISO_PNM_SAVE_ASCII
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
-    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
         
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
         
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
@@ -1106,45 +1106,45 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
         
-        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpLayer.isAlphaBinary Then
-            tmpLayer.applyAlphaCutoff
+        'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpDIB.isAlphaBinary Then
+            tmpDIB.applyAlphaCutoff
         Else
         
             'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
             ' Thus, use a default cut-off of 127 and continue on.
             If MacroStatus = MacroBATCH Then
-                tmpLayer.applyAlphaCutoff
+                tmpDIB.applyAlphaCutoff
             
             'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
             
                 Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = promptAlphaCutoff(tmpLayer)
+                alphaCheck = promptAlphaCutoff(tmpDIB)
                 
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
                 
-                    tmpLayer.eraseLayer
-                    Set tmpLayer = Nothing
+                    tmpDIB.eraseDIB
+                    Set tmpDIB = Nothing
                     SaveTGAImage = False
                     Exit Function
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                    tmpDIB.applyAlphaCutoff g_AlphaCutoff
                 End If
             End If
             
@@ -1154,13 +1154,13 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
     End If
     
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
@@ -1169,7 +1169,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpLayer.getTransparentLocation transpX, transpY
+        tmpDIB.getTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -1183,7 +1183,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
         
     End If
     
@@ -1257,21 +1257,21 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
-    If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.convertTo24bpp
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
         
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
         
     'If the image is grayscale, instruct FreeImage to internally mark the image as such
     Dim outputColorDepth As Long
     Message "Analyzing image color content..."
     
-    If tmpLayer.isLayerGrayscale Then
+    If tmpDIB.isDIBGrayscale Then
     
         Message "No color found.  Saving 8bpp grayscale JPEG."
         outputColorDepth = 8
@@ -1383,44 +1383,44 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
             
     End Select
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
         
-        'Does this layer contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpLayer.isAlphaBinary Then
-            tmpLayer.applyAlphaCutoff
+        'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
+        If tmpDIB.isAlphaBinary Then
+            tmpDIB.applyAlphaCutoff
         Else
             
             'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
             ' Thus, use a default cut-off of 127 and continue on.
             If MacroStatus = MacroBATCH Then
-                tmpLayer.applyAlphaCutoff
+                tmpDIB.applyAlphaCutoff
             
             'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
                 Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = promptAlphaCutoff(tmpLayer)
+                alphaCheck = promptAlphaCutoff(tmpDIB)
                 
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
                 
-                    tmpLayer.eraseLayer
-                    Set tmpLayer = Nothing
+                    tmpDIB.eraseDIB
+                    Set tmpDIB = Nothing
                     SaveTIFImage = False
                     Exit Function
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpLayer.applyAlphaCutoff g_AlphaCutoff
+                    tmpDIB.applyAlphaCutoff g_AlphaCutoff
                 End If
             End If
             
@@ -1430,13 +1430,13 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.getCompositedImage().getLayerColorDepth = 32) And (outputColorDepth < 32) Then tmpLayer.compositeBackgroundColor 255, 255, 255
+        If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
     End If
     
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
     
     'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
@@ -1448,7 +1448,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpLayer.getTransparentLocation transpX, transpY
+        tmpDIB.getTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -1462,7 +1462,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpLayer.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
         
     End If
     
@@ -1518,8 +1518,8 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
             outputColorDepth = 32
             TIFFFlags = (TIFFFlags Or TIFF_CMYK)
             FreeImage_UnloadEx fi_DIB
-            tmpLayer.convertToCMYK32
-            fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+            tmpDIB.convertToCMYK32
+            fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
             
         End If
         
@@ -1580,17 +1580,17 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getLayerColorDepth = 32) Then tmpLayer.convertTo24bpp
+    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
     
-    'Convert our current layer to a FreeImage-type DIB
+    'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpLayer.getLayerDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then

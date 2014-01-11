@@ -200,24 +200,24 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'If this is a preview, we need to adjust the mosaic values to match the size of the preview box
     If toPreview Then
-        BlockSizeX = BlockSizeX * curLayerValues.previewModifier
-        BlockSizeY = BlockSizeY * curLayerValues.previewModifier
+        BlockSizeX = BlockSizeX * curDIBValues.previewModifier
+        BlockSizeY = BlockSizeY * curDIBValues.previewModifier
         If BlockSizeX = 0 Then BlockSizeX = 1
         If BlockSizeY = 0 Then BlockSizeY = 1
     End If
@@ -225,12 +225,12 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'Calculate how many mosaic tiles will fit on the current image's size
     Dim xLoop As Long, yLoop As Long
-    xLoop = initX + Int(workingLayer.getLayerWidth \ BlockSizeX) + 1
-    yLoop = initY + Int(workingLayer.getLayerHeight \ BlockSizeY) + 1
+    xLoop = initX + Int(workingDIB.getDIBWidth \ BlockSizeX) + 1
+    yLoop = initY + Int(workingDIB.getDIBHeight \ BlockSizeY) + 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

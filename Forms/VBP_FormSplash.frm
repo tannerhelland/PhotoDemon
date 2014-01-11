@@ -74,15 +74,15 @@ Public Sub prepareSplash()
 
     'Before we can display the splash screen, we need to paint the program logo to it.  (This is done to
     ' guarantee proper painting regardless of screen DPI.)
-    Dim logoLayer As pdLayer
-    Set logoLayer = New pdLayer
-    If loadResourceToLayer("PDLOGO", logoLayer) Then
+    Dim logoDIB As pdDIB
+    Set logoDIB = New pdDIB
+    If loadResourceToDIB("PDLOGO", logoDIB) Then
     
         Dim logoAspectRatio As Double
-        logoAspectRatio = CDbl(logoLayer.getLayerWidth) / CDbl(logoLayer.getLayerHeight)
+        logoAspectRatio = CDbl(logoDIB.getDIBWidth) / CDbl(logoDIB.getDIBHeight)
         
         SetStretchBltMode Me.hDC, STRETCHBLT_HALFTONE
-        StretchBlt Me.hDC, 0, 0, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio, logoLayer.getLayerDC, 0, 0, logoLayer.getLayerWidth, logoLayer.getLayerHeight, vbSrcCopy
+        StretchBlt Me.hDC, 0, 0, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio, logoDIB.getDIBDC, 0, 0, logoDIB.getDIBWidth, logoDIB.getDIBHeight, vbSrcCopy
         Me.Picture = Me.Image
         
     End If

@@ -32,12 +32,12 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Four images are used for the straight stretches of drop shadow - two for vertical, two for horizontal
-Private singleHShadow As pdLayer, singleHShadow2 As pdLayer
-Private singleVShadow As pdLayer, singleVShadow2 As pdLayer
+Private singleHShadow As pdDIB, singleHShadow2 As pdDIB
+Private singleVShadow As pdDIB, singleVShadow2 As pdDIB
 
 'Four more images are used for the corners.
-Private nwShadow As pdLayer, neShadow As pdLayer
-Private swShadow As pdLayer, seShadow As pdLayer
+Private nwShadow As pdDIB, neShadow As pdDIB
+Private swShadow As pdDIB, seShadow As pdDIB
 
 'Create the images necessary for rendering a drop shadow around a square object.
 Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStrength As Byte, ByVal BackColor As Long)
@@ -56,8 +56,8 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
         shadowLookup(i) = CByte(tmpCalc)
     Next i
 
-    Set singleHShadow = New pdLayer
-    Set singleVShadow = New pdLayer
+    Set singleHShadow = New pdDIB
+    Set singleVShadow = New pdDIB
     
     'Initialize shadows that are (1 x shadowRadius) and (shadowRadius x 1) in size
     singleHShadow.createBlank 1, shadowRadius, 24, BackColor
@@ -105,18 +105,18 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     
     'We now want to create mirror copies of those two shadows
-    Set singleHShadow2 = New pdLayer
-    Set singleVShadow2 = New pdLayer
+    Set singleHShadow2 = New pdDIB
+    Set singleVShadow2 = New pdDIB
     
-    singleHShadow2.createFromExistingLayer singleHShadow
-    singleVShadow2.createFromExistingLayer singleVShadow
+    singleHShadow2.createFromExistingDIB singleHShadow
+    singleVShadow2.createFromExistingDIB singleVShadow
     
-    StretchBlt singleHShadow2.getLayerDC, 0, 0, 1, shadowRadius, singleHShadow.getLayerDC, 0, shadowRadius - 1, 1, -shadowRadius, vbSrcCopy
-    StretchBlt singleVShadow2.getLayerDC, 0, 0, shadowRadius, 1, singleVShadow.getLayerDC, shadowRadius - 1, 0, -shadowRadius, 1, vbSrcCopy
+    StretchBlt singleHShadow2.getDIBDC, 0, 0, 1, shadowRadius, singleHShadow.getDIBDC, 0, shadowRadius - 1, 1, -shadowRadius, vbSrcCopy
+    StretchBlt singleVShadow2.getDIBDC, 0, 0, shadowRadius, 1, singleVShadow.getDIBDC, shadowRadius - 1, 0, -shadowRadius, 1, vbSrcCopy
     
     'Now, we need to render the first of four corner shadows.  The render will only be done once, and each subsequent corner
     ' will simply be a rotation of this initial shadow.
-    Set seShadow = New pdLayer
+    Set seShadow = New pdDIB
     seShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
@@ -142,7 +142,7 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
         
     'Now, corner number 2
-    Set swShadow = New pdLayer
+    Set swShadow = New pdDIB
     swShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
@@ -165,7 +165,7 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
 
     'Now, corner number 3
-    Set nwShadow = New pdLayer
+    Set nwShadow = New pdDIB
     nwShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
@@ -188,7 +188,7 @@ Public Sub initializeSquareShadow(ByVal shadowRadius As Long, ByVal shadowStreng
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     
     'And finally, corner number 4
-    Set neShadow = New pdLayer
+    Set neShadow = New pdDIB
     neShadow.createBlank shadowRadius, shadowRadius, 24, BackColor
     
     'Loop through the image, using a distance formula to determine opacity
@@ -226,21 +226,21 @@ Public Function getShadowDC(ByVal dcToReturn As Long) As Long
     Select Case dcToReturn
     
         Case 0
-            getShadowDC = singleHShadow.getLayerDC
+            getShadowDC = singleHShadow.getDIBDC
         Case 1
-            getShadowDC = singleHShadow2.getLayerDC
+            getShadowDC = singleHShadow2.getDIBDC
         Case 2
-            getShadowDC = singleVShadow.getLayerDC
+            getShadowDC = singleVShadow.getDIBDC
         Case 3
-            getShadowDC = singleVShadow2.getLayerDC
+            getShadowDC = singleVShadow2.getDIBDC
         Case 4
-            getShadowDC = nwShadow.getLayerDC
+            getShadowDC = nwShadow.getDIBDC
         Case 5
-            getShadowDC = neShadow.getLayerDC
+            getShadowDC = neShadow.getDIBDC
         Case 6
-            getShadowDC = swShadow.getLayerDC
+            getShadowDC = swShadow.getDIBDC
         Case 7
-            getShadowDC = seShadow.getLayerDC
+            getShadowDC = seShadow.getDIBDC
     End Select
 
 End Function
