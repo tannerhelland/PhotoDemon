@@ -340,15 +340,15 @@ Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long,
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    'Use the external function to create a rotated layer
-    CreateRotatedLayer rotateAngle, edgeHandling, useBilinear, srcLayer, workingLayer, centerX, centerY, toPreview
+    'Use the external function to create a rotated DIB
+    CreateRotatedDIB rotateAngle, edgeHandling, useBilinear, srcDIB, workingDIB, centerX, centerY, toPreview
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic

@@ -309,15 +309,15 @@ Private Function calculateOptimalThreshold() As Long
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -351,8 +351,8 @@ Private Function calculateOptimalThreshold() As Long
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
-    workingLayer.eraseLayer
-    Set workingLayer = Nothing
+    workingDIB.eraseDIB
+    Set workingDIB = Nothing
             
     'Divide the number of pixels by two
     NumOfPixels = NumOfPixels \ 2
@@ -389,15 +389,15 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, i As Long, j As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -870,7 +870,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
         Dim dErrors() As Double
         
-        ReDim dErrors(0 To workingLayer.getLayerWidth, 0 To workingLayer.getLayerHeight) As Double
+        ReDim dErrors(0 To workingDIB.getDIBWidth, 0 To workingDIB.getDIBHeight) As Double
         
         Dim QuickX As Long, QuickY As Long
         

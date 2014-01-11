@@ -565,7 +565,7 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then
     
         'Hide the background color selectors
         colorPicker.Visible = False
@@ -594,7 +594,7 @@ Private Sub Form_Load()
     tudHeight.Value = pdImages(g_CurrentImage).Height
     
     'If the source image is 32bpp, hide the color selection box and change the text to match
-    If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then
         lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
     Else
         lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")
@@ -674,17 +674,17 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     
     End Select
     
-    'Create a temporary layer to hold the new canvas
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+    'Create a temporary DIB to hold the new canvas
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
 
     'Bitblt the old image into its new position on the canvas
-    BitBlt tmpLayer.getLayerDC, dstX, dstY, srcWidth, srcHeight, pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt tmpDIB.getDIBDC, dstX, dstY, srcWidth, srcHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, vbSrcCopy
     
-    'The temporary layer now holds the new canvas and image.  Copy it back into the main image.
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
-    Set tmpLayer = Nothing
+    'The temporary DIB now holds the new canvas and image.  Copy it back into the main image.
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    Set tmpDIB = Nothing
     
     'Update the main image's size values
     pdImages(g_CurrentImage).updateSize

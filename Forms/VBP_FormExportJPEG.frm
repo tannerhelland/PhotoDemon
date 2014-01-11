@@ -270,8 +270,8 @@ Public imageBeingExported As pdImage
 Dim m_ToolTip As clsToolTip
 
 'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
-' store one in this layer (at the size of the preview) and simply re-use it when we need to render a preview.
-Private origImageCopy As pdLayer
+' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
+Private origImageCopy As pdDIB
 Private previewWidth As Long, previewHeight As Long
 
 'As a further optimizations, we keep a persistent copy of the image in FreeImage format; FreeImage is used to save the
@@ -468,24 +468,24 @@ Public Sub showDialog()
     chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
     
     'Make a copy of the main image; we'll use this to render the preview image
-    Set origImageCopy = New pdLayer
+    Set origImageCopy = New pdDIB
     convertAspectRatio imageBeingExported.Width, imageBeingExported.Height, picPreview.Width, picPreview.Height, previewWidth, previewHeight
-    origImageCopy.createFromExistingLayer imageBeingExported.getActiveLayer, previewWidth, previewHeight
-    If origImageCopy.getLayerColorDepth = 32 Then origImageCopy.convertTo24bpp
+    origImageCopy.createFromExistingDIB imageBeingExported.getActiveDIB, previewWidth, previewHeight
+    If origImageCopy.getDIBColorDepth = 32 Then origImageCopy.convertTo24bpp
     
     'FreeImage is required to perform the JPEG transformation.  We could use GDI+, but FreeImage is
     ' much easier to interface with.
     If g_ImageFormats.FreeImageEnabled Then
     
         'Convert our DIB into FreeImage-format; we will maintain this copy to improve JPEG preview performance.
-        fi_DIB = FreeImage_CreateFromDC(origImageCopy.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(origImageCopy.getDIBDC)
         
     'If FreeImage is not available, notify the user.
     Else
         
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        tmpLayer.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
     
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
@@ -495,11 +495,11 @@ Public Sub showDialog()
         notifyFont.setFontBold True
         notifyFont.setTextAlignment vbCenter
         notifyFont.createFontObject
-        notifyFont.attachToDC tmpLayer.getLayerDC
+        notifyFont.attachToDC tmpDIB.getDIBDC
     
-        notifyFont.fastRenderText tmpLayer.getLayerWidth \ 2, tmpLayer.getLayerHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
-        tmpLayer.renderToPictureBox picPreview
-        Set tmpLayer = Nothing
+        notifyFont.fastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
+        tmpDIB.renderToPictureBox picPreview
+        Set tmpDIB = Nothing
         
     End If
     
@@ -538,8 +538,8 @@ Private Sub updatePreview()
         Dim tmpFI_DIB As Long
         tmpFI_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
         
-        'Copy the newly decompressed JPEG into our original pdLayer object.
-        SetDIBitsToDevice origImageCopy.getLayerDC, 0, 0, origImageCopy.getLayerWidth, origImageCopy.getLayerHeight, 0, 0, 0, origImageCopy.getLayerHeight, ByVal FreeImage_GetBits(tmpFI_DIB), ByVal FreeImage_GetInfo(tmpFI_DIB), 0&
+        'Copy the newly decompressed JPEG into our original pdDIB object.
+        SetDIBitsToDevice origImageCopy.getDIBDC, 0, 0, origImageCopy.getDIBWidth, origImageCopy.getDIBHeight, 0, 0, 0, origImageCopy.getDIBHeight, ByVal FreeImage_GetBits(tmpFI_DIB), ByVal FreeImage_GetInfo(tmpFI_DIB), 0&
         
         'Paint the final image to screen and release all temporary objects
         origImageCopy.renderToPictureBox picPreview

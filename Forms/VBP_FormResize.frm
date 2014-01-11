@@ -713,7 +713,7 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32 Then
     
         'Hide the background color selectors
         colorPicker.Visible = False
@@ -737,7 +737,7 @@ Private Sub Form_Load()
     refillResampleBox True
     
     'If the source image is 32bpp, change the text of the "fit inclusive" subheading to match
-    If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 32 Then
+    If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32 Then
         lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be transparent")
     Else
         lblSubtext(1).Caption = g_Language.TranslateMessage("no distortion; empty borders will be filled with:")
@@ -753,7 +753,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Resize an image using the FreeImage library.  Very fast.
-Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer, ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
+Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal iWidth As Long, iHeight As Long, ByVal interpolationMethod As Long)
     
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
@@ -761,11 +761,11 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
         Message "Resampling image using the FreeImage plugin..."
         
         'If the original image is 32bpp, remove premultiplication now
-        If srcLayer.getLayerColorDepth = 32 Then srcLayer.fixPremultipliedAlpha
+        If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(srcLayer.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -773,11 +773,11 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
             Dim returnDIB As Long
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, iWidth, iHeight, True, interpolationMethod)
             
-            'Resize the destination layer in preparation for the transfer
-            dstLayer.createBlank iWidth, iHeight, srcLayer.getLayerColorDepth
+            'Resize the destination DIB in preparation for the transfer
+            dstDIB.createBlank iWidth, iHeight, srcDIB.getDIBColorDepth
             
             'Copy the bits from the FreeImage DIB to our DIB
-            SetDIBitsToDevice dstLayer.getLayerDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
      
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
@@ -785,7 +785,7 @@ Private Sub FreeImageResize(ByRef dstLayer As pdLayer, ByRef srcLayer As pdLayer
         End If
         
         'If the original image is 32bpp, add back in premultiplication now
-        If srcLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+        If srcDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
         
     End If
     
@@ -828,9 +828,9 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
 
-    'Because most resize methods require a temporary layer, create one here
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    'Because most resize methods require a temporary DIB, create one here
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
 
     Select Case resampleMethod
 
@@ -839,8 +839,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
         
             Message "Resizing image..."
             
-            'Copy the current layer into this temporary layer at the new size
-            tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, False
+            'Copy the current DIB into this temporary DIB at the new size
+            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, False
             
         'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
         ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that
@@ -848,8 +848,8 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             
             Message "Resizing image..."
             
-            'Copy the current layer into this temporary layer at the new size
-            tmpLayer.createFromExistingLayer pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, True
+            'Copy the current DIB into this temporary DIB at the new size
+            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, True
         
         'True bilinear sampling
         Case RESIZE_BILINEAR
@@ -857,7 +857,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
             If g_ImageFormats.FreeImageEnabled Then
             
-                FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BILINEAR
+                FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BILINEAR
             
             'If FreeImage is not enabled, we have to do the resample ourselves.
             Else
@@ -870,24 +870,24 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 prepImageData srcSA
                 CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
-                'Resize the temporary layer to the target size, and point a second local array at it
-                tmpLayer.createBlank fitWidth, fitHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+                'Resize the temporary DIB to the target size, and point a second local array at it
+                tmpDIB.createBlank fitWidth, fitHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
                 
                 Dim dstImageData() As Byte
                 Dim dstSA As SAFEARRAY2D
                 
-                prepSafeArray dstSA, tmpLayer
+                prepSafeArray dstSA, tmpDIB
                 CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
                 
                 'These values will help us access locations in the array more quickly.
                 ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
                 Dim qvDepth As Long
-                qvDepth = tmpLayer.getLayerColorDepth \ 8
+                qvDepth = tmpDIB.getDIBColorDepth \ 8
                 
                 'Create a filter support class, which will aid with edge handling and interpolation
                 Dim fSupport As pdFilterSupport
                 Set fSupport = New pdFilterSupport
-                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curLayerValues.maxX, curLayerValues.MaxY
+                fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curDIBValues.maxX, curDIBValues.MaxY
     
                 'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
                 ' based on the size of the area to be processed.
@@ -938,22 +938,22 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
             End If
         
         Case RESIZE_BSPLINE
-            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BSPLINE
+            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BSPLINE
             
         Case RESIZE_BICUBIC_MITCHELL
-            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_BICUBIC
+            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BICUBIC
             
         Case RESIZE_BICUBIC_CATMULL
-            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_CATMULLROM
+            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_CATMULLROM
         
         Case RESIZE_LANCZOS
-            FreeImageResize tmpLayer, pdImages(g_CurrentImage).mainLayer, fitWidth, fitHeight, FILTER_LANCZOS3
+            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_LANCZOS3
             
     End Select
     
-    'The temporary layer now holds a copy of the resized image.
+    'The temporary DIB now holds a copy of the resized image.
     
-    'Calculate the aspect ratio of this layer and the target picture box
+    'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
     srcAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
     dstAspect = iWidth / iHeight
@@ -966,17 +966,17 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
         'Stretch-to-fit.  This is default resize behavior in all image editing software
         Case 0
     
-            'Very simple - just copy the resized image back into the main layer
-            pdImages(g_CurrentImage).mainLayer.createFromExistingLayer tmpLayer
+            'Very simple - just copy the resized image back into the main DIB
+            pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     
         'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
         ' blank space - that space is filled by the background color parameter passed in.
         Case 1
         
-            'Resize the main layer (destructively!) to fit the new dimensions
-            pdImages(g_CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+            'Resize the main DIB (destructively!) to fit the new dimensions
+            pdImages(g_CurrentImage).mainDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
         
-            'BitBlt the old image, centered, onto the new layer
+            'BitBlt the old image, centered, onto the new DIB
             If srcAspect > dstAspect Then
                 dstY = CLng((iHeight - fitHeight) / 2)
                 dstX = 0
@@ -985,16 +985,16 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 dstY = 0
             End If
             
-            BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+            BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
         
         'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
         ' blank space - but parts of the image may get cropped out.
         Case 2
         
-            'Resize the main layer (destructively!) to fit the new dimensions
-            pdImages(g_CurrentImage).mainLayer.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth, newBackColor
+            'Resize the main DIB (destructively!) to fit the new dimensions
+            pdImages(g_CurrentImage).mainDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
         
-            'BitBlt the old image, centered, onto the new layer
+            'BitBlt the old image, centered, onto the new DIB
             If srcAspect < dstAspect Then
                 dstY = CLng((iHeight - fitHeight) / 2)
                 dstX = 0
@@ -1003,12 +1003,12 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 dstY = 0
             End If
             
-            BitBlt pdImages(g_CurrentImage).mainLayer.getLayerDC, dstX, dstY, fitWidth, fitHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+            BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
         
     End Select
     
-    'We are finished with the temporary layer, so release it
-    Set tmpLayer = Nothing
+    'We are finished with the temporary DIB, so release it
+    Set tmpDIB = Nothing
     
     'Update the main image's size values
     pdImages(g_CurrentImage).updateSize
@@ -1106,7 +1106,7 @@ Private Sub updateFormLayout()
         
         'Hide the background color selector only if the image is not 32bpp.  (If it is 32bpp, blank space will
         ' be filled by transparency, not color.)
-        If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth <> 32 Then colorPicker.Visible = True
+        If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth <> 32 Then colorPicker.Visible = True
         
         'Resize the form to match
         Me.Height = formHeightDifference + (lblSubtext(2).Top + lblSubtext(2).Height + cmdBar.Height + fixDPI(24)) * Screen.TwipsPerPixelY

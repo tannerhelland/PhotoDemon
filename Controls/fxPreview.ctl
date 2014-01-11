@@ -163,7 +163,7 @@ Private disableZoomPanAbility As Boolean
 'Has this control been given a copy of the original image?
 Private m_HasOriginal As Boolean, m_HasFX As Boolean
 
-Private originalImage As pdLayer, fxImage As pdLayer
+Private originalImage As pdDIB, fxImage As pdDIB
 
 'The control's current state: whether it is showing the original image or the fx preview
 Private curImageState As Boolean
@@ -294,33 +294,33 @@ End Property
 
 'Use this to supply the preview with a copy of the original image's data.  The preview object can use this to display
 ' the original image when the user clicks the "show original image" link.
-Public Sub setOriginalImage(ByRef srcLayer As pdLayer)
+Public Sub setOriginalImage(ByRef srcDIB As pdDIB)
 
     'Note that we have a copy of the original image, so the calling function doesn't attempt to supply it again
     m_HasOriginal = True
     
-    'Make a copy of the layer passed in
-    If (originalImage Is Nothing) Then Set originalImage = New pdLayer
+    'Make a copy of the DIB passed in
+    If (originalImage Is Nothing) Then Set originalImage = New pdDIB
     
-    originalImage.eraseLayer
-    originalImage.createFromExistingLayer srcLayer
+    originalImage.eraseDIB
+    originalImage.createFromExistingDIB srcDIB
     
-    If originalImage.getLayerColorDepth = 32 Then originalImage.fixPremultipliedAlpha True
+    If originalImage.getDIBColorDepth = 32 Then originalImage.fixPremultipliedAlpha True
     
 End Sub
 
 'Use this to supply the object with a copy of the processed image's data.  The preview object can use this to display
 ' the processed image again if the user clicks the "show original image" link, then clicks it again.
-Public Sub setFXImage(ByRef srcLayer As pdLayer)
+Public Sub setFXImage(ByRef srcDIB As pdDIB)
 
     'Note that we have a copy of the original image, so the calling function doesn't attempt to supply it again
     m_HasFX = True
     
-    'Make a copy of the layer passed in
-    If (fxImage Is Nothing) Then Set fxImage = New pdLayer
+    'Make a copy of the DIB passed in
+    If (fxImage Is Nothing) Then Set fxImage = New pdDIB
     
-    fxImage.eraseLayer
-    fxImage.createFromExistingLayer srcLayer
+    fxImage.eraseDIB
+    fxImage.createFromExistingDIB srcDIB
         
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
@@ -402,7 +402,7 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         
         If Button = vbRightButton Then
         
-            curColor = GetPixel(originalImage.getLayerDC, x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2))
+            curColor = GetPixel(originalImage.getDIBDC, x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2))
             
             If curColor = -1 Then curColor = RGB(127, 127, 127)
             
@@ -420,11 +420,11 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         
             'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
             Dim retX As Double, retY As Double
-            retX = x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2)
-            retY = y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2)
+            retX = x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2)
+            retY = y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2)
             
-            retX = retX / originalImage.getLayerWidth
-            retY = retY / originalImage.getLayerHeight
+            retX = retX / originalImage.getDIBWidth
+            retY = retY / originalImage.getDIBHeight
             
             RaiseEvent PointSelected(retX, retY)
         
@@ -486,11 +486,11 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
         
             'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
             Dim retX As Double, retY As Double
-            retX = x - ((picPreview.ScaleWidth - originalImage.getLayerWidth) \ 2)
-            retY = y - ((picPreview.ScaleHeight - originalImage.getLayerHeight) \ 2)
+            retX = x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2)
+            retY = y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2)
             
-            retX = retX / originalImage.getLayerWidth
-            retY = retY / originalImage.getLayerHeight
+            retX = retX / originalImage.getDIBWidth
+            retY = retY / originalImage.getDIBHeight
             
             RaiseEvent PointSelected(retX, retY)
         
@@ -643,8 +643,8 @@ Private Sub UserControl_Show()
             srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
             srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
         Else
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+            srcWidth = pdImages(g_CurrentImage).getActiveDIB.getDIBWidth
+            srcHeight = pdImages(g_CurrentImage).getActiveDIB.getDIBHeight
         End If
         
         maxHOffset = srcWidth - picPreview.ScaleWidth
@@ -673,8 +673,8 @@ End Sub
 Private Sub UserControl_Terminate()
 
     'Release any image objects that may have been created
-    If Not (originalImage Is Nothing) Then originalImage.eraseLayer
-    If Not (fxImage Is Nothing) Then fxImage.eraseLayer
+    If Not (originalImage Is Nothing) Then originalImage.eraseDIB
+    If Not (fxImage Is Nothing) Then fxImage.eraseDIB
     
 End Sub
 

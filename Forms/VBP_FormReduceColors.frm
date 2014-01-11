@@ -230,15 +230,15 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         
         If Not toPreview Then Message "Quantizing image using the FreeImage library..."
         
-        'Convert our current layer to a FreeImage-type DIB
+        'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
         
         If toPreview Then
-            If workingLayer.getLayerColorDepth = 32 Then workingLayer.compositeBackgroundColor 255, 255, 255
-            fi_DIB = FreeImage_CreateFromDC(workingLayer.getLayerDC)
+            If workingDIB.getDIBColorDepth = 32 Then workingDIB.compositeBackgroundColor 255, 255, 255
+            fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
         Else
-            If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 32 Then pdImages(g_CurrentImage).mainLayer.compositeBackgroundColor 255, 255, 255
-            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainLayer.getLayerDC)
+            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then pdImages(g_CurrentImage).mainDIB.compositeBackgroundColor 255, 255, 255
+            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainDIB.getDIBDC)
         End If
         
         'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
@@ -248,19 +248,19 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             returnDIB = FreeImage_ColorQuantizeEx(fi_DIB, qMethod, True)
             
-            'If this is a preview, render it to the temporary layer.  Otherwise, use the current main layer.
+            'If this is a preview, render it to the temporary DIB.  Otherwise, use the current main DIB.
             If toPreview Then
-                workingLayer.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight, 24
-                SetDIBitsToDevice workingLayer.getLayerDC, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, 0, 0, 0, workingLayer.getLayerHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                workingDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, 24
+                SetDIBitsToDevice workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             Else
-                pdImages(g_CurrentImage).mainLayer.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 24
-                SetDIBitsToDevice pdImages(g_CurrentImage).mainLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 0, 0, 0, pdImages(g_CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                pdImages(g_CurrentImage).mainDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 24
+                SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 0, 0, 0, pdImages(g_CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
-            'If this is a preview, draw the new image to the picture box and exit.  Otherwise, render the new main image layer.
+            'If this is a preview, draw the new image to the picture box and exit.  Otherwise, render the new main image DIB.
             If toPreview Then
                 finalizeImageData toPreview, dstPic
             Else

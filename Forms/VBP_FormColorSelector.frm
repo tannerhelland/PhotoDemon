@@ -609,23 +609,23 @@ Private newUserColor As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Private m_ToolTip As clsToolTip
 
-'pdLayer for the primary color box (luminance/saturation) on the left
-Private primaryBox As pdLayer
+'pdDIB for the primary color box (luminance/saturation) on the left
+Private primaryBox As pdDIB
 
-'pdLayer for the hue box on the rihgt
-Private hueBox As pdLayer
+'pdDIB for the hue box on the rihgt
+Private hueBox As pdDIB
 
 'Currently selected color, including RGB and HSL attributes
 Private curColor As Long
 Private curRed As Long, curGreen As Long, curBlue As Long
 Private curHue As Double, curSaturation As Double, curValue As Double
 
-'One layer for each of the individual color sample boxes
-Private sRed As pdLayer, sGreen As pdLayer, sBlue As pdLayer
-Private sHue As pdLayer, sSaturation As pdLayer, sValue As pdLayer
+'One DIB for each of the individual color sample boxes
+Private sRed As pdDIB, sGreen As pdDIB, sBlue As pdDIB
+Private sHue As pdDIB, sSaturation As pdDIB, sValue As pdDIB
 
 'Left/right/up arrows for the hue and color boxes; these are 7x13 (or 13x7) and loaded from the resource at run-time
-Private leftSideArrow As pdLayer, rightSideArrow As pdLayer, upArrow As pdLayer
+Private leftSideArrow As pdDIB, rightSideArrow As pdDIB, upArrow As pdDIB
 
 'Changing the various text boxes resyncs the dialog, unless this parameter is set.  (We use it to prevent
 ' infinite resyncs.)
@@ -679,22 +679,22 @@ Public Sub showDialog(ByVal initialColor As Long)
     userAnswer = vbCancel
     
     'Load the left/right side hue box arrow images from the resource file
-    Set leftSideArrow = New pdLayer
-    Set rightSideArrow = New pdLayer
-    Set upArrow = New pdLayer
+    Set leftSideArrow = New pdDIB
+    Set rightSideArrow = New pdDIB
+    Set upArrow = New pdDIB
     
-    loadResourceToLayer "CLR_ARROW_L", leftSideArrow
-    loadResourceToLayer "CLR_ARROW_R", rightSideArrow
-    loadResourceToLayer "CLR_ARROW_U", upArrow
+    loadResourceToDIB "CLR_ARROW_L", leftSideArrow
+    loadResourceToDIB "CLR_ARROW_R", rightSideArrow
+    loadResourceToDIB "CLR_ARROW_U", upArrow
         
     'Cache the currentColor parameter so we can access it elsewhere
     oldColor = initialColor
     
     'Render the old color to the screen.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
-    Dim tmpLayer As New pdLayer
-    tmpLayer.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
-    tmpLayer.renderToPictureBox picOriginal
+    Dim tmpDIB As New pdDIB
+    tmpDIB.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
+    tmpDIB.renderToPictureBox picOriginal
     
     'Sync all current color values to the initial color
     curColor = initialColor
@@ -739,21 +739,21 @@ Private Sub drawHueBox()
     Dim r As Long, g As Long, b As Long
     
     'Because we want the hue box to be color-managed, we must create it as a DIB, then render it to the screen later
-    Set hueBox = New pdLayer
+    Set hueBox = New pdDIB
     hueBox.createBlank picHue.ScaleWidth, picHue.ScaleHeight
     
     'Simple gradient-ish code implementation of drawing hue
     Dim y As Long
-    For y = 0 To hueBox.getLayerHeight
+    For y = 0 To hueBox.getDIBHeight
     
         'Based on our x-position, gradient a value between -1 and 5
-        hVal = y / hueBox.getLayerHeight
+        hVal = y / hueBox.getDIBHeight
         
         'Generate a hue for this position (the 1 and 0.5 correspond to full saturation and half luminance, respectively)
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        drawLineToDC hueBox.getLayerDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
+        drawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
     Next y
     
@@ -769,7 +769,7 @@ Private Sub syncInterfaceToCurrentColor()
     Me.Picture = LoadPicture("")
     
     'Start by drawing the primary box (luminance/saturation) using the current values
-    Set primaryBox = New pdLayer
+    Set primaryBox = New pdDIB
     
     primaryBox.createBlank picColor.ScaleWidth, picColor.ScaleHeight
     
@@ -784,8 +784,8 @@ Private Sub syncInterfaceToCurrentColor()
     Dim tmpSat As Double, tmpLum As Double
     
     Dim loopWidth As Long, loopHeight As Long
-    loopWidth = primaryBox.getLayerWidth - 1
-    loopHeight = primaryBox.getLayerHeight - 1
+    loopWidth = primaryBox.getDIBWidth - 1
+    loopHeight = primaryBox.getDIBHeight - 1
     
     For x = 0 To loopWidth
         QuickX = x * 3
@@ -807,16 +807,16 @@ Private Sub syncInterfaceToCurrentColor()
     Erase pImageData
     
     'We now want to draw a circle around the point where the user's current color resides
-    GDIPlusDrawCanvasCircle primaryBox.getLayerDC, curValue * loopWidth, (1 - curSaturation) * loopHeight, fixDPI(7), 192
+    GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * loopWidth, (1 - curSaturation) * loopHeight, fixDPI(7), 192
         
     'Render the primary color box
     primaryBox.renderToPictureBox picColor
     
     'Render the current color box.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
-    Dim tmpLayer As New pdLayer
-    tmpLayer.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
-    tmpLayer.renderToPictureBox picCurrent
+    Dim tmpDIB As New pdDIB
+    tmpDIB.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
+    tmpDIB.renderToPictureBox picCurrent
     
     'Synchronize all text boxes to their current values
     redrawAllTextBoxes
@@ -825,8 +825,8 @@ Private Sub syncInterfaceToCurrentColor()
     Dim hueY As Long
     hueY = picHue.Top + 1 + (curHue * picHue.ScaleHeight)
     
-    leftSideArrow.alphaBlendToDC Me.hDC, , picHue.Left - leftSideArrow.getLayerWidth, hueY - (leftSideArrow.getLayerHeight \ 2)
-    rightSideArrow.alphaBlendToDC Me.hDC, , picHue.Left + picHue.Width, hueY - (rightSideArrow.getLayerHeight \ 2)
+    leftSideArrow.alphaBlendToDC Me.hDC, , picHue.Left - leftSideArrow.getDIBWidth, hueY - (leftSideArrow.getDIBHeight \ 2)
+    rightSideArrow.alphaBlendToDC Me.hDC, , picHue.Left + picHue.Width, hueY - (rightSideArrow.getDIBHeight \ 2)
     Me.Picture = Me.Image
     Me.Refresh
     
@@ -849,7 +849,7 @@ Private Sub redrawAllTextBoxes()
     
     'Next, prepare some universal values for the arrow image offsets
     Dim arrowOffset As Long
-    arrowOffset = (upArrow.getLayerWidth \ 2) - 1
+    arrowOffset = (upArrow.getDIBWidth \ 2) - 1
     
     Dim leftOffset As Long
     leftOffset = picSampleRGB(0).Left
@@ -866,14 +866,14 @@ Private Sub redrawAllTextBoxes()
     upArrow.alphaBlendToDC Me.hDC, , leftOffset + (curSaturation * widthCheck) - arrowOffset, picSampleHSV(1).Top + picSampleHSV(1).Height
     upArrow.alphaBlendToDC Me.hDC, , leftOffset + (curValue * widthCheck) - arrowOffset, picSampleHSV(2).Top + picSampleHSV(2).Height
     
-    'Next, we need to prep all our color bar layers
-    renderSampleLayer sRed, ccRed
-    renderSampleLayer sGreen, ccGreen
-    renderSampleLayer sBlue, ccBlue
+    'Next, we need to prep all our color bar DIBs
+    renderSampleDIB sRed, ccRed
+    renderSampleDIB sGreen, ccGreen
+    renderSampleDIB sBlue, ccBlue
     
-    renderSampleLayer sHue, ccHue
-    renderSampleLayer sSaturation, ccSaturation
-    renderSampleLayer sValue, ccValue
+    renderSampleDIB sHue, ccHue
+    renderSampleDIB sSaturation, ccSaturation
+    renderSampleDIB sValue, ccValue
     
     'Now we can render the bars to screen
     sRed.renderToPictureBox picSampleRGB(0)
@@ -956,15 +956,15 @@ End Sub
 
 'This sub handles the preparation of the individual color sample boxes (one each for R/G/B/H/S/V)
 ' (Because we want these boxes to be color-managed, we must create them as DIBs.)
-Private Sub renderSampleLayer(ByRef dstLayer As pdLayer, ByVal layerColorType As colorCheckType)
+Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCheckType)
 
-    Set dstLayer = New pdLayer
-    dstLayer.createBlank picSampleRGB(0).ScaleWidth, picSampleRGB(0).ScaleHeight
+    Set dstDIB = New pdDIB
+    dstDIB.createBlank picSampleRGB(0).ScaleWidth, picSampleRGB(0).ScaleHeight
     
     Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, v As Double
     
-    'Initialize each component to its default type; only one parameter will be changed per layerColorType
+    'Initialize each component to its default type; only one parameter will be changed per dibColorType
     r = curRed
     g = curGreen
     b = curBlue
@@ -973,18 +973,18 @@ Private Sub renderSampleLayer(ByRef dstLayer As pdLayer, ByVal layerColorType As
     v = curValue
     
     Dim gradientValue As Double, gradientMax As Double
-    gradientMax = dstLayer.getLayerWidth
+    gradientMax = dstDIB.getDIBWidth
     
     'Simple gradient-ish code implementation of drawing any individual color component
     Dim x As Long
-    For x = 0 To dstLayer.getLayerWidth
+    For x = 0 To dstDIB.getDIBWidth
     
         gradientValue = x / gradientMax
     
         'We handle RGB separately from HSV
-        If layerColorType <= ccBlue Then
+        If dibColorType <= ccBlue Then
             
-            Select Case layerColorType
+            Select Case dibColorType
             
                 Case ccRed
                     r = gradientValue * 255
@@ -999,7 +999,7 @@ Private Sub renderSampleLayer(ByRef dstLayer As pdLayer, ByVal layerColorType As
             
         Else
         
-            Select Case layerColorType
+            Select Case dibColorType
             
                 Case ccHue
                     h = gradientValue
@@ -1017,7 +1017,7 @@ Private Sub renderSampleLayer(ByRef dstLayer As pdLayer, ByVal layerColorType As
         End If
         
         'Draw the color
-        drawLineToDC dstLayer.getLayerDC, x, 0, x, dstLayer.getLayerHeight, RGB(r, g, b)
+        drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
         
     Next x
     

@@ -217,7 +217,7 @@ Private Sub optAlpha_Click(Index As Integer)
     updatePreview
 End Sub
 
-'Convert a layer from 24bpp to 32bpp, using a constant alpha channel (specified by the user)
+'Convert a DIB from 24bpp to 32bpp, using a constant alpha channel (specified by the user)
 Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Adding new alpha channel to image..."
@@ -227,8 +227,8 @@ Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Opti
     Dim tmpSA As SAFEARRAY2D
     prepImageData tmpSA, toPreview, dstPic
     
-    'Pretty simple - ask pdLayer to apply a constant alpha channel to the image, and we're done!
-    workingLayer.convertTo32bpp convertConstant
+    'Pretty simple - ask pdDIB to apply a constant alpha channel to the image, and we're done!
+    workingDIB.convertTo32bpp convertConstant
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic

@@ -386,25 +386,25 @@ Public Sub releaseColorTransform(ByVal transformHandle As Long)
     DeleteColorTransform transformHandle
 End Sub
 
-'Given a color transformation and a layer, apply one to the other!  Returns TRUE if successful.
-Public Function applyColorTransformToLayer(ByVal srcTransform As Long, ByRef dstLayer As pdLayer) As Boolean
+'Given a color transformation and a DIB, apply one to the other!  Returns TRUE if successful.
+Public Function applyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDIB As pdDIB) As Boolean
 
     Dim transformCheck As Long
     
-    With dstLayer
+    With dstDIB
                 
-        'NOTE: note that I use BM_RGBTRIPLETS below, despite pdLayer DIBs most definitely being in BGR order.  This is an
+        'NOTE: note that I use BM_RGBTRIPLETS below, despite pdDIB DIBs most definitely being in BGR order.  This is an
         '       undocumented bug with Windows' color management engine!
         Dim bitDepthIdentifier As Long
-        If .getLayerColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
+        If .getDIBColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
         
         'TranslateBitmapBits handles the actual transformation for us.
-        transformCheck = TranslateBitmapBits(srcTransform, .getLayerDIBits, bitDepthIdentifier, .getLayerWidth, .getLayerHeight, .getLayerArrayWidth, .getLayerDIBits, bitDepthIdentifier, .getLayerArrayWidth, ByVal 0&, 0&)
+        transformCheck = TranslateBitmapBits(srcTransform, .getActualDIBBits, bitDepthIdentifier, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getActualDIBBits, bitDepthIdentifier, .getDIBArrayWidth, ByVal 0&, 0&)
         
     End With
     
     If transformCheck = 0 Then
-        applyColorTransformToLayer = False
+        applyColorTransformToDIB = False
         
         'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
         ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
@@ -417,21 +417,21 @@ Public Function applyColorTransformToLayer(ByVal srcTransform As Long, ByRef dst
         End If
         
     Else
-        applyColorTransformToLayer = True
+        applyColorTransformToDIB = True
     End If
 
 End Function
 
-'Given a color transformation and two layers, fill one layer with a transformed copy of the other!  Returns TRUE if successful.
-Public Function applyColorTransformToTwoLayers(ByVal srcTransform As Long, ByRef srcLayer As pdLayer, ByRef dstLayer As pdLayer, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
+'Given a color transformation and two DIBs, fill one DIB with a transformed copy of the other!  Returns TRUE if successful.
+Public Function applyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
 
     Dim transformCheck As Long
     
     'TranslateBitmapBits handles the actual transformation for us.
-    transformCheck = TranslateBitmapBits(srcTransform, srcLayer.getLayerDIBits, srcFormat, srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerArrayWidth, dstLayer.getLayerDIBits, dstFormat, dstLayer.getLayerArrayWidth, ByVal 0&, 0&)
+    transformCheck = TranslateBitmapBits(srcTransform, srcDIB.getActualDIBBits, srcFormat, srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBArrayWidth, dstDIB.getActualDIBBits, dstFormat, dstDIB.getDIBArrayWidth, ByVal 0&, 0&)
     
     If transformCheck = 0 Then
-        applyColorTransformToTwoLayers = False
+        applyColorTransformToTwoDIBs = False
         
         'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
         ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
@@ -444,13 +444,13 @@ Public Function applyColorTransformToTwoLayers(ByVal srcTransform As Long, ByRef
         End If
         
     Else
-        applyColorTransformToTwoLayers = True
+        applyColorTransformToTwoDIBs = True
     End If
 
 End Function
 
-'Apply a CMYK transform between a 32bpp CMYK layer and a 24bpp sRGB layer.
-Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKLayer As pdLayer, ByRef dstRGBLayer As pdLayer) As Boolean
+'Apply a CMYK transform between a 32bpp CMYK DIB and a 24bpp sRGB DIB.
+Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB) As Boolean
 
     Message "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
     
@@ -489,7 +489,7 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
                 Dim transformCheck As Boolean
-                transformCheck = applyColorTransformToTwoLayers(iccTransformation, srcCMYKLayer, dstRGBLayer, BM_KYMCQUADS, BM_RGBTRIPLETS)
+                transformCheck = applyColorTransformToTwoDIBs(iccTransformation, srcCMYKDIB, dstRGBDIB, BM_KYMCQUADS, BM_RGBTRIPLETS)
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then

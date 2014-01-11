@@ -268,7 +268,7 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 23/August/13
-'Last update: added command bar, converted the polar coordinate routine itself to operate on any two layers
+'Last update: added command bar, converted the polar coordinate routine itself to operate on any two DIBs
 '             (thus making this dialog just a thin wrapper to that function)
 '
 'This tool allows the user to convert an image between rectangular and polar coordinates.  An optional polar
@@ -315,21 +315,21 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boo
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    'Use the external function to create a polar coordinate layer
+    'Use the external function to create a polar coordinate DIB
     If swapXAndY Then
-        CreatePolarCoordLayer conversionMethod, polarRadius, edgeHandling, useBilinear, srcLayer, workingLayer, toPreview
+        CreatePolarCoordDIB conversionMethod, polarRadius, edgeHandling, useBilinear, srcDIB, workingDIB, toPreview
     Else
-        CreateXSwappedPolarCoordLayer conversionMethod, polarRadius, edgeHandling, useBilinear, srcLayer, workingLayer, toPreview
+        CreateXSwappedPolarCoordDIB conversionMethod, polarRadius, edgeHandling, useBilinear, srcDIB, workingDIB, toPreview
     End If
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
         
 End Sub

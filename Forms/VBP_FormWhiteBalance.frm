@@ -159,9 +159,9 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Double = 0.05, Optio
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
-    WhiteBalanceLayer percentIgnore, workingLayer, toPreview
+    WhiteBalanceDIB percentIgnore, workingDIB, toPreview
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub

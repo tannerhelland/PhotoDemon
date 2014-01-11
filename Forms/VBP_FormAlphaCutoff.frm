@@ -216,10 +216,10 @@ Option Explicit
 Private userAnswer As VbMsgBoxResult
 
 'A reference to the image being saved (actually, a temporary copy of the image being saved - but whatever).
-Private srcLayer As pdLayer
+Private srcDIB As pdDIB
 
 'Our copy of the image being saved.  This will be created and destroyed frequently as the alpha values are updated.
-Private tmpLayer As pdLayer
+Private tmpDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -230,15 +230,15 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
-Public Property Let refLayer(ByRef refLayer As pdLayer)
-    Set srcLayer = refLayer
+Public Property Let refDIB(ByRef refDIB As pdDIB)
+    Set srcDIB = refDIB
 End Property
 
 'CANCEL button
 Private Sub CmdCancel_Click()
     
     'Free up memory
-    tmpLayer.eraseLayer
+    tmpDIB.eraseDIB
     
     userAnswer = vbCancel
     Me.Hide
@@ -256,7 +256,7 @@ Private Sub CmdOK_Click()
         g_AlphaCutoff = sltThreshold.Value
         
         'Free up memory
-        tmpLayer.eraseLayer
+        tmpDIB.eraseDIB
         
         userAnswer = vbOK
         Me.Hide
@@ -280,8 +280,8 @@ Public Sub showDialog()
     If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
     DrawSystemIcon IDI_ASTERISK, Me.hDC, fixDPI(22), iconY
         
-    'Initialize our temporary layer render object
-    Set tmpLayer = New pdLayer
+    'Initialize our temporary DIB render object
+    Set tmpDIB = New pdDIB
         
     'Render a preview of this threshold value
     renderPreview
@@ -300,12 +300,12 @@ End Sub
 'Render a preview of the current alpha cut-off to the large picture box on the form
 Private Sub renderPreview()
 
-    tmpLayer.eraseLayer
+    tmpDIB.eraseDIB
     
-    tmpLayer.createFromExistingLayer srcLayer
-    tmpLayer.applyAlphaCutoff sltThreshold.Value, False
+    tmpDIB.createFromExistingDIB srcDIB
+    tmpDIB.applyAlphaCutoff sltThreshold.Value, False
     
-    tmpLayer.renderToPictureBox picPreview
+    tmpDIB.renderToPictureBox picPreview
 
 End Sub
 

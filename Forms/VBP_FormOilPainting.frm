@@ -192,7 +192,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        mRadius = mRadius * curLayerValues.previewModifier
+        mRadius = mRadius * curDIBValues.previewModifier
         If mRadius < 1 Then mRadius = 1
     End If
     
@@ -204,23 +204,23 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcLayer.getLayerWidth - 1
-    finalY = srcLayer.getLayerHeight - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
     
     'Just to be safe, make sure the radius isn't larger than the image itself
     If (finalY - initY) < (finalX - initX) Then
@@ -232,7 +232,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcLayer.getLayerColorDepth \ 8
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -543,10 +543,10 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
 
 End Sub

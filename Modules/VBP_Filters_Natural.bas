@@ -28,15 +28,15 @@ Public Sub MenuRainbow()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -104,10 +104,10 @@ Public Sub MenuFogEffect()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'Because interpolation may be used, it's necessary to keep pixel values within special ranges
     Dim xLimit As Long, yLimit As Long
@@ -117,7 +117,7 @@ Public Sub MenuFogEffect()
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -237,19 +237,19 @@ Public Sub MenuWater()
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'Because interpolation may be used, it's necessary to keep pixel values within special ranges
     Dim xLimit As Long, yLimit As Long
@@ -259,7 +259,7 @@ Public Sub MenuWater()
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -359,15 +359,15 @@ Public Sub MenuAtmospheric()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -424,15 +424,15 @@ Public Sub MenuFrozen()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -496,15 +496,15 @@ Public Sub MenuLava()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -569,15 +569,15 @@ Public Sub MenuBurn()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -644,15 +644,15 @@ Public Sub MenuSteel()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

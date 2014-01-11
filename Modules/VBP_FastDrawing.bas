@@ -27,21 +27,21 @@ Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Long, lpSrc As Long, ByVal byteLength As Long)
 
 'Any time a tool dialog is in use, the image to be operated on will be stored IN THIS LAYER.
-'- In preview mode, workingLayer will contain a small, preview-size version of the image.
-'- In non-preview mode, workingLayer will contain a copy of the full image.  We do not allow various effects and tools to operate
+'- In preview mode, workingDIB will contain a small, preview-size version of the image.
+'- In non-preview mode, workingDIB will contain a copy of the full image.  We do not allow various effects and tools to operate
 '   on the original image data, in case they cancel a function mid-way (we must be able to restore the original image).
-'- If a selection is active, workingLayer will contain the selected part of the image, converted to 32bpp mode as necessary
+'- If a selection is active, workingDIB will contain the selected part of the image, converted to 32bpp mode as necessary
 '   (e.g. if feathering or antialiasing is enabled on the selection).
-Public workingLayer As pdLayer
+Public workingDIB As pdDIB
 
-'When the workingLayer is first created, we store a backup of it in this layer.  This backup is used to rebuild the full image
+'When the workingDIB is first created, we store a backup of it in this DIB.  This backup is used to rebuild the full image
 ' while accounting for any selected areas; we merge the selected areas onto this original copy, then copy the composited result
-' back onto the image.  This is easier than attempting to merge the area onto the main layer while doing all our extra
+' back onto the image.  This is easier than attempting to merge the area onto the main DIB while doing all our extra
 ' selection processing.
-Private workingLayerBackup As pdLayer
+Private workingDIBBackup As pdDIB
 
 'prepImageData is the function all PhotoDemon tools call when they need a copy of the image to operate on.  That function fills a
-' variable of this type (FilterInfo) with everything a filter or effect could possibly want to know about the current layer.
+' variable of this type (FilterInfo) with everything a filter or effect could possibly want to know about the current DIB.
 ' Note that filters are free to ignore this data, but it is ALWAYS populated and made available.
 Public Type FilterInfo
     
@@ -66,17 +66,17 @@ Public Type FilterInfo
     maxX As Long
     MaxY As Long
     
-    'The colorDepth of the current layer, specified as BITS per pixel; this will always be 24 or 32
+    'The colorDepth of the current DIB, specified as BITS per pixel; this will always be 24 or 32
     colorDepth As Long
     
     'BytesPerPixel is simply colorDepth / 8.  It is provided for convenience.
     BytesPerPixel As Long
     
-    'Filters shouldn't have to worry about where the layer is physically located, but when it comes
-    ' time to set the layer back in place, knowing the layer's location on the primary image may be
-    ' useful (as when previewing, for example)
-    LayerX As Long
-    LayerY As Long
+    'Filters shouldn't have to worry about where the DIB is physically located, but when it comes
+    ' time to set the image databack in place, knowing the layer's location on the primary image
+    ' may be useful (as when previewing, for example)
+    dibX As Long
+    dibY As Long
     
     'When in preview mode, the on-screen image will typically be represented at a smaller-than-actual size.
     ' If an effect or filter operates on a radius (e.g. "blur radius 20"), that radius value has to be shrunk
@@ -86,30 +86,30 @@ Public Type FilterInfo
     
 End Type
 
-'Calling functions can use this variable to access all FilterInfo for the current workingLayer copy.
-Public curLayerValues As FilterInfo
+'Calling functions can use this variable to access all FilterInfo for the current workingDIB copy.
+Public curDIBValues As FilterInfo
 
 'We may need a temporary copy of the selection mask for rendering purposes; if so, it will be stored here
-Private tmpSelectionMask As pdLayer
+Private tmpSelectionMask As pdDIB
 
-'This function can be used to populate a valid SAFEARRAY2D structure against any layer
-Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcLayer As pdLayer)
+'This function can be used to populate a valid SAFEARRAY2D structure against any DIB
+Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
     
-    'Populate a relevant SafeArray variable for the supplied layer
+    'Populate a relevant SafeArray variable for the supplied DIB
     With srcSA
         .cbElements = 1
         .cDims = 2
         .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcLayer.getLayerHeight
+        .Bounds(0).cElements = srcDIB.getDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcLayer.getLayerArrayWidth
-        .pvData = srcLayer.getLayerDIBits
+        .Bounds(1).cElements = srcDIB.getDIBArrayWidth
+        .pvData = srcDIB.getActualDIBBits
     End With
     
 End Sub
 
 
-'prepImageData's job is to copy the relevant layer (or part of a layer, if a selection is active) into a temporary object,
+'prepImageData's job is to copy the relevant DIB (or part of a DIB, if a selection is active) into a temporary object,
 ' which individual filters and effects can then operate on.  prepImageData() also populates a relevant SafeArray object and
 ' a host of other variables, which filters and effects can copy locally to ensure the fastest possible runtime speed.
 '
@@ -119,35 +119,35 @@ End Sub
 ' Note that for this to work, an fxPreview control must be passed to the function.
 '
 'Finally, the calling routine can optionally specify a different progress bar maximum value.  By default, this is the current
-' layer's width, but some routines run vertically and the progress bar needs to be changed accordingly.
+' DIB's width, but some routines run vertically and the progress bar needs to be changed accordingly.
 Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     cancelCurrentAction = False
 
-    'Prepare our temporary layer
-    Set workingLayer = New pdLayer
+    'Prepare our temporary DIB
+    Set workingDIB = New pdDIB
         
     'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
     Dim dstWidth As Double, dstHeight As Double
     Dim srcWidth As Double, srcHeight As Double
     Dim newWidth As Long, newHeight As Long
     
-    'If this is not a preview, simply copy the current layer without modification
+    'If this is not a preview, simply copy the current DIB without modification
     If Not isPreview Then
     
-        'Check for an active selection; if one is present, use that instead of the full layer.  Note that no special processing is
+        'Check for an active selection; if one is present, use that instead of the full DIB.  Note that no special processing is
         ' applied to the selected area - a full rectangle is passed to the source function, with no accounting for non-rectangular
         ' boundaries or feathering.  All that work is handled *after* the processing is complete.
         If pdImages(g_CurrentImage).selectionActive Then
-            workingLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
-            BitBlt workingLayer.getLayerDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            workingDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+            BitBlt workingDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         Else
-            workingLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer()
+            workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB()
         End If
         
         'Premultiplied alpha is removed prior to processing; this allows various tools to return proper results.
-        If workingLayer.getLayerColorDepth = 32 Then workingLayer.fixPremultipliedAlpha False
+        If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
     
     'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the image that matches the requested
     ' dimensions of the preview area (which are not assumed to be universal!).
@@ -165,8 +165,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
                 srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
             Else
-                srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
-                srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+                srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
+                srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
             End If
         
         'Only a section of the image is being preview (at 100% zoom).  Retrieve just that section.
@@ -188,10 +188,10 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 
             Else
             
-                If pdImages(g_CurrentImage).getActiveLayer().getLayerWidth < srcWidth Then
-                    srcWidth = pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
-                ElseIf pdImages(g_CurrentImage).getActiveLayer().getLayerHeight < srcHeight Then
-                    srcHeight = pdImages(g_CurrentImage).getActiveLayer().getLayerHeight
+                If pdImages(g_CurrentImage).getActiveDIB().getDIBWidth < srcWidth Then
+                    srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
+                ElseIf pdImages(g_CurrentImage).getActiveDIB().getDIBHeight < srcHeight Then
+                    srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
                 End If
                 
             End If
@@ -213,9 +213,9 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'The area may be offset from the (0, 0) position if the user has elected to drag the preview area
         Dim hOffset As Long, vOffset As Long
         
-        'Next, we will create the temporary object (called "workingLayer") at the calculated preview dimensions.  All editing
-        ' actions are applied to this layer; if the user does not cancel the action, that layer will be copied over the
-        ' primary image.  If they cancel, we'll simply discard the temporary layer.
+        'Next, we will create the temporary object (called "workingDIB") at the calculated preview dimensions.  All editing
+        ' actions are applied to this DIB; if the user does not cancel the action, that DIB will be copied over the
+        ' primary image.  If they cancel, we'll simply discard the temporary DIB.
         
         'Just like with a full image, if a selection is active, we only want to process the selected area.
         If pdImages(g_CurrentImage).selectionActive Then
@@ -224,17 +224,17 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             ' This is done at the same color depth as the source image.  (Note that we do not do any preprocessing of the selection
             ' area at this juncture.  The full bounding rect of the selection is processed as-is, and it as at the *draw* step
             ' that we do any further processing.)
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
-            BitBlt tmpLayer.getLayerDC, 0, 0, tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, pdImages(g_CurrentImage).getActiveLayer.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+            BitBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, pdImages(g_CurrentImage).getActiveDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
             
             'If the source area is 32bpp, we want to remove premultiplication before doing any resizing
-            'If tmpLayer.getLayerColorDepth = 32 Then tmpLayer.fixPremultipliedAlpha
+            'If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha
             
             'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
             If previewTarget.viewportFitFullImage Then
-                workingLayer.createFromExistingLayer tmpLayer, newWidth, newHeight
+                workingDIB.createFromExistingDIB tmpDIB, newWidth, newHeight
             
             'The user is operating at 100% zoom.  Retrieve a subsection of the selected area, but do not scale it.
             Else
@@ -243,22 +243,22 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 hOffset = previewTarget.offsetX
                 vOffset = previewTarget.offsetY
                 
-                workingLayer.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
-                BitBlt workingLayer.getLayerDC, 0, 0, dstWidth, dstHeight, tmpLayer.getLayerDC, hOffset, vOffset, vbSrcCopy
+                workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
             
             End If
             
             
-            'Release our temporary layer
-            tmpLayer.eraseLayer
-            Set tmpLayer = Nothing
+            'Release our temporary DIB
+            tmpDIB.eraseDIB
+            Set tmpDIB = Nothing
         
         'If a selection is not currently active, this step is incredibly simple!
         Else
             
             'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
             If previewTarget.viewportFitFullImage Then
-                workingLayer.createFromExistingLayer pdImages(g_CurrentImage).getActiveLayer(), newWidth, newHeight
+                workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight
                 
             'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
             Else
@@ -267,49 +267,49 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 hOffset = previewTarget.offsetX
                 vOffset = previewTarget.offsetY
                 
-                workingLayer.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
-                BitBlt workingLayer.getLayerDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, hOffset, vOffset, vbSrcCopy
+                workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, hOffset, vOffset, vbSrcCopy
                 
             End If
             
         End If
         
         'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
-        If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingLayer
+        If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
         
-        If workingLayer.getLayerColorDepth = 32 Then workingLayer.fixPremultipliedAlpha False
+        If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
         
     End If
     
     'If a selection is active, make a backup of the selected area.  (We do this regardless of whether the current
     ' action is a preview or not.
     If pdImages(g_CurrentImage).selectionActive Then
-        Set workingLayerBackup = New pdLayer
-        workingLayerBackup.createFromExistingLayer workingLayer
+        Set workingDIBBackup = New pdDIB
+        workingDIBBackup.createFromExistingDIB workingDIB
     End If
     
-    'With our temporary layer successfully created, populate the relevant SafeArray variable
-    prepSafeArray tmpSA, workingLayer
+    'With our temporary DIB successfully created, populate the relevant SafeArray variable
+    prepSafeArray tmpSA, workingDIB
 
-    'Finally, populate the ubiquitous curLayerValues variable with everything a filter might want to know
-    With curLayerValues
+    'Finally, populate the ubiquitous curDIBValues variable with everything a filter might want to know
+    With curDIBValues
         .Left = 0
         .Top = 0
-        .Right = workingLayer.getLayerWidth - 1
-        .Bottom = workingLayer.getLayerHeight - 1
-        .Width = workingLayer.getLayerWidth
-        .Height = workingLayer.getLayerHeight
+        .Right = workingDIB.getDIBWidth - 1
+        .Bottom = workingDIB.getDIBHeight - 1
+        .Width = workingDIB.getDIBWidth
+        .Height = workingDIB.getDIBHeight
         .minX = 0
         .MinY = 0
-        .maxX = workingLayer.getLayerWidth - 1
-        .MaxY = workingLayer.getLayerHeight - 1
-        .colorDepth = workingLayer.getLayerColorDepth
-        .BytesPerPixel = (workingLayer.getLayerColorDepth \ 8)
-        .LayerX = 0
-        .LayerY = 0
+        .maxX = workingDIB.getDIBWidth - 1
+        .MaxY = workingDIB.getDIBHeight - 1
+        .colorDepth = workingDIB.getDIBColorDepth
+        .BytesPerPixel = (workingDIB.getDIBColorDepth \ 8)
+        .dibX = 0
+        .dibY = 0
         If isPreview Then
             If previewTarget.viewportFitFullImage Then
-                .previewModifier = workingLayer.getLayerWidth / pdImages(g_CurrentImage).getActiveLayer().getLayerWidth
+                .previewModifier = workingDIB.getDIBWidth / pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
             Else
                 .previewModifier = 1#
             End If
@@ -321,19 +321,19 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
     If (Not isPreview) And (Not doNotTouchProgressBar) Then
         If newProgBarMax = -1 Then
-            SetProgBarMax (curLayerValues.Left + curLayerValues.Width)
+            SetProgBarMax (curDIBValues.Left + curDIBValues.Width)
         Else
             SetProgBarMax newProgBarMax
         End If
     End If
     
-    'If desired, the statement below can be used to verify that the function created a working layer at the proper dimensions
-    'Debug.Print "prepImageData worked: " & workingLayer.getLayerHeight & ", " & workingLayer.getLayerWidth & " (" & workingLayer.getLayerArrayWidth & ")" & ", " & workingLayer.getLayerDIBits
+    'If desired, the statement below can be used to verify that the function created a working DIB at the proper dimensions
+    'Debug.Print "prepImageData worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.getActualDIBBits
 
 End Sub
 
 
-'The counterpart to prepImageData, finalizeImageData copies the working layer back into the source image, then renders
+'The counterpart to prepImageData, finalizeImageData copies the working DIB back into the source image, then renders
 ' everything to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData
 ' will rely on the preview-related values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS
 ' be called before this routine.
@@ -343,12 +343,12 @@ End Sub
 ' this is especially ugly.  (This is the price we pay for full selection feathering support!)
 Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
 
-    'If the user canceled the current action, disregard the working layer and exit immediately.  The central processor
+    'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
     If (Not isPreview) And cancelCurrentAction Then
         
-        workingLayer.eraseLayer
-        Set workingLayer = Nothing
+        workingDIB.eraseDIB
+        Set workingDIB = Nothing
         
         Exit Sub
         
@@ -364,59 +364,59 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     Dim x As Long, y As Long
     
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
-    ' workingLayer with its original version (as stored in workingLayerBackup), while accounting for any selection intricacies.
+    ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
     If pdImages(g_CurrentImage).selectionActive Then
     
         'Before continuing further, create a copy of the selection mask at the relevant image size; note that "relevant size"
         ' is obviously calculated differently for previews.
-        Dim selMaskCopy As pdLayer
-        Set selMaskCopy = New pdLayer
+        Dim selMaskCopy As pdDIB
+        Set selMaskCopy = New pdDIB
         selMaskCopy.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight
-        BitBlt selMaskCopy.getLayerDC, 0, 0, selMaskCopy.getLayerWidth, selMaskCopy.getLayerHeight, pdImages(g_CurrentImage).mainSelection.selMask.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+        BitBlt selMaskCopy.getDIBDC, 0, 0, selMaskCopy.getDIBWidth, selMaskCopy.getDIBHeight, pdImages(g_CurrentImage).mainSelection.selMask.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         
         'If this is a preview, resize the selection mask to match the preview size
         If isPreview Then
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer selMaskCopy
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB selMaskCopy
             
             'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
             If previewTarget.viewportFitFullImage Then
-                GDIPlusResizeLayer selMaskCopy, 0, 0, workingLayer.getLayerWidth, workingLayer.getLayerHeight, tmpLayer, 0, 0, tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, InterpolationModeHighQualityBilinear
+                GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBilinear
             
             'The preview is a 100% copy of the image.  Copy only the relevant part of the selection mask into the
-            ' selection processing layer.
+            ' selection processing DIB.
             Else
                 
                 Dim hOffset As Long, vOffset As Long
                 hOffset = previewTarget.offsetX
                 vOffset = previewTarget.offsetY
                 
-                selMaskCopy.createBlank workingLayer.getLayerWidth, workingLayer.getLayerHeight
-                BitBlt selMaskCopy.getLayerDC, 0, 0, selMaskCopy.getLayerWidth, selMaskCopy.getLayerHeight, pdImages(g_CurrentImage).mainSelection.selMask.getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy
+                selMaskCopy.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight
+                BitBlt selMaskCopy.getDIBDC, 0, 0, selMaskCopy.getDIBWidth, selMaskCopy.getDIBHeight, pdImages(g_CurrentImage).mainSelection.selMask.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy
                 
             End If
             
-            tmpLayer.eraseLayer
-            Set tmpLayer = Nothing
+            tmpDIB.eraseDIB
+            Set tmpDIB = Nothing
         End If
         
-        'We now have a layer that represents the selection mask at the same offset and size as the workingLayer.  This allows
-        ' us to process the selected area identically, regardless of whether this is a preview or a true full-layer operation.
+        'We now have a DIB that represents the selection mask at the same offset and size as the workingDIB.  This allows
+        ' us to process the selected area identically, regardless of whether this is a preview or a true full-DIB operation.
         
-        'A few rare functions actually change the color depth of the image.  Check for that now, and make sure the workingLayer
-        ' and workingLayerBackup layers are the same bit-depth.
-        If workingLayer.getLayerColorDepth <> workingLayerBackup.getLayerColorDepth Then
-            If workingLayer.getLayerColorDepth = 24 Then
-                workingLayerBackup.convertTo24bpp
+        'A few rare functions actually change the color depth of the image.  Check for that now, and make sure the workingDIB
+        ' and workingDIBBackup DIBs are the same bit-depth.
+        If workingDIB.getDIBColorDepth <> workingDIBBackup.getDIBColorDepth Then
+            If workingDIB.getDIBColorDepth = 24 Then
+                workingDIBBackup.convertTo24bpp
             Else
-                workingLayerBackup.convertTo32bpp
+                workingDIBBackup.convertTo32bpp
             End If
         End If
         
         'Next, point three arrays at three images: the original image, the newly modified image, and the selection mask copy
         ' we just created.
-        prepSafeArray wlSA, workingLayer
+        prepSafeArray wlSA, workingDIB
         CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
         
         prepSafeArray selSA, selMaskCopy
@@ -424,7 +424,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         Dim dstImageData() As Byte
         Dim dstSA As SAFEARRAY2D
-        prepSafeArray dstSA, workingLayerBackup
+        prepSafeArray dstSA, workingDIBBackup
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim i As Long
@@ -432,13 +432,13 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Dim blendAlpha As Double
         
         Dim dstQuickVal As Long
-        dstQuickVal = pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth \ 8
+        dstQuickVal = pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth \ 8
             
-        Dim workingLayerCD As Long
-        workingLayerCD = workingLayer.getLayerColorDepth \ 8
+        Dim workingDIBCD As Long
+        workingDIBCD = workingDIB.getDIBColorDepth \ 8
         
-        For x = 0 To workingLayer.getLayerWidth - 1
-        For y = 0 To workingLayer.getLayerHeight - 1
+        For x = 0 To workingDIB.getDIBWidth - 1
+        For y = 0 To workingDIB.getDIBHeight - 1
             
             'Retrieve the selection mask value at this position.  Its value determines how this pixel is handled.
             thisAlpha = selImageData(x * 3, y)
@@ -451,7 +451,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 'This pixel completely replaces the destination one, so simply copy it over
                 Case 255
                     For i = 0 To dstQuickVal - 1
-                        dstImageData(x * dstQuickVal + i, y) = wlImageData(x * workingLayerCD + i, y)
+                        dstImageData(x * dstQuickVal + i, y) = wlImageData(x * workingDIBCD + i, y)
                     Next i
                         
                     'This pixel is antialiased or feathered, so it needs to be blended with the destination at the level specified
@@ -459,7 +459,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                     Case Else
                         blendAlpha = thisAlpha / 255
                         For i = 0 To dstQuickVal - 1
-                            dstImageData(x * dstQuickVal + i, y) = BlendColors(dstImageData(x * dstQuickVal + i, y), wlImageData(x * workingLayerCD + i, y), blendAlpha)
+                            dstImageData(x * dstQuickVal + i, y) = BlendColors(dstImageData(x * dstQuickVal + i, y), wlImageData(x * workingDIBCD + i, y), blendAlpha)
                         Next i
                     
                 End Select
@@ -480,7 +480,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
     'Processing past this point is contingent on whether or not the current action is a preview.
         
-    'If this is not a preview, simply copy the processed data back into the active layer
+    'If this is not a preview, simply copy the processed data back into the active DIB
     If Not isPreview Then
         
         Message "Rendering image to screen..."
@@ -488,18 +488,18 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is active, copy the processed area into its proper place.
         If pdImages(g_CurrentImage).selectionActive Then
         
-            If workingLayerBackup.getLayerColorDepth = 32 Then workingLayerBackup.fixPremultipliedAlpha True
-            BitBlt pdImages(g_CurrentImage).getActiveLayer().getLayerDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingLayerBackup.getLayerDC, 0, 0, vbSrcCopy
+            If workingDIBBackup.getDIBColorDepth = 32 Then workingDIBBackup.fixPremultipliedAlpha True
+            BitBlt pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.getDIBDC, 0, 0, vbSrcCopy
         
-        'If a selection is not active, replace the entire layer with the contents of the working layer
+        'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
-            If workingLayer.getLayerColorDepth = 32 Then workingLayer.fixPremultipliedAlpha True
-            pdImages(g_CurrentImage).getActiveLayer().createFromExistingLayer workingLayer
+            If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha True
+            pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB workingDIB
         End If
                 
-        'workingLayer and its backup have served their purposes, so erase them from memory
-        Set workingLayer = Nothing
-        Set workingLayerBackup = Nothing
+        'workingDIB and its backup have served their purposes, so erase them from memory
+        Set workingDIB = Nothing
+        Set workingDIBBackup = Nothing
                 
         'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
         releaseProgressBar
@@ -512,20 +512,20 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'If this is a preview, we need to repaint a preview box
     Else
         
-        'If a selection is active, use the contents of workingLayerBackup instead of workingLayer to render the preview
+        'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
         If pdImages(g_CurrentImage).selectionActive Then
-            If workingLayerBackup.getLayerColorDepth = 32 Then workingLayerBackup.fixPremultipliedAlpha True
-            previewTarget.setFXImage workingLayerBackup
+            If workingDIBBackup.getDIBColorDepth = 32 Then workingDIBBackup.fixPremultipliedAlpha True
+            previewTarget.setFXImage workingDIBBackup
         
         Else
-            If workingLayer.getLayerColorDepth = 32 Then workingLayer.fixPremultipliedAlpha True
-            previewTarget.setFXImage workingLayer
+            If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha True
+            previewTarget.setFXImage workingDIB
         
         End If
         
-        'workingLayer and its backup have served their purposes, so erase them from memory
-        Set workingLayer = Nothing
-        Set workingLayerBackup = Nothing
+        'workingDIB and its backup have served their purposes, so erase them from memory
+        Set workingDIB = Nothing
+        Set workingDIBBackup = Nothing
         
     End If
     

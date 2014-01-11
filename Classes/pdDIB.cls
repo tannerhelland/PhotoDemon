@@ -6,20 +6,24 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdLayer"
+Attribute VB_Name = "pdDIB"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Image Layer class
-'Copyright ©2011-2014 by Tanner Helland
+'PhotoDemon DIB Wrapper class (formerly known as "pdDIB")
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 05/November/13
-'Last update: whenever the layer is created anew (and thus acquires a new DC), activate color management for that DC.
+'Last updated: 10/January/14
+'Last update: renamed to pdDIB instead of pdDIB.  DIBs need extra metadata associated with them (name, opacity, etc)
+'             and that extra data is too heavy for the many functions that just need a single DIB for fx or whatever else.
+'             To that end, this class is now pdDIB, and all it does is store DIB data, whereas the new pdDIB class will
+'             actually be FOR LAYERS, e.g. it will include all relevant layer data, as well as a single pdDIB object with
+'             the image data for that DIB.  (Confused yet?  :)
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
-' pdLayer is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
+' pdDIB is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
 ' this approach include:
 '
 '- Ability to load large images without problems
@@ -30,7 +34,7 @@ Attribute VB_Exposed = False
 '
 'These are serious benefits.
 '
-'Note that anything you can do with an hDC property you can do with this class - simply use the getLayerDC function to
+'Note that anything you can do with an hDC property you can do with this class - simply use the getDIBDC function to
 ' return the DIB's hDC, then do with it what you please. All functions are heavily commented and should be self-explanatory.
 '
 'Note also that this class is treated as a subset of pdImage(). Right now each pdImage object only contains one layer
@@ -166,29 +170,29 @@ Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'Variables related to the DIB
-'hDC for this layer
-Private layerDC As Long
-'DIB handle for this layer
-Private layerDIB As Long
-'Original handle when this layer is first created (we must store this so we can properly clean up the DIB when we're finished)
-Private layerDIBOriginal As Long
+'hDC for this DIB
+Private dibDC As Long
+'Actual DIB handle for this DIB
+Private dibHandle As Long
+'Original handle when this DIB is first created (we must store this so we can properly clean up the DIB when we're finished)
+Private dibHandleOriginal As Long
 'Pointer to the actual DIB bits
-Private layerDIBits As Long
-'Persistent DIB header; this will be used to create the DIB associated with this layer
-Private layerDIBHeader As BITMAPINFOHEADER
+Private dibBits As Long
+'Persistent DIB header; this will be used with WAPI to create the DIB initially
+Private dibHeader As BITMAPINFOHEADER
 
-'The layer's width and height
-Private layerWidth As Long, layerHeight As Long
+'The DIB's width and height
+Private dibWidth As Long, dibHeight As Long
 
-'The layer's array width (layerWidth * 4 for 32-bit, varies for 24-bit due to DWORD-alignment)
-Private layerArrayWidth As Long
+'The DIB's array width (dibWidth * 4 for 32-bit, varies for 24-bit due to DWORD-alignment)
+Private dibArrayWidth As Long
 
-'The layer's color depth (should only ever be 24 or 32)
-Private layerColorDepth As Long
+'The DIB's color depth (should only ever be 24 or 32)
+Private dibColorDepth As Long
 
-'Used when writing/reading the layer data to/from a file
-Private Const LAYER_IDENTIFIER As String * 4 = "PDlr"
-Private Const LAYER_FILE_VERSION_2012 As Long = &H1000
+'Used when writing/reading DIB data to/from a file
+Private Const DIB_IDENTIFIER As String * 4 = "PDlr"
+Private Const DIB_FILE_VERSION_2012 As Long = &H1000
 
 'These variables are a temporary addition to ensure that print previewing still works. They will be removed in a future
 ' update as part of a print preview revamp, so DO NOT add features that rely on them.
@@ -197,7 +201,7 @@ Public previewY As Long
 Public previewWidth As Long
 Public previewHeight As Long
 
-'When converting a 32bpp layer to 8bpp with transparency, we need to know the location of a transparent pixel.
+'When converting a 32bpp DIB to 8bpp with transparency, we need to know the location of a transparent pixel.
 ' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
 Private trnsX As Long, trnsY As Long
 
@@ -219,11 +223,11 @@ End Sub
 ' magic magenta (253,0,253) and the location of a transparent pixel (trnsX, trnsY) will be marked.
 Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True)
 
-    'Make sure this layer is 32bpp. If it isn't, running this function is pointless.
-    If layerColorDepth = 32 Then
+    'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
+    If dibColorDepth = 32 Then
 
-        'Make sure this layer isn't empty
-        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+        'Make sure this DIB isn't empty
+        If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
             
             If cutOff = 0 Then
                 convertTo24bpp
@@ -244,9 +248,9 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             trnsX = -1
                 
             'Loop through the image, checking alphas as we go
-            For x = 0 To layerWidth - 1
+            For x = 0 To dibWidth - 1
                 QuickX = x * 4
-            For y = 0 To layerHeight - 1
+            For y = 0 To dibHeight - 1
                 
                 chkAlpha = iData(QuickX + 3, y)
                 
@@ -311,56 +315,56 @@ Private Function TranslateColor(ByVal colorRef As Long) As Long
     End If
 End Function
 
-'Return this layer's color depth
-Public Function getLayerColorDepth() As Long
-    getLayerColorDepth = layerColorDepth
+'Return this DIB's color depth
+Public Function getDIBColorDepth() As Long
+    getDIBColorDepth = dibColorDepth
 End Function
 
-'Return this layer's array width
-Public Function getLayerArrayWidth() As Long
-    getLayerArrayWidth = layerArrayWidth
+'Return this DIB's array width
+Public Function getDIBArrayWidth() As Long
+    getDIBArrayWidth = dibArrayWidth
 End Function
 
-'Return this layer's width
-Public Function getLayerWidth() As Long
-    getLayerWidth = layerWidth
+'Return this DIB's width
+Public Function getDIBWidth() As Long
+    getDIBWidth = dibWidth
 End Function
 
-'Return this layer's height
-Public Function getLayerHeight() As Long
-    getLayerHeight = layerHeight
+'Return this DIB's height
+Public Function getDIBHeight() As Long
+    getDIBHeight = dibHeight
 End Function
 
-'Return whether or not this layer has image data associated with it
+'Return whether or not this DIB has image data associated with it
 Public Function hasImage() As Boolean
-    hasImage = (layerDIB <> 0)
+    hasImage = (dibHandle <> 0)
 End Function
 
-'Return this layer's hDC
-Public Function getLayerDC() As Long
-    getLayerDC = layerDC
+'Return this DIB's hDC
+Public Function getDIBDC() As Long
+    getDIBDC = dibDC
 End Function
 
-'Return a pointer to this layer's DIB
-Public Function getLayerDIB() As Long
-    getLayerDIB = layerDIB
+'Return a pointer to this DIB's actual DIB
+Public Function getDIBHandle() As Long
+    getDIBHandle = dibHandle
 End Function
 
-'Return a pointer to this layer's pixel data
-Public Function getLayerDIBits() As Long
-    getLayerDIBits = layerDIBits
+'Return a pointer to this DIB's pixel data (no header)
+Public Function getActualDIBBits() As Long
+    getActualDIBBits = dibBits
 End Function
 
-'Return a pointer to this layer's DIB header
-Public Function getLayerDIBHeader() As Long
-    getLayerDIBHeader = VarPtr(layerDIBHeader)
+'Return a pointer to this DIB's header
+Public Function getDIBHeader() As Long
+    getDIBHeader = VarPtr(dibHeader)
 End Function
 
-'Copy the current layer's contents to the clipboard
-Public Sub copyLayerToClipboard()
+'Copy the current DIB's contents to the clipboard
+Public Sub copyDIBToClipboard()
     
-    'Make sure the current layer actually contains an image before copying it to the clipboard
-    If (layerDIB <> 0) Then
+    'Make sure the DIB actually contains an image before copying it to the clipboard
+    If (dibHandle <> 0) Then
     
         'We are going to copy the image data to the clipboard twice - once in PNG format, then again in standard BMP format.
         ' This maxmimizes operability between major software packages.
@@ -373,14 +377,14 @@ Public Sub copyLayerToClipboard()
             clpObject.ClearClipboard
         
             'FreeImage is required to perform the PNG transformation.  We could use GDI+, but FreeImage is easier to interface with.
-            If g_ImageFormats.FreeImageEnabled And layerColorDepth = 32 Then
+            If g_ImageFormats.FreeImageEnabled And dibColorDepth = 32 Then
             
                 Dim PNGID As Long
                 PNGID = clpObject.AddFormat("PNG")
                 
-                'Convert our current layer to a FreeImage-type DIB
+                'Convert our current DIB to a FreeImage-type DIB
                 Dim fi_DIB As Long
-                fi_DIB = FreeImage_CreateFromDC(layerDC)
+                fi_DIB = FreeImage_CreateFromDC(dibDC)
                 
                 'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
                 Dim pngArray() As Byte
@@ -405,9 +409,9 @@ Public Sub copyLayerToClipboard()
             'If our temporary DC was created successfully, use it to create a temporary bitmap for the clipboard
             If (clipboardDC <> 0) Then
             
-                'Create a bitmap compatible with the current desktop. This will receive the actual pixel data of the current layer.
+                'Create a bitmap compatible with the current desktop. This will receive the actual pixel data of the current DIB.
                 Dim clipboardBMP As Long
-                clipboardBMP = CreateCompatibleBitmap(desktopDC, layerWidth, layerHeight)
+                clipboardBMP = CreateCompatibleBitmap(desktopDC, dibWidth, dibHeight)
                 
                 If (clipboardBMP <> 0) Then
                     
@@ -415,9 +419,9 @@ Public Sub copyLayerToClipboard()
                     Dim clipboardOldBMP As Long
                     clipboardOldBMP = SelectObject(clipboardDC, clipboardBMP)
                     
-                    'Composite the layer against a white background, then use BitBlt to paint the current layer to the clipboard bitmap
+                    'Composite the DIB against a white background, then use BitBlt to paint it to the clipboard bitmap
                     Me.convertTo24bpp
-                    BitBlt clipboardDC, 0, 0, layerWidth, layerHeight, layerDC, 0, 0, vbSrcCopy
+                    BitBlt clipboardDC, 0, 0, dibWidth, dibHeight, dibDC, 0, 0, vbSrcCopy
                     
                     'Remove that bitmap from the clipboard device context to leave room for the copy
                     SelectObject clipboardDC, clipboardOldBMP
@@ -443,24 +447,24 @@ Public Sub copyLayerToClipboard()
 
 End Sub
 
-'Make a copy of an existing layer
-Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
+'Make a copy of an existing DIB
+Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
 
-    'Make sure the layer we're passed isn't empty
-    If srcLayer.getLayerDC <> 0 Then
+    'Make sure the DIB we're passed isn't empty
+    If srcDIB.getDIBDC <> 0 Then
         
         'Prepare new width and height values as requested by the user
-        If newWidth = -1 Then newWidth = srcLayer.getLayerWidth
-        If newHeight = -1 Then newHeight = srcLayer.getLayerHeight
+        If newWidth = -1 Then newWidth = srcDIB.getDIBWidth
+        If newHeight = -1 Then newHeight = srcDIB.getDIBHeight
         
         'If the width and height values are not being changed, the transfer is simple
-        If (newWidth = srcLayer.getLayerWidth) And (newHeight = srcLayer.getLayerHeight) Then
+        If (newWidth = srcDIB.getDIBWidth) And (newHeight = srcDIB.getDIBHeight) Then
         
-            'Create a new, blank DIB the same size as the source layer
-            If createBlank(srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerColorDepth) Then
+            'Create a new, blank DIB the same size as the source DIB
+            If createBlank(srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBColorDepth) Then
                 'Copy the image data without modification
-                BitBlt layerDC, 0, 0, layerWidth, layerHeight, srcLayer.getLayerDC, 0, 0, vbSrcCopy
-                createFromExistingLayer = True
+                BitBlt dibDC, 0, 0, dibWidth, dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+                createFromExistingDIB = True
                 Exit Function
             End If
         
@@ -468,32 +472,32 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
         Else
         
             'Create a new, blank DIB at the requested size
-            If createBlank(newWidth, newHeight, srcLayer.getLayerColorDepth) Then
+            If createBlank(newWidth, newHeight, srcDIB.getDIBColorDepth) Then
 
                 'If either dimension of the new image will be smaller than the source, request halftoning
                 If useHalftoning Then
-                    SetStretchBltMode layerDC, STRETCHBLT_HALFTONE
+                    SetStretchBltMode dibDC, STRETCHBLT_HALFTONE
                 Else
-                    SetStretchBltMode layerDC, STRETCHBLT_COLORONCOLOR
+                    SetStretchBltMode dibDC, STRETCHBLT_COLORONCOLOR
                 End If
 
                 'Resize and copy the image data
-                StretchBlt layerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
+                StretchBlt dibDC, 0, 0, newWidth, newHeight, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, vbSrcCopy
                 
                 'Now comes a nasty hack; HALFTONE stretching does not preserve the alpha channel, but COLORONCOLOR does. So for 32bpp
                 ' images, we now make a second copy of the original image using COLORONCOLOR - which means it contains valid alpha values.
                 ' Then we copy those into our current image, effectively taking the best of both HALFTONE and COLORONCOLOR stretching.
-                If srcLayer.getLayerColorDepth = 32 Then
+                If srcDIB.getDIBColorDepth = 32 Then
                     
-                    Dim hackLayer As pdLayer
-                    Set hackLayer = New pdLayer
-                    hackLayer.createBlank newWidth, newHeight, 32
+                    Dim hackDIB As pdDIB
+                    Set hackDIB = New pdDIB
+                    hackDIB.createBlank newWidth, newHeight, 32
             
-                    SetStretchBltMode hackLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
-                    StretchBlt hackLayer.getLayerDC, 0, 0, newWidth, newHeight, srcLayer.getLayerDC, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, vbSrcCopy
+                    SetStretchBltMode hackDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
+                    StretchBlt hackDIB.getDIBDC, 0, 0, newWidth, newHeight, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, vbSrcCopy
             
-                    'At this point, hacklayer contains transparency data roughly equivalent to our half-toned images. (Not perfect, but close.)
-                    ' We need to copy that data into our image, then release the hack layer.
+                    'At this point, hackDIB contains transparency data roughly equivalent to our half-toned images. (Not perfect, but close.)
+                    ' We need to copy that data into our image, then release the hack DIB.
                     
                     'Start, as always, with a SafeArray
                     Dim iData() As Byte
@@ -501,18 +505,18 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
                     prepInternalSafeArray tmpSA
                     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-                    'Now make a second array that points to the hacked layer alpha data
+                    'Now make a second array that points to the hacked alpha data
                     Dim aData() As Byte
                     Dim srcSA As SAFEARRAY2D
-                    prepExternalSafeArray hackLayer, srcSA
+                    prepExternalSafeArray hackDIB, srcSA
                     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
                     Dim x As Long, y As Long, QuickX As Long
     
                     'Now loop through the image, copying alpha values as we go
-                    For x = 0 To layerWidth - 1
+                    For x = 0 To dibWidth - 1
                         QuickX = x * 4
-                    For y = 0 To layerHeight - 1
+                    For y = 0 To dibHeight - 1
                         iData(QuickX + 3, y) = aData(QuickX + 3, y)
                     Next y
                     Next x
@@ -523,56 +527,56 @@ Public Function createFromExistingLayer(ByRef srcLayer As pdLayer, Optional ByVa
                     CopyMemory ByVal VarPtrArray(aData), 0&, 4
                     Erase aData
                     
-                    'Release the temporary layer
-                    hackLayer.eraseLayer
-                    Set hackLayer = Nothing
+                    'Release the temporary DIB
+                    hackDIB.eraseDIB
+                    Set hackDIB = Nothing
     
                 End If
                 
-                createFromExistingLayer = True
+                createFromExistingDIB = True
                 Exit Function
                         
             End If
         
         End If
             
-        createFromExistingLayer = False
+        createFromExistingDIB = False
     
     End If
     
-    createFromExistingLayer = False
+    createFromExistingDIB = False
 
 End Function
 
-'Convert this layer to 24bpp mode
+'Convert this DIB to 24bpp mode
 Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
 
-    'Make sure this layer is 32bpp. If it isn't, running this function pointless.
-    If layerColorDepth = 32 Then
+    'Make sure this DIB is 32bpp. If it isn't, running this function pointless.
+    If dibColorDepth = 32 Then
 
-        'Make sure this layer isn't empty
-        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+        'Make sure this DIB isn't empty
+        If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
     
-            'Create a temporary layer to hold a copy of this layer's data (because it's about to get deleted)
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer Me
+            'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB Me
                         
-            'Composite the temporary layer against a white background, per convention.
-            tmpLayer.compositeBackgroundColor ExtractR(newBackColor), ExtractG(newBackColor), ExtractB(newBackColor)
+            'Composite the temporary DIB against a white background, per convention.
+            tmpDIB.compositeBackgroundColor ExtractR(newBackColor), ExtractG(newBackColor), ExtractB(newBackColor)
             
-            'Now erase our own layer
-            eraseLayer
+            'Now erase our own DIB
+            eraseDIB
             
-            'Create a new layer that's exactly the same size as the old one
-            If createBlank(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, 24) Then
+            'Create a new DIB that's exactly the same size as the old one
+            If createBlank(tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, 24) Then
                 
-                'Copy the image data from the temporary layer without modification
-                BitBlt layerDC, 0, 0, layerWidth, layerHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+                'Copy the image data from the temporary DIB without modification
+                BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
                 
-                'Erase the temporary layer
-                tmpLayer.eraseLayer
-                Set tmpLayer = Nothing
+                'Erase the temporary DIB
+                tmpDIB.eraseDIB
+                Set tmpDIB = Nothing
                 
                 'Exit
                 convertTo24bpp = True
@@ -589,32 +593,32 @@ Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
 
 End Function
 
-'Convert this layer to 32bpp mode
+'Convert this DIB to 32bpp mode
 Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
 
-    'Make sure this layer is 24bpp. If it isn't, running this function is pointless.
-    If layerColorDepth = 24 Then
+    'Make sure this DIB is 24bpp. If it isn't, running this function is pointless.
+    If dibColorDepth = 24 Then
 
-        'Make sure this layer isn't empty
-        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+        'Make sure this DIB isn't empty
+        If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
     
-            'Create a temporary layer to hold a copy of this layer's data (because it's about to get deleted)
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.createFromExistingLayer Me
+            'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB Me
             
-            'Now erase our own layer
-            eraseLayer
+            'Now erase our own DIB
+            eraseDIB
     
-            'Create a new layer that's exactly the same size as the old one
-            If createBlank(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, 32) Then
+            'Create a new DIB that's exactly the same size as the old one
+            If createBlank(tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, 32) Then
                 
-                'Copy the image data from the temporary layer without modification
-                BitBlt layerDC, 0, 0, layerWidth, layerHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+                'Copy the image data from the temporary DIB without modification
+                BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
                 
-                'Erase the temporary layer
-                tmpLayer.eraseLayer
-                Set tmpLayer = Nothing
+                'Erase the temporary DIB
+                tmpDIB.eraseDIB
+                Set tmpDIB = Nothing
                                 
                 'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
                 ' be completely transparent (and we don't want that!)
@@ -626,9 +630,9 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 Dim x As Long, y As Long, QuickX As Long
                 
                 'Loop through the image, setting the alpha of each pixel to 255 (opaque)
-                For x = 0 To layerWidth - 1
+                For x = 0 To dibWidth - 1
                     QuickX = x * 4
-                For y = 0 To layerHeight - 1
+                For y = 0 To dibHeight - 1
                     iData(QuickX + 3, y) = newTransparency
                 Next y
                 Next x
@@ -651,14 +655,14 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
 
 End Function
 
-'Convert the current layer to 32bpp CMYK encoding (for export as CMYK via FreeImage)
+'Convert the current DIB to 32bpp CMYK encoding (for export as CMYK via FreeImage)
 Public Sub convertToCMYK32()
     
-    'Make sure this layer isn't empty
-    If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    'Make sure this DIB isn't empty
+    If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
     
-        'If is layer isn't 32bpp, make it 32bpp
-        If layerColorDepth <> 32 Then Me.convertTo32bpp
+        'If is DIB isn't 32bpp, make it 32bpp
+        If dibColorDepth <> 32 Then Me.convertTo32bpp
     
         'Prepare direct access to the DIB data
         Dim iData() As Byte
@@ -671,12 +675,12 @@ Public Sub convertToCMYK32()
         Dim cyan As Long, magenta As Long, yellow As Long, K As Long
         
         Dim qvDepth As Long
-        qvDepth = layerColorDepth \ 8
+        qvDepth = dibColorDepth \ 8
                         
         'Loop through the image, checking alphas as we go
-        For x = 0 To layerWidth - 1
+        For x = 0 To dibWidth - 1
             QuickX = x * qvDepth
-        For y = 0 To layerHeight - 1
+        For y = 0 To dibHeight - 1
                         
             'Cyan
             cyan = 255 - iData(QuickX + 2, y)
@@ -713,11 +717,11 @@ Public Sub convertToCMYK32()
     
 End Sub
 
-'Is this layer grayscale? Determination is made by scanning each pixel and comparing RGB values to see if they match.
-Public Function isLayerGrayscale() As Boolean
+'Is this DIB grayscale? Determination is made by scanning each pixel and comparing RGB values to see if they match.
+Public Function isDIBGrayscale() As Boolean
     
-    'Make sure this layer isn't empty
-    If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+    'Make sure this DIB isn't empty
+    If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
     
         'Loop through the image and compare RGB values to determine grayscale or not.
         Dim iData() As Byte
@@ -730,12 +734,12 @@ Public Function isLayerGrayscale() As Boolean
         Dim r As Long, g As Long, b As Long
         
         Dim qvDepth As Long
-        qvDepth = layerColorDepth \ 8
+        qvDepth = dibColorDepth \ 8
                         
         'Loop through the image, checking alphas as we go
-        For x = 0 To layerWidth - 1
+        For x = 0 To dibWidth - 1
             QuickX = x * qvDepth
-        For y = 0 To layerHeight - 1
+        For y = 0 To dibHeight - 1
             
             r = iData(QuickX + 2, y)
             g = iData(QuickX + 1, y)
@@ -748,7 +752,7 @@ Public Function isLayerGrayscale() As Boolean
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
         
-                isLayerGrayscale = False
+                isDIBGrayscale = False
                 Exit Function
                 
             ElseIf g <> b Then
@@ -756,7 +760,7 @@ Public Function isLayerGrayscale() As Boolean
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
             
-                isLayerGrayscale = False
+                isDIBGrayscale = False
                 Exit Function
                 
             ElseIf r <> b Then
@@ -764,7 +768,7 @@ Public Function isLayerGrayscale() As Boolean
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
             
-                isLayerGrayscale = False
+                isDIBGrayscale = False
                 Exit Function
                 
             End If
@@ -778,25 +782,25 @@ Public Function isLayerGrayscale() As Boolean
         Erase iData
                         
         'Exit
-        isLayerGrayscale = True
+        isDIBGrayscale = True
         Exit Function
         
     End If
     
-    'If we made it to this line, the layer is blank, so it doesn't matter what value we return
-    isLayerGrayscale = False
+    'If we made it to this line, the DIB is blank, so it doesn't matter what value we return
+    isDIBGrayscale = False
 
 End Function
 
-'Does this layer have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
+'Does this DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 ' (This is used to determine how transparency is handled when exporting to lower color depths.)
 Public Function isAlphaBinary() As Boolean
 
-    'Make sure this layer is 32bpp. If it isn't, running this function is pointless.
-    If layerColorDepth = 32 Then
+    'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
+    If dibColorDepth = 32 Then
 
-        'Make sure this layer isn't empty
-        If (layerDC <> 0) And (layerWidth <> 0) And (layerHeight <> 0) Then
+        'Make sure this DIB isn't empty
+        If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
     
             'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
@@ -815,9 +819,9 @@ Public Function isAlphaBinary() As Boolean
             Dim chkAlpha As Byte
                 
             'Loop through the image, checking alphas as we go
-            For x = 0 To layerWidth - 1
+            For x = 0 To dibWidth - 1
                 QuickX = x * 4
-            For y = 0 To layerHeight - 1
+            For y = 0 To dibHeight - 1
                 chkAlpha = iData(QuickX + 3, y)
                 
                 'For optimization reasons, this is stated as two IFs instead of an OR. I'm not sure if VB
@@ -853,7 +857,7 @@ Public Function isAlphaBinary() As Boolean
 
 End Function
 
-'Give this layer a picture from a standard VB picture object
+'Give this DIB a picture from a standard VB picture object
 Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
     'Make sure the picture we're passed isn't empty
@@ -880,8 +884,8 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     Dim oldBitmap As Long
                     oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
                     
-                    'Use BitBlt to copy the pixel data to this layer
-                    BitBlt layerDC, 0, 0, layerWidth, layerHeight, TmpDC, 0, 0, vbSrcCopy
+                    'Use BitBlt to copy the pixel data to this DIB
+                    BitBlt dibDC, 0, 0, dibWidth, dibHeight, TmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
                     SelectObject TmpDC, oldBitmap
@@ -889,7 +893,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
-                    If forceWhiteBackground And (layerColorDepth = 32) Then compositeBackgroundColor
+                    If forceWhiteBackground And (dibColorDepth = 32) Then compositeBackgroundColor
                     
                     'Success!
                     CreateFromPicture = True
@@ -913,12 +917,12 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
 
 End Function
 
-'Create a blank layer. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
-' If the layer is 32bpp, an optional alpha parameter can be set for the layer.
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal layerAlpha As Long = 255) As Boolean
+'Create a blank DIB. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
+' If the DIB is 32bpp, an optional alpha parameter can be set for the DIB.
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 255) As Boolean
     
-    'Erase any existing layer data
-    eraseLayer
+    'Erase any existing DIB data
+    eraseDIB
     
     'PhotoDemon only supports 24 and 32 BPP at present
     If colorDepth <> 32 And colorDepth <> 24 Then
@@ -929,97 +933,97 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     BackColor = TranslateColor(BackColor)
         
     'Remember this color depth, width, and height
-    layerColorDepth = colorDepth
-    layerWidth = iWidth
-    layerHeight = iHeight
+    dibColorDepth = colorDepth
+    dibWidth = iWidth
+    dibHeight = iHeight
     
     'Prepare the required header
-    With layerDIBHeader
-        .Size = Len(layerDIBHeader)
+    With dibHeader
+        .Size = Len(dibHeader)
         .Planes = 1
         .BitCount = colorDepth
         .Width = iWidth
         .Height = -iHeight
         'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
         If colorDepth = 32 Then
-            layerArrayWidth = 4 * iWidth
+            dibArrayWidth = 4 * iWidth
         Else
-            layerArrayWidth = (iWidth * 3 + 3) And &HFFFFFFFC
+            dibArrayWidth = (iWidth * 3 + 3) And &HFFFFFFFC
         End If
-        .ImageSize = layerArrayWidth * iHeight
+        .ImageSize = dibArrayWidth * iHeight
     End With
     
-    'Create a new DC for use with this layer
-    layerDC = CreateCompatibleDC(0)
+    'Create a new DC for use with this DIB
+    dibDC = CreateCompatibleDC(0)
     
-    If layerDC <> 0 Then
+    If dibDC <> 0 Then
     
         'Activate color management for this DC.
         ' NOTE!  Due to rejiggering of PD's color management engine, this is no longer necessary.  Color management is only applied
         '         at image load-time (to convert into sRGB), and when drawing to the screen - but when drawing to the screen, all
-        '         management is handled at the destination.  For performance reasons, we no longer color-manage layers themselves,
-        '         which allows us to move RGB/A data between layers much more efficiently.
-        'turnOnColorManagementForDC layerDC
+        '         management is handled at the destination.  For performance reasons, we no longer color-manage DIBs themselves,
+        '         which allows us to move RGB/A data between them much more efficiently.
+        'turnOnColorManagementForDC dibDC
         
         'Create a DIB
-        layerDIB = CreateDIBSection(layerDC, layerDIBHeader, 0, layerDIBits, 0, 0)
+        dibHandle = CreateDIBSection(dibDC, dibHeader, 0, dibBits, 0, 0)
         
         'If successful, select the newly created dib into our DC
-        If (layerDIB <> 0) Then
+        If (dibHandle <> 0) Then
         
-            'If the layer is 24bpp, apply the background color now
+            'If the DIB is 24bpp, apply the background color now
             'If (colorDepth = 24) Then
         
-                'We will later use layerDIBOriginal to clear up the memory associated with this layer
-                layerDIBOriginal = SelectObject(layerDC, layerDIB)
+                'We will later use dibHandleOriginal to clear up the memory associated with this DIB
+                dibHandleOriginal = SelectObject(dibDC, dibHandle)
                 
                 'Finally, set the backColor
-                Dim layerRect As RECT
-                SetRect layerRect, 0, 0, iWidth, iHeight
+                Dim dibRect As RECT
+                SetRect dibRect, 0, 0, iWidth, iHeight
                 
                 Dim hBrush As Long
                 hBrush = CreateSolidBrush(BackColor)
-                FillRect layerDC, layerRect, hBrush
+                FillRect dibDC, dibRect, hBrush
                 DeleteObject hBrush
                 
-            'If the layer is 32bpp, apply any transparency now
+            'If the DIB is 32bpp, apply any transparency now
             'Else
                 '(NOT IMPLEMENTED YET; may add in the future if it proves useful)
             'End If
         
         'If DIB creation failed, clear out the work we've done so far
         Else
-            eraseLayer
+            eraseDIB
         End If
         
     End If
     
     'Return success contingent on whether we have a DIB pointer or not
-    createBlank = (layerDIB <> 0)
+    createBlank = (dibHandle <> 0)
     
 End Function
 
-'This will effectively reset everything related to this layer, including image data. Use cautiously!
-Public Function eraseLayer()
+'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
+Public Function eraseDIB()
 
     'If we have image data, clear it out
-    If layerDC <> 0 Then
-        If layerDIB <> 0 Then
-            SelectObject layerDC, layerDIBOriginal
-            DeleteObject layerDIB
+    If dibDC <> 0 Then
+        If dibHandle <> 0 Then
+            SelectObject dibDC, dibHandleOriginal
+            DeleteObject dibHandle
         End If
-        DeleteDC layerDC
+        DeleteDC dibDC
     End If
 
     'Reset all associated DIB section variables
-    layerDC = 0
-    layerDIB = 0
-    layerDIBOriginal = 0
-    layerDIBits = 0
+    dibDC = 0
+    dibHandle = 0
+    dibHandleOriginal = 0
+    dibBits = 0
 
-    'Reset layer size
-    layerWidth = 0
-    layerHeight = 0
+    'Reset DIB size
+    dibWidth = 0
+    dibHeight = 0
 
 End Function
 
@@ -1027,23 +1031,23 @@ End Function
 Private Sub Class_Initialize()
 
     'Reset all associated DIB section variables
-    layerDC = 0
-    layerDIB = 0
-    layerDIBOriginal = 0
-    layerDIBits = 0
+    dibDC = 0
+    dibHandle = 0
+    dibHandleOriginal = 0
+    dibBits = 0
     
-    'Reset layer size
-    layerWidth = 0
-    layerHeight = 0
+    'Reset DIB size
+    dibWidth = 0
+    dibHeight = 0
     
 End Sub
 
 'TERMINATE class
 Private Sub Class_Terminate()
-    eraseLayer
+    eraseDIB
 End Sub
 
-'Draw this layer to a picture box. The image will be automatically resized and centered.
+'Draw this DIB to a picture box. The image will be automatically resized and centered.
 Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
 
     'Erase any existing picture
@@ -1054,10 +1058,10 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     dstHeight = dstPicture.ScaleHeight
     
     Dim srcWidth As Double, srcHeight As Double
-    srcWidth = layerWidth
-    srcHeight = layerHeight
+    srcWidth = dibWidth
+    srcHeight = dibHeight
     
-    'Calculate the aspect ratio of this layer and the target picture box
+    'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
     srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
@@ -1088,27 +1092,27 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         
     End If
     
-    'Create a temporary layer to house the stretched image
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createBlank dWidth, dHeight
+    'Create a temporary DIB to house the stretched image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank dWidth, dHeight
     
-    'If the target area is smaller than the layer, request halftoning
-    If (dstPicture.ScaleWidth < layerWidth) Or (dstPicture.ScaleHeight < layerHeight) Then
-        SetStretchBltMode tmpLayer.getLayerDC, STRETCHBLT_HALFTONE
+    'If the target area is smaller than the DIB, request halftoning
+    If (dstPicture.ScaleWidth < dibWidth) Or (dstPicture.ScaleHeight < dibHeight) Then
+        SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_HALFTONE
     Else
-        SetStretchBltMode tmpLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
+        SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
     End If
     
     'For 24bpp images, simply copy over the current image data
-    If layerColorDepth = 24 Then
-        StretchBlt tmpLayer.getLayerDC, 0, 0, dWidth, dHeight, layerDC, 0, 0, layerWidth, layerHeight, vbSrcCopy
+    If dibColorDepth = 24 Then
+        StretchBlt tmpDIB.getDIBDC, 0, 0, dWidth, dHeight, dibDC, 0, 0, dibWidth, dibHeight, vbSrcCopy
     
     'For 32bpp images, we must first apply a background checkerboard pattern, then alphablend the image onto it.  (Note
     ' that this does not currently use HALFTONE stretching - that change is forthcoming.)
     Else
-        Drawing.fillLayerWithAlphaCheckerboard tmpLayer, 0, 0, dWidth, dHeight
-        alphaBlendToDC tmpLayer.getLayerDC, , 0, 0, dWidth, dHeight
+        Drawing.fillDIBWithAlphaCheckerboard tmpDIB, 0, 0, dWidth, dHeight
+        alphaBlendToDC tmpDIB.getDIBDC, , 0, 0, dWidth, dHeight
         
     End If
     
@@ -1117,20 +1121,20 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     turnOnColorManagementForDC dstPicture.hDC
     
     'Render the image to the picture box
-    BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
     
     If dstPicture.AutoRedraw Then
         dstPicture.Picture = dstPicture.Image
         dstPicture.Refresh
     End If
     
-    Set tmpLayer = Nothing
+    Set tmpDIB = Nothing
 
 End Sub
 
-'Load a layer's DIB information from file.  If the file is compressed, it will automatically be decompressed.
-' Optionally, if the layer data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
-' load layer data from the current file pointer location.  (In this case, just supply a blank filename.)
+'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
+' Optionally, if the DIB data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
+' load DIB data from the current file pointer location.  (In this case, just supply a blank filename.)
 Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByRef fileNum As Integer = 0) As Boolean
     
     'If this is not an embedded file, create and open it now
@@ -1139,19 +1143,19 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
         Open srcFilename For Binary As #fileNum
     End If
     
-    'Check to make sure this file actually contains layer data
-    Dim LayerIDCheck As String * 4
-    Get #fileNum, , LayerIDCheck
-    If (LayerIDCheck <> LAYER_IDENTIFIER) Then
+    'Check to make sure this file actually contains DIB data
+    Dim DIBIDCheck As String * 4
+    Get #fileNum, , DIBIDCheck
+    If (DIBIDCheck <> DIB_IDENTIFIER) Then
         Close #fileNum
-        Message "Failed to load embedded image layer; invalid layer data found."
+        Message "Failed to load embedded image; invalid header found."
         createFromFile = False
         Exit Function
     End If
 
     'Now check to make sure that the version number is supported (not implemented right now, because there's only one version)
-    Dim LayerVersionCheck As Long
-    Get #fileNum, , LayerVersionCheck
+    Dim DIBVersionCheck As Long
+    Get #fileNum, , DIBVersionCheck
                     
     'Get color depth
     Dim fColorDepth As Long
@@ -1163,7 +1167,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     Get #fileNum, , fHeight
     Get #fileNum, , fArrayWidth
     
-    'Is the layer data compressed?
+    'Is the DIB data compressed?
     Dim toDecompress As Boolean
     Get #fileNum, , toDecompress
     
@@ -1176,7 +1180,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
         'If zLib is not enabled for some reason, abandon the load
         If Not g_ZLibEnabled Then
-            Message "Layer data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue."
+            Message "DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue."
             createFromFile = False
             Exit Function
         End If
@@ -1200,18 +1204,18 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     If createBlank(fWidth, fHeight, fColorDepth) Then
         
         'Now it's time to overwrite our current DIB with the pixel data we pulled from the file.
-        ' Start, as always, with a SafeArray pointed at the layer DIB data.
+        ' Start, as always, with a SafeArray pointed at the DIB data.
         Dim iData() As Byte
         Dim tmpSA As SAFEARRAY2D
         prepInternalSafeArray tmpSA
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
-        'If the layer data is compressed, decompress it now
+        'If the DIB data is compressed, decompress it now
         If toDecompress Then
         
             Dim uncompressedImageData() As Byte
             
-            'If the data is decompressed succesfully, convert it to a 2D array and copy it into the layer DIB memory
+            'If the data is decompressed succesfully, convert it to a 2D array and copy it into this class's DIB memory chunk
             If decompressArray(fileData, uncompressedImageData, origDataSize) Then
             
                 Dim iData2D() As Byte
@@ -1226,7 +1230,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
             'If decompression failed, abandon further processing
             Else
                 
-                Message "Decompression was not successful (unspecified zLib plugin error).  Layer processing abandoned."
+                Message "Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned."
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 Erase iData
                 createFromFile = False
@@ -1234,10 +1238,10 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
                 
             End If
         
-        'If the layer data is not compressed, copy it straight into the DIB
+        'If the DIB data is not compressed, copy it straight into the DIB
         Else
         
-            'Bulk copy the contents of fileData() over to iData() - which is pointing at this layer's DIB, remember
+            'Bulk copy the contents of fileData() over to iData() - which is pointing at this object's DIB, remember
             CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
         
         End If
@@ -1256,8 +1260,8 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
 End Function
 
-'Write this layer's DIB information to file.  Compression can optionally be applied to the layer data.
-' Also, if the calling function wants to embed the layer's data inside an existing file, specify the embedInFile parameter and pass a valid
+'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
+' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
 ' file handle, with the pointer already moved to the location desired for embedding.
 Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompress As Boolean = True, Optional ByVal embedInFile As Boolean = False, Optional ByRef fileNum As Integer) As Boolean
     
@@ -1274,18 +1278,18 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
     End If
     
     'Identifiers
-    Put #fileNum, , LAYER_IDENTIFIER
-    Put #fileNum, , LAYER_FILE_VERSION_2012
+    Put #fileNum, , DIB_IDENTIFIER
+    Put #fileNum, , DIB_FILE_VERSION_2012
     
     'Color depth
-    Put #fileNum, , layerColorDepth
+    Put #fileNum, , dibColorDepth
     
     'Size
-    Put #fileNum, , layerWidth
-    Put #fileNum, , layerHeight
-    Put #fileNum, , layerArrayWidth
+    Put #fileNum, , dibWidth
+    Put #fileNum, , dibHeight
+    Put #fileNum, , dibArrayWidth
         
-    'And finally, the pixel data.  Start by pointing a VB array at the layer's DIB data
+    'And finally, the pixel data.  Start by pointing a VB array at the DIB data
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
     prepInternalSafeArray tmpSA
@@ -1342,7 +1346,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
         
     End If
     
-    'Release the VB array that points at the layer DIB
+    'Release the VB array that points at the DIB
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     Erase iData
     
@@ -1351,15 +1355,15 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
 
 End Function
 
-'Write this layer's DIB information to a valid BMP file.
+'Write this class's DIB information to a valid BMP file.
 Public Sub writeToBitmapFile(ByRef dstFilename As String)
 
-    'First, make sure this layer actually contains image data
+    'First, make sure this DIB actually contains image data
     If Not Me.hasImage() Then Exit Sub
         
     'Calculate the size of a scanline
     Dim slWidth As Long
-    slWidth = ((layerWidth * layerColorDepth + 31) \ 32) * 4
+    slWidth = ((dibWidth * dibColorDepth + 31) \ 32) * 4
     
     'A valid bitmap header consists of two parts: a file header, and an image header.
     Dim bmpFileHeader As BITMAPFILEHEADER
@@ -1368,7 +1372,7 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     'Build the file header first
     With bmpFileHeader
         .Type = &H4D42 'BMP identifier
-        .Size = Len(bmpFileHeader) + (slWidth * layerHeight) 'Length of the file
+        .Size = Len(bmpFileHeader) + (slWidth * dibHeight) 'Length of the file
         .OffBits = Len(bmpFileHeader) + Len(bmpInfoHeader) 'Length of the header area
     End With
     
@@ -1376,15 +1380,15 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     With bmpInfoHeader.Header
         .Size = 40
         .Planes = 1
-        .BitCount = layerColorDepth
-        .Width = layerWidth
-        .Height = layerHeight
+        .BitCount = dibColorDepth
+        .Width = dibWidth
+        .Height = dibHeight
     End With
     
     'Finally, the image bytes
     Dim iData() As Byte
-    ReDim iData(0 To slWidth - 1, 0 To layerHeight - 1) As Byte
-    GetDIBits layerDC, layerDIB, 0, layerHeight, iData(0, 0), bmpInfoHeader, 0
+    ReDim iData(0 To slWidth - 1, 0 To dibHeight - 1) As Byte
+    GetDIBits dibDC, dibHandle, 0, dibHeight, iData(0, 0), bmpInfoHeader, 0
     
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
     If FileExist(dstFilename) Then Kill dstFilename
@@ -1408,29 +1412,29 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     
 End Sub
 
-'Sometimes a layer needs to access its own bits. Here's how.
+'Sometimes this class needs to access its own DIB bits. Here's how.
 Private Sub prepInternalSafeArray(ByRef tmpSA As SAFEARRAY2D)
     With tmpSA
         .cbElements = 1
         .cDims = 2
         .Bounds(0).lBound = 0
-        .Bounds(0).cElements = layerHeight
+        .Bounds(0).cElements = dibHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = layerArrayWidth
-        .pvData = layerDIBits
+        .Bounds(1).cElements = dibArrayWidth
+        .pvData = dibBits
     End With
 End Sub
 
-'Sometimes a layer needs to access the bits of other layers. Here's how.
-Private Sub prepExternalSafeArray(ByRef srcLayer As pdLayer, ByRef tmpSA As SAFEARRAY2D)
+'Sometimes this class needs to access the DIB bits of other DIBs. Here's how.
+Private Sub prepExternalSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SAFEARRAY2D)
     With tmpSA
         .cbElements = 1
         .cDims = 2
         .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcLayer.getLayerHeight
+        .Bounds(0).cElements = srcDIB.getDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcLayer.getLayerArrayWidth
-        .pvData = srcLayer.getLayerDIBits
+        .Bounds(1).cElements = srcDIB.getDIBArrayWidth
+        .pvData = srcDIB.getActualDIBBits
     End With
 End Sub
 
@@ -1439,7 +1443,7 @@ End Sub
 Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255, Optional ByVal parentIsPremultiplied As Boolean = False)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If layerColorDepth <> 32 Then Exit Sub
+    If dibColorDepth <> 32 Then Exit Sub
 
     'DEBUG: These variables can be used to run timing tests on the composite routine.
     'Dim TotalTime As Long
@@ -1470,9 +1474,9 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     Next x
     
     'Loop through the image, blending colors as we go
-    For x = 0 To layerWidth - 1
+    For x = 0 To dibWidth - 1
         QuickX = x * 4
-    For y = 0 To layerHeight - 1
+    For y = 0 To dibHeight - 1
         
         'Access the alpha data for this pixel
         checkAlpha = iData(QuickX + 3, y)
@@ -1522,17 +1526,17 @@ Private Function Blend2Colors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByRef 
 End Function
 
 'Check to see if a 32bpp image is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
-' 255 or all values are set to 0, remove the alpha channel and rebuild this layer in 24bpp mode.)
+' 255 or all values are set to 0, remove the alpha channel and rebuild this DIB in 24bpp mode.)
 Public Function verifyAlphaChannel() As Boolean
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If layerColorDepth <> 32 Then
+    If dibColorDepth <> 32 Then
         verifyAlphaChannel = True
         Exit Function
     End If
     
-    'This routine will fail if the width or height of this layer is 0
-    If layerWidth = 0 Or layerHeight = 0 Then
+    'This routine will fail if the width or height of this DIB is 0
+    If dibWidth = 0 Or dibHeight = 0 Then
         verifyAlphaChannel = True
         Exit Function
     End If
@@ -1559,9 +1563,9 @@ Public Function verifyAlphaChannel() As Boolean
     End If
         
     'Loop through the image, comparing colors as we go
-    For x = 0 To layerWidth - 1
+    For x = 0 To dibWidth - 1
         QuickX = x * 4
-    For y = 0 To layerHeight - 1
+    For y = 0 To dibHeight - 1
         
         'Compare the alpha data for this pixel to the initial pixel. If they DO NOT match, this is a valid alpha channel.
         If initAlpha <> iData(QuickX + 3, y) Then
@@ -1586,16 +1590,16 @@ Public Function verifyAlphaChannel() As Boolean
 
 End Function
 
-'Copy the alpha values from another pdLayer object to this one. This is useful when the alpha channel for this layer must be lost
-' during a transformation (typically something involving FreeImage or GDI+), and a temporary layer was made to preserve the alpha
+'Copy the alpha values from another pdDIB object to this one. This is useful when the alpha channel for this DIB must be lost
+' during a transformation (typically something involving FreeImage or GDI+), and a temporary DIB was made to preserve the alpha
 ' data. If the image is currently 24bpp, this function will first convert it to 32bpp before copying the alpha data.
 
-'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE. Make sure that the passed pdLayer object is
-' THE SAME SIZE (or larger) than this layer, or you will experience critical errors.
-Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
+'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE. Make sure that the passed pdDIB object is
+' THE SAME SIZE (or larger) than this DIB, or you will experience critical errors.
+Public Sub copyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If layerColorDepth <> 32 Then convertTo32bpp
+    If dibColorDepth <> 32 Then convertTo32bpp
 
     'Prepare a SafeArray that points to our own DIB data
     Dim iData() As Byte
@@ -1606,15 +1610,15 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
     'Now make a second array that points to the source DIB data
     Dim aData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepExternalSafeArray srcLayer, srcSA
+    prepExternalSafeArray srcDIB, srcSA
     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
     Dim x As Long, y As Long, QuickX As Long
     
     'Loop through the image, copying alpha values as we go
-    For x = 0 To layerWidth - 1
+    For x = 0 To dibWidth - 1
         QuickX = x * 4
-    For y = 0 To layerHeight - 1
+    For y = 0 To dibHeight - 1
         
         'Access the alpha data for this pixel
         iData(QuickX + 3, y) = aData(QuickX + 3, y)
@@ -1630,12 +1634,12 @@ Public Sub copyAlphaFromExistingLayer(ByRef srcLayer As pdLayer)
 
 End Sub
 
-'Layers created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
+'DIBs created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
 ' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
 Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolean = False)
 
     'This function doesn't matter if the image isn't 32bpp
-    If layerColorDepth <> 32 Then Exit Sub
+    If dibColorDepth <> 32 Then Exit Sub
 
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly
     Dim iData() As Byte
@@ -1649,9 +1653,9 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
     Dim tmpAlpha As Byte, tmpAlphaModifier As Double
 
     'Loop through the image, removing the effects of pre-multiplication as we go
-    For x = 0 To layerWidth - 1
+    For x = 0 To dibWidth - 1
         QuickX = x * 4
-    For y = 0 To layerHeight - 1
+    For y = 0 To dibHeight - 1
         
         tmpAlpha = iData(QuickX + 3, y)
         
@@ -1726,12 +1730,12 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
 
 End Sub
 
-'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects a premultiplied layer
+'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
 Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     Dim bfParams As Long
     
-    If layerColorDepth = 32 Then
+    If dibColorDepth = 32 Then
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
     Else
@@ -1739,6 +1743,6 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 25
         bfParams = customAlpha * &H10000
     End If
     
-    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, layerWidth, newWidth), IIf(newHeight = 0, layerHeight, newHeight), layerDC, 0, 0, layerWidth, layerHeight, bfParams
+    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, dibWidth, newWidth), IIf(newHeight = 0, dibHeight, newHeight), dibDC, 0, 0, dibWidth, dibHeight, bfParams
     
 End Sub

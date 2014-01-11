@@ -124,21 +124,21 @@ Private Sub drawControlBorders()
         
     'For color management to work, we must pre-render the control onto a DIB, then copy the DIB to the screen.
     ' Using VB's internal draw commands leads to unpredictable results.
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
-    tmpLayer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, UserControl.BackColor
+    tmpDIB.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, UserControl.BackColor
     
     'Use the API to draw borders around the control
-    GDIPlusDrawLineToDC tmpLayer.getLayerDC, 0, 0, UserControl.ScaleWidth - 1, 0, vbBlack
-    GDIPlusDrawLineToDC tmpLayer.getLayerDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC tmpLayer.getLayerDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC tmpLayer.getLayerDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
+    GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, vbBlack
+    GDIPlusDrawLineToDC tmpDIB.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, vbBlack
+    GDIPlusDrawLineToDC tmpDIB.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, vbBlack
+    GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
     
     'Render the backcolor to the control; doing it this way ensures color management works.  (Note that we use a
     ' g_UserModeFix check to prevent color management from firing at compile-time.)
     If g_UserModeFix Then turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
-    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, tmpLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
     UserControl.Picture = UserControl.Image
     UserControl.Refresh
     

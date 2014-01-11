@@ -87,7 +87,7 @@ Public Function getMRUThumbnailPath(ByVal mruIndex As Long) As String
     End If
 End Function
 
-Private Function doesMRUHashExist(ByVal filePath As String) As String
+Private Function doesMRUHashExist(ByVal FilePath As String) As String
 
     'Check to see if this file has been requested before.  If it has, return our previous
     ' hash instead of recalculating one from scratch.  If it does not exist, return "".
@@ -98,7 +98,7 @@ Private Function doesMRUHashExist(ByVal filePath As String) As String
         For i = 0 To numOfMRUHashes - 1
         
             'If this file path matches one we've already calculated, return that instead of calculating it again
-            If StrComp(mruHashes(i).mruInitPath, filePath, vbTextCompare) = 0 Then
+            If StrComp(mruHashes(i).mruInitPath, FilePath, vbTextCompare) = 0 Then
                 doesMRUHashExist = mruHashes(i).mruHashPath
                 Exit Function
             End If
@@ -112,11 +112,11 @@ Private Function doesMRUHashExist(ByVal filePath As String) As String
 End Function
 
 'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
-Private Function getMRUHash(ByVal filePath As String) As String
+Private Function getMRUHash(ByVal FilePath As String) As String
     
     'Check to see if this hash already exists
     Dim prevHash As String
-    prevHash = doesMRUHashExist(filePath)
+    prevHash = doesMRUHashExist(FilePath)
     
     'If it does, return it.
     If Len(prevHash) > 0 Then
@@ -131,14 +131,14 @@ Private Function getMRUHash(ByVal filePath As String) As String
         Set cSHA2 = New CSHA256
             
         Dim hString As String
-        hString = cSHA2.SHA256(filePath)
+        hString = cSHA2.SHA256(FilePath)
                 
         'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
         ' This is too long for a filename, so take only the first sixteen characters of the hash.
         hString = Left(hString, 16)
         
         'Save this hash to our hashes array
-        mruHashes(numOfMRUHashes).mruInitPath = filePath
+        mruHashes(numOfMRUHashes).mruInitPath = FilePath
         mruHashes(numOfMRUHashes).mruHashPath = hString
         numOfMRUHashes = numOfMRUHashes + 1
         ReDim Preserve mruHashes(0 To numOfMRUHashes) As mruHash
@@ -465,10 +465,10 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Dim sFilename As String
     sFilename = g_UserPreferences.getIconPath & getMRUHash(imagePath) & ".png"
     
-    'Request a thumbnail from the current image, and store it in a temporary layer.  Note that we can use large (64x64)
+    'Request a thumbnail from the current image, and store it in a temporary DIB.  Note that we can use large (64x64)
     ' thumbnails on Vista, but we are limited to 16x16 on XP.
-    Dim mruThumb As pdLayer
-    Set mruThumb = New pdLayer
+    Dim mruThumb As pdDIB
+    Set mruThumb = New pdDIB
     If g_IsVistaOrLater Then
         tImage.requestThumbnail mruThumb, 64
     Else
@@ -478,9 +478,9 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
     If g_ImageFormats.FreeImageEnabled Then
         
-        'Convert the temporary layer to a FreeImage-type DIB
+        'Convert the temporary DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(mruThumb.getLayerDC)
+        fi_DIB = FreeImage_CreateFromDC(mruThumb.getDIBDC)
     
         'Use that handle to save the image to PNG format
         If fi_DIB <> 0 Then
@@ -488,7 +488,7 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
             
             'Output the PNG file at the proper color depth
             Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-            If mruThumb.getLayerColorDepth = 24 Then
+            If mruThumb.getDIBColorDepth = 24 Then
                 fi_OutputColorDepth = FICD_24BPP
             Else
                 fi_OutputColorDepth = FICD_32BPP
@@ -506,9 +506,9 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Else
         Dim tmpImage As pdImage
         Set tmpImage = New pdImage
-        Set tmpImage.mainLayer = mruThumb
+        Set tmpImage.mainDIB = mruThumb
         
-        If GDIPlusSavePicture(tmpImage, sFilename, ImagePNG, mruThumb.getLayerColorDepth) Then
+        If GDIPlusSavePicture(tmpImage, sFilename, ImagePNG, mruThumb.getDIBColorDepth) Then
             Message "Thumbnail saved successfully."
         Else
             Message "Thumbnail save failed (unspecified GDI+ error)."
@@ -517,8 +517,8 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
         Set tmpImage = Nothing
     End If
     
-    'Regardless of how our thumbnail was saved, we can now delete the temporary thumbnail layer
-    mruThumb.eraseLayer
+    'Regardless of how our thumbnail was saved, we can now delete the temporary thumbnail DIB
+    mruThumb.eraseDIB
     Set mruThumb = Nothing
 
 End Sub

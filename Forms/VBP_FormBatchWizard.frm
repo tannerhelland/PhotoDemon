@@ -2410,29 +2410,29 @@ Private Sub cmbResizeFit_Click()
     If cmbResizeFit.ListIndex = 1 Then colorPicker.Visible = True Else colorPicker.Visible = False
     
     'Display a sample image of the selected resize method
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
-    'Load the proper sample image to our temporary layer
+    'Load the proper sample image to our temporary DIB
     Select Case cmbResizeFit.ListIndex
     
         'Stretch
         Case 0
-            loadResourceToLayer "RSZ_STRETCH", tmpLayer
+            loadResourceToDIB "RSZ_STRETCH", tmpDIB
         
         'Fit inclusive
         Case 1
-            loadResourceToLayer "RSZ_FITIN", tmpLayer
+            loadResourceToDIB "RSZ_FITIN", tmpDIB
         
         'Fit exclusive
         Case 2
-            loadResourceToLayer "RSZ_FITEX", tmpLayer
+            loadResourceToDIB "RSZ_FITEX", tmpDIB
     
     End Select
     
     'Paint the sample image to the screen
     picResizeDemo.Picture = LoadPicture("")
-    tmpLayer.alphaBlendToDC picResizeDemo.hDC
+    tmpDIB.alphaBlendToDC picResizeDemo.hDC
     picResizeDemo.Picture = picResizeDemo.Image
 
 End Sub
@@ -3465,10 +3465,10 @@ Private Sub updatePreview(ByVal srcImagePath As String)
         
         Dim tmpImage As pdImage
         Set tmpImage = New pdImage
-        PreLoadImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainLayer, -1
+        PreLoadImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainDIB, -1
         
-        If Not (tmpImage.mainLayer Is Nothing) And (tmpImage.mainLayer.getLayerWidth > 0) And (tmpImage.mainLayer.getLayerHeight > 0) Then
-            tmpImage.mainLayer.renderToPictureBox picPreview
+        If Not (tmpImage.mainDIB Is Nothing) And (tmpImage.mainDIB.getDIBWidth > 0) And (tmpImage.mainDIB.getDIBHeight > 0) Then
+            tmpImage.mainDIB.renderToPictureBox picPreview
         Else
             picPreview.Picture = LoadPicture("")
             Dim strToPrint As String
@@ -3800,7 +3800,7 @@ Private Sub prepareForBatchConversion()
                             'If it isn't, save as JPEG or PNG contingent on color depth
                             
                             '24bpp images default to JPEG
-                            If pdImages(g_CurrentImage).getCompositedImage().getLayerColorDepth = 24 Then
+                            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 24 Then
                                 tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
                                 pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
                             

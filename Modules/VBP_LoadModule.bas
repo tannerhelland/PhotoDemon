@@ -313,8 +313,8 @@ Public Sub LoadTheProgram()
     
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.
-    Set g_CheckerboardPattern = New pdLayer
-    Drawing.createAlphaCheckerboardLayer g_CheckerboardPattern
+    Set g_CheckerboardPattern = New pdDIB
+    Drawing.createAlphaCheckerboardDIB g_CheckerboardPattern
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
@@ -449,7 +449,7 @@ Private Sub LoadImagesFromCommandLine()
 End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
-Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetLayer As pdLayer, Optional ByVal pageNumber As Long = 0)
+Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
         
     '*************************************************************************************************************************************
     ' Prepare all variables related to image loading
@@ -538,7 +538,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             CreateNewImageForm
         
             Set targetImage = pdImages(g_CurrentImage)
-            Set targetLayer = pdImages(g_CurrentImage).getActiveLayer()
+            Set targetDIB = pdImages(g_CurrentImage).getActiveDIB()
         
             g_AllowViewportRendering = False
         
@@ -590,7 +590,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Case "PDI"
             
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
-                loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetLayer, targetImage)
+                loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetDIB, targetImage)
                 
                 targetImage.originalFileFormat = 100
                 mustCountColors = True
@@ -598,9 +598,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too.
             Case "TMP"
             
-                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer, targetImage)
+                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB, targetImage)
                 
-                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer, targetImage)
+                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB, targetImage)
                 
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
@@ -609,7 +609,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' VB's internal LoadPicture function.
             Case Else
                                 
-                If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetLayer, targetImage, pageNumber, isThisPrimaryImage)
+                If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetDIB, targetImage, pageNumber, isThisPrimaryImage)
                 
                 If loadSuccessful Then loadedByOtherMeans = False
                 
@@ -618,7 +618,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
                     If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetLayer, targetImage)
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB, targetImage)
                     
                     'If GDI+ loaded the image successfully, note that we have to determine color depth manually
                     If loadSuccessful Then
@@ -632,7 +632,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If (Not loadSuccessful) Then
                     
                     If isThisPrimaryImage Then Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetLayer, targetImage)
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB, targetImage)
                 
                     'If VB managed to load the image successfully, note that we have to deteremine color depth manually
                     If loadSuccessful Then
@@ -651,7 +651,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         'Double-check to make sure the image was loaded successfully
-        If ((Not loadSuccessful) Or (targetImage.getActiveLayer().getLayerWidth = 0) Or (targetImage.getActiveLayer().getLayerHeight = 0)) And isThisPrimaryImage Then
+        If ((Not loadSuccessful) Or (targetImage.getActiveDIB().getDIBWidth = 0) Or (targetImage.getActiveDIB().getDIBHeight = 0)) And isThisPrimaryImage Then
             Message "Failed to load %1", sFile(thisImage)
             
             'Deactivating the image will remove the reference to the containing form - this is desired behavior, because VB counts object references,
@@ -727,7 +727,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the image has an alpha channel, verify it.  If it contains all 0 or all 255, convert it to 24bpp to conserve resources.
         '*************************************************************************************************************************************
         
-        If targetImage.getActiveLayer().getLayerColorDepth = 32 Then
+        If targetImage.getActiveDIB().getDIBColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
             If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
@@ -735,12 +735,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
                 'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
-                If Not targetImage.getActiveLayer().verifyAlphaChannel Then
+                If Not targetImage.getActiveDIB().verifyAlphaChannel Then
                 
                     If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
                 
-                    'Transparently convert the main layer to 24bpp
-                    targetImage.getActiveLayer().convertTo24bpp
+                    'Transparently convert the main DIB to 24bpp
+                    targetImage.getActiveDIB().convertTo24bpp
                 
                 Else
                     If isThisPrimaryImage Then Message "Alpha channel verified.  Leaving image in 32bpp mode."
@@ -771,12 +771,12 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         If targetImage.ICCProfile.hasICCData And (Not targetImage.ICCProfile.hasProfileBeenApplied) Then
             
             '32bpp images must be un-premultiplied before the transformation
-            If targetImage.mainLayer.getLayerColorDepth = 32 Then targetImage.mainLayer.fixPremultipliedAlpha
+            If targetImage.mainDIB.getDIBColorDepth = 32 Then targetImage.mainDIB.fixPremultipliedAlpha
             
             targetImage.ICCProfile.applyICCtoParentImage targetImage
             
             '32bpp images must be re-premultiplied after the transformation
-            If targetImage.mainLayer.getLayerColorDepth = 32 Then targetImage.mainLayer.fixPremultipliedAlpha True
+            If targetImage.mainDIB.getDIBColorDepth = 32 Then targetImage.mainDIB.fixPremultipliedAlpha True
             
         End If
         
@@ -796,7 +796,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
         
             'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-            targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.getActiveLayer())
+            targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.getActiveDIB())
             
             If g_IsImageGray Then
                 Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
@@ -1051,14 +1051,14 @@ PreloadMoreImages:
 End Sub
 
 'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
-Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage, Optional ByVal pageNumber As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
+Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal pageNumber As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
 
-    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstLayer, dstImage, pageNumber, showMessages)
+    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstDIB, dstImage, pageNumber, showMessages)
     
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
-Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
+Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
     'Decompress the current PDI file
     DecompressFile PDIPath
@@ -1074,7 +1074,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstLayer As p
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstDIB.CreateFromPicture tmpPicture
     
     'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
     ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
@@ -1087,13 +1087,13 @@ End Function
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
             
     Dim verifyGDISuccess As Boolean
     
-    verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstImage, dstLayer)
+    verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstImage, dstDIB)
     
-    If verifyGDISuccess And (dstLayer.getLayerWidth <> 0) And (dstLayer.getLayerHeight <> 0) Then
+    If verifyGDISuccess And (dstDIB.getDIBWidth <> 0) And (dstDIB.getDIBHeight <> 0) Then
         LoadGDIPlusImage = True
     Else
         LoadGDIPlusImage = False
@@ -1102,7 +1102,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstLayer As pd
 End Function
 
 'BITMAP loading
-Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer, ByRef dstImage As pdImage) As Boolean
+Public Function LoadVBImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
     On Error GoTo LoadVBImageFail
     
@@ -1117,7 +1117,7 @@ Public Function LoadVBImage(ByVal imagePath As String, ByRef dstLayer As pdLayer
     End If
     
     'Copy the image into the current pdImage object
-    dstLayer.CreateFromPicture tmpPicture
+    dstDIB.CreateFromPicture tmpPicture
     
     LoadVBImage = True
     Exit Function
@@ -1138,8 +1138,8 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
         'Pixel data
         'Case 1
         
-            'The layer handles the actual loading of the undo data
-            pdImages(g_CurrentImage).getActiveLayer().createFromFile undoFile
+            'The DIB handles the actual loading of the undo data
+            pdImages(g_CurrentImage).getActiveDIB().createFromFile undoFile
             pdImages(g_CurrentImage).updateSize
             
         'Selection data
@@ -1571,7 +1571,7 @@ Public Sub DuplicateCurrentImage()
     pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
         
     'Copy the picture from the previous form to this new one
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer pdImages(imageToBeDuplicated).mainLayer
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB pdImages(imageToBeDuplicated).mainDIB
 
     'Store important data about the image to the pdImages array
     pdImages(g_CurrentImage).updateSize

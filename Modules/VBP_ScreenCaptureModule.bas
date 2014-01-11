@@ -54,14 +54,14 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     ' to give the message box time to disappear
     Sleep 250
     
-    'Use the getDesktopAsLayer function to copy the requested screen contents into a temporary layer
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    'Use the getDesktopAsDIB function to copy the requested screen contents into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
     If captureFullDesktop Then
-        getDesktopAsLayer tmpLayer
+        getDesktopAsDIB tmpDIB
     Else
-        If Not getHwndContentsAsLayer(tmpLayer, alternateWindowHwnd, includeChrome) Then
+        If Not getHwndContentsAsDIB(tmpDIB, alternateWindowHwnd, includeChrome) Then
             Message "Could not retrieve program window - the program appears to have been unloaded."
             Exit Sub
         End If
@@ -74,12 +74,12 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Dim tmpFilename As String
     tmpFilename = g_UserPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
     
-    'Ask the layer to write out its data to file in BMP format
-    tmpLayer.writeToBitmapFile tmpFilename
+    'Ask the DIB to write out its data to file in BMP format
+    tmpDIB.writeToBitmapFile tmpFilename
         
-    'We are now done with the temporary layer, so free it up
-    tmpLayer.eraseLayer
-    Set tmpLayer = Nothing
+    'We are now done with the temporary DIB, so free it up
+    tmpDIB.eraseDIB
+    Set tmpDIB = Nothing
         
     'Once the capture is saved, load it up like any other bitmap
     ' NOTE: Because PreLoadImage requires an array of strings, create an array to send to it
@@ -105,8 +105,8 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     
 End Sub
 
-'Use this function to return a copy of the current desktop in layer format
-Public Sub getDesktopAsLayer(ByRef dstLayer As pdLayer)
+'Use this function to return a copy of the current desktop in DIB format
+Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
 
     'Get the window handle of the screen
     Dim scrHwnd As Long
@@ -130,9 +130,9 @@ Public Sub getDesktopAsLayer(ByRef dstLayer As pdLayer)
     'Convert the hDC into the appropriate bitmap format
     CreateCompatibleBitmap scrhDC, screenWidth, screenHeight
     
-    'Copy the bitmap into the specified layer
-    dstLayer.createBlank screenWidth, screenHeight
-    BitBlt dstLayer.getLayerDC, 0, 0, screenWidth, screenHeight, scrhDC, screenLeft, screenTop, vbSrcCopy
+    'Copy the bitmap into the specified DIB
+    dstDIB.createBlank screenWidth, screenHeight
+    BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, scrhDC, screenLeft, screenTop, vbSrcCopy
     
     'Release the object and handle we generated for the capture, then exit
     ReleaseDC scrHwnd, scrhDC
@@ -140,8 +140,8 @@ Public Sub getDesktopAsLayer(ByRef dstLayer As pdLayer)
 
 End Sub
 
-'Copy the visual contents of any hWnd into a layer; window chrome can be optionally included, if desired
-Public Function getHwndContentsAsLayer(ByRef dstLayer As pdLayer, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
+Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
     'Start by retrieving the necessary dimensions from the target window
     Dim targetRect As winRect
@@ -154,21 +154,21 @@ Public Function getHwndContentsAsLayer(ByRef dstLayer As pdLayer, ByVal targetHW
     
     'Check to make sure the window hasn't been unloaded
     If (targetRect.x2 - targetRect.x1 = 0) Or (targetRect.y2 - targetRect.y1 = 0) Then
-        getHwndContentsAsLayer = False
+        getHwndContentsAsDIB = False
         Exit Function
     End If
     
-    'Prepare the layer at the proper size
-    dstLayer.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1
+    'Prepare the DIB at the proper size
+    dstDIB.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1
     
-    'Ask the window in question to paint itself into our layer
+    'Ask the window in question to paint itself into our DIB
     If includeChrome Then
-        PrintWindow targetHWnd, dstLayer.getLayerDC, 0
+        PrintWindow targetHWnd, dstDIB.getDIBDC, 0
     Else
-        PrintWindow targetHWnd, dstLayer.getLayerDC, PW_CLIENTONLY
+        PrintWindow targetHWnd, dstDIB.getDIBDC, PW_CLIENTONLY
     End If
     
-    getHwndContentsAsLayer = True
+    getHwndContentsAsDIB = True
     
 End Function
 

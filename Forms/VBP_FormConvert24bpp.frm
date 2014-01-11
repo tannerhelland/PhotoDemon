@@ -146,7 +146,7 @@ Private Sub updatePreview()
     If cmdBar.previewsAllowed Then
         Dim tmpSA As SAFEARRAY2D
         prepImageData tmpSA, True, fxPreview
-        workingLayer.convertTo24bpp colorPicker.Color
+        workingDIB.convertTo24bpp colorPicker.Color
         finalizeImageData True, fxPreview
     End If
 End Sub

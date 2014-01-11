@@ -1109,14 +1109,14 @@ Public Sub TallyHistogramValues()
     Debug.Print "Tallying histogram values..."
 
     'Notify the user that the histogram is being generated
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
     'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
     If (picH.Picture.Width = 0) Then
-        tmpLayer.createBlank picH.ScaleWidth, picH.ScaleHeight
+        tmpDIB.createBlank picH.ScaleWidth, picH.ScaleHeight
     Else
-        tmpLayer.CreateFromPicture picH.Picture
+        tmpDIB.CreateFromPicture picH.Picture
     End If
     
     Dim notifyFont As pdFont
@@ -1127,11 +1127,11 @@ Public Sub TallyHistogramValues()
     notifyFont.setFontBold True
     notifyFont.setTextAlignment vbCenter
     notifyFont.createFontObject
-    notifyFont.attachToDC tmpLayer.getLayerDC
+    notifyFont.attachToDC tmpDIB.getDIBDC
     
     notifyFont.fastRenderText picH.ScaleWidth / 2, picH.ScaleHeight / 2, g_Language.TranslateMessage("Please wait while the histogram is updated...")
-    tmpLayer.renderToPictureBox picH
-    Set tmpLayer = Nothing
+    tmpDIB.renderToPictureBox picH
+    Set tmpDIB = Nothing
 
     Message "Updating histogram..."
     
@@ -1168,15 +1168,15 @@ Public Sub StretchHistogram()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

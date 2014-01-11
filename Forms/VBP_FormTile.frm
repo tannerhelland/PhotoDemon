@@ -370,9 +370,9 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
     If Not isPreview Then Message "Rendering tiled image..."
     
-    'Create a temporary layer to generate the tile and/or tile preview
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
+    'Create a temporary DIB to generate the tile and/or tile preview
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
         
     'We need to determine a target width and height based on the input parameters
     Dim targetWidth As Long, targetHeight As Long
@@ -405,7 +405,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If targetHeight > MaxSize Then targetHeight = MaxSize
     
     'Resize the target picture box to this new size
-    tmpLayer.createBlank targetWidth, targetHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth
+    tmpDIB.createBlank targetWidth, targetHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
         
     'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
     Dim xLoop As Long, yLoop As Long
@@ -419,7 +419,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
     For x = 0 To xLoop
     For y = 0 To yLoop
-        BitBlt tmpLayer.getLayerDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(g_CurrentImage).getActiveLayer().getLayerDC, 0, 0, vbSrcCopy
+        BitBlt tmpDIB.getDIBDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, 0, 0, vbSrcCopy
     Next y
         If Not isPreview Then SetProgBarVal x
     Next x
@@ -428,12 +428,12 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
         SetProgBarVal xLoop
     
-        'With the tiling complete, copy the temporary layer over the existing layer
-        pdImages(g_CurrentImage).getActiveLayer().createFromExistingLayer tmpLayer
+        'With the tiling complete, copy the temporary DIB over the existing DIB
+        pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB tmpDIB
         
-        'Erase the temporary layer to save on memory
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        'Erase the temporary DIB to save on memory
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
         
         'Display the new size
         pdImages(g_CurrentImage).updateSize
@@ -448,12 +448,12 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         
     Else
     
-        'Render the preview and erase the temporary layer to conserve memory
-        tmpLayer.renderToPictureBox fxPreview.getPreviewPic
-        fxPreview.setFXImage tmpLayer
+        'Render the preview and erase the temporary DIB to conserve memory
+        tmpDIB.renderToPictureBox fxPreview.getPreviewPic
+        fxPreview.setFXImage tmpDIB
         
-        tmpLayer.eraseLayer
-        Set tmpLayer = Nothing
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
         
     End If
 
@@ -490,7 +490,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage pdImages(g_CurrentImage).getActiveLayer()
+    fxPreview.setOriginalImage pdImages(g_CurrentImage).getActiveDIB()
     
     'Populate the combo box
     cboTarget.AddItem " current screen size", 0

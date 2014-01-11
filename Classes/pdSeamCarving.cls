@@ -46,13 +46,13 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Source image, which will be carved into smaller and smaller bits by the function
-Private m_SourceImage As pdLayer
+Private m_SourceImage As pdDIB
 
 'Energy image, which can be generated however the calling function wants
-Private m_EnergyImage As pdLayer
+Private m_EnergyImage As pdDIB
 
 'Final image, which will only exist after a seam carve operation has been carried out
-Private m_DestinationImage As pdLayer
+Private m_DestinationImage As pdDIB
 
 'Shrinking and enlarging are handled separately
 Private Enum ScaleChange
@@ -66,24 +66,24 @@ End Enum
 #End If
 
 'For performance reasons, the seam carver class maintains its own copy of the source image.
-Public Sub setSourceImage(ByRef srcLayer As pdLayer)
-    Set m_SourceImage = New pdLayer
-    m_SourceImage.createFromExistingLayer srcLayer
+Public Sub setSourceImage(ByRef srcDIB As pdDIB)
+    Set m_SourceImage = New pdDIB
+    m_SourceImage.createFromExistingDIB srcDIB
 End Sub
 
-'Retrieve the carved image into a layer of the calling function's choosing
-Public Function getCarvedImage() As pdLayer
+'Retrieve the carved image into a DIB of the calling function's choosing
+Public Function getCarvedImage() As pdDIB
     Set getCarvedImage = m_DestinationImage
 End Function
 
-Public Sub setEnergyImage(ByRef srcLayer As pdLayer)
+Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     
     'Create a copy of the energy image
-    Set m_EnergyImage = New pdLayer
-    m_EnergyImage.createFromExistingLayer srcLayer
+    Set m_EnergyImage = New pdDIB
+    m_EnergyImage.createFromExistingDIB srcDIB
     
     'Transparency data is not relevant for computing pixel energy, so remove it if present
-    If m_EnergyImage.getLayerColorDepth = 32 Then m_EnergyImage.convertTo24bpp
+    If m_EnergyImage.getDIBColorDepth = 32 Then m_EnergyImage.convertTo24bpp
     
     'To speed up processing, we are going to store all energy data in the blue channel of the image.
     Dim energyData() As Byte
@@ -100,9 +100,9 @@ Public Sub setEnergyImage(ByRef srcLayer As pdLayer)
         grayLookUp(x) = x \ 3
     Next x
     
-    For x = 0 To srcLayer.getLayerWidth - 1
+    For x = 0 To srcDIB.getDIBWidth - 1
         QuickVal = x * 3
-    For y = 0 To srcLayer.getLayerHeight - 1
+    For y = 0 To srcDIB.getDIBHeight - 1
         r = energyData(QuickVal + 2, y)
         g = energyData(QuickVal + 1, y)
         b = energyData(QuickVal, y)
@@ -238,8 +238,8 @@ Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long,
         If rowIndex < finalY Then
             
             'Both the energy image and source image must have their data shifted
-            BitBlt m_EnergyImage.getLayerDC, x, rowIndex, 1, finalY - rowIndex, m_EnergyImage.getLayerDC, x, rowIndex + 1, vbSrcCopy
-            BitBlt m_SourceImage.getLayerDC, x, rowIndex, 1, finalY - rowIndex, m_SourceImage.getLayerDC, x, rowIndex + 1, vbSrcCopy
+            BitBlt m_EnergyImage.getDIBDC, x, rowIndex, 1, finalY - rowIndex, m_EnergyImage.getDIBDC, x, rowIndex + 1, vbSrcCopy
+            BitBlt m_SourceImage.getDIBDC, x, rowIndex, 1, finalY - rowIndex, m_SourceImage.getDIBDC, x, rowIndex + 1, vbSrcCopy
             
         End If
         
@@ -426,8 +426,8 @@ Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Lon
         If columnIndex < finalX Then
             
             'Both the energy image and source image must have their data shifted
-            BitBlt m_EnergyImage.getLayerDC, columnIndex, y, finalX - columnIndex, 1, m_EnergyImage.getLayerDC, columnIndex + 1, y, vbSrcCopy
-            BitBlt m_SourceImage.getLayerDC, columnIndex, y, finalX - columnIndex, 1, m_SourceImage.getLayerDC, columnIndex + 1, y, vbSrcCopy
+            BitBlt m_EnergyImage.getDIBDC, columnIndex, y, finalX - columnIndex, 1, m_EnergyImage.getDIBDC, columnIndex + 1, y, vbSrcCopy
+            BitBlt m_SourceImage.getDIBDC, columnIndex, y, finalX - columnIndex, 1, m_SourceImage.getDIBDC, columnIndex + 1, y, vbSrcCopy
             
         End If
         
@@ -496,7 +496,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
 
     'Due to limitations of the seam carving algorithm, this function can only add [imagewidth] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
-    If numOfAddedSeams > m_SourceImage.getLayerWidth / 2 Then numOfAddedSeams = m_SourceImage.getLayerWidth / 2
+    If numOfAddedSeams > m_SourceImage.getDIBWidth / 2 Then numOfAddedSeams = m_SourceImage.getDIBWidth / 2
     
     Dim x As Long, y As Long, i As Long
     
@@ -592,9 +592,9 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     'We now have a completed visibility map for this image.  Next, we will use that visibility map to construct a new destination image.
     
     'Create a blank destination image
-    Dim tmpImage As pdLayer
-    Set tmpImage = New pdLayer
-    tmpImage.createBlank finalX + 1 + numOfAddedSeams, finalY + 1, m_SourceImage.getLayerColorDepth
+    Dim tmpImage As pdDIB
+    Set tmpImage = New pdDIB
+    tmpImage.createBlank finalX + 1 + numOfAddedSeams, finalY + 1, m_SourceImage.getDIBColorDepth
     
     'Obtain a pointer to the raw DIB bits of both the source and destination images
     Dim srcImageData() As Byte
@@ -608,8 +608,8 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Note that if the image is going to be resized again in the future, we also need to update the energy map
-    Dim newEnergyMap As pdLayer
-    Set newEnergyMap = New pdLayer
+    Dim newEnergyMap As pdDIB
+    Set newEnergyMap = New pdDIB
     newEnergyMap.createBlank finalX + 1 + numOfAddedSeams, finalY + 1, 24
     
     Dim srcEnergy() As Byte
@@ -625,7 +625,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     Dim quickSrcX As Long, quickDstX As Long, xOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
-    If m_SourceImage.getLayerColorDepth = 32 Then
+    If m_SourceImage.getDIBColorDepth = 32 Then
         alphaPresent = True
         colorDepthOffset = 4
     Else
@@ -676,11 +676,11 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     CopyMemory ByVal VarPtrArray(dstEnergy), 0&, 4
     
     'Replace the source image with the newly generated destination image
-    m_SourceImage.createFromExistingLayer tmpImage
+    m_SourceImage.createFromExistingDIB tmpImage
     Set tmpImage = Nothing
     
     'Replace the energy image with this new copy
-    m_EnergyImage.createFromExistingLayer newEnergyMap
+    m_EnergyImage.createFromExistingDIB newEnergyMap
     Set newEnergyMap = Nothing
 
 End Function
@@ -690,7 +690,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
 
     'Due to limitations of the seam carving algorithm, this function can only add [imageheight] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
-    If numOfAddedSeams > m_SourceImage.getLayerHeight / 2 Then numOfAddedSeams = m_SourceImage.getLayerHeight / 2
+    If numOfAddedSeams > m_SourceImage.getDIBHeight / 2 Then numOfAddedSeams = m_SourceImage.getDIBHeight / 2
     
     Dim x As Long, y As Long, i As Long
     
@@ -786,9 +786,9 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     'We now have a completed visibility map for this image.  Next, we will use that visibility map to construct a new destination image.
     
     'Create a blank destination image
-    Dim tmpImage As pdLayer
-    Set tmpImage = New pdLayer
-    tmpImage.createBlank finalX + 1, finalY + 1 + numOfAddedSeams, m_SourceImage.getLayerColorDepth
+    Dim tmpImage As pdDIB
+    Set tmpImage = New pdDIB
+    tmpImage.createBlank finalX + 1, finalY + 1 + numOfAddedSeams, m_SourceImage.getDIBColorDepth
     
     'Obtain a pointer to the raw DIB bits of both the source and destination images
     Dim srcImageData() As Byte
@@ -802,8 +802,8 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Note that if the image is going to be resized again in the future, we also need to update the energy map
-    Dim newEnergyMap As pdLayer
-    Set newEnergyMap = New pdLayer
+    Dim newEnergyMap As pdDIB
+    Set newEnergyMap = New pdDIB
     newEnergyMap.createBlank finalX + 1, finalY + 1 + numOfAddedSeams, 24
     
     Dim srcEnergy() As Byte
@@ -819,7 +819,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     Dim QuickX As Long, QuickY As Long, yOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
-    If m_SourceImage.getLayerColorDepth = 32 Then
+    If m_SourceImage.getDIBColorDepth = 32 Then
         alphaPresent = True
         colorDepthOffset = 4
     Else
@@ -871,11 +871,11 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     CopyMemory ByVal VarPtrArray(dstEnergy), 0&, 4
     
     'Replace the source image with the newly generated destination image
-    m_SourceImage.createFromExistingLayer tmpImage
+    m_SourceImage.createFromExistingDIB tmpImage
     Set tmpImage = Nothing
     
     'Replace the energy image with this new copy
-    m_EnergyImage.createFromExistingLayer newEnergyMap
+    m_EnergyImage.createFromExistingDIB newEnergyMap
     Set newEnergyMap = Nothing
 
 End Function
@@ -885,8 +885,8 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
 
     'We will be referencing image size frequently in this function, so cache these values in advance
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = m_SourceImage.getLayerWidth
-    srcHeight = m_SourceImage.getLayerHeight
+    srcWidth = m_SourceImage.getDIBWidth
+    srcHeight = m_SourceImage.getDIBHeight
     
     'Start by determining if we are widening or shrinking the image in the horizontal and/or vertical directions
     ' We'll use a simple system: -1 means shrinking, 0 means no change, and 1 means enlarging.
@@ -912,10 +912,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     
     Dim i As Long
     
-    'Because we need to transfer image data back and forth between DIBs, a temporary layer comes in handy
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer m_SourceImage
+    'Because we need to transfer image data back and forth between DIBs, a temporary DIB comes in handy
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB m_SourceImage
     
     'Determine a progress bar maximum value.  We'll refresh the progress bar approximately once for each
     ' seam added or removed from the image.
@@ -955,12 +955,12 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             
             'All necessary horizontal seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
-            tmpLayer.createBlank newWidth, srcHeight, m_SourceImage.getLayerColorDepth
-            BitBlt tmpLayer.getLayerDC, 0, 0, newWidth, srcHeight, m_SourceImage.getLayerDC, 0, 0, vbSrcCopy
-            m_SourceImage.createFromExistingLayer tmpLayer
+            tmpDIB.createBlank newWidth, srcHeight, m_SourceImage.getDIBColorDepth
+            BitBlt tmpDIB.getDIBDC, 0, 0, newWidth, srcHeight, m_SourceImage.getDIBDC, 0, 0, vbSrcCopy
+            m_SourceImage.createFromExistingDIB tmpDIB
             
             'Note the new width now, in case the user is also changing the vertical size of the image
-            srcWidth = m_SourceImage.getLayerWidth
+            srcWidth = m_SourceImage.getDIBWidth
     
         'Horizontal size is growing
         Case ScaleLarger
@@ -974,12 +974,12 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 growHorizontally seamData, newWidth - srcWidth, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 'Update the source width, in case this function must be called again
-                srcWidth = m_SourceImage.getLayerWidth
+                srcWidth = m_SourceImage.getDIBWidth
             
-            Loop While m_SourceImage.getLayerWidth < newWidth
+            Loop While m_SourceImage.getDIBWidth < newWidth
             
             'Update the temp image (which may be used by subsequent vertical resize functions)
-            tmpLayer.createFromExistingLayer m_SourceImage
+            tmpDIB.createFromExistingDIB m_SourceImage
     
     End Select
     
@@ -1014,9 +1014,9 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             
             'All necessary vertical seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
-            tmpLayer.createBlank newWidth, newHeight, m_SourceImage.getLayerColorDepth
-            BitBlt tmpLayer.getLayerDC, 0, 0, newWidth, newHeight, m_SourceImage.getLayerDC, 0, 0, vbSrcCopy
-            m_SourceImage.createFromExistingLayer tmpLayer
+            tmpDIB.createBlank newWidth, newHeight, m_SourceImage.getDIBColorDepth
+            BitBlt tmpDIB.getDIBDC, 0, 0, newWidth, newHeight, m_SourceImage.getDIBDC, 0, 0, vbSrcCopy
+            m_SourceImage.createFromExistingDIB tmpDIB
             
     
         'Vertical size is growing
@@ -1031,20 +1031,20 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 growVertically seamData, newHeight - srcHeight, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, hDiff
                 
                 'Update the source height, in case this function must be called again
-                srcHeight = m_SourceImage.getLayerHeight
+                srcHeight = m_SourceImage.getDIBHeight
             
-            Loop While m_SourceImage.getLayerHeight < newHeight
+            Loop While m_SourceImage.getDIBHeight < newHeight
             
             'Update the temp image (which will be used to overwrite the original image)
-            tmpLayer.createFromExistingLayer m_SourceImage
+            tmpDIB.createFromExistingDIB m_SourceImage
     
     
     End Select
     
     
     'Now that all seam carves have been carried out, generate a final destination image
-    Set m_DestinationImage = New pdLayer
-    m_DestinationImage.createFromExistingLayer tmpLayer
+    Set m_DestinationImage = New pdDIB
+    m_DestinationImage.createFromExistingDIB tmpDIB
     
     'Reset the progress bar
     SetProgBarVal 0

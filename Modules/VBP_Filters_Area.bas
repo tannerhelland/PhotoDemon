@@ -55,21 +55,21 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, x2 As Long, y2 As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
-    checkXMin = curLayerValues.minX
-    checkXMax = curLayerValues.maxX
-    checkYMin = curLayerValues.MinY
-    checkYMax = curLayerValues.MaxY
+    checkXMin = curDIBValues.minX
+    checkXMax = curDIBValues.maxX
+    checkYMin = curDIBValues.MinY
+    checkYMax = curDIBValues.MaxY
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -101,16 +101,16 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     'Temporary calculation variables
     Dim CalcX As Long, CalcY As Long
     
-    'Create a temporary layer and resize it to the same size as the current image
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer workingLayer
+    'Create a temporary DIB and resize it to the same size as the current image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB workingDIB
     
-    'Create a local array and point it at the pixel data of our temporary layer.  This will be used to access the current pixel data
+    'Create a local array and point it at the pixel data of our temporary DIB.  This will be used to access the current pixel data
     ' without modifications, while the actual image data will be modified by the filter as it's processed.
     Dim tmpData() As Byte
     Dim tSA As SAFEARRAY2D
-    prepSafeArray tSA, tmpLayer
+    prepSafeArray tSA, tmpDIB
     CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
     
     'QuickValInner is like QuickVal below, but for sub-loops
@@ -220,9 +220,9 @@ NextCustomFilterPixel:  Next y2
     CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
     Erase tmpData
     
-    'Erase our temporary layer
-    tmpLayer.eraseLayer
-    Set tmpLayer = Nothing
+    'Erase our temporary DIB
+    tmpDIB.eraseDIB
+    Set tmpDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
@@ -242,14 +242,14 @@ Public Sub FilterGridBlur()
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = curLayerValues.Width
-    iHeight = curLayerValues.Height
+    iWidth = curDIBValues.Width
+    iHeight = curDIBValues.Height
             
     Dim NumOfPixels As Long
     NumOfPixels = iWidth + iHeight
@@ -257,7 +257,7 @@ Public Sub FilterGridBlur()
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -359,8 +359,8 @@ Public Sub FilterIsometric()
     'Make note of the current image's width and height
     Dim hWidth As Double
     Dim oWidth As Long, oHeight As Long
-    oWidth = curLayerValues.Width - 1
-    oHeight = curLayerValues.Height - 1
+    oWidth = curDIBValues.Width - 1
+    oHeight = curDIBValues.Height - 1
     hWidth = oWidth / 2
     
     Dim nWidth As Long, nHeight As Long
@@ -371,26 +371,26 @@ Public Sub FilterIsometric()
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     
-    Dim dstLayer As pdLayer
-    Set dstLayer = New pdLayer
-    dstLayer.createBlank nWidth + 1, nHeight + 1, pdImages(g_CurrentImage).mainLayer.getLayerColorDepth
+    Dim dstDIB As pdDIB
+    Set dstDIB = New pdDIB
+    dstDIB.createBlank nWidth + 1, nHeight + 1, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
     
-    prepSafeArray dstSA, dstLayer
+    prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     Dim srcX As Double, srcY As Double
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim dstQuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -444,22 +444,22 @@ Public Sub FilterIsometric()
     
     'If the action was canceled, exit before copying the processed image over
     If cancelCurrentAction Then
-        dstLayer.eraseLayer
+        dstDIB.eraseDIB
         Message "Action canceled."
         SetProgBarVal 0
         Exit Sub
     End If
     
     'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
-    If dstLayer.getLayerColorDepth = 32 Then dstLayer.fixPremultipliedAlpha True
+    If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
     
     'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
-    pdImages(g_CurrentImage).mainLayer.eraseLayer
-    pdImages(g_CurrentImage).mainLayer.createFromExistingLayer dstLayer
+    pdImages(g_CurrentImage).mainDIB.eraseDIB
+    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
     
-    'With that transfer complete, we can erase our temporary layer
-    dstLayer.eraseLayer
-    Set dstLayer = Nothing
+    'With that transfer complete, we can erase our temporary DIB
+    dstDIB.eraseDIB
+    Set dstDIB = Nothing
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize

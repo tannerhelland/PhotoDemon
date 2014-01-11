@@ -417,16 +417,16 @@ Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    CreateContourLayer blackBackground, srcLayer, workingLayer, toPreview
+    CreateContourDIB blackBackground, srcDIB, workingDIB, toPreview
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub

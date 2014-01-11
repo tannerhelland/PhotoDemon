@@ -102,12 +102,12 @@ Private Const BLOCKHEIGHT As Long = 54
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Private m_ToolTip As clsToolTip
 
-Private backLayer As pdLayer
-Private bufferLayer As pdLayer
+Private backDIB As pdDIB
+Private bufferDIB As pdDIB
 Private m_BufferWidth As Long, m_BufferHeight As Long
 Private m_FormWidth As Long
 
-Private logoLayer As pdLayer, maskLayer As pdLayer
+Private logoDIB As pdDIB, maskDIB As pdDIB
 
 'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
 Private firstFont As pdFont, secondFont As pdFont
@@ -120,13 +120,13 @@ End Sub
 Private Sub Form_Load()
 
     'Load the logo from the resource file
-    Set logoLayer = New pdLayer
-    loadResourceToLayer "PDLOGONOTEXT", logoLayer
+    Set logoDIB = New pdDIB
+    loadResourceToDIB "PDLOGONOTEXT", logoDIB
     
-    'Load the logo mask from the resource file into a temporary layer
-    Dim tmpMaskLayer As pdLayer
-    Set tmpMaskLayer = New pdLayer
-    loadResourceToLayer "PDLOGOMASK", tmpMaskLayer
+    'Load the logo mask from the resource file into a temporary DIB
+    Dim tmpMaskDIB As pdDIB
+    Set tmpMaskDIB = New pdDIB
+    loadResourceToDIB "PDLOGOMASK", tmpMaskDIB
     
     scrollOffset = 0
 
@@ -211,35 +211,35 @@ Private Sub Form_Load()
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
-    'Initialize the background layer (this allows for faster blitting than a picture box)
-    ' Note that this layer is dynamically resized; this solves issues with high-DPI screens
-    Set backLayer = New pdLayer
+    'Initialize the background DIB (this allows for faster blitting than a picture box)
+    ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens
+    Set backDIB = New pdDIB
     Dim logoAspectRatio As Double
-    logoAspectRatio = CDbl(logoLayer.getLayerWidth) / CDbl(logoLayer.getLayerHeight)
-    backLayer.createFromExistingLayer logoLayer, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio
+    logoAspectRatio = CDbl(logoDIB.getDIBWidth) / CDbl(logoDIB.getDIBHeight)
+    backDIB.createFromExistingDIB logoDIB, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio
     
-    'Copy the resized logo into the logo layer.  (We don't want to resize it every time we need it.)
-    logoLayer.eraseLayer
-    logoLayer.createFromExistingLayer backLayer
+    'Copy the resized logo into the logo DIB.  (We don't want to resize it every time we need it.)
+    logoDIB.eraseDIB
+    logoDIB.createFromExistingDIB backDIB
     
-    'Create a mask layer at the same size.
-    Set maskLayer = New pdLayer
-    maskLayer.createFromExistingLayer tmpMaskLayer, backLayer.getLayerWidth, backLayer.getLayerHeight, False
-    tmpMaskLayer.eraseLayer
-    Set tmpMaskLayer = Nothing
+    'Create a mask DIB at the same size.
+    Set maskDIB = New pdDIB
+    maskDIB.createFromExistingDIB tmpMaskDIB, backDIB.getDIBWidth, backDIB.getDIBHeight, False
+    tmpMaskDIB.eraseDIB
+    Set tmpMaskDIB = Nothing
     
     'In order to fix high-DPI screen issues, resize the buffer at run-time.  (Why not blit directly to the form?  Because
     ' the OK command button will flicker.  Instead, we just draw to a picture box sized to match the form.)
-    picBuffer.Move 0, 0, backLayer.getLayerWidth, backLayer.getLayerHeight
+    picBuffer.Move 0, 0, backDIB.getDIBWidth, backDIB.getDIBHeight
     
     'Remember that the PicBuffer picture box is used only as a placeholder.  We render everything manually to an
     ' off-screen buffer, then flip that buffer to the picture box after all rendering is complete.
-    Set bufferLayer = New pdLayer
-    bufferLayer.createBlank backLayer.getLayerWidth, backLayer.getLayerHeight, 24, 0
+    Set bufferDIB = New pdDIB
+    bufferDIB.createBlank backDIB.getDIBWidth, backDIB.getDIBHeight, 24, 0
     
     'Initialize a few other variables for speed reasons
-    m_BufferWidth = backLayer.getLayerWidth
-    m_BufferHeight = backLayer.getLayerHeight
+    m_BufferWidth = backDIB.getDIBWidth
+    m_BufferHeight = backDIB.getDIBHeight
     m_FormWidth = Me.ScaleWidth
     
     'Initialize a custom font objects for names
@@ -259,7 +259,7 @@ Private Sub Form_Load()
     secondFont.setTextAlignment vbRightJustify
     
     'Render the primary background image to the form
-    BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
     
@@ -290,8 +290,8 @@ Private Sub tmrText_Timer()
     scrollOffset = scrollOffset + fixDPIFloat(1)
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
-    'Erase the back layer by copying over the logo (onto which we will render the text)
-    BitBlt backLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, logoLayer.getLayerDC, 0, 0, vbSrcCopy
+    'Erase the back DIB by copying over the logo (onto which we will render the text)
+    BitBlt backDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
         
     'Render all text
     Dim i As Long
@@ -299,23 +299,23 @@ Private Sub tmrText_Timer()
         renderCredit i, fixDPI(8), fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPIFloat(2)
     Next i
     
-    'The back layer now contains the credit text drawn over the program logo.
+    'The back DIB now contains the credit text drawn over the program logo.
     
-    'Black out the section of the back layer where the base text appears - we don't want text rendering over
+    'Black out the section of the back DIB where the base text appears - we don't want text rendering over
     ' the top of this section.
-    BitBlt backLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, maskLayer.getLayerDC, 0, 0, vbMergePaint
+    BitBlt backDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.getDIBDC, 0, 0, vbMergePaint
     
-    'Blit a blank copy of the logo to the buffer layer
-    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, logoLayer.getLayerDC, 0, 0, vbSrcCopy
+    'Blit a blank copy of the logo to the buffer DIB
+    BitBlt bufferDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
     
     'Blit the logo mask over the top
-    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, maskLayer.getLayerDC, 0, 0, vbSrcPaint
+    BitBlt bufferDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.getDIBDC, 0, 0, vbSrcPaint
     
-    'Blit the back layer, with the text, over the top of the buffer
-    BitBlt bufferLayer.getLayerDC, 0, 0, m_BufferWidth, m_BufferHeight, backLayer.getLayerDC, 0, 0, vbSrcAnd
-    'srcpaint,srcand
+    'Blit the back DIB, with the text, over the top of the buffer
+    BitBlt bufferDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, backDIB.getDIBDC, 0, 0, vbSrcAnd
+    
     'Copy the buffer to the main form and refresh it
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferLayer.getLayerDC, 0, 0, vbSrcCopy
+    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
     
@@ -336,14 +336,14 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         drawString = creditList(blockIndex).Name
         
         'Render the "name" field
-        firstFont.attachToDC backLayer.getLayerDC
+        firstFont.attachToDC backDIB.getDIBDC
         firstFont.fastRenderText m_BufferWidth - offsetX, offsetY, drawString
                 
         'Below the name, add the URL (or other description)
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
         drawString = creditList(blockIndex).URL
         
-        secondFont.attachToDC backLayer.getLayerDC
+        secondFont.attachToDC backDIB.getDIBDC
         secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
         
     End If

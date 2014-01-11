@@ -209,13 +209,13 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     
     If Not toPreview Then Message "Applying zoom blur..."
     
-    'Call prepImageData, which will initialize a workingLayer object for us (with all selection tool masks applied)
+    'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
     Dim finalX As Long, finalY As Long
-    finalX = workingLayer.getLayerWidth
-    finalY = workingLayer.getLayerHeight
+    finalX = workingDIB.getDIBWidth
+    finalY = workingDIB.getDIBHeight
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -229,32 +229,32 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     ' creates very obvious blocking along the lines where the algorithm stretches), and it is incapable of rendering from
     ' a source DC to a matching dest DC.  Thus we will make our own a temporary copy of the image, which we will use to
     ' work around these two issues.
-    Dim tmpSrcLayer As pdLayer
-    Set tmpSrcLayer = New pdLayer
-    tmpSrcLayer.createFromExistingLayer workingLayer
+    Dim tmpSrcDIB As pdDIB
+    Set tmpSrcDIB = New pdDIB
+    tmpSrcDIB.createFromExistingDIB workingDIB
     
     'Next, we set up some AlphaBlend parameters.  If the image already has alpha data, we want to make use of it, although
     ' it will result in a funky final image (I may work around this in the future, but right now I don't care).  If the
     ' image is 24bpp, we'll use halftoning to generate a higher-quality zoom.
     Dim blendVal As Long
     blendVal = 127 * &H10000
-    If workingLayer.getLayerColorDepth = 32 Then
-        SetStretchBltMode tmpSrcLayer.getLayerDC, STRETCHBLT_COLORONCOLOR
+    If workingDIB.getDIBColorDepth = 32 Then
+        SetStretchBltMode tmpSrcDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
     Else
-        SetStretchBltMode tmpSrcLayer.getLayerDC, STRETCHBLT_HALFTONE
+        SetStretchBltMode tmpSrcDIB.getDIBDC, STRETCHBLT_HALFTONE
     End If
     
     'Finally, we're going to use the image's aspect ratio to try and generate a more realistic zoom blur.  Calculate
     ' that ratio now.
     Dim aspectRatio As Double
-    If workingLayer.getLayerWidth > workingLayer.getLayerHeight Then
-        aspectRatio = workingLayer.getLayerHeight / workingLayer.getLayerWidth
+    If workingDIB.getDIBWidth > workingDIB.getDIBHeight Then
+        aspectRatio = workingDIB.getDIBHeight / workingDIB.getDIBWidth
     Else
-        aspectRatio = workingLayer.getLayerWidth / workingLayer.getLayerHeight
+        aspectRatio = workingDIB.getDIBWidth / workingDIB.getDIBHeight
     End If
     
     'Zoom distance must be adjusted during a preview, so that the preview accurately represents the finished product.
-    If toPreview Then zDistance = zDistance * curLayerValues.previewModifier
+    If toPreview Then zDistance = zDistance * curDIBValues.previewModifier
     
     'Now comes the actual transform.  We basically just repeat a series of AlphaBlend calls on the image, blending at 50% opacity
     ' as we go.  Ridiculous?  Yes.  Simple?  Yes.  :)
@@ -270,14 +270,14 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
             ' same aspect ratio as the image itself (e.g. the "zoom" lines extend from the center toward the corners, and not
             ' at 45 degree increments).
             zoomOffset = i / 2
-            If workingLayer.getLayerWidth > workingLayer.getLayerHeight Then
-                StretchBlt tmpSrcLayer.getLayerDC, 0, 0, finalX, finalY, workingLayer.getLayerDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), vbSrcCopy
+            If workingDIB.getDIBWidth > workingDIB.getDIBHeight Then
+                StretchBlt tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, workingDIB.getDIBDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), vbSrcCopy
             Else
-                StretchBlt tmpSrcLayer.getLayerDC, 0, 0, finalX, finalY, workingLayer.getLayerDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, vbSrcCopy
+                StretchBlt tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, workingDIB.getDIBDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, vbSrcCopy
             End If
             
-            'Finally, AlphaBlend the modified layer onto the working layer, then rinse and repeat!
-            AlphaBlend workingLayer.getLayerDC, 0, 0, finalX, finalY, tmpSrcLayer.getLayerDC, 0, 0, finalX, finalY, blendVal
+            'Finally, AlphaBlend the modified DIB onto the working DIB, then rinse and repeat!
+            AlphaBlend workingDIB.getDIBDC, 0, 0, finalX, finalY, tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, blendVal
             
             If Not toPreview Then
                 If (i And progBarCheck) = 0 Then
@@ -297,14 +297,14 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
             ' same aspect ratio as the image itself (e.g. the "zoom" lines extend from the center toward the corners, and not
             ' at 45 degree increments).
             zoomOffset = Abs(i / 2)
-            If workingLayer.getLayerWidth > workingLayer.getLayerHeight Then
-                StretchBlt tmpSrcLayer.getLayerDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), workingLayer.getLayerDC, 0, 0, finalX, finalY, vbSrcCopy
+            If workingDIB.getDIBWidth > workingDIB.getDIBHeight Then
+                StretchBlt tmpSrcDIB.getDIBDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), workingDIB.getDIBDC, 0, 0, finalX, finalY, vbSrcCopy
             Else
-                StretchBlt tmpSrcLayer.getLayerDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, workingLayer.getLayerDC, 0, 0, finalX, finalY, vbSrcCopy
+                StretchBlt tmpSrcDIB.getDIBDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, workingDIB.getDIBDC, 0, 0, finalX, finalY, vbSrcCopy
             End If
             
-            'Finally, AlphaBlend the modified layer onto the working layer, then rinse and repeat!
-            AlphaBlend workingLayer.getLayerDC, 0, 0, finalX, finalY, tmpSrcLayer.getLayerDC, 0, 0, finalX, finalY, blendVal
+            'Finally, AlphaBlend the modified DIB onto the working DIB, then rinse and repeat!
+            AlphaBlend workingDIB.getDIBDC, 0, 0, finalX, finalY, tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, blendVal
             
             If Not toPreview Then
                 If (Abs(i) And progBarCheck) = 0 Then
@@ -317,7 +317,7 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     
     End If
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub
@@ -334,19 +334,19 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
     'By dividing blur distance by 200 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
     If toPreview Then
-        bDistance = bDistance * curLayerValues.previewModifier
+        bDistance = bDistance * curDIBValues.previewModifier
         If bDistance < 1 Then bDistance = 1
     End If
     
     Dim finalX As Long, finalY As Long
-    finalX = workingLayer.getLayerWidth
-    finalY = workingLayer.getLayerHeight
+    finalX = workingDIB.getDIBWidth
+    finalY = workingDIB.getDIBHeight
     
     Dim newProgBarMax As Long
     
@@ -367,13 +367,13 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
         newProgBarMax = finalX * 3
     
         'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-        If CreatePolarCoordLayer(1, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax) Then
+        If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
             
-            'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
-            If CreateVerticalBlurLayer(bDistance, bDistance, workingLayer, srcLayer, toPreview, newProgBarMax, finalX) Then
+            'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
+            If CreateVerticalBlurDIB(bDistance, bDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
                 
                 'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-                CreatePolarCoordLayer 0, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax, finalX + finalX
+                CreatePolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalX
                 
             End If
             
@@ -385,13 +385,13 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
         newProgBarMax = finalX * 2 + finalY
     
         'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-        If CreateXSwappedPolarCoordLayer(1, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax) Then
+        If CreateXSwappedPolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
             
-            'Now we can apply the box blur to the temporary layer, using the blur radius supplied by the user
-            If CreateHorizontalBlurLayer(bDistance, bDistance, workingLayer, srcLayer, toPreview, newProgBarMax, finalX) Then
+            'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
+            If CreateHorizontalBlurDIB(bDistance, bDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
                 
                 'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-                CreateXSwappedPolarCoordLayer 0, 100, EDGE_CLAMP, True, srcLayer, workingLayer, toPreview, newProgBarMax, finalX + finalY
+                CreateXSwappedPolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalY
                 
             End If
             
@@ -399,10 +399,10 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
     
     End If
     
-    srcLayer.eraseLayer
-    Set srcLayer = Nothing
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingLayer
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
     
 End Sub

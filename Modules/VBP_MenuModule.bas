@@ -212,11 +212,11 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
             ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
             If g_LastSaveFilter = -1 Then
             
-                '24bpp layers default to JPEG
-                If pdImages(imageID).getCompositedImage().getLayerColorDepth = 24 Then
+                '24bpp DIBs default to JPEG
+                If pdImages(imageID).getCompositedImage().getDIBColorDepth = 24 Then
                     g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
                 
-                '32bpp layers default to PNG
+                '32bpp DIBs default to PNG
                 Else
                     g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
                 End If

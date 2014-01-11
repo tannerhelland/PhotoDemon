@@ -423,22 +423,22 @@ Public g_GDIPlusToken As Long
 'GDI+ v1.1 allows for advanced fx work.  When we initialize GDI+, check the availability of version 1.1.
 Public g_GDIPlusFXAvailable As Boolean
 
-'Use GDI+ to resize a layer.  (Technically, to copy a resized portion of a source image into a destination layer.)
+'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
-Public Function GDIPlusResizeLayer(ByRef dstLayer As pdLayer, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcLayer As pdLayer, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode) As Boolean
+Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode) As Boolean
 
-    GDIPlusResizeLayer = True
+    GDIPlusResizeDIB = True
 
-    'Create a GDI+ graphics object that points to the destination layer's DC
+    'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    If srcLayer.getLayerColorDepth = 32 Then
+    If srcDIB.getDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.getLayerWidth * 4, PixelFormat32bppPARGB, ByVal srcLayer.getLayerDIBits, tBitmap
+        GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
     
     Else
     
@@ -447,11 +447,11 @@ Public Function GDIPlusResizeLayer(ByRef dstLayer As pdLayer, ByVal dstX As Long
         With imgHeader.Header
             .Size = Len(imgHeader.Header)
             .Planes = 1
-            .BitCount = srcLayer.getLayerColorDepth
-            .Width = srcLayer.getLayerWidth
-            .Height = -srcLayer.getLayerHeight
+            .BitCount = srcDIB.getDIBColorDepth
+            .Width = srcDIB.getDIBWidth
+            .Height = -srcDIB.getDIBHeight
         End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcLayer.getLayerDIBits, tBitmap
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
         
     End If
     
@@ -462,11 +462,11 @@ Public Function GDIPlusResizeLayer(ByRef dstLayer As pdLayer, ByVal dstX As Long
     
         'Perform the resize
         If GdipDrawImageRectRectI(iGraphics, tBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel) <> 0 Then
-            GDIPlusResizeLayer = False
+            GDIPlusResizeDIB = False
         End If
     
     Else
-        GDIPlusResizeLayer = False
+        GDIPlusResizeDIB = False
     End If
     
     'Release both the destination graphics object and the source bitmap object
@@ -475,20 +475,20 @@ Public Function GDIPlusResizeLayer(ByRef dstLayer As pdLayer, ByVal dstX As Long
     
 End Function
 
-'Use GDI+ to blur a layer with variable radius
-Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As Long, ByVal rLeft As Double, ByVal rTop As Double, ByVal rWidth As Double, ByVal rHeight As Double) As Boolean
+'Use GDI+ to blur a DIB with variable radius
+Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, ByVal rLeft As Double, ByVal rTop As Double, ByVal rWidth As Double, ByVal rHeight As Double) As Boolean
 
-    'Create a GDI+ graphics object that points to the destination layer's DC
+    'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     
     'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
     
-    If dstLayer.getLayerColorDepth = 32 Then
+    If dstDIB.getDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 dstLayer.getLayerWidth, dstLayer.getLayerHeight, dstLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal dstLayer.getLayerDIBits, tBitmap
+        GdipCreateBitmapFromScan0 dstDIB.getDIBWidth, dstDIB.getDIBHeight, dstDIB.getDIBWidth * 4, PixelFormat32bppARGB, ByVal dstDIB.getActualDIBBits, tBitmap
     
     Else
     
@@ -497,11 +497,11 @@ Public Function GDIPlusBlurLayer(ByRef dstLayer As pdLayer, ByVal blurRadius As 
         With imgHeader.Header
             .Size = Len(imgHeader.Header)
             .Planes = 1
-            .BitCount = dstLayer.getLayerColorDepth
-            .Width = dstLayer.getLayerWidth
-            .Height = -dstLayer.getLayerHeight
+            .BitCount = dstDIB.getDIBColorDepth
+            .Width = dstDIB.getDIBWidth
+            .Height = -dstDIB.getDIBHeight
         End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal dstLayer.getLayerDIBits, tBitmap
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal dstDIB.getActualDIBBits, tBitmap
         
     End If
         
@@ -672,11 +672,11 @@ Public Function GDIPlusDrawEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
 End Function
 
 'Use GDI+ to render a rectangle with rounded corners, with optional antialiasing
-Public Function GDIPlusDrawRoundRect(ByRef dstLayer As pdLayer, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal rRadius As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal rRadius As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
-    GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
@@ -728,7 +728,7 @@ Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte
 End Function
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any common image type.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage As pdImage, ByRef dstLayer As pdLayer) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
@@ -785,11 +785,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     Dim isCMYK As Boolean
     If (iPixelFormat = PixelFormat32bppCMYK) Then isCMYK = True
     
-    'Create a blank layer with matching size and alpha channel
+    'Create a blank DIB with matching size and alpha channel
     If hasAlpha Then
-        dstLayer.createBlank CLng(imgWidth), CLng(imgHeight), 32
+        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
     Else
-        dstLayer.createBlank CLng(imgWidth), CLng(imgHeight), 24
+        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
     End If
     
     Dim copyBitmapData As BitmapData
@@ -810,8 +810,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
             .Width = imgWidth
             .Height = imgHeight
             .PixelFormat = PixelFormat32bppPARGB
-            .Stride = dstLayer.getLayerArrayWidth
-            .Scan0 = dstLayer.getLayerDIBits
+            .Stride = dstDIB.getDIBArrayWidth
+            .Scan0 = dstDIB.getActualDIBBits
         End With
         
         'Next, prepare a clipping rect
@@ -833,17 +833,17 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         If (isCMYK And hasProfile) Then
         
             'Create a blank 32bpp DIB, which will hold the CMYK data
-            Dim tmpCMYKLayer As pdLayer
-            Set tmpCMYKLayer = New pdLayer
-            tmpCMYKLayer.createBlank imgWidth, imgHeight, 32
+            Dim tmpCMYKDIB As pdDIB
+            Set tmpCMYKDIB = New pdDIB
+            tmpCMYKDIB.createBlank imgWidth, imgHeight, 32
         
             'Next, prepare a BitmapData variable with instructions on where GDI+ should paste the bitmap data
             With copyBitmapData
                 .Width = imgWidth
                 .Height = imgHeight
                 .PixelFormat = PixelFormat32bppCMYK
-                .Stride = tmpCMYKLayer.getLayerArrayWidth
-                .Scan0 = tmpCMYKLayer.getLayerDIBits
+                .Stride = tmpCMYKDIB.getDIBArrayWidth
+                .Scan0 = tmpCMYKDIB.getActualDIBBits
             End With
             
             'Next, prepare a clipping rect
@@ -859,11 +859,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
             GdipBitmapUnlockBits hImage, copyBitmapData
             
             'Apply the transformation using the dedicated CMYK transform handler
-            If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKLayer, dstLayer) Then
+            If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB) Then
             
                 Message "Copying newly transformed sRGB data..."
             
-                'The transform was successful, and the destination layer is ready to go!
+                'The transform was successful, and the destination DIB is ready to go!
                 dstImage.ICCProfile.markSuccessfulProfileApplication
                 
             'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
@@ -871,18 +871,18 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
             
                 Message "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
             
-                GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+                GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
                 GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
                 GdipDeleteGraphics iGraphics
             
             End If
             
-            Set tmpCMYKLayer = Nothing
+            Set tmpCMYKDIB = Nothing
         
         Else
             
-            'Render the GDI+ image directly onto the newly created layer
-            GdipCreateFromHDC dstLayer.getLayerDC, iGraphics
+            'Render the GDI+ image directly onto the newly created DIB
+            GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
             GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
             GdipDeleteGraphics iGraphics
             
@@ -905,20 +905,20 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Message "Initializing GDI+..."
 
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    tmpLayer.createFromExistingLayer srcPDImage.getCompositedImage()
-    If tmpLayer.getLayerColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpLayer.compositeBackgroundColor 255, 255, 255
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    If tmpDIB.getDIBColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpDIB.compositeBackgroundColor 255, 255, 255
 
-    'Begin by creating a generic bitmap header for the current layer
+    'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO
     
     With imgHeader.Header
         .Size = Len(imgHeader.Header)
         .Planes = 1
-        .BitCount = tmpLayer.getLayerColorDepth
-        .Width = tmpLayer.getLayerWidth
-        .Height = -tmpLayer.getLayerHeight
+        .BitCount = tmpDIB.getDIBColorDepth
+        .Width = tmpDIB.getDIBWidth
+        .Height = -tmpDIB.getDIBHeight
     End With
 
     'Use GDI+ to create a GDI+-compatible bitmap
@@ -929,13 +929,13 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         
     'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
     ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
-    If tmpLayer.getLayerColorDepth = 32 Then
+    If tmpDIB.getDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpLayer.getLayerWidth, tmpLayer.getLayerHeight, tmpLayer.getLayerWidth * 4, PixelFormat32bppARGB, ByVal tmpLayer.getLayerDIBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBWidth * 4, PixelFormat32bppARGB, ByVal tmpDIB.getActualDIBBits, hImage)
     
     Else
-        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpLayer.getLayerDIBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.getActualDIBBits, hImage)
     End If
     
     If (GDIPlusReturn <> [OK]) Then

@@ -243,39 +243,39 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
             
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        umRadius = umRadius * curLayerValues.previewModifier
+        umRadius = umRadius * curDIBValues.previewModifier
         If umRadius = 0 Then umRadius = 0.1
     End If
     
-    'Unsharp masking requires a gaussian blur layer to operate.  Create one now.
-    If CreateGaussianBlurLayer(umRadius, workingLayer, srcLayer, toPreview, finalY * 2 + finalX) Then
+    'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
+    If CreateGaussianBlurDIB(umRadius, workingDIB, srcDIB, toPreview, finalY * 2 + finalX) Then
     
-        'Now that we have a gaussian layer created in workingLayer, we can point arrays toward it and the source layer
+        'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
         Dim dstImageData() As Byte
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcLayer
+        prepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
         Dim QuickVal As Long, qvDepth As Long
-        qvDepth = curLayerValues.BytesPerPixel
+        qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
@@ -364,8 +364,8 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
         
-        srcLayer.eraseLayer
-        Set srcLayer = Nothing
+        srcDIB.eraseDIB
+        Set srcDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         Erase dstImageData
@@ -402,7 +402,7 @@ Private Sub Form_Activate()
         lblIDEWarning.Visible = True
     Else
         '32bpp images take longer to process.  Limit the radius to 100 in this case.
-        If pdImages(g_CurrentImage).getActiveLayer().getLayerColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
+        If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
     End If
     
     'Draw a preview of the effect

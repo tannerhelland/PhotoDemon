@@ -2688,7 +2688,7 @@ Private Sub MnuTransparency_Click(Index As Integer)
         Case 3
 
             'Ignore if the current image is already in 24bpp mode
-            If pdImages(g_CurrentImage).mainLayer.getLayerColorDepth = 24 Then Exit Sub
+            If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 24 Then Exit Sub
             Process "Remove alpha channel", True
     
     End Select

@@ -176,37 +176,37 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
-    'Create a separate source layer.  This will contain the a copy of the current image, and we will use it as our source reference
+    'Create a separate source DIB.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent adjusted pixel values from spreading across the image as we go.)
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    'Create a layer to hold the gaussian blur
-    Dim gaussLayer As pdLayer
-    Set gaussLayer = New pdLayer
+    'Create a DIB to hold the gaussian blur
+    Dim gaussDIB As pdDIB
+    Set gaussDIB = New pdDIB
     
-    'Create a layer to hold the film grain
-    Dim noiseLayer As pdLayer
-    Set noiseLayer = New pdLayer
-    noiseLayer.createFromExistingLayer workingLayer
+    'Create a DIB to hold the film grain
+    Dim noiseDIB As pdDIB
+    Set noiseDIB = New pdDIB
+    noiseDIB.createFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
     
-    'Point an array at the noise layer
+    'Point an array at the noise DIB
     Dim dstImageData() As Byte
-    prepSafeArray dstSA, noiseLayer
+    prepSafeArray dstSA, noiseDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -252,7 +252,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    'Next, we need to soften the noise layer
+    'Next, we need to soften the noise DIB
     If (Not toPreview) And (Not cancelCurrentAction) Then Message "Softening film grain..."
     
     If (gSoftness > 0) And (Not cancelCurrentAction) Then
@@ -260,41 +260,41 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         'If this is a preview, we need to adjust the softening radius to match the size of the preview box
         If toPreview Then
             If iWidth > iHeight Then
-                gSoftness = (gSoftness / iWidth) * curLayerValues.Width
+                gSoftness = (gSoftness / iWidth) * curDIBValues.Width
             Else
-                gSoftness = (gSoftness / iHeight) * curLayerValues.Height
+                gSoftness = (gSoftness / iHeight) * curDIBValues.Height
             End If
             If gSoftness = 0 Then gSoftness = 1
         End If
     
-        gaussLayer.createFromExistingLayer workingLayer
+        gaussDIB.createFromExistingDIB workingDIB
     
         'Blur the noise texture as required by the user
-        CreateGaussianBlurLayer gSoftness, noiseLayer, gaussLayer, toPreview, finalY * 2 + finalX * 2, finalX
+        CreateGaussianBlurDIB gSoftness, noiseDIB, gaussDIB, toPreview, finalY * 2 + finalX * 2, finalX
         
     Else
-        gaussLayer.createFromExistingLayer noiseLayer
+        gaussDIB.createFromExistingDIB noiseDIB
     End If
     
-    'Delete the original noise layer to conserve resources
-    noiseLayer.eraseLayer
-    Set noiseLayer = Nothing
+    'Delete the original noise DIB to conserve resources
+    noiseDIB.eraseDIB
+    Set noiseDIB = Nothing
     
     If Not cancelCurrentAction Then
     
-        'We now have a softened noise layer.  Next, create three arrays - one pointing at the original image data, one pointing at
+        'We now have a softened noise DIB.  Next, create three arrays - one pointing at the original image data, one pointing at
         ' the noise data, and one pointing at the destination data.
         prepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcLayer
+        prepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
         Dim GaussImageData() As Byte
         Dim gaussSA As SAFEARRAY2D
-        prepSafeArray gaussSA, gaussLayer
+        prepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
             
         If Not toPreview Then Message "Applying film grain to image..."
@@ -343,14 +343,14 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Long, Opti
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
         Erase GaussImageData
         
-        gaussLayer.eraseLayer
-        Set gaussLayer = Nothing
+        gaussDIB.eraseDIB
+        Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
         
-        srcLayer.eraseLayer
-        Set srcLayer = Nothing
+        srcDIB.eraseDIB
+        Set srcDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         Erase dstImageData

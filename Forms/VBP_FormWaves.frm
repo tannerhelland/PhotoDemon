@@ -375,29 +375,29 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     
-    Dim srcLayer As pdLayer
-    Set srcLayer = New pdLayer
-    srcLayer.createFromExistingLayer workingLayer
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcLayer
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curLayerValues.Left
-    initY = curLayerValues.Top
-    finalX = curLayerValues.Right
-    finalY = curLayerValues.Bottom
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curLayerValues.BytesPerPixel
+    qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curLayerValues.maxX, curLayerValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -410,10 +410,10 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     
     'During a preview, modify the wavelength and amplitude values to make the preview representative of the final image
     If toPreview Then
-        xWavelength = xWavelength * curLayerValues.previewModifier
-        yWavelength = yWavelength * curLayerValues.previewModifier
-        xAmplitude = xAmplitude * curLayerValues.previewModifier
-        yAmplitude = yAmplitude * curLayerValues.previewModifier
+        xWavelength = xWavelength * curDIBValues.previewModifier
+        yWavelength = yWavelength * curDIBValues.previewModifier
+        xAmplitude = xAmplitude * curDIBValues.previewModifier
+        yAmplitude = yAmplitude * curDIBValues.previewModifier
     End If
     
     'X and Y values, remapped around a center point of (0, 0)
