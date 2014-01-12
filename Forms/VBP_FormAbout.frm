@@ -43,7 +43,7 @@ Begin VB.Form FormAbout
    Begin VB.Timer tmrText 
       Enabled         =   0   'False
       Interval        =   17
-      Left            =   360
+      Left            =   1200
       Top             =   8400
    End
    Begin VB.CommandButton CmdOK 
@@ -74,9 +74,8 @@ Attribute VB_Exposed = False
 'About Form
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 13/September/13
-'Last update: all logos are now stored in the resource file.  Added a mask for more "legit" credit rendering. :)
-'             Non-96dpi screens also render the credits and image correctly now.  Yay!
+'Last updated: 12/January/14
+'Last update: all (relevant) entries are now clickable!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -88,6 +87,7 @@ Option Explicit
 Private Type pdCredit
     Name As String
     URL As String
+    Clickable As Boolean
 End Type
 
 Private creditList() As pdCredit
@@ -112,12 +112,87 @@ Private logoDIB As pdDIB, maskDIB As pdDIB
 'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
 Private firstFont As pdFont, secondFont As pdFont
 
+'...and another font object for highlighted text (when URLs are hovered)
+Private highlightFont As pdFont
+
+'Current mouse position; to make the URLs clickable, we track the current mouse position and highlight the relevant credit
+Private mouseX As Long, mouseY As Long
+
+'Currently hovered credit (if any)
+Private curHoveredCredit As Long
+Private inHoverState As Boolean
+
+'As the credit list is now clickable, we display "click to visit" with the current entry
+Private clickToVisitText As String
+
+'An outside class provides access to specialized mouse events (mouse enter/leave, in this case)
+Private WithEvents cMouseEvents As bluMouseEvents
+Attribute cMouseEvents.VB_VarHelpID = -1
+
+'When the mouse moves over something clickable, update the pointer and stop the timer
+Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
+
+    If isSomethingUsefulHovered Then
+        
+        'If we are already in hover state, disregard this command
+        If Not inHoverState Then
+            
+            'Display a hand cursor
+            setHandCursor picBuffer
+            
+            'Slow the scrolling (to simplify clicking)
+            tmrText.Interval = 50
+            
+            'Mark the new hover state
+            inHoverState = True
+            
+        End If
+        
+    Else
+        
+        If inHoverState Then
+        
+            'Restore an arrow cursor
+            setArrowCursorToObject picBuffer
+            
+            'Return scrolling to normal speed
+            tmrText.Interval = 17
+            
+            'Mark the new hover state
+            inHoverState = False
+        
+        End If
+        
+    End If
+    
+End Sub
+
 Private Sub CmdOK_Click()
     tmrText.Enabled = False
     Unload Me
 End Sub
 
+Private Sub cMouseEvents_MouseOut()
+    mouseX = -1
+    mouseY = -1
+    curHoveredCredit = -1
+    updateHoverState False
+End Sub
+
 Private Sub Form_Load()
+
+    'Reset the mouse coordinates and currently hovered entry
+    mouseX = -1
+    mouseY = -1
+    curHoveredCredit = -1
+    updateHoverState False
+    
+    'Translate "click to visit" and cache it to improve performance
+    clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "
+    
+    'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
+    Set cMouseEvents = New bluMouseEvents
+    cMouseEvents.Attach picBuffer.hWnd
 
     'Load the logo from the resource file
     Set logoDIB = New pdDIB
@@ -150,44 +225,45 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
     GenerateThankyou "Abhijit Mhapsekar"
-    GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/"
+    GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/", True
     GenerateThankyou "Allan Lima"
     GenerateThankyou "Andrew Yeoman"
-    GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
-    GenerateThankyou "audioglider", "https://github.com/audioglider"
-    GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
-    GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
-    GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
-    GenerateThankyou "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control"
-    GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm"
-    GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/"
-    GenerateThankyou "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
-    GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/"
-    GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
-    GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
-    GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
-    GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
-    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
-    GenerateThankyou "Kroc Camen", "http://camendesign.com"
-    GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
-    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
-    GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
-    GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
-    GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/"
-    GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx"
-    GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-    GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1"
-    GenerateThankyou "Rod Stephens", "http://www.vb-helper.com"
-    GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
-    GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/"
-    GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
-    GenerateThankyou "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1"
+    GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1", True
+    GenerateThankyou "audioglider", "https://github.com/audioglider", True
+    GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html", True
+    GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1", True
+    GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546", True
+    GenerateThankyou "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control", True
+    GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm", True
+    GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/", True
+    GenerateThankyou "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers", True
+    GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/", True
+    GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html", True
+    GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock", True
+    GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1", True
+    GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html", True
+    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1", True
+    GenerateThankyou "Kroc Camen", "http://camendesign.com", True
+    GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736", True
+    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/", True
+    GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1", True
+    GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/", True
+    GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
+    GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
+    GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
+    GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1", True
+    GenerateThankyou "Rod Stephens", "http://www.vb-helper.com", True
+    GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp", True
+    GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/", True
+    GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/", True
+    GenerateThankyou "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1", True
     GenerateThankyou ""
     
     Dim extraString1 As String, extraString2 As String
     extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
-    extraString2 = g_Language.TranslateMessage("for more information on licensing, visit photodemon.org/about/license/")
-    GenerateThankyou extraString1, extraString2
+    GenerateThankyou extraString1
+    extraString1 = g_Language.TranslateMessage("For more information on licensing, please visit")
+    GenerateThankyou extraString1, "http://photodemon.org/about/license/", True
     GenerateThankyou ""
     extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
     GenerateThankyou extraString1
@@ -198,14 +274,13 @@ Private Sub Form_Load()
     GenerateThankyou ""
     extraString1 = g_Language.TranslateMessage("For more information on plugin licensing, please visit:")
     GenerateThankyou extraString1
-    GenerateThankyou "ExifTool", "http://dev.perl.org/licenses/"
-    GenerateThankyou "EZTwain", "http://eztwain.com/ezt1faq.htm"
-    GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html"
-    GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/"
-    GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html"
+    GenerateThankyou "ExifTool", "http://dev.perl.org/licenses/", True
+    GenerateThankyou "EZTwain", "http://eztwain.com/ezt1faq.htm", True
+    GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html", True
+    GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/", True
+    GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html", True
     GenerateThankyou "", ""
-    GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon")
-    GenerateThankyou "photodemon.org"
+    GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "photodemon.org", True
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -258,6 +333,15 @@ Private Sub Form_Load()
     secondFont.createFontObject
     secondFont.setTextAlignment vbRightJustify
     
+    '...and a third custom font object for highlighted text
+    Set highlightFont = New pdFont
+    highlightFont.setFontColor ConvertSystemColor(vbHighlight)
+    highlightFont.setFontBold False
+    highlightFont.setFontSize 10
+    highlightFont.setFontUnderline True
+    highlightFont.createFontObject
+    highlightFont.setTextAlignment vbRightJustify
+    
     'Render the primary background image to the form
     BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
@@ -269,10 +353,11 @@ Private Sub Form_Load()
 End Sub
 
 'Generate a label with the specified "thank you" text, and link it to the specified URL
-Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = "")
+Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = "", Optional ByVal isClickable As Boolean = False)
     
     creditList(numOfCredits).Name = thxText
     creditList(numOfCredits).URL = creditURL
+    creditList(numOfCredits).Clickable = isClickable
     
     numOfCredits = numOfCredits + 1
     ReDim Preserve creditList(0 To numOfCredits) As pdCredit
@@ -281,6 +366,15 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub picBuffer_Click()
+    If curHoveredCredit >= 0 Then OpenURL creditList(curHoveredCredit).URL
+End Sub
+
+Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    mouseX = X
+    mouseY = Y
 End Sub
 
 'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
@@ -325,8 +419,29 @@ End Sub
 Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < m_BufferHeight) Then
+    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
     
+        'Check to see if the current credit block is highlighted
+        Dim isHovered As Boolean
+        
+        'If this entry is clickable, compare it to the current mouse position
+        If (mouseX >= 0) And (mouseX < m_BufferWidth) And (mouseY >= offsetY) And (mouseY < offsetY + BLOCKHEIGHT) Then
+            
+            'Ignore unclickable entries
+            If creditList(blockIndex).Clickable Then
+                isHovered = True
+                curHoveredCredit = blockIndex
+                updateHoverState True
+            Else
+                isHovered = False
+                curHoveredCredit = -1
+                updateHoverState False
+            End If
+            
+        Else
+            isHovered = False
+        End If
+                
         Dim linePadding As Long
         linePadding = 1
     
@@ -334,6 +449,9 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         
         Dim drawString As String
         drawString = creditList(blockIndex).Name
+        
+        'If this entry is hovered, append "click to visit" to the name
+        If isHovered Then drawString = clickToVisitText & drawString
         
         'Render the "name" field
         firstFont.attachToDC backDIB.getDIBDC
@@ -343,8 +461,24 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
         drawString = creditList(blockIndex).URL
         
-        secondFont.attachToDC backDIB.getDIBDC
-        secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+        If isHovered Then
+            highlightFont.attachToDC backDIB.getDIBDC
+            highlightFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+        Else
+            secondFont.attachToDC backDIB.getDIBDC
+            secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+        End If
+        
+        'If the user's mouse is over the current block, highlight the block
+        If isHovered Then
+        
+            Dim tmpRect As RECT, hBrush As Long
+            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+            hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
+            FrameRect backDIB.getDIBDC, tmpRect, hBrush
+            DeleteObject hBrush
+        
+        End If
         
     End If
 
