@@ -770,6 +770,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
         
+        Case "Chroma blur"
+            If showDialog Then
+                showPDDialog vbModal, FormChromaBlur
+            Else
+                FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
+            End If
+        
         Case "Gaussian blur"
             If showDialog Then
                 showPDDialog vbModal, FormGaussianBlur

@@ -26,15 +26,15 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -686,32 +686,36 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Gaussian blur..."
+            Caption         =   "Chroma blur..."
             Index           =   1
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Grid blur"
+            Caption         =   "Gaussian blur..."
             Index           =   2
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Motion blur..."
+            Caption         =   "Grid blur"
             Index           =   3
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Pixelate..."
+            Caption         =   "Motion blur..."
             Index           =   4
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Radial blur..."
+            Caption         =   "Pixelate..."
             Index           =   5
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Smart blur..."
+            Caption         =   "Radial blur..."
             Index           =   6
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Zoom blur..."
+            Caption         =   "Smart blur..."
             Index           =   7
+         End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Zoom blur..."
+            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1592,32 +1596,36 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         Case 0
             Process "Box blur", True
             
-        'Gaussian blur
+        'Chroma blur
         Case 1
+            Process "Chroma blur", True
+        
+        'Gaussian blur
+        Case 2
             Process "Gaussian blur", True
                 
         'Grid blur
-        Case 2
+        Case 3
             Process "Grid blur"
             
         'Motion blur
-        Case 3
+        Case 4
             Process "Motion blur", True
             
         'Pixelate (mosaic)
-        Case 4
+        Case 5
             Process "Pixelate", True
         
         'Radial blur
-        Case 5
+        Case 6
             Process "Radial blur", True
             
         'Smart Blur
-        Case 6
+        Case 7
             Process "Smart blur", True
         
         'Zoom Blur
-        Case 7
+        Case 8
             Process "Zoom blur", True
             
     End Select

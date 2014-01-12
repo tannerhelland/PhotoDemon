@@ -328,13 +328,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "BLUR", 6, 3            'Blur
         '--> Blur sub-menu
         addMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur
-        addMenuIcon "GAUSSBLUR", 6, 3, 1      'Gaussian Blur
-        addMenuIcon "GRIDBLUR", 6, 3, 2       'Grid Blur
-        addMenuIcon "MOTIONBLUR", 6, 3, 3     'Motion Blur
-        addMenuIcon "PIXELATE", 6, 3, 4       'Pixelate (formerly Mosaic)
-        addMenuIcon "RADIALBLUR", 6, 3, 5     'Radial Blur
-        addMenuIcon "SMARTBLUR", 6, 3, 6      'Smart Blur
-        addMenuIcon "ZOOMBLUR", 6, 3, 7       'Zoom Blur
+        addMenuIcon "CHROMABLUR", 6, 3, 1     'Chroma Blur
+        addMenuIcon "GAUSSBLUR", 6, 3, 2      'Gaussian Blur
+        addMenuIcon "GRIDBLUR", 6, 3, 3       'Grid Blur
+        addMenuIcon "MOTIONBLUR", 6, 3, 4     'Motion Blur
+        addMenuIcon "PIXELATE", 6, 3, 5       'Pixelate (formerly Mosaic)
+        addMenuIcon "RADIALBLUR", 6, 3, 6     'Radial Blur
+        addMenuIcon "SMARTBLUR", 6, 3, 7      'Smart Blur
+        addMenuIcon "ZOOMBLUR", 6, 3, 8       'Zoom Blur
     addMenuIcon "DISTORT", 6, 4         'Distort
         '--> Distort sub-menu
         addMenuIcon "LENSDISTORT", 6, 4, 0    'Apply lens distortion

@@ -164,6 +164,7 @@ RELIEF       CUSTOM  MOVEABLE        LOADONCALL      wall.png
 BLUR         CUSTOM  MOVEABLE        LOADONCALL      glass.png
 //--> Blur sub-menu
 BOXBLUR      CUSTOM  MOVEABLE        LOADONCALL      box.png
+CHROMABLUR   CUSTOM  MOVEABLE        LOADONCALL      category_group_select.png
 GAUSSBLUR    CUSTOM  MOVEABLE        LOADONCALL      image_blur.png
 GRIDBLUR     CUSTOM  MOVEABLE        LOADONCALL      image_empty.png
 MOTIONBLUR   CUSTOM  MOVEABLE        LOADONCALL      weather_wind.png
