@@ -25,6 +25,126 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   7
+      Left            =   10680
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   37
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   6
+      Left            =   10080
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   36
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   5
+      Left            =   9480
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   35
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   4
+      Left            =   8880
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   34
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   3
+      Left            =   8280
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   33
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   2
+      Left            =   7680
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   32
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   1
+      Left            =   7080
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   31
+      Top             =   4560
+      Width           =   495
+   End
+   Begin VB.PictureBox picRecColor 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Index           =   0
+      Left            =   6480
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   31
+      TabIndex        =   30
+      Top             =   4560
+      Width           =   495
+   End
    Begin VB.TextBox txtHex 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -347,6 +467,30 @@ Begin VB.Form dialog_ColorSelector
    Begin VB.Label lblColor 
       Alignment       =   1  'Right Justify
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "recent colors:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00000000&
+      Height          =   600
+      Index           =   9
+      Left            =   5085
+      TabIndex        =   29
+      Top             =   4680
+      Width           =   1305
+      WordWrap        =   -1  'True
+   End
+   Begin VB.Label lblColor 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
@@ -577,16 +721,12 @@ Attribute VB_Exposed = False
 'Color Selection Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 11/November/13
-'Last updated: 11/November/13
-'Last update: initial build
+'Last updated: 12/January/14
+'Last update: remember a handful of last-used colors as XML presets
 '
 'Basic color selection dialog.  I've modeled this after the comparable color selector in GIMP; of all the color
 ' selectors I've used (and there have been many!), I find GIMP's the most intuitive... strange, I know, considering
 ' what a mess the rest of their interface is.
-'
-'Unlike other dialogs in the program, I wanted this one to be fully resizable.  A bit of extra code is required
-' to accomplish this, but I believe it's worth the effort.  Dialog size is not currently cached, but it could
-' be in the future.
 '
 'More features are certainly possible in the future, but for now, the dialog is pretty minimalist.
 '
@@ -644,6 +784,17 @@ End Enum
     Private Const ccRed = 0, ccGreen = 1, ccBlue = 2, ccHue = 3, ccSaturation = 4, ccValue = 5
 #End If
 
+'Recently used colors are loaded/saved from a custom XML file
+Private xmlEngine As pdXML
+
+'The file where we'll store recent color data when the program is closed.  This file will be saved in the
+' /Data/Presets/ folder.
+Private xmlFilename As String
+
+'Because we have to color manage everything on this screen, we can't simply set picture box backcolors to match the
+' recent color list.  We have to create special DIBs of each color, then blt those onto the respective boxes.
+Private recentColors() As Long
+
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -666,6 +817,9 @@ End Sub
 Private Sub CmdOK_Click()
     
     newUserColor = RGB(curRed, curGreen, curBlue)
+    
+    'Save the current list of recently used colors
+    saveRecentColorList
     
     userAnswer = vbOK
     Me.Hide
@@ -692,9 +846,9 @@ Public Sub showDialog(ByVal initialColor As Long)
     
     'Render the old color to the screen.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
-    Dim tmpDIB As New pdDIB
-    tmpDIB.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
-    tmpDIB.renderToPictureBox picOriginal
+    Dim tmpDib As New pdDIB
+    tmpDib.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
+    tmpDib.renderToPictureBox picOriginal
     
     'Sync all current color values to the initial color
     curColor = initialColor
@@ -710,11 +864,11 @@ Public Sub showDialog(ByVal initialColor As Long)
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
         
-    Message "Waiting for user to select color..."
+    'Message "Waiting for user to select color..."
         
     'Render the vertical hue box
     drawHueBox
-        
+    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
@@ -723,8 +877,170 @@ Public Sub showDialog(ByVal initialColor As Long)
     ' a hand cursor to all other picture boxes on the form.  I'm okay with that.
     setHandCursor picColor
     
+    'Initialize an XML engine, which we will use to read/write recent color data to file
+    Set xmlEngine = New pdXML
+    
+    'The XML file will be stored in the Preset path (/Data/Presets)
+    xmlFilename = g_UserPreferences.getPresetPath & "Color_Selector.xml"
+    
+    'If an XML file exists, load its contents now
+    loadRecentColorList
+    
     'Display the dialog
     showPDDialog vbModal, Me
+
+End Sub
+
+'If the user has used the color selector before, their last-used colors will be stored to an XML file.  Use this function
+' to load those colors.
+Private Sub loadRecentColorList()
+
+    'Start by seeing if an XML file with previously saved color data exists
+    If FileExist(xmlFilename) Then
+        
+        'Attempt to load and validate the current file; if we can't, create a new, blank XML object
+        If Not xmlEngine.loadXMLFile(xmlFilename) Then
+            Debug.Print "List of recent colors appears to be invalid.  A new recent color list has been created."
+            resetXMLData
+        End If
+        
+    Else
+        resetXMLData
+    End If
+        
+    'We are now ready to load the actual color data from file.
+    
+    'The XML engine will do most the heavy lifting for this task.  We pass it a String array, and it fills it with
+    ' all values corresponding to the given tag name and attribute.  (We must do this dynamically, because we don't
+    ' know how many recent colors are actually saved - it could be anywhere from 0 to picRecColor.Count.)
+    Dim allRecentColors() As String
+    Dim numColors As Long
+    
+    If xmlEngine.findAllAttributeValues(allRecentColors, "colorEntry", "id") Then
+        
+        numColors = UBound(allRecentColors) + 1
+        
+        'Make sure the file does not contain more entries than are allowed (shouldn't theoretically be possible,
+        ' but it doesn't hurt to check).
+        If numColors > picRecColor.Count Then numColors = picRecColor.Count
+        
+    'No recent color entries were found.
+    Else
+        numColors = 0
+    End If
+    
+    Dim i As Long
+    
+    'If one or more recent colors were found, load them now.
+    If numColors > 0 Then
+        
+        ReDim recentColors(0 To numColors - 1) As Long
+        
+        'Load the actual colors from the XML file
+        Dim tmpColorString As String
+        
+        For i = 0 To numColors - 1
+        
+            'Retrieve the color, in string format
+            tmpColorString = xmlEngine.getUniqueTag_String("color", , , "colorEntry", "id", allRecentColors(i))
+            
+            'Translate the color into a long, and update the corresponding picture box
+            recentColors(i) = CLng(tmpColorString)
+            
+        Next i
+    
+    'No recent colors were found.  Populate the list with a few default values.
+    Else
+        
+        ReDim recentColors(0 To picRecColor.Count - 1)
+        recentColors(0) = RGB(0, 0, 255)
+        recentColors(1) = RGB(0, 255, 0)
+        recentColors(2) = RGB(255, 0, 0)
+        recentColors(3) = RGB(255, 0, 255)
+        recentColors(4) = RGB(0, 255, 255)
+        recentColors(5) = RGB(255, 255, 0)
+        recentColors(6) = 0
+        recentColors(7) = RGB(255, 255, 255)
+    End If
+    
+    'For color management reasons, we must use DIBs to copy colors onto the recent color picture boxes
+    Dim tmpDib As pdDIB
+    Set tmpDib = New pdDIB
+    
+    'Render the recent color list to their respective picture boxes
+    For i = 0 To picRecColor.Count - 1
+    
+        If i <= UBound(recentColors) Then
+            tmpDib.createBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, recentColors(i)
+            tmpDib.renderToPictureBox picRecColor(i)
+        End If
+    
+    Next i
+
+End Sub
+
+'Save the current list of last-used colors to an XML file, adding the color presently selected as the most-recent entry.
+Private Sub saveRecentColorList()
+    
+    'Reset whatever XML data we may have stored at present - we will be rewriting the full MRU file from scratch.
+    resetXMLData
+    
+    'We now need to update the colors array with the new color entry.  Start by seeing if this color is already in the
+    ' array.  If it is, simply swap its order.
+    Dim i As Long, j As Long
+    
+    Dim colorFound As Boolean
+    colorFound = False
+    
+    For i = 0 To picRecColor.Count - 1
+    
+        'This color already exists in the list.  Move it to the top of the list, and shift everything else downward.
+        If recentColors(i) = newUserColor Then
+            
+            colorFound = True
+            
+            For j = i To 1 Step -1
+                recentColors(j) = recentColors(j - 1)
+            Next j
+            
+            recentColors(0) = newUserColor
+            Exit For
+            
+        End If
+        
+    Next i
+    
+    'If this color is not already in the list, add it now.
+    If Not colorFound Then
+        
+        For i = picRecColor.Count - 1 To 1 Step -1
+            recentColors(i) = recentColors(i - 1)
+        Next i
+        
+        recentColors(0) = newUserColor
+    
+    End If
+    
+    'Add all color entries to the XML engine
+    For i = 0 To UBound(recentColors)
+        xmlEngine.writeTagWithAttribute "colorEntry", "id", CStr(i), "", True
+        xmlEngine.writeTag "color", recentColors(i)
+        xmlEngine.closeTag "colorEntry"
+        xmlEngine.writeBlankLine
+    Next i
+    
+    'With the XML file now complete, write it out to file
+    xmlEngine.writeXMLToFile xmlFilename
+    
+End Sub
+
+'When creating a new recent coclors file, or overwriting a corrupt one, use this to initialize the new XML file.
+Private Sub resetXMLData()
+
+    xmlEngine.prepareNewXML "Recent colors"
+    xmlEngine.writeBlankLine
+    xmlEngine.writeComment "Everything past this point is recent color data.  Entries are sorted in reverse chronological order."
+    xmlEngine.writeBlankLine
 
 End Sub
 
@@ -814,9 +1130,9 @@ Private Sub syncInterfaceToCurrentColor()
     
     'Render the current color box.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
-    Dim tmpDIB As New pdDIB
-    tmpDIB.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
-    tmpDIB.renderToPictureBox picCurrent
+    Dim tmpDib As New pdDIB
+    tmpDib.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
+    tmpDib.renderToPictureBox picCurrent
     
     'Synchronize all text boxes to their current values
     redrawAllTextBoxes
@@ -1021,6 +1337,22 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
         
     Next x
     
+End Sub
+
+'When a recent color is clicked, update the screen with the new color
+Private Sub picRecColor_Click(Index As Integer)
+
+    'Update the current color values with the color of this box
+    curRed = ExtractR(recentColors(Index))
+    curGreen = ExtractG(recentColors(Index))
+    curBlue = ExtractB(recentColors(Index))
+    
+    'Calculate new HSV values to match
+    RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
+    
+    'Resync the interface to match the new value!
+    syncInterfaceToCurrentColor
+
 End Sub
 
 Private Sub picSampleHSV_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
@@ -1231,3 +1563,4 @@ Private Sub txtHex_Validate(Cancel As Boolean)
     syncInterfaceToCurrentColor
 
 End Sub
+
