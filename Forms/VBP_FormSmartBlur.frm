@@ -317,7 +317,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
         Dim progBarCheck As Long
         progBarCheck = findBestProgBarValue()
             
-        If toPreview = False Then Message "Applying smart blur..."
+        If Not toPreview Then Message "Applying smart blur..."
             
         Dim blendVal As Double
         
@@ -366,7 +366,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
             End If
             
         Next y
-            If toPreview = False Then
+            If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
                     SetProgBarVal x + (finalY * 2)
