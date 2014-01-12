@@ -297,10 +297,6 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
             
 End Sub
 
-Private Sub chkEstimate_Click()
-    updatePreview
-End Sub
-
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Gaussian blur", , buildParams(sltRadius, qualityIndex)
