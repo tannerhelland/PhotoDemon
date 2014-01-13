@@ -193,8 +193,10 @@ Private Type pdWindowData
     offsetX As Long
     offsetY As Long
     optionalToolbarType As pdToolbarType
-    originalWidth As Long
-    originalHeight As Long
+    originalWidthClient As Long
+    originalHeightClient As Long
+    originalWidthFull As Long
+    originalHeightFull As Long
     previousRenderStyle As renderedBorderStyle
     subclassingReleased As Boolean
     typeOfWindow As pdWindowType
@@ -1140,8 +1142,8 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     ' original dimensions.  (Note that this does not matter the *first* time a floating window is rendered, because
                     ' the window will already be in floating-style.)
                     If Not isFirstLoad Then
-                        childRect.x2 = childRect.x1 + pdWindows(winIndex).originalWidth
-                        childRect.y2 = childRect.y1 + pdWindows(winIndex).originalHeight
+                        childRect.x2 = childRect.x1 + pdWindows(winIndex).originalWidthClient
+                        childRect.y2 = childRect.y1 + pdWindows(winIndex).originalHeightClient
                         AdjustWindowRect childRect, GetWindowLong(pdWindows(winIndex).hWnd, GWL_STYLE), 0
                     End If
                     
@@ -1176,7 +1178,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE 'Or WS_EX_LAYERED
-                    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidth, pdWindows(winIndex).originalHeight, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
+                    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidthClient, pdWindows(winIndex).originalHeightClient, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
                     
                     'Specify the main window as the parent
                     SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
@@ -1393,9 +1395,17 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
             
             'Certain toolbars are not resizable.  Instead of relying on previous rect values, supply our own.
             If (.typeOfWindow = TOOLBAR_WINDOW) And (.optionalToolbarType = FILE_TOOLBOX) Then
-                .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidth
+                If toolbarsFloating Then
+                    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthFull
+                Else
+                    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthClient
+                End If
             ElseIf (.typeOfWindow = TOOLBAR_WINDOW) And (.optionalToolbarType = SELECTION_TOOLBOX) Then
-                .lastPosition.y2 = .lastPosition.y1 + pdWindows(windowIndex).originalHeight
+                If toolbarsFloating Then
+                    .lastPosition.y2 = .lastPosition.y1 + pdWindows(windowIndex).originalHeightFull
+                Else
+                    .lastPosition.y2 = .lastPosition.y1 + pdWindows(windowIndex).originalHeightClient
+                End If
             End If
             
             'Window and border state
@@ -1675,19 +1685,10 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
         'The width and height of toolbars is handled differently.  Instead of storing last-used width and height
         ' (which may be incorrect if monitor DPI has changed since the last session), force them to their initial
         ' width/height, which VB will have automatically resolved to match the current DPI setting.
-        If whatWindowType = TOOLBAR_WINDOW Then
-            
-            If getFloatState(TOOLBAR_WINDOW) Then
-                .originalWidth = getWindowWidth(pdWindows(numOfPDWindows).hWnd)
-                .originalHeight = getWindowHeight(pdWindows(numOfPDWindows).hWnd)
-            Else
-                .originalWidth = getClientWidth(pdWindows(numOfPDWindows).hWnd)
-                .originalHeight = getClientHeight(pdWindows(numOfPDWindows).hWnd)
-            End If
-        Else
-            .originalWidth = getClientWidth(pdWindows(numOfPDWindows).hWnd)
-            .originalHeight = getClientHeight(pdWindows(numOfPDWindows).hWnd)
-        End If
+        .originalWidthFull = getWindowWidth(pdWindows(numOfPDWindows).hWnd)
+        .originalHeightFull = getWindowHeight(pdWindows(numOfPDWindows).hWnd)
+        .originalWidthClient = getClientWidth(pdWindows(numOfPDWindows).hWnd)
+        .originalHeightClient = getClientHeight(pdWindows(numOfPDWindows).hWnd)
         
         .hasBeenMadeTransparent = False
         .typeOfWindow = whatWindowType
