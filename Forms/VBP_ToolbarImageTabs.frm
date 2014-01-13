@@ -46,8 +46,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Selection ("Tab") Toolbar
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/October/13
-'Last updated: 21/October/13
-'Last update: fix syncing of curThumb and g_CurrentImage when an inactive image is unloaded via the taskbar
+'Last updated: 12/January/14
+'Last update: fix thumbnail sizes on high-DPI displays; also, fix rendering of highlight rect relative to
+'             dialog border (for all orientations)
 '
 'In fall 2014, PhotoDemon left behind the MDI model in favor of fully dockable/floatable tool and image windows.
 ' This required quite a new features, including a way to switch between loaded images when image windows are docked -
@@ -55,7 +56,9 @@ Attribute VB_Exposed = False
 '
 'The purpose of this form is to provide a tab-like interface for switching between open images.  Please note that
 ' much of this form's layout and alignment is handled by PhotoDemon's window manager, so you will need to look
-' there for additional details.
+' there for detailed information on things like the window's positioning and alignment.
+'
+'To my knowledge, as of January '14 the tabstrip should work properly under all orientations and screen DPIs.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -158,9 +161,9 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
             
             If verticalLayout Then
-                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
             Else
-                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
             End If
             
             updateShadowDIB i
@@ -180,9 +183,9 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     Set imgThumbnails(numOfThumbnails).thumbDIB = New pdDIB
     
     If verticalLayout Then
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
     Else
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
     End If
     
     'Create a matching shadow DIB
@@ -257,10 +260,10 @@ Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
     thumbOffset = hsThumbnails.Value
     
     If verticalLayout Then
-        getThumbAtPosition = (y + thumbOffset) \ fixDPI(thumbHeight)
+        getThumbAtPosition = (y + thumbOffset) \ thumbHeight
         If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     Else
-        getThumbAtPosition = (x + thumbOffset) \ fixDPI(thumbWidth)
+        getThumbAtPosition = (x + thumbOffset) \ thumbWidth
         If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     End If
     
@@ -375,6 +378,10 @@ Private Sub Form_Load()
         thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
         thumbWidth = thumbHeight
     End If
+    
+    'Compensate for the presence of the 2px border along the edge of the tabstrip
+    thumbWidth = thumbWidth - 2
+    thumbHeight = thumbHeight - 2
     
     'Retrieve the unsaved image notification icon from the resource file
     Set unsavedChangesDIB = New pdDIB
@@ -613,24 +620,24 @@ Private Sub Form_Resize()
     'If the tabstrip is horizontal and the window's height is changing, we need to recreate all image thumbnails
     If ((Not verticalLayout) And (thumbHeight <> g_WindowManager.getClientHeight(Me.hWnd))) Then
         
-        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
+        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd) - 2
     
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbHeight) - (fixDPI(thumbBorder) * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
             updateShadowDIB i
         Next i
     
     End If
     
     'If the tabstrip is vertical and the window's with is changing, we need to recreate all image thumbnails
-    If (verticalLayout And (thumbWidth <> g_WindowManager.getClientWidth(Me.hWnd))) Then
+    If (verticalLayout And (thumbWidth <> g_WindowManager.getClientWidth(Me.hWnd) - 2)) Then
     
-        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd)
+        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd) - 2
         
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, fixDPI(thumbWidth) - (fixDPI(thumbBorder) * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
             updateShadowDIB i
         Next i
     
@@ -638,10 +645,10 @@ Private Sub Form_Resize()
     
     'Update thumbnail sizes
     If verticalLayout Then
-        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd)
+        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd) - 2
         thumbHeight = thumbWidth
     Else
-        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
+        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd) - 2
         thumbWidth = thumbHeight
     End If
         
@@ -684,7 +691,7 @@ Private Sub redrawToolbar()
     
     'Determine if the scrollbar needs to be accounted for or not
     Dim maxThumbSize As Long
-    maxThumbSize = fixDPIFloat(constrainingDimension) * numOfThumbnails - 1
+    maxThumbSize = constrainingDimension * numOfThumbnails - 1
     
     If maxThumbSize < constrainingMax Then
         hsThumbnails.Value = 0
@@ -713,9 +720,17 @@ Private Sub redrawToolbar()
     Dim i As Long
     For i = 0 To numOfThumbnails - 1
         If verticalLayout Then
-            renderThumbTab i, 0, fixDPI(i * thumbHeight) - scrollOffset
+            If g_WindowManager.getImageTabstripAlignment = vbAlignLeft Then
+                renderThumbTab i, 0, (i * thumbHeight) - scrollOffset
+            Else
+                renderThumbTab i, 2, (i * thumbHeight) - scrollOffset
+            End If
         Else
-            renderThumbTab i, fixDPI(i * thumbWidth) - scrollOffset, 0
+            If g_WindowManager.getImageTabstripAlignment = vbAlignTop Then
+                renderThumbTab i, (i * thumbWidth) - scrollOffset, 0
+            Else
+                renderThumbTab i, (i * thumbWidth) - scrollOffset, 2
+            End If
         End If
     Next i
     
@@ -755,9 +770,9 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
     tabVisible = False
     
     If verticalLayout Then
-        If ((offsetY + fixDPI(thumbHeight)) > 0) And (offsetY < m_BufferHeight) Then tabVisible = True
+        If ((offsetY + thumbHeight) > 0) And (offsetY < m_BufferHeight) Then tabVisible = True
     Else
-        If ((offsetX + fixDPI(thumbWidth)) > 0) And (offsetX < m_BufferWidth) Then tabVisible = True
+        If ((offsetX + thumbWidth) > 0) And (offsetX < m_BufferWidth) Then tabVisible = True
     End If
     
     If tabVisible Then
@@ -767,7 +782,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
     
         'If this thumbnail has been selected, draw the background with the system's current selection color
         If thumbIndex = curThumb Then
-            SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
+            SetRect tmpRect, offsetX, offsetY, offsetX + thumbWidth, offsetY + thumbHeight
             hBrush = CreateSolidBrush(ConvertSystemColor(vb3DLight))
             FillRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
@@ -775,7 +790,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         
         'If the current thumbnail is highlighted but not selected, simply render the border with a highlight
         If (thumbIndex <> curThumb) And (thumbIndex = curThumbHover) Then
-            SetRect tmpRect, offsetX, offsetY, offsetX + fixDPI(thumbWidth), offsetY + fixDPI(thumbHeight)
+            SetRect tmpRect, offsetX, offsetY, offsetX + thumbWidth, offsetY + thumbHeight
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
             SetRect tmpRect, tmpRect.Left + 1, tmpRect.Top + 1, tmpRect.Right - 1, tmpRect.Bottom - 1
@@ -789,7 +804,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         
         'If the parent image has unsaved changes, also render a notification icon
         If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState Then
-            unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + fixDPI(thumbHeight) - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
+            unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + thumbHeight - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
         End If
         
     End If
