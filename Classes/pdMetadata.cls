@@ -15,12 +15,12 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 26/November/13
-'Last update: huge metadata rewrite.  Loading/saving is now asynchronous, meaning it does not interfere with normal
-'              program operation!  Also the option to "preserve all metadata, regardless of relevance" has been removed.
-'              The reasons for this are many, but basically there is *no physical way* to preserve metadata exactly, so
-'              it is misleading to claim to do so.  PD is better off not providing options like that, so I have reworked
-'              the metadata handler to only operate on relevant data.  Irrelevant or invalid data is now forcibly removed.
+'Last updated: 15/January/14
+'Last update: perform special checks for multiline EXIF comments.  It's actually a violation of the EXIF spec to write
+'              comments spanning multiple lines (the spec unambiguously states: "Comments are written in ASCII text
+'              terminated with NULL. If there are two or more comments, each statement ends with a period. A carriage
+'              return or line feed character shall not be used.")  However, as with most specs, some software chooses
+'              to violate this.  I have now added special checks for multiline comments.
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -228,6 +228,8 @@ Public Sub loadAllMetadata(ByVal mdString As String)
             '       ...many more lines of gibberish...
             '    </et:prt>
             '    Not difficult to parse, but FYI there is really no reason to store or attempt to convert the specific binary values.
+            '    One exception to this is user comments, which can include newline characters and thus fool the auto-detector - note
+            '    that we perform a special check for this case.
             
             ' 3) List-type values.  Used primarily by PhotoShop.  Looks like:
             '<et:prt>
@@ -264,11 +266,44 @@ Public Sub loadAllMetadata(ByVal mdString As String)
             
             If iMetadata(maxMetadataCount).isValueBinary Or iMetadata(maxMetadataCount).isValueList Then
             
-                'Binary and list data can be enormous.  ExifTool is kind enough to always start these tag types on a new line -
-                ' so move down a line, then start searching for the end of the chunk.
-                Do
-                    curLine = curLine + 1
-                Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
+                'SPECIAL CHECK FOR COMMENTS
+                'Comments are a unique exception to the binary data detector (data spanning multiple lines), as comments can actually
+                ' include their own linebreak characters!  Check for the presence of comment data now.
+                If StrComp(iMetadata(maxMetadataCount).Name, "Comment") = 0 Then
+                
+                    'This is a comment.  Retrieve its value using a custom parse strategy.
+                    xmlLines(curLine) = Trim$(xmlLines(curLine))
+                    iMetadata(maxMetadataCount).Value = Trim$(Right$(xmlLines(curLine), Len(xmlLines(curLine)) - 8))
+                    
+                    Do
+                        curLine = curLine + 1
+                        
+                        If InStr(1, xmlLines(curLine), "</et:prt>") > 0 Then
+                        
+                            'See if there are any useful characters on this line; if there are, add them to the comment before exiting
+                            If Len(xmlLines(curLine)) > 9 Then
+                                iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & " " & Left$(xmlLines(curLine), Len(xmlLines(curLine)) - 9)
+                            End If
+                        
+                        Else
+                            iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & " " & xmlLines(curLine)
+                        End If
+                        
+                    Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
+                    
+                    'Remove dead space from the parsed comment string
+                    iMetadata(maxMetadataCount).Value = Trim$(iMetadata(maxMetadataCount).Value)
+                    
+                Else
+            
+                    'This is generic binary and/or list data, which tends to be enormous.  ExifTool is kind enough to always start
+                    ' these tag types on a new line - so move down a line, then start searching for the end of the chunk.
+                    Do
+                        curLine = curLine + 1
+                    Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
+                    
+                End If
+                
             Else
                 xmlLines(curLine) = Trim$(xmlLines(curLine))
                 iMetadata(maxMetadataCount).Value = Trim$(Mid$(xmlLines(curLine), 9, InStr(1, xmlLines(curLine), "</et") - 9))
@@ -301,7 +336,7 @@ Public Sub loadAllMetadata(ByVal mdString As String)
                         iMetadata(maxMetadataCount).ActualValue = "(binary data)"
                     End If
                 End If
-                
+                                
                 'Binary and list-type values can be ignored.  Only retrieve the data if it is neither of these types.
                 If iMetadata(maxMetadataCount).isActualValueBinary Or iMetadata(maxMetadataCount).isActualValueList Then
                 
@@ -321,6 +356,18 @@ Public Sub loadAllMetadata(ByVal mdString As String)
             
             'Now that we have fully parsed the tag, we need to run a few additional checks.
             
+            'SPECIAL CHECK FOR MULTILINE COMMENTS
+            'If the current tag is a multiline comment, it will have been erroneously marked as containing binary data.
+            ' Reset it now.
+            If (StrComp(iMetadata(maxMetadataCount).Name, "Comment") = 0) And iMetadata(maxMetadataCount).isValueBinary Then
+            
+                'Remove the binary identifier from this tag
+                iMetadata(maxMetadataCount).ActualValue = iMetadata(maxMetadataCount).Value
+                iMetadata(maxMetadataCount).isActualValueBinary = False
+                iMetadata(maxMetadataCount).isValueBinary = False
+            
+            End If
+                        
             'ANALYZE GROUP
             
             'First, analyze the current Group.  Some groups can be ignored - check for those first.
