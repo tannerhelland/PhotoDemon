@@ -280,7 +280,7 @@ Private Sub Form_Load()
     GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/", True
     GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html", True
     GenerateThankyou "", ""
-    GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "photodemon.org", True
+    GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -372,9 +372,9 @@ Private Sub picBuffer_Click()
     If curHoveredCredit >= 0 Then OpenURL creditList(curHoveredCredit).URL
 End Sub
 
-Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    mouseX = X
-    mouseY = Y
+Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    mouseX = x
+    mouseY = y
 End Sub
 
 'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
