@@ -3,11 +3,9 @@ Attribute VB_Name = "FastDrawing"
 'Fast API Graphics Routines Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 15/September/13
-'Last update: during a preview, clients should not have to track and calculate the difference between preview dimensions
-'              and actual image dimensions (important for things like Blur, where the preview radius must be reduced in
-'              order to provide an accurate preview).  PrepImageData now does this for them, and they can simply access
-'              the .previewModifier value as necessary.
+'Last updated: 15/January/14
+'Last update: added special preview-specific versions of prep/finalizeImageData.  These were very helpful in the Export JPEG
+'              dialog, as they allow the full power of prep/finalizeImageData to be used on any arbitrary pdImage object.
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
@@ -105,6 +103,133 @@ Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
         .Bounds(1).cElements = srcDIB.getDIBArrayWidth
         .pvData = srcDIB.getActualDIBBits
     End With
+    
+End Sub
+
+'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
+' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
+' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.
+Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As fxPreviewCtl)
+    
+    'Prepare our temporary DIB
+    Set workingDIB = New pdDIB
+        
+    'We know this is a preview, so new width and height values need to be calculated against the size of the preview window.
+    Dim dstWidth As Double, dstHeight As Double
+    Dim srcWidth As Double, srcHeight As Double
+    Dim newWidth As Long, newHeight As Long
+    
+    'Start by calculating the source area for the preview.  This changes based on several criteria:
+    ' 1) Is the preview area set to "fit full image" or "100% zoom"?
+    ' 2) Is a selection is active?  If so, we only want to preview the selected area.  (I may change this behavior in the future,
+    '     so the user can actually see the fully composited result of any changes.)
+    
+    'The full image is being previewed.  Retrieve the entire thing, so we can shrink it down to size.
+    If previewTarget.viewportFitFullImage Then
+    
+        srcWidth = srcDIB.getDIBWidth
+        srcHeight = srcDIB.getDIBHeight
+        
+    'Only a section of the image is being preview (at 100% zoom).  Retrieve just that section.
+    Else
+    
+        srcWidth = previewTarget.getPreviewWidth
+        srcHeight = previewTarget.getPreviewHeight
+        
+        Dim curAspectRatio As Double
+        
+        If srcDIB.getDIBWidth < srcWidth Then
+            srcWidth = srcDIB.getDIBWidth
+        ElseIf srcDIB.getDIBHeight < srcHeight Then
+            srcHeight = srcDIB.getDIBHeight
+        End If
+        
+    End If
+    
+    'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.  The only
+    ' exception to this is when the image is actually smaller than the preview area - in that case use the whole image.
+    dstWidth = previewTarget.getPreviewWidth
+    dstHeight = previewTarget.getPreviewHeight
+            
+    If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
+        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+    Else
+        newWidth = srcWidth
+        newHeight = srcHeight
+    End If
+    
+    'The area may be offset from the (0, 0) position if the user has elected to drag the preview area
+    Dim hOffset As Long, vOffset As Long
+    
+    'Next, we will create the temporary object (called "workingDIB") at the calculated preview dimensions.  All editing
+    ' actions are applied to this DIB.
+    
+    'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
+    If previewTarget.viewportFitFullImage Then
+        workingDIB.createFromExistingDIB srcDIB, newWidth, newHeight
+        
+    'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
+    Else
+    
+        'Calculate offsets, if any, for the image
+        hOffset = previewTarget.offsetX
+        vOffset = previewTarget.offsetY
+        
+        workingDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth
+        BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, srcDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
+        
+    End If
+    
+    'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
+    If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
+    
+    'For 32bpp layers, fix premultiplication now, as all effects assume UN-premultiplied alpha
+    If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
+    
+    'With our temporary DIB successfully created, populate the relevant SafeArray variable
+    prepSafeArray tmpSA, workingDIB
+
+    'Finally, populate the ubiquitous curDIBValues variable with everything a filter might want to know
+    With curDIBValues
+        .Left = 0
+        .Top = 0
+        .Right = workingDIB.getDIBWidth - 1
+        .Bottom = workingDIB.getDIBHeight - 1
+        .Width = workingDIB.getDIBWidth
+        .Height = workingDIB.getDIBHeight
+        .minX = 0
+        .MinY = 0
+        .maxX = workingDIB.getDIBWidth - 1
+        .MaxY = workingDIB.getDIBHeight - 1
+        .colorDepth = workingDIB.getDIBColorDepth
+        .BytesPerPixel = (workingDIB.getDIBColorDepth \ 8)
+        .dibX = 0
+        .dibY = 0
+        If previewTarget.viewportFitFullImage Then
+            .previewModifier = workingDIB.getDIBWidth / srcDIB.getDIBWidth
+        Else
+            .previewModifier = 1#
+        End If
+    End With
+    
+    'If desired, the statement below can be used to verify that the function created a working DIB at the proper dimensions
+    'Debug.Print "previewNonStandardImage worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.getActualDIBBits
+
+End Sub
+
+'The counterpart to previewNonStandardImage, above
+Public Sub finalizeNonstandardPreview(ByRef previewTarget As fxPreviewCtl)
+    
+    'Because is a preview, we only need to repaint a preview box
+    
+    'Fix premultiplied alpha if necessary
+    If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha True
+    
+    'Pass the modified image on to the specified preview control
+    previewTarget.setFXImage workingDIB
+    
+    'workingDIB and its backup have served their purposes, so erase them from memory
+    Set workingDIB = Nothing
     
 End Sub
 

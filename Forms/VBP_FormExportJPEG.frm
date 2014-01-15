@@ -3,10 +3,10 @@ Begin VB.Form dialog_ExportJPEG
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
-   ClientHeight    =   8580
+   ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   9240
+   ClientWidth     =   13125
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,32 +19,18 @@ Begin VB.Form dialog_ExportJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   572
+   ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   616
+   ScaleWidth      =   875
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Left            =   240
-      ScaleHeight     =   311
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   583
-      TabIndex        =   10
-      Top             =   120
-      Width           =   8775
-   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   7830
-      Width           =   9240
-      _ExtentX        =   16298
+      Top             =   5835
+      Width           =   13125
+      _ExtentX        =   23151
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -58,9 +44,9 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.smartCheckBox chkOptimize 
       Height          =   540
-      Left            =   480
+      Left            =   6000
       TabIndex        =   5
-      Top             =   6240
+      Top             =   1560
       Width           =   3105
       _ExtentX        =   5477
       _ExtentY        =   953
@@ -88,12 +74,12 @@ Begin VB.Form dialog_ExportJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   840
+      Left            =   6360
       Style           =   2  'Dropdown List
       TabIndex        =   4
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   7320
-      Width           =   4215
+      Top             =   3600
+      Width           =   6615
    End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
@@ -107,17 +93,17 @@ Begin VB.Form dialog_ExportJPEG
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   480
+      Left            =   6000
       Style           =   2  'Dropdown List
       TabIndex        =   1
-      Top             =   5325
+      Top             =   600
       Width           =   2775
    End
    Begin PhotoDemon.smartCheckBox chkThumbnail 
       Height          =   540
-      Left            =   5160
+      Left            =   6000
       TabIndex        =   6
-      Top             =   6240
+      Top             =   2040
       Width           =   2715
       _ExtentX        =   4789
       _ExtentY        =   953
@@ -134,9 +120,9 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.smartCheckBox chkProgressive 
       Height          =   540
-      Left            =   5160
+      Left            =   6000
       TabIndex        =   7
-      Top             =   6720
+      Top             =   2520
       Width           =   2835
       _ExtentX        =   5001
       _ExtentY        =   953
@@ -153,10 +139,10 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.smartCheckBox chkSubsample 
       Height          =   540
-      Left            =   480
+      Left            =   6000
       TabIndex        =   8
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   6720
+      Top             =   3000
       Width           =   2820
       _ExtentX        =   4974
       _ExtentY        =   953
@@ -173,10 +159,10 @@ Begin VB.Form dialog_ExportJPEG
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   495
-      Left            =   3480
+      Left            =   8880
       TabIndex        =   9
-      Top             =   5265
-      Width           =   5655
+      Top             =   540
+      Width           =   4215
       _ExtentX        =   9975
       _ExtentY        =   873
       Min             =   1
@@ -191,6 +177,15 @@ Begin VB.Form dialog_ExportJPEG
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   10
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -208,9 +203,9 @@ Begin VB.Form dialog_ExportJPEG
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   240
+      Left            =   5880
       TabIndex        =   3
-      Top             =   5880
+      Top             =   1200
       Width           =   1965
    End
    Begin VB.Label lblTitle 
@@ -229,9 +224,9 @@ Begin VB.Form dialog_ExportJPEG
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
+      Left            =   5880
       TabIndex        =   2
-      Top             =   4920
+      Top             =   120
       Width           =   1410
    End
 End
@@ -244,13 +239,12 @@ Attribute VB_Exposed = False
 'JPEG Export Dialog
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 5/8/00
-'Last updated: 03/December/12
-'Last update: converted this into a true "dialog", in that it can be called from anywhere, and it will return
-'              "OK" or "Cancel" (as type vbMsgBoxResult) if the user hit OK or Cancel.  If OK was pressed, three
-'              global variables - g_JPEGQuality, g_JPEGFlags, and g_JPEGThumbnail - will be set with the user's
-'              answers.  These can then be queried by external functions as needed.
+'Last updated: 15/January/14
+'Last update: replaced the standalone picture box preview with PD's dedicated preview control.  This allows the
+'              user to pan around the image at their own leisure, and investigate specific elements of the
+'              compressed JPEG image.
 '
-'Dialog for preseting the user a number of options for related to JPEG exporting.  The various advanced features
+'Dialog for presenting the user various options related to JPEG exporting.  The advanced features all currently
 ' rely on FreeImage for implementation, and will be disabled if FreeImage cannot be found.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -268,16 +262,6 @@ Public imageBeingExported As pdImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
-' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
-Private origImageCopy As pdDIB
-Private previewWidth As Long, previewHeight As Long
-
-'As a further optimizations, we keep a persistent copy of the image in FreeImage format; FreeImage is used to save the
-' JPEG in-memory, then render it back out to the picture box.  As the JPEG encoding/decoding is an intensive process,
-' anything we can do to alleviate its burden is helpful.
-Private fi_DIB As Long
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -386,11 +370,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    
-    'Release any remaining FreeImage handles
-    If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
-    If Not origImageCopy Is Nothing Then Set origImageCopy = Nothing
-    
 End Sub
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
@@ -467,25 +446,13 @@ Public Sub showDialog()
     chkThumbnail.ToolTipText = g_Language.TranslateMessage("Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).")
     chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
     
-    'Make a copy of the main image; we'll use this to render the preview image
-    Set origImageCopy = New pdDIB
-    convertAspectRatio imageBeingExported.Width, imageBeingExported.Height, picPreview.Width, picPreview.Height, previewWidth, previewHeight
-    origImageCopy.createFromExistingDIB imageBeingExported.getActiveDIB, previewWidth, previewHeight
-    If origImageCopy.getDIBColorDepth = 32 Then origImageCopy.convertTo24bpp
-    
     'FreeImage is required to perform the JPEG transformation.  We could use GDI+, but FreeImage is
-    ' much easier to interface with.
-    If g_ImageFormats.FreeImageEnabled Then
-    
-        'Convert our DIB into FreeImage-format; we will maintain this copy to improve JPEG preview performance.
-        fi_DIB = FreeImage_CreateFromDC(origImageCopy.getDIBDC)
-        
-    'If FreeImage is not available, notify the user.
-    Else
+    ' much easier to interface with.  If FreeImage is not available, warn the user.
+    If Not g_ImageFormats.FreeImageEnabled Then
         
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
+        tmpDIB.createBlank fxPreview.getPreviewWidth, fxPreview.getPreviewHeight
     
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
@@ -498,7 +465,9 @@ Public Sub showDialog()
         notifyFont.attachToDC tmpDIB.getDIBDC
     
         notifyFont.fastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
-        tmpDIB.renderToPictureBox picPreview
+        fxPreview.setOriginalImage tmpDIB
+        fxPreview.setFXImage tmpDIB
+        'tmpDIB.renderToPictureBox picPreview
         Set tmpDIB = Nothing
         
     End If
@@ -515,12 +484,29 @@ Public Sub showDialog()
 
 End Sub
 
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
 Private Sub sltQuality_Change()
     updateComboBox
 End Sub
 
 Private Sub updatePreview()
+
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+        
+        'Start by retrieving the relevant portion of the image, according to the preview window
+        Dim tmpSafeArray As SAFEARRAY2D
+        previewNonStandardImage tmpSafeArray, imageBeingExported.getCompositedImage, fxPreview
+        
+        'workingDIB may be 32bpp at present.  Convert it to 24bpp if necessary.
+        If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp
+        
+        'The public workingDIB object now contains the relevant portion of the preview window.  Pass that to
+        ' FreeImage, which will make a copy for itself.
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
                 
         'Only some of the JPEG settings actually affect the appearance of the saved image.  Specifically, only
         ' save quality and subsampling technique matter.  Convert those into FreeImage-compatible settings now.
@@ -533,20 +519,21 @@ Private Sub updatePreview()
         ' in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
         Dim jpegArray() As Byte
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveToMemoryEx(FIF_JPEG, fi_DIB, jpegArray, jpegFlags, False)
+        fi_Check = FreeImage_SaveToMemoryEx(FIF_JPEG, fi_DIB, jpegArray, jpegFlags, True)
         
-        Dim tmpFI_DIB As Long
-        tmpFI_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
+        fi_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
         
         'Copy the newly decompressed JPEG into our original pdDIB object.
-        SetDIBitsToDevice origImageCopy.getDIBDC, 0, 0, origImageCopy.getDIBWidth, origImageCopy.getDIBHeight, 0, 0, 0, origImageCopy.getDIBHeight, ByVal FreeImage_GetBits(tmpFI_DIB), ByVal FreeImage_GetInfo(tmpFI_DIB), 0&
+        SetDIBitsToDevice workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
         
         'Paint the final image to screen and release all temporary objects
-        origImageCopy.renderToPictureBox picPreview
-        FreeImage_Unload tmpFI_DIB
+        finalizeNonstandardPreview fxPreview
+        
+        FreeImage_Unload fi_DIB
         Erase jpegArray
-    
+                
     End If
+    
 End Sub
 
 Private Function getSubsampleConstantFromComboBox() As Long
