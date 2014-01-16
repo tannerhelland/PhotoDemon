@@ -2709,6 +2709,9 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         Else
                             m_FormatParams = m_FormatParams & "|0"
                         End If
+                        
+                        'FOR NOW, disable automatic JPEG quality calculations.  This must be done manually on a per-image basis.
+                        m_FormatParams = m_FormatParams & "|0"
                                         
                     Case FIF_PNG
                         m_FormatParams = CStr(hsPNGCompression)

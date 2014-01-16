@@ -151,6 +151,19 @@ Public g_ClosingAllImages As Boolean
 Public g_JPEGQuality As Long
 Public g_JPEGFlags As Long
 Public g_JPEGThumbnail As Long
+Public g_JPEGAutoQuality As jpegAutoQualityMode
+
+Public Enum jpegAutoQualityMode
+    doNotUseAutoQuality = 0
+    noDifference = 1
+    tinyDifference = 2
+    minorDifference = 3
+    majorDifference = 4
+End Enum
+
+#If False Then
+    Private Const doNotUseAutoQuality = 0, noDifference = 1, tinyDifference = 2, minorDifference = 3, majorDifference = 4
+#End If
 
 'JPEG-2000 export compression ratio; this is set by the JP2 export dialog if the user clicks "OK" (not Cancel)
 Public g_JP2Compression As Long

@@ -20,6 +20,62 @@ Option Explicit
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
+'Given a DIB, fill a Single-type array with a L*a*b* representation of the image
+Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray() As Single) As Boolean
+
+    'This only works on 24bpp images; exit prematurely on 32bpp encounters
+    If srcDIB.getDIBColorDepth = 32 Then
+        convertEntireDIBToLabColor = False
+        Exit Function
+    End If
+
+    'Redim the destination array to proper dimensions
+    ReDim dstArray(0 To srcDIB.getDIBArrayWidth, 0 To srcDIB.getDIBHeight) As Single
+    
+    'Request a pointer to the source dib
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    
+    Dim ImageData() As Byte
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'Iterate through the image, converting colors as we go
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
+    
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+    
+    Dim r As Long, g As Long, b As Long
+    Dim LabL As Double, LabA As Double, LabB As Double
+    
+    For x = 0 To finalX
+        quickX = x * 3
+    For y = 0 To finalY
+    
+        'Get the source pixel color values
+        r = ImageData(quickX + 2, y)
+        g = ImageData(quickX + 1, y)
+        b = ImageData(quickX, y)
+        
+        'Convert the color to the L*a*b* color space
+        RGBtoLAB r, g, b, LabL, LabA, LabB
+        
+        'Store the L*a*b* values
+        dstArray(quickX, y) = LabL
+        dstArray(quickX + 1, y) = LabA
+        dstArray(quickX + 2, y) = LabB
+    
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    convertEntireDIBToLabColor = True
+
+End Function
+
 'Present the user with a color selection dialog.  At present, this is just a thin wrapper to the stock Windows color
 ' selector, but in the future it will link to a custom PhotoDemon one.
 ' INPUTS:  1) a Long-type variable that will receive the new color
@@ -514,11 +570,11 @@ End Sub
 
 
 'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB.
-Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
+Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef LabL As Double, ByRef LabA As Double, ByRef LabB As Double)
 
     Dim x As Double, y As Double, z As Double
     RGBtoXYZ r, g, b, x, y, z
-    XYZtoLab x, y, z, labL, labA, labB
+    XYZtoLab x, y, z, LabL, LabA, LabB
 
 End Sub
 
