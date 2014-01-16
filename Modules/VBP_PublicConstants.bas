@@ -6,7 +6,7 @@ Public Const DISPLAY_TIMINGS As Boolean = True
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.15.4"
+Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.16.0"
 Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Public Const EXPECTED_PNGNQ_VERSION As String = "2.0.1"

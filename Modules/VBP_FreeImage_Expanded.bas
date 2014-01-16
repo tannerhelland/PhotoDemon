@@ -823,7 +823,7 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
         Exit Function
     End If
         
-    'Determine the file type.  (Currently, this feature only works on animated GIFs and multipage TIFFs.)
+    'Determine the file type.  (Currently, this feature only works on animated GIFs, multipage TIFFs, and icons.)
     Dim fileFIF As FREE_IMAGE_FORMAT
     fileFIF = FreeImage_GetFileType(srcFilename)
     If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilename(srcFilename)
