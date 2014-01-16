@@ -1,7 +1,9 @@
 Attribute VB_Name = "Outside_FreeImageV3"
-'Note: this file has been heavily modified for use within PhotoDemon.
+'Note: this file has been heavily modified for use within PhotoDemon.  The vast majority of the code is copied directly from the official
+' VB6 wrapper by Carsten Klein, but I have stripped out unused functions, retyped certain enums (to work more nicely with PD's custom
+' systems), and directly modified a few functions to handle data more easily for PD's purposes.
 
-'IF YOU WANT TO USE THIS CODE IN YOUR OWN PROJECT, PLEASE DOWNLOAD THE ORIGINAL FROM THIS LINK:
+'So basically: IF YOU WANT TO USE THIS CODE IN YOUR OWN PROJECT, PLEASE DOWNLOAD AN ORIGINAL COPY FROM THIS LINK:
 'http://freeimage.sourceforge.net/download.html
 
 'Many thanks to Carsten Klein and the FreeImage team for this excellent library (and associated DLL).
@@ -34,9 +36,9 @@ Attribute VB_Name = "Outside_FreeImageV3"
 
 '// ==========================================================
 '// CVS
-'// $Revision: 2.17 $
-'// $Date: 2012/10/01 12:52:22 $
-'// $Id: MFreeImage.bas,v 2.17 2012/10/01 12:52:22 cklein05 Exp $
+'// $Revision: 2.20 $
+'// $Date: 2013/10/10 11:11:15 $
+'// $Id: MFreeImage.bas,v 2.20 2013/10/10 11:11:15 cklein05 Exp $
 '// ==========================================================
 
 
@@ -246,6 +248,12 @@ Private Type RECT
    Bottom As Long
 End Type
 
+Private Declare Function DestroyIcon Lib "user32.dll" ( _
+    ByVal hIcon As Long) As Long
+
+Private Declare Function CreateIconIndirect Lib "user32.dll" ( _
+    ByRef piconinfo As ICONINFO) As Long
+
 Private Type Guid
    Data1 As Long
    Data2 As Integer
@@ -394,6 +402,9 @@ Private Declare Function AlphaBlend Lib "MSIMG32.dll" ( _
 Private Const AC_SRC_OVER = &H0
 Private Const AC_SRC_ALPHA = &H1
 
+Private Const BLACKONWHITE As Long = 1
+Private Const WHITEONBLACK As Long = 2
+'Private Const COLORONCOLOR As Long = 3
 
 Public Enum STRETCH_MODE
    SM_BLACKONWHITE = 1
@@ -463,8 +474,8 @@ End Enum
 
 ' Version information
 Public Const FREEIMAGE_MAJOR_VERSION As Long = 3
-Public Const FREEIMAGE_MINOR_VERSION As Long = 15
-Public Const FREEIMAGE_RELEASE_SERIAL As Long = 4
+Public Const FREEIMAGE_MINOR_VERSION As Long = 16
+Public Const FREEIMAGE_RELEASE_SERIAL As Long = 0
 
 ' Memory stream pointer operation flags
 Public Const SEEK_SET As Long = 0
@@ -600,6 +611,11 @@ Public Const TIFF_LOGLUV As Long = &H10000           ' save using LogLuv compres
 Public Const WBMP_DEFAULT As Long = 0
 Public Const XBM_DEFAULT As Long = 0
 Public Const XPM_DEFAULT As Long = 0
+Public Const WEBP_DEFAULT As Long = 0                ' save with good quality (75:1)
+Public Const WEBP_LOSSLESS As Long = &H100           ' save in lossless mode
+Public Const JXR_DEFAULT As Long = 0                 ' save with quality 80 and no chroma subsampling (4:4:4)
+Public Const JXR_LOSSLESS As Long = &H64             ' save lossless
+Public Const JXR_PROGRESSIVE As Long = &H2000        ' save as a progressive-JXR (use | to combine with other save flags)
 
 Public Enum FREE_IMAGE_FORMAT
    FIF_UNKNOWN = -1
@@ -639,6 +655,8 @@ Public Enum FREE_IMAGE_FORMAT
    FIF_PFM = 32
    FIF_PICT = 33
    FIF_RAW = 34
+   FIF_WEBP = 35
+   FIF_JXR = 36
 End Enum
 #If False Then
    Const FIF_UNKNOWN = -1
@@ -678,10 +696,12 @@ End Enum
    Const FIF_PFM = 32
    Const FIF_PICT = 33
    Const FIF_RAW = 34
+   Const FIF_WEBP = 35
+   Const FIF_JXR = 36
 #End If
 
 Public Enum FREE_IMAGE_LOAD_OPTIONS
-   FILO_LOAD_NOPIXELS = &H8000                    ' load the image header only (not supported by all plugins)
+   FILO_LOAD_NOPIXELS = FIF_LOAD_NOPIXELS         ' load the image header only (not supported by all plugins)
    FILO_LOAD_DEFAULT = 0
    FILO_GIF_DEFAULT = GIF_DEFAULT
    FILO_GIF_LOAD256 = GIF_LOAD256                 ' load the image as a 256 color image with ununsed palette entries, if it's 16 or 2 color
@@ -777,6 +797,9 @@ Public Enum FREE_IMAGE_SAVE_OPTIONS
    FISO_TIFF_LZW = TIFF_LZW                       ' save using LZW compression
    FISO_TIFF_JPEG = TIFF_JPEG                     ' save using JPEG compression
    FISO_TIFF_LOGLUV = TIFF_LOGLUV                 ' save using LogLuv compression
+   FISO_WEBP_LOSSLESS = WEBP_LOSSLESS             ' save in lossless mode
+   FISO_JXR_LOSSLESS = JXR_LOSSLESS               ' save lossless
+   FISP_JXR_PROGRESSIVE = JXR_PROGRESSIVE         ' save as a progressive-JXR (use | to combine with other save flags)
 End Enum
 #If False Then
    Const FISO_SAVE_DEFAULT = 0
@@ -807,6 +830,9 @@ End Enum
    Const FISO_TIFF_CCITTFAX4 = TIFF_CCITTFAX4
    Const FISO_TIFF_LZW = TIFF_LZW
    Const FISO_TIFF_JPEG = TIFF_JPEG
+   Const FISO_WEBP_LOSSLESS = WEBP_LOSSLESS
+   Const FISO_JXR_LOSSLESS = JXR_LOSSLESS
+   Const FISP_JXR_PROGRESSIVE = JXR_PROGRESSIVE
 #End If
 
 Public Enum FREE_IMAGE_TYPE
@@ -1938,7 +1964,7 @@ Public Declare Function FreeImage_RotateClassic Lib "FreeImage.dll" Alias "_Free
 Public Declare Function FreeImage_Rotate Lib "FreeImage.dll" Alias "_FreeImage_Rotate@16" ( _
            ByVal BITMAP As Long, _
            ByVal Angle As Double, _
-  Optional ByRef Color As Any) As Long
+  Optional ByRef Color As Any = 0) As Long
 
 Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeImage_RotateEx@48" ( _
            ByVal BITMAP As Long, _
@@ -3140,7 +3166,7 @@ Dim lpSA As Long
                                                       ' received by FreeImage_AcquireMemory
          End With
          
-         lpSA = deref(VarPtrArray(Data))
+         lpSA = pDeref(VarPtrArray(Data))
          If (lpSA = 0) Then
             ' allocate memory for an array descriptor
             Call SafeArrayAllocDescriptor(1, lpSA)
@@ -3538,7 +3564,7 @@ Public Function FreeImage_GetICCProfileColorModel(ByVal BITMAP As Long) As FREE_
    ' Bitmap. That depends on the bitmap's color type.
 
    If (FreeImage_HasICCProfile(BITMAP)) Then
-      FreeImage_GetICCProfileColorModel = (deref(FreeImage_GetICCProfileInt(BITMAP)) _
+      FreeImage_GetICCProfileColorModel = (pDeref(FreeImage_GetICCProfileInt(BITMAP)) _
             And FREE_IMAGE_ICC_COLOR_MODEL_MASK)
    Else
       ' use FreeImage_GetColorType() to determine, whether this is a CMYK bitmap or not
@@ -3557,7 +3583,7 @@ Public Function FreeImage_GetICCProfileSize(ByVal BITMAP As Long) As Long
    ' only the size in bytes of the ICC profile data for the Bitmap specified or zero,
    ' if there is no ICC profile data for the Bitmap.
 
-   FreeImage_GetICCProfileSize = deref(FreeImage_GetICCProfileInt(BITMAP) + 4)
+   FreeImage_GetICCProfileSize = pDeref(FreeImage_GetICCProfileInt(BITMAP) + 4)
 
 End Function
 
@@ -3567,7 +3593,7 @@ Public Function FreeImage_GetICCProfileDataPointer(ByVal BITMAP As Long) As Long
    ' only the pointer (the address) of the ICC profile data for the Bitmap specified,
    ' or zero if there is no ICC profile data for the Bitmap.
 
-   FreeImage_GetICCProfileDataPointer = deref(FreeImage_GetICCProfileInt(BITMAP) + 8)
+   FreeImage_GetICCProfileDataPointer = pDeref(FreeImage_GetICCProfileInt(BITMAP) + 8)
 
 End Function
 
@@ -4164,12 +4190,12 @@ Dim eLastStretchMode As STRETCH_MODE
       End If
       
       If (DrawMode And DM_MIRROR_VERTICAL) Then
-         yDst = HeightDst
+         yDst = yDst + HeightDst
          HeightDst = -HeightDst
       End If
      
       If (DrawMode And DM_MIRROR_HORIZONTAL) Then
-         xDst = WidthDst
+         xDst = xDst + WidthDst
          WidthDst = -WidthDst
       End If
 
@@ -5538,7 +5564,7 @@ Dim lArrayDataPtr As Long
    If (IncludeSize) Then
       ' get the pointer actual pointing to the array data of
       ' the Byte array 'FreeImage_ZLibCompressVB'
-      lArrayDataPtr = deref(deref(VarPtrArray(FreeImage_ZLibCompressVB)) + 12)
+      lArrayDataPtr = pDeref(pDeref(VarPtrArray(FreeImage_ZLibCompressVB)) + 12)
 
       ' copy uncompressed size into the first 4 bytes
       Call CopyMemory(ByVal lArrayDataPtr, UBound(Data) + 1, 4)
@@ -5626,7 +5652,7 @@ Dim lArrayDataPtr As Long
    If (IncludeSize) Then
       ' get the pointer actual pointing to the array data of
       ' the Byte array 'FreeImage_ZLibCompressVB'
-      lArrayDataPtr = deref(deref(VarPtrArray(FreeImage_ZLibGZipVB)) + 12)
+      lArrayDataPtr = pDeref(pDeref(VarPtrArray(FreeImage_ZLibGZipVB)) + 12)
 
       ' copy uncompressed size into the first 4 bytes
       Call CopyMemory(ByVal lArrayDataPtr, UBound(Data) + 1, 4)
@@ -5811,7 +5837,7 @@ Dim lpArrayPtr As Long
       ' VARIANTARG structure is the VarPtr of the Variant variable in VB
       
       ' getting the contents of the data element (in C/C++: *(data + 8))
-      lpArrayPtr = deref(VarPtr(Data) + 8)
+      lpArrayPtr = pDeref(VarPtr(Data) + 8)
       
       ' call the 'FreeImage_DestroyLockedArrayByPtr' function to destroy
       ' the array properly
@@ -5831,7 +5857,7 @@ Dim lpSA As Long
    ' descriptor by a pointer to the array variable.
 
    ' dereference the pointer once (in C/C++: *ArrayPtr)
-   lpSA = deref(ArrayPtr)
+   lpSA = pDeref(ArrayPtr)
    ' now 'lpSA' is a pointer to the actual SAFEARRAY structure
    ' and could be a null pointer when the array is not initialized
    ' then, we have nothing to do here but return (-1) to indicate
@@ -6077,7 +6103,7 @@ Dim lLength As Long
 
 End Function
 
-Private Function deref(ByVal Ptr As Long) As Long
+Private Function pDeref(ByVal Ptr As Long) As Long
 
    ' This function dereferences a pointer and returns the
    ' contents as it's return value.
@@ -6085,7 +6111,7 @@ Private Function deref(ByVal Ptr As Long) As Long
    ' in C/C++ this would be:
    ' return *(ptr);
    
-   Call CopyMemory(deref, ByVal Ptr, 4)
+   Call CopyMemory(pDeref, ByVal Ptr, 4)
 
 End Function
 
@@ -6230,10 +6256,10 @@ Dim lDataPtr As Long
       ' VARIANTARG structure is the VarPtr of the Variant variable in VB
       
       ' getting the contents of the data element (in C/C++: *(data + 8))
-      lDataPtr = deref(VarPtr(Data) + 8)
+      lDataPtr = pDeref(VarPtr(Data) + 8)
       
       ' dereference the pointer again (in C/C++: *(lDataPtr))
-      lDataPtr = deref(lDataPtr)
+      lDataPtr = pDeref(lDataPtr)
       
       ' test, whether 'lDataPtr' now is a Null pointer
       ' in that case, the array is not yet initialized and so we can't dereference
@@ -6272,7 +6298,7 @@ Dim lDataPtr As Long
          ' of 12 bytes from the base address of the structure,
          ' so dereference the pvData pointer, what indeed is a pointer
          ' to the actual array (in C/C++: *(lDataPtr + 12))
-         lDataPtr = deref(lDataPtr + 12)
+         lDataPtr = pDeref(lDataPtr + 12)
       End If
       
       ' return this value
@@ -6280,7 +6306,7 @@ Dim lDataPtr As Long
       
       ' a more shorter form of this function would be:
       ' (doesn't work for uninitialized arrays, but will likely crash!)
-      'pGetArrayPtrFromVariantArray = deref(deref(deref(VarPtr(data) + 8)) + 12)
+      'pGetArrayPtrFromVariantArray = pDeref(pDeref(pDeref(VarPtr(data) + 8)) + 12)
    End If
 
 End Function
