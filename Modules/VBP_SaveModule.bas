@@ -233,6 +233,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 cParams.setParamString CStr(g_JPEGQuality)
                 cParams.setParamString cParams.getParamString & "|" & g_JPEGFlags
                 cParams.setParamString cParams.getParamString & "|" & g_JPEGThumbnail
+                cParams.setParamString cParams.getParamString & "|" & g_JPEGAutoQuality
                 
             End If
             
@@ -1230,13 +1231,58 @@ End Function
 Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As String, ByVal jpegParams As String) As Boolean
     
     On Error GoTo SaveJPEGError
-        
+    
+    Dim sFileType As String
+    sFileType = "JPEG"
+    
     'Parse all possible JPEG parameters
     Dim cParams As pdParamString
     Set cParams = New pdParamString
     If Len(jpegParams) > 0 Then cParams.setParamString jpegParams
     Dim jpegFlags As Long
+    
+    'Start by retrieving quality
     jpegFlags = cParams.GetLong(1, 92)
+    
+    'If FreeImage is enabled, check for an "automatically determine quality" request.
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        Dim autoQualityCheck As jpegAutoQualityMode
+        autoQualityCheck = cParams.GetLong(4, 0)
+        
+        If autoQualityCheck <> doNotUseAutoQuality Then
+        
+            'The user has requested that we determine a proper quality value for them.  Do so now!
+            Message "Testing JPEG quality values to determine best setting..."
+            
+            'Large images take a veeeery long time to search.  Force a max value of 1024x1024, and search the smaller image.
+            ' (This should still result in a good value, but at a much smaller time investment.)
+            Dim testDIB As pdDIB
+            Set testDIB = New pdDIB
+            testDIB.createFromExistingDIB srcPDImage.getCompositedImage
+            
+            If testDIB.getDIBWidth > 1024 Or testDIB.getDIBHeight > 1024 Then
+            
+                'Find new dimensions
+                Dim newWidth As Long, newHeight As Long
+                convertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
+                
+                testDIB.createFromExistingDIB srcPDImage.getCompositedImage, newWidth, newHeight
+            
+            End If
+            
+            jpegFlags = findQualityForDesiredJPEGPerception(testDIB, autoQualityCheck)
+            Message "Ideal quality of %1 found.  Continuing with save...", jpegFlags
+            
+            Set testDIB = Nothing
+        
+        Else
+            Message "Preparing %1 image...", sFileType
+        End If
+    
+    Else
+        Message "Preparing %1 image...", sFileType
+    End If
     
     'If FreeImage is not available, fall back to GDI+.  If that is not available, fail the function.
     If Not g_ImageFormats.FreeImageEnabled Then
@@ -1251,11 +1297,6 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
         Exit Function
         
     End If
-    
-    Dim sFileType As String
-    sFileType = "JPEG"
-    
-    Message "Preparing %1 image...", sFileType
     
     'Copy the image into a temporary DIB
     Dim tmpDIB As pdDIB
@@ -1623,5 +1664,178 @@ SaveJP2Error:
 
     SaveJP2Image = False
     
+End Function
+
+'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This
+' is used to generate the live preview used in PhotoDemon's "export JPEG" dialog.
+Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jpegQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
+
+    'srcDIB may be 32bpp.  Convert it to 24bpp if necessary.
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.convertTo24bpp
+
+    'Pass the DIB to FreeImage, which will make a copy for itself.
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    
+    'Prepare matching flags for FreeImage's JPEG encoder
+    Dim jpegFlags As Long
+    jpegFlags = jpegQuality Or jpegSubsample
+        
+    'Now comes the actual JPEG conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
+    ' the image in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
+    Dim jpegArray() As Byte
+    Dim fi_Check As Long
+    fi_Check = FreeImage_SaveToMemoryEx(FIF_JPEG, fi_DIB, jpegArray, jpegFlags, True)
+    
+    fi_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
+    
+    'Copy the newly decompressed JPEG into the destination pdDIB object.
+    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+    
+    'Release the FreeImage copy of the DIB
+    FreeImage_Unload fi_DIB
+    Erase jpegArray
+
+End Sub
+
+'Given a source image and a desired JPEG perception quality, test various JPEG quality values until an ideal one is found
+Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByVal desiredPerception As jpegAutoQualityMode) As Long
+
+    'If desiredPerception is 0 ("do not use auto check"), exit
+    If desiredPerception = doNotUseAutoQuality Then
+        findQualityForDesiredJPEGPerception = 0
+        Exit Function
+    End If
+    
+    'Based on the requested desiredPerception, calculate an RMSD to aim for
+    Dim targetRMSD As Double
+    
+    Select Case desiredPerception
+    
+        Case noDifference
+            targetRMSD = 2.2
+        
+        Case tinyDifference
+            targetRMSD = 4#
+        
+        Case minorDifference
+            targetRMSD = 5.5
+        
+        Case majorDifference
+            targetRMSD = 7
+    
+    End Select
+        
+    'Start by converting the source image into a Single-type L*a*b* array.  We only do this once to improve performance.
+    Dim srcImageData() As Single, dstImageData() As Single
+    convertEntireDIBToLabColor srcImage, srcImageData
+    
+    Dim curJPEGQuality As Long
+    curJPEGQuality = 90
+    
+    Dim rmsdCheck As Double
+    
+    Dim rmsdExceeded As Boolean
+    rmsdExceeded = False
+    
+    Dim tmpJPEGImage As pdDIB
+    Set tmpJPEGImage = New pdDIB
+    
+    'Loop through successively smaller quality values (in series of 10) until the target RMSD is exceeded
+    Do
+    
+        'Retrieve a copy of the original image at the current JPEG quality
+        tmpJPEGImage.createFromExistingDIB srcImage
+        fillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
+        
+        'Convert the JPEG-ified DIB to the L*a*b* color space
+        convertEntireDIBToLabColor tmpJPEGImage, dstImageData
+        
+        'Retrieve a mean RMSD for the two images
+        rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+        
+        'If the rmsdCheck passes, reduce the JPEG threshold and try again
+        If rmsdCheck < targetRMSD Then
+            curJPEGQuality = curJPEGQuality - 10
+            If curJPEGQuality <= 0 Then rmsdExceeded = True
+        Else
+            rmsdExceeded = True
+        End If
+    
+    Loop While Not rmsdExceeded
+    
+    'We now have the nearest acceptable JPEG quality as a multiple of 10.  Drill down further to obtain an exact JPEG quality.
+    rmsdExceeded = False
+    
+    Dim firstJpegCheck As Long
+    firstJpegCheck = curJPEGQuality
+    
+    curJPEGQuality = curJPEGQuality + 9
+    
+    'Loop through successively smaller quality values (in series of 1) until the target RMSD is exceeded
+    Do
+    
+        'Retrieve a copy of the original image at the current JPEG quality
+        tmpJPEGImage.createFromExistingDIB srcImage
+        fillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
+        
+        'Convert the JPEG-ified DIB to the L*a*b* color space
+        convertEntireDIBToLabColor tmpJPEGImage, dstImageData
+        
+        'Retrieve a mean RMSD for the two images
+        rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+        
+        'If the rmsdCheck passes, reduce the JPEG threshold and try again
+        If rmsdCheck < targetRMSD Then
+            curJPEGQuality = curJPEGQuality - 1
+            If curJPEGQuality <= firstJpegCheck Then rmsdExceeded = True
+        Else
+            rmsdExceeded = True
+        End If
+    
+    Loop While Not rmsdExceeded
+    
+    curJPEGQuality = curJPEGQuality + 1
+    If curJPEGQuality = 100 Then curJPEGQuality = 99
+    
+    'We now have a quality value!  Return it.
+    findQualityForDesiredJPEGPerception = curJPEGQuality
+
+End Function
+
+'This function assumes two 24bpp DIBs have been pre-converted to Single-type L*a*b* arrays.  Use the L*a*b* data to return
+' a mean RMSD for the two images.
+Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcArray2() As Single, ByVal imgWidth As Long, ByVal imgHeight As Long) As Double
+
+    Dim totalRMSD As Double
+    totalRMSD = 0
+
+    Dim x As Long, y As Long, quickX As Long
+    
+    Dim LabL1 As Double, LabA1 As Double, LabB1 As Double
+    Dim LabL2 As Double, LabA2 As Double, LabB2 As Double
+    
+    For x = 0 To imgWidth - 1
+        quickX = x * 3
+    For y = 0 To imgHeight - 1
+    
+        'Retrieve both sets of L*a*b* coordinates
+        LabL1 = srcArray1(quickX, y)
+        LabA1 = srcArray1(quickX + 1, y)
+        LabB1 = srcArray1(quickX + 2, y)
+        
+        LabL2 = srcArray2(quickX, y)
+        LabA2 = srcArray2(quickX + 1, y)
+        LabB2 = srcArray2(quickX + 2, y)
+        
+        'Calculate an RMSD
+        totalRMSD = totalRMSD + distanceThreeDimensions(LabL1, LabA1, LabB1, LabL2, LabA2, LabB2)
+    
+    Next y
+    Next x
+    
+    'Divide the total RMSD by the number of pixels in the image, then exit
+    findMeanRMSDForTwoArrays = totalRMSD / (imgWidth * imgHeight)
+
 End Function
 
