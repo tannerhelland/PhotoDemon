@@ -1265,6 +1265,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
             Dim testDIB As pdDIB
             Set testDIB = New pdDIB
             testDIB.createFromExistingDIB srcPDImage.getCompositedImage
+            If testDIB.getDIBColorDepth = 32 Then testDIB.convertTo24bpp
             
             If testDIB.getDIBWidth > 1024 Or testDIB.getDIBHeight > 1024 Then
             
