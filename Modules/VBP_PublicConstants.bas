@@ -10,7 +10,7 @@ Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.16.0"
 Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Public Const EXPECTED_PNGNQ_VERSION As String = "2.0.1"
-Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.37"
+Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.46"
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
