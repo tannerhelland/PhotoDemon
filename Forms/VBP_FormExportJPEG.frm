@@ -64,7 +64,7 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   540
       Left            =   6000
       TabIndex        =   5
-      Top             =   3360
+      Top             =   3120
       Width           =   3105
       _ExtentX        =   5477
       _ExtentY        =   953
@@ -96,7 +96,7 @@ Begin VB.Form dialog_ExportJPEG
       Style           =   2  'Dropdown List
       TabIndex        =   4
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   5400
+      Top             =   5160
       Width           =   6735
    End
    Begin VB.ComboBox CmbSaveQuality 
@@ -121,7 +121,7 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   540
       Left            =   6000
       TabIndex        =   6
-      Top             =   3840
+      Top             =   3600
       Width           =   2715
       _ExtentX        =   4789
       _ExtentY        =   953
@@ -140,7 +140,7 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   540
       Left            =   6000
       TabIndex        =   7
-      Top             =   4320
+      Top             =   4080
       Width           =   2835
       _ExtentX        =   5001
       _ExtentY        =   953
@@ -160,7 +160,7 @@ Begin VB.Form dialog_ExportJPEG
       Left            =   6000
       TabIndex        =   8
       ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-      Top             =   4800
+      Top             =   4560
       Width           =   2820
       _ExtentX        =   4974
       _ExtentY        =   953
@@ -233,7 +233,6 @@ Begin VB.Form dialog_ExportJPEG
       _ExtentX        =   8969
       _ExtentY        =   847
       Caption         =   "use perceptive color matching (slower, more accurate)"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -243,7 +242,6 @@ Begin VB.Form dialog_ExportJPEG
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   -2147483631
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -263,7 +261,7 @@ Begin VB.Form dialog_ExportJPEG
       Index           =   1
       Left            =   5880
       TabIndex        =   3
-      Top             =   3000
+      Top             =   2760
       Width           =   1965
    End
    Begin VB.Label lblTitle 
@@ -297,13 +295,15 @@ Attribute VB_Exposed = False
 'JPEG Export Dialog
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 5/8/00
-'Last updated: 15/January/14
-'Last update: replaced the standalone picture box preview with PD's dedicated preview control.  This allows the
-'              user to pan around the image at their own leisure, and investigate specific elements of the
-'              compressed JPEG image.
+'Last updated: 16/January/14
+'Last update: new automatic JPEG quality feature.  This (amazing!) feature will intelligently test JPEG quality values
+'              until an ideal one is reached, per the user's "allowable damage" setting.  This should help users produce
+'              much smaller JPEGs with minimal impact to the images themselves.  For best results, the "perceptive color
+'              matching" toggle should be used.  This uses the L*a*b* color space for matching, which is way slower, but
+'              generally offers more accurate results.
 '
 'Dialog for presenting the user various options related to JPEG exporting.  The advanced features all currently
-' rely on FreeImage for implementation, and will be disabled if FreeImage cannot be found.
+' rely on FreeImage for implementation, and will be disabled and/or ignored if FreeImage cannot be found.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -421,6 +421,9 @@ Private Sub cmdBar_OKClick()
     Else
         g_JPEGAutoQuality = doNotUseAutoQuality
     End If
+    
+    'Also pass along the color matching technique, which may or may not be useful
+    g_JPEGAdvancedColorMatching = CBool(chkColorMatching)
      
     userAnswer = vbOK
     Me.Hide
@@ -511,14 +514,17 @@ Public Sub showDialog()
     'Populate the "auto quality" drop-down next
     cmbAutoQuality.Clear
     cmbAutoQuality.AddItem " No noticeable differences allowed", 0
-    cmbAutoQuality.AddItem " Barely noticeable differences allowed", 1
-    cmbAutoQuality.AddItem " Minor differences allowed", 2
-    cmbAutoQuality.AddItem " Smallest possible file size without destroying image", 3
+    cmbAutoQuality.AddItem " Slight differences allowed", 1
+    cmbAutoQuality.AddItem " Some minor differences allowed", 2
+    cmbAutoQuality.AddItem " Many minor differences allowed", 3
     cmbAutoQuality.ListIndex = 1
     
     'By default, let the user pick JPEG quality, and use sloppy color matching
     chkAutoQuality.Value = vbChecked
+    chkAutoQuality.ToolTipText = g_Language.TranslateMessage("PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.")
+    
     chkColorMatching.Value = vbUnchecked
+    chkColorMatching.ToolTipText = g_Language.TranslateMessage("Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds.")
     
     'Populate the custom subsampling combo box as well
     cmbSubsample.Clear
@@ -599,21 +605,21 @@ Private Sub updatePreview()
         Dim tmpSafeArray As SAFEARRAY2D
         previewNonStandardImage tmpSafeArray, imageBeingExported.getCompositedImage, fxPreview
         
-        Dim jpegQuality As Long
-        jpegQuality = sltQuality.Value
+        Dim JPEGQuality As Long
+        JPEGQuality = sltQuality.Value
         
         'If the user wants PhotoDemon to determine a save value for them, let's do that now for the working copy.
         ' While not 100% true to the final image, it should give them a good idea of how far the compressor can go.
         If CBool(chkAutoQuality) Then
-            jpegQuality = findQualityForDesiredJPEGPerception(workingDIB, cmbAutoQuality.ListIndex + 1)
+            JPEGQuality = findQualityForDesiredJPEGPerception(workingDIB, cmbAutoQuality.ListIndex + 1, CBool(chkColorMatching))
             m_CheckBoxUpdatingDisabled = True
-            sltQuality.Value = jpegQuality
+            sltQuality.Value = JPEGQuality
             m_CheckBoxUpdatingDisabled = False
         End If
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
-        fillDIBWithJPEGVersion workingDIB, workingDIB, jpegQuality, IIf(CBool(chkSubsample), getSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
+        fillDIBWithJPEGVersion workingDIB, workingDIB, JPEGQuality, IIf(CBool(chkSubsample), getSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
         
         'Paint the final image to screen and release all temporary objects
         finalizeNonstandardPreview fxPreview

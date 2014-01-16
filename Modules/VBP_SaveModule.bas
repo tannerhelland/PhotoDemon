@@ -231,9 +231,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the user clicked OK, replace the function's save parameters with the ones set by the user
                 cParams.setParamString CStr(g_JPEGQuality)
-                cParams.setParamString cParams.getParamString & "|" & g_JPEGFlags
-                cParams.setParamString cParams.getParamString & "|" & g_JPEGThumbnail
-                cParams.setParamString cParams.getParamString & "|" & g_JPEGAutoQuality
+                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGFlags)
+                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGThumbnail)
+                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGAutoQuality)
+                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGAdvancedColorMatching)
                 
             End If
             
@@ -245,9 +246,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             ' parameters, like optimization, thumbnail embedding, and custom subsampling.  If no optional parameters are in use
             ' (or if FreeImage is unavailable), use GDI+.  Otherwise, use FreeImage.
             If g_ImageFormats.FreeImageEnabled And (cParams.doesParamExist(2) Or cParams.doesParamExist(3)) Then
+                Screen.MousePointer = vbHourglass
                 updateMRU = SaveJPEGImage(srcPDImage, dstPath, cParams.getParamString)
+                Screen.MousePointer = vbDefault
             ElseIf g_ImageFormats.GDIPlusEnabled Then
+                Screen.MousePointer = vbHourglass
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageJPEG, 24, cParams.GetLong(1, 92))
+                Screen.MousePointer = vbDefault
             Else
                 Message "No %1 encoder found. Save aborted.", "JPEG"
                 PhotoDemon_SaveImage = False
@@ -1271,7 +1276,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
             
             End If
             
-            jpegFlags = findQualityForDesiredJPEGPerception(testDIB, autoQualityCheck)
+            jpegFlags = findQualityForDesiredJPEGPerception(testDIB, autoQualityCheck, cParams.GetBool(5, False))
             Message "Ideal quality of %1 found.  Continuing with save...", jpegFlags
             
             Set testDIB = Nothing
@@ -1668,7 +1673,7 @@ End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JPEG" dialog.
-Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jpegQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
+Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JPEGQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
 
     'srcDIB may be 32bpp.  Convert it to 24bpp if necessary.
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.convertTo24bpp
@@ -1679,7 +1684,7 @@ Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Prepare matching flags for FreeImage's JPEG encoder
     Dim jpegFlags As Long
-    jpegFlags = jpegQuality Or jpegSubsample
+    jpegFlags = JPEGQuality Or jpegSubsample
         
     'Now comes the actual JPEG conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
     ' the image in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
@@ -1699,7 +1704,7 @@ Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
 End Sub
 
 'Given a source image and a desired JPEG perception quality, test various JPEG quality values until an ideal one is found
-Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByVal desiredPerception As jpegAutoQualityMode) As Long
+Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByVal desiredPerception As jpegAutoQualityMode, Optional ByVal useHighQualityColorMatching As Boolean = False) As Long
 
     'If desiredPerception is 0 ("do not use auto check"), exit
     If desiredPerception = doNotUseAutoQuality Then
@@ -1713,22 +1718,39 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
     Select Case desiredPerception
     
         Case noDifference
-            targetRMSD = 2.2
+            If useHighQualityColorMatching Then
+                targetRMSD = 2.2
+            Else
+                targetRMSD = 4.4
+            End If
         
         Case tinyDifference
-            targetRMSD = 4#
+            If useHighQualityColorMatching Then
+                targetRMSD = 4#
+            Else
+                targetRMSD = 8
+            End If
         
         Case minorDifference
-            targetRMSD = 5.5
+            If useHighQualityColorMatching Then
+                targetRMSD = 5.5
+            Else
+                targetRMSD = 11
+            End If
         
         Case majorDifference
-            targetRMSD = 7
+            If useHighQualityColorMatching Then
+                targetRMSD = 7
+            Else
+                targetRMSD = 14
+            End If
     
     End Select
         
-    'Start by converting the source image into a Single-type L*a*b* array.  We only do this once to improve performance.
+    'During high-quality color matching, start by converting the source image into a Single-type L*a*b* array.  We only do this once
+    ' to improve performance.
     Dim srcImageData() As Single, dstImageData() As Single
-    convertEntireDIBToLabColor srcImage, srcImageData
+    If useHighQualityColorMatching Then convertEntireDIBToLabColor srcImage, srcImageData
     
     Dim curJPEGQuality As Long
     curJPEGQuality = 90
@@ -1748,11 +1770,20 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
         tmpJPEGImage.createFromExistingDIB srcImage
         fillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
         
-        'Convert the JPEG-ified DIB to the L*a*b* color space
-        convertEntireDIBToLabColor tmpJPEGImage, dstImageData
+        'Here is where high-quality and low-quality color-matching diverge.
+        If useHighQualityColorMatching Then
         
-        'Retrieve a mean RMSD for the two images
-        rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            'Convert the JPEG-ified DIB to the L*a*b* color space
+            convertEntireDIBToLabColor tmpJPEGImage, dstImageData
+            
+            'Retrieve a mean RMSD for the two images
+            rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            
+        Else
+        
+            rmsdCheck = findMeanRMSDForTwoDIBs(srcImage, tmpJPEGImage)
+        
+        End If
         
         'If the rmsdCheck passes, reduce the JPEG threshold and try again
         If rmsdCheck < targetRMSD Then
@@ -1779,11 +1810,20 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
         tmpJPEGImage.createFromExistingDIB srcImage
         fillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
         
-        'Convert the JPEG-ified DIB to the L*a*b* color space
-        convertEntireDIBToLabColor tmpJPEGImage, dstImageData
+        'Here is where high-quality and low-quality color-matching diverge.
+        If useHighQualityColorMatching Then
         
-        'Retrieve a mean RMSD for the two images
-        rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            'Convert the JPEG-ified DIB to the L*a*b* color space
+            convertEntireDIBToLabColor tmpJPEGImage, dstImageData
+            
+            'Retrieve a mean RMSD for the two images
+            rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            
+        Else
+        
+            rmsdCheck = findMeanRMSDForTwoDIBs(srcImage, tmpJPEGImage)
+        
+        End If
         
         'If the rmsdCheck passes, reduce the JPEG threshold and try again
         If rmsdCheck < targetRMSD Then
@@ -1803,6 +1843,65 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
 
 End Function
 
+'This function takes two 24bpp DIBs and compares them, returning a single mean RMSD.
+Public Function findMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As pdDIB) As Double
+
+    Dim totalRMSD As Double
+    totalRMSD = 0
+
+    Dim x As Long, y As Long, QuickX As Long
+    
+    Dim r1 As Long, g1 As Long, b1 As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    
+    'Acquire pointers to both DIB arrays
+    Dim tmpSA1 As SAFEARRAY2D, tmpSA2 As SAFEARRAY2D
+    
+    Dim srcArray1() As Byte, srcArray2() As Byte
+    
+    prepSafeArray tmpSA1, srcDib1
+    prepSafeArray tmpSA2, srcDib2
+    
+    CopyMemory ByVal VarPtrArray(srcArray1()), VarPtr(tmpSA1), 4
+    CopyMemory ByVal VarPtrArray(srcArray2()), VarPtr(tmpSA2), 4
+    
+    Dim imgWidth As Long, imgHeight As Long
+    imgWidth = srcDib1.getDIBWidth
+    imgHeight = srcDib2.getDIBHeight
+    
+    For x = 0 To imgWidth - 1
+        QuickX = x * 3
+    For y = 0 To imgHeight - 1
+    
+        'Retrieve both sets of L*a*b* coordinates
+        r1 = srcArray1(QuickX, y)
+        g1 = srcArray1(QuickX + 1, y)
+        b1 = srcArray1(QuickX + 2, y)
+        
+        r2 = srcArray2(QuickX, y)
+        g2 = srcArray2(QuickX + 1, y)
+        b2 = srcArray2(QuickX + 2, y)
+        
+        r1 = (r2 - r1) * (r2 - r1)
+        g1 = (g2 - g1) * (g2 - g1)
+        b1 = (b2 - b1) * (b2 - b1)
+        
+        'Calculate an RMSD
+        totalRMSD = totalRMSD + Sqr(r1 + g1 + b1)
+    
+    Next y
+    Next x
+    
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcArray1), 0&, 4
+    CopyMemory ByVal VarPtrArray(srcArray2), 0&, 4
+    
+    'Divide the total RMSD by the number of pixels in the image, then exit
+    findMeanRMSDForTwoDIBs = totalRMSD / (imgWidth * imgHeight)
+
+End Function
+
+
 'This function assumes two 24bpp DIBs have been pre-converted to Single-type L*a*b* arrays.  Use the L*a*b* data to return
 ' a mean RMSD for the two images.
 Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcArray2() As Single, ByVal imgWidth As Long, ByVal imgHeight As Long) As Double
@@ -1810,26 +1909,26 @@ Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcA
     Dim totalRMSD As Double
     totalRMSD = 0
 
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     
     Dim LabL1 As Double, LabA1 As Double, LabB1 As Double
-    Dim LabL2 As Double, LabA2 As Double, LabB2 As Double
+    Dim labL2 As Double, labA2 As Double, labB2 As Double
     
     For x = 0 To imgWidth - 1
-        quickX = x * 3
+        QuickX = x * 3
     For y = 0 To imgHeight - 1
     
         'Retrieve both sets of L*a*b* coordinates
-        LabL1 = srcArray1(quickX, y)
-        LabA1 = srcArray1(quickX + 1, y)
-        LabB1 = srcArray1(quickX + 2, y)
+        LabL1 = srcArray1(QuickX, y)
+        LabA1 = srcArray1(QuickX + 1, y)
+        LabB1 = srcArray1(QuickX + 2, y)
         
-        LabL2 = srcArray2(quickX, y)
-        LabA2 = srcArray2(quickX + 1, y)
-        LabB2 = srcArray2(quickX + 2, y)
+        labL2 = srcArray2(QuickX, y)
+        labA2 = srcArray2(QuickX + 1, y)
+        labB2 = srcArray2(QuickX + 2, y)
         
         'Calculate an RMSD
-        totalRMSD = totalRMSD + distanceThreeDimensions(LabL1, LabA1, LabB1, LabL2, LabA2, LabB2)
+        totalRMSD = totalRMSD + distanceThreeDimensions(LabL1, LabA1, LabB1, labL2, labA2, labB2)
     
     Next y
     Next x

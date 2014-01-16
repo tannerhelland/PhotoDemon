@@ -152,6 +152,7 @@ Public g_JPEGQuality As Long
 Public g_JPEGFlags As Long
 Public g_JPEGThumbnail As Long
 Public g_JPEGAutoQuality As jpegAutoQualityMode
+Public g_JPEGAdvancedColorMatching As Boolean
 
 Public Enum jpegAutoQualityMode
     doNotUseAutoQuality = 0
