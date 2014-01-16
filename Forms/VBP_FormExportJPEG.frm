@@ -605,6 +605,8 @@ Private Sub updatePreview()
         Dim tmpSafeArray As SAFEARRAY2D
         previewNonStandardImage tmpSafeArray, imageBeingExported.getCompositedImage, fxPreview
         
+        If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp
+        
         Dim JPEGQuality As Long
         JPEGQuality = sltQuality.Value
         
