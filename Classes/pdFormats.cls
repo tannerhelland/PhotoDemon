@@ -27,12 +27,12 @@ Attribute VB_Exposed = False
 ' have any connection to the other.
 '
 'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
-' individual FreeImage version numbers if necessary.  As of FreeImage 3.15.4 (released October '12) no formats are
-' disabled due to known FreeImage bugs.
+' individual FreeImage version numbers if necessary.  As of FreeImage 3.16.0 (pre-release custom compiled be me in
+' January '14) no formats are disabled due to known FreeImage bugs.
 '
 'GDIPlus is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
 ' is not as well-tested as FreeImage.  In some cases, however, it IS faster to use GDI+ due to the need to make a
-' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch conversions, GDI+ is actually
+' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch processing, GDI+ is actually
 ' used preferentially over FreeImage for reading and writing certain filetypes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own

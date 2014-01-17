@@ -55,6 +55,16 @@ Private originalMetadataXML As String
 Private hasGPSCoordinates As Boolean
 Private gpsIndex As Long
 
+'Current metadata export setting for this image
+Private metadataExportPreference As Long
+
+'Metadata export preferences are typically handled according a global user setting (settable via Tools -> Options).  When a
+' new image is loaded, its metadata handling preference will be set to that.  However, some dialogs (e.g. JPEG) allow the user
+' to override metadata handling for a given image.  In that case, this preference may deviate from the global setting.
+Public Sub setMetadataExportPreference(ByVal newExportPreference As Long)
+    metadataExportPreference = newExportPreference
+End Sub
+
 'Given an index and a source metadata object, fill that object with the contents of the matching entry in the iMetadata() array
 Friend Function getMetadataEntry(ByVal objIndex As Long) As mdItem
 
@@ -356,7 +366,9 @@ Public Sub loadAllMetadata(ByVal mdString As String)
             
             'Now that we have fully parsed the tag, we need to run a few additional checks.
             
+            
             'SPECIAL CHECK FOR MULTILINE COMMENTS
+            
             'If the current tag is a multiline comment, it will have been erroneously marked as containing binary data.
             ' Reset it now.
             If (StrComp(iMetadata(maxMetadataCount).Name, "Comment") = 0) And iMetadata(maxMetadataCount).isValueBinary Then
@@ -367,7 +379,31 @@ Public Sub loadAllMetadata(ByVal mdString As String)
                 iMetadata(maxMetadataCount).isValueBinary = False
             
             End If
-                        
+            
+            
+            'SPECIAL CHECK FOR UNEXTRACTED BINARY DATA
+            
+            'I've gone back and forth on whether to extract binary data or not.  There are pros and cons to extracting it, and
+            ' among the big cons are that it adds a significant amount of processing time to RAW images.
+             
+            'Either way, ExifTool sometimes makes its own decision about what binary data to extract.  When it does this, it
+            ' will give a comment similar to "(binary data 12345 bytes, use -b option to extract)".  Check for entries like
+            ' this, and remove the "use -b option" instructions.
+            If (InStr(1, iMetadata(maxMetadataCount).Value, ", use -b option to extract") > 0) Then
+            
+                'Remove the binary identifier from this tag
+                iMetadata(maxMetadataCount).Value = Replace(iMetadata(maxMetadataCount).Value, ", use -b option to extract", "")
+            
+            End If
+            
+            If (InStr(1, iMetadata(maxMetadataCount).ActualValue, ", use -b option to extract") > 0) Then
+            
+                'Remove the binary identifier from this tag
+                iMetadata(maxMetadataCount).ActualValue = Replace(iMetadata(maxMetadataCount).ActualValue, ", use -b option to extract", "")
+            
+            End If
+            
+            
             'ANALYZE GROUP
             
             'First, analyze the current Group.  Some groups can be ignored - check for those first.
@@ -479,7 +515,7 @@ End Sub
 'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a Long-type value specifying what metadata to save,
 ' embed all relevant metadata.  (Note: this needs to be done immediately following a save, and is generally handled by the
 ' PhotoDemon_SaveImage function.)
-Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions As Long, ByRef srcPDImage As pdImage) As Boolean
+Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As pdImage) As Boolean
     
     'Metadata only needs to be written out if it exists (obviously)
     If hasXMLMetadata Then
@@ -491,8 +527,9 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByVal saveOptions A
         Dim cSHA2 As CSHA256
         Set cSHA2 = New CSHA256
         
-        'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel
-        Select Case saveOptions
+        'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel.
+        ' (Note: some export dialogs (e.g. JPEG) also allow the user to override the global metadata preference for a given image.)
+        Select Case metadataExportPreference
             
             'Save all relevant metadata.  Previously, we provided an option for "save all metadata, regardless of relevance",
             ' but that has since been removed (for a variety of reasons).  If someone previously specified that option, we
