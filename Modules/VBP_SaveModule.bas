@@ -419,9 +419,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     ' If the file was not written successfully, abandon any attempts at metadata embedding.
     If updateMRU And g_ExifToolEnabled And (Not suspendMetadataActions) Then
         
-        'Only attempt to export metadata if ExifTool was able to successfully parse or cache metadata prior to saving
+        'Only attempt to export metadata if ExifTool was able to successfully cache and parse metadata prior to saving
         If srcPDImage.imgMetadata.hasXMLMetadata Then
-            updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1), srcPDImage)
+            updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, srcPDImage)
         Else
             Message "No metadata to export.  Continuing save..."
         End If

@@ -564,6 +564,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             startMetadataProcessing sFile(thisImage), targetImage.originalFileFormat
         End If
         
+        'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
+        ' The user may override this setting later, but by default we always start with the user's program-wide setting.
+        targetImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
+        
         
             
         '*************************************************************************************************************************************

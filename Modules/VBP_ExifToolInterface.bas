@@ -311,9 +311,9 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
     ' so deny them specifically.
-    cmdParams = cmdParams & "-x" & vbCrLf & "PreviewImage" & vbCrLf
-    cmdParams = cmdParams & "-x" & vbCrLf & "ThumbnailImage" & vbCrLf
-    cmdParams = cmdParams & "-x" & vbCrLf & "PhotoshopThumbnail" & vbCrLf
+    'cmdParams = cmdParams & "-x" & vbCrLf & "PreviewImage" & vbCrLf
+    'cmdParams = cmdParams & "-x" & vbCrLf & "ThumbnailImage" & vbCrLf
+    'cmdParams = cmdParams & "-x" & vbCrLf & "PhotoshopThumbnail" & vbCrLf
     
     'Output XML data (a lot more complex, but the only way to retrieve descriptions and names simultaneously)
     cmdParams = cmdParams & "-X" & vbCrLf
