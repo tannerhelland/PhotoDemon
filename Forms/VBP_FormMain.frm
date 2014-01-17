@@ -26,15 +26,15 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1201,14 +1201,28 @@ End Sub
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
 Private Sub Form_Load()
 
+    '*************************************************************************************************************************************
+    ' Before doing anything else, store the command line to memory
+    '*************************************************************************************************************************************
+
     'Use a global variable to store any command line parameters we may have been passed
     g_CommandLine = Command$
     
     'Instantiate the themed tooltip class
     Set m_ToolTip = New clsToolTip
     
+    
+    '*************************************************************************************************************************************
+    ' Reroute control to "LoadTheProgram", which initializes all key PD systems
+    '*************************************************************************************************************************************
+    
     'The bulk of the loading code actually takes place inside the LoadTheprogram subroutine (which can be found in the "Loading" module)
-    LoadTheProgram
+    Loading.LoadTheProgram
+    
+    
+    '*************************************************************************************************************************************
+    ' Now that all engines are initialized, prep and display the main editing window
+    '*************************************************************************************************************************************
     
     'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
     ' and I'm working on a solution to that.)
@@ -1228,7 +1242,28 @@ Private Sub Form_Load()
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, IIf(g_OpenImageCount > 1, True, False)
-                
+    
+    'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
+    Set cMouseEvents = New bluMouseEvents
+    cMouseEvents.Attach Me.hWnd
+    
+    
+    '*************************************************************************************************************************************
+    ' Next, analyze the command line and load any image files (if present).
+    '*************************************************************************************************************************************
+    
+    Message "Checking command line..."
+    
+    If g_CommandLine <> "" Then
+        Message "Loading requested images..."
+        Loading.LoadImagesFromCommandLine
+    End If
+    
+    
+    '*************************************************************************************************************************************
+    ' Next, see if we need to display the language selection dialog (NOT IMPLEMENTED AT PRESENT)
+    '*************************************************************************************************************************************
+    
     'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
     ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
     
@@ -1246,6 +1281,11 @@ Private Sub Form_Load()
         
     
     End If
+    
+    
+    '*************************************************************************************************************************************
+    ' Next, see if we need to launch an asynchronous check for updates
+    '*************************************************************************************************************************************
     
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
@@ -1267,6 +1307,11 @@ Private Sub Form_Load()
         FormMain.updateChecker.Download "http://photodemon.org/downloads/updates.xml", g_UserPreferences.getDataPath & "updates.xml", vbAsyncReadForceUpdate
                 
     End If
+    
+    
+    '*************************************************************************************************************************************
+    ' Next, see if an update was previously loaded; if it was, display any relevant findings.
+    '*************************************************************************************************************************************
     
     'It's possible that a past program instance downloaded update information for us; check for an update file now.
     ' (Note that this check can be skipped the first time the program is run, as we are guaranteed to not have update data yet!)
@@ -1305,6 +1350,11 @@ Private Sub Form_Load()
             
     End If
     
+    
+    '*************************************************************************************************************************************
+    ' Next, check for missing core plugins
+    '*************************************************************************************************************************************
+    
     'Last but not least, if any core plugin files were marked as "missing," offer to download them
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so ignore this request if the user was already notified of an update.)
@@ -1332,16 +1382,22 @@ Private Sub Form_Load()
         End If
     
     End If
+    
+    
+    '*************************************************************************************************************************************
+    ' Let the user know we're ready to go!
+    '*************************************************************************************************************************************
         
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
-    
-    'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-    Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach Me.hWnd
     
     'TODO: As of 17 Oct '13, I am removing the interface warning.  I think things are now "stable enough" for people to once again
     '       play with nightly builds.
     'MsgBox "WARNING!  PhotoDemon's current interface is undergoing a huge overhaul.  As long as this message remains, the program may not work as expected.  I've suspended nightly builds for now, but if you've downloaded this from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the 6.0 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.2 Development Warning"
+    
+    
+    '*************************************************************************************************************************************
+    ' Finally, display an IDE avoidance warning if necessary
+    '*************************************************************************************************************************************
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
@@ -3118,5 +3174,6 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     
     'DEBUG ONLY!
     'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    'Debug.Print receivedData
     
 End Sub

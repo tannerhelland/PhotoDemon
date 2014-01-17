@@ -3,9 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 07/December/13
-'Last update: if an external function has already applied an image's ICC profile (as needed for proper CMYK conversion), don't attempt
-'             to apply it again.
+'Last updated: 17/January/14
+'Last update: if images are supplied on the command line, wait until *after* the main form has loaded to process them.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -171,6 +170,13 @@ Public Sub LoadTheProgram()
     
     '(Note that LoadPlugins also checks GDI+ availability, despite GDI+ not really being a "plugin")
     
+    'If ExifTool was enabled successfully, ask it to double-check that its tag database has been created
+    ' successfully at some point in the past.  If it hasn't, generate a new copy now.
+    If g_ExifToolEnabled Then
+    
+        writeTagDatabase
+    
+    End If
     
     
     '*************************************************************************************************************************************
@@ -347,21 +353,6 @@ Public Sub LoadTheProgram()
     syncInterfaceToCurrentImage
     
     
-    '*************************************************************************************************************************************
-    ' Finally, before loading the final interface, analyze the command line and load any image files (if present).
-    '*************************************************************************************************************************************
-    
-    LoadMessage "Checking command line..."
-    
-    If g_CommandLine <> "" Then
-        LoadMessage "Loading images..."
-        FormSplash.Visible = False
-        LoadImagesFromCommandLine
-    Else
-        LoadMessage "All systems go!  Launching main window..."
-    End If
-    
-    
     
     '*************************************************************************************************************************************
     ' Unload the splash screen and present the main form
@@ -380,9 +371,9 @@ Public Sub LoadTheProgram()
 End Sub
 
 'If files are present in the command line, this sub will load them
-Private Sub LoadImagesFromCommandLine()
+Public Sub LoadImagesFromCommandLine()
 
-    LoadMessage "Loading image(s)..."
+    Message "Loading image(s)..."
         
     'NOTE: Windows can pass the program multiple filenames via the command line, but it does so in a confusing and overly complex way.
     ' Specifically, quotation marks are placed around filenames IFF they contain a space; otherwise, file names are separated from
@@ -442,7 +433,7 @@ Private Sub LoadImagesFromCommandLine()
         Next i
         
     End If
-        
+    
     'Finally, pass the array of filenames to the image loading routine
     PreLoadImage sFile
 
@@ -480,7 +471,38 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
     Dim brokenFiles As String
     brokenFiles = ""
             
+    
+    '*************************************************************************************************************************************
+    'Before actually loading anything, perform a one-time check to make sure the metadata engine isn't still busy
+    ' processing an initial database build.
+    '*************************************************************************************************************************************
+    
+    If g_ExifToolEnabled And isDatabaseModeActive Then
+        
+        'Wait for metadata parsing to finish...
+        If Not isMetadataFinished Then
+        
+            Message "Finishing final program initialization steps..."
+        
+            'Forcibly disable the main form to avoid DoEvents allowing click-through
+            FormMain.Enabled = False
+        
+            'Pause for 1/10 second
+            Do
+                PauseProgram 0.1
+                
+                'If the user shuts down the program while we are still waiting for input, exit immediately
+                If g_ProgramShuttingDown Then Exit Sub
+                
+            Loop While (Not isMetadataFinished)
             
+            'Re-enable the main form
+            FormMain.Enabled = True
+            
+        End If
+        
+    End If
+        
             
     '*************************************************************************************************************************************
     ' Loop through each entry in the sFile() array, loading images as we go
