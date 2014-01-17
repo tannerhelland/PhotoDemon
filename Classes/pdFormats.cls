@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 14/May/13
-'Last update: added formal RAW and DNG support
+'Last updated: 16/January/14
+'Last update: added WebP support (import only; export may be added in the coming weeks)
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -261,7 +261,10 @@ Public Sub generateInputFormats()
     'FreeImage or GDI+ works for loading TIFFs
     If FreeImageEnabled Or GDIPlusEnabled Then addInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", FIF_TIFF
         
-    If FreeImageEnabled Then addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", FIF_WBMP
+    If FreeImageEnabled Then
+        addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", FIF_WBMP
+        addInputFormat "WEBP - Google WebP", "*.webp", FIF_WEBP
+    End If
         
     'Finish out the list with an obligatory "All files" option
     addInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
