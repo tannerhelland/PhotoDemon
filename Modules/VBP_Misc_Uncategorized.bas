@@ -203,3 +203,23 @@ End Sub
 Public Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
+
+'Retrieve PD's current name and version, modified against "beta" labels, etc
+Public Function getPhotoDemonNameAndVersion() As String
+    
+    'Even-numbered releases are "official" releases, so simply return the full version string
+    If (CLng(App.Minor) Mod 2 = 0) Then
+        getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & App.Minor
+        
+    Else
+    
+        'Odd-numbered development releases of the pattern X.9 are betas for the next major version, e.g. (X+1).0
+        If App.Minor = 9 Then
+            getPhotoDemonNameAndVersion = App.Title & " " & (App.Major + 1) & ".0 beta (build " & App.Revision & ")"
+        Else
+            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " beta (build " & App.Revision & ")"
+        End If
+        
+    End If
+    
+End Function
