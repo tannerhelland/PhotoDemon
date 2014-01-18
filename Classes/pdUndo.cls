@@ -25,7 +25,7 @@ Attribute VB_Exposed = False
 ' to a more robust HDD-based solution, and further updates have tacked on features to (the very poor) original
 ' Undo/Redo framework.
 '
-'In 2014, I finally had enough of the program's shoddy Undo/Redo code, so I merged all the various Undo/Redo subs
+'In 2013, I finally had enough of the program's shoddy Undo/Redo code, so I merged all the various Undo/Redo subs
 ' into a single class, and gave each pdImage a copy of said class.  This achieves a long-desired goal of making
 ' the Undo/Redo code completely self-contained, and should make future improvements much, much easier.  As part
 ' of this change, the Undo/Redo engine was largely rewritten, and all interface-related code was moved outside the
