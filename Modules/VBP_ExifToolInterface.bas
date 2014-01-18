@@ -129,6 +129,11 @@ Private captureModeActive As Boolean
 Private verificationModeActive As Boolean
 Private verificationString As String
 
+'Once in its lifetime, ExifTool will be asked to write its full tag database to an XML file (~1.5 mb worth of data).  This
+' will normally happen the first time PD is run.  While that special mode is running, this variable will be set to TRUE.
+Private databaseModeActive As Boolean
+Private databaseString As String
+
 'Prior to writing out a file's metadata, we must cache the information we want written in a temp file.  (ExifTool requires
 ' a source file when writing metadata out to file; the alternative is to manually request the writing of each tag in turn,
 ' but if we do this, we lose many built-in utilities like automatically removing duplicate tags, and reassigning invalid
@@ -136,6 +141,10 @@ Private verificationString As String
 ' before deleting the temp file, so we keep a copy of the file's path here.  The stopVerificationMode (which is
 ' automatically triggered by the newMetadataReceived function as necessary) will remove the file at this location.
 Private tmpMetadataFilePath As String
+
+Public Function isDatabaseModeActive() As Boolean
+    isDatabaseModeActive = databaseModeActive
+End Function
 
 'The FormMain.ShellPipeMain user control will asynchronously trigger this function whenever it receives new metadata
 ' from ExifTool.
@@ -148,7 +157,42 @@ Public Sub newMetadataReceived(ByVal newMetadata As String)
     ElseIf verificationModeActive Then
         verificationString = verificationString & newMetadata
         If isMetadataFinished() Then stopVerificationMode
+        
+    'During database mode, check for a finish state, then write the retrieved database out to file!
+    ElseIf databaseModeActive Then
+        databaseString = databaseString & newMetadata
+        If isMetadataFinished() Then writeMetadataDatabaseToFile
     End If
+    
+End Sub
+
+Private Sub writeMetadataDatabaseToFile()
+
+    Dim mdDatabasePath As String
+    mdDatabasePath = g_PluginPath & "ExifToolDatabase.xml"
+    
+    'If the database already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
+    ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
+    If FileExist(mdDatabasePath) Then
+        Kill mdDatabasePath
+        DoEvents
+    End If
+    
+    'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
+    databaseString = Replace$(databaseString, "{ready}", "")
+    
+    'Write our XML string out to file
+    
+    'Open the specified file
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open mdDatabasePath For Output As #fileNum
+        Print #fileNum, databaseString
+    Close #fileNum
+    
+    databaseString = ""
+    databaseModeActive = False
     
 End Sub
 
@@ -190,6 +234,11 @@ Public Function isMetadataFinished() As Boolean
         tmpMetadata = curMetadataString
     ElseIf verificationModeActive Then
         tmpMetadata = verificationString
+    ElseIf databaseModeActive Then
+        tmpMetadata = databaseString
+    Else
+        isMetadataFinished = True
+        Exit Function
     End If
     
     If InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0 Then
@@ -197,6 +246,7 @@ Public Function isMetadataFinished() As Boolean
         'Terminate the relevant mode
         If captureModeActive Then captureModeActive = False
         If verificationModeActive Then verificationModeActive = False
+        If databaseModeActive Then databaseModeActive = False
         
         isMetadataFinished = True
         
@@ -306,7 +356,7 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     ' our metadata back out to file, we may want to have a copy of it.
     'cmdParams = cmdParams & "-b" & vbCrLf
     
-    'TEST!!! Explicitly set a charset
+    'Historically, we needed to explicitly set a charset; this shouldn't be necessary with current versions.
     'cmdParams = cmdParams & "-charset" & vbCrLf & "Latin" & vbCrLf
     
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
@@ -332,6 +382,41 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     
 End Function
 
+'If the user wants to edit an image's metadata, we need to know which tags are writeable and which are not.  Also, it's helpful to
+' know things like each tag's datatype (to verify output before it's passed along to ExifTool).  If ExifTool is successfully initialized
+' at program startup, this function will be called, and its job is to populate ExifTool's tag database.
+Public Function writeTagDatabase() As Boolean
+
+    'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
+    If FileExist(g_PluginPath & "exifToolDatabase.xml") Then
+    
+        'Database already exists - no need to recreate it!
+        writeTagDatabase = True
+    
+    Else
+    
+        'Database wasn't found.  Generate a new copy now.
+        
+        'Start metadata database retrieval mode
+        databaseModeActive = True
+        databaseString = ""
+        
+        'Request a database rewrite from ExifTool
+        Dim cmdParams As String
+        cmdParams = ""
+        
+        cmdParams = cmdParams & "-listx" & vbCrLf
+        cmdParams = cmdParams & "-s" & vbCrLf
+        cmdParams = cmdParams & "-execute" & vbCrLf
+        
+        FormMain.shellPipeMain.SendData cmdParams
+        
+        writeTagDatabase = True
+    
+    End If
+
+End Function
+
 'Given a path to a valid metadata file, and a second path to a valid image file, use ExifTool to write the contents of
 ' the metadata file into the image file.
 Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal removeGPS As Boolean = False) As Boolean
@@ -349,10 +434,6 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
     Dim Quotes As String
     Quotes = Chr(34)
-    
-    'Grab the ExifTool path, which we will shell and pipe in a moment
-    Dim appLocation As String
-    appLocation = g_PluginPath & "exiftool.exe"
     
     'Start building a string of ExifTool parameters.  We will send these parameters to stdIn, but ExifTool expects them in
     ' ARGFILE format, e.g. each parameter on its own line.

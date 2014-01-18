@@ -120,6 +120,7 @@ README_PSC-version.txt
 *.tmpxml
 *.backup
 README.txt
+/App/PhotoDemon/Plugins/ExifToolDatabase.xml
 
 # I keep copies of rc.exe and rcdll.dll in this folder,
 # but to my knowledge these are not redistributable, so
