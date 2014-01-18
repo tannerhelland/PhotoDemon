@@ -3,12 +3,10 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 'ExifTool Plugin Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 26/November/13
-'Last update: huge metadata rewrite.  Loading/saving is now asynchronous, meaning it does not interfere with normal
-'              program operation!  Also the option to "preserve all metadata, regardless of relevance" has been removed.
-'              The reasons for this are many, but basically there is *no physical way* to preserve metadata exactly, so
-'              it is misleading to claim to do so.  PD is better off not providing options like that, so I have reworked
-'              the metadata handler to only operate on relevant data.  Irrelevant or invalid data is now forcibly removed.
+'Last updated: 18/January/14
+'Last update: improve treatment of JPEG metadata that may be invalid due to JPEG re-saves; basically, technical
+'              JPEG information is sometimes stored inside EXIF or XMP data, and we should rewrite this technical
+'              data (if present) to match the values of the latest JPEG export.
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -458,8 +456,25 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & " -ColorSpace=sRGB" & vbCrLf
     cmdParams = cmdParams & "--Padding" & vbCrLf
     
+    'Remove YCbCr subsampling data from the tags, as we may be using a different system than the previous save, and this information
+    ' is not useful anyway - the JPEG header contains a copy of the subsampling data for the decoder, and that's sufficient!
+    cmdParams = cmdParams & "--YCbCrSubSampling" & vbCrLf
+    cmdParams = cmdParams & "--IFD0:YCbCrSubSampling" & vbCrLf
+    
+    'Remove YCbCrPositioning tags as well.  If no previous values are found, ExifTool will automatically repopulate these with
+    ' the right value according to the JPEG header.
+    cmdParams = cmdParams & "--YCbCrPositioning" & vbCrLf
+    
     'If we were asked to remove GPS data, do so now
     If removeGPS Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
+    
+    'GPS removal indicates the user wants privacy tags removed; if the user has NOT requested removal of these, list PD as
+    ' the processing software.
+    If Not removeGPS Then cmdParams = cmdParams & "-Software=" & getPhotoDemonNameAndVersion() & vbCrLf
+    
+    'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
+    ' do not list any toolkit at all.
+    If removeGPS Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
     
     'Finally, add the special command "-execute" which tells ExifTool to start operations
     cmdParams = cmdParams & "-execute" & vbCrLf
