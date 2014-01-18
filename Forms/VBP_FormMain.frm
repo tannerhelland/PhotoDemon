@@ -1249,6 +1249,21 @@ Private Sub Form_Load()
     
     
     '*************************************************************************************************************************************
+    ' Next, make sure PD's previous session closed down successfully
+    '*************************************************************************************************************************************
+    
+    Message "Checking for old autosave data..."
+    
+    If Not Image_Autosave_Handler.wasLastShutdownClean Then
+    
+        'Oh no!  Something went horribly wrong with the last PD session.  See if there's any AutoSave data worth recovering.
+        
+    
+    End If
+    
+    
+    
+    '*************************************************************************************************************************************
     ' Next, analyze the command line and load any image files (if present).
     '*************************************************************************************************************************************
     
@@ -1553,6 +1568,9 @@ Private Sub Form_Unload(Cancel As Integer)
         End If
         
     Next tmpForm
+    
+    'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
+    Image_Autosave_Handler.notifyCleanShutdown
     
 End Sub
 
