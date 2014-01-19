@@ -1257,7 +1257,28 @@ Private Sub Form_Load()
     If Not Image_Autosave_Handler.wasLastShutdownClean Then
     
         'Oh no!  Something went horribly wrong with the last PD session.  See if there's any AutoSave data worth recovering.
+        If Image_Autosave_Handler.saveableImagesPresent > 0 Then
         
+            'Autosave data was found!  Present it to the user.
+            'userGivesADamn = showAutosaveDialog()
+            
+            'If the user wants to restore old Autosave data, do so now.
+            'If userGivesADamn Then
+            '   ...
+            'Else
+                
+                'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
+                ' up in future AutoSave searches.
+                Image_Autosave_Handler.purgeOldAutosaveData
+            
+            '
+            'End if
+            
+        
+        'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report.
+        Else
+        
+        End If
     
     End If
     
