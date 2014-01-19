@@ -346,7 +346,7 @@ Private Function generateUndoFilename(ByVal uIndex As Long) As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoFilename = g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & ".tmp"
+        generateUndoFilename = g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & "_.tmp"
     End If
     
 End Function
