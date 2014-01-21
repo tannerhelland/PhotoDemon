@@ -465,6 +465,10 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' the right value according to the JPEG header.
     cmdParams = cmdParams & "--YCbCrPositioning" & vbCrLf
     
+    'Other software may have added Exif tags for an embedded thumbnail.  PD obeys the JFIF spec and writes the thumbnail into the
+    ' JFIF header, so we don't want those extra Exif tags included.
+    cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
+    
     'If we were asked to remove GPS data, do so now
     If removeGPS Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
     
