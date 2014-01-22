@@ -27,15 +27,34 @@ Attribute VB_Name = "Image_Autosave_Handler"
 
 Option Explicit
 
-Private Type autoSaveEntry
+'Binary autosave entries.  These are raw image buffers dumped to the user's temp folder as part of normal
+' PD processing.
+Public Type autosaveBinary
     fullPath As String
     origImageID As Long
     origUndoID As Long
 End Type
 
+'A collection of valid Autosave XML entries in the user's Data\Autosave folder.  In all but the worst-case
+' scenarios (e.g. program failure during generating Undo/Redo data), these *should* correspond to raw image
+' data in the Undo/Redo list.
+Public Type autosaveXML
+    xmlPath As String
+    friendlyName As String
+    idValue As Long
+    isDisplayed As Boolean
+    latestUndoFound As Long
+    latestUndoPath As String
+    isBufferOnly As Boolean
+End Type
+
 'For performance reasons, we cache the list of Autosave files found during our initial search (if any)
-Private m_ListOfAutosaveFiles() As autoSaveEntry
-Private m_numOfAutosaveFiles As Long
+Private m_BinaryEntries() As autosaveBinary
+Private m_numOfBinaryFound As Long
+
+'Collection of Autosave XML entries found
+Private m_numOfXMLFound As Long
+Private m_XmlEntries() As autosaveXML
 
 'Check to make sure the last program shutdown was clean.  If it was, return TRUE (and write out a new safe shutdown file).
 ' If it was not, return FALSE.
@@ -89,20 +108,20 @@ End Sub
 Public Function saveableImagesPresent() As Long
 
     'Search the temporary folder for any files matching PhotoDemon's Undo/Redo file pattern.  The pattern we currently use is:
-    ' g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & ".tmp"
+    ' g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & ".pdtmp"
     
     'This is going to change in the future, as some kind of Layer ID will also be necessary.
     
     Dim numOfImagesFound As Long
     numOfImagesFound = 0
-    m_numOfAutosaveFiles = 0
-    ReDim m_ListOfAutosaveFiles(0 To 9) As autoSaveEntry
+    m_numOfBinaryFound = 0
+    ReDim m_BinaryEntries(0 To 9) As autosaveBinary
     
     Dim imgIDCheck As Long, undoIDCheck As Long
     
     'Retrieve the first image from the list (if any)
     Dim chkFile As String
-    chkFile = Dir(g_UserPreferences.getTempPath & "~cPDU_*_*.tmp", vbNormal)
+    chkFile = Dir(g_UserPreferences.getTempPath & "~cPDU_*_*.pdtmp", vbNormal)
         
     Do While Len(chkFile) > 0
     
@@ -111,15 +130,15 @@ Public Function saveableImagesPresent() As Long
             numOfImagesFound = numOfImagesFound + 1
             
             'Also, cache this path in a module-level array, which we'll use externally to interact with the user
-            m_numOfAutosaveFiles = m_numOfAutosaveFiles + 1
+            m_numOfBinaryFound = m_numOfBinaryFound + 1
             
-            If (m_numOfAutosaveFiles - 1) > UBound(m_ListOfAutosaveFiles) Then
-                ReDim Preserve m_ListOfAutosaveFiles(0 To UBound(m_ListOfAutosaveFiles) * 2) As autoSaveEntry
+            If (m_numOfBinaryFound - 1) > UBound(m_BinaryEntries) Then
+                ReDim Preserve m_BinaryEntries(0 To UBound(m_BinaryEntries) * 2) As autosaveBinary
             End If
             
-            m_ListOfAutosaveFiles(m_numOfAutosaveFiles - 1).fullPath = g_UserPreferences.getTempPath & chkFile
-            m_ListOfAutosaveFiles(m_numOfAutosaveFiles - 1).origImageID = imgIDCheck
-            m_ListOfAutosaveFiles(m_numOfAutosaveFiles - 1).origUndoID = undoIDCheck
+            m_BinaryEntries(m_numOfBinaryFound - 1).fullPath = g_UserPreferences.getTempPath & chkFile
+            m_BinaryEntries(m_numOfBinaryFound - 1).origImageID = imgIDCheck
+            m_BinaryEntries(m_numOfBinaryFound - 1).origUndoID = undoIDCheck
             
         End If
         
@@ -135,19 +154,21 @@ End Function
 'If the user declines to restore old AutoSave data, purge it from the system (to prevent it from showing up in future searches).
 Public Sub purgeOldAutosaveData()
 
-    If m_numOfAutosaveFiles > 0 Then
+    Dim i As Long
     
-        Dim i As Long
-        For i = 0 To m_numOfAutosaveFiles - 1
+    'Release binary autosave entries first
+    If m_numOfBinaryFound > 0 Then
+    
+        For i = 0 To m_numOfBinaryFound - 1
         
             'Validate each path before removing it from the system (just to be safe!)
-            If i < UBound(m_ListOfAutosaveFiles) Then
+            If i < UBound(m_BinaryEntries) Then
             
-                If Len(m_ListOfAutosaveFiles(i).fullPath) > 0 Then
-                    If FileExist(m_ListOfAutosaveFiles(i).fullPath) Then Kill m_ListOfAutosaveFiles(i).fullPath
+                If Len(m_BinaryEntries(i).fullPath) > 0 Then
+                    If FileExist(m_BinaryEntries(i).fullPath) Then Kill m_BinaryEntries(i).fullPath
                     
                     'Also check for selection data matching this file, and remove it if present
-                    If FileExist(m_ListOfAutosaveFiles(i).fullPath & ".selection") Then Kill m_ListOfAutosaveFiles(i).fullPath & ".selection"
+                    If FileExist(m_BinaryEntries(i).fullPath & ".selection") Then Kill m_BinaryEntries(i).fullPath & ".selection"
                     
                 End If
                 
@@ -156,8 +177,28 @@ Public Sub purgeOldAutosaveData()
         Next i
         
         'Release any memory associated with autosaves
-        m_numOfAutosaveFiles = 0
-        ReDim m_ListOfAutosaveFiles(0) As autoSaveEntry
+        m_numOfBinaryFound = 0
+        ReDim m_BinaryEntries(0) As autosaveBinary
+    
+    End If
+    
+    'Follow it with XML entries
+    If m_numOfXMLFound > 0 Then
+    
+        For i = 0 To m_numOfXMLFound - 1
+        
+            'Validate each path before removing it from the system (just to be safe!)
+            If i < UBound(m_XmlEntries) Then
+                If Len(m_XmlEntries(i).xmlPath) > 0 Then
+                    If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
+                End If
+            End If
+        
+        Next i
+        
+        'Release any memory associated with autosaves
+        m_numOfXMLFound = 0
+        ReDim m_XmlEntries(0) As autosaveXML
     
     End If
     
@@ -211,3 +252,170 @@ Private Function checkNumberAtPosition(ByRef srcString() As String, ByRef sArray
     End If
     
 End Function
+
+'External functions can retrieve a copy of the binary autosave entries we've found by using this function.
+Public Function getBinaryAutosaveEntries(ByRef autosaveArray() As autosaveBinary, ByRef autosaveCount As Long) As Boolean
+
+    ReDim autosaveArray(0 To m_numOfBinaryFound - 1) As autosaveBinary
+    autosaveCount = m_numOfBinaryFound
+    
+    Dim i As Long
+    For i = 0 To autosaveCount - 1
+        autosaveArray(i) = m_BinaryEntries(i)
+    Next i
+    
+    getBinaryAutosaveEntries = True
+    
+End Function
+
+'External functions can retrieve a copy of the XML autosave entries we've found by using this function.
+Public Function getXMLAutosaveEntries(ByRef autosaveArray() As autosaveXML, ByRef autosaveCount As Long) As Boolean
+
+    ReDim autosaveArray(0 To m_numOfXMLFound - 1) As autosaveXML
+    autosaveCount = m_numOfXMLFound
+    
+    Dim i As Long
+    For i = 0 To autosaveCount - 1
+        autosaveArray(i) = m_XmlEntries(i)
+    Next i
+    
+    getXMLAutosaveEntries = True
+    
+End Function
+
+'Retrieve all XML autosave entries from the user's /Data/Autosave folder.
+Public Function findAllAutosaveXML() As Boolean
+
+    m_numOfXMLFound = 0
+    ReDim m_XmlEntries(0) As autosaveXML
+    
+    'Retrieve the first image from the list (if any)
+    Dim chkFile As String
+    chkFile = Dir(g_UserPreferences.getAutosavePath & "*.xml", vbNormal)
+    
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    Do While Len(chkFile) > 0
+    
+        'Do some processing on said XML to make sure it is valid
+        If xmlEngine.loadXMLFile(g_UserPreferences.getAutosavePath & chkFile) Then
+        
+            'Make sure the XML type is valid, and an ID value is present in the file
+            If xmlEngine.isPDDataType("pdImage Backup") And xmlEngine.validateLoadedXMLData("ID") Then
+            
+                'The file checks out.  Add it to our XML entries array
+                With m_XmlEntries(m_numOfXMLFound)
+                    .xmlPath = g_UserPreferences.getAutosavePath & chkFile
+                    .friendlyName = xmlEngine.getUniqueTag_String("OriginalFileNameAndExtension")
+                    .idValue = xmlEngine.getUniqueTag_Long("ID", -1)
+                    .isDisplayed = False
+                    .latestUndoFound = 0
+                    .latestUndoPath = ""
+                End With
+                
+                'Increment the "number found" counter and resize the array as necessary
+                m_numOfXMLFound = m_numOfXMLFound + 1
+                If m_numOfXMLFound > UBound(m_XmlEntries) Then
+                    ReDim Preserve m_XmlEntries(0 To (UBound(m_XmlEntries) + 1) * 2) As autosaveXML
+                End If
+            
+            End If
+        
+        End If
+        
+        'Check the next file in the list
+        chkFile = Dir
+    
+    Loop
+    
+    'All entries have been found.  Return TRUE if more than one entry was discovered.
+    If m_numOfXMLFound > 0 Then
+        findAllAutosaveXML = True
+    Else
+        findAllAutosaveXML = False
+    End If
+
+End Function
+
+'Once Binary and XML autosave data has been retrieved, this function can be used to align the two.  The latest binary image buffer
+' for each XML entry will be marked, and the resulting XML array will contain a full collection of relevant autosave data.
+Public Sub alignXMLandBinaryAutosaves()
+
+    Dim i As Long, j As Long
+    Dim curImage As Long, curImageExists As Boolean
+    
+    Dim unfoundImages As Long
+    unfoundImages = 0
+    
+    'For each raw image buffer found, we are now going to attempt to align it with an XML entry.  If we can, we
+    ' will load a single copy of that image into the list box.
+    For i = 0 To m_numOfBinaryFound - 1
+        
+        curImage = m_BinaryEntries(i).origImageID
+        curImageExists = False
+        
+        'Find a matching entry in the xmlEntries list
+        For j = 0 To m_numOfXMLFound - 1
+        
+            If m_XmlEntries(j).idValue = curImage Then
+                
+                'A matching XML entry was found!  See if this entry has already been matched up with a raw
+                ' image buffer.
+                
+                If m_XmlEntries(j).isDisplayed Then
+                
+                    curImageExists = True
+                
+                    'This XML entry has already been matched up with a raw buffer.  See if this Undo value is
+                    ' more recent than the previous one.
+                    If m_XmlEntries(j).latestUndoFound < m_BinaryEntries(i).origUndoID Then
+                    
+                        'This entry is newer.  Update accordingly.
+                        m_XmlEntries(j).latestUndoFound = m_BinaryEntries(i).origUndoID
+                        m_XmlEntries(j).latestUndoPath = m_BinaryEntries(i).fullPath
+                    
+                    End If
+                
+                Else
+                
+                    'This XML entry has not yet been matched up with a raw buffer.  Match it now.
+                    curImageExists = True
+                    m_XmlEntries(j).latestUndoFound = m_BinaryEntries(i).origUndoID
+                    m_XmlEntries(j).latestUndoPath = m_BinaryEntries(i).fullPath
+                    m_XmlEntries(j).isDisplayed = True
+                
+                End If
+                
+            End If
+        
+            'If we've already found a matching entry, exit the search loop
+            If curImageExists Then Exit For
+        
+        Next j
+        
+        'If this buffer did not have a corresponding entry in the XML array, let's add one now.  The entry will
+        ' be necessarily incomplete due to not knowing things like the file's original name, but at least the
+        ' user can recover the raw image data - which is certainly better than nothing at all!
+        If Not curImageExists Then
+        
+            'Add a new spot to the XML array
+            m_numOfXMLFound = m_numOfXMLFound + 1
+            ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound - 1) As autosaveXML
+            
+            'Fill the new spot with data corresponding to this set of raw image data
+            unfoundImages = unfoundImages + 1
+            With m_XmlEntries(m_numOfXMLFound - 1)
+                .idValue = m_BinaryEntries(i).origImageID
+                .isBufferOnly = True
+                .isDisplayed = True
+                .latestUndoFound = m_BinaryEntries(i).origUndoID
+                .latestUndoPath = m_BinaryEntries(i).fullPath
+                .friendlyName = g_Language.TranslateMessage("unknown image %1", CStr(unfoundImages))
+            End With
+            
+        End If
+        
+    Next i
+
+End Sub

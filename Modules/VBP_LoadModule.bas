@@ -856,6 +856,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             targetImage.setSaveState True
             
         Else
+        
             'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
             ' dialog in the future by not specifying a location on disk
             targetImage.locationOnDisk = ""
@@ -999,6 +1000,21 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
         End If
+        
+        
+        
+        '*************************************************************************************************************************************
+        ' For images that don't exist on disk, create an immediate Autosave entry
+        '*************************************************************************************************************************************
+        
+        'If this is a primary image that does not already exist on the user's hard drive, as a courtesy to the user,
+        ' force an immediate Autosave entry.  This can be used to recover the file if something goes wrong before the
+        ' user is able to save it themselves.
+        
+        If isThisPrimaryImage Then
+            If Len(targetImage.locationOnDisk) = 0 Then targetImage.undoManager.writeOneOffUndoEntry
+        End If
+        
         
         
         '*************************************************************************************************************************************

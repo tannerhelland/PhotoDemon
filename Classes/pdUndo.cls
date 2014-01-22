@@ -92,6 +92,18 @@ Public Function getRedoState() As Boolean
     getRedoState = redoState
 End Function
 
+'With the creation of PD's Autosave engine, it became helpful to write some Undo immediately, outside of the
+' traditional Undo/Redo stack.  This function can be used to do so.
+Public Sub writeOneOffUndoEntry()
+
+    'Ask the parent PD image to write itself out to file
+    parentPDImage.getActiveDIB().writeToFile getCurrentUndoFilename(), False
+    parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
+    
+    Debug.Print "Saved " & getCurrentUndoFilename() & " at the request of PD's Autosave engine."
+
+End Sub
+
 'Create an Undo entry (e.g. save a copy of the present image or selection to the temp directory)
 ' Inputs:
 '  1) the ID string of the process that called this action (e.g. "Gaussian blur")
@@ -346,7 +358,7 @@ Private Function generateUndoFilename(ByVal uIndex As Long) As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoFilename = g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & "_.tmp"
+        generateUndoFilename = g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
     End If
     
 End Function
