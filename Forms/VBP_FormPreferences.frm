@@ -2621,7 +2621,7 @@ Private Sub cmbMonitors_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     
     'Restore any settings that may have been changed in real-time
     If g_UseFancyFonts <> originalg_useFancyFonts Then
@@ -3289,7 +3289,7 @@ Private Sub LoadAllPreferences()
                 End If
                 
                 'Add the monitor's name
-                monitorEntry = monitorEntry & g_cMonitors.Monitors(i).FriendlyName
+                monitorEntry = monitorEntry & g_cMonitors.Monitors(i).friendlyName
                 
                 'Add the monitor's description (typically the video card driving the monitor)
                 monitorEntry = monitorEntry & " (" & g_cMonitors.Monitors(i).Description & ")"
