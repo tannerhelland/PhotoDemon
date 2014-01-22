@@ -3,8 +3,8 @@ Attribute VB_Name = "Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 22/November/13
-'Last update: added an image reference to the JPEG-2000 export dialog, so it can provide live previews
+'Last updated: 19/January/14
+'Last update: added support for the new Autosave detected dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -130,7 +130,6 @@ End Function
 Public Function displayIDEWarning() As VbMsgBoxResult
 
     Load dialog_IDEWarning
-
     dialog_IDEWarning.showDialog
 
     displayIDEWarning = dialog_IDEWarning.DialogResult
@@ -140,3 +139,15 @@ Public Function displayIDEWarning() As VbMsgBoxResult
 
 End Function
 
+'If an unclean shutdown + old Autosave data is found, offer to restore it for the user.
+Public Function displayAutosaveWarning() As VbMsgBoxResult
+
+    Load dialog_AutosaveWarning
+    dialog_AutosaveWarning.showDialog
+    
+    displayAutosaveWarning = dialog_AutosaveWarning.DialogResult
+    
+    Unload dialog_AutosaveWarning
+    Set dialog_AutosaveWarning = Nothing
+
+End Function
