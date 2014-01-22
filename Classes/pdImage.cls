@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2014 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 13/September/13
-'Last update: added a new requestThumbnail function, which external functions can use to request a square thumbnail
-'              of an arbitrary size.
+'Last updated: 22/January/14
+'Last update: when an image's save state is changed, write a new Autosave entry to the user's Autosave folder.
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -145,6 +144,104 @@ Option Explicit
     
     'Various viewport actions are now handled through a separate pdViewport class
     Public imgViewport As pdViewport
+
+'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the current image's state,
+' but it should be good enough to reconstruct an approximation for data recovery purposes.
+Public Function writeInternalDataToFile(ByVal dstFilename As String) As Boolean
+
+    On Error GoTo failedInternalDataWrite
+
+    'Prepare an XML engine, which will handle the actual writing of the file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Add a basic header and explanatory comment
+    xmlEngine.prepareNewXML "pdImage Backup"
+    
+    xmlEngine.writeBlankLine
+    xmlEngine.writeComment "This file contains a summary of crucial data for a given pdImage entry.  It is not comprehensive, but should be sufficient for autosave purposes."
+    xmlEngine.writeBlankLine
+    
+    'Start by writing out the imageID.  This value will not be re-used in subsequent session, but it's helpful for matching up
+    ' this image's data with any saved Undo/Redo entries (which are created by imageID for privacy reasons)
+    xmlEngine.writeTag "ID", imageID
+    
+    'Start writing any tag that may be useful for reconstructing an autosave version of this image.  We limit the information to
+    ' properties independent of a given session (e.g. imageID); session-dependent properties will be recreated anew by PD.
+    xmlEngine.writeTag "Width", Width
+    xmlEngine.writeTag "Height", Height
+    xmlEngine.writeTag "xResolution", xResolution
+    xmlEngine.writeTag "yResolution", yResolution
+    xmlEngine.writeTag "DPI", imageDPI
+    xmlEngine.writeTag "OriginalFileSize", originalFileSize
+    xmlEngine.writeTag "OriginalFileName", originalFileName
+    xmlEngine.writeTag "OriginalFileNameAndExtension", originalFileNameAndExtension
+    xmlEngine.writeTag "LocationOnDisk", locationOnDisk
+    xmlEngine.writeTag "OriginalFileFormat", originalFileFormat
+    xmlEngine.writeTag "CurrentFileFormat", currentFileFormat
+    xmlEngine.writeTag "OriginalColorDepth", originalColorDepth
+    xmlEngine.writeTag "pngBackgroundColor", pngBackgroundColor
+    xmlEngine.writeBlankLine
+    
+    'That should be enough information to reconstruct the original image state.  Write it out to the file we were supplied.
+    xmlEngine.writeXMLToFile dstFilename
+    
+    writeInternalDataToFile = True
+    Exit Function
+    
+failedInternalDataWrite:
+
+    Message "Could not write Autosave data - did the containing drive run out of free space?"
+    writeInternalDataToFile = False
+    
+End Function
+
+'Sister function to writeInternalDataToFile, above.  If you add a variable to one function, make sure to include it in the other.
+' If the function fails, it will return FALSE.
+Public Function readInternalDataFromFile(ByVal srcFilename As String) As Boolean
+
+    On Error GoTo failedInternalDataRead
+
+    'Prepare an XML engine, which will handle the actual reading and parsing of the file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Make sure the supplied file is valid
+    If xmlEngine.loadXMLFile(srcFilename) And xmlEngine.isPDDataType("pdImage Backup") Then
+    
+        'The XML file checked out.  Start retrieving relevant values.
+        Me.Width = xmlEngine.getUniqueTag_Long("Width")
+        Me.Height = xmlEngine.getUniqueTag_Long("Height")
+        xResolution = xmlEngine.getUniqueTag_Long("xResolution")
+        yResolution = xmlEngine.getUniqueTag_Long("yResolution")
+        imageDPI = xmlEngine.getUniqueTag_Long("DPI")
+        Me.originalFileSize = xmlEngine.getUniqueTag_Long("originalFileSize")
+        Me.originalFileName = xmlEngine.getUniqueTag_String("originalFileName")
+        Me.originalFileNameAndExtension = xmlEngine.getUniqueTag_String("originalFileNameAndExtension")
+        Me.locationOnDisk = xmlEngine.getUniqueTag_String("locationOnDisk")
+        Me.originalFileFormat = xmlEngine.getUniqueTag_Long("originalFileFormat")
+        Me.currentFileFormat = xmlEngine.getUniqueTag_Long("currentFileFormat")
+        Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
+        Me.pngBackgroundColor = xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+    
+    Else
+        GoTo failedInternalDataRead
+    End If
+    
+    xmlEngine.writeBlankLine
+    xmlEngine.writeComment "This file contains a summary of crucial pdImage data.  It is not comprehensive, but should be sufficient for autosave purposes."
+    xmlEngine.writeBlankLine
+    
+    readInternalDataFromFile = True
+    
+    Exit Function
+    
+failedInternalDataRead:
+    
+    Message "WARNING: could not read Autosave data."
+    readInternalDataFromFile = False
+    
+End Function
 
 'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
 ' differ, PD will average them when image DPI is requested.
@@ -333,6 +430,9 @@ Public Sub deactivateImage()
     originalFileNameAndExtension = ""
     locationOnDisk = ""
     
+    'Delete the file's Autosave entry, if any
+    If FileExist(g_UserPreferences.getAutosavePath & imageID & ".xml") Then Kill g_UserPreferences.getAutosavePath & imageID & ".xml"
+    
     'Mark this image as inactive
     IsActive = False
     
@@ -353,6 +453,9 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
     Else
         hasBeenSaved = False
     End If
+    
+    'Any time the save state is modified, write a new AutoSave entry out to file.
+    If IsActive And (Not forInternalUseOnly) Then writeInternalDataToFile g_UserPreferences.getAutosavePath & imageID & ".xml"
     
 End Sub
 
