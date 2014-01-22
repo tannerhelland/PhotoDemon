@@ -32,7 +32,7 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     
     'We need GDI+ to extract a JPEG from the resource file and convert it in-memory.  (Yes, there are other ways to do this.  No, I don't
-    ' care about using them.)  Check it's availability.
+    ' care about using them.)  Check its availability.
     If isGDIPlusAvailable() Then
     
         'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
@@ -617,7 +617,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
-        
+            
+            'PDTMP files are raw image buffers saved as part of Undo/Redo or Autosaving
+            Case "PDTMP"
+            
+                loadSuccessful = LoadRawImageBuffer(sFile(thisImage), targetDIB, targetImage)
+                
+                targetImage.originalFileFormat = FIF_JPEG
+                mustCountColors = True
+            
             'All other formats follow a prescribed behavior - try to load via FreeImage (if available), then GDI+, then finally
             ' VB's internal LoadPicture function.
             Case Else
@@ -1178,6 +1186,24 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
     PrepareViewport pdImages(g_CurrentImage).containingForm, "LoadUndo"
     
 End Sub
+
+'Load a raw image buffer (.pdtmp) into the destination image and DIB
+Public Function LoadRawImageBuffer(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+
+    On Error GoTo LoadRawImageBufferFail
+    
+    'Ask the destination DIB to create itself using the raw image buffer data
+    dstDIB.createFromFile imagePath
+    
+    LoadRawImageBuffer = True
+    Exit Function
+    
+LoadRawImageBufferFail:
+
+    LoadRawImageBuffer = False
+    Exit Function
+
+End Function
 
 'This routine sets the message on the splash screen (used only when the program is first started)
 Public Sub LoadMessage(ByVal sMsg As String)
