@@ -117,6 +117,7 @@ README_PSC-version.txt
 /Data/PhotoDemon_settings.xml
 /Data/Presets
 /Data/Languages
+/Data/Autosave
 *.tmpxml
 *.backup
 README.txt
