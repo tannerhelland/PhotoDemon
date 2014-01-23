@@ -249,6 +249,32 @@ Dim m_ToolTip As clsToolTip
 Private m_numOfXMLFound As Long
 Private m_XmlEntries() As autosaveXML
 
+'When this dialog finally closes, the calling function can use this sub to retrieve the entries the user wants saved.
+Friend Sub fillArrayWithSaveResults(ByRef dstArray() As autosaveXML)
+    
+    Dim numOfEntriesBeingSaved As Long
+    numOfEntriesBeingSaved = 0
+    
+    'Count how many entries the user is saving
+    Dim i As Long
+    For i = 0 To lstAutosaves.ListCount - 1
+        If lstAutosaves.Selected(i) Then numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
+    Next i
+    
+    'Prepare the destination array
+    ReDim dstArray(0 To numOfEntriesBeingSaved - 1) As autosaveXML
+    
+    'Fill the array with all selected entries
+    numOfEntriesBeingSaved = 0
+    For i = 0 To lstAutosaves.ListCount - 1
+        If lstAutosaves.Selected(i) Then
+            dstArray(numOfEntriesBeingSaved) = m_XmlEntries(lstAutosaves.ItemData(i))
+            numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
+        End If
+    Next i
+    
+End Sub
+
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
@@ -275,12 +301,12 @@ Public Sub showDialog()
     displayAutosaveEntries
 
     'Display the form
-    showPDDialog vbModal, Me
+    showPDDialog vbModal, Me, True
 
 End Sub
 
 'If the user cancels, warn them that these image will be lost foreeeever.
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
 
     Dim msgReturn As VbMsgBoxResult
     msgReturn = pdMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbApplicationModal + vbInformation + vbYesNo, "Warning: autosave data will be deleted")
@@ -351,7 +377,7 @@ Private Function displayAutosaveEntries() As Boolean
     Dim i As Long
     For i = 0 To m_numOfXMLFound - 1
         If Len(m_XmlEntries(i).latestUndoPath) > 0 Then
-            lstAutosaves.AddItem m_XmlEntries(i).friendlyName, i
+            lstAutosaves.AddItem m_XmlEntries(i).FriendlyName, i
             lstAutosaves.ItemData(lstAutosaves.newIndex) = i
             lstAutosaves.Selected(lstAutosaves.newIndex) = True
         End If

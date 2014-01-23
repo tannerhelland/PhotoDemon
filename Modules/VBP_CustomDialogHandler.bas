@@ -140,12 +140,16 @@ Public Function displayIDEWarning() As VbMsgBoxResult
 End Function
 
 'If an unclean shutdown + old Autosave data is found, offer to restore it for the user.
-Public Function displayAutosaveWarning() As VbMsgBoxResult
+Public Function displayAutosaveWarning(ByRef dstArray() As autosaveXML) As VbMsgBoxResult
 
     Load dialog_AutosaveWarning
     dialog_AutosaveWarning.showDialog
     
     displayAutosaveWarning = dialog_AutosaveWarning.DialogResult
+    
+    'It's a bit unorthodox, but we must also populate dstArray() from this function, rather than relying on the
+    ' dialog itself to do it (as VB makes it difficult to pass module-level array references).
+    dialog_AutosaveWarning.fillArrayWithSaveResults dstArray
     
     Unload dialog_AutosaveWarning
     Set dialog_AutosaveWarning = Nothing
