@@ -841,34 +841,53 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' the necessary Save As... dialog.
         Dim tmpFilename As String
         
-        If imgName = "" Then
-            'The calling routine hasn't specified an image name, so assume this is a normal load situation.
-            ' That means pulling the filename from the file itself.
+        'Autosaved images are handled differently from normal images.  In order to preserve their original data,
+        ' we load certain image data from a standalone XML file.
+        If FileExtension = "PDTMP" Then
+        
             targetImage.locationOnDisk = sFile(thisImage)
             
-            tmpFilename = sFile(thisImage)
-            StripFilename tmpFilename
-            targetImage.originalFileNameAndExtension = tmpFilename
-            StripOffExtension tmpFilename
-            targetImage.originalFileName = tmpFilename
+            'Ask the AutoSave engine to retrieve this image's data from the matching XML autosave file
+            Image_Autosave_Handler.alignLoadedImageWithAutosave targetImage
             
-            'Disable the save button, because this file exists on disk
-            targetImage.setSaveState True
-            
+            'This is a bit wacky, but - the MRU engine will automatically update this entry based on its location
+            ' on disk (per PD convention) AS STORED IN THE sFile ARRAY.  But as this file's location on disk is
+            ' a temp file, we need to rewrite its sFile entry mid-loading!
+            sFile(thisImage) = targetImage.locationOnDisk
+        
+        'This is a non-autosave (normal!) image.
         Else
         
-            'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
-            ' dialog in the future by not specifying a location on disk
-            targetImage.locationOnDisk = ""
-            targetImage.originalFileNameAndExtension = imgName
+            If imgName = "" Then
+                'The calling routine hasn't specified an image name, so assume this is a normal load situation.
+                ' That means pulling the filename from the file itself.
+                targetImage.locationOnDisk = sFile(thisImage)
+                
+                tmpFilename = sFile(thisImage)
+                StripFilename tmpFilename
+                targetImage.originalFileNameAndExtension = tmpFilename
+                StripOffExtension tmpFilename
+                targetImage.originalFileName = tmpFilename
+                
+                'Disable the save button, because this file exists on disk
+                targetImage.setSaveState True
+                
+            Else
             
-            tmpFilename = imgName
-            StripOffExtension tmpFilename
-            targetImage.originalFileName = tmpFilename
-            
-            'Similarly, enable the save button
-            targetImage.setSaveState False
-            
+                'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
+                ' dialog in the future by not specifying a location on disk
+                targetImage.locationOnDisk = ""
+                targetImage.originalFileNameAndExtension = imgName
+                
+                tmpFilename = imgName
+                StripOffExtension tmpFilename
+                targetImage.originalFileName = tmpFilename
+                
+                'Similarly, enable the save button
+                targetImage.setSaveState False
+                
+            End If
+        
         End If
 
         
