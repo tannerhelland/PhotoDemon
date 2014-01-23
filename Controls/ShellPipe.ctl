@@ -646,7 +646,8 @@ Private Sub WriteData()
                 lngError = Err.LastDllError
                 RaiseEvent Error(lngError, "ShellPipe.WriteData.WriteFile", blnCancel)
                 If Not blnCancel Then
-                    Err.Raise lngError, TypeName(Me), "WriteData WriteFile error"
+                    'NOTE FROM TANNER: we don't care about write errors in PD, so just ignore any that may rise
+                    'Err.Raise lngError, TypeName(Me), "WriteData WriteFile error"
                 End If
             End If
         End If
