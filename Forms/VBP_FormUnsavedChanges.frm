@@ -254,7 +254,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     makeFormPretty Me, m_ToolTip, True
 
     'Display the form
-    showPDDialog vbModal, Me
+    showPDDialog vbModal, Me, True
 
 End Sub
 

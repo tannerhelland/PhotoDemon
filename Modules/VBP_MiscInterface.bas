@@ -497,7 +497,7 @@ End Sub
 ' while also properly assigning ownership so that the dialog is truly on top of any active windows.  It also handles deactivation of
 ' other windows (to prevent click-through), and dynamic top-most behavior to ensure that the program doesn't steal focus if the user switches
 ' to another program while a modal dialog is active.
-Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form)
+Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form, Optional ByVal doNotUnload As Boolean = False)
 
     On Error GoTo showPDDialogError
 
@@ -587,7 +587,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     End If
     
     'If the form has not been unloaded, unload it now
-    If Not (dialogForm Is Nothing) Then
+    If (Not (dialogForm Is Nothing)) And (Not doNotUnload) Then
         Unload dialogForm
         Set dialogForm = Nothing
     End If
