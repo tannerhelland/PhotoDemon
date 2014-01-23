@@ -26,22 +26,22 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
       Top             =   360
-      _ExtentX        =   635
-      _ExtentY        =   635
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1260,19 +1260,32 @@ Private Sub Form_Load()
         If Image_Autosave_Handler.saveableImagesPresent > 0 Then
         
             'Autosave data was found!  Present it to the user.
-            'userGivesADamn = showAutosaveDialog()
+            Dim userWantsAutosaves As VbMsgBoxResult
+            Dim listOfFilesToSave() As autosaveXML
+            
+            userWantsAutosaves = displayAutosaveWarning(listOfFilesToSave)
             
             'If the user wants to restore old Autosave data, do so now.
-            'If userGivesADamn Then
-            '   ...
-            'Else
+            If userWantsAutosaves = vbYes Then
+            
+                'listOfFilesToSave now contains the list of files the user wants saved.  Load them all now.
+                Dim autosaveEntries() As String
+                ReDim autosaveEntries(0 To UBound(listOfFilesToSave)) As String
+                
+                Dim i As Long
+                For i = 0 To UBound(listOfFilesToSave)
+                    autosaveEntries(i) = listOfFilesToSave(i).latestUndoPath
+                Next i
+                
+                PreLoadImage autosaveEntries
+            
+            Else
                 
                 'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
                 ' up in future AutoSave searches.
                 Image_Autosave_Handler.purgeOldAutosaveData
             
-            '
-            'End if
+            End If
             
         
         'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report.
@@ -1591,6 +1604,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
+    Image_Autosave_Handler.purgeOldAutosaveData
     Image_Autosave_Handler.notifyCleanShutdown
     
 End Sub
