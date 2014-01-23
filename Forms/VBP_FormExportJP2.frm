@@ -358,7 +358,7 @@ Public Sub showDialog()
     updatePreview
     
     'Display the dialog
-    showPDDialog vbModal, Me
+    showPDDialog vbModal, Me, True
 
 End Sub
 

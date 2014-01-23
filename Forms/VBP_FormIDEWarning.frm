@@ -210,7 +210,7 @@ Public Sub showDialog()
     makeFormPretty Me, m_ToolTip
 
     'Display the form
-    showPDDialog vbModal, Me
+    showPDDialog vbModal, Me, True
 
 End Sub
 

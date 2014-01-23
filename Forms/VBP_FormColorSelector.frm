@@ -846,9 +846,9 @@ Public Sub showDialog(ByVal initialColor As Long)
     
     'Render the old color to the screen.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
-    Dim tmpDib As New pdDIB
-    tmpDib.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
-    tmpDib.renderToPictureBox picOriginal
+    Dim tmpDIB As New pdDIB
+    tmpDIB.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
+    tmpDIB.renderToPictureBox picOriginal
     
     'Sync all current color values to the initial color
     curColor = initialColor
@@ -887,7 +887,7 @@ Public Sub showDialog(ByVal initialColor As Long)
     loadRecentColorList
     
     'Display the dialog
-    showPDDialog vbModal, Me
+    showPDDialog vbModal, Me, True
 
 End Sub
 
@@ -964,15 +964,15 @@ Private Sub loadRecentColorList()
     End If
     
     'For color management reasons, we must use DIBs to copy colors onto the recent color picture boxes
-    Dim tmpDib As pdDIB
-    Set tmpDib = New pdDIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
     'Render the recent color list to their respective picture boxes
     For i = 0 To picRecColor.Count - 1
     
         If i <= UBound(recentColors) Then
-            tmpDib.createBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, recentColors(i)
-            tmpDib.renderToPictureBox picRecColor(i)
+            tmpDIB.createBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, recentColors(i)
+            tmpDIB.renderToPictureBox picRecColor(i)
         End If
     
     Next i
@@ -1130,9 +1130,9 @@ Private Sub syncInterfaceToCurrentColor()
     
     'Render the current color box.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
-    Dim tmpDib As New pdDIB
-    tmpDib.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
-    tmpDib.renderToPictureBox picCurrent
+    Dim tmpDIB As New pdDIB
+    tmpDIB.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
+    tmpDIB.renderToPictureBox picCurrent
     
     'Synchronize all text boxes to their current values
     redrawAllTextBoxes

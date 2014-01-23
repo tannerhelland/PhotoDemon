@@ -204,7 +204,7 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     makeFormPretty Me, m_ToolTip
 
     'Display the form
-    showPDDialog vbModal, Me
+    showPDDialog vbModal, Me, True
 
 End Sub
 
