@@ -238,7 +238,7 @@ Public Function readInternalDataFromFile(ByVal srcFilename As String) As Boolean
     
 failedInternalDataRead:
     
-    Message "WARNING: could not read Autosave data."
+    Debug.Print "WARNING: could not read Autosave data.  pdImage internals were not updated."
     readInternalDataFromFile = False
     
 End Function
