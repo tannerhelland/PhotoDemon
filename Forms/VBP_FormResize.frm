@@ -132,6 +132,15 @@ Begin VB.Form FormResize
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   2990
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin VB.ComboBox cboResample 
          BeginProperty Font 

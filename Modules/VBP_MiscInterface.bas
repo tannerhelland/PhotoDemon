@@ -956,7 +956,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.FontName = g_InterfaceFont
         End If
         
-        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is commandBar)) Then
+        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is commandBar) Or (TypeOf eControl Is smartResize)) Then
             eControl.Font.Name = g_InterfaceFont
         End If
                         
