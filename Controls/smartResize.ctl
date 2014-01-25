@@ -205,7 +205,7 @@ Begin VB.UserControl smartResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   15
+      Left            =   0
       TabIndex        =   3
       Top             =   1245
       Width           =   2490
@@ -238,9 +238,14 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 
+Option Explicit
+
 'This object provides a single raised event:
 ' - Change (which triggers when a size value is updated)
 Public Event Change(newWidth As Long, newHeight As Long)
+
+Private WithEvents mFont As StdFont
+Attribute mFont.VB_VarHelpID = -1
 
 'Store a copy of the original width/height values we are passed
 Private initWidth As Long, initHeight As Long
@@ -254,7 +259,33 @@ Private allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-Option Explicit
+'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
+Public Property Get Font() As StdFont
+    Set Font = mFont
+End Property
+
+Public Property Set Font(mNewFont As StdFont)
+    With mFont
+        .Bold = mNewFont.Bold
+        .Italic = mNewFont.Italic
+        .Name = mNewFont.Name
+        .Size = mNewFont.Size
+    End With
+    PropertyChanged "Font"
+End Property
+
+'When the control's font is changed, this sub will be fired; make sure all child controls have their fonts changed here.
+Private Sub mFont_FontChanged(ByVal PropertyName As String)
+    Set UserControl.Font = mFont
+    Set lblWidth.Font = UserControl.Font
+    Set lblHeight.Font = UserControl.Font
+    Set lblAspectRatio.Font = UserControl.Font
+    Set tudWidth.Font = UserControl.Font
+    Set tudHeight.Font = UserControl.Font
+    Set lblWidthUnit.Font = UserControl.Font
+    Set lblHeightUnit.Font = UserControl.Font
+    Set chkRatio.Font = UserControl.Font
+End Sub
 
 'Width and height can be retrieved from these properties
 Public Property Get imgWidth() As Long
@@ -308,7 +339,28 @@ Private Sub UserControl_Initialize()
     
     allowedToUpdateWidth = True
     allowedToUpdateHeight = True
+    
+    'Prepare a font object for use
+    Set mFont = New StdFont
+    Set UserControl.Font = mFont
 
+End Sub
+
+Private Sub UserControl_InitProperties()
+
+    Set mFont = UserControl.Font
+    mFont.Name = "Tahoma"
+    mFont.Size = 10
+    mFont_FontChanged ("")
+
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+
+    With PropBag
+        Set Font = .ReadProperty("Font", Ambient.Font)
+    End With
+    
 End Sub
 
 Private Sub UserControl_Show()
@@ -415,5 +467,14 @@ Private Sub updateAspectRatio()
         
         lblAspectRatio.Caption = g_Language.TranslateMessage("new aspect ratio will be %1:%2", Numerator, Denominator)
     End If
+
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+
+    'Store all associated properties
+    With PropBag
+        .WriteProperty "Font", mFont, "Tahoma"
+    End With
 
 End Sub
