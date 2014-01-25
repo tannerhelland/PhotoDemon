@@ -20,9 +20,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.  The original version of this code required a separate subclass/hook module, which I have
-'      rewritten against cSelfSubHookCallback to improve IDE safety and reliability.  I have also modified the custom tAccel type (and
-'      related code) to automatically handle interaction with PhotoDemon's software processor.
+'Note: this file has been modified for use within PhotoDemon.  The original version of this code required a separate subclass/hook module,
+' which I have rewritten against cSelfSubHookCallback to improve IDE safety and reliability.  I have also modified the custom tAccel type
+' (and related code) to automatically handle interaction with PhotoDemon's software processor.
 
 'You may download the original version of this code at:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
