@@ -221,7 +221,7 @@ End Sub
 
 'This function will apply an "alpha-cutoff" to a 32bpp image. Any alpha values above the cutoff will be replaced with
 ' magic magenta (253,0,253) and the location of a transparent pixel (trnsX, trnsY) will be marked.
-Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True)
+Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215)
 
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
     If dibColorDepth = 32 Then
@@ -230,7 +230,7 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
         If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
             
             If cutOff = 0 Then
-                convertTo24bpp
+                convertTo24bpp newBackgroundColor
                 Exit Sub
             End If
             
@@ -246,6 +246,12 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             Dim tmpAlpha As Double
             
             trnsX = -1
+            
+            'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
+            Dim backR As Byte, backG As Byte, backB As Byte
+            backR = CByte(ExtractR(newBackgroundColor))
+            backG = CByte(ExtractG(newBackgroundColor))
+            backB = CByte(ExtractB(newBackgroundColor))
                 
             'Loop through the image, checking alphas as we go
             For x = 0 To dibWidth - 1
@@ -283,9 +289,9 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     tmpAlpha = CDbl(chkAlpha) / 255
             
                     'Use that alpha value to blend the current color against white
-                    iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), 255, tmpAlpha)
-                    iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), 255, tmpAlpha)
-                    iData(QuickX, y) = Blend2Colors(iData(QuickX, y), 255, tmpAlpha)
+                    iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), backR, tmpAlpha)
+                    iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), backG, tmpAlpha)
+                    iData(QuickX, y) = Blend2Colors(iData(QuickX, y), backB, tmpAlpha)
                     
                     'Opaque-ify the alpha channel
                     iData(QuickX + 3, y) = 255

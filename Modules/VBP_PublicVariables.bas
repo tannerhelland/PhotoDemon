@@ -188,6 +188,10 @@ Public g_IsImageMonochrome As Boolean
 ' (This is set by the custom alpha cutoff dialog.)
 Public g_AlphaCutoff As Byte
 
+'What background color should be used for compositing an image's complex alpha channel?
+' (This is also set by the custom alpha cutoff dialog.)
+Public g_AlphaCompositeColor As Long
+
 'When an image has its colors counted, the image's ID is stored here.  Other functions can use this to see if the
 ' current color count is relevant for a given image (e.g. if the image being worked on has just had its colors counted).
 Public g_LastImageScanned As Long
