@@ -822,7 +822,7 @@ Private Sub processFile(ByVal srcFile As String)
         ElseIf InStr(1, curLineText, "ToolTipText", vbTextCompare) And (InStr(1, curLineText, ".ToolTipText", vbTextCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
-        ElseIf (InStr(1, curLineText, "ToolTip", vbTextCompare) > 0) And (InStr(1, curLineText, ".ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipTitle", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipBackColor", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipType", vbTextCompare) = 0) And (InStr(1, curLineText, "m_ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "clsToolTip", vbTextCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, curLineText, "delaytime", vbTextCompare) = 0) And (InStr(1, curLineText, "eControl.ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "tooltipBackup", vbTextCompare) = 0) And (InStr(1, curLineText, "newTooltip", vbTextCompare) = 0) Then
+        ElseIf (InStr(1, curLineText, "ToolTip", vbTextCompare) > 0) And (InStr(1, curLineText, ".ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipTitle", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipBackColor", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipType", vbTextCompare) = 0) And (InStr(1, curLineText, "m_ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "clsToolTip", vbTextCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, curLineText, "delaytime", vbTextCompare) = 0) And (InStr(1, curLineText, "eControl.ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "tooltipBackup", vbTextCompare) = 0) And (InStr(1, curLineText, "newTooltip", vbTextCompare) = 0) And (InStr(1, curLineText, "SetThumbnailTooltip", vbTextCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
         
         ElseIf InStr(1, curLineText, "TooltipTitle", vbTextCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (Not m_FileName = "jcButton.ctl") Then
@@ -1226,7 +1226,7 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
     Next i
     
     If isTooltip Then
-        If InStr(1, srcLines(lineNumber), ".frx") Then
+        If InStr(1, srcLines(lineNumber), ".frx") > 0 Then
             findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP OF " & m_ObjectName & " IN " & m_FormName
             'MsgBox srcLines(lineNumber)
             Exit Function
@@ -1621,6 +1621,7 @@ Private Sub Form_Load()
     addBlacklist "tannerhelland.com/contact"
     addBlacklist "photodemon.org/about/contact"
     addBlacklist "photodemon.org/about/contact/"
+    addBlacklist "HTML / CSS"
     
 End Sub
 
