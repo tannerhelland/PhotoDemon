@@ -4,10 +4,10 @@ Begin VB.Form dialog_AlphaCutoff
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Please Choose A Transparency Threshold"
-   ClientHeight    =   9135
+   ClientHeight    =   6660
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   7035
+   ClientWidth     =   11655
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,16 +20,44 @@ Begin VB.Form dialog_AlphaCutoff
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   609
+   ScaleHeight     =   444
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   469
+   ScaleWidth      =   777
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.colorSelector csComposite 
+      Height          =   495
+      Left            =   5040
+      TabIndex        =   8
+      Top             =   3900
+      Width           =   6255
+      _ExtentX        =   11033
+      _ExtentY        =   873
+   End
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   7
+      Top             =   5910
+      Width           =   11655
+      _ExtentX        =   20558
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
-      Left            =   360
-      TabIndex        =   2
-      Top             =   7080
-      Width           =   6495
+      Left            =   4920
+      TabIndex        =   0
+      Top             =   2400
+      Width           =   6615
       _ExtentX        =   11456
       _ExtentY        =   873
       Max             =   255
@@ -49,57 +77,35 @@ Begin VB.Form dialog_AlphaCutoff
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   5100
-      Left            =   615
-      ScaleHeight     =   338
+      Height          =   4500
+      Left            =   120
+      ScaleHeight     =   298
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   382
-      TabIndex        =   5
+      ScaleWidth      =   298
+      TabIndex        =   3
       Top             =   1200
-      Width           =   5760
+      Width           =   4500
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "background color for compositing:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   495
-      Left            =   5550
-      TabIndex        =   1
-      Top             =   8520
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   4080
-      TabIndex        =   0
-      Top             =   8520
-      Width           =   1365
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   8
-      Top             =   8370
-      Width           =   7095
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   1
+      Left            =   4920
+      TabIndex        =   6
+      Top             =   3480
+      Width           =   3675
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -116,9 +122,9 @@ Begin VB.Form dialog_AlphaCutoff
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   3960
-      TabIndex        =   7
-      Top             =   7560
+      Left            =   8640
+      TabIndex        =   5
+      Top             =   2940
       Width           =   1710
    End
    Begin VB.Label lblAfter 
@@ -136,9 +142,9 @@ Begin VB.Form dialog_AlphaCutoff
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   720
-      TabIndex        =   6
-      Top             =   7560
+      Left            =   5400
+      TabIndex        =   4
+      Top             =   2940
       Width           =   1230
    End
    Begin VB.Label lblWarning 
@@ -156,9 +162,9 @@ Begin VB.Form dialog_AlphaCutoff
       ForeColor       =   &H00202020&
       Height          =   765
       Left            =   975
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   270
-      Width           =   5775
+      Width           =   7320
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblTitle 
@@ -177,9 +183,9 @@ Begin VB.Form dialog_AlphaCutoff
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
-      TabIndex        =   3
-      Top             =   6720
+      Left            =   4920
+      TabIndex        =   1
+      Top             =   2040
       Width           =   2205
    End
 End
@@ -192,8 +198,8 @@ Attribute VB_Exposed = False
 'Alpha Cut-Off Dialog
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 15/December/12
-'Last updated: 24/April/13
-'Last update: rewrote the dialog against the new slider/text combo control
+'Last updated: 29/January/14
+'Last update: add an option for composite background color; with thanks to Kroc of camendesign.com for the suggestion
 '
 'Dialog for presenting the user a choice of alpha cut-off.  When reducing complex (32bpp)
 ' alpha channels to the simple ones required by 8bpp images, there is no fool-proof
@@ -234,37 +240,6 @@ Public Property Let refDIB(ByRef refDIB As pdDIB)
     Set srcDIB = refDIB
 End Property
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    
-    'Free up memory
-    tmpDIB.eraseDIB
-    
-    userAnswer = vbCancel
-    Me.Hide
-    
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-        
-    'Make sure the input value is valid before continuing
-    If sltThreshold.IsValid Then
-        
-        'Save the selected color depth to the corresponding global variable (so other functions can access it
-        ' after this form is unloaded)
-        g_AlphaCutoff = sltThreshold.Value
-        
-        'Free up memory
-        tmpDIB.eraseDIB
-        
-        userAnswer = vbOK
-        Me.Hide
-        
-    End If
-    
-End Sub
-
 'The ShowDialog routine presents the user with this form.
 Public Sub showDialog()
 
@@ -284,7 +259,7 @@ Public Sub showDialog()
     Set tmpDIB = New pdDIB
         
     'Render a preview of this threshold value
-    renderPreview
+    updatePreview
         
     Message "Waiting for user to specify alpha threshold... "
         
@@ -298,15 +273,60 @@ Public Sub showDialog()
 End Sub
 
 'Render a preview of the current alpha cut-off to the large picture box on the form
-Private Sub renderPreview()
+Private Sub updatePreview()
 
     tmpDIB.eraseDIB
     
     tmpDIB.createFromExistingDIB srcDIB
-    tmpDIB.applyAlphaCutoff sltThreshold.Value, False
+    tmpDIB.applyAlphaCutoff sltThreshold.Value, False, csComposite.Color
     
     tmpDIB.renderToPictureBox picPreview
 
+End Sub
+
+'CANCEL button
+Private Sub cmdBar_CancelClick()
+
+    'Free up memory
+    tmpDIB.eraseDIB
+    
+    'Hide the dialog and return a value of "Cancel"
+    userAnswer = vbCancel
+    Me.Hide
+
+End Sub
+
+'OK button
+Private Sub cmdBar_OKClick()
+    
+    'Save the selected color depth to the corresponding global variable (so other functions can access it
+    ' after this form is unloaded)
+    g_AlphaCutoff = sltThreshold.Value
+    
+    'Similarly, save the selected composite color to its corresponding global variable
+    g_AlphaCompositeColor = csComposite.Color
+    
+    'Free up memory
+    tmpDIB.eraseDIB
+    
+    userAnswer = vbOK
+    Me.Hide
+        
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    
+    'Give the transparency slider a default value of 127 instead of 0
+    sltThreshold.Value = 127
+    
+End Sub
+
+Private Sub csComposite_ColorChanged()
+    updatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -315,5 +335,5 @@ End Sub
 
 'Redraw the preview when the scroll bar is moved
 Private Sub sltThreshold_Change()
-    If sltThreshold.IsValid(False) Then renderPreview
+    If sltThreshold.IsValid(False) Then updatePreview
 End Sub

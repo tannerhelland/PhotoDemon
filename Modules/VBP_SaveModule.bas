@@ -654,7 +654,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpDIB.applyAlphaCutoff g_AlphaCutoff
+                    tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                 End If
                 
                 'If the user decided to completely remove the image's alpha values, change handleAlpha to FALSE
@@ -816,7 +816,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                     
                     'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                     Else
-                        tmpDIB.applyAlphaCutoff g_AlphaCutoff
+                        tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                     End If
                 
                 End If
@@ -1150,7 +1150,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpDIB.applyAlphaCutoff g_AlphaCutoff
+                    tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                 End If
             End If
             
@@ -1467,7 +1467,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpDIB.applyAlphaCutoff g_AlphaCutoff
+                    tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                 End If
             End If
             
