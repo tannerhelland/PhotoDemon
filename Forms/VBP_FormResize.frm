@@ -401,6 +401,25 @@ Begin VB.Form FormResize
          Width           =   5010
       End
    End
+   Begin VB.Label lblTemporaryWarning 
+      BackStyle       =   0  'Transparent
+      Caption         =   $"VBP_FormResize.frx":24A4
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000FF&
+      Height          =   4215
+      Left            =   7440
+      TabIndex        =   18
+      Top             =   960
+      Width           =   2175
+   End
 End
 Attribute VB_Name = "FormResize"
 Attribute VB_GlobalNameSpace = False
