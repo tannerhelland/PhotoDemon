@@ -30,7 +30,7 @@ Begin VB.Form FormResize
       TabIndex        =   0
       Top             =   5475
       Width           =   9660
-      _ExtentX        =   17119
+      _ExtentX        =   17039
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -403,7 +403,6 @@ Begin VB.Form FormResize
    End
    Begin VB.Label lblTemporaryWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_FormResize.frx":24A4
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -653,6 +652,10 @@ Private Sub Form_Activate()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    
+    'TODO - TEMPORARY WARNING!!
+    ' Let the user know that this form is being actively worked on
+    lblTemporaryWarning = "WARNING! This dialog is being completely reworked for PhotoDemon 6.2.  As long as this warning remains, resizing may not work as expected.  I hope to have all changes finalized by the end of February 2014, but until then, avoid using this developer release for serious resize tasks."
             
 End Sub
 

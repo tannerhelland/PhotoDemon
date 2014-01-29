@@ -3,7 +3,6 @@ Begin VB.Form special_ProgressBar
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   Caption         =   "Form1"
    ClientHeight    =   3030
    ClientLeft      =   0
    ClientTop       =   0
