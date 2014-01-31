@@ -350,6 +350,9 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
         cmdParams = cmdParams & "-lang" & vbCrLf & g_Language.getCurrentLanguage() & vbCrLf
     End If
     
+    'TEST! On JPEGs, request a digest as well
+    'If srcFormat = FIF_JPEG Then cmdParams = cmdParams & "-jpegdigest" & vbCrLf
+    
     'Request that binary data be processed.  We have no use for this data within PD, but when it comes time to write
     ' our metadata back out to file, we may want to have a copy of it.
     'cmdParams = cmdParams & "-b" & vbCrLf
