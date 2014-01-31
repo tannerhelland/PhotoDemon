@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 24/September/13
-'Last update: translate all control text when a translation is active.  (Can't believe I missed this before!)
+'Last updated: 31/January/14
+'Last update: add read/write preset support for the new "SmartResize" user control
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -501,8 +501,8 @@ End Function
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -690,8 +690,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -777,8 +777,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * Screen.TwipsPerPixelX
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -803,8 +803,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -813,8 +813,8 @@ Private Sub UserControl_Show()
         End With
         
         'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
         
         'In the IDE, we also need to translate the left-hand buttons
         If Not g_IsProgramCompiled Then
@@ -962,6 +962,11 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 
             Case "TextBox"
                 controlValue = CStr(eControl.Text)
+                
+            'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
+            ' a single control), we must combine its various values into a single string.
+            Case "smartResize"
+                controlValue = CStr(eControl.imgWidth) & "|" & CStr(eControl.imgHeight) & "|" & CStr(eControl.lockAspectRatio)
         
         End Select
         
@@ -1045,6 +1050,9 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
     Dim controlName As String, controlType As String, controlValue As String
     Dim controlIndex As Long
     
+    'Some specialty user controls require us to parse out individual values from a lengthy param string
+    Dim cParam As pdParamString
+    
     Dim eControl As Object
     For Each eControl In Parent.Controls
         
@@ -1096,6 +1104,22 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     
                 Case "TextBox"
                     eControl.Text = controlValue
+                    
+                'PD's "smart resize" control has some special needs, on account of using multiple value properties
+                ' within a single control.  Parse out those values from the control string.
+                Case "smartResize"
+                    Set cParam = New pdParamString
+                    cParam.setParamString controlValue
+                    
+                    'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
+                    ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
+                    ' aspect ratio!)
+                    eControl.lockAspectRatio = False
+                    
+                    eControl.imgWidth = cParam.GetDouble(1, 1920)
+                    eControl.imgHeight = cParam.GetDouble(2, 1080)
+                    
+                    Set cParam = Nothing
             
             End Select
 
