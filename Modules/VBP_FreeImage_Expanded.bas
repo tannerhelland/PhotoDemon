@@ -665,7 +665,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
         tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB) Then
+        If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstImage.ICCProfile.getSourceRenderIntent) Then
         
             Message "Copying newly transformed sRGB data..."
         
