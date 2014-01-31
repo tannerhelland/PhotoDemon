@@ -357,9 +357,9 @@ Public Sub releaseICCProfile(ByVal profileHandle As Long)
 End Sub
 
 'Given a source profile, destination profile, and rendering intent, return a compatible transformation handle.
-Public Function requestProfileTransform(ByVal srcProfile As Long, ByVal dstProfile As Long, ByVal preferredIntent As RenderingIntents) As Long
+Public Function requestProfileTransform(ByVal srcProfile As Long, ByVal dstProfile As Long, ByVal preferredIntent As RenderingIntents, Optional ByVal useEmbeddedIntent As Long = -1) As Long
 
-     'Next we need to prepare two matrices to supply to CreateMultiProfileTransform: one for ICC profiles themselves,
+    'Next we need to prepare two matrices to supply to CreateMultiProfileTransform: one for ICC profiles themselves,
     ' and one for desired render intents.
     Dim profileMatrix(0 To 1) As Long, intentMatrix(0 To 1) As Long
     
@@ -367,8 +367,23 @@ Public Function requestProfileTransform(ByVal srcProfile As Long, ByVal dstProfi
     profileMatrix(0) = srcProfile
     profileMatrix(1) = dstProfile
     
-    'The second column in the array contains the render intents for the transformation.
-    intentMatrix(0) = preferredIntent
+    'The second column in the array contains the render intents for the transformation.  Note that an option is available
+    ' to use a preferred intent in an ICC profile, if one exists.
+    
+    'DISCLAIMER! Until this setting can be handled by preference, I now default to perceptual render intent.  This provides
+    ' better results on most images, and is standard for PostScript workflows.  See http://fieryforums.efi.com/showthread.php/835-Rendering-Intent-Control-for-Embedded-Profiles.
+    ' or https://developer.mozilla.org/en-US/docs/ICC_color_correction_in_Firefox, for example)
+    useEmbeddedIntent = -1
+    
+    If useEmbeddedIntent > -1 Then
+        intentMatrix(0) = useEmbeddedIntent
+    
+    'If the user does not want us to use the embedded intent in the source file, simply mimic the preferred destination intent.
+    Else
+        intentMatrix(0) = preferredIntent
+    End If
+    
+    'The destination
     intentMatrix(1) = preferredIntent
     
     'We can now use our profile matrix to generate a transformation object, which we will use on the DIB itself
@@ -450,7 +465,7 @@ Public Function applyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef s
 End Function
 
 'Apply a CMYK transform between a 32bpp CMYK DIB and a 24bpp sRGB DIB.
-Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB) As Boolean
+Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
 
     Message "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
     
@@ -476,7 +491,7 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
             'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
             ' the DIB's RGB values.
             Dim iccTransformation As Long
-            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL)
+            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, customSourceIntent)
             
             'If the transformation was generated successfully, carry on!
             If iccTransformation <> 0 Then

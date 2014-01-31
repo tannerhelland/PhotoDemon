@@ -15,10 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon ICC (International Color Consortium) Profile Manager
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/November/13
-'Last updated: 05/November/13
-'Last update: moved a bunch of code to the new Color_Management module.  Certain ICC Profile actions (like loading and
-'              validating profiles) will need to be handled for both raw image data, and destination DCs (like forms
-'              and preview picture boxes), so it made sense to abstract some functions away from this per-image class.
+'Last updated: 31/January/14
+'Last update: retrieve the rendering intent from embedded ICC profiles, and use that for the first stage of color
+'              transforms (if available).
 '
 'ICC profiles can be embedded in certain types of images (JPEG, PNG, and TIFF at the time of this writing).  These
 ' profiles can be used to convert an image to its true color space, taking into account any pecularities of the
@@ -58,6 +57,27 @@ Private iccData() As Byte
 
 'CopyMemory is used to shuttle around ICC data in memory
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDestination As Any, ByRef lpSource As Any, ByVal Length As Long)
+
+'Retrieve the source render intent from the contained ICC profile
+Public Function getSourceRenderIntent() As Long
+
+    'Make sure we have been given an ICC profile to work with!
+    If UBound(iccData) = 0 Then
+        getSourceRenderIntent = -1
+        Exit Function
+    End If
+    
+    'Render intent is stored in bytes 63-67 of the ICC profile, per the spec.  (http://www.color.org/specification/ICC1v43_2010-12.pdf)
+    ' Technically only byte 67 matters, as render intent can only be a value of 0, 1, 2, or 3.
+    Dim srcIntent As Long
+    srcIntent = iccData(67)
+    
+    'Validate the intent; it must fall between 0 and 3.  If it does not, set it to 0 (Perceptual)
+    If srcIntent < 0 Or srcIntent > 3 Then srcIntent = 0
+    
+    getSourceRenderIntent = srcIntent
+    
+End Function
 
 'If a profile has been successfully applied to the parent image, this will return TRUE.
 Public Function hasProfileBeenApplied() As Boolean
@@ -114,7 +134,7 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
             'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
             ' the DIB's RGB values.
             Dim iccTransformation As Long
-            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL)
+            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, getSourceRenderIntent)
             
             'If the transformation was generated successfully, carry on!
             If iccTransformation <> 0 Then
@@ -214,6 +234,10 @@ Public Function hasICCData() As Boolean
 End Function
 
 Private Sub Class_Initialize()
+    
     iccDataPresent = False
     iccProfileHasBeenApplied = False
+    
+    ReDim iccData(0) As Byte
+    
 End Sub

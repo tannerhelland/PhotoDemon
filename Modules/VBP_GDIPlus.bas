@@ -857,9 +857,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
             'Use LockBits to perform the copy for us.
             GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppCMYK, copyBitmapData
             GdipBitmapUnlockBits hImage, copyBitmapData
-            
+                        
             'Apply the transformation using the dedicated CMYK transform handler
-            If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB) Then
+            If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB, dstImage.ICCProfile.getSourceRenderIntent) Then
             
                 Message "Copying newly transformed sRGB data..."
             
