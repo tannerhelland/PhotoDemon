@@ -3,10 +3,10 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   6225
+   ClientHeight    =   5310
    ClientLeft      =   45
    ClientTop       =   225
-   ClientWidth     =   9660
+   ClientWidth     =   10665
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,18 +19,18 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   415
+   ScaleHeight     =   354
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   644
+   ScaleWidth      =   711
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5475
-      Width           =   9660
-      _ExtentX        =   17039
+      Top             =   4560
+      Width           =   10665
+      _ExtentX        =   18812
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -49,8 +49,8 @@ Begin VB.Form FormResize
       Left            =   120
       TabIndex        =   15
       Top             =   120
-      Width           =   2760
-      _ExtentX        =   6138
+      Width           =   3000
+      _ExtentX        =   5292
       _ExtentY        =   1376
       ButtonStyle     =   7
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -63,7 +63,7 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       BackColor       =   -2147483643
-      Caption         =   "Basic "
+      Caption         =   "Basic options "
       ForeColor       =   4210752
       ForeColorHover  =   4194304
       Mode            =   1
@@ -80,11 +80,11 @@ Begin VB.Form FormResize
    Begin PhotoDemon.jcbutton cmdCategory 
       Height          =   780
       Index           =   1
-      Left            =   3000
+      Left            =   120
       TabIndex        =   16
-      Top             =   120
-      Width           =   2760
-      _ExtentX        =   6138
+      Top             =   960
+      Width           =   3000
+      _ExtentX        =   5292
       _ExtentY        =   1376
       ButtonStyle     =   7
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -97,7 +97,7 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
       BackColor       =   -2147483643
-      Caption         =   "Advanced "
+      Caption         =   "Advanced options "
       ForeColor       =   4210752
       ForeColorHover  =   4194304
       Mode            =   1
@@ -115,22 +115,198 @@ Begin VB.Form FormResize
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3975
-      Index           =   0
-      Left            =   240
-      ScaleHeight     =   265
+      Height          =   4215
+      Index           =   1
+      Left            =   3360
+      ScaleHeight     =   281
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
+      ScaleWidth      =   480
+      TabIndex        =   6
+      Top             =   120
+      Width           =   7200
+      Begin PhotoDemon.smartOptionButton optFit 
+         Height          =   375
+         Index           =   0
+         Left            =   480
+         TabIndex        =   7
+         Top             =   600
+         Width           =   1425
+         _ExtentX        =   2514
+         _ExtentY        =   661
+         Caption         =   "stretching"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optFit 
+         Height          =   375
+         Index           =   1
+         Left            =   480
+         TabIndex        =   8
+         Top             =   1320
+         Width           =   1755
+         _ExtentX        =   3096
+         _ExtentY        =   661
+         Caption         =   "fit inclusively"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optFit 
+         Height          =   375
+         Index           =   2
+         Left            =   480
+         TabIndex        =   9
+         Top             =   2640
+         Width           =   1800
+         _ExtentX        =   3175
+         _ExtentY        =   661
+         Caption         =   "fit exclusively"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.colorSelector colorPicker 
+         Height          =   495
+         Left            =   960
+         TabIndex        =   10
+         Top             =   2040
+         Width           =   5415
+         _ExtentX        =   9551
+         _ExtentY        =   873
+      End
+      Begin VB.Label lblFit 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "fit image to new size by:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   14
+         Top             =   120
+         Width           =   2610
+      End
+      Begin VB.Label lblSubtext 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "no distortion; empty borders will be filled with:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   960
+         TabIndex        =   13
+         Top             =   1710
+         Width           =   4020
+      End
+      Begin VB.Label lblSubtext 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "no distortion; image edges will be cropped to fit"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   2
+         Left            =   960
+         TabIndex        =   12
+         Top             =   3030
+         Width           =   4110
+      End
+      Begin VB.Label lblSubtext 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "maintain aspect ratio or the final image may look distorted"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   0
+         Left            =   960
+         TabIndex        =   11
+         Top             =   990
+         Width           =   5010
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4215
+      Index           =   0
+      Left            =   3360
+      ScaleHeight     =   281
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   480
       TabIndex        =   1
-      Top             =   1080
-      Width           =   7095
+      Top             =   120
+      Width           =   7200
       Begin PhotoDemon.smartResize ucResize 
          Height          =   1695
-         Left            =   360
+         Left            =   480
          TabIndex        =   17
-         Top             =   480
-         Width           =   6615
-         _ExtentX        =   11668
+         Top             =   600
+         Width           =   7695
+         _ExtentX        =   11880
          _ExtentY        =   2990
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -154,17 +330,17 @@ Begin VB.Form FormResize
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         Left            =   360
+         Left            =   480
          Style           =   2  'Dropdown List
          TabIndex        =   3
-         Top             =   2760
+         Top             =   3000
          Width           =   5895
       End
       Begin PhotoDemon.smartCheckBox chkNames 
          Height          =   480
-         Left            =   360
+         Left            =   480
          TabIndex        =   2
-         Top             =   3240
+         Top             =   3480
          Width           =   2265
          _ExtentX        =   3995
          _ExtentY        =   847
@@ -196,9 +372,9 @@ Begin VB.Form FormResize
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   285
-         Left            =   0
+         Left            =   120
          TabIndex        =   5
-         Top             =   2280
+         Top             =   2520
          Width           =   1470
       End
       Begin VB.Label lblTitle 
@@ -219,205 +395,18 @@ Begin VB.Form FormResize
          ForeColor       =   &H00404040&
          Height          =   285
          Index           =   0
-         Left            =   0
+         Left            =   120
          TabIndex        =   4
-         Top             =   0
+         Top             =   120
          Width           =   990
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3975
-      Index           =   1
-      Left            =   240
-      ScaleHeight     =   265
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
-      TabIndex        =   6
-      Top             =   1080
-      Width           =   7095
-      Begin PhotoDemon.smartOptionButton optFit 
-         Height          =   375
-         Index           =   0
-         Left            =   360
-         TabIndex        =   7
-         Top             =   480
-         Width           =   1425
-         _ExtentX        =   2514
-         _ExtentY        =   661
-         Caption         =   "stretching"
-         Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartOptionButton optFit 
-         Height          =   375
-         Index           =   1
-         Left            =   360
-         TabIndex        =   8
-         Top             =   1200
-         Width           =   1755
-         _ExtentX        =   3096
-         _ExtentY        =   661
-         Caption         =   "fit inclusively"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartOptionButton optFit 
-         Height          =   375
-         Index           =   2
-         Left            =   360
-         TabIndex        =   9
-         Top             =   2520
-         Width           =   1800
-         _ExtentX        =   3175
-         _ExtentY        =   661
-         Caption         =   "fit exclusively"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.colorSelector colorPicker 
-         Height          =   495
-         Left            =   840
-         TabIndex        =   10
-         Top             =   1920
-         Width           =   5415
-         _ExtentX        =   9551
-         _ExtentY        =   873
-      End
-      Begin VB.Label lblFit 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "fit image to new size by:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   0
-         TabIndex        =   14
-         Top             =   0
-         Width           =   2610
-      End
-      Begin VB.Label lblSubtext 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "no distortion; empty borders will be filled with:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   1
-         Left            =   840
-         TabIndex        =   13
-         Top             =   1590
-         Width           =   4020
-      End
-      Begin VB.Label lblSubtext 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "no distortion; image edges will be cropped to fit"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   2
-         Left            =   840
-         TabIndex        =   12
-         Top             =   2910
-         Width           =   4110
-      End
-      Begin VB.Label lblSubtext 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "maintain aspect ratio or the final image may look distorted"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   0
-         Left            =   840
-         TabIndex        =   11
-         Top             =   870
-         Width           =   5010
-      End
-   End
-   Begin VB.Label lblTemporaryWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   4215
-      Left            =   7440
-      TabIndex        =   18
-      Top             =   960
-      Width           =   2175
+   Begin VB.Line Line1 
+      BorderColor     =   &H8000000D&
+      X1              =   216
+      X2              =   216
+      Y1              =   296
+      Y2              =   8
    End
 End
 Attribute VB_Name = "FormResize"
@@ -429,8 +418,9 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 25/August/13
-'Last update: added command bar, and redesigned the dialog to accommodate its large width
+'Last updated: 31/January/14
+'Last update: redesign dialog to account for new "SmartResize" user control.  Also, separate basic and
+'              advanced options into separate panels.
 '
 'Handles all image-size related functions.  Currently supports nearest-neighbor and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it manually), bilinear resampling via pure VB, and
@@ -589,6 +579,7 @@ End Sub
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
 
+    ucResize.lockAspectRatio = False
     ucResize.imgWidth = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
     ucResize.imgHeight = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
 
@@ -598,6 +589,7 @@ Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    ucResize.lockAspectRatio = True
     
     'Make borders fill with black by default
     colorPicker.Color = RGB(0, 0, 0)
@@ -655,7 +647,7 @@ Private Sub Form_Activate()
     
     'TODO - TEMPORARY WARNING!!
     ' Let the user know that this form is being actively worked on
-    lblTemporaryWarning = "WARNING! This dialog is being completely reworked for PhotoDemon 6.2.  As long as this warning remains, resizing may not work as expected.  I hope to have all changes finalized by the end of February 2014, but until then, avoid using this developer release for serious resize tasks."
+    'lblTemporaryWarning = "WARNING! This dialog is being completely reworked for PhotoDemon 6.2.  As long as this warning remains, resizing may not work as expected.  I hope to have all changes finalized by the end of February 2014, but until then, avoid using this developer release for serious resize tasks."
             
 End Sub
 

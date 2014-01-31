@@ -25,19 +25,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   0
       Top             =   255
       Width           =   1770
-      _ExtentX        =   3122
-      _ExtentY        =   847
-      Caption         =   "lock aspect ratio"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   3122
+      _extenty        =   847
+      caption         =   "lock aspect ratio"
+      font            =   "smartResize.ctx":0312
+      value           =   1
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   405
@@ -45,20 +37,12 @@ Begin VB.UserControl smartResize
       TabIndex        =   1
       Top             =   0
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Min             =   1
-      Max             =   32767
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   714
+      font            =   "smartResize.ctx":033A
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   405
@@ -66,20 +50,12 @@ Begin VB.UserControl smartResize
       TabIndex        =   2
       Top             =   630
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Min             =   1
-      Max             =   32767
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   714
+      font            =   "smartResize.ctx":0362
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin VB.Label lblWidth 
       Appearance      =   0  'Flat
@@ -220,8 +196,8 @@ Attribute VB_Exposed = False
 'Image Resize User Control
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
-'Last updated: 24/Jan/14
-'Last update: initial conversion of resize UI to dedicated user control
+'Last updated: 31/Jan/14
+'Last update: wrap up initial conversion of resize UI to dedicated user control
 '
 'Many tools in PD relate to resizing: image size, canvas size, (soon) layer size, content-aware rescaling,
 ' perhaps a more advanced autocrop tool, plus dedicated resize options in the batch converter...
@@ -287,7 +263,24 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set chkRatio.Font = UserControl.Font
 End Sub
 
-'Width and height can be retrieved from these properties
+'Lock aspect ratio can be set/retrieved by the owning dialog
+Public Property Get lockAspectRatio() As Boolean
+    lockAspectRatio = CBool(chkRatio)
+End Property
+
+Public Property Let lockAspectRatio(newSetting As Boolean)
+    
+    If newSetting Then
+        chkRatio.Value = vbChecked
+    Else
+        chkRatio.Value = vbUnchecked
+    End If
+    
+    syncDimensions True
+    
+End Property
+
+'Width and height can be set/retrieved from these properties
 Public Property Get imgWidth() As Long
     imgWidth = tudWidth
 End Property
