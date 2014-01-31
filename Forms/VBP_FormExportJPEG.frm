@@ -226,10 +226,12 @@ Begin VB.Form dialog_ExportJPEG
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H00404040&
          Height          =   1080
          Left            =   360
          TabIndex        =   17
          Top             =   1560
+         UseMnemonic     =   0   'False
          Width           =   6615
          WordWrap        =   -1  'True
       End
@@ -767,6 +769,7 @@ Public Sub showDialog()
     curMDString = curMDString & g_Language.TranslateMessage("You can change the program-wide setting from the Tools -> Options menu.")
     
     lblCurMetadata = curMDString
+    lblCurMetadata.Refresh
     
     cmbMetadata.ToolTipText = g_Language.TranslateMessage("Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.")
     
