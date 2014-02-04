@@ -2936,8 +2936,11 @@ Private Sub CmdOK_Click()
     'All user preferences have now been written out to file
     
     'Because some preferences affect the program's interface, redraw the active image.
+    FormMain.refreshAllCanvases
+    FormMain.mainCanvas(0).BackColor = g_CanvasBackground
+    
     If g_OpenImageCount > 0 Then
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
     Message "Finished."
