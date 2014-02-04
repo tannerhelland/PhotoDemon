@@ -198,9 +198,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright ©2008-2014 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 03/December/13
-'Last update: store curve nodes as relative values rather than absolute ones.  This fixes an extremely rare error when
-'              the user has stored curve presets (or last-used settings), changes their monitor DPI, then re-loads PD.
+'Last updated: 04/February/14
+'Last update: fix Curve preset storage to account for commas as a decimal separator in some locales
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -412,7 +411,7 @@ Private Sub cmdBar_AddCustomPresetData()
     
     Dim i As Long
     For i = 1 To numOfNodes
-        nodeString = nodeString & CStr(cNodes(i).pX / nodeBoxWidth) & "," & CStr(cNodes(i).pY / nodeBoxHeight)
+        nodeString = nodeString & CStr(cNodes(i).pX / nodeBoxWidth) & ":" & CStr(cNodes(i).pY / nodeBoxHeight)
         If i < numOfNodes Then nodeString = nodeString & "|"
     Next i
     
@@ -470,7 +469,17 @@ Private Sub cmdBar_ReadCustomPresetData()
     'With the help of a paramString class, parse out individual coordinates into the cNodes array
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString Replace(tmpString, ",", "|")
+    
+    'Old versions of the Curves dialog used the comma to separate coordinate entries.  This was a bad idea, because
+    ' some locales (e.g. IT-IT) use the comma as a decimal separator!  We now use a colon instead, but to make
+    ' sure old data doesn't crash the program, check for it now.
+    If InStr(1, tmpString, ",") > 0 Then
+        If InStr(1, tmpString, ".") > 0 Then
+            cParams.setParamString Replace(tmpString, ",", "|")
+        End If
+    Else
+        cParams.setParamString Replace(tmpString, ":", "|")
+    End If
     
     'UPDATE 03 Dec 2014: instead of storing absolute coordinates, we now store relative ones per the size of
     '                    the curve box.  This fixes an extremely rare error when the user changes DPI for
