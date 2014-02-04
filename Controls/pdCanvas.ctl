@@ -580,29 +580,31 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
             
                 'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
                 ' ability to resize the selection.
-                If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                
-                    'This routine will return a best estimate for the location of the mouse.  We then pass its value
-                    ' to a sub that will use it to select the most appropriate mouse cursor.
-                    Dim sCheck As Long
-                    sCheck = findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me)
+                If Not pdImages(g_CurrentImage).mainSelection Is Nothing Then
+                    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     
-                    'Based on that return value, assign a new mouse cursor to the form
-                    setSelectionCursor sCheck
-                    
-                    'Set the active selection's transformation type to match
-                    pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
-                    
-                Else
-                
-                    'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
-                    ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                    If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                        setArrowCursorToObject Me
+                        'This routine will return a best estimate for the location of the mouse.  We then pass its value
+                        ' to a sub that will use it to select the most appropriate mouse cursor.
+                        Dim sCheck As Long
+                        sCheck = findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me)
+                        
+                        'Based on that return value, assign a new mouse cursor to the form
+                        setSelectionCursor sCheck
+                        
+                        'Set the active selection's transformation type to match
+                        pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
+                        
                     Else
-                        setArrowCursorToObject Me
+                    
+                        'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
+                        ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
+                        If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
+                            setArrowCursorToObject Me
+                        Else
+                            setArrowCursorToObject Me
+                        End If
+                    
                     End If
-                
                 End If
         
             Case Else
@@ -618,7 +620,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
         End Select
         
     End If
-        
+    
     'Display the image coordinates under the mouse pointer (but only if this is the currently active image)
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me
     
