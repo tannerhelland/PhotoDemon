@@ -44,7 +44,7 @@ Begin VB.Form dialog_AutosaveWarning
       ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   330
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   2430
       Width           =   4980
    End
@@ -128,27 +128,6 @@ Begin VB.Form dialog_AutosaveWarning
       X2              =   595
       Y1              =   120
       Y2              =   120
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "preview:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   3960
-      TabIndex        =   6
-      Top             =   2040
-      Width           =   915
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -377,7 +356,7 @@ Private Function displayAutosaveEntries() As Boolean
     Dim i As Long
     For i = 0 To m_numOfXMLFound - 1
         If Len(m_XmlEntries(i).latestUndoPath) > 0 Then
-            lstAutosaves.AddItem m_XmlEntries(i).FriendlyName, i
+            lstAutosaves.AddItem m_XmlEntries(i).friendlyName, i
             lstAutosaves.ItemData(lstAutosaves.newIndex) = i
             lstAutosaves.Selected(lstAutosaves.newIndex) = True
         End If
