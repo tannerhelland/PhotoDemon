@@ -938,10 +938,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
             PrepareViewport targetImage, FormMain.mainCanvas(0), "PreLoadImage"
-            
-            'If the user wants us to resize the image to fit on-screen, do that now
-            If g_AutozoomLargeImages = 1 Then FitImageToViewport
-                        
+                                    
             'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
             
@@ -1616,8 +1613,8 @@ Public Sub DuplicateCurrentImage()
         
     g_AllowViewportRendering = False
         
-    pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
-    pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
+    FormMain.mainCanvas(0).getHScrollReference.Value = 0
+    FormMain.mainCanvas(0).getVScrollReference.Value = 0
         
     'Copy the picture from the previous form to this new one
     pdImages(g_CurrentImage).mainDIB.createFromExistingDIB pdImages(imageToBeDuplicated).mainDIB
@@ -1647,14 +1644,14 @@ Public Sub DuplicateCurrentImage()
     Message "Resizing image to fit screen..."
     
     'Update the current caption to match
-    g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).originalFileNameAndExtension
+    'g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).originalFileNameAndExtension
         
     'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
     ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
-    g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
+    'g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
             
     'Also register this image with the image tab bar
-    createCustomFormIcon pdImages(g_CurrentImage).containingForm
+    createCustomFormIcon pdImages(g_CurrentImage)
     toolbar_ImageTabs.registerNewImage g_CurrentImage
     
     'If the user wants us to resize the image to fit on-screen, do that now
@@ -1667,15 +1664,7 @@ Public Sub DuplicateCurrentImage()
         
     'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "Duplicate image"
-            
-    'Note the window state, as it may be important in the future
-    pdImages(g_CurrentImage).WindowState = pdImages(g_CurrentImage).containingForm.WindowState
-            
-    'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
-    ' bottom edges don't fall outside the MDI client area
-    'If the user wants us to resize the image to fit on-screen, do that now
-    If g_AutozoomLargeImages = 1 Then FitWindowToViewport
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Duplicate image"
     
     'Synchronize the interface to match the newly created image's settings
     syncInterfaceToCurrentImage
