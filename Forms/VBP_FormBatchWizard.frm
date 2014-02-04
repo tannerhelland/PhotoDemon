@@ -2930,12 +2930,12 @@ Private Function saveCurrentBatchList() As Boolean
         Dim x As Long
         
         Open sFile For Output As #fileNum
-            Write #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
-            Write #fileNum, Trim(CStr(lstFiles.ListCount))
+            Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
+            Print #fileNum, Trim(CStr(lstFiles.ListCount))
             For x = 0 To lstFiles.ListCount - 1
-                Write #fileNum, lstFiles.List(x)
+                Print #fileNum, lstFiles.List(x)
             Next x
-            Write #fileNum, "<END OF LIST>"
+            Print #fileNum, "<END OF LIST>"
         Close #fileNum
         
         saveCurrentBatchList = True

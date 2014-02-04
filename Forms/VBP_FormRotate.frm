@@ -293,8 +293,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 
                 'Fit the new image on-screen and redraw it
                 FitImageToViewport
-                FitWindowToImage
-            
+                
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library

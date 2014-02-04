@@ -355,7 +355,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "Content-aware resize"
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Content-aware resize"
     
     Message "Finished."
 
