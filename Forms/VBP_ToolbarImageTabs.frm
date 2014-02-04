@@ -148,9 +148,87 @@ Public Sub notifyNewActiveImage(ByVal newPDImageIndex As Long)
     Next i
     
     'Redraw the toolbar to reflect the change
-    redrawToolbar
+    redrawToolbar True
         
 End Sub
+
+'Returns TRUE is a given thumbnail is currently viewable in its entirety; FALSE if it lies partially or fully off-screen.
+Public Function fitThumbnailOnscreen(ByVal thumbIndex As Long) As Boolean
+
+    Dim isThumbnailOnscreen As Boolean
+
+    'First, figure out where the thumbnail actually sits.
+    
+    'Determine a scrollbar offset as necessary
+    Dim scrollOffset As Long
+    scrollOffset = hsThumbnails.Value
+    
+    'Per the tabstrip's current alignment, figure out a relevant position
+    Dim hPosition As Long, vPosition As Long
+    
+    If verticalLayout Then
+        hPosition = 0
+        vPosition = (thumbIndex * thumbHeight) - scrollOffset
+    Else
+        hPosition = (thumbIndex * thumbWidth) - scrollOffset
+        vPosition = 0
+    End If
+    
+    'Use the tabstrip's size to determine if this thumbnail lies off-screen
+    If verticalLayout Then
+        
+        If vPosition < 0 Or (vPosition + thumbHeight - 1) > Me.ScaleHeight Then
+            isThumbnailOnscreen = False
+        Else
+            isThumbnailOnscreen = True
+        End If
+        
+    Else
+    
+        If hPosition < 0 Or (hPosition + thumbWidth - 1) > Me.ScaleWidth Then
+            isThumbnailOnscreen = False
+        Else
+            isThumbnailOnscreen = True
+        End If
+        
+    End If
+    
+    'If the thumbnail is not onscreen, make it so!
+    If Not isThumbnailOnscreen Then
+    
+        If verticalLayout Then
+        
+            If vPosition < 0 Then
+                hsThumbnails.Value = thumbIndex * thumbHeight
+            Else
+            
+                If ((thumbIndex + 1) * thumbHeight) - Me.ScaleHeight > hsThumbnails.Max Then
+                    hsThumbnails.Value = hsThumbnails.Max
+                Else
+                    hsThumbnails.Value = ((thumbIndex + 1) * thumbHeight) - Me.ScaleHeight
+                End If
+                
+            End If
+            
+        Else
+        
+            If hPosition < 0 Then
+                hsThumbnails.Value = thumbIndex * thumbWidth
+            Else
+            
+                If ((thumbIndex + 1) * thumbWidth) - Me.ScaleWidth > hsThumbnails.Max Then
+                    hsThumbnails.Value = hsThumbnails.Max
+                Else
+                    hsThumbnails.Value = ((thumbIndex + 1) * thumbWidth) - Me.ScaleWidth
+                End If
+                
+            End If
+            
+        End If
+    
+    End If
+            
+End Function
 
 'When the user somehow changes an image, they need to notify the toolbar, so that a new thumbnail can be rendered
 Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
@@ -203,7 +281,7 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     ReDim Preserve imgThumbnails(0 To numOfThumbnails) As thumbEntry
     
     'Redraw the toolbar to reflect these changes
-    redrawToolbar
+    redrawToolbar True
     
 End Sub
 
@@ -672,7 +750,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Whenever a function wants to render the current toolbar, it may do so here
-Private Sub redrawToolbar()
+Private Sub redrawToolbar(Optional ByVal fitCurrentThumbOnScreen As Boolean = False)
 
     'Recreate the toolbar buffer
     Set bufferDIB = New pdDIB
@@ -709,6 +787,9 @@ Private Sub redrawToolbar()
         If lChange > thumbWidth \ 4 Then lChange = thumbWidth \ 4
         
         hsThumbnails.LargeChange = lChange
+        
+        'If requested, fit the currently active thumbnail on-screen
+        If fitCurrentThumbOnScreen Then fitThumbnailOnscreen curThumb
         
     End If
     
