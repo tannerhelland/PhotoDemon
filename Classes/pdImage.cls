@@ -102,10 +102,6 @@ Option Explicit
     'These two variables are only used at form load; they can be safely ignored once the image is visible.
     Public WindowLeft As Long
     Public WindowTop As Long
-    
-    'Track the current window state; if the image's containing form goes from maximized to normal, all images need their
-    ' buffer refreshed (as scroll bars may then be needed)
-    Public WindowState As Long
         
     'A copy of the form's current icon
     Public curFormIcon32 As Long, curFormIcon16 As Long
