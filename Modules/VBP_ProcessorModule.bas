@@ -85,9 +85,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If we need to display an additional dialog, restore the default mouse cursor.  Otherwise, set the cursor to busy.
     If showDialog Then
-        If g_OpenImageCount > 0 Then
-            If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then setArrowCursor pdImages(g_CurrentImage).containingForm
-        End If
+        'If g_OpenImageCount > 0 Then
+        '    If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then setArrowCursor pdImages(g_CurrentImage).containingForm
+        'End If
     Else
         Screen.MousePointer = vbHourglass
     End If
@@ -217,7 +217,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.revertToLastSavedState
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                createCustomFormIcon pdImages(g_CurrentImage).containingForm
+                createCustomFormIcon pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
             
@@ -283,7 +283,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.restoreUndoData
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                createCustomFormIcon pdImages(g_CurrentImage).containingForm
+                createCustomFormIcon pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
             
@@ -292,7 +292,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.RestoreRedoData
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                createCustomFormIcon pdImages(g_CurrentImage).containingForm
+                createCustomFormIcon pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
         
@@ -1180,7 +1180,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then
-        createCustomFormIcon pdImages(g_CurrentImage).containingForm
+        createCustomFormIcon pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
     End If
     
@@ -1204,7 +1204,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo > 0) Then
-        If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "processor call complete"
+        If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "processor call complete"
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
@@ -1216,7 +1216,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     syncInterfaceToCurrentImage
         
     'Finally, after all our work is done, return focus to the main PD window
-    If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then g_WindowManager.requestActivation FormMain.hWnd
+    g_WindowManager.requestActivation FormMain.hWnd
         
     'Mark the processor as ready
     Processing = False
@@ -1263,7 +1263,7 @@ MainErrHandler:
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
         pdImages(g_CurrentImage).deactivateImage
-        Unload pdImages(g_CurrentImage).containingForm
+        
         Exit Sub
     
     'File not found error

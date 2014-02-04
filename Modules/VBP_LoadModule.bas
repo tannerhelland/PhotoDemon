@@ -232,7 +232,7 @@ Public Sub LoadTheProgram()
         
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
     toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True
-    toggleWindowFloating IMAGE_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False), True
+    'toggleWindowFloating IMAGE_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False), True
     
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
@@ -312,6 +312,9 @@ Public Sub LoadTheProgram()
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
+    
+    'Set the main canvas background color
+    FormMain.mainCanvas(0).BackColor = g_CanvasBackground
     
     'Apply visual styles
     FormMain.requestMakeFormPretty
@@ -544,15 +547,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Message "Image found. Initializing blank form..."
 
-            CreateNewImageForm
+            CreateNewPDImage
         
             Set targetImage = pdImages(g_CurrentImage)
             Set targetDIB = pdImages(g_CurrentImage).getActiveDIB()
         
             g_AllowViewportRendering = False
         
-            pdImages(g_CurrentImage).containingForm.HScroll.Value = 0
-            pdImages(g_CurrentImage).containingForm.VScroll.Value = 0
+            FormMain.mainCanvas(0).getHScrollReference.Value = 0
+            FormMain.mainCanvas(0).getVScrollReference.Value = 0
         
         End If
         
@@ -678,9 +681,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Deactivating the image will remove the reference to the containing form - this is desired behavior, because VB counts object references,
             ' and doesn't free an object until all references are resolved.  To work around this, we make a copy of the reference prior to deactivation.
             ' We then use this reference copy to unload the form.
-            Dim failedImageForm As Form
-            Set failedImageForm = targetImage.containingForm
-            failedImageForm.Visible = False
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
@@ -690,13 +690,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
             targetImage.deactivateImage
-            
-            If isThisPrimaryImage Then
-                'Notify the window manager that this hWnd will soon be dead, so we can stop subclassing it
-                g_WindowManager.unregisterForm failedImageForm
-                Unload failedImageForm
-                Set failedImageForm = Nothing
-            End If
             
             'Update the interface to reflect the images currently loaded
             syncInterfaceToCurrentImage
@@ -901,16 +894,16 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             If imgFormTitle = "" Then
                 If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                    g_WindowManager.requestWindowCaptionChange targetImage.containingForm, getFilename(sFile(thisImage))
+                    'g_WindowManager.requestWindowCaptionChange targetImage.containingForm, getFilename(sFile(thisImage))
                 Else
-                    g_WindowManager.requestWindowCaptionChange targetImage.containingForm, sFile(thisImage)
+                    'g_WindowManager.requestWindowCaptionChange targetImage.containingForm, sFile(thisImage)
                 End If
             Else
-                g_WindowManager.requestWindowCaptionChange targetImage.containingForm, imgFormTitle
+                'g_WindowManager.requestWindowCaptionChange targetImage.containingForm, imgFormTitle
             End If
             
             'Create an icon-sized version of this image, which we will use as form's taskbar icon
-            If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage.containingForm
+            If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage
             
             'Synchronize all other interface elements to match the newly loaded image
             syncInterfaceToCurrentImage
@@ -924,21 +917,18 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
             ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
-            g_WindowManager.registerChildForm targetImage.containingForm, IMAGE_WINDOW, , , g_CurrentImage
+            'g_WindowManager.registerChildForm targetImage.containingForm, IMAGE_WINDOW, , , g_CurrentImage
             
             'Also register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage
             
             'Give the image form a chance to detect its parent monitor
-            targetImage.containingForm.checkParentMonitor True
+            FormMain.mainCanvas(0).checkParentMonitor True
             
             Message "Resizing image to fit screen..."
     
             'If the user wants us to resize the image to fit on-screen, do that now
             If g_AutozoomLargeImages = 0 Then FitImageToViewport True
-                    
-            'If image windows are not docked, fit the window around the (now properly-zoomed) image
-            If g_WindowManager.getFloatState(IMAGE_WINDOW) Then FitWindowToImage True, True
             
             'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
             ' update the zoom combo box to match the zoom assigned by the window-fit function.
@@ -947,31 +937,16 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
-            PrepareViewport targetImage.containingForm, "PreLoadImage"
+            PrepareViewport targetImage, FormMain.mainCanvas(0), "PreLoadImage"
             
-            'Note the window state, as it may be important in the future
-            targetImage.WindowState = targetImage.containingForm.WindowState
-            
-            'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
-            If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                targetImage.containingForm.Move targetImage.WindowLeft * Screen.TwipsPerPixelX, targetImage.WindowTop * Screen.TwipsPerPixelY
-                g_WindowManager.requestWindowResync targetImage.indexInWindowManager
-                
-            'If image windows are docked, the window manager will have already positioned the window for us.
-            Else
-                
-            End If
-            
-            'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
-            ' bottom edges don't fall outside the MDI client area
             'If the user wants us to resize the image to fit on-screen, do that now
-            If g_AutozoomLargeImages = 1 Then FitWindowToViewport
+            If g_AutozoomLargeImages = 1 Then FitImageToViewport
                         
             'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
             
             'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-            targetImage.containingForm.fixChromeLayout
+            FormMain.mainCanvas(0).fixChromeLayout
             
         End If
         
@@ -1218,7 +1193,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
     If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
         
     'Render the image to the screen
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "LoadUndo"
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo"
     
 End Sub
 
@@ -1388,8 +1363,8 @@ Public Sub LoadAccelerators()
         .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuPlayMacroRecording, True, True, True, False
         
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(7), False, True, False, False
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(8), False, True, False, False
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(6), False, True, False, False
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(7), False, True, False, False
                 
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"
@@ -1637,7 +1612,7 @@ Public Sub DuplicateCurrentImage()
     Dim imageToBeDuplicated As Long
     imageToBeDuplicated = g_CurrentImage
     
-    CreateNewImageForm
+    CreateNewPDImage
         
     g_AllowViewportRendering = False
         
@@ -1684,9 +1659,6 @@ Public Sub DuplicateCurrentImage()
     
     'If the user wants us to resize the image to fit on-screen, do that now
     If g_AutozoomLargeImages = 0 Then FitImageToViewport True
-                    
-    'If image windows are not docked, fit the window around the (now properly-zoomed) image
-    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then FitWindowToImage True, True
             
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
     ' update the zoom combo box to match the zoom assigned by the window-fit function.
@@ -1699,16 +1671,6 @@ Public Sub DuplicateCurrentImage()
             
     'Note the window state, as it may be important in the future
     pdImages(g_CurrentImage).WindowState = pdImages(g_CurrentImage).containingForm.WindowState
-            
-    'If image windows are floating, move the window into place now using values previously calculated by FitToScreen
-    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-        pdImages(g_CurrentImage).containingForm.Move pdImages(g_CurrentImage).WindowLeft * Screen.TwipsPerPixelX, pdImages(g_CurrentImage).WindowTop * Screen.TwipsPerPixelY
-        g_WindowManager.requestWindowResync pdImages(g_CurrentImage).indexInWindowManager
-        
-    'If image windows are docked, the window manager will have already positioned the window for us.
-    Else
-            
-    End If
             
     'Finally, if the image has not been resized to fit on screen, check its viewport to make sure the right and
     ' bottom edges don't fall outside the MDI client area

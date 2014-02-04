@@ -47,9 +47,6 @@ Option Explicit
 
     'Was the image loaded successfully?
     Public loadedSuccessfully As Boolean
-
-    'The ID of the MDI child form containing this particular image
-    Public containingForm As Form
     
     'Image dimensions
     Public Width As Long
@@ -411,10 +408,7 @@ Public Sub deactivateImage()
     
     'If a selection exists, wipe it
     If Not (mainSelection Is Nothing) Then Set mainSelection = Nothing
-    
-    'Remove the reference to the parent form so VB can wipe it
-    If Not (containingForm Is Nothing) Then Set containingForm = Nothing
-    
+        
     'Deactivate the Undo/Redo handler
     If Not (undoManager Is Nothing) Then
         undoManager.clearUndos

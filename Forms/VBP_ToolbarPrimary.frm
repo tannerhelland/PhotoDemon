@@ -322,24 +322,30 @@ Private Sub CmbZoom_Click()
     
     'Track the current zoom value
     If g_OpenImageCount > 0 Then
+    
         pdImages(g_CurrentImage).currentZoomValue = toolbar_File.CmbZoom.ListIndex
+        
         If toolbar_File.CmbZoom.ListIndex = 0 Then
             toolbar_File.cmdZoomIn.Enabled = False
         Else
             If Not toolbar_File.cmdZoomIn.Enabled Then toolbar_File.cmdZoomIn.Enabled = True
         End If
+        
         If toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListCount - 1 Then
             toolbar_File.cmdZoomOut.Enabled = False
         Else
             If Not toolbar_File.cmdZoomOut.Enabled Then toolbar_File.cmdZoomOut.Enabled = True
         End If
-        PrepareViewport pdImages(g_CurrentImage).containingForm, "zoom changed by user"
+        
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by user"
+        
     End If
     
 End Sub
 
 Private Sub cmdClose_Click()
-    Unload pdImages(g_CurrentImage).containingForm
+    g_ClosingAllImages = False
+    fullPDImageUnload g_CurrentImage
 End Sub
 
 Private Sub cmdOpen_Click()

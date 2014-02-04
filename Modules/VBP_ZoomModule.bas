@@ -45,13 +45,19 @@ Private cornerFix As pdDIB
 'RenderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> RenderViewport)
 ' It can only be executed after both PrepareViewport and ScrollViewport have been run at least once.  It assumes a fully composited backbuffer,
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
-Public Sub RenderViewport(ByRef formToBuffer As Form)
+Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
-    'Make sure the form is valid
-    If formToBuffer Is Nothing Then Exit Sub
+    'If no images have been loaded, clear the canvas and exit
+    If g_OpenImageCount = 0 Then
+        FormMain.mainCanvas(0).clearCanvas
+        Exit Sub
+    End If
+
+    'Make sure the canvas is valid
+    If dstCanvas Is Nothing Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If Not pdImages(formToBuffer.Tag).IsActive Then Exit Sub
+    If Not srcImage.IsActive Then Exit Sub
 
     'Reset the front buffer
     If Not (frontBuffer Is Nothing) Then
@@ -62,16 +68,16 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'We can use the .Tag property of the target form to locate the matching pdImage in the pdImages array
     Dim curImage As Long
-    curImage = CLng(formToBuffer.Tag)
+    curImage = srcImage.imageID
     
     'Copy the current back buffer into the front buffer
-    frontBuffer.createFromExistingDIB pdImages(curImage).backBuffer
+    frontBuffer.createFromExistingDIB srcImage.backBuffer
     
     'Check to see if a selection is active.
-    If pdImages(curImage).selectionActive Then
+    If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        pdImages(curImage).mainSelection.renderCustom frontBuffer, formToBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight, toolbar_Selections.cmbSelRender(0).ListIndex
+        srcImage.mainSelection.renderCustom frontBuffer, srcImage, FormMain.mainCanvas(0), srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Selections.cmbSelRender(0).ListIndex
     
     End If
         
@@ -79,42 +85,42 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     If g_CanvasDropShadow Then
     
         'We'll handle this in two steps; first, render the horizontal shadows
-        If Not formToBuffer.VScroll.Visible Then
+        If Not dstCanvas.getVScrollReference.Visible Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, rendering drop shadows is a waste of time
-            If pdImages(curImage).imgViewport.targetTop <> 0 Then
+            If srcImage.imgViewport.targetTop <> 0 Then
                 'Top edge
-                StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
                 'Bottom edge
-                StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop + pdImages(curImage).imgViewport.targetHeight, pdImages(curImage).imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, srcImage.imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
             End If
         
         End If
         
         'Second, the vertical shadows
-        If Not formToBuffer.HScroll.Visible Then
+        If Not dstCanvas.getHScrollReference.Visible Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
-            If pdImages(curImage).imgViewport.targetLeft <> 0 Then
+            If srcImage.imgViewport.targetLeft <> 0 Then
                 'Left edge
-                StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetTop, PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetHeight, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop, PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetHeight, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
                 'Right edge
-                StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft + pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetTop, PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetHeight, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop, PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetHeight, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
             End If
         
         End If
         
         'Finally, the corners, which are only drawn if both scroll bars are invisible
-        If (Not formToBuffer.VScroll.Visible) And (Not formToBuffer.HScroll.Visible) Then
+        If (Not dstCanvas.getVScrollReference.Visible) And (Not dstCanvas.getHScrollReference.Visible) Then
         
             'NW corner
-            StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'NE corner
-            StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft + pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SW corner
-            StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft - PD_CANVASSHADOWSIZE, pdImages(curImage).imgViewport.targetTop + pdImages(curImage).imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
             'SE corner
-            StretchBlt frontBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft + pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetTop + pdImages(curImage).imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
         
         End If
     
@@ -124,68 +130,73 @@ Public Sub RenderViewport(ByRef formToBuffer As Form)
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
-    assignDefaultColorProfileToForm formToBuffer
-    turnOnColorManagementForDC formToBuffer.hDC
+    assignDefaultColorProfileToForm dstCanvas
+    turnOnColorManagementForDC dstCanvas.hDC
     
     'Finally, flip the front buffer to the screen
     'BitBlt formToBuffer.hDC, 0, 26, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
-    BitBlt formToBuffer.hDC, 0, pdImages(curImage).imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstCanvas.hDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
         
     'If both scrollbars are active, copy a gray square over the small space between them
-    If formToBuffer.HScroll.Visible And formToBuffer.VScroll.Visible Then
+    If dstCanvas.getHScrollReference.Visible And dstCanvas.getVScrollReference.Visible Then
         
         'Only initialize the corner fix image once
         If cornerFix Is Nothing Then
             Set cornerFix = New pdDIB
-            cornerFix.createBlank formToBuffer.VScroll.Width, formToBuffer.HScroll.Height, 24, vbButtonFace
+            cornerFix.createBlank dstCanvas.getVScrollReference.Width, dstCanvas.getHScrollReference.Height, 24, vbButtonFace
         End If
         
         'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
-        BitBlt formToBuffer.hDC, formToBuffer.VScroll.Left, formToBuffer.HScroll.Top, cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt dstCanvas.hDC, dstCanvas.getVScrollReference.Left, dstCanvas.getHScrollReference.Top, cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
         
     End If
     
     'Finally, we can do some tool-specific rendering directly onto the form.
     
     'Check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
-    If pdImages(curImage).selectionActive And pdImages(curImage).mainSelection.isTransformable Then
+    If srcImage.selectionActive And srcImage.mainSelection.isTransformable Then
     
         'If it is, composite the selection against the temporary buffer
-        pdImages(curImage).mainSelection.renderTransformNodes formToBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop
+        srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop
     
     End If
     
     
     'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
-    formToBuffer.Picture = formToBuffer.Image
-    If (CLng(formToBuffer.Tag) = g_CurrentImage) Then formToBuffer.Refresh
+    dstCanvas.requestBufferSync
     
 End Sub
 
 'ScrollViewport is used to update the on-screen image when the scroll bars are used.
 ' Given how frequently it is used, I've tried to make it as small and fast as possible.
-Public Sub ScrollViewport(ByRef formToBuffer As Form)
+Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+    
+    'If no images have been loaded, clear the canvas and exit
+    If g_OpenImageCount = 0 Then
+        FormMain.mainCanvas(0).clearCanvas
+        Exit Sub
+    End If
     
     'Make sure the target form is valid
-    If formToBuffer Is Nothing Then Exit Sub
+    If dstCanvas Is Nothing Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If Not pdImages(formToBuffer.Tag).IsActive Then Exit Sub
+    If Not srcImage.IsActive Then Exit Sub
     
     'We can use the .Tag property of the target form to locate the matching pdImage in the pdImages array
     Dim curImage As Long
-    curImage = CLng(formToBuffer.Tag)
+    curImage = srcImage.imageID
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-    zoomVal = g_Zoom.getZoomValue(pdImages(curImage).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
 
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-    srcWidth = pdImages(curImage).imgViewport.targetWidth / zoomVal
-    srcHeight = pdImages(curImage).imgViewport.targetHeight / zoomVal
+    srcWidth = srcImage.imgViewport.targetWidth / zoomVal
+    srcHeight = srcImage.imgViewport.targetHeight / zoomVal
         
     'These variables are the offset, as determined by the scroll bar values
-    If formToBuffer.HScroll.Visible Then srcX = formToBuffer.HScroll.Value Else srcX = 0
-    If formToBuffer.VScroll.Visible Then srcY = formToBuffer.VScroll.Value Else srcY = 0
+    If dstCanvas.getHScrollReference.Visible Then srcX = dstCanvas.getHScrollReference.Value Else srcX = 0
+    If dstCanvas.getVScrollReference.Visible Then srcY = dstCanvas.getVScrollReference.Value Else srcY = 0
         
     'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
@@ -195,12 +206,12 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         'ZOOMED OUT
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If pdImages(curImage).getCompositedImage().getDIBColorDepth = 32 Then
+        If srcImage.getCompositedImage().getDIBColorDepth = 32 Then
         
             'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size
             ' of the viewport.)
-            pdImages(curImage).alphaFixDIB.createBlank srcWidth, srcHeight, 32
-            BitBlt pdImages(curImage).alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, pdImages(curImage).mainDIB.getDIBDC, srcX, srcY, vbSrcCopy
+            srcImage.alphaFixDIB.createBlank srcWidth, srcHeight, 32
+            BitBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, srcImage.mainDIB.getDIBDC, srcX, srcY, vbSrcCopy
 
             'Update 15 Sep 2014: If GDI+ is available, use it to resize 32bpp images.  (StretchBlt erases all alpha channel data
             ' if HALFTONE mode is used, and zooming-out requires HALFTONE for properly pretty results.)
@@ -236,14 +247,14 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
 '
 '            Else
                 
-                Drawing.fillDIBWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
-                pdImages(curImage).alphaFixDIB.alphaBlendToDC pdImages(curImage).backBuffer.getDIBDC, 255, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
+                Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
+                srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
 
 '            End If
             
         Else
-            SetStretchBltMode pdImages(curImage).backBuffer.getDIBDC, STRETCHBLT_HALFTONE
-            StretchBlt pdImages(curImage).backBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight, pdImages(curImage).getCompositedImage().getDIBDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_HALFTONE
+            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.getCompositedImage().getDIBDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     Else
@@ -255,34 +266,34 @@ Public Sub ScrollViewport(ByRef formToBuffer As Form)
         ' NOTE: I have removed that stretching fix, because it causes invalid rendering later down the chain.  As it's not
         '       a particularly pressing concern, I will revisit at some point in the future (ETA to be determined).
         Dim bltWidth As Long, bltHeight As Long
-        bltWidth = pdImages(curImage).imgViewport.targetWidth '+ (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetWidth Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
+        bltWidth = srcImage.imgViewport.targetWidth '+ (Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)) - (srcImage.imgViewport.targetWidth Mod Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue))))
         srcWidth = bltWidth / zoomVal
-        bltHeight = pdImages(curImage).imgViewport.targetHeight '+ (Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue)) - (pdImages(curImage).imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue))))
+        bltHeight = srcImage.imgViewport.targetHeight '+ (Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)) - (srcImage.imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue))))
         srcHeight = bltHeight / zoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If pdImages(curImage).getCompositedImage().getDIBColorDepth = 32 Then
+        If srcImage.getCompositedImage().getDIBColorDepth = 32 Then
             
             'Create a temporary streched copy of the image
-            pdImages(curImage).alphaFixDIB.createBlank bltWidth, bltHeight, 32
-            SetStretchBltMode pdImages(curImage).alphaFixDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(curImage).alphaFixDIB.getDIBDC, 0, 0, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getDIBDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            srcImage.alphaFixDIB.createBlank bltWidth, bltHeight, 32
+            SetStretchBltMode srcImage.alphaFixDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
+            StretchBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, bltWidth, bltHeight, srcImage.getCompositedImage().getDIBDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             
             'Fill the target area with the alpha checkerboard
-            Drawing.fillDIBWithAlphaCheckerboard pdImages(curImage).backBuffer, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
+            Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
             
             'Alpha blend the DIB onto the checkerboard background
-            pdImages(curImage).alphaFixDIB.alphaBlendToDC pdImages(curImage).backBuffer.getDIBDC, 255, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, pdImages(curImage).imgViewport.targetWidth, pdImages(curImage).imgViewport.targetHeight
+            srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
             
         Else
-            SetStretchBltMode pdImages(curImage).backBuffer.getDIBDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt pdImages(curImage).backBuffer.getDIBDC, pdImages(curImage).imgViewport.targetLeft, pdImages(curImage).imgViewport.targetTop, bltWidth, bltHeight, pdImages(curImage).getCompositedImage().getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_COLORONCOLOR
+            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, bltWidth, bltHeight, srcImage.getCompositedImage().getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     End If
     
     'Pass control to the viewport renderer, which will handle the final compositing
-    RenderViewport formToBuffer
+    RenderViewport srcImage, dstCanvas
 
 End Sub
 
@@ -302,45 +313,51 @@ End Sub
 'Because redrawing a viewport from scratch is an expensive operation, this function also takes a "reasonForRedraw" parameter, which
 ' is an untranslated string supplied by the caller.  I use this to track when viewport redraws are requested, and to try and keep
 ' such requests as infrequent as possible.
-Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForRedraw As String)
+Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByRef reasonForRedraw As String)
 
     'Don't attempt to resize the scroll bars if g_AllowViewportRendering is disabled. This is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
     ' new picture is loaded.  To prevent PrepareViewport from being fired multiple times, g_AllowViewportRendering is utilized.)
     If Not g_AllowViewportRendering Then Exit Sub
     
-    'Make sure the form is valid
-    If formToBuffer Is Nothing Then Exit Sub
+    'Make sure the target canvas is valid
+    If dstCanvas Is Nothing Then Exit Sub
+    
+    'If no images have been loaded, clear the canvas and exit
+    If g_OpenImageCount = 0 Then
+        FormMain.mainCanvas(0).clearCanvas
+        Exit Sub
+    End If
     
     'We can use the .Tag property of the target form to locate the matching pdImage in the pdImages array
     Dim curImage As Long
-    curImage = CLng(formToBuffer.Tag)
+    curImage = srcImage.imageID
     
     'If the image associated with this form is inactive, ignore this request
-    If Not pdImages(curImage).IsActive Then Exit Sub
+    If Not srcImage.IsActive Then Exit Sub
     
     'Because this routine is time-consuming, I track it carefully to try and minimize how frequently it's called.  Feel free to comment out this line.
-    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImage & ") | " & formToBuffer.Caption
+    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImage & ") | " '& formToBuffer.Caption
     
     On Error GoTo ZoomErrorHandler
     
     'Get the mathematical zoom multiplier (based on the current combo box setting - for example, 0.50 for "50% zoom")
     Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(pdImages(curImage).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
     'Calculate the width and height of a full-size viewport based on the current zoom value
-    zWidth = (pdImages(curImage).Width * zoomVal)
-    zHeight = (pdImages(curImage).Height * zoomVal)
+    zWidth = (srcImage.Width * zoomVal)
+    zHeight = (srcImage.Height * zoomVal)
     
     'Calculate the vertical offset of the viewport.  This changes according to the height of the top-aligned status bar,
     ' and in the future, it will also change if rulers are visible.
     Dim verticalOffset As Long
-    verticalOffset = pdImages(curImage).imgViewport.getVerticalOffset
+    verticalOffset = srcImage.imgViewport.getVerticalOffset
     
     'Grab the form dimensions; these are necessary for rendering the scroll bars
-    Dim FormWidth As Long, FormHeight As Long
-    FormWidth = g_WindowManager.getClientWidth(formToBuffer.hWnd)
-    FormHeight = g_WindowManager.getClientHeight(formToBuffer.hWnd) - verticalOffset
+    Dim canvasWidth As Long, canvasHeight As Long
+    canvasWidth = dstCanvas.getCanvasWidth
+    canvasHeight = dstCanvas.getCanvasHeight - verticalOffset
     
     'These variables will reflect whether or not scroll bars are enabled; this is used rather than the .Enabled property so we
     ' can defer rendering the scroll bars until the last possible instant (rather than turning them on-and-off mid-subroutine)
@@ -349,13 +366,13 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     vScrollEnabled = False
     
     'Step 1: compare viewport width to zoomed image width
-    If Int(zWidth) > FormWidth Then hScrollEnabled = True
+    If Int(zWidth) > canvasWidth Then hScrollEnabled = True
     
     'Step 2: compare viewport height to zoomed image height.  If the horizontal scrollbar has been enabled, factor that into our calculations
-    If (Int(zHeight) > FormHeight) Or (hScrollEnabled And (Int(zHeight) > (FormHeight - formToBuffer.HScroll.Height))) Then vScrollEnabled = True
+    If (Int(zHeight) > canvasHeight) Or (hScrollEnabled And (Int(zHeight) > (canvasHeight - dstCanvas.getHScrollReference.Height))) Then vScrollEnabled = True
     
     'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled, the horizontal viewport width has changed.
-    If vScrollEnabled And (Not hScrollEnabled) And (Int(zWidth) > (FormWidth - formToBuffer.VScroll.Width)) Then hScrollEnabled = True
+    If vScrollEnabled And (Not hScrollEnabled) And (Int(zWidth) > (canvasWidth - dstCanvas.getVScrollReference.Width)) Then hScrollEnabled = True
     
     'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
     ' be located - on the edge if scroll bars are enabled, or centered in the viewable area if scroll bars are NOT enabled.
@@ -367,32 +384,32 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If hScrollEnabled Then
         viewportLeft = 0
         If Not vScrollEnabled Then
-            viewportWidth = FormWidth
+            viewportWidth = canvasWidth
         Else
-            viewportWidth = FormWidth - formToBuffer.VScroll.Width
+            viewportWidth = canvasWidth - dstCanvas.getVScrollReference.Width
         End If
     Else
         viewportWidth = zWidth
         If Not vScrollEnabled Then
-            viewportLeft = (FormWidth - zWidth) / 2
+            viewportLeft = (canvasWidth - zWidth) / 2
         Else
-            viewportLeft = ((FormWidth - formToBuffer.VScroll.Width) - zWidth) / 2
+            viewportLeft = ((canvasWidth - dstCanvas.getVScrollReference.Width) - zWidth) / 2
         End If
     End If
     
     If vScrollEnabled Then
         viewportTop = 0
         If Not hScrollEnabled Then
-            viewportHeight = FormHeight
+            viewportHeight = canvasHeight
         Else
-            viewportHeight = FormHeight - formToBuffer.HScroll.Height
+            viewportHeight = canvasHeight - dstCanvas.getHScrollReference.Height
         End If
     Else
         viewportHeight = zHeight
         If Not hScrollEnabled Then
-            viewportTop = (FormHeight - zHeight) / 2
+            viewportTop = (canvasHeight - zHeight) / 2
         Else
-            viewportTop = ((FormHeight - formToBuffer.HScroll.Height) - zHeight) / 2
+            viewportTop = ((canvasHeight - dstCanvas.getHScrollReference.Height) - zHeight) / 2
         End If
     End If
     
@@ -403,22 +420,22 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     If (Not hScrollEnabled) And (Not vScrollEnabled) Then
     
         'Reset the scroll bar values so ScrollViewport doesn't assume we want scrolling
-        formToBuffer.HScroll.Value = 0
-        formToBuffer.VScroll.Value = 0
+        dstCanvas.getHScrollReference.Value = 0
+        dstCanvas.getVScrollReference.Value = 0
     
         'Hide the scroll bars if necessary
-        If formToBuffer.HScroll.Visible Then formToBuffer.HScroll.Visible = False
-        If formToBuffer.VScroll.Visible Then formToBuffer.VScroll.Visible = False
+        If dstCanvas.getHScrollReference.Visible Then dstCanvas.getHScrollReference.Visible = False
+        If dstCanvas.getVScrollReference.Visible Then dstCanvas.getVScrollReference.Visible = False
             
         'Resize the buffer and store the relevant painting information into this pdImages object
-        pdImages(curImage).backBuffer.createBlank FormWidth, FormHeight, 24, g_CanvasBackground
-        pdImages(curImage).imgViewport.targetLeft = viewportLeft
-        pdImages(curImage).imgViewport.targetTop = viewportTop
-        pdImages(curImage).imgViewport.targetWidth = viewportWidth
-        pdImages(curImage).imgViewport.targetHeight = viewportHeight
+        srcImage.backBuffer.createBlank canvasWidth, canvasHeight, 24, g_CanvasBackground
+        srcImage.imgViewport.targetLeft = viewportLeft
+        srcImage.imgViewport.targetTop = viewportTop
+        srcImage.imgViewport.targetWidth = viewportWidth
+        srcImage.imgViewport.targetHeight = viewportHeight
         
         'Pass control to the viewport renderer
-        ScrollViewport formToBuffer
+        ScrollViewport srcImage, dstCanvas
         
         Exit Sub
         
@@ -432,17 +449,21 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If zoomVal <= 1 Then
-            newScrollMax = pdImages(curImage).Width - Int(viewportWidth * g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
+            newScrollMax = srcImage.Width - Int(viewportWidth * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(curImage).Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
+            newScrollMax = srcImage.Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         End If
         
-        If formToBuffer.HScroll.Value > newScrollMax Then formToBuffer.HScroll.Value = newScrollMax
-        formToBuffer.HScroll.Max = newScrollMax
+        If dstCanvas.getHScrollReference.Value > newScrollMax Then dstCanvas.getHScrollReference.Value = newScrollMax
+        dstCanvas.getHScrollReference.Max = newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If formToBuffer.HScroll.Max > 15 Then formToBuffer.HScroll.LargeChange = formToBuffer.HScroll.Max \ 16
+        If dstCanvas.getHScrollReference.Max > 15 Then
+            dstCanvas.getHScrollReference.LargeChange = dstCanvas.getHScrollReference.Max \ 16
+        Else
+            dstCanvas.getHScrollReference.LargeChange = 1
+        End If
         
     End If
     
@@ -451,17 +472,21 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
         If zoomVal <= 1 Then
-            newScrollMax = pdImages(curImage).Height - Int(viewportHeight * g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
+            newScrollMax = srcImage.Height - Int(viewportHeight * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
         Else
-            newScrollMax = pdImages(curImage).Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(pdImages(curImage).currentZoomValue) + 0.5)
+            newScrollMax = srcImage.Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         End If
         
-        If formToBuffer.VScroll.Value > newScrollMax Then formToBuffer.VScroll.Value = newScrollMax
-        formToBuffer.VScroll.Max = newScrollMax
+        If dstCanvas.getVScrollReference.Value > newScrollMax Then dstCanvas.getVScrollReference.Value = newScrollMax
+        dstCanvas.getVScrollReference.Max = newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If formToBuffer.VScroll.Max > 15 Then formToBuffer.VScroll.LargeChange = formToBuffer.VScroll.Max \ 16
+        If dstCanvas.getVScrollReference.Max > 15 Then
+            dstCanvas.getVScrollReference.LargeChange = dstCanvas.getVScrollReference.Max \ 16
+        Else
+            dstCanvas.getVScrollReference.LargeChange = 1
+        End If
         
     End If
     
@@ -470,39 +495,39 @@ Public Sub PrepareViewport(ByRef formToBuffer As Form, Optional ByRef reasonForR
     
     'Horizontal scroll bar gets rendered first...
     If hScrollEnabled Then
-        formToBuffer.HScroll.Move 0, FormHeight - formToBuffer.HScroll.Height, viewportWidth, formToBuffer.HScroll.Height
-        If (Not formToBuffer.HScroll.Visible) Then formToBuffer.HScroll.Visible = True
+        dstCanvas.getHScrollReference.Move 0, canvasHeight - dstCanvas.getHScrollReference.Height, viewportWidth, dstCanvas.getHScrollReference.Height
+        If (Not dstCanvas.getHScrollReference.Visible) Then dstCanvas.getHScrollReference.Visible = True
     Else
-        formToBuffer.HScroll.Value = 0
-        If formToBuffer.HScroll.Visible Then formToBuffer.HScroll.Visible = False
+        dstCanvas.getHScrollReference.Value = 0
+        If dstCanvas.getHScrollReference.Visible Then dstCanvas.getHScrollReference.Visible = False
     End If
     
     'Then vertical scroll bar...
     If vScrollEnabled Then
-        formToBuffer.VScroll.Move FormWidth - formToBuffer.VScroll.Width, pdImages(curImage).imgViewport.getTopOffset, formToBuffer.VScroll.Width, viewportHeight
-        If (Not formToBuffer.VScroll.Visible) Then formToBuffer.VScroll.Visible = True
+        dstCanvas.getVScrollReference.Move canvasWidth - dstCanvas.getVScrollReference.Width, srcImage.imgViewport.getTopOffset, dstCanvas.getVScrollReference.Width, viewportHeight
+        If (Not dstCanvas.getVScrollReference.Visible) Then dstCanvas.getVScrollReference.Visible = True
     Else
-        formToBuffer.VScroll.Value = 0
-        If formToBuffer.VScroll.Visible Then formToBuffer.VScroll.Visible = False
+        dstCanvas.getVScrollReference.Value = 0
+        If dstCanvas.getVScrollReference.Visible Then dstCanvas.getVScrollReference.Visible = False
     End If
     
     'We don't actually render the image here; instead, we prepare the buffer (backBuffer) and store the relevant
     ' drawing variables to this pdImages object.  ScrollViewport (above) will handle the actual drawing.
     Dim newVWidth As Long, newVHeight As Long
-    If hScrollEnabled Then newVWidth = viewportWidth Else newVWidth = FormWidth
-    If vScrollEnabled Then newVHeight = viewportHeight Else newVHeight = FormHeight
+    If hScrollEnabled Then newVWidth = viewportWidth Else newVWidth = canvasWidth
+    If vScrollEnabled Then newVHeight = viewportHeight Else newVHeight = canvasHeight
     
     'Prepare the relevant back buffer
-    If (Not pdImages(curImage).backBuffer Is Nothing) Then pdImages(curImage).backBuffer.eraseDIB
-    pdImages(curImage).backBuffer.createBlank newVWidth, newVHeight, 24, g_CanvasBackground
+    If (Not srcImage.backBuffer Is Nothing) Then srcImage.backBuffer.eraseDIB
+    srcImage.backBuffer.createBlank newVWidth, newVHeight, 24, g_CanvasBackground
     
-    pdImages(curImage).imgViewport.targetLeft = viewportLeft
-    pdImages(curImage).imgViewport.targetTop = viewportTop
-    pdImages(curImage).imgViewport.targetWidth = viewportWidth
-    pdImages(curImage).imgViewport.targetHeight = viewportHeight
+    srcImage.imgViewport.targetLeft = viewportLeft
+    srcImage.imgViewport.targetTop = viewportTop
+    srcImage.imgViewport.targetWidth = viewportWidth
+    srcImage.imgViewport.targetHeight = viewportHeight
         
     'Pass control to the viewport renderer (found at the top of this module)
-    ScrollViewport formToBuffer
+    ScrollViewport srcImage, dstCanvas
 
     Exit Sub
 

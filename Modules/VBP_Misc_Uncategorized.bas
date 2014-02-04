@@ -131,13 +131,12 @@ Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox,
 End Sub
 
 'Let a form know whether the mouse pointer is over its image or just the viewport
-Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcForm As Form) As Boolean
+Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcImage As pdImage) As Boolean
 
-    Dim imgID As Long
-    imgID = CLng(srcForm.Tag)
+    If srcImage.imgViewport Is Nothing Then Exit Function
 
-    If (x1 >= pdImages(imgID).imgViewport.targetLeft) And (x1 <= pdImages(imgID).imgViewport.targetLeft + pdImages(imgID).imgViewport.targetWidth) Then
-        If (y1 >= pdImages(imgID).imgViewport.targetTop) And (y1 <= pdImages(imgID).imgViewport.targetTop + pdImages(imgID).imgViewport.targetHeight) Then
+    If (x1 >= srcImage.imgViewport.targetLeft) And (x1 <= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth) Then
+        If (y1 >= srcImage.imgViewport.targetTop) And (y1 <= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight) Then
             isMouseOverImage = True
             Exit Function
         Else
@@ -151,31 +150,27 @@ End Function
 'Calculate and display the current mouse position.
 ' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two Double-type variables to receive the relative
 ' coordinates (e.g. location on the image) of the current mouse position.
-Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcForm As Form, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
-
-    Dim imageID As Long
-    imageID = srcForm.Tag
+Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
+    
+    If srcImage.imgViewport Is Nothing Then Exit Sub
     
     'Grab the current zoom value
     Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(pdImages(imageID).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
                 
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    y1 = y1 - pdImages(imageID).imgViewport.getTopOffset
+    y1 = y1 - srcImage.imgViewport.getTopOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / zoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / zoomVal)
+    x1 = srcCanvas.getHScrollReference.Value + Int((x1 - srcImage.imgViewport.targetLeft) / zoomVal)
+    y1 = srcCanvas.getVScrollReference.Value + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
             
     'If the user has requested copies of these coordinates, assign them now
     If copyX Then copyX = x1
     If copyY Then copyY = y1
     
-    If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.lblCoordinates.Caption = "(" & x1 & "," & y1 & ")"
-        pdImages(g_CurrentImage).containingForm.lblCoordinates.Refresh
-    End If
+    If g_OpenImageCount > 0 Then srcCanvas.displayCanvasCoordinates x1, y1
     
 End Sub
 

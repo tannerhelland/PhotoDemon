@@ -3854,8 +3854,8 @@ Private Sub prepareForBatchConversion()
                 End If
             
                 'Unload the active form
-                If Not pdImages(g_CurrentImage).containingForm Is Nothing Then Unload pdImages(g_CurrentImage).containingForm
-            
+                fullPDImageUnload g_CurrentImage
+                
             Next curPage
             
             'If a good number of images have been processed, start estimating the amount of time remaining

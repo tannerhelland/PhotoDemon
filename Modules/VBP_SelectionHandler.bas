@@ -69,7 +69,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     syncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
-    RenderViewport pdImages(g_CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -84,7 +84,7 @@ Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
     syncTextToCurrentSelection g_CurrentImage
         
     'Redraw the image (with selection removed)
-    RenderViewport pdImages(g_CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -106,7 +106,7 @@ Public Sub SelectWholeImage()
     syncTextToCurrentSelection g_CurrentImage
         
     'Draw the new selection to the screen
-    RenderViewport pdImages(g_CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -170,7 +170,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         syncTextToCurrentSelection g_CurrentImage
                 
         'Draw the new selection to the screen
-        RenderViewport pdImages(g_CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         Message "Selection loaded successfully"
     
     End If
@@ -270,7 +270,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, g_ImageFormats.getOutputFormatExtension(saveFormat - 1))
     
     'Present a common dialog to the user
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(g_CurrentImage).containingForm.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
                 
         'Store the selected file format to the image object
         tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
@@ -333,7 +333,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, "png")
     
     'Present a common dialog to the user
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(g_CurrentImage).containingForm.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
                 
         'Store the selected file format to the image object
         tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
@@ -438,46 +438,43 @@ End Sub
 ' 7 - S edge
 ' 8 - W edge
 ' 9 - interior of selection, not near a corner or edge
-Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcForm As Form) As Long
-
-    Dim imageID As Long
-    imageID = CLng(srcForm.Tag)
+Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas) As Long
     
     'If the current selection is NOT transformable, return 0.
-    If Not pdImages(imageID).mainSelection.isTransformable Then
+    If Not srcImage.mainSelection.isTransformable Then
         findNearestSelectionCoordinates = 0
         Exit Function
     End If
 
     'Grab the current zoom value
     Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(pdImages(imageID).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
     'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
     ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    y1 = y1 - pdImages(imageID).imgViewport.getTopOffset
+    y1 = y1 - srcImage.imgViewport.getTopOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(imageID).imgViewport.targetLeft) / zoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(imageID).imgViewport.targetTop) / zoomVal)
+    x1 = srcCanvas.getHScrollReference.Value + Int((x1 - srcImage.imgViewport.targetLeft) / zoomVal)
+    y1 = srcCanvas.getVScrollReference.Value + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
     
     'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
     Dim horzOffset As Long, vertOffset As Long
-    vertOffset = pdImages(imageID).imgViewport.getVerticalOffset
+    vertOffset = srcImage.imgViewport.getVerticalOffset
     
     'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
     Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
     
-    If (pdImages(imageID).mainSelection.getSelectionShape = sRectangle) Or (pdImages(imageID).mainSelection.getSelectionShape = sCircle) Then
-        tLeft = pdImages(imageID).mainSelection.selLeft
-        tTop = pdImages(imageID).mainSelection.selTop
-        tRight = pdImages(imageID).mainSelection.selLeft + pdImages(imageID).mainSelection.selWidth
-        tBottom = pdImages(imageID).mainSelection.selTop + pdImages(imageID).mainSelection.selHeight
+    If (srcImage.mainSelection.getSelectionShape = sRectangle) Or (srcImage.mainSelection.getSelectionShape = sCircle) Then
+        tLeft = srcImage.mainSelection.selLeft
+        tTop = srcImage.mainSelection.selTop
+        tRight = srcImage.mainSelection.selLeft + srcImage.mainSelection.selWidth
+        tBottom = srcImage.mainSelection.selTop + srcImage.mainSelection.selHeight
     Else
-        tLeft = pdImages(imageID).mainSelection.boundLeft
-        tTop = pdImages(imageID).mainSelection.boundTop
-        tRight = pdImages(imageID).mainSelection.boundLeft + pdImages(imageID).mainSelection.boundWidth
-        tBottom = pdImages(imageID).mainSelection.boundTop + pdImages(imageID).mainSelection.boundHeight
+        tLeft = srcImage.mainSelection.boundLeft
+        tTop = srcImage.mainSelection.boundTop
+        tRight = srcImage.mainSelection.boundLeft + srcImage.mainSelection.boundWidth
+        tBottom = srcImage.mainSelection.boundTop + srcImage.mainSelection.boundHeight
     End If
     
     'Adjust the mouseAccuracy value based on the current zoom value
@@ -497,7 +494,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     Dim closestPoint As Long
     
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
-    Select Case pdImages(imageID).mainSelection.getSelectionShape
+    Select Case srcImage.mainSelection.getSelectionShape
     
         Case SELECT_RECT, SELECT_CIRC
     
@@ -588,10 +585,10 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
             
             closestPoint = 0
             
-            pdImages(imageID).mainSelection.getSelectionCoordinates 1, xCoord, yCoord
+            srcImage.mainSelection.getSelectionCoordinates 1, xCoord, yCoord
             firstDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
             
-            pdImages(imageID).mainSelection.getSelectionCoordinates 2, xCoord, yCoord
+            srcImage.mainSelection.getSelectionCoordinates 2, xCoord, yCoord
             secondDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
                         
             If firstDist <= minDistance Then closestPoint = 1
@@ -624,7 +621,7 @@ Public Sub invertCurrentSelection()
     pdImages(g_CurrentImage).selectionActive = True
         
     'Draw the new selection to the screen
-    RenderViewport pdImages(g_CurrentImage).containingForm
+    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -670,7 +667,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(g_CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -711,7 +708,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(g_CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -758,7 +755,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(g_CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -805,7 +802,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(g_CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -846,7 +843,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        RenderViewport pdImages(g_CurrentImage).containingForm
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
