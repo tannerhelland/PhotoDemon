@@ -233,7 +233,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
         
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, pdImages(imageID).containingForm.hWnd, 0) Then
+    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
                 
         'Store the selected file format to the image object
         pdImages(imageID).currentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
@@ -253,9 +253,9 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         If MenuSaveAs Then
             
             If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) Then
-                g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, getFilename(sFile)
+                'g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, getFilename(sFile)
             Else
-                g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, sFile
+                'g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, sFile
             End If
             
         End If
@@ -275,7 +275,7 @@ Public Sub MenuClose()
     'Make sure the correct flag is set so that the MDI Child QueryUnload behaves properly (e.g. note that we
     ' are not closing ALL images - just this one.)
     g_ClosingAllImages = False
-    Unload pdImages(g_CurrentImage).containingForm
+    fullPDImageUnload g_CurrentImage
     
 End Sub
 
@@ -291,7 +291,7 @@ Public Sub MenuCloseAll()
     For i = 0 To g_NumOfImagesLoaded
     
         If Not (pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then Unload pdImages(i).containingForm
+            If pdImages(i).IsActive Then fullPDImageUnload i
         End If
         
         'If the user presses "cancel" at some point in the unload chain, obey their request immediately

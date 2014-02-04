@@ -2621,7 +2621,7 @@ Private Sub cmbMonitors_Click()
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
     
     'Restore any settings that may have been changed in real-time
     If g_UseFancyFonts <> originalg_useFancyFonts Then
@@ -2935,11 +2935,10 @@ Private Sub CmdOK_Click()
     
     'All user preferences have now been written out to file
     
-    'Because some preferences affect the program's interface, redraw all active MDI child forms to make them
-    ' reflect any new preference changes.
-    For Each tForm In VB.Forms
-        If tForm.Name = "FormImage" Then PrepareViewport tForm
-    Next
+    'Because some preferences affect the program's interface, redraw the active image.
+    If g_OpenImageCount > 0 Then
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas
+    End If
     
     Message "Finished."
         

@@ -153,7 +153,7 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     Message "Finished."
     
     'Redraw the main window
-    ScrollViewport pdImages(g_CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -239,7 +239,7 @@ Public Sub MenuFadeLastEffect()
     'Render the final image to the screen
     SetProgBarVal 0
     Message "Finished."
-    ScrollViewport pdImages(g_CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 

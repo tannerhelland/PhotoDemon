@@ -206,8 +206,9 @@ Public Sub assignDefaultColorProfileToPictureBox(ByRef targetPictureBox As Pictu
     
 End Sub
 
-'Assign the default color profile (whether the system profile or the user profile) to a form
-Public Sub assignDefaultColorProfileToForm(ByRef targetForm As Form)
+'Assign the default color profile (whether the system profile or the user profile) to an object.  The object must have
+' an hDC property or this action will fail.
+Public Sub assignDefaultColorProfileToForm(ByRef targetForm As Object)
     
     'If the current user setting is "use system color profile", our job is easy.
     If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then

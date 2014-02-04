@@ -630,7 +630,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         releaseProgressBar
         
         'Pass control to the viewport renderer, which will perform the actual rendering
-        ScrollViewport pdImages(g_CurrentImage).containingForm
+        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         Message "Finished."
     

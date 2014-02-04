@@ -351,15 +351,8 @@ Public Sub displayProgressBar(ByRef progBarForm As Form)
 
     Dim hWndAfterParam As Long
     
-    'An image has been loaded; position the progress bar above it
-    If (g_OpenImageCount > 0) Then
-        hWndAfterParam = pdImages(g_CurrentImage).containingForm.hWnd
-    
-    'No image is loaded; position the progress bar on the main form
-    Else
-        hWndAfterParam = mainWindowHwnd
-    
-    End If
+    'Progress bars are now always displayed on the main window
+    hWndAfterParam = mainWindowHwnd
     
     'Display the window, but do not move or resize it (as its position and size have already been set)
     progBarForm.Visible = True
@@ -379,7 +372,7 @@ Public Sub moveProgressBarIntoPosition(ByRef progBarForm As Form)
     If (g_OpenImageCount > 0) Then
     
         'Find the active image in our window array and restore it
-        getClientCoordsRelativeToScreen pdImages(g_CurrentImage).containingForm.hWnd, curWinRect
+        getClientCoordsRelativeToScreen FormMain.mainCanvas(0).hWnd, curWinRect
         
         'Compensate for any chrome that may be in the way, such as the image window's status bar
         curWinRect.y1 = curWinRect.y2 - pdImages(g_CurrentImage).imgViewport.getBottomOffset - fixDPI(15)
@@ -489,118 +482,6 @@ Public Sub setImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     
     Next i
 
-End Sub
-
-'Now that we no longer use MDI in PhotoDemon, we must rely on our own code for window cascading.
-Public Sub cascadeImageWindows()
-
-    'Start by counting the number of image windows
-    Dim imgWinCount As Long
-    Dim i As Long
-    
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then imgWinCount = imgWinCount + 1
-    Next i
-    
-    'Prepare an array to hold the hWnds of all image windows
-    Dim imgWindows() As Long
-    ReDim imgWindows(0 To imgWinCount - 1) As Long
-    
-    'Fill the array
-    imgWinCount = 0
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then
-            imgWindows(imgWinCount) = pdWindows(i).hWnd
-            imgWinCount = imgWinCount + 1
-        End If
-    Next i
-    
-    'Fill a rect with the main form's client area (accounting for toolbars, etc)
-    Dim mainClientRect As winRect
-    getActualMainFormClientRect mainClientRect
-    
-    Dim clientWidth As Long, clientHeight As Long
-    clientWidth = mainClientRect.x2 - mainClientRect.x1
-    clientHeight = mainClientRect.y2 - mainClientRect.y1
-    
-    'Ask the OS for the height of window title (caption) bars.  We use this amount to control the cascade offset.
-    Dim captionHeight As Long
-    captionHeight = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME)
-        
-    'Basically, cascading tiles windows so that they fill the available window space, up to a maximum of 5.  (After that point, windows
-    ' start cascading over the top of each other.)  5 is a completely arbitrary value; any other number could be used, but note that
-    ' if the main window is resized quite small, a value larger than 5 may result in unusably small image windows.
-    Dim cascadeCount As Long
-    If imgWinCount > 5 Then cascadeCount = 5 Else cascadeCount = imgWinCount - 1
-    
-    'Per the original Windows convention, all cascaded windows will be forced to the same size
-    Dim windowWidth As Long, windowHeight As Long
-    windowWidth = clientWidth - captionHeight * cascadeCount
-    windowHeight = clientHeight - captionHeight * cascadeCount
-    
-    'Because we use Mod to determine cascade offset, we need the count to be one higher than it actually is
-    cascadeCount = cascadeCount + 1
-    
-    'Cascade all available windows using an extremely simple formula
-    For i = 0 To imgWinCount - 1
-        MoveWindow imgWindows(i), mainClientRect.x1 + (i Mod cascadeCount) * captionHeight, mainClientRect.y1 + (i Mod cascadeCount) * captionHeight, windowWidth, windowHeight, 1
-    Next i
-    
-End Sub
-
-'Now that we no longer use MDI in PhotoDemon, we must rely on custom code for window tiling.
-Public Sub tileImageWindows(Optional ByVal tHorizontally As Boolean = True)
-
-    'Start by counting the number of image windows
-    Dim imgWinCount As Long
-    Dim i As Long
-    
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then imgWinCount = imgWinCount + 1
-    Next i
-    
-    'Prepare an array to hold the hWnds of all image windows
-    Dim imgWindows() As Long
-    ReDim imgWindows(0 To imgWinCount - 1) As Long
-    
-    'Fill the array
-    imgWinCount = 0
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = IMAGE_WINDOW) And pdWindows(i).isVisible Then
-            imgWindows(imgWinCount) = pdWindows(i).hWnd
-            imgWinCount = imgWinCount + 1
-        End If
-    Next i
-    
-    'Fill a rect with the main form's client area (accounting for toolbars, etc)
-    Dim mainClientRect As winRect
-    getActualMainFormClientRect mainClientRect
-    
-    Dim clientWidth As Long, clientHeight As Long
-    clientWidth = mainClientRect.x2 - mainClientRect.x1
-    clientHeight = mainClientRect.y2 - mainClientRect.y1
-    
-    'Given the number of windows to tile, determine how big we can make each one
-    Dim imgWidth As Long, imgHeight As Long
-    imgWidth = clientWidth
-    imgHeight = clientHeight
-    If tHorizontally Then imgWidth = clientWidth \ imgWinCount Else imgHeight = clientHeight \ imgWinCount
-    
-    'Manually tile all windows
-    If tHorizontally Then
-    
-        For i = 0 To imgWinCount - 1
-            MoveWindow imgWindows(i), mainClientRect.x1 + i * imgWidth, mainClientRect.y1, imgWidth, imgHeight, 1
-        Next i
-    
-    Else
-    
-        For i = 0 To imgWinCount - 1
-            MoveWindow imgWindows(i), mainClientRect.x1, mainClientRect.y1 + i * imgHeight, imgWidth, imgHeight, 1
-        Next i
-    
-    End If
-        
 End Sub
 
 'Though officially discouraged by Microsoft (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx), it is
@@ -729,7 +610,10 @@ Public Sub setWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     End If
     
     'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-    restoreActiveImageToForeground "float status of toolbars or images changed"
+    'restoreActiveImageToForeground "float status of toolbars or images changed"
+    
+    'Because the main image canvas area may be modified due to window visibility, redraw it now
+    FormMain.refreshAllCanvases
     
 End Sub
 
@@ -1371,7 +1255,7 @@ Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Bool
     End If
     
     'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-    restoreActiveImageToForeground "float status of toolbars or images changed"
+    'restoreActiveImageToForeground "float status of toolbars or images changed"
     
 End Sub
 
@@ -1984,27 +1868,6 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
 
 End Sub
 
-'Because window zOrder may get botched under a variety of circumstances (e.g. when the program gains/loses focus, when toolbar or image floating
-' status is changed, etc), it is sometimes necessary to forcibly restore the active image to the foreground.  Use this wrapper to do it.
-Private Sub restoreActiveImageToForeground(ByVal reasonForRestore As String)
-    
-    If (g_OpenImageCount > 0) Then
-    
-        'Find the active image in our window array and restore it
-        Dim i As Long
-        For i = 0 To numOfPDWindows - 1
-            If Not pdWindows(i).subclassingReleased Then
-                If pdWindows(i).formReference.hWnd = pdImages(g_CurrentImage).containingForm.hWnd Then
-                    Debug.Print "Active image window is about to be redrawn due to " & reasonForRestore
-                    SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-                End If
-            End If
-        Next i
-        
-    End If
-    
-End Sub
-
 'This sub provides a simpler interface to restrictRectToParent (below).  It will perform the actual move for the window in question.
 Private Sub moveChildInsideParent(ByVal winIndex As Long)
 
@@ -2109,7 +1972,7 @@ Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boo
         Next i
         
         'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-        restoreActiveImageToForeground "PD gained focus"
+        'restoreActiveImageToForeground "PD gained focus"
         
         'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
         ' sit above any image or toolbar windows.
@@ -2129,9 +1992,9 @@ Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boo
         
         'This is a bit funny, but - when resetting zOrder, we need to manually handle the active image last; otherwise, it may look
         ' as though another image window has mistakenly received focus (even though internally we know it hasn't).
-        If g_OpenImageCount > 0 Then
-            SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-        End If
+        'If g_OpenImageCount > 0 Then
+        '    SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
+        'End If
         
         'If the program has registered any extra windows (e.g. modal dialogs), reset them as well
         If numOfExtraWindows > 0 Then
@@ -2511,7 +2374,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         End If
                         
                         'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-                        restoreActiveImageToForeground "PD maximized or restored"
+                        'restoreActiveImageToForeground "PD maximized or restored"
                                             
                     End If
                     

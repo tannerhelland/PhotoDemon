@@ -20,9 +20,20 @@ Begin VB.Form FormMain
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   10455
-   ScaleWidth      =   17205
+   ScaleHeight     =   697
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   1147
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdCanvas mainCanvas 
+      Height          =   3735
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   0
+      Top             =   2880
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   6588
+   End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
@@ -184,9 +195,6 @@ Begin VB.Form FormMain
       Caption         =   "&View"
       Begin VB.Menu MnuFitOnScreen 
          Caption         =   "&Fit image on screen"
-      End
-      Begin VB.Menu MnuFitWindowToImage 
-         Caption         =   "Fit viewport around &image"
       End
       Begin VB.Menu MnuViewSepBar0 
          Caption         =   "-"
@@ -1044,37 +1052,16 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Floating image windows"
-         Checked         =   -1  'True
+         Caption         =   "-"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
+         Caption         =   "Next image"
          Index           =   6
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
-         Index           =   7
-      End
-      Begin VB.Menu MnuWindow 
          Caption         =   "Previous image"
-         Index           =   8
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "-"
-         Index           =   9
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "&Cascade"
-         Index           =   10
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &horizontally"
-         Index           =   11
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "Tile &vertically"
-         Index           =   12
+         Index           =   7
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -1166,6 +1153,30 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+'When the main form is resized, we must re-align the main canvas
+Private Sub Form_Resize()
+
+    refreshAllCanvases
+
+End Sub
+
+'Resize all currently active canvases
+Public Sub refreshAllCanvases()
+
+    'Start by reorienting the canvas to fill the full available client area
+    Dim mainRect As winRect
+    
+    g_WindowManager.getActualMainFormClientRect mainRect, False, False
+    mainCanvas(0).Move mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1
+    mainCanvas(0).fixChromeLayout
+    
+    'Refresh any current windows
+    If g_OpenImageCount > 0 Then
+        PrepareViewport pdImages(g_CurrentImage), mainCanvas(0), "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
+    End If
+    
+End Sub
+
 'When download of the update information is complete, write out the current date to the preferences file
 Private Sub updateChecker_Complete()
     Debug.Print "Update file download complete.  Update information has been saved at " & g_UserPreferences.getDataPath & "updates.xml"
@@ -1179,7 +1190,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
         Else
-            pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+            FormMain.mainCanvas(0).cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
         End If
     End If
 
@@ -1191,7 +1202,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         Else
-            pdImages(g_CurrentImage).containingForm.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+            FormMain.mainCanvas(0).cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         End If
     End If
 
@@ -1242,6 +1253,9 @@ Private Sub Form_Load()
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, IIf(g_OpenImageCount > 1, True, False)
+    
+    'Synchronize the main canvas layout
+    refreshAllCanvases
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
     Set cMouseEvents = New bluMouseEvents
@@ -1542,7 +1556,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 If pdImages(i).IsActive Then
                 
                     'This image is active and so is its parent form.  Unload both now.
-                    Unload pdImages(i).containingForm
+                    QueryUnloadPDImage Cancel, UnloadMode, i
+                    
+                    If Not CBool(Cancel) Then UnloadPDImage Cancel, i
                     
                     'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
                     If Not g_ProgramShuttingDown Then
@@ -2056,11 +2072,6 @@ Private Sub MnuFitOnScreen_Click()
     FitOnScreen
 End Sub
 
-Private Sub MnuFitWindowToImage_Click()
-    If (pdImages(g_CurrentImage).containingForm.WindowState = vbMaximized) Or (pdImages(g_CurrentImage).containingForm.WindowState = vbMinimized) Then pdImages(g_CurrentImage).containingForm.WindowState = vbNormal
-    FitWindowToImage
-End Sub
-
 Private Sub MnuHeatmap_Click()
     Process "Thermograph (heat map)"
 End Sub
@@ -2352,7 +2363,7 @@ Private Sub MnuLoadAllMRU_Click()
     PreLoadImage sFile
     
     'If the image loaded successfully, activate it and bring it to the foreground
-    If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "finished loading all recent images"
+    If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "finished loading all recent images"
     
 End Sub
 
@@ -2552,7 +2563,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
     End If
     
     'If the image loaded successfully, activate it and bring it to the foreground
-    If g_OpenImageCount > 0 Then pdImages(g_CurrentImage).containingForm.ActivateWorkaround "processor call complete"
+    If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "MRU entry finished loading"
     
 End Sub
 
@@ -2999,73 +3010,18 @@ Private Sub MnuWindow_Click(Index As Integer)
         'Floating toolbars
         Case 4
             toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(4).Checked
-            
-        'Floating image windows
-        Case 5
-            toggleWindowFloating IMAGE_WINDOW, Not FormMain.MnuWindow(5).Checked
-            
+        
         '<separator>
-        Case 6
+        Case 5
         
         'Next image
-        Case 7
+        Case 6
             moveToNextChildWindow True
             
         'Previous image
-        Case 8
+        Case 7
             moveToNextChildWindow False
-    
-        '<separator>
-        Case 9
-        
-        'Cascade
-        Case 10
-            
-            g_WindowManager.cascadeImageWindows
-            
-            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-            ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Cascade"
-                End If
-            Next i
-            
-            'Restore focus to the active window
-            pdImages(prevActiveWindow).containingForm.ActivateWorkaround
-        
-        'Tile horizontally
-        Case 11
-            
-            g_WindowManager.tileImageWindows True
-            
-            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-            ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile horizontally"
-                End If
-            Next i
-            
-            'Restore focus to the active window
-            pdImages(prevActiveWindow).containingForm.ActivateWorkaround
-    
-        'Tile vertically
-        Case 12
-            
-            g_WindowManager.tileImageWindows False
-            
-            'Rebuild the scroll bars for each window, since they will now be irrelevant (and each form's "Resize" event
-            ' may not get triggered - it's a particular VB quirk)
-            For i = 0 To g_NumOfImagesLoaded
-                If (Not pdImages(i) Is Nothing) Then
-                    If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Tile vertically"
-                End If
-            Next i
-            
-            'Restore focus to the active window
-            pdImages(prevActiveWindow).containingForm.ActivateWorkaround
-    
+
     End Select
     
 
@@ -3097,7 +3053,7 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
                 
         If Not pdImages(i) Is Nothing Then
             If pdImages(i).IsActive Then
-                pdImages(i).containingForm.ActivateWorkaround "user requested next/previous image"
+                activatePDImage i, "user requested next/previous image"
                 Exit Do
             End If
         End If

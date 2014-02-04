@@ -43,7 +43,6 @@ CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
 ZOOMIN       CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_in.png
 ZOOMOUT      CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_out.png
 ZOOMACTUAL   CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_actual_equal.png
-FITWINIMG    CUSTOM  MOVEABLE        LOADONCALL      layer_resize_actual.png
 FITONSCREEN  CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_fit.png
 
 
@@ -255,9 +254,6 @@ PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
 //Window menu
 NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png
 PREVIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow_180.png
-TILEHOR      CUSTOM  MOVEABLE        LOADONCALL      application_tile_horizontal.png
-TILEVER      CUSTOM  MOVEABLE        LOADONCALL      application_tile_vertical.png
-CASCADE      CUSTOM  MOVEABLE        LOADONCALL      application_cascade.png
 
 //Help menu
 FAVORITE     CUSTOM  MOVEABLE        LOADONCALL      favorite.png

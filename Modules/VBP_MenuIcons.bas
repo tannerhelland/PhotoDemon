@@ -12,7 +12,7 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 ' See the clsMenuImage class for details on how this works. (A link to Leandro's original project can also be found there.)
 '
 'This module also handles the rendering of dynamic form, program, and taskbar icons.  (When an image is loaded and active,
-' those icons can change to match the current image.)  As of February 2014, custom form icon generation has now been reworked
+' those icons can change to match the current image.)  As of February 2013, custom form icon generation has now been reworked
 ' based off this MSDN article: http://support.microsoft.com/kb/318876
 ' The new code is much leaner (and cleaner!) than past incarnations.
 '
@@ -200,10 +200,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'View Menu
     addMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
-    addMenuIcon "FITWINIMG", 2, 1      'Fit Viewport to Image
-    addMenuIcon "ZOOMIN", 2, 3         'Zoom In
-    addMenuIcon "ZOOMOUT", 2, 4        'Zoom Out
-    addMenuIcon "ZOOMACTUAL", 2, 10    'Zoom 100%
+    addMenuIcon "ZOOMIN", 2, 2         'Zoom In
+    addMenuIcon "ZOOMOUT", 2, 3        'Zoom Out
+    addMenuIcon "ZOOMACTUAL", 2, 9     'Zoom 100%
     
     'Image Menu
     addMenuIcon "DUPLICATE", 3, 0      'Duplicate
@@ -411,11 +410,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "PLUGIN", 7, 6          'Plugin Manager
     
     'Window Menu
-    addMenuIcon "NEXTIMAGE", 8, 7       'Next image
-    addMenuIcon "PREVIMAGE", 8, 8       'Previous image
-    addMenuIcon "CASCADE", 8, 10         'Cascade
-    addMenuIcon "TILEVER", 8, 11        'Tile Horizontally
-    addMenuIcon "TILEHOR", 8, 12        'Tile Vertically
+    addMenuIcon "NEXTIMAGE", 8, 6       'Next image
+    addMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    'addMenuIcon "CASCADE", 8, 10         'Cascade
+    'addMenuIcon "TILEVER", 8, 11        'Tile Horizontally
+    'addMenuIcon "TILEHOR", 8, 12        'Tile Vertically
     
     'Help Menu
     addMenuIcon "FAVORITE", 9, 0        'Donate
@@ -604,43 +603,44 @@ End Function
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
 ' Note that this function currently requires the FreeImage plugin to be present on the system.
-Public Sub createCustomFormIcon(ByRef imgForm As FormImage)
+Public Sub createCustomFormIcon(ByRef srcImage As pdImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
-    
+
     'Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.
     Dim hIcon32 As Long, hIcon16 As Long
-    
+
     Dim thumbDIB As pdDIB
     Set thumbDIB = New pdDIB
-    
+
     'Request a 32x32 thumbnail version of the current image
-    If pdImages(imgForm.Tag).requestThumbnail(thumbDIB, 32) Then
-        
+    If srcImage.requestThumbnail(thumbDIB, 32) Then
+
         'Request an icon-format version of the generated thumbnail
         hIcon32 = getIconFromDIB(thumbDIB)
-        
+
         'Assign the new icon to the taskbar
-        setNewTaskbarIcon hIcon32, imgForm.hWnd
-        
+        'setNewTaskbarIcon hIcon32, imgForm.hWnd
+
         '...and remember it in our current icon collection
         addIconToList hIcon32
-            
+
         '...and the current form
-        pdImages(imgForm.Tag).curFormIcon32 = hIcon32
-        
+        srcImage.curFormIcon32 = hIcon32
+
         'Now repeat the same steps, but for a 16x16 icon to be used in the form's title bar.
         hIcon16 = getIconFromDIB(thumbDIB, 16)
         addIconToList hIcon16
-        pdImages(imgForm.Tag).curFormIcon16 = hIcon16
-                
+        srcImage.curFormIcon16 = hIcon16
+
         'Apply the 16x16 icon to the title bar of the specified form
-        SendMessageLong imgForm.hWnd, &H80, 0, hIcon16
-                
+        'SendMessageLong imgForm.hWnd, &H80, 0, hIcon16
+
     End If
-       
+
 End Sub
+
 'Needs to be run only once, at the start of the program
 Public Sub initializeIconHandler()
     numOfIcons = 0
@@ -805,9 +805,9 @@ Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
 End Sub
 
 'Set a single object to use the arrow cursor
-Public Sub setArrowCursorToObject(ByRef tControl As Control)
-    tControl.MouseIcon = LoadPicture("")
-    tControl.MousePointer = 0
+Public Sub setArrowCursorToObject(ByRef tControl As Object)
+    'tControl.MouseIcon = LoadPicture("")
+    'tControl.MousePointer = 0
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
@@ -816,12 +816,12 @@ Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
 End Sub
 
 'Set a single form to use the arrow cursor
-Public Sub setArrowCursor(ByRef tControl As Form)
+Public Sub setArrowCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
 'Set a single form to use the cross cursor
-Public Sub setCrossCursor(ByRef tControl As Form)
+Public Sub setCrossCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_CROSS)
 End Sub
     
@@ -831,22 +831,22 @@ Public Sub setSizeAllCursor(ByRef tControl As Object)
 End Sub
 
 'Set a single form to use the Size NESW cursor
-Public Sub setSizeNESWCursor(ByRef tControl As Form)
+Public Sub setSizeNESWCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENESW)
 End Sub
 
 'Set a single form to use the Size NS cursor
-Public Sub setSizeNSCursor(ByRef tControl As Form)
+Public Sub setSizeNSCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENS)
 End Sub
 
 'Set a single form to use the Size NWSE cursor
-Public Sub setSizeNWSECursor(ByRef tControl As Form)
+Public Sub setSizeNWSECursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENWSE)
 End Sub
 
 'Set a single form to use the Size WE cursor
-Public Sub setSizeWECursor(ByRef tControl As Form)
+Public Sub setSizeWECursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEWE)
 End Sub
 

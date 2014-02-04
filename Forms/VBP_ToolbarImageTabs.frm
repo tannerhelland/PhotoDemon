@@ -590,7 +590,7 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         ' scrolling the list.
         If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
             curThumb = potentialNewThumb
-            pdImages(imgThumbnails(curThumb).indexInPDImages).containingForm.ActivateWorkaround "user clicked image thumbnail"
+            activatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
         End If
         
     End If

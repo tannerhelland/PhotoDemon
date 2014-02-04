@@ -1285,7 +1285,7 @@ Private Sub createSelectionMask()
 
 End Sub
 
-Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long)
+Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If rejectRefreshRequests Then Exit Sub
@@ -1295,11 +1295,11 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     '   on the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when scroll
     '   and zoom parameters are in effect.)
     Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(pdImages(dstForm.Tag).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
     Dim hScrollVal As Long, vScrollVal As Long
-    hScrollVal = dstForm.HScroll.Value
-    vScrollVal = dstForm.VScroll.Value
+    hScrollVal = dstCanvas.getHScrollReference.Value
+    vScrollVal = dstCanvas.getVScrollReference.Value
     
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
@@ -1318,12 +1318,12 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
     
     'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
     Dim horzOffset As Long, vertOffset As Long
-    vertOffset = pdImages(dstForm.Tag).imgViewport.getVerticalOffset
+    vertOffset = srcImage.imgViewport.getVerticalOffset
     
     'Add offsets to the destination locations
     If vertOffset > 0 Then
-        dstTop = dstTop + pdImages(dstForm.Tag).imgViewport.getTopOffset
-        dstBottom = dstBottom + pdImages(dstForm.Tag).imgViewport.getTopOffset
+        dstTop = dstTop + srcImage.imgViewport.getTopOffset
+        dstBottom = dstBottom + srcImage.imgViewport.getTopOffset
     End If
     
     'If this selection is transformable, we can now draw transform circles at appropriate locations for the selection's shape.
@@ -1340,37 +1340,37 @@ Public Sub renderTransformNodes(ByRef dstForm As Form, ByVal imgLeft As Long, By
             Case sRectangle, sCircle
         
                 'Draw corner circles first
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstBottom, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstBottom, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstBottom, circRadius, circAlpha
                 
                 'Draw mid-line circles next
                 Dim midHorizontal As Long, midVertical As Long
                 midHorizontal = (dstLeft + dstRight) \ 2
                 midVertical = (dstTop + dstBottom) \ 2
                 
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, midVertical, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, midVertical, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, midHorizontal, dstBottom, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, midVertical, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, midHorizontal, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, midVertical, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, midHorizontal, dstBottom, circRadius, circAlpha
                 
             Case sLine
             
                 'Lines only need transform nodes at the end points of the line
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstLeft, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstForm.hDC, dstRight, dstBottom, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
+                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
                 
         End Select
         
-        dstForm.Picture = dstForm.Image
+        dstCanvas.requestBufferSync
                 
     End If
     
 End Sub
 
 'Render a selection using one of several methods.
-Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef dstForm As Form, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender)
+Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender)
 
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If rejectRefreshRequests Then Exit Sub
@@ -1383,11 +1383,11 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef dstForm As Form, ByVal imgL
     '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
     '   in effect.)
     Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(pdImages(dstForm.Tag).currentZoomValue)
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
     Dim hScrollVal As Long, vScrollVal As Long
-    hScrollVal = dstForm.HScroll.Value
-    vScrollVal = dstForm.VScroll.Value
+    hScrollVal = dstCanvas.getHScrollReference.Value
+    vScrollVal = dstCanvas.getVScrollReference.Value
     
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
@@ -1416,8 +1416,8 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef dstForm As Form, ByVal imgL
     rightBound = imgLeft + imgWidth - 1
     bottomBound = imgTop + imgHeight - 1
             
-    If rightBound > pdImages(dstForm.Tag).backBuffer.getDIBWidth - 1 Then rightBound = pdImages(dstForm.Tag).backBuffer.getDIBWidth - 1
-    If bottomBound > pdImages(dstForm.Tag).backBuffer.getDIBHeight - 1 Then bottomBound = pdImages(dstForm.Tag).backBuffer.getDIBHeight - 1
+    If rightBound > srcImage.backBuffer.getDIBWidth - 1 Then rightBound = srcImage.backBuffer.getDIBWidth - 1
+    If bottomBound > srcImage.backBuffer.getDIBHeight - 1 Then bottomBound = srcImage.backBuffer.getDIBHeight - 1
     
     Dim xLookup() As Long, yLookup() As Long
     Dim tmpCalculation As Long

@@ -223,7 +223,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         SetProgBarVal 0
         
         'Redraw the image
-        PrepareViewport pdImages(g_CurrentImage).containingForm, "Autocrop image"
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Autocrop image"
     
     End If
 
@@ -290,7 +290,7 @@ Public Sub MenuCropToSelection()
     End If
     
     'Redraw the image
-    PrepareViewport pdImages(g_CurrentImage).containingForm, "Crop to selection"
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop to selection"
 
 End Sub
 
@@ -307,7 +307,7 @@ Public Sub MenuFlip()
     StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
-    ScrollViewport pdImages(g_CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -324,7 +324,7 @@ Public Sub MenuMirror()
     StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
-    ScrollViewport pdImages(g_CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -415,11 +415,7 @@ Public Sub MenuRotate90Clockwise()
     
     Message "Finished. "
     
-    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-        FitWindowToImage
-    Else
-        PrepareViewport pdImages(g_CurrentImage).containingForm, "image rotated"
-    End If
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "image rotated"
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -442,7 +438,7 @@ Public Sub MenuRotate180()
         
     Message "Finished. "
     
-    ScrollViewport pdImages(g_CurrentImage).containingForm
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -533,11 +529,7 @@ Public Sub MenuRotate270Clockwise()
     Message "Finished. "
     
     'Redraw the image
-    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-        FitWindowToImage
-    Else
-        PrepareViewport pdImages(g_CurrentImage).containingForm, "image rotated"
-    End If
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "image rotated"
     
     'Reset the progress bar to zero
     SetProgBarVal 0

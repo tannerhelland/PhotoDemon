@@ -195,11 +195,11 @@ Public Sub syncInterfaceToCurrentImage()
         
         'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
         If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
-            If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, pdImages(g_CurrentImage).containingForm.hWnd
             
             'If images are docked, they do not have their own taskbar entries.  Change the main program icon to match this image.
             setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, FormMain.hWnd
             setNewAppIcon pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+            
         Else
             setNewTaskbarIcon origIcon32, FormMain.hWnd
         End If
@@ -268,11 +268,11 @@ Public Sub syncInterfaceToCurrentImage()
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
     If g_OpenImageCount >= 2 Then
+        FormMain.MnuWindow(6).Enabled = True
         FormMain.MnuWindow(7).Enabled = True
-        FormMain.MnuWindow(8).Enabled = True
     Else
+        FormMain.MnuWindow(6).Enabled = False
         FormMain.MnuWindow(7).Enabled = False
-        FormMain.MnuWindow(8).Enabled = False
     End If
     
 End Sub
@@ -382,21 +382,6 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.MnuAdjustmentsTop.Enabled = newState
             End If
             
-            'FitWindowToImage is a little weird - we disable it if no images are active, but also if images are docked.
-            If newState Then
-                
-                'The "Fit viewport around image" option is only available for floating image windows.  If images are docked,
-                ' do not enable that menu, even if requested.
-                If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                    FormMain.MnuFitWindowToImage.Enabled = True
-                Else
-                    FormMain.MnuFitWindowToImage.Enabled = False
-                End If
-                
-            Else
-                FormMain.MnuFitWindowToImage.Enabled = newState
-            End If
-        
         'Effects (top-level menu)
         Case tEffects
             If FormMain.MnuFilter.Enabled <> newState Then FormMain.MnuFilter.Enabled = newState
@@ -544,37 +529,12 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
-        
-    'Manually disable all other images forms to prevent them from mistakenly receiving input
-    Dim i As Long
-    If g_NumOfImagesLoaded > 0 Then
-        For i = 0 To g_NumOfImagesLoaded
-            If Not pdImages(i) Is Nothing Then
-                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And (i <> g_CurrentImage) Then pdImages(i).containingForm.Enabled = False
-            End If
-        Next i
-    End If
-
-    'Show the dialog, and dynamically assign its owner to the proper window (the main form if no child windows are active; otherwise, the
-    ' active child image window).  Note that in almost all cases, the owning window will already be activated.  The only problem occurs if
-    ' a modal dialog is active, and the user switches to another window then returns, while image windows are floating.  Still need to debug
-    ' that case.
-    'getModalOwner().ActivateWorkaround
     
     'Register the window with the window manager, which will also make it a top-most window
     g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
     
     'Use VB to actually display the dialog
     dialogForm.Show dialogModality, getModalOwner()
-    
-    'Re-enable any disabled image forms
-    If g_NumOfImagesLoaded > 0 Then
-        For i = 0 To g_NumOfImagesLoaded
-            If Not pdImages(i) Is Nothing Then
-                If pdImages(i).IsActive And (Not pdImages(i).containingForm Is Nothing) And i <> g_CurrentImage Then pdImages(i).containingForm.Enabled = True
-            End If
-        Next i
-    End If
     
     'De-register this hWnd with the window manager
     g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
@@ -611,18 +571,11 @@ Public Function getModalOwner(Optional ByVal assumeSecondaryDialog As Boolean = 
     If isSecondaryDialog Or assumeSecondaryDialog Then
         Set getModalOwner = currentDialogReference
         
-    'No modal dialog is active, making this the only one.  Give the main form or the active image form ownership.
+    'No modal dialog is active, making this the only one.  Give the main form ownership.
     Else
         
-        'If no images have been loaded, the main form owns any dialog boxes.
-        If g_OpenImageCount = 0 Then
-            Set getModalOwner = FormMain
+        Set getModalOwner = FormMain
         
-        'If images HAVE been loaded, make the top-most child the dialog owner
-        Else
-            Set getModalOwner = pdImages(g_CurrentImage).containingForm
-        End If
-    
     End If
     
 End Function
@@ -674,8 +627,8 @@ Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
     toolbar_ImageTabs.forceRedraw
     
-    'Re-select the current image
-    If g_OpenImageCount > 0 Then g_WindowManager.notifyChildReceivedFocus pdImages(g_CurrentImage).containingForm
+    'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
+    FormMain.refreshAllCanvases
     
 End Sub
 
@@ -696,17 +649,16 @@ Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     'Write the matching preference out to file
     g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
     
+    'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
+    FormMain.refreshAllCanvases
+    
     'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
     ' currently open images.
     If Not suppressInterfaceSync Then syncInterfaceToCurrentImage
     
     'If images are loaded, we may need to redraw their viewports because the available client area may have changed.
-    If (g_NumOfImagesLoaded > 0) And (Not g_WindowManager.getFloatState(IMAGE_WINDOW)) Then
-        For i = 0 To g_NumOfImagesLoaded
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image tabstrip visibility toggled"
-            End If
-        Next i
+    If (g_NumOfImagesLoaded > 0) Then
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image tabstrip visibility toggled"
     End If
 
 End Sub
@@ -729,71 +681,10 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
             g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus
             
             'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
-            If Not g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-                If g_NumOfImagesLoaded > 0 Then
-                    For i = 0 To g_NumOfImagesLoaded
-                        If (Not pdImages(i) Is Nothing) Then
-                            If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar float status changed"
-                        End If
-                    Next i
-                End If
-            End If
-            
-        Case IMAGE_WINDOW
-            FormMain.MnuWindow(5).Checked = floatStatus
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Image Windows", floatStatus
-            
-            'If image windows are floating, do not display the image tabstrip
-            If (Not floatStatus) Then
-                If g_OpenImageCount > 1 Then
-                    g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
-                Else
-                    g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
-                End If
-            Else
-                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
-            End If
-            
-            'Notify the window manager of the change
-            g_WindowManager.setFloatState IMAGE_WINDOW, floatStatus
-            
-            'As a convenience to the user, cascade any open windows
-            If floatStatus And (g_OpenImageCount > 0) Then g_WindowManager.cascadeImageWindows
-            
-            'All image windows need to be redrawn, because the available client area will have changed.
-            If g_NumOfImagesLoaded > 0 Then
-                For i = 0 To g_NumOfImagesLoaded
-                    If (Not pdImages(i) Is Nothing) Then
-                        If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Image float status changed"
-                    End If
-                Next i
-            End If
-            
-            'If image windows are docked, there's no reason to display extra Window menu items like "Cascade" or "Minimize all windows".
-            ' En/disable those menu entries as necessary.
-            
-            '(The 9 here is a magic number corresponding to the index of the Cascade menu entry.
-            For i = 9 To FormMain.MnuWindow.Count - 1
-                FormMain.MnuWindow(i).Visible = g_WindowManager.getFloatState(IMAGE_WINDOW)
-            Next i
-            
-            'Menu icons may need to be reapplied to those menus if they were previously hidden
-            If Not suspendMenuRefresh Then resetMenuIcons
+            FormMain.refreshAllCanvases
             
     End Select
     
-    'Restore focus to the previously active window
-    If (Not suspendMenuRefresh) And (g_NumOfImagesLoaded > 0) Then
-        If Not (pdImages(backupCurrentImage).containingForm Is Nothing) Then pdImages(backupCurrentImage).containingForm.ActivateWorkaround
-    End If
-    
-    'The "Fit viewport around image" option is only available for floating image windows
-    If g_WindowManager.getFloatState(IMAGE_WINDOW) Then
-        FormMain.MnuFitWindowToImage.Enabled = True
-    Else
-        FormMain.MnuFitWindowToImage.Enabled = False
-    End If
-
 End Sub
 
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
@@ -814,16 +705,9 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
     
     End Select
     
-    'If both images and toolbars are docked, we need to redraw any open images because the available client area will have changed.
-    If g_NumOfImagesLoaded > 0 Then
-        Dim i As Long
-        For i = 0 To g_NumOfImagesLoaded
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then PrepareViewport pdImages(i).containingForm, "Toolbar visibility changed"
-            End If
-        Next i
-    End If
-
+    'Redraw the primary image viewport, as the available client area may have changed.
+    If g_NumOfImagesLoaded > 0 Then FormMain.refreshAllCanvases
+    
 End Sub
 
 Public Function fixDPI(ByVal pxMeasurement As Long) As Long
@@ -932,7 +816,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
+Public Sub makeFormPretty(ByRef tForm As Object, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
@@ -1106,8 +990,7 @@ End Sub
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.lblImgSize.Caption = g_Language.TranslateMessage("size") & ": " & iWidth & " x " & iHeight
-        pdImages(g_CurrentImage).containingForm.lblImgSize.Refresh
+        FormMain.mainCanvas(0).displayImageSize iWidth, iHeight
     End If
     
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
@@ -1204,17 +1087,16 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     
     If MacroStatus <> MacroBATCH Then
     
-        If g_OpenImageCount > 0 Then
-            pdImages(g_CurrentImage).containingForm.lblMessages.Caption = newString
-            pdImages(g_CurrentImage).containingForm.lblMessages.Refresh
-        End If
+        'If g_OpenImageCount > 0 Then
+            FormMain.mainCanvas(0).displayCanvasMessage newString
+        'End If
         
     End If
     
     If Not g_IsProgramCompiled Then Debug.Print newString
     
     'If we're logging program messages, open up a log file and dump the message there
-    If g_LogProgramMessages = True Then
+    If g_LogProgramMessages Then
         Dim fileNum As Integer
         fileNum = FreeFile
         Open g_UserPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
@@ -1236,10 +1118,9 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).containingForm.lblCoordinates.Caption = ""
-        pdImages(g_CurrentImage).containingForm.lblCoordinates.Refresh
-    End If
+    'If g_OpenImageCount > 0 Then
+    FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
+    'End If
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
