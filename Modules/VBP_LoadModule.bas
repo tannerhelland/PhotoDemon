@@ -232,7 +232,6 @@ Public Sub LoadTheProgram()
         
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
     toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True
-    'toggleWindowFloating IMAGE_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Image Windows", False), True
     
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
@@ -315,6 +314,10 @@ Public Sub LoadTheProgram()
     
     'Set the main canvas background color
     FormMain.mainCanvas(0).BackColor = g_CanvasBackground
+    
+    'Clear the main canvas coordinate and size displays
+    FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
+    FormMain.mainCanvas(0).displayImageSize 0, 0, True
     
     'Apply visual styles
     FormMain.requestMakeFormPretty
@@ -690,6 +693,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
             
             targetImage.deactivateImage
+            fullPDImageUnload targetImage.imageID
             
             'Update the interface to reflect the images currently loaded
             syncInterfaceToCurrentImage
