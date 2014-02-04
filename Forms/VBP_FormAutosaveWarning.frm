@@ -356,7 +356,7 @@ Private Function displayAutosaveEntries() As Boolean
     Dim i As Long
     For i = 0 To m_numOfXMLFound - 1
         If Len(m_XmlEntries(i).latestUndoPath) > 0 Then
-            lstAutosaves.AddItem m_XmlEntries(i).friendlyName, i
+            lstAutosaves.AddItem m_XmlEntries(i).friendlyName
             lstAutosaves.ItemData(lstAutosaves.newIndex) = i
             lstAutosaves.Selected(lstAutosaves.newIndex) = True
         End If
