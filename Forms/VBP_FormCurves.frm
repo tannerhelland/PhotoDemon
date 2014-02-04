@@ -474,9 +474,13 @@ Private Sub cmdBar_ReadCustomPresetData()
     ' some locales (e.g. IT-IT) use the comma as a decimal separator!  We now use a colon instead, but to make
     ' sure old data doesn't crash the program, check for it now.
     If InStr(1, tmpString, ",") > 0 Then
+        
         If InStr(1, tmpString, ".") > 0 Then
             cParams.setParamString Replace(tmpString, ",", "|")
+        Else
+            cParams.setParamString Replace(tmpString, ":", "|")
         End If
+        
     Else
         cParams.setParamString Replace(tmpString, ":", "|")
     End If
