@@ -232,7 +232,11 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     ' function to append ascending numbers (of the format "_(#)") to the filename until a unique filename is found.
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
-        
+    
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the common dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
     If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
                 
         'Store the selected file format to the image object
@@ -263,6 +267,9 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Else
         MenuSaveAs = False
     End If
+    
+    'Restore window status
+    g_WindowManager.resetTopmostForAllWindows True
     
     'Release the common dialog object
     Set CC = Nothing
