@@ -557,7 +557,7 @@ Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     fileNum = FreeFile
     
     Open dstFile For Output As #fileNum
-        Print #fileNum, fileContents
+        Write #fileNum, fileContents
     Close #fileNum
     
     writeXMLToFile = True

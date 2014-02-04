@@ -555,7 +555,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 fileNum = FreeFile
     
                 Open tmpXMLPath For Output As #fileNum
-                    Print #fileNum, newXMLString
+                    Write #fileNum, newXMLString
                 Close #fileNum
                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
@@ -634,7 +634,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 fileNum = FreeFile
     
                 Open tmpXMLPath For Output As #fileNum
-                    Print #fileNum, newXMLString
+                    Write #fileNum, newXMLString
                 Close #fileNum
                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.

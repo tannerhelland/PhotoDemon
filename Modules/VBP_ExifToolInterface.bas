@@ -186,7 +186,7 @@ Private Sub writeMetadataDatabaseToFile()
     fileNum = FreeFile
     
     Open mdDatabasePath For Output As #fileNum
-        Print #fileNum, databaseString
+        Write #fileNum, databaseString
     Close #fileNum
     
     databaseString = ""

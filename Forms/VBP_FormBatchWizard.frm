@@ -2552,12 +2552,16 @@ Private Sub cmdLoadList_Click()
             'Check to see if the user wants to append this list to the current list,
             ' or if they want to load just the list data
             If lstFiles.ListCount > 0 Then
+                
                 Dim msgReturn As VbMsgBoxResult
-                'NOTE TO TANNER FOR v5.4: a translation may already exist for this text
                 msgReturn = pdMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel + vbApplicationModal + vbInformation, "Batch process notification")
+                
                 If msgReturn = vbCancel Then Exit Sub
+                
             End If
+            
             Screen.MousePointer = vbHourglass
+            
             'Now that everything is in place, load the entries from the file
             Input #fileNum, tmpLine
             Dim numOfEntries As Long
@@ -2926,12 +2930,12 @@ Private Function saveCurrentBatchList() As Boolean
         Dim x As Long
         
         Open sFile For Output As #fileNum
-            Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
-            Print #fileNum, Trim(CStr(lstFiles.ListCount))
+            Write #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
+            Write #fileNum, Trim(CStr(lstFiles.ListCount))
             For x = 0 To lstFiles.ListCount - 1
-                Print #fileNum, lstFiles.List(x)
+                Write #fileNum, lstFiles.List(x)
             Next x
-            Print #fileNum, "<END OF LIST>"
+            Write #fileNum, "<END OF LIST>"
         Close #fileNum
         
         saveCurrentBatchList = True
