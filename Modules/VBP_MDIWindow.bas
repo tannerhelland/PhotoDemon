@@ -3,7 +3,7 @@ Attribute VB_Name = "Image_Canvas_Handler"
 'Image Canvas Handler (formerly Image Window Handler)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 01/February/14
+'Last updated: 04/February/14
 'Last update: rework all code to operate on Canvas user controls instead of standalone forms
 '
 'This module contains functions relating to the creation, sizing, and maintenance of the windows ("canvases") associated
@@ -312,7 +312,7 @@ Public Function fullPDImageUnload(ByVal imageID As Long) As Boolean
         
         fullPDImageUnload = True
     End If
-
+    
 End Function
 
 'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
@@ -387,11 +387,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 Cancel = Not saveSuccessful
  
                 'If we make it here and the save was successful, force an immediate unload
-                If Cancel = False Then
-                    UnloadPDImage Cancel, imageID
-                
-                '...but if the save was not successful, suspend all unload action
-                Else
+                If Cancel Then
                     If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
                     If g_ClosingAllImages Then g_ClosingAllImages = False
                     g_DealWithAllUnsavedImages = False
@@ -400,12 +396,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
             'Do not save the image
             ElseIf confirmReturn = vbNo Then
                 
-                'I think this "Unload Me" statement may be causing some kind of infinite recursion - perhaps because it triggers this very
-                ' QueryUnload statement? Not sure, but I may need to revisit it if the problems don't go away...
-                'UPDATE 26 Aug 2014: after changing my subclassing code, the problem seems to have disappeared, but I'm leaving
-                ' this comment here until I'm absolutely certain the problem has been resolved.
-                UnloadPDImage Cancel, imageID
-                'Set Me = Nothing
+                'No action is required here, because subsequent functions will take care of the rest of the unload process!
                 
             End If
         
@@ -426,7 +417,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long)
     
     'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1
-        
+    
     'Deactivate this DIB (note that this will take care of additional actions, like clearing the Undo/Redo cache
     ' for this image)
     pdImages(imageID).deactivateImage
