@@ -1795,13 +1795,8 @@ Public Sub notifyImageTabStripResized()
     
     If Not mainFormTriggeredChange Then
     
-        Dim curMainFormRect As winRect
-        GetWindowRect pdWindows(mainWindowIndex).hWnd, curMainFormRect
-        
-        Dim i As Long
-        For i = 0 To numOfPDWindows - 1
-            If pdWindows(i).typeOfWindow = IMAGE_WINDOW Then requestWindowRedraw i, curMainFormRect
-        Next i
+        'Ask the main form's canvas to redraw itself
+        FormMain.refreshAllCanvases
         
     End If
     
