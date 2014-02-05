@@ -383,7 +383,7 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
 
     'Use the API to determine the monitor with the largest intersect with this window
     Dim monitorCheck As Long
-    monitorCheck = MonitorFromWindow(UserControl.hWnd, MONITOR_DEFAULTTONEAREST)
+    monitorCheck = MonitorFromWindow(FormMain.hWnd, MONITOR_DEFAULTTONEAREST)
     
     'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
     If monitorCheck <> currentMonitor Then
