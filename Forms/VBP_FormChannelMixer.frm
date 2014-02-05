@@ -456,7 +456,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             If y = 3 Then
                 channelModifiers(x, y) = cParams.GetLong((x * 4) + y + 1)
             Else
-                channelModifiers(x, y) = CDbl(cParams.GetLong((x * 4) + y + 1)) / 100
+                channelModifiers(x, y) = CDblCustom(cParams.GetLong((x * 4) + y + 1)) / 100
             End If
         Next y
     Next x

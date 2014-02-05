@@ -3,8 +3,10 @@ Attribute VB_Name = "Text_Validation"
 'Miscellaneous Functions Related to Validating User Input
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 03/October/12
-'Last update: First build
+'Last updated: 05/February/14
+'Last update: New CDblCustom() function to replace CDbl.  It is designed for use with my internal XML writing routines,
+'              and will check for either comma or period as a decimal separator.  This allows the user to change locale
+'              without all their presets breaking.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -97,4 +99,19 @@ Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVa
             EntryValid = False
         End If
     End If
+End Function
+
+'A custom CDbl function that accepts both commas and decimals as a separator
+Public Function CDblCustom(ByVal srcString As String) As Double
+
+    'Replace commas with periods
+    If InStr(1, srcString, ",") > 0 Then srcString = Replace(srcString, ",", ".")
+    
+    'We can now use Val() to convert to Double
+    If IsNumeric(srcString) Then
+        CDblCustom = Val(srcString)
+    Else
+        CDblCustom = 0
+    End If
+
 End Function

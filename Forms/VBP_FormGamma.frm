@@ -273,7 +273,7 @@ Private Sub chkUnison_Click()
     
     If CBool(chkUnison) Then
         Dim newGamma As Double
-        newGamma = CDbl(sltGamma(0) + sltGamma(1) + sltGamma(2)) / 3
+        newGamma = CDblCustom(sltGamma(0) + sltGamma(1) + sltGamma(2)) / 3
     
         userChange = False
         sltGamma(0) = newGamma
