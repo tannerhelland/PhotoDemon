@@ -350,15 +350,20 @@ Public Sub displayProgressBar(ByRef progBarForm As Form)
     On Error GoTo doNotMakeFormVisible
 
     Dim hWndAfterParam As Long
-    
+
     'Progress bars are now always displayed on the main window
     hWndAfterParam = mainWindowHwnd
-    
+
     'Display the window, but do not move or resize it (as its position and size have already been set)
-    progBarForm.Visible = True
-    SetWindowPos progBarForm.hWnd, hWndAfterParam, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_SHOWWINDOW Or SWP_NOACTIVATE
+    'progBarForm.Visible = True
+    progBarForm.Show vbModeless, FormMain
+    SetWindowPos progBarForm.hWnd, hWndAfterParam, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_SHOWWINDOW 'Or SWP_NOACTIVATE
     
+    Exit Sub
+
 doNotMakeFormVisible:
+
+    Debug.Print "Couldn't display progress bar??"
 
 End Sub
 
@@ -369,22 +374,22 @@ Public Sub moveProgressBarIntoPosition(ByRef progBarForm As Form)
     Dim curWinRect As winRect
 
     'An image has been loaded; use its rect to position the progress bar
-    If (g_OpenImageCount > 0) Then
-    
+    'If (g_OpenImageCount > 0) Then
+
         'Find the active image in our window array and restore it
-        getClientCoordsRelativeToScreen FormMain.mainCanvas(0).hWnd, curWinRect
-        
+        'getClientCoordsRelativeToScreen FormMain.mainCanvas(0).hWnd, curWinRect
+
         'Compensate for any chrome that may be in the way, such as the image window's status bar
-        curWinRect.y1 = curWinRect.y2 - pdImages(g_CurrentImage).imgViewport.getBottomOffset - fixDPI(15)
-        
+        'curWinRect.y1 = curWinRect.y2 - pdImages(g_CurrentImage).imgViewport.getBottomOffset - fixDPI(15)
+
     'No image has been loaded; use the main form's client rect to position the progress bar
-    Else
+    'Else
         getActualMainFormClientRect curWinRect
-    End If
-    
+    'End If
+
     'Silently move the window into position.
     MoveWindow progBarForm.hWnd, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, fixDPI(15), 1
-    
+
 End Sub
 
 'Retrieve the current tabstrip alignment
@@ -490,9 +495,9 @@ End Sub
 ' certain that VB uses this exact same code to assign ownership when it encounters code like FormChild.Show vbModeless, FormOwner.)
 ' Technically we should also track the previous window owner and restore it upon form exiting, but VB makes that unnecessary due to the way it
 ' couples owner/child unload behavior.
-Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerhWnd As Long)
-    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerhWnd
-End Sub
+'Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerhWnd As Long)
+'    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerhWnd
+'End Sub
 
 'If external functions want to know if PD has focus or not, they can use this function.  It will return TRUE if PhotoDemon is the active window.
 Public Function doesProgramHaveFocus() As Boolean
