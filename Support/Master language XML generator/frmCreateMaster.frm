@@ -815,7 +815,7 @@ Private Sub processFile(ByVal srcFile As String)
             processedText = findFormCaption(fileLines, curLineNumber)
                 
         '2) Check for a control caption.  (This has to be handled slightly differently than form caption.)
-        ElseIf ((InStr(1, curLineText, "Begin VB.") > 0) Or (InStr(1, curLineText, "Begin PhotoDemon.") > 0)) And (InStr(1, curLineText, "PictureBox") = 0) And (InStr(1, curLineText, "ComboBox") = 0) And (InStr(1, curLineText, "Shape") = 0) And (InStr(1, curLineText, "TextBox") = 0) And (InStr(1, curLineText, "HScrollBar") = 0) And (InStr(1, curLineText, "VScrollBar") = 0) Then
+        ElseIf ((InStr(1, curLineText, "Begin VB.", vbTextCompare) > 0) Or (InStr(1, curLineText, "Begin PhotoDemon.", vbTextCompare) > 0)) And (InStr(1, curLineText, "PictureBox", vbTextCompare) = 0) And (InStr(1, curLineText, "ComboBox") = 0) And (InStr(1, curLineText, ".Shape") = 0) And (InStr(1, curLineText, "TextBox") = 0) And (InStr(1, curLineText, "HScrollBar") = 0) And (InStr(1, curLineText, "VScrollBar") = 0) Then
             processedText = findControlCaption(fileLines, curLineNumber)
         
         '3) Check for tooltip text (several varations of this exist due to custom controls having unique tooltip property names)
@@ -861,7 +861,10 @@ Private Sub processFile(ByVal srcFile As String)
             processedText = findCaptionInQuotes(fileLines, curLineNumber, InStr(1, curLineText, "Process """))
             
         End If
-    
+        
+        'DEBUG! Check for certain text entries here
+        'If (shortcutName = "FormVignette") And Len(Trim$(processedText)) > 0 Then MsgBox processedText
+        
         'We now have text in potentially two places: processedText, and processedTextSecondary (for message box titles)
         chkText = Trim$(processedText)
         
@@ -967,6 +970,7 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
     
     'Before writing the phrase out, check to see if it already exists
     If CBool(chkRemoveDuplicates) Then
+                
         If InStr(1, outputText, "<original>" & phraseText & "</original>", vbTextCompare) > 0 Then
             addPhrase = False
         Else
@@ -1298,9 +1302,9 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
         lineNumber = lineNumber + 1
         
         'Some controls may not have a caption.  If this occurs, exit.
-        If InStr(1, srcLines(lineNumber), "End") And Not InStr(1, srcLines(lineNumber), "EndProperty") Then
+        If (InStr(1, srcLines(lineNumber), "End", vbTextCompare) > 0) And Not (InStr(1, srcLines(lineNumber), "EndProperty", vbTextCompare) > 0) Then
             foundCaption = False
-            lineNumber = originalLineNumber + 1
+            lineNumber = originalLineNumber '+ 1
             Exit Do
         End If
         
