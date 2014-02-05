@@ -761,7 +761,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Basic</original>
+<original>Basic options</original>
 <translation></translation>
 </phrase>
 
@@ -771,28 +771,13 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Advanced</original>
-<translation>Fortgeschritten</translation>
+<original>Advanced options</original>
+<translation>Erweiterte Optionen</translation>
 </phrase>
 
 <phrase>
 <original>Load (Import) Options</original>
 <translation>Load (Import) Optionen</translation>
-</phrase>
-
-<phrase>
-<original>show technical names</original>
-<translation>Technische Namen anzeigen</translation>
-</phrase>
-
-<phrase>
-<original>resize quality</original>
-<translation>größe Qualität</translation>
-</phrase>
-
-<phrase>
-<original>new size</original>
-<translation>neue Größe</translation>
 </phrase>
 
 <phrase>
@@ -828,6 +813,21 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>maintain aspect ratio or the final image may look distorted</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>show technical names</original>
+<translation>Technische Namen anzeigen</translation>
+</phrase>
+
+<phrase>
+<original>resize quality</original>
+<translation>größe Qualität</translation>
+</phrase>
+
+<phrase>
+<original>new size</original>
+<translation>neue Größe</translation>
 </phrase>
 
 <phrase>
@@ -1545,11 +1545,6 @@ When finished, click the Submit button.  Thank you!</original>
 </phrase>
 
 <phrase>
-<original>rendering options</original>
-<translation>rendering-Optionen</translation>
-</phrase>
-
-<phrase>
 <original>Level</original>
 <translation>Ebene</translation>
 </phrase>
@@ -1589,7 +1584,7 @@ When finished, click the Submit button.  Thank you!</original>
 <translation>Stretch Histogramm</translation>
 </phrase>
 
-<!-- VBP_FormHistogram.frm contains 46 phrases. 28 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_FormHistogram.frm contains 45 phrases. 28 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_FormHistogram.frm-->
 
@@ -1967,11 +1962,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>&Fit image on screen</original>
 <translation>&Fit Bild auf dem Bildschirm</translation>
-</phrase>
-
-<phrase>
-<original>Fit viewport around &image</original>
-<translation>Ansichtsfenster passen rund &Bild</translation>
 </phrase>
 
 <phrase>
@@ -2790,11 +2780,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Floating image windows</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Next image</original>
 <translation>Nächstes Bild</translation>
 </phrase>
@@ -2802,21 +2787,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Previous image</original>
 <translation>Vorheriges Bild</translation>
-</phrase>
-
-<phrase>
-<original>&Cascade</original>
-<translation>In der Sequenz</translation>
-</phrase>
-
-<phrase>
-<original>Tile &horizontally</original>
-<translation>Nebeneinander</translation>
-</phrase>
-
-<phrase>
-<original>Tile &vertically</original>
-<translation>Unter jeder</translation>
 </phrase>
 
 <phrase>
@@ -3292,7 +3262,7 @@ Note: some minor program text (such as hover tooltips) cannot be live-updated.  
 <translation>Entfernen Alphakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 421 phrases. 129 were duplicates of existing phrases, so only 292 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 416 phrases. 129 were duplicates of existing phrases, so only 287 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -3889,8 +3859,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>Advanced Options</original>
-<translation>Erweiterte Optionen</translation>
+<original>Advanced</original>
+<translation>Fortgeschritten</translation>
 </phrase>
 
 <phrase>
@@ -4094,11 +4064,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
-<translation>rendern PhotoDemon Text mit modernen Schriften (nur auf Vista oder neuer)</translation>
-</phrase>
-
-<phrase>
 <original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
 <translation>Diese Einstellung verwendet "Segoe UI" als PhotoDemon Schnittstelle Schriftart. Verlassen sie deaktiviert standardmäßig auf" Tahoma".</translation>
 </phrase>
@@ -4175,11 +4140,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>available monitors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
 <translation></translation>
 </phrase>
 
@@ -4374,6 +4334,11 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
 <translation>Die " Recent Files "-Menü Breite wird von Windows beschränkt. Um dieses Menü ein Überlaufen zu verhindern, können PhotoDemon angezeigt Bildnamen nur statt Vollbild Standorten.</translation>
+</phrase>
+
+<phrase>
+<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
+<translation>rendern PhotoDemon Text mit modernen Schriften (nur auf Vista oder neuer)</translation>
 </phrase>
 
 <phrase>
@@ -4809,7 +4774,7 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zugang verboten). Bitte geben Sie eine gültige Ordner. Wenn keine neuen Ordner bereitgestellt wird, wird PhotoDemon verwenden die Standardsprache des Systems temporären Speicherort.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 267 phrases. 78 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 265 phrases. 77 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -4864,52 +4829,11 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 
 <!-- END text for VBP_FormPosterize.frm-->
 
-<!-- BEGIN text for VBP_FormImage.frm (FormImage) -->
-
-<phrase>
-<original>Image Window</original>
-<translation>Bildfenster</translation>
-</phrase>
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>size</original>
-<translation>Größe</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>erstellen Auswahl</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>Bewegen Auswahl</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Resize Auswahl</translation>
-</phrase>
+<!-- BEGIN text for VBP_MDIWindow.bas -->
 
 <phrase>
 <original>Closing image</original>
 <translation>Schließen Bild</translation>
-</phrase>
-
-<!-- VBP_FormImage.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for VBP_FormImage.frm-->
-
-<!-- BEGIN text for VBP_MDIWindow.bas -->
-
-<phrase>
-<original>Loading image</original>
-<translation>Lade Bild</translation>
 </phrase>
 
 <!-- VBP_MDIWindow.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -5522,11 +5446,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Core Plugins Missing - Download Recommended</original>
-<translation>Core-Plugins fehlen - Download Empfohlene</translation>
-</phrase>
-
-<phrase>
 <original>Downloading file %1 of %2 (%3 of %4 bytes received)</original>
 <translation>Download-Datei %1 der %2 (%3 von %4 empfangenen Bytes)</translation>
 </phrase>
@@ -5680,7 +5599,7 @@ To improve your user experience, please allow the program to automatically downl
 <translation>Download-Größe gesamt</translation>
 </phrase>
 
-<!-- VBP_FormPluginDownloader.frm contains 65 phrases. 19 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+<!-- VBP_FormPluginDownloader.frm contains 64 phrases. 19 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -5849,11 +5768,6 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie p
 </phrase>
 
 <phrase>
-<original>render tiled image using</original>
-<translation>Erstellen gefliesten Bild mit</translation>
-</phrase>
-
-<phrase>
 <original>tiles</original>
 <translation>fliesen</translation>
 </phrase>
@@ -5883,7 +5797,7 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie p
 <translation>Das fertige Bild wird %1 %3 breit %2 %3 hoch.</translation>
 </phrase>
 
-<!-- VBP_FormTile.frm contains 32 phrases. 21 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- VBP_FormTile.frm contains 31 phrases. 21 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTile.frm-->
 
@@ -6368,7 +6282,7 @@ Please enter a numeric value.</original>
 <translation>ignorieren</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -7049,6 +6963,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>background color for compositing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum transparency</original>
 <translation>maximale Transparenz</translation>
 </phrase>
@@ -7073,7 +6992,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Erwarten Angabe des Benutzers für alpha Schwelle</translation>
 </phrase>
 
-<!-- VBP_FormAlphaCutoff.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormAlphaCutoff.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormAlphaCutoff.frm-->
 
@@ -7100,11 +7019,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Sie führen PhotoDemon innerhalb der Visual Basic IDE. Dies wird nicht empfohlen.</translation>
-</phrase>
-
-<phrase>
 <original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
 <translation>Bitte kompilieren Sie PhotoDemon bevor Sie es Verwenden. Viele Funktionen, die auf Unterklassen verlassen werden in der IDE deaktiviert, aber einige - wie benutzerdefinierte Schaltflächen - kann nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Als solcher, können IDE Instabilität und Abstürze, besonders wenn Sie das Programm mit dem IDE- Stop-Taste zu schließen.</translation>
 </phrase>
@@ -7119,7 +7033,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Wenn Sie zum PhotoDemon Ausführen in der IDE zu bestehen, wenden Sie sich bitte senden Sie keine Bugs in Bezug IDE stürzt ab oder friert. PhotoDemon -Entwickler können sich nur auf Probleme und Fehler, die das kompilierte. Exe beeinflussen.</translation>
 </phrase>
 
-<!-- VBP_FormIDEWarning.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormIDEWarning.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormIDEWarning.frm-->
 
@@ -7413,11 +7327,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>render emphasis</original>
-<translation>Rendering Schwerpunkte</translation>
-</phrase>
-
-<phrase>
 <original>swirl angle</original>
 <translation>Drallwinkel</translation>
 </phrase>
@@ -7427,7 +7336,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Abbildung wirbelnden rund und rund</translation>
 </phrase>
 
-<!-- VBP_FormSwirl.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormSwirl.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSwirl.frm-->
 
@@ -7453,7 +7362,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Projizierte Bild durch simulierte Linse</translation>
 </phrase>
 
-<!-- VBP_FormLens.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormLens.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLens.frm-->
 
@@ -7484,7 +7393,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Simulation von Wellen auf der Bildebene</translation>
 </phrase>
 
-<!-- VBP_FormRipple.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_FormRipple.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormRipple.frm-->
 
@@ -7505,7 +7414,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Kneifen und wirbelnden Bild</translation>
 </phrase>
 
-<!-- VBP_FormPinch.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormPinch.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPinch.frm-->
 
@@ -7536,7 +7445,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bild in virtuelle Welle Tauchen</translation>
 </phrase>
 
-<!-- VBP_FormWaves.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_FormWaves.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormWaves.frm-->
 
@@ -7557,7 +7466,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Projizierte Bild durch simulierte Glas</translation>
 </phrase>
 
-<!-- VBP_FormFiguredGlass.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormFiguredGlass.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormFiguredGlass.frm-->
 
@@ -7605,7 +7514,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Peering durch imaginäre Bild Kaleidoskop</translation>
 </phrase>
 
-<!-- VBP_FormKaleidoscope.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormKaleidoscope.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormKaleidoscope.frm-->
 
@@ -7646,7 +7555,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Polar Inversion</translation>
 </phrase>
 
-<!-- VBP_FormPolar.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_FormPolar.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPolar.frm-->
 
@@ -7781,7 +7690,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Korrektur Bildverzerrungen</translation>
 </phrase>
 
-<!-- VBP_FormLensCorrect.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_FormLensCorrect.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLensCorrect.frm-->
 
@@ -7858,6 +7767,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>fit to image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circular</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>shape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>vignetting color (click box to change)</original>
 <translation>Vignettierung Farbe (Klick-Box zu ändern)</translation>
 </phrase>
@@ -7867,7 +7791,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Anwendung Vignettierung</translation>
 </phrase>
 
-<!-- VBP_FormVignette.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormVignette.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormVignette.frm-->
 
@@ -8663,7 +8587,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Shearing Bild</translation>
 </phrase>
 
-<!-- VBP_FormShear.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormShear.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShear.frm-->
 
@@ -8674,7 +8598,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Quetschen Bild</translation>
 </phrase>
 
-<!-- VBP_FormSquish.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormSquish.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormSquish.frm-->
 
@@ -8720,7 +8644,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>linken unteren</translation>
 </phrase>
 
-<!-- VBP_FormPerspective.frm contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormPerspective.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPerspective.frm-->
 
@@ -8867,7 +8791,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Anwenden von Schwenk-und Zoom (Ken Burns) Wirkung</translation>
 </phrase>
 
-<!-- VBP_FormPanZoom.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormPanZoom.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPanZoom.frm-->
 
@@ -8884,7 +8808,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Stochern Bild</translation>
 </phrase>
 
-<!-- VBP_FormPoke.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormPoke.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormPoke.frm-->
 
@@ -8920,7 +8844,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Einwickeln Bild um Kugel</translation>
 </phrase>
 
-<!-- VBP_FormSpherize.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormSpherize.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSpherize.frm-->
 
@@ -9382,7 +9306,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>wurmloch</translation>
 </phrase>
 
-<!-- VBP_FormMiscDistorts.frm contains 24 phrases. 13 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- VBP_FormMiscDistorts.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMiscDistorts.frm-->
 
@@ -9866,11 +9790,6 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <!-- BEGIN text for VBP_FormColorToTransparency.frm (FormTransparency_FromColor) -->
 
 <phrase>
-<original>edge blending</original>
-<translation>Edge-Blending</translation>
-</phrase>
-
-<phrase>
 <original>erase threshold</original>
 <translation>Löschschwellwertspannung</translation>
 </phrase>
@@ -9880,7 +9799,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormColorToTransparency.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormColorToTransparency.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorToTransparency.frm-->
 
@@ -9896,7 +9815,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Wenn Sie die Leinwand zu vergrößern, um das gedrehte Bild passen wollen, nutzen Sie bitte das Bild -> Drehen Menü statt.</translation>
 </phrase>
 
-<!-- VBP_FormRotateDistort.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormRotateDistort.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormRotateDistort.frm-->
 
@@ -9912,7 +9831,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Anwenden Radial Blur</translation>
 </phrase>
 
-<!-- VBP_FormRadialBlur.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormRadialBlur.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormRadialBlur.frm-->
 
@@ -9928,7 +9847,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Anwenden von Bewegungsunschärfe</translation>
 </phrase>
 
-<!-- VBP_FormMotionBlur.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormMotionBlur.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMotionBlur.frm-->
 
@@ -10602,7 +10521,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormReplaceColor.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormReplaceColor.frm-->
 
@@ -10933,11 +10852,6 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <!-- BEGIN text for VBP_FormContentAwareResize.frm (FormResizeContentAware) -->
 
 <phrase>
-<original>WARNING! This tool is currently under heavy development.  It may not work as intended.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Initializing content-aware resize engine</original>
 <translation></translation>
 </phrase>
@@ -10947,7 +10861,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormContentAwareResize.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormContentAwareResize.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormContentAwareResize.frm-->
 
@@ -11002,11 +10916,6 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 </phrase>
 
 <phrase>
-<original>preview</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>autosave entries found</original>
 <translation></translation>
 </phrase>
@@ -11031,7 +10940,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormAutosaveWarning.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_FormAutosaveWarning.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormAutosaveWarning.frm-->
 
@@ -11041,13 +10950,44 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 
 <!-- END text for smartResize.ctl-->
 
+<!-- BEGIN text for pdCanvas.ctl -->
+
+<phrase>
+<original>size</original>
+<translation>Größe</translation>
+</phrase>
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>erstellen Auswahl</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>Bewegen Auswahl</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Resize Auswahl</translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for pdCanvas.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>1941</phrasecount>
+<phrasecount>1929</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3303 phrases. -->
-<!-- 1362 are duplicates, so only 1941 unique phrases have been written to file. -->
-<!-- These 1941 phrases contain approximately 11978 total words. -->
+<!-- As of this build, PhotoDemon contains 3268 phrases. -->
+<!-- 1339 are duplicates, so only 1929 unique phrases have been written to file. -->
+<!-- These 1929 phrases contain approximately 11921 total words. -->
 
 </pdData>
 
