@@ -134,6 +134,8 @@ End Function
 'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
 Public Sub releaseProgressBar()
 
+    Debug.Print "Releasing progress bar..."
+
     'Briefly display a full progress bar before exiting
     If Not curProgBar Is Nothing Then
         curProgBar.Value = curProgBar.Max
@@ -143,7 +145,9 @@ Public Sub releaseProgressBar()
         Set curProgBar = Nothing
     End If
     
-    If special_ProgressBar.Visible Then Unload special_ProgressBar
+    special_ProgressBar.Hide
+    Unload special_ProgressBar
+    
     If g_IsWin7OrLater Then SetTaskbarProgressState TBPF_NOPROGRESS
     
 End Sub
