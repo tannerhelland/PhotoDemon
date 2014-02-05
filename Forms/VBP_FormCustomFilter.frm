@@ -815,7 +815,7 @@ Private Sub updatePreview()
             
             Dim i As Long
             For i = 0 To 24
-                filterSum = filterSum + CDbl(tudF(i))
+                filterSum = filterSum + CDblCustom(tudF(i))
             Next i
             
             'Generate automatic divisor and offset values based on the total.

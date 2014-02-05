@@ -613,7 +613,7 @@ Public Function getUniqueTag_Double(ByVal tagName As String, Optional ByVal defa
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
     If Len(tmpString) > 0 Then
-        getUniqueTag_Double = CDbl(tmpString)
+        getUniqueTag_Double = CDblCustom(tmpString)
     Else
         getUniqueTag_Double = defaultReturn
     End If

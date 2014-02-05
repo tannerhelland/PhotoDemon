@@ -511,7 +511,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     Else
         
         Dim checkVal As Double
-        checkVal = CDbl(chkString)
+        checkVal = CDblCustom(chkString)
     
         If (checkVal >= controlMin) And (checkVal <= controlMax) Then
             IsTextEntryValid = True

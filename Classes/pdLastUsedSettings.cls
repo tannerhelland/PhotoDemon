@@ -275,7 +275,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                             eControl.Value = CLng(controlValue)
                             
                         Case 1, 2
-                            eControl.Value = CDbl(controlValue)
+                            eControl.Value = CDblCustom(controlValue)
                                             
                     End Select
                     

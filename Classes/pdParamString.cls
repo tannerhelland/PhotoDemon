@@ -181,10 +181,10 @@ End Function
 Public Function GetDouble(ByVal pIndex As Long, Optional ByVal defaultReturn As Double = 0#) As Double
 
     If m_numOfParams = 1 Then
-        GetDouble = CDbl(m_ParamString)
+        GetDouble = CDblCustom(m_ParamString)
     Else
         If doesParamExist(pIndex) Then
-            GetDouble = CDbl(m_Params(pIndex - 1))
+            GetDouble = CDblCustom(m_Params(pIndex - 1))
         Else
             GetDouble = defaultReturn
         End If
