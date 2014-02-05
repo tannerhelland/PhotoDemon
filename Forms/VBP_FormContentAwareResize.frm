@@ -397,6 +397,9 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     'This initial seam-carving algorithm is not particularly well-implemented, but that's okay.  It's a starting point!
     seamCarver.startSeamCarve iWidth, iHeight
     
+    'Release the progress bar
+    releaseProgressBar
+    
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
     If Not cancelCurrentAction Then srcDIB.createFromExistingDIB seamCarver.getCarvedImage()
     
