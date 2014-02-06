@@ -133,7 +133,10 @@ End Sub
 'Let a form know whether the mouse pointer is over its image or just the viewport
 Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcImage As pdImage) As Boolean
 
-    If srcImage.imgViewport Is Nothing Then Exit Function
+    If srcImage.imgViewport Is Nothing Then
+        isMouseOverImage = False
+        Exit Function
+    End If
 
     If (x1 >= srcImage.imgViewport.targetLeft) And (x1 <= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth) Then
         If (y1 >= srcImage.imgViewport.targetTop) And (y1 <= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight) Then

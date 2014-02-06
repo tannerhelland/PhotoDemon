@@ -462,7 +462,7 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
             If Not isColorSelectionAllowed Then setHandCursor picPreview
         End If
     Else
-        'setArrowCursorToObject picPreview
+        'setArrowCursor picPreview
     End If
     
     If colorJustClicked > 0 Then
