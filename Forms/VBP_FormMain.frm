@@ -2103,9 +2103,11 @@ Private Sub MnuHelp_Click(Index As Integer)
         
                 Case 0
                     pdMsgBox "An error occurred while checking for updates.  Please try again later.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates"
+                    Message "Software update check postponed."
                     
                 Case 1
                     pdMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    Message "This copy of PhotoDemon is up to date."
                         
                     'Because the software is up-to-date, we can mark this as a successful check in the preferences file
                     g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
