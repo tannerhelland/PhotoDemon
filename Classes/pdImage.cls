@@ -126,9 +126,6 @@ Option Explicit
     ' NOTE: EXIFTOOL IS REQUIRED FOR METADATA HANDLING.
     Public imgMetadata As pdMetadata
     
-    'This image's location in the window manager.  We cache this value so we can quickly access information about this image's window.
-    Public indexInWindowManager As Long
-    
     'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
     Public undoManager As pdUndo
     
