@@ -412,9 +412,6 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Window Menu
     addMenuIcon "NEXTIMAGE", 8, 6       'Next image
     addMenuIcon "PREVIMAGE", 8, 7       'Previous image
-    'addMenuIcon "CASCADE", 8, 10         'Cascade
-    'addMenuIcon "TILEVER", 8, 11        'Tile Horizontally
-    'addMenuIcon "TILEHOR", 8, 12        'Tile Vertically
     
     'Help Menu
     addMenuIcon "FAVORITE", 9, 0        'Donate
@@ -484,9 +481,6 @@ Public Sub resetMenuIcons()
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
     addMenuIcon "NEXTIMAGE", 8, 6       'Next image
     addMenuIcon "PREVIMAGE", 8, 7       'Previous image
-    addMenuIcon "CASCADE", 8, 9         'Cascade
-    addMenuIcon "TILEVER", 8, 10        'Tile Horizontally
-    addMenuIcon "TILEHOR", 8, 11        'Tile Vertically
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long

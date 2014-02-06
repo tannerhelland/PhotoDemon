@@ -273,11 +273,13 @@ PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      splash_2013_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
 //Toolbox icons
-T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
-T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
-T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
+//T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
+//T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
+//T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
 
 //Cursors
+HANDOPEN     CUSTOM  MOVEABLE        LOADONCALL      openhand.png
+HANDCLOSED   CUSTOM  MOVEABLE        LOADONCALL      closedhand.png
 C_PIPETTE    CUSTOM  MOVEABLE        LOADONCALL      pipette_cursor.png
 
 //Placeholder for missing MRU icons
