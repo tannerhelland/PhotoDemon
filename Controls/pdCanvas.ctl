@@ -387,6 +387,7 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
     
     'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
     If monitorCheck <> currentMonitor Then
+        
         currentMonitor = monitorCheck
         
         If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
@@ -396,6 +397,9 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
         If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(UserControl.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
             RenderViewport pdImages(g_CurrentImage), Me
         End If
+        
+        'The image tabstrip also needs to be redrawn!
+        toolbar_ImageTabs.forceRedraw
     
     End If
     

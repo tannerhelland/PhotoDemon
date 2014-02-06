@@ -915,15 +915,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If this is a primary image, register the new window with the window manager, then display the image on-screen
+        ' If this is a primary image, do preparations, then render the image to the screen
         '*************************************************************************************************************************************
             
             
-            'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
-            ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
-            'g_WindowManager.registerChildForm targetImage.containingForm, IMAGE_WINDOW, , , g_CurrentImage
-            
-            'Also register this image with the image tab bar
+            'Register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage
             
             'Give the image form a chance to detect its parent monitor
@@ -1649,10 +1645,6 @@ Public Sub DuplicateCurrentImage()
     
     'Update the current caption to match
     'g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).originalFileNameAndExtension
-        
-    'Register this window with PhotoDemon's window manager.  This will do things like set the proper border state depending on whether
-    ' image windows are docked or floating, which we need before doing things like auto-zoom or window placement.
-    'g_WindowManager.registerChildForm pdImages(g_CurrentImage).containingForm, IMAGE_WINDOW, , , g_CurrentImage
             
     'Also register this image with the image tab bar
     createCustomFormIcon pdImages(g_CurrentImage)

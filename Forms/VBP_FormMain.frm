@@ -1163,6 +1163,9 @@ End Sub
 'Resize all currently active canvases
 Public Sub refreshAllCanvases()
 
+    'If the main form has been minimized, don't refresh anything
+    If FormMain.WindowState = vbMinimized Then Exit Sub
+
     'Start by reorienting the canvas to fill the full available client area
     Dim mainRect As winRect
     
