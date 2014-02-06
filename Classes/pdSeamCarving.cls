@@ -1048,6 +1048,7 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     
     'Reset the progress bar
     SetProgBarVal 0
+    releaseProgressBar
     
     Exit Function
     

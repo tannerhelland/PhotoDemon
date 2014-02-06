@@ -1243,6 +1243,7 @@ Private Sub createSelectionMask()
                 'CreateGaussianBlurDIB featheringRadius, tmpDIB, selMask
                 CreateApproximateGaussianBlurDIB featheringRadius, tmpDIB, selMask, 1, True
                 SetProgBarVal 0
+                releaseProgressBar
                 Message "Finished."
             Else
             
@@ -1272,6 +1273,7 @@ Private Sub createSelectionMask()
                 Set dstDIB = Nothing
                 
                 SetProgBarVal 0
+                releaseProgressBar
                 Message "Finished."
             
             End If
@@ -1952,6 +1954,7 @@ Public Sub invertSelection()
     isMaskReady = True
     
     SetProgBarVal 0
+    releaseProgressBar
     Message "Selection inversion complete."
 
 End Sub

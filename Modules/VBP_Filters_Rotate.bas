@@ -100,6 +100,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         Erase srcImageData
         
         SetProgBarVal 0
+        releaseProgressBar
+        
         Message "Image is all one color.  Autocrop unnecessary."
         Exit Sub
     
@@ -199,6 +201,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     If (newTop = 0) And (newBottom = pdImages(g_CurrentImage).Height - 1) And (newLeft = 0) And (newRight = pdImages(g_CurrentImage).Width - 1) Then
         SetProgBarVal 0
+        releaseProgressBar
         Message "Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)"
     Else
     
@@ -221,6 +224,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         Message "Finished. "
         SetProgBarVal 0
+        releaseProgressBar
         
         'Redraw the image
         PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Autocrop image"
@@ -419,6 +423,7 @@ Public Sub MenuRotate90Clockwise()
     
     'Reset the progress bar to zero
     SetProgBarVal 0
+    releaseProgressBar
     
 End Sub
 
@@ -533,5 +538,6 @@ Public Sub MenuRotate270Clockwise()
     
     'Reset the progress bar to zero
     SetProgBarVal 0
+    releaseProgressBar
     
 End Sub

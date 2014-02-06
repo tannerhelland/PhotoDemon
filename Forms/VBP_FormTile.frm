@@ -440,6 +440,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         SetProgBarVal 0
+        releaseProgressBar
         
         'Render the image on-screen at an automatically corrected zoom
         FitOnScreen

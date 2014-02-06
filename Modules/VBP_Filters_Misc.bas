@@ -238,6 +238,7 @@ Public Sub MenuFadeLastEffect()
     
     'Render the final image to the screen
     SetProgBarVal 0
+    releaseProgressBar
     Message "Finished."
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
@@ -1220,6 +1221,7 @@ Public Sub MenuCountColors()
     
     'Reset the progress bar
     SetProgBarVal 0
+    releaseProgressBar
     
     'Show the user our final tally
     Message "Total number of unique colors: %1", totalCount

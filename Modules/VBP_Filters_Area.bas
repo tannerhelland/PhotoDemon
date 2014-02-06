@@ -447,6 +447,7 @@ Public Sub FilterIsometric()
         dstDIB.eraseDIB
         Message "Action canceled."
         SetProgBarVal 0
+        releaseProgressBar
         Exit Sub
     End If
     
@@ -472,6 +473,7 @@ Public Sub FilterIsometric()
     
     'Reset the progress bar to zero
     SetProgBarVal 0
+    releaseProgressBar
 
 End Sub
 
