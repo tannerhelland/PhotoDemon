@@ -835,10 +835,16 @@ Private Sub newToolSelected()
                     pdImages(g_CurrentImage).mainSelection.setSelectionShape g_CurrentTool
                     RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 Else
+                    
                     If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle Then
                         metaToggle tSelectionTransform, True
                     Else
+                    
+                        'Remove any existing selections
+                        If g_OpenImageCount > 0 Then Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2
+                    
                         metaToggle tSelectionTransform, False
+                        
                     End If
                 End If
             End If
@@ -851,10 +857,16 @@ Private Sub newToolSelected()
                     pdImages(g_CurrentImage).mainSelection.setSelectionShape g_CurrentTool
                     RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 Else
+                    
                     If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle Then
                         metaToggle tSelectionTransform, True
                     Else
+                        
+                        'Remove any existing selections
+                        If g_OpenImageCount > 0 Then Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2
+                        
                         metaToggle tSelectionTransform, False
+                        
                     End If
                 End If
             End If
@@ -867,7 +879,12 @@ Private Sub newToolSelected()
                 If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sLine Then
                     metaToggle tSelectionTransform, True
                 Else
+                
+                    'Remove any existing selections
+                    If g_OpenImageCount > 0 Then Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2
+                
                     metaToggle tSelectionTransform, False
+                    
                 End If
             Else
                 metaToggle tSelectionTransform, False
