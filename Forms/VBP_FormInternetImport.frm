@@ -177,6 +177,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     Call HttpQueryInfo(ByVal hUrl, HTTP_QUERY_CONTENT_LENGTH, ByVal tmpStrBuffer, Len(tmpStrBuffer), 0)
     downloadSize = CLng(Val(tmpStrBuffer))
     SetProgBarVal 0
+    
     If downloadSize <> 0 Then SetProgBarMax downloadSize
     
     'We need a temporary file to house the image; generate it automatically, using the extension of the original image
@@ -224,6 +225,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
                 If hUrl Then InternetCloseHandle hUrl
                 If hInternetSession Then InternetCloseHandle hInternetSession
                 SetProgBarVal 0
+                releaseProgressBar
                 ImportImageFromInternet = False
                 Screen.MousePointer = 0
                 Exit Function
@@ -270,6 +272,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         If hUrl Then InternetCloseHandle hUrl
         If hInternetSession Then InternetCloseHandle hInternetSession
         SetProgBarVal 0
+        releaseProgressBar
         ImportImageFromInternet = False
         Screen.MousePointer = 0
         Exit Function
@@ -286,6 +289,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
     
     SetProgBarVal 0
+    releaseProgressBar
     
     'Delete the temporary file
     If FileExist(tmpFile) Then Kill tmpFile

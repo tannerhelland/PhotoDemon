@@ -663,6 +663,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
+        releaseProgressBar
         
         Message "Feathering complete."
         
@@ -704,6 +705,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
+        releaseProgressBar
         
         Message "Feathering complete."
         
@@ -751,6 +753,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
+        releaseProgressBar
         
         Message "Selection resize complete."
         
@@ -798,6 +801,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
+        releaseProgressBar
         
         Message "Selection resize complete."
         
@@ -839,6 +843,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
+        releaseProgressBar
         
         Message "Selection resize complete."
         

@@ -536,6 +536,7 @@ ZoomErrorHandler:
     If Err = 480 Then
         pdMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
         SetProgBarVal 0
+        releaseProgressBar
         Message "Operation halted."
     ElseIf Err = 13 Then
         Message "Invalid zoom value."

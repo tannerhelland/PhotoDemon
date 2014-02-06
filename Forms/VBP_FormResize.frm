@@ -865,6 +865,7 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
                 Erase dstImageData
                 
                 SetProgBarVal 0
+                releaseProgressBar
                 
             End If
         
