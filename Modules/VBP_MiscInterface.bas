@@ -174,7 +174,7 @@ Public Sub syncInterfaceToCurrentImage()
         'Undo, Redo, and RepeatLast are all closely related
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState
-        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getRedoState
+        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getUndoState
         
         '"Fade last effect" is reserved for filters and effects only, so if the last Undo action was selection-only
         ' (e.g. "feather selection"), do not enable the "Fade Last Effect" menu.
