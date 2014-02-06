@@ -420,8 +420,10 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     If (Not hScrollEnabled) And (Not vScrollEnabled) Then
     
         'Reset the scroll bar values so ScrollViewport doesn't assume we want scrolling
+        dstCanvas.setRedrawSuspension True
         dstCanvas.getHScrollReference.Value = 0
         dstCanvas.getVScrollReference.Value = 0
+        dstCanvas.setRedrawSuspension False
     
         'Hide the scroll bars if necessary
         If dstCanvas.getHScrollReference.Visible Then dstCanvas.getHScrollReference.Visible = False
@@ -498,8 +500,14 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
         dstCanvas.getHScrollReference.Move 0, canvasHeight - dstCanvas.getHScrollReference.Height, viewportWidth, dstCanvas.getHScrollReference.Height
         If (Not dstCanvas.getHScrollReference.Visible) Then dstCanvas.getHScrollReference.Visible = True
     Else
+        
+        'Note that we disable automatic canvas redraws prior to changing the scroll bar value; otherwise, the change will
+        ' force a redraw, and we don't want that yet.
+        dstCanvas.setRedrawSuspension True
         dstCanvas.getHScrollReference.Value = 0
         If dstCanvas.getHScrollReference.Visible Then dstCanvas.getHScrollReference.Visible = False
+        dstCanvas.setRedrawSuspension False
+        
     End If
     
     'Then vertical scroll bar...
@@ -507,8 +515,12 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
         dstCanvas.getVScrollReference.Move canvasWidth - dstCanvas.getVScrollReference.Width, srcImage.imgViewport.getTopOffset, dstCanvas.getVScrollReference.Width, viewportHeight
         If (Not dstCanvas.getVScrollReference.Visible) Then dstCanvas.getVScrollReference.Visible = True
     Else
+    
+        dstCanvas.setRedrawSuspension True
         dstCanvas.getVScrollReference.Value = 0
         If dstCanvas.getVScrollReference.Visible Then dstCanvas.getVScrollReference.Visible = False
+        dstCanvas.setRedrawSuspension False
+        
     End If
     
     'We don't actually render the image here; instead, we prepare the buffer (backBuffer) and store the relevant
