@@ -15,8 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 21/October/13
-'Last update: added additional debug code to individual GetPref subs, to help track down some obscure errors
+'Last updated: 06/February/14
+'Last update: added new failsafes against the possibility of settings corruption.  If the program feels compelled to rewrite the
+'              settings file from scratch (for example, after a series of unsafe shutdowns), certain key settings-related
+'              preset files will also be rewritten.  This should protect against the random bug where the image tabstrip
+'              renders as if top-aligned but is clearly positioned as left-aligned.
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
 ' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
@@ -323,6 +326,12 @@ Private Sub createNewPreferencesFile()
     '     treating the program as if its being run for the first time is as good a plan as any.
     g_IsFirstRun = True
     
+    'As a failsafe against data corruption, if this is determined to be a first run, delete some settings-related
+    ' files in the Presets folder (if they exist)
+    If g_IsFirstRun Then
+        If FileExist(PresetPath & "Program_WindowLocations.xml") Then Kill PresetPath & "Program_WindowLocations.xml"
+    End If
+    
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
@@ -353,7 +362,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Core", "", True
         xmlEngine.writeTag "DisplayIDEWarning", "True"
         xmlEngine.writeTag "FloatingToolbars", "False"
-        xmlEngine.writeTag "FloatingImageWindows", "False"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
         xmlEngine.writeTag "LastFilePreferencesPage", "1"
