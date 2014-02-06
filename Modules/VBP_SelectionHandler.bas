@@ -372,44 +372,44 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
                 'Rectangular and elliptical selections display left, top, width and height
                 Case sRectangle, sCircle
-                    toolbar_Selections.tudSel(0).Value = pdImages(formID).mainSelection.selLeft
-                    toolbar_Selections.tudSel(1).Value = pdImages(formID).mainSelection.selTop
-                    toolbar_Selections.tudSel(2).Value = pdImages(formID).mainSelection.selWidth
-                    toolbar_Selections.tudSel(3).Value = pdImages(formID).mainSelection.selHeight
+                    toolbar_Tools.tudSel(0).Value = pdImages(formID).mainSelection.selLeft
+                    toolbar_Tools.tudSel(1).Value = pdImages(formID).mainSelection.selTop
+                    toolbar_Tools.tudSel(2).Value = pdImages(formID).mainSelection.selWidth
+                    toolbar_Tools.tudSel(3).Value = pdImages(formID).mainSelection.selHeight
                     
                 'Line selections display x1, y1, x2, y2
                 Case sLine
-                    toolbar_Selections.tudSel(0).Value = pdImages(formID).mainSelection.x1
-                    toolbar_Selections.tudSel(1).Value = pdImages(formID).mainSelection.y1
-                    toolbar_Selections.tudSel(2).Value = pdImages(formID).mainSelection.x2
-                    toolbar_Selections.tudSel(3).Value = pdImages(formID).mainSelection.y2
+                    toolbar_Tools.tudSel(0).Value = pdImages(formID).mainSelection.x1
+                    toolbar_Tools.tudSel(1).Value = pdImages(formID).mainSelection.y1
+                    toolbar_Tools.tudSel(2).Value = pdImages(formID).mainSelection.x2
+                    toolbar_Tools.tudSel(3).Value = pdImages(formID).mainSelection.y2
         
             End Select
             
         Else
         
-            For i = 0 To toolbar_Selections.tudSel.Count - 1
-                If toolbar_Selections.tudSel(i).Value <> 0 Then toolbar_Selections.tudSel(i).Value = 0
+            For i = 0 To toolbar_Tools.tudSel.Count - 1
+                If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
             Next i
             
         End If
         
         'Next, sync all non-coordinate information
-        If toolbar_Selections.cmbSelType(0).ListIndex <> pdImages(formID).mainSelection.getSelectionType Then toolbar_Selections.cmbSelType(0).ListIndex = pdImages(formID).mainSelection.getSelectionType
-        If toolbar_Selections.sltSelectionBorder.Value <> pdImages(formID).mainSelection.getBorderSize Then toolbar_Selections.sltSelectionBorder.Value = pdImages(formID).mainSelection.getBorderSize
-        If toolbar_Selections.cmbSelSmoothing(0).ListIndex <> pdImages(formID).mainSelection.getSmoothingType Then toolbar_Selections.cmbSelSmoothing(0).ListIndex = pdImages(formID).mainSelection.getSmoothingType
-        If toolbar_Selections.sltSelectionFeathering.Value <> pdImages(formID).mainSelection.getFeatheringRadius Then toolbar_Selections.sltSelectionFeathering.Value = pdImages(formID).mainSelection.getFeatheringRadius
+        If toolbar_Tools.cmbSelType(0).ListIndex <> pdImages(formID).mainSelection.getSelectionType Then toolbar_Tools.cmbSelType(0).ListIndex = pdImages(formID).mainSelection.getSelectionType
+        If toolbar_Tools.sltSelectionBorder.Value <> pdImages(formID).mainSelection.getBorderSize Then toolbar_Tools.sltSelectionBorder.Value = pdImages(formID).mainSelection.getBorderSize
+        If toolbar_Tools.cmbSelSmoothing(0).ListIndex <> pdImages(formID).mainSelection.getSmoothingType Then toolbar_Tools.cmbSelSmoothing(0).ListIndex = pdImages(formID).mainSelection.getSmoothingType
+        If toolbar_Tools.sltSelectionFeathering.Value <> pdImages(formID).mainSelection.getFeatheringRadius Then toolbar_Tools.sltSelectionFeathering.Value = pdImages(formID).mainSelection.getFeatheringRadius
         
         'Finally, sync any shape-specific information
         Select Case pdImages(formID).mainSelection.getSelectionShape
         
             Case sRectangle
-                If toolbar_Selections.sltCornerRounding.Value <> pdImages(formID).mainSelection.getRoundedCornerAmount Then toolbar_Selections.sltCornerRounding.Value = pdImages(formID).mainSelection.getRoundedCornerAmount
+                If toolbar_Tools.sltCornerRounding.Value <> pdImages(formID).mainSelection.getRoundedCornerAmount Then toolbar_Tools.sltCornerRounding.Value = pdImages(formID).mainSelection.getRoundedCornerAmount
             
             Case sCircle
             
             Case sLine
-                If toolbar_Selections.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.getSelectionLineWidth Then toolbar_Selections.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.getSelectionLineWidth
+                If toolbar_Tools.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.getSelectionLineWidth Then toolbar_Tools.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.getSelectionLineWidth
         
         End Select
         
@@ -419,8 +419,8 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         metaToggle tSelection, False
         metaToggle tSelectionTransform, False
-        For i = 0 To toolbar_Selections.tudSel.Count - 1
-            If toolbar_Selections.tudSel(i).Value <> 0 Then toolbar_Selections.tudSel(i).Value = 0
+        For i = 0 To toolbar_Tools.tudSel.Count - 1
+            If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
         Next i
         
     End If

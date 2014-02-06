@@ -190,6 +190,14 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'To improve performance, we can ask the canvas to not refresh itself until we say so.
+Private m_suspendRedraws As Boolean
+
+'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
+Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
+    m_suspendRedraws = newRedrawValue
+End Sub
+
 Public Property Get BackColor() As Long
     BackColor = UserControl.BackColor
 End Property
@@ -265,6 +273,11 @@ Private Sub cMouseEvents_MouseIn()
 
     'Notify the window manager that toolbars need to be made translucent
     g_WindowManager.notifyMouseMoveOverCanvas
+    
+    'If no images have been loaded, reset the cursor
+    If g_OpenImageCount = 0 Then
+        setArrowCursor Me
+    End If
 
 End Sub
 
@@ -279,6 +292,9 @@ Private Sub UserControl_Initialize()
         'Assign the system hand cursor to all relevant objects
         Set m_ToolTip = New clsToolTip
         'makeFormPretty Me, m_ToolTip
+        
+        'Allow the control to generate its own redraw requests
+        m_suspendRedraws = False
         
     End If
 
@@ -466,8 +482,11 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
         displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
         
         'Any further processing depends on which tool is currently active
-        
         Select Case g_CurrentTool
+        
+            'Drag-to-pan canvas
+            Case NAV_DRAG
+                setInitialCanvasScrollValues FormMain.mainCanvas(0)
         
             'Rectangular selection
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -498,7 +517,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                         ' the selection.
                         Else
                         
-                            toolbar_Selections.selectNewTool getRelevantToolFromSelectType()
+                            toolbar_Tools.selectNewTool getRelevantToolFromSelectType()
                             
                             'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                             pdImages(g_CurrentImage).mainSelection.setBackupParamString
@@ -560,6 +579,11 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
     
         Select Case g_CurrentTool
         
+            'Drag-to-pan canvas
+            Case NAV_DRAG
+                panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+            'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
     
                 'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
@@ -587,6 +611,17 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
     
         Select Case g_CurrentTool
         
+            'Drag-to-navigate
+            Case NAV_DRAG
+            
+                'If the cursor is over the image, change to an arrow cursor
+                If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
+                    setSizeAllCursor Me
+                Else
+                    setArrowCursor Me
+                End If
+        
+            'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
                 'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
@@ -610,9 +645,9 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                         'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                         ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
                         If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                            setArrowCursorToObject Me
+                            setArrowCursor Me
                         Else
-                            setArrowCursorToObject Me
+                            setArrowCursor Me
                         End If
                     
                     End If
@@ -771,9 +806,8 @@ Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button A
     
 End Sub
 
-
 Private Sub HScroll_Change()
-    ScrollViewport pdImages(g_CurrentImage), Me
+    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
 End Sub
 
 Private Sub HScroll_GotFocus()
@@ -781,7 +815,7 @@ Private Sub HScroll_GotFocus()
 End Sub
 
 Private Sub HScroll_Scroll()
-    ScrollViewport pdImages(g_CurrentImage), Me
+    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
 End Sub
 
 Private Sub UserControl_Resize()
@@ -789,7 +823,7 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub VScroll_Change()
-    ScrollViewport pdImages(g_CurrentImage), Me
+    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
 End Sub
 
 Private Sub VScroll_GotFocus()
@@ -797,7 +831,7 @@ Private Sub VScroll_GotFocus()
 End Sub
 
 Private Sub VScroll_Scroll()
-    ScrollViewport pdImages(g_CurrentImage), Me
+    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
 End Sub
 
 'Selection tools utilize a variety of cursors.  To keep the main MouseMove sub clean, cursors are set separately
@@ -878,7 +912,7 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
     'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
     ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Selections.cmbSelType(0).ListIndex, toolbar_Selections.cmbSelSmoothing(0).ListIndex, toolbar_Selections.sltSelectionFeathering.Value, toolbar_Selections.sltSelectionBorder.Value, toolbar_Selections.sltCornerRounding.Value, toolbar_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
     
     'Set the first two coordinates of this selection to this mouseclick's location
     pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y

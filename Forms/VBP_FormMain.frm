@@ -1244,14 +1244,14 @@ Private Sub Form_Load()
     
     'Register all toolbox forms with the window manager
     g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
-    g_WindowManager.registerChildForm toolbar_Selections, TOOLBAR_WINDOW, 3, SELECTION_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Tools, TOOLBAR_WINDOW, 3, SELECTION_TOOLBOX
     g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
     
     'Display the file and tool toolboxes per the user's display settings
     toolbar_File.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_File.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
-    toolbar_Selections.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    toolbar_Tools.Show vbModeless, Me
+    g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
@@ -2297,7 +2297,7 @@ Private Sub mnuLanguages_Click(Index As Integer)
     g_Language.undoTranslations FormMain, True
     g_Language.undoTranslations toolbar_File, True
     g_Language.undoTranslations toolbar_ImageTabs, True
-    g_Language.undoTranslations toolbar_Selections, True
+    g_Language.undoTranslations toolbar_Tools, True
     
     'Apply the new translation
     Message "Applying new translation..."

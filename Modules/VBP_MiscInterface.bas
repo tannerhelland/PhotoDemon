@@ -395,16 +395,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'If selections are not active, clear all the selection value textboxes
             If Not newState Then
-                For i = 0 To toolbar_Selections.tudSel.Count - 1
-                    toolbar_Selections.tudSel(i).Value = 0
+                For i = 0 To toolbar_Tools.tudSel.Count - 1
+                    toolbar_Tools.tudSel(i).Value = 0
                 Next i
             End If
             
             'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
             ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
             ' draw a selection, it already has the attributes they want.
-            For i = 0 To toolbar_Selections.tudSel.Count - 1
-                toolbar_Selections.tudSel(i).Enabled = newState
+            For i = 0 To toolbar_Tools.tudSel.Count - 1
+                toolbar_Tools.tudSel(i).Enabled = newState
             Next i
             
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -434,9 +434,9 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To toolbar_Selections.tudSel.Count - 1
-                If (Not newState) Then toolbar_Selections.tudSel(i).Value = 0
-                toolbar_Selections.tudSel(i).Enabled = newState
+            For i = 0 To toolbar_Tools.tudSel.Count - 1
+                If (Not newState) Then toolbar_Tools.tudSel(i).Value = 0
+                toolbar_Tools.tudSel(i).Enabled = newState
             Next i
         
         '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
@@ -701,7 +701,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Case SELECTION_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(1).Checked
-            g_WindowManager.setWindowVisibility toolbar_Selections.hWnd, FormMain.MnuWindow(1).Checked
+            g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, FormMain.MnuWindow(1).Checked
     
     End Select
     
@@ -996,13 +996,13 @@ Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
     'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
     ' now is an excellent time to update them.
     If iWidth < iHeight Then
-        toolbar_Selections.sltSelectionBorder.Max = iWidth
-        toolbar_Selections.sltCornerRounding.Max = iWidth
-        toolbar_Selections.sltSelectionLineWidth.Max = iHeight
+        toolbar_Tools.sltSelectionBorder.Max = iWidth
+        toolbar_Tools.sltCornerRounding.Max = iWidth
+        toolbar_Tools.sltSelectionLineWidth.Max = iHeight
     Else
-        toolbar_Selections.sltSelectionBorder.Max = iHeight
-        toolbar_Selections.sltCornerRounding.Max = iHeight
-        toolbar_Selections.sltSelectionLineWidth.Max = iWidth
+        toolbar_Tools.sltSelectionBorder.Max = iHeight
+        toolbar_Tools.sltCornerRounding.Max = iHeight
+        toolbar_Tools.sltSelectionLineWidth.Max = iWidth
     End If
     
 End Sub

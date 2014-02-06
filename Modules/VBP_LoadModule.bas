@@ -228,7 +228,7 @@ Public Sub LoadTheProgram()
     ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
     Load toolbar_File
     Load toolbar_ImageTabs
-    Load toolbar_Selections
+    Load toolbar_Tools
         
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
     toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True
