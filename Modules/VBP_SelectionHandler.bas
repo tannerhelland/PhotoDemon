@@ -496,7 +496,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
     Select Case srcImage.mainSelection.getSelectionShape
     
-        Case SELECT_RECT, SELECT_CIRC
+        Case sRectangle, sCircle
     
             'Corners get preference, so check them first.
             Dim nwDist As Double, neDist As Double, seDist As Double, swDist As Double
@@ -577,7 +577,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
                 findNearestSelectionCoordinates = 0
             End If
             
-        Case SELECT_LINE
+        Case sLine
     
             'Line selections are simple - we only care if the mouse is by (x1,y1) or (x2,y2)
             Dim xCoord As Double, yCoord As Double
@@ -848,4 +848,50 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
     End If
     
 End Sub
+
+'The selection engine integrates closely with tool selection (as it needs to know what kind of selection is being
+' created/edited at any given time).  This function is called whenever the selection engine needs to correlate the
+' current tool with a selection type.  When new tools are added, make sure to update this function!
+Public Function getSelectionTypeFromCurrentTool() As SelectionShape
+
+    Select Case g_CurrentTool
+    
+        Case SELECT_RECT
+            getSelectionTypeFromCurrentTool = sRectangle
+            
+        Case SELECT_CIRC
+            getSelectionTypeFromCurrentTool = sCircle
+        
+        Case SELECT_LINE
+            getSelectionTypeFromCurrentTool = sLine
+    
+    End Select
+    
+    'Debug.Print getSelectionTypeFromCurrentTool
+
+End Function
+
+'The inverse of "getSelectionTypeFromCurrentTool", above
+Public Function getRelevantToolFromSelectType() As PDTools
+
+    If g_OpenImageCount > 0 Then
+
+        Select Case pdImages(g_CurrentImage).mainSelection.getSelectionShape
+        
+            Case sRectangle
+                getRelevantToolFromSelectType = SELECT_RECT
+                
+            Case sCircle
+                getRelevantToolFromSelectType = SELECT_CIRC
+            
+            Case sLine
+                getRelevantToolFromSelectType = SELECT_LINE
+        
+        End Select
+    
+    'Debug.Print getRelevantToolFromSelectType
+    
+    End If
+
+End Function
 
