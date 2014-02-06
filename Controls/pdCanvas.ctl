@@ -483,7 +483,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                     If (sCheck <> 0) And pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     
                         'If the selection type matches the current selection tool, start transforming the selection.
-                        If (pdImages(g_CurrentImage).mainSelection.getSelectionShape = g_CurrentTool) Then
+                        If (pdImages(g_CurrentImage).mainSelection.getSelectionShape = getSelectionTypeFromCurrentTool()) Then
                         
                             'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                             pdImages(g_CurrentImage).mainSelection.setBackupParamString
@@ -498,7 +498,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                         ' the selection.
                         Else
                         
-                            toolbar_Selections.selectNewTool pdImages(g_CurrentImage).mainSelection.getSelectionShape
+                            toolbar_Selections.selectNewTool getRelevantToolFromSelectType()
                             
                             'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                             pdImages(g_CurrentImage).mainSelection.setBackupParamString
@@ -878,7 +878,7 @@ Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
     'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
     ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(g_CurrentTool, toolbar_Selections.cmbSelType(0).ListIndex, toolbar_Selections.cmbSelSmoothing(0).ListIndex, toolbar_Selections.sltSelectionFeathering.Value, toolbar_Selections.sltSelectionBorder.Value, toolbar_Selections.sltCornerRounding.Value, toolbar_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Selections.cmbSelType(0).ListIndex, toolbar_Selections.cmbSelSmoothing(0).ListIndex, toolbar_Selections.sltSelectionFeathering.Value, toolbar_Selections.sltSelectionBorder.Value, toolbar_Selections.sltCornerRounding.Value, toolbar_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
     
     'Set the first two coordinates of this selection to this mouseclick's location
     pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y

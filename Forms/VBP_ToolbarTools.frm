@@ -27,8 +27,8 @@ Begin VB.Form toolbar_Selections
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   0
-      Left            =   150
+      Index           =   1
+      Left            =   1230
       TabIndex        =   16
       Top             =   315
       Width           =   720
@@ -451,8 +451,8 @@ Begin VB.Form toolbar_Selections
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   1
-      Left            =   870
+      Index           =   2
+      Left            =   1950
       TabIndex        =   17
       Top             =   315
       Width           =   720
@@ -479,8 +479,8 @@ Begin VB.Form toolbar_Selections
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   2
-      Left            =   1590
+      Index           =   3
+      Left            =   2670
       TabIndex        =   18
       Top             =   315
       Width           =   720
@@ -504,6 +504,56 @@ Begin VB.Form toolbar_Selections
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdTools 
+      Height          =   600
+      Index           =   0
+      Left            =   120
+      TabIndex        =   23
+      Top             =   315
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin VB.Label lblCategory 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "nav"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00606060&
+      Height          =   240
+      Index           =   0
+      Left            =   120
+      TabIndex        =   22
+      Top             =   30
+      Width           =   300
    End
    Begin VB.Line lineMain 
       BorderColor     =   &H80000002&
@@ -530,8 +580,8 @@ Begin VB.Form toolbar_Selections
       EndProperty
       ForeColor       =   &H00606060&
       Height          =   240
-      Index           =   0
-      Left            =   120
+      Index           =   1
+      Left            =   1200
       TabIndex        =   21
       Top             =   30
       Width           =   840
@@ -599,9 +649,9 @@ Private Sub Form_Load()
     'INITIALIZE ALL TOOLS
     
         'Tool button tooltips
-        cmdTools(0).ToolTipText = g_Language.TranslateMessage("Rectangular Selection")
-        cmdTools(1).ToolTipText = g_Language.TranslateMessage("Elliptical (Oval) Selection")
-        cmdTools(2).ToolTipText = g_Language.TranslateMessage("Line Selection")
+        cmdTools(1).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
+        cmdTools(2).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
+        cmdTools(3).ToolTip = g_Language.TranslateMessage("Line Selection")
     
         'Selection visual styles (currently lightbox or highlight)
         toolbar_Selections.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
@@ -668,7 +718,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) > 0 Then
         g_CurrentTool = CLng(lastUsedSettings.retrievePresetData("ActiveSelectionTool"))
     Else
-        g_CurrentTool = SELECT_RECT
+        g_CurrentTool = NAV_DRAG
     End If
     resetToolButtonStates
     
@@ -832,7 +882,7 @@ Private Sub newToolSelected()
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
                 If (g_PreviousTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
-                    pdImages(g_CurrentImage).mainSelection.setSelectionShape g_CurrentTool
+                    pdImages(g_CurrentImage).mainSelection.setSelectionShape sRectangle
                     RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 Else
                     
@@ -854,7 +904,7 @@ Private Sub newToolSelected()
             'If a similar selection is already active, change its shape to match the current tool, then redraw it
             If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
                 If (g_PreviousTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
-                    pdImages(g_CurrentImage).mainSelection.setSelectionShape g_CurrentTool
+                    pdImages(g_CurrentImage).mainSelection.setSelectionShape sCircle
                     RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 Else
                     

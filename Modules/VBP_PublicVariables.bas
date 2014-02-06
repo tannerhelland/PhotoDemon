@@ -42,15 +42,17 @@ Public g_PreviousTool As PDTools
 
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form
 Public Enum PDTools
-    SELECT_RECT = 0
-    SELECT_CIRC = 1
-    SELECT_LINE = 2
+    NAV_DRAG = 0
+    SELECT_RECT = 1
+    SELECT_CIRC = 2
+    SELECT_LINE = 3
 End Enum
 
 #If False Then
-    Const SELECT_RECT = 0
-    Const SELECT_CIRC = 1
-    Const SELECT_LINE = 2
+    Const NAV_DRAG = 0
+    Const SELECT_RECT = 1
+    Const SELECT_CIRC = 2
+    Const SELECT_LINE = 3
 #End If
 
 'How should the selection be rendered?
