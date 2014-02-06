@@ -298,7 +298,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         'Redraw any/all toolbars as well
         toolbar_File.requestMakeFormPretty
         toolbar_ImageTabs.requestMakeFormPretty
-        toolbar_Selections.requestMakeFormPretty
+        toolbar_Tools.requestMakeFormPretty
         
     End If
         

@@ -1,9 +1,9 @@
 VERSION 5.00
-Begin VB.Form toolbar_Selections 
+Begin VB.Form toolbar_Tools 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Selections"
+   Caption         =   " Tools"
    ClientHeight    =   2355
    ClientLeft      =   45
    ClientTop       =   315
@@ -528,6 +528,7 @@ Begin VB.Form toolbar_Selections
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":23B2
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -603,7 +604,7 @@ Begin VB.Form toolbar_Selections
       Y2              =   2000
    End
 End
-Attribute VB_Name = "toolbar_Selections"
+Attribute VB_Name = "toolbar_Tools"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -649,42 +650,43 @@ Private Sub Form_Load()
     'INITIALIZE ALL TOOLS
     
         'Tool button tooltips
+        cmdTools(0).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
         cmdTools(1).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
         cmdTools(2).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
         cmdTools(3).ToolTip = g_Language.TranslateMessage("Line Selection")
     
         'Selection visual styles (currently lightbox or highlight)
-        toolbar_Selections.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
-        For i = 0 To toolbar_Selections.cmbSelRender.Count - 1
-            toolbar_Selections.cmbSelRender(i).AddItem "Lightbox", 0
-            toolbar_Selections.cmbSelRender(i).AddItem "Highlight (Blue)", 1
-            toolbar_Selections.cmbSelRender(i).AddItem "Highlight (Red)", 2
-            toolbar_Selections.cmbSelRender(i).ListIndex = 0
+        toolbar_Tools.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
+        For i = 0 To toolbar_Tools.cmbSelRender.Count - 1
+            toolbar_Tools.cmbSelRender(i).AddItem "Lightbox", 0
+            toolbar_Tools.cmbSelRender(i).AddItem "Highlight (Blue)", 1
+            toolbar_Tools.cmbSelRender(i).AddItem "Highlight (Red)", 2
+            toolbar_Tools.cmbSelRender(i).ListIndex = 0
         Next i
         
         'Selection smoothing (currently none, antialiased, fully feathered)
-        toolbar_Selections.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
-        toolbar_Selections.cmbSelSmoothing(0).AddItem "None", 0
-        toolbar_Selections.cmbSelSmoothing(0).AddItem "Antialiased", 1
+        toolbar_Tools.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
+        toolbar_Tools.cmbSelSmoothing(0).AddItem "None", 0
+        toolbar_Tools.cmbSelSmoothing(0).AddItem "Antialiased", 1
         
         'Previously, live feathering was disallowed on XP or Vista for performance reasons (GDI+ can't be used to blur
         ' the selection mask, and our own code was too slow).  As of 17 Oct '13, I have reinstated live selection
         ' feathering on these OSes using PD's very fast horizontal and vertical blur.  While not perfect, this should
         ' still provide "good enough" performance for smaller images and/or slight feathering.
-        toolbar_Selections.cmbSelSmoothing(0).AddItem "Feathered", 2
-        toolbar_Selections.cmbSelSmoothing(0).ListIndex = 1
+        toolbar_Tools.cmbSelSmoothing(0).AddItem "Feathered", 2
+        toolbar_Tools.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
-        toolbar_Selections.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
-        toolbar_Selections.cmbSelType(0).AddItem "Interior", 0
-        toolbar_Selections.cmbSelType(0).AddItem "Exterior", 1
-        toolbar_Selections.cmbSelType(0).AddItem "Border", 2
-        toolbar_Selections.cmbSelType(0).ListIndex = 0
+        toolbar_Tools.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
+        toolbar_Tools.cmbSelType(0).AddItem "Interior", 0
+        toolbar_Tools.cmbSelType(0).AddItem "Exterior", 1
+        toolbar_Tools.cmbSelType(0).AddItem "Border", 2
+        toolbar_Tools.cmbSelType(0).ListIndex = 0
         
-        toolbar_Selections.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
-        toolbar_Selections.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-        toolbar_Selections.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
-        toolbar_Selections.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
+        toolbar_Tools.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        toolbar_Tools.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+        toolbar_Tools.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+        toolbar_Tools.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
         
         'Load any last-used settings for this form
         Set lastUsedSettings = New pdLastUsedSettings
@@ -809,6 +811,7 @@ Public Sub resetToolButtonStates()
             activeToolPanel = 0
         
         Case Else
+            activeToolPanel = -1
         
     End Select
     
@@ -819,21 +822,21 @@ Public Sub resetToolButtonStates()
     
         'For rectangular selections, show the rounded corners option
         Case SELECT_RECT
-            toolbar_Selections.lblSelection(5).Visible = True
-            toolbar_Selections.sltCornerRounding.Visible = True
-            toolbar_Selections.sltSelectionLineWidth.Visible = False
+            toolbar_Tools.lblSelection(5).Visible = True
+            toolbar_Tools.sltCornerRounding.Visible = True
+            toolbar_Tools.sltSelectionLineWidth.Visible = False
             
         'For elliptical selections, hide the rounded corners option
         Case SELECT_CIRC
-            toolbar_Selections.lblSelection(5).Visible = False
-            toolbar_Selections.sltCornerRounding.Visible = False
-            toolbar_Selections.sltSelectionLineWidth.Visible = False
+            toolbar_Tools.lblSelection(5).Visible = False
+            toolbar_Tools.sltCornerRounding.Visible = False
+            toolbar_Tools.sltSelectionLineWidth.Visible = False
             
         'Line selections also show the rounded corners slider, though they repurpose it for line width
         Case SELECT_LINE
-            toolbar_Selections.lblSelection(5).Visible = True
-            toolbar_Selections.sltCornerRounding.Visible = False
-            toolbar_Selections.sltSelectionLineWidth.Visible = True
+            toolbar_Tools.lblSelection(5).Visible = True
+            toolbar_Tools.sltCornerRounding.Visible = False
+            toolbar_Tools.sltSelectionLineWidth.Visible = True
         
     End Select
     
@@ -860,7 +863,7 @@ Public Sub resetToolButtonStates()
         If i = activeToolPanel Then
             If Not picTools(i).Visible Then
                 picTools(i).Visible = True
-                setArrowCursorToObject picTools(i)
+                setArrowCursor picTools(i)
             End If
         Else
             If picTools(i).Visible Then picTools(i).Visible = False

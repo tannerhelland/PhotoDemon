@@ -252,7 +252,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     
     'Select the relevant tool for this action, if we were supplied one previously
     If getUndoTool > -1 Then
-        toolbar_Selections.selectNewTool getUndoTool
+        toolbar_Tools.selectNewTool getUndoTool
     End If
         
     'Launch the undo bitmap loading routine
@@ -330,7 +330,7 @@ Public Sub RestoreRedoData()
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
-    If getUndoTool > -1 Then toolbar_Selections.selectNewTool getUndoTool
+    If getUndoTool > -1 Then toolbar_Tools.selectNewTool getUndoTool
         
     'Load the Redo bitmap file
     LoadUndo getCurrentUndoFilename(), getUndoProcessType, True
