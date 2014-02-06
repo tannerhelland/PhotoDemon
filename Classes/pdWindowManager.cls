@@ -15,23 +15,22 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 11/January/14
-'Last update: fix z-order issues with floating toolboxes after tool dialogs are raised
+'Last updated: 06/February/14
+'Last update: huge refactoring to account for the removal of floating image windows
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
-' 2014, it became time to rewrite its window method once again - this time, to a dual SDI and MDI environment, separate from
-' the "stock" MDI implementation.  (MDI has a lot of interaction problems, not to mention a host of known bugs that will
-' never be fixed because Microsoft is - rightfully - moving away from the MDI model.  PD still allows for multiple document
-' windows via a custom floating-window system.)
+' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
+' UI trends and research of the past decade.  (MDI has a lot of interaction problems, not to mention a host of known bugs
+' that will never be fixed because Microsoft is - rightfully - moving away from the MDI model.)
 '
 'One unfortunate result of this change is that PhotoDemon must now be responsible for much of its own window handling.  In
 ' particular, child windows must move with the parent window, and all document windows must be managed intelligently.
 ' Top-most behavior must be carefully handled to ensure proper order of the main form, toolboxes, image windows, and various
 ' modal and non-modal dialogs.
 '
-'Thus this class.  The main form, toolbar forms, and image forms are all registered with this handler when they are created.
-' This class manages their placement, styles, opacity, and a host of other minor details.  Additionally, other windows (such
-' as tool dialogs) can be registered on-the-fly if they require special behavior.
+'Thus this class.  The main form, toolbar forms, and any special forms (like progress bars) are all registered with this handler
+' when they are created. This class manages their placement, styles, opacity, and a host of other minor details.  Additionally,
+' other windows (such as tool dialogs) can be registered on-the-fly if they require special behavior.
 '
 'One thing I am particularly adamant about is properly deactivating top-most windows when the user switches to another
 ' application.  I believe I have covered every possible contingency, because errant top-most windows are never something I
@@ -1652,6 +1651,34 @@ Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosin
     
 End Function
 
+'When the mouse moves over the main canvas, use this function to make floating toolbars transparent; similarly, use it to
+' restore toolbar opacity when the mouse leaves
+Public Sub notifyMouseMoveOverCanvas(Optional ByVal mouseIsOver As Boolean = True)
+
+    'Translucency only matters if toolbars are floating; otherwise, we can ignore these requests entirely
+    If toolbarsFloating Then
+    
+        Dim i As Long
+    
+        If mouseIsOver Then
+        
+            For i = 0 To numOfPDWindows - 1
+                If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) Then
+                    pdWindows(i).hasBeenMadeTransparent = True
+                    setWindowTranslucency pdWindows(i).hWnd, INACTIVE_TOOLBOX_OPACITY
+                End If
+            Next i
+        
+        'We don't actually need to handle a FALSE case for mouse over, as translucency is restored by mouse detection
+        ' on the toolbars themselves.
+        Else
+        
+        End If
+        
+    End If
+
+End Sub
+
 'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
 Public Sub notifyImageTabStripResized()
     
@@ -1712,78 +1739,6 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
 
 End Sub
 
-'Whenever a child rect needs to be fit inside a parent rect, use this sub.  It will modify the childRect so that it fits snugly within the parent's
-' client area (including toolbars, if necessary).  If a resize action is requesting the fit, please supply the direction of the resize as the
-' second parameter (as retrieved from the wParam of the window procedure).
-Private Sub restrictRectToParent(ByRef childRect As winRect, Optional ByVal resizeHandle As Long = -1)
-
-    'Get the parent's client window rect (accounting for toolbars, etc)
-    Dim parentRect As winRect
-    getActualMainFormClientRect parentRect
-    
-    Dim parentWidth As Long, parentHeight As Long
-    parentWidth = parentRect.x2 - parentRect.x1
-    parentHeight = parentRect.y2 - parentRect.y1
-    
-    'We will calculate horizontal and vertical differences as necessary, then apply them in one fell swoop after all calculations are complete.
-    Dim hDif As Long, vDif As Long
-    hDif = 0
-    vDif = 0
-    
-    Dim childWidth As Long, childHeight As Long
-    childWidth = childRect.x2 - childRect.x1
-    childHeight = childRect.y2 - childRect.y1
-    
-    'A resize direction has been specified, meaning we may need to shrink the window before checking its position.
-    ' Also, we must take directionality into account to provide a predictable experience.
-    If resizeHandle >= 0 Then
-    
-        'If the user has set the window size too large for the parent's client, force it to fit inside.
-        If childWidth > parentWidth Then
-            If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
-                childRect.x1 = childRect.x2 - parentWidth
-            Else
-                childRect.x2 = childRect.x1 + parentWidth
-            End If
-        End If
-        
-        If childHeight > parentHeight Then
-            If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
-                childRect.y1 = childRect.y2 - parentHeight
-            Else
-                childRect.y2 = childRect.y1 + parentHeight
-            End If
-        End If
-    
-    End If
-    
-    'For both moving and sizing events, we always check positioning.  If this was a resize, the child's size will have already been set to
-    ' fit within the parent, so we can assume the child rect is "fittable".
-    
-    'Check horizontal fit
-    If childRect.x1 < parentRect.x1 Then
-        hDif = parentRect.x1 - childRect.x1
-    ElseIf childRect.x2 > parentRect.x2 Then
-        hDif = parentRect.x2 - childRect.x2
-    End If
-    
-    'Check vertical fit
-    If childRect.y1 < parentRect.y1 Then
-        vDif = parentRect.y1 - childRect.y1
-    ElseIf childRect.y2 > parentRect.y2 Then
-        vDif = parentRect.y2 - childRect.y2
-    End If
-    
-    'Apply any changes to the child rect
-    With childRect
-        .x1 = .x1 + hDif
-        .x2 = .x2 + hDif
-        .y1 = .y1 + vDif
-        .y2 = .y2 + vDif
-    End With
-
-End Sub
-
 'Under certain circumstances (such as PD losing focus), it is important to remove the top-most status of any window types.  Use this
 ' function to do so.  If restoreOriginalZOrder is TRUE, the function will re-enable top-most status for any windows that require it.
 Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boolean = False)
@@ -1797,9 +1752,6 @@ Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boo
                 SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
             End If
         Next i
-        
-        'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-        'restoreActiveImageToForeground "PD gained focus"
         
         'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
         ' sit above any image or toolbar windows.
@@ -1816,12 +1768,6 @@ Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boo
                 SetWindowPos pdWindows(i).hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW
             End If
         Next i
-        
-        'This is a bit funny, but - when resetting zOrder, we need to manually handle the active image last; otherwise, it may look
-        ' as though another image window has mistakenly received focus (even though internally we know it hasn't).
-        'If g_OpenImageCount > 0 Then
-        '    SetWindowPos pdImages(g_CurrentImage).containingForm.hWnd, getDesiredZOrder(i, True), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-        'End If
         
         'If the program has registered any extra windows (e.g. modal dialogs), reset them as well
         If numOfExtraWindows > 0 Then

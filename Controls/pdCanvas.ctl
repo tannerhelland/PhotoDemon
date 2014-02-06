@@ -261,6 +261,13 @@ Public Property Get hDC()
     hDC = UserControl.hDC
 End Property
 
+Private Sub cMouseEvents_MouseIn()
+
+    'Notify the window manager that toolbars need to be made translucent
+    g_WindowManager.notifyMouseMoveOverCanvas
+
+End Sub
+
 Private Sub UserControl_Initialize()
 
     If g_UserModeFix Then
