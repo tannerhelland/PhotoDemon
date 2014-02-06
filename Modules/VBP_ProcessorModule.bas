@@ -1185,7 +1185,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     End If
     
     'Unlock the main form
-    FormMain.Enabled = True
+    If MacroStatus <> MacroBATCH Then FormMain.Enabled = True
     
     'If the user canceled the requested action before it completed, we need to roll back the undo data we created
     If cancelCurrentAction Then
@@ -1216,7 +1216,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     syncInterfaceToCurrentImage
         
     'Finally, after all our work is done, return focus to the main PD window
-    g_WindowManager.requestActivation FormMain.hWnd
+    If MacroStatus <> MacroBATCH Then g_WindowManager.requestActivation FormMain.hWnd
         
     'Mark the processor as ready
     Processing = False
