@@ -153,7 +153,7 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
         If inHoverState Then
         
             'Restore an arrow cursor
-            setArrowCursorToObject picBuffer
+            setArrowCursor picBuffer
             
             'Return scrolling to normal speed
             tmrText.Interval = 17

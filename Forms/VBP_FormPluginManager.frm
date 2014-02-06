@@ -2090,7 +2090,7 @@ Private Sub Form_Load()
     ' Manually force those cursors to arrows to prevent this.
     Dim i As Long
     For i = 0 To picContainer.Count - 1
-        setArrowCursorToObject picContainer(i)
+        setArrowCursor picContainer(i)
     Next i
             
     'Apply visual styles

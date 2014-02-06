@@ -804,13 +804,6 @@ Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
     SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub
 
-'Set a single object to use the arrow cursor
-Public Sub setArrowCursorToObject(ByRef tControl As Object)
-    'tControl.MouseIcon = LoadPicture("")
-    'tControl.MousePointer = 0
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
-End Sub
-
 Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
     SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub

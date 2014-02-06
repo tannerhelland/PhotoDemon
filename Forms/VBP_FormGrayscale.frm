@@ -435,8 +435,8 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    setArrowCursorToObject picChannel
-    setArrowCursorToObject picDecompose
+    setArrowCursor picChannel
+    setArrowCursor picDecompose
     
     'Draw the initial preview
     cmdBar.markPreviewStatus True

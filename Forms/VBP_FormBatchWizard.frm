@@ -3271,7 +3271,7 @@ Private Sub Form_Load()
     'For some reason, the container picture boxes automatically acquire the cursor of children objects.
     ' Manually force those cursors to arrows to prevent this.
     For i = 0 To picContainer.Count - 1
-        setArrowCursorToObject picContainer(i)
+        setArrowCursor picContainer(i)
     Next i
     
     'Cache the translations for words used in high-performance processes
