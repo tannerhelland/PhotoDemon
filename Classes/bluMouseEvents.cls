@@ -550,6 +550,7 @@ Private Sub SubclassWindowProcedure( _
     '`WM_SETCURSOR` _
      <msdn.microsoft.com/en-us/library/windows/desktop/ms648382%28v=vs.85%29.aspx>
     ElseIf wMessage = WM_SETCURSOR Then '-----------------------------------------------
+    
         If IsOut = False And MousePointer > 0 Then
             'If we set the cursor here, in `WM_SETCURSOR` it won't be overrided or _
              replaced by some other action in the wMessage queue _
