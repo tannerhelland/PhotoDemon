@@ -38,7 +38,15 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
         'Calculate a new scroll value
         Dim hOffset As Long
-        hOffset = m_InitHScroll + (initX - curX)
+        hOffset = (initX - curX)
+        
+        'When zoomed-in, sub-pixel scrolling is not allowed.  Compensate for that now
+        If srcImage.currentZoomValue < g_Zoom.getZoom100Index Then
+            hOffset = hOffset / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)
+        End If
+        
+        'Factor in the initial scroll bar value
+        hOffset = m_InitHScroll + hOffset
         
         'If that value lies within the bounds of the scroll bar, apply it
         If (hOffset < srcCanvas.getHScrollReference.Min) Then
@@ -56,7 +64,15 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
         'Calculate a new scroll value
         Dim vOffset As Long
-        vOffset = m_InitVScroll + (initY - curY)
+        vOffset = (initY - curY)
+        
+        'When zoomed-in, sub-pixel scrolling is not allowed.  Compensate for that now
+        If srcImage.currentZoomValue < g_Zoom.getZoom100Index Then
+            vOffset = vOffset / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)
+        End If
+        
+        'Factor in the initial scroll bar value
+        vOffset = m_InitVScroll + vOffset
         
         'If that value lies within the bounds of the scroll bar, apply it
         If (vOffset < srcCanvas.getVScrollReference.Min) Then
