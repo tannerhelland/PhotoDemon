@@ -746,11 +746,17 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
                 
                 DeleteObject monoBmp
                 DeleteObject hBitmap
+                
+                'Debug.Print "Custom cursor (""" & resTitle & """ : " & createCursorFromResource & ") created successfully!"
             
+            Else
+                Debug.Print "GDI+ couldn't create HBITMAP from resource image - sorry!"
             End If
             
             GdipDisposeImage gdiBitmap
-                
+        
+        Else
+            Debug.Print "GDI+ couldn't load resource image - sorry!"
         End If
     
         Set IStream = Nothing
@@ -782,9 +788,22 @@ Public Sub unloadAllCursors()
     
 End Sub
 
-'Use any 32bpp PNG resource as a cursor (yes, it's amazing!)
+'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  When setting the mouse pointer of VB objects, please use
+' setPNGCursorToObject, below.
 Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
     SetClassLong dstHwnd, GCL_HCURSOR, requestCustomCursor(pngTitle, curHotspotX, curHotspotY)
+End Sub
+
+'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  Use this function preferentially over the previous one, if
+' you can.  If a VB object does not have its MousePointer property set to "custom", it will override our attempts to set
+' a custom mouse icon.
+Public Sub setPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
+    
+    'Force VB to use a custom cursor
+    srcObject.MousePointer = vbCustom
+    
+    SetClassLong srcObject.hWnd, GCL_HCURSOR, requestCustomCursor(pngTitle, curHotspotX, curHotspotY)
+    
 End Sub
 
 'Set a single object to use the hand cursor

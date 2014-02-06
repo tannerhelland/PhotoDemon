@@ -486,6 +486,8 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
         
             'Drag-to-pan canvas
             Case NAV_DRAG
+                UserControl.MousePointer = vbCustom
+                setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
                 setInitialCanvasScrollValues FormMain.mainCanvas(0)
         
             'Rectangular selection
@@ -581,6 +583,8 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
         
             'Drag-to-pan canvas
             Case NAV_DRAG
+                UserControl.MousePointer = vbCustom
+                setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
                 panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
             'Selection tools
@@ -616,7 +620,8 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
             
                 'If the cursor is over the image, change to an arrow cursor
                 If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                    setSizeAllCursor Me
+                    UserControl.MousePointer = vbCustom
+                    setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
                 Else
                     setArrowCursor Me
                 End If
@@ -687,6 +692,12 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
     
         Select Case g_CurrentTool
         
+            'Click-to-drag navigation
+            Case NAV_DRAG
+                UserControl.MousePointer = vbCustom
+                setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
+                
+            'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
                 'If a selection was being drawn, lock it into place
@@ -745,7 +756,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
     If Button = vbRightButton Then rMouseDown = False
     
     'makeFormPretty Me
-    setArrowCursorToHwnd UserControl.hWnd
+    'setArrowCursorToHwnd UserControl.hWnd
         
     'Reset the mouse movement tracker
     hasMouseMoved = 0
