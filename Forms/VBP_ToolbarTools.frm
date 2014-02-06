@@ -596,7 +596,12 @@ Private Sub Form_Load()
 
      Dim i As Long
     
-    'INITIALIZE ALL SELECTION TOOLS
+    'INITIALIZE ALL TOOLS
+    
+        'Tool button tooltips
+        cmdTools(0).ToolTipText = g_Language.TranslateMessage("Rectangular Selection")
+        cmdTools(1).ToolTipText = g_Language.TranslateMessage("Elliptical (Oval) Selection")
+        cmdTools(2).ToolTipText = g_Language.TranslateMessage("Line Selection")
     
         'Selection visual styles (currently lightbox or highlight)
         toolbar_Selections.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
