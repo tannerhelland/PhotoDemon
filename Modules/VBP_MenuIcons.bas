@@ -807,9 +807,9 @@ Public Sub setPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As Str
 End Sub
 
 'Set a single object to use the hand cursor
-Public Sub setHandCursor(ByRef tControl As Control)
+Public Sub setHandCursor(ByRef tControl As Object)
     tControl.MouseIcon = LoadPicture("")
-    tControl.MousePointer = 0
+    tControl.MousePointer = 99
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub
 
@@ -823,6 +823,7 @@ End Sub
 
 'Set a single form to use the arrow cursor
 Public Sub setArrowCursor(ByRef tControl As Object)
+    tControl.MousePointer = vbCustom
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 

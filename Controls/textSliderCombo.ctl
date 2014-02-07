@@ -16,6 +16,7 @@ Begin VB.UserControl sliderTextCombo
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   MousePointer    =   99  'Custom
    ScaleHeight     =   33
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
@@ -66,8 +67,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 13/September/13
-'Last update: fix non-96dpi layout issues
+'Last updated: 07/February/14
+'Last update: improve robustness of value error checking
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -206,7 +207,10 @@ Public Property Let Value(ByVal NewValue As Double)
         If hsPrimary <> newScrollVal Then
             
             'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-            If newScrollVal >= hsPrimary.Min And newScrollVal <= hsPrimary.Max Then hsPrimary = newScrollVal
+            If newScrollVal <= hsPrimary.Min Then newScrollVal = hsPrimary.Min
+            If newScrollVal >= hsPrimary.Max Then newScrollVal = hsPrimary.Max
+            
+            hsPrimary = newScrollVal
             
         End If
         

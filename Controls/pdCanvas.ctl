@@ -276,7 +276,7 @@ Private Sub cMouseEvents_MouseIn()
     
     'If no images have been loaded, reset the cursor
     If g_OpenImageCount = 0 Then
-        setArrowCursor Me
+        setArrowCursorToHwnd Me.hWnd
     End If
 
 End Sub
@@ -623,7 +623,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                     UserControl.MousePointer = vbCustom
                     setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
                 Else
-                    setArrowCursor Me
+                    setArrowCursorToHwnd Me.hWnd
                 End If
         
             'Standard selection tools
@@ -650,9 +650,9 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                         'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                         ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
                         If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                            setArrowCursor Me
+                            setArrowCursorToHwnd Me.hWnd
                         Else
-                            setArrowCursor Me
+                            setArrowCursorToHwnd Me.hWnd
                         End If
                     
                     End If
@@ -663,9 +663,9 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                 'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                 ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
                 If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                    setArrowCursor Me
+                    setArrowCursorToHwnd Me.hWnd
                 Else
-                    setArrowCursor Me
+                    setArrowCursorToHwnd Me.hWnd
                 End If
             
         End Select
@@ -867,7 +867,7 @@ Private Sub setSelectionCursor(ByVal transformID As Long)
             Select Case transformID
         
                 Case 0
-                    setArrowCursor Me
+                    setArrowCursorToHwnd Me.hWnd
                 Case 1
                     setSizeNWSECursor Me
                 Case 2
@@ -897,7 +897,7 @@ Private Sub setSelectionCursor(ByVal transformID As Long)
         
             Select Case transformID
                 Case 0
-                    setArrowCursor Me
+                    setArrowCursorToHwnd Me.hWnd
                 Case 1
                     setSizeAllCursor Me
                 Case 2

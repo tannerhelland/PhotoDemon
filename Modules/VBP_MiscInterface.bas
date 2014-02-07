@@ -816,7 +816,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub makeFormPretty(ByRef tForm As Object, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
+Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
@@ -832,6 +832,8 @@ Public Sub makeFormPretty(ByRef tForm As Object, Optional ByRef customTooltips A
         ' list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
         If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
             setHandCursor eControl
+            If (TypeOf eControl Is ComboBox) Then Debug.Print eControl.Name
+            'setHandCursorToHwnd eControl.hWnd
         End If
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
@@ -857,24 +859,12 @@ Public Sub makeFormPretty(ByRef tForm As Object, Optional ByRef customTooltips A
     'FORM STEP 2: subclass this form and force controls to render transparent borders properly.
     g_Themer.requestContainerSubclass tForm.hWnd
     
-    'FORM STEP 3: find any picture boxes on the form that are being used as containers, and subclass them as well
-    For Each eControl In tForm.Controls
-        If (TypeOf eControl Is PictureBox) Then
-            'SubclassFrame eControl.hWnd, False
-        End If
-        
-        'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.
-        If useDoEvents Then DoEvents
-        
-    Next
-    
-    'FORM STEP 4: translate the form (and all controls on it)
+    'FORM STEP 3: translate the form (and all controls on it)
     If g_Language.translationActive And tForm.Enabled Then
         g_Language.applyTranslations tForm, useDoEvents
     End If
     
-    'FORM STEP 5: if a custom tooltip handler was passed in, activate and populate it now.
+    'FORM STEP 4: if a custom tooltip handler was passed in, activate and populate it now.
     If Not (customTooltips Is Nothing) Then
         
         'In rare cases, the custom tooltip handler passed to this function may already be initialized.  Some forms
