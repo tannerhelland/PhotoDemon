@@ -1123,7 +1123,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     End If
     
     'Activate color management for the destination picture box
-    assignDefaultColorProfileToPictureBox dstPicture
+    assignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
     turnOnColorManagementForDC dstPicture.hDC
     
     'Render the image to the picture box
