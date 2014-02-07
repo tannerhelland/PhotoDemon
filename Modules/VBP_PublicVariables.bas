@@ -107,7 +107,7 @@ Public g_LogProgramMessages As Boolean
 'Whether or not we are running in the IDE or compiled
 Public g_IsProgramCompiled As Boolean
 
-'Temporary loading variable to disable Autog_Zoom feature
+'Temporary loading variable to disable Autozoom feature
 Public g_AllowViewportRendering As Boolean
 
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
@@ -249,3 +249,5 @@ Public g_RecentFiles As pdRecentFiles
 ' the main form will forward mousewheel events there; otherwise, the image window gets them.
 Public g_MouseOverImageTabstrip As Boolean
 
+'Global color management setting.  If the user has requested use of custom profiles, this will be set to FALSE.
+Public g_UseSystemColorProfile As Boolean

@@ -165,7 +165,7 @@ End Function
 Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
     
     'If the current user setting is "use system color profile", our job is easy.
-    If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then
+    If g_UseSystemColorProfile Then
         SetICMProfile objectHDC, currentSystemColorProfile
     Else
         
@@ -181,57 +181,12 @@ Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal obj
         
     End If
     
-End Sub
-
-'Assign the default color profile (whether the system profile or the user profile) to a picture box, typically a picture box
-' used as a preview in a tool dialog
-Public Sub assignDefaultColorProfileToPictureBox(ByRef targetPictureBox As PictureBox)
-    
-    'If the current user setting is "use system color profile", our job is easy.
-    If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then
-        SetICMProfile targetPictureBox.hDC, currentSystemColorProfile
-    Else
-        
-        'Use the form's containing monitor to retrieve a matching profile from the preferences file
-        Dim newICMProfile As String
-        newICMProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & MonitorFromWindow(targetPictureBox.hWnd, MONITOR_DEFAULTTONEAREST), "")
-        
-        If Len(newICMProfile) > 0 Then
-            SetICMProfile targetPictureBox.hDC, newICMProfile
-        Else
-            SetICMProfile targetPictureBox.hDC, currentSystemColorProfile
-        End If
-        
-    End If
-    
-End Sub
-
-'Assign the default color profile (whether the system profile or the user profile) to an object.  The object must have
-' an hDC property or this action will fail.
-Public Sub assignDefaultColorProfileToForm(ByRef targetForm As Object)
-    
-    'If the current user setting is "use system color profile", our job is easy.
-    If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then
-        SetICMProfile targetForm.hDC, currentSystemColorProfile
-    Else
-        
-        'Use the form's containing monitor to retrieve a matching profile from the preferences file
-        Dim newICMProfile As String
-        newICMProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & targetForm.currentMonitor, "")
-        
-        If Len(newICMProfile) > 0 Then
-            SetICMProfile targetForm.hDC, newICMProfile
-        Else
-            SetICMProfile targetForm.hDC, currentSystemColorProfile
-        End If
-        
-    End If
-    
     'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
     ' that the function is working), use something similar to the code below.
     'Dim TEST_ICM As String
     'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
     'SetICMProfile targetDC, TEST_ICM
+    
 End Sub
 
 'When PD is first loaded, this function will be called, which caches the current color management file in use by the system

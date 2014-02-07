@@ -292,6 +292,9 @@ Public Sub loadUserSettings()
     g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
     g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
     
+    'For performance reasons, cache the system color management setting
+    g_UseSystemColorProfile = g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True)
+    
     'Initialize a few other settings to default values, despite them not coming from the preferences file
         
     'Mark the Macro recorder as "not recording"
