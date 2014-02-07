@@ -16,6 +16,7 @@ Begin VB.UserControl smartCheckBox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   MousePointer    =   99  'Custom
    ScaleHeight     =   25
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   168

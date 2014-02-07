@@ -17,6 +17,7 @@ Begin VB.UserControl colorSelector
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   MousePointer    =   99  'Custom
    ScaleHeight     =   114
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   312
