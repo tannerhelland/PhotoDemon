@@ -863,7 +863,7 @@ Private Sub processFile(ByVal srcFile As String)
         End If
         
         'DEBUG! Check for certain text entries here
-        'If (shortcutName = "FormVignette") And Len(Trim$(processedText)) > 0 Then MsgBox processedText
+        'If (shortcutName = "FormLens") And Len(Trim$(processedText)) > 0 Then MsgBox processedText
         
         'We now have text in potentially two places: processedText, and processedTextSecondary (for message box titles)
         chkText = Trim$(processedText)
@@ -1302,7 +1302,8 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
         lineNumber = lineNumber + 1
         
         'Some controls may not have a caption.  If this occurs, exit.
-        If (InStr(1, srcLines(lineNumber), "End", vbTextCompare) > 0) And Not (InStr(1, srcLines(lineNumber), "EndProperty", vbTextCompare) > 0) Then
+        ' NOTE: we must use a binary comparison here, or entries with "End" in them will fail to work!
+        If (InStr(1, srcLines(lineNumber), "End", vbBinaryCompare) > 0) And Not (InStr(1, srcLines(lineNumber), "EndProperty", vbBinaryCompare) > 0) Then
             foundCaption = False
             lineNumber = originalLineNumber '+ 1
             Exit Do
