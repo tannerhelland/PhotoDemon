@@ -240,6 +240,7 @@ Begin VB.Form FormRipple
       EndProperty
    End
    Begin VB.Label lblExplanation 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "Set a new center position by clicking the preview window"
       BeginProperty Font 
@@ -252,13 +253,12 @@ Begin VB.Form FormRipple
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   435
+      Height          =   240
       Index           =   0
       Left            =   6120
       TabIndex        =   18
       Top             =   480
-      Width           =   5655
-      WordWrap        =   -1  'True
+      Width           =   4905
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
