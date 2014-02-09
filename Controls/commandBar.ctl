@@ -554,7 +554,7 @@ Private Sub CmdOK_Click()
     For Each eControl In Parent.Controls
         
         'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
-        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then
+        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is smartResize) Then
             
             'Just to be safe, verify matching container hWnd properties
             If eControl.Container.hWnd = UserControl.containerHwnd Then
