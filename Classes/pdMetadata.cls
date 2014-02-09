@@ -83,8 +83,8 @@ Public Function getResolution(ByRef xResolution As Double, ByRef yResolution As 
         End If
         
         'Retrieve X and Y resolution values
-        xResolution = CDblCustom(iMetadata(xResTagIndex).ActualValue)
-        yResolution = CDblCustom(iMetadata(yResTagIndex).ActualValue)
+        xResolution = CDblCustom(iMetadata(xResTagIndex).Value)
+        yResolution = CDblCustom(iMetadata(yResTagIndex).Value)
         
         'If the units are in centimeters, convert them to inches
         If unitIsCentimeters Then
