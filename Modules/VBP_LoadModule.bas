@@ -496,6 +496,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
     End If
         
+        
+    '*************************************************************************************************************************************
+    ' To prevent re-entry problems, forcibly disable the main form
+    '*************************************************************************************************************************************
+    
+    FormMain.Enabled = False
+    
+    
             
     '*************************************************************************************************************************************
     ' Loop through each entry in the sFile() array, loading images as we go
@@ -671,6 +679,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     
         End Select
         
+        DoEvents
+        
         
         
         '*************************************************************************************************************************************
@@ -704,6 +714,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             If isThisPrimaryImage Then Message "Image data loaded successfully."
         End If
         
+        DoEvents
         
         
         '*************************************************************************************************************************************
@@ -739,6 +750,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
+        DoEvents
+        
         
         
         '*************************************************************************************************************************************
@@ -770,6 +783,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         End If
         
+        DoEvents
+        
         
         
         '*************************************************************************************************************************************
@@ -779,6 +794,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         targetImage.updateSize
         If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
         targetImage.currentFileFormat = targetImage.originalFileFormat
+        
+        DoEvents
                 
                 
         
@@ -798,6 +815,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
         End If
         
+        DoEvents
         
         
         '*************************************************************************************************************************************
@@ -824,6 +842,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                         
         End If
         
+        DoEvents
         
                 
         '*************************************************************************************************************************************
@@ -886,7 +905,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             End If
         
         End If
-
+        
+        DoEvents
         
         
         '*************************************************************************************************************************************
@@ -911,6 +931,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Synchronize all other interface elements to match the newly loaded image
             syncInterfaceToCurrentImage
+            
+            DoEvents
         
         
         
@@ -944,6 +966,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
             'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
             FormMain.mainCanvas(0).fixChromeLayout
+            
+            DoEvents
             
         End If
         
@@ -1053,6 +1077,14 @@ PreloadMoreImages:
     'If we have more images to process, now's the time to do it!
     Next thisImage
         
+    
+    '*************************************************************************************************************************************
+    ' As all images have now loaded, re-enable the main form
+    '*************************************************************************************************************************************
+    
+    FormMain.Enabled = True
+    
+    
     
     
     '*************************************************************************************************************************************
