@@ -983,9 +983,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 Message "Metadata retrieved successfully."
                 targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
-            
-                'I hate doing this, but we need to resync the interface to match any metadata discoveries
-                syncInterfaceToCurrentImage
                 
             Else
             
@@ -1008,11 +1005,19 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 
                 Message "Metadata retrieved successfully."
                 targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
-            
-                'I hate doing this, but we need to resync the interface to match any metadata discoveries
-                syncInterfaceToCurrentImage
-            
+                
             End If
+            
+            'Next, retrieve any specific metadata-related entries that may be useful to further processing
+            
+            'First is resolution
+            Dim xResolution As Double, yResolution As Double
+            If targetImage.imgMetadata.getResolution(xResolution, yResolution) Then
+                targetImage.setDPI xResolution, yResolution
+            End If
+            
+            'I hate doing this, but we need to resync the interface to match any metadata discoveries
+            syncInterfaceToCurrentImage
             
         End If
         
