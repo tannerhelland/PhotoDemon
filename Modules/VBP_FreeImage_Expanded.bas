@@ -341,7 +341,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     ' Retrieve generic metadata, like X and Y resolution (if available)
     '****************************************************************************
     
-    dstImage.setDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
+    dstImage.setDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
     
     
     

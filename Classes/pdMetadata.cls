@@ -58,6 +58,82 @@ Private gpsIndex As Long
 'Current metadata export setting for this image
 Private metadataExportPreference As Long
 
+'Retrieve resolution data from the metadata collection, if it exists.  Returns TRUE if resolution metadata entrist exist; FALSE
+' if they do not.  Note that this function always returns resolution in inches.  Pixels per CM measurements will be automatically
+' converted to PPI.
+Public Function getResolution(ByRef xResolution As Double, ByRef yResolution As Double) As Boolean
+
+    On Error GoTo mdResolutionError
+
+    Dim xResTagIndex As Long, yResTagIndex As Long
+
+    If doesTagExist("XResolution", xResTagIndex) And doesTagExist("YResolution", yResTagIndex) Then
+    
+        'Check for the presence of a resolution type.  If the resolution is in CM, we need to convert it to inches.
+        ' Similarly, if no unit is specified, assume inches.
+        Dim unitIsCentimeters As Boolean
+        unitIsCentimeters = False
+        
+        Dim resUnitIndex As Long
+        If doesTagExist("ResolutionUnit", resUnitIndex) Then
+        
+            'Note that 3 is a magic number used by EXIF to indicate CM.  See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
+            If CLng(iMetadata(resUnitIndex).ActualValue) = 3 Then unitIsCentimeters = True
+            
+        End If
+        
+        'Retrieve X and Y resolution values
+        xResolution = CDblCustom(iMetadata(xResTagIndex).ActualValue)
+        yResolution = CDblCustom(iMetadata(yResTagIndex).ActualValue)
+        
+        'If the units are in centimeters, convert them to inches
+        If unitIsCentimeters Then
+            xResolution = xResolution * 0.393700787
+            yResolution = yResolution * 0.393700787
+        End If
+        
+        'Return TRUE!
+        getResolution = True
+    
+    'Resolution tags don't exist.  Return FALSE.
+    Else
+    
+        getResolution = False
+    
+    End If
+    
+    Exit Function
+    
+'If an error occurs, return FALSE
+mdResolutionError:
+
+    getResolution = False
+
+End Function
+
+'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
+' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
+Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1) As Boolean
+
+    doesTagExist = False
+
+    'Scan the metadata collection, looking for the given tag name
+    Dim i As Long
+    For i = 0 To maxMetadataCount - 1
+    
+        'Tag name found!  Mark the index and exit.
+        If StrComp(iMetadata(i).Name, tagName, vbTextCompare) = 0 Then
+        
+            doesTagExist = True
+            tagIndex = i
+            Exit For
+        
+        End If
+        
+    Next i
+
+End Function
+
 'Metadata export preferences are typically handled according a global user setting (settable via Tools -> Options).  When a
 ' new image is loaded, its metadata handling preference will be set to that.  However, some dialogs (e.g. JPEG) allow the user
 ' to override metadata handling for a given image.  In that case, this preference may deviate from the global setting.
