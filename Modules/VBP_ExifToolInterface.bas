@@ -456,6 +456,8 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & "--IFD2:ImageWidth" & vbCrLf & "--IFD2:ImageHeight" & vbCrLf
     cmdParams = cmdParams & "-ImageWidth=" & srcPDImage.Width & vbCrLf & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
     cmdParams = cmdParams & "-ImageHeight=" & srcPDImage.Height & vbCrLf & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
+    cmdParams = cmdParams & "-XResolution=" & srcPDImage.getDPI() & vbCrLf & "-YResolution=" & srcPDImage.getDPI() & vbCrLf
+    cmdParams = cmdParams & "-ResolutionUnit=inches" & vbCrLf
     cmdParams = cmdParams & " -ColorSpace=sRGB" & vbCrLf
     cmdParams = cmdParams & "--Padding" & vbCrLf
     
