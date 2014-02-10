@@ -565,6 +565,7 @@ Private Sub UserControl_Show()
         lblDimensions(0).Caption = g_Language.TranslateMessage("dimensions") & ":"
         lblAspectRatio(0).Caption = g_Language.TranslateMessage("aspect ratio") & ":"
         
+        
         'UPDATE 09 February 14
         'I'm trying a new strategy for auto-alignment, per http://helpx.adobe.com/photoshop/using/resizing-image.html
         ' Photoshop has a lovely layout for their latest resize dialog, using much better alignment than anything I have tried so far.
@@ -580,6 +581,17 @@ Private Sub UserControl_Show()
         If hOffset < 0 Then hOffset = 0
         
         cmdAspectRatio.Left = hOffset
+        
+        'Add tooltips to the form
+        Set m_ToolTip = New clsToolTip
+        
+        m_ToolTip.Create Me
+        m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+        m_ToolTip.DelayTime(ttDelayShow) = 10000
+        
+        m_ToolTip.AddTool cmdAspectRatio, g_Language.TranslateMessage("Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.")
+        m_ToolTip.AddTool cmbWidthUnit, g_Language.TranslateMessage("Change the unit of measurement used to resize the image.")
+        m_ToolTip.AddTool cmbHeightUnit, g_Language.TranslateMessage("Change the unit of measurement used to resize the image.")
         
     End If
 
