@@ -404,9 +404,9 @@ Private Sub cmbResolution_Click()
             'If the user previously had PPCM selected, convert the resolution now
             If previousUnitOfResolution = 1 Then
                 If tudResolution.IsValid(False) Then
-                    tudResolution = getInchesFromCM(tudResolution)
+                    tudResolution = getCMFromInches(tudResolution)
                 Else
-                    tudResolution = initDPI
+                    tudResolution = getCMFromInches(initDPI)
                 End If
             End If
             
@@ -416,9 +416,9 @@ Private Sub cmbResolution_Click()
             'If the user previously had PPI selected, convert the resolution now
             If previousUnitOfResolution = 0 Then
                 If tudResolution.IsValid(False) Then
-                    tudResolution = getCMFromInches(tudResolution)
+                    tudResolution = getInchesFromCM(tudResolution)
                 Else
-                    tudResolution = getCMFromInches(initDPI)
+                    tudResolution = initDPI
                 End If
             End If
     
@@ -477,9 +477,8 @@ Public Property Get imgWidthInPixels() As Long
 End Property
 
 Public Property Let imgWidthInPixels(newWidth As Long)
-    unitSyncingSuspended = True
     cmbWidthUnit.ListIndex = MU_PIXELS
-    cmbHeightUnit.ListIndex = MU_PIXELS
+    unitSyncingSuspended = True
     tudWidth = newWidth
     unitSyncingSuspended = False
     syncDimensions True
@@ -490,9 +489,8 @@ Public Property Get imgHeightInPixels() As Long
 End Property
 
 Public Property Let imgHeightInPixels(newHeight As Long)
-    unitSyncingSuspended = True
     cmbWidthUnit.ListIndex = MU_PIXELS
-    cmbHeightUnit.ListIndex = MU_PIXELS
+    unitSyncingSuspended = True
     tudHeight = newHeight
     unitSyncingSuspended = False
     syncDimensions False
@@ -689,6 +687,7 @@ Public Sub setInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long,
     
     'Set the "previous unit of resolution" to equal PPI, as that is PD's default
     previousUnitOfResolution = 0
+    cmbResolution.ListIndex = 0
     
 End Sub
 
