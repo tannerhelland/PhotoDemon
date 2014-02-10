@@ -401,9 +401,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-
     Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleTypes(cboResample.ListIndex).ProgramID, 0, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPI)
-
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
@@ -411,8 +409,8 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
 
     ucResize.lockAspectRatio = False
-    ucResize.imgWidth = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.imgHeight = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
 
 End Sub
 
@@ -519,9 +517,9 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     srcWidth = pdImages(g_CurrentImage).Width
     srcHeight = pdImages(g_CurrentImage).Height
     
-    'In past versions of the software, we could assume the passed measurements were always in pixels.  That is no
-    ' longer possible, however!  Using the supplied "unit of measurement", convert the passed width and height
-    ' to pixel measurements.
+    'In past versions of the software, we could assume the passed measurements were always in pixels,
+    ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
+    ' width and height values to pixel measurements.
     iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, srcWidth)
     iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, srcHeight)
     
