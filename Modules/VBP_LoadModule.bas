@@ -916,16 +916,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
             
-            If imgFormTitle = "" Then
-                If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                    'g_WindowManager.requestWindowCaptionChange targetImage.containingForm, getFilename(sFile(thisImage))
-                Else
-                    'g_WindowManager.requestWindowCaptionChange targetImage.containingForm, sFile(thisImage)
-                End If
-            Else
-                'g_WindowManager.requestWindowCaptionChange targetImage.containingForm, imgFormTitle
-            End If
-            
             'Create an icon-sized version of this image, which we will use as form's taskbar icon
             If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage
             
