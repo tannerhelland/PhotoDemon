@@ -372,7 +372,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormCanvasSize
             Else
-                FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+                FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5, MU_PIXELS), cParams.GetLong(6, 96)
             End If
         
         'Crop operations

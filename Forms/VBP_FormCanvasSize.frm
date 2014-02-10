@@ -3,7 +3,7 @@ Begin VB.Form FormCanvasSize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Canvas"
-   ClientHeight    =   6915
+   ClientHeight    =   7680
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   9705
@@ -19,7 +19,7 @@ Begin VB.Form FormCanvasSize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   461
+   ScaleHeight     =   512
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
@@ -28,7 +28,7 @@ Begin VB.Form FormCanvasSize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6165
+      Top             =   6930
       Width           =   9705
       _ExtentX        =   17119
       _ExtentY        =   1323
@@ -46,141 +46,101 @@ Begin VB.Form FormCanvasSize
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   8
-      Left            =   3240
-      TabIndex        =   20
-      Top             =   4080
+      Left            =   2040
+      TabIndex        =   12
+      Top             =   4920
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   7
-      Left            =   2640
-      TabIndex        =   19
-      Top             =   4080
+      Left            =   1440
+      TabIndex        =   11
+      Top             =   4920
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   6
-      Left            =   2040
-      TabIndex        =   18
-      Top             =   4080
+      Left            =   840
+      TabIndex        =   10
+      Top             =   4920
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   5
-      Left            =   3240
-      TabIndex        =   17
-      Top             =   3480
+      Left            =   2040
+      TabIndex        =   9
+      Top             =   4320
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   4
-      Left            =   2640
-      TabIndex        =   16
-      Top             =   3480
+      Left            =   1440
+      TabIndex        =   8
+      Top             =   4320
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   3
-      Left            =   2040
-      TabIndex        =   15
-      Top             =   3480
+      Left            =   840
+      TabIndex        =   7
+      Top             =   4320
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   2
-      Left            =   3240
-      TabIndex        =   14
-      Top             =   2880
+      Left            =   2040
+      TabIndex        =   6
+      Top             =   3720
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   1
-      Left            =   2640
-      TabIndex        =   13
-      Top             =   2880
+      Left            =   1440
+      TabIndex        =   5
+      Top             =   3720
       Width           =   570
    End
    Begin VB.CommandButton cmdAnchor 
       Height          =   570
       Index           =   0
-      Left            =   2040
-      TabIndex        =   12
-      Top             =   2880
+      Left            =   840
+      TabIndex        =   4
+      Top             =   3720
       Width           =   570
-   End
-   Begin PhotoDemon.smartCheckBox chkRatio 
-      Height          =   480
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   975
-      Width           =   1770
-      _ExtentX        =   3122
-      _ExtentY        =   847
-      Caption         =   "lock aspect ratio"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.textUpDown tudWidth 
-      Height          =   405
-      Left            =   2880
-      TabIndex        =   1
-      Top             =   705
-      Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Max             =   32767
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.textUpDown tudHeight 
-      Height          =   405
-      Left            =   2880
-      TabIndex        =   2
-      Top             =   1335
-      Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Max             =   32767
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
-      Left            =   2040
-      TabIndex        =   21
-      Top             =   5280
-      Width           =   5895
+      Left            =   840
+      TabIndex        =   13
+      Top             =   6120
+      Width           =   7935
       _ExtentX        =   10398
       _ExtentY        =   873
+   End
+   Begin PhotoDemon.smartResize ucResize 
+      Height          =   2850
+      Left            =   360
+      TabIndex        =   14
+      Top             =   480
+      Width           =   8775
+      _ExtentX        =   15478
+      _ExtentY        =   5027
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblAnchor 
       Appearance      =   0  'Flat
@@ -199,9 +159,9 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   1680
-      TabIndex        =   4
-      Top             =   2520
+      Left            =   360
+      TabIndex        =   1
+      Top             =   3360
       Width           =   1725
    End
    Begin VB.Label lblFill 
@@ -221,9 +181,9 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   1680
-      TabIndex        =   11
-      Top             =   4920
+      Left            =   360
+      TabIndex        =   3
+      Top             =   5760
       Width           =   2235
    End
    Begin VB.Label lblTitle 
@@ -244,141 +204,10 @@ Begin VB.Form FormCanvasSize
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   1680
-      TabIndex        =   10
-      Top             =   240
+      Left            =   360
+      TabIndex        =   2
+      Top             =   120
       Width           =   990
-   End
-   Begin VB.Label lblAspectRatio 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "new aspect ratio will be"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   2055
-      TabIndex        =   9
-      Top             =   1950
-      Width           =   2490
-   End
-   Begin VB.Line Line4 
-      BorderColor     =   &H00808080&
-      X1              =   393
-      X2              =   393
-      Y1              =   57
-      Y2              =   105
-   End
-   Begin VB.Line Line3 
-      BorderColor     =   &H00808080&
-      X1              =   328
-      X2              =   393
-      Y1              =   56
-      Y2              =   56
-   End
-   Begin VB.Line Line2 
-      BorderColor     =   &H00808080&
-      X1              =   328
-      X2              =   393
-      Y1              =   105
-      Y2              =   105
-   End
-   Begin VB.Label lblHeightUnit 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
-      Height          =   375
-      Left            =   4170
-      TabIndex        =   8
-      Top             =   1365
-      Width           =   855
-   End
-   Begin VB.Label lblWidthUnit 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
-      Height          =   480
-      Left            =   4170
-      TabIndex        =   7
-      Top             =   735
-      Width           =   855
-   End
-   Begin VB.Label lblHeight 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "height:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   2040
-      TabIndex        =   6
-      Top             =   1365
-      Width           =   750
-   End
-   Begin VB.Label lblWidth 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "width:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   2040
-      TabIndex        =   5
-      Top             =   735
-      Width           =   675
    End
 End
 Attribute VB_Name = "FormCanvasSize"
@@ -411,10 +240,6 @@ Option Explicit
 ' NOTE: TOOLBOX IMAGES WILL NOT APPEAR IN THE IDE.  YOU MUST COMPILE FIRST.
 Private cImgCtl As clsControlImage
 
-'Used for maintaining ratios when the check box is clicked
-Private wRatio As Double, hRatio As Double
-Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -423,11 +248,6 @@ Dim m_CurrentAnchor As Long
 
 'We must also track which arrows are drawn where on the command button array
 Dim arrowLocations() As String
-
-'If the ratio button is checked, update the height box to reflect the image's current aspect ratio
-Private Sub ChkRatio_Click()
-    If CBool(chkRatio.Value) Then tudHeight = Int((tudWidth * hRatio) + 0.5)
-End Sub
 
 Private Sub fillArrowLocations(ByRef aLocations() As String)
 
@@ -516,16 +336,23 @@ Private Sub cmdBar_AddCustomPresetData()
     cmdBar.addPresetData "currentAnchor", CStr(m_CurrentAnchor)
 End Sub
 
+Private Sub cmdBar_ExtraValidations()
+    If Not ucResize.IsValid(True) Then cmdBar.validationFailed
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Canvas size", , buildParams(tudWidth, tudHeight, m_CurrentAnchor, colorPicker.Color)
+    Process "Canvas size", , buildParams(ucResize.imgWidth, ucResize.imgHeight, m_CurrentAnchor, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPI)
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
-    tudWidth = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    tudHeight = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    
+    ucResize.lockAspectRatio = False
+    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    
 End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
@@ -540,8 +367,9 @@ End Sub
 Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(g_CurrentImage).Width
-    tudHeight.Value = pdImages(g_CurrentImage).Height
+    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    ucResize.lockAspectRatio = True
     
     'Make borders fill with black by default
     colorPicker.Color = RGB(0, 0, 0)
@@ -576,22 +404,12 @@ Private Sub Form_Load()
         Me.ScaleMode = vbPixels
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + 24) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + fixDPI(24)) * Screen.TwipsPerPixelY
         
     End If
     
-    'To prevent aspect ratio changes to one box resulting in recursion-type changes to the other, we only
-    ' allow one box at a time to be updated.
-    allowedToUpdateWidth = True
-    allowedToUpdateHeight = True
-    
-    'Establish ratios
-    wRatio = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
-    hRatio = pdImages(g_CurrentImage).Height / pdImages(g_CurrentImage).Width
-    
     'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(g_CurrentImage).Width
-    tudHeight.Value = pdImages(g_CurrentImage).Height
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
     
     'If the source image is 32bpp, hide the color selection box and change the text to match
     If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then
@@ -610,11 +428,17 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite)
+Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
 
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(g_CurrentImage).Width
     srcHeight = pdImages(g_CurrentImage).Height
+    
+    'In past versions of the software, we could assume the passed measurements were always in pixels,
+    ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
+    ' width and height values to pixel measurements.
+    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, srcWidth)
+    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, srcHeight)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
@@ -686,60 +510,14 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
     
-    'Update the main image's size values
+    'Update the main image's size and DPI values
     pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).setDPI iDPI, iDPI
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Canvas resize"
     
     Message "Finished."
-    
-End Sub
-
-'PhotoDemon now displays an approximate aspect ratio for the selected values.  This can be helpful when
-' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
-Private Sub updateAspectRatio()
-
-    'This sub may be called before all on-screen controls have been filled.  To prevent overflow errors, check for
-    ' DIV-BY-0 in advance.
-    If tudHeight = 0 Then Exit Sub
-
-    Dim wholeNumber As Double, Numerator As Double, Denominator As Double
-    
-    If tudWidth.IsValid And tudHeight.IsValid Then
-        convertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
-        
-        'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-        If CLng(Denominator) = 5 Then
-            Numerator = Numerator * 2
-            Denominator = Denominator * 2
-        End If
-        
-        lblAspectRatio.Caption = g_Language.TranslateMessage("new aspect ratio will be %1:%2", Numerator, Denominator)
-    End If
-
-End Sub
-
-'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
-Private Sub tudHeight_Change()
-    If CBool(chkRatio) And allowedToUpdateWidth Then
-        allowedToUpdateHeight = False
-        tudWidth = Int((tudHeight * wRatio) + 0.5)
-        allowedToUpdateHeight = True
-    End If
-    
-    updateAspectRatio
-    
-End Sub
-
-Private Sub tudWidth_Change()
-    If CBool(chkRatio) And allowedToUpdateHeight Then
-        allowedToUpdateWidth = False
-        tudHeight = Int((tudWidth * hRatio) + 0.5)
-        allowedToUpdateWidth = True
-    End If
-    
-    updateAspectRatio
     
 End Sub
