@@ -8,7 +8,7 @@ Attribute VB_Name = "Math_Functions"
 '             approximate image aspect ratios from width/height values.
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
-' until June 2014.  This module is now used to store all the random bits of specialized math required by the program.
+' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/

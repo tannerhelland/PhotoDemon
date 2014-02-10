@@ -77,13 +77,3 @@ Public Const MOUSESELACCURACY As Double = 8#
 Public Const BIF_RETURNONLYFSDIRS = 1
 Public Const BFFM_INITIALIZED = 1
 Public Const MAX_PATH_LEN = 260
-
-'Units of measurement, as used in PD resize dialogs
-Public Enum MeasurementUnit
-    MU_PERCENT = 0
-    MU_PIXELS = 1
-End Enum
-
-#If False Then
-    Const MU_PERCENT = 0, MU_PIXELS = 1
-#End If

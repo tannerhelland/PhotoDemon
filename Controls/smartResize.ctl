@@ -52,7 +52,7 @@ Begin VB.UserControl smartResize
       Left            =   3600
       Style           =   2  'Dropdown List
       TabIndex        =   7
-      Top             =   600
+      Top             =   615
       Width           =   3015
    End
    Begin VB.ComboBox cmbWidthUnit 
@@ -60,23 +60,23 @@ Begin VB.UserControl smartResize
       Left            =   3600
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   0
+      Top             =   15
       Width           =   3015
    End
    Begin PhotoDemon.textUpDown tudWidth 
-      Height          =   405
+      Height          =   435
       Left            =   2280
       TabIndex        =   0
       Top             =   0
       Width           =   1200
       _ExtentX        =   2117
-      _ExtentY        =   714
+      _ExtentY        =   767
       Min             =   1
       Max             =   32767
       Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -85,19 +85,19 @@ Begin VB.UserControl smartResize
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudHeight 
-      Height          =   405
+      Height          =   435
       Left            =   2280
       TabIndex        =   1
       Top             =   600
       Width           =   1200
       _ExtentX        =   2117
-      _ExtentY        =   714
+      _ExtentY        =   767
       Min             =   1
       Max             =   32767
       Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -195,7 +195,7 @@ Begin VB.UserControl smartResize
       Height          =   285
       Left            =   1530
       TabIndex        =   4
-      Top             =   45
+      Top             =   60
       Width           =   675
    End
    Begin VB.Label lblHeight 
@@ -218,7 +218,7 @@ Begin VB.UserControl smartResize
       Height          =   285
       Left            =   1455
       TabIndex        =   3
-      Top             =   645
+      Top             =   660
       Width           =   750
    End
    Begin VB.Label lblAspectRatio 
@@ -367,9 +367,10 @@ Public Property Let lockAspectRatio(newSetting As Boolean)
     syncDimensions True
 End Property
 
-'Width and height can be set/retrieved from these properties
+'Width and height can be set/retrieved from these properties.  Note that if the current text value for either dimension is invalid,
+' this function will simply return the image's original width/height
 Public Property Get imgWidth() As Long
-    imgWidth = getImageWidthInPixels(cmbWidthUnit.ListIndex)
+    imgWidth = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, , initWidth)
 End Property
 
 Public Property Let imgWidth(newWidth As Long)
@@ -378,7 +379,7 @@ Public Property Let imgWidth(newWidth As Long)
 End Property
 
 Public Property Get imgHeight() As Long
-    imgHeight = getImageHeightInPixels(cmbHeightUnit.ListIndex)
+    imgHeight = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, , initHeight)
 End Property
 
 Public Property Let imgHeight(newHeight As Long)
@@ -408,7 +409,9 @@ Private Sub cmbHeightUnit_Click()
     'Convert the current measurements to the new ones.
     convertUnitsToNewValue previousUnitOfMeasurement, cmbHeightUnit.ListIndex
     
-    'Mark this as the previous unit of measurement.  Future unit conversions will rely on this value to know how to convert the present values.
+    'Mark the new unit as the previous unit of measurement.  Future unit conversions will rely on this value to know how
+    ' to convert their values.  (We must store this separately, because clicking a combo box will instantly change the
+    ' ListIndex, erasing the previous value.)
     previousUnitOfMeasurement = cmbHeightUnit.ListIndex
     
     'Restore automatic synchronization
@@ -449,13 +452,16 @@ Private Sub convertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
 
     'Start by retrieving the old values in pixel measurements
     Dim imgWidthPixels As Double, imgHeightPixels As Double
-    imgWidthPixels = getImageWidthInPixels(oldUnit)
-    imgHeightPixels = getImageHeightInPixels(oldUnit)
+    
+    'If the current width or height value is invalid, note that the convertUnitToPixels function will
+    ' simply return the original dimension.
+    imgWidthPixels = convertUnitToPixels(oldUnit, tudWidth, , initWidth)
+    imgHeightPixels = convertUnitToPixels(oldUnit, tudHeight, , initHeight)
     
     'Use those pixel measurements to retrieve new values in the desired unit of measurement
     Dim newWidth As Double, newHeight As Double
-    newWidth = getCustomWidthValue(newUnit, imgWidthPixels)
-    newHeight = getCustomHeightValue(newUnit, imgHeightPixels)
+    newWidth = convertPixelToOtherUnit(newUnit, imgWidthPixels, , initWidth)
+    newHeight = convertPixelToOtherUnit(newUnit, imgHeightPixels, , initHeight)
     
     'Copy the new values to their respective text boxes
     tudWidth = newWidth
@@ -488,12 +494,14 @@ Public Sub setInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long,
     hRatio = initHeight / initWidth
     
     'Display the initial width/height
+    unitSyncingSuspended = True
     tudWidth = srcWidth
     tudHeight = srcHeight
+    unitSyncingSuspended = False
     
     'Set the "previous unit of measurement" to equal pixels, as that's always how we begin
     previousUnitOfMeasurement = MU_PIXELS
-
+    
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -630,9 +638,10 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
     
     'Because the resize dialog now allows use of units other than pixels (e.g. "percent"), we always provide a width/height pixel
     ' equivalent, in case subsequent conversion functions needs it.
-    Dim imgWidthPixels As Long, imgHeightPixels As Long
-    imgWidthPixels = getImageWidthInPixels(cmbWidthUnit.ListIndex)
-    imgHeightPixels = getImageHeightInPixels(cmbHeightUnit.ListIndex)
+    Dim imgWidthPixels As Double, imgHeightPixels As Double
+    
+    imgWidthPixels = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, , initWidth)
+    imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, , initHeight)
     
     'Synchronization is divided into two possible code paths: synchronizing height to match width, and width to match height.
     ' These could technically be merged down to a single path, but I find it more intuitive to handle them separately (despite
@@ -685,7 +694,11 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
     'Display a relevant aspect ratio for the current
     updateAspectRatio
     
-    RaiseEvent Change(getImageWidthInPixels(cmbWidthUnit.ListIndex), getImageHeightInPixels(cmbHeightUnit.ListIndex), tudWidth, tudHeight)
+    'Update our image width/height in pixel values, so we can raise them as part of the control's Change event
+    imgWidthPixels = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, , initWidth)
+    imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, , initHeight)
+    
+    RaiseEvent Change(imgWidthPixels, imgHeightPixels, tudWidth, tudHeight)
 
 End Sub
 
@@ -696,7 +709,14 @@ Private Sub updateAspectRatio()
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
     If tudWidth.IsValid And tudHeight.IsValid Then
-        convertToFraction getImageWidthInPixels(cmbWidthUnit.ListIndex) / getImageHeightInPixels(cmbHeightUnit.ListIndex), wholeNumber, Numerator, Denominator, 4, 99.9
+    
+        'Retrieve width and height values in pixel amounts
+        Dim imgWidthPixels As Double, imgHeightPixels As Double
+        imgWidthPixels = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, , initWidth)
+        imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, , initHeight)
+        
+        'Convert the floating-point aspect ratio to a fraction
+        convertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
         If CLng(Denominator) = 5 Then
@@ -707,7 +727,7 @@ Private Sub updateAspectRatio()
         lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator
         
         'While we're here, also update the dimensions caption
-        lblDimensions(1).Caption = " " & Int(getImageWidthInPixels(cmbWidthUnit.ListIndex)) & " px   X   " & Int(getImageHeightInPixels(cmbHeightUnit.ListIndex)) & " px"
+        lblDimensions(1).Caption = " " & Int(imgWidthPixels) & " px   X   " & Int(imgHeightPixels) & " px"
     
     Else
         lblAspectRatio(1).Caption = ""
@@ -725,84 +745,14 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
 End Sub
 
-'These functions can be used to return the image's width, in pixels, that corresponds to the user's current input for the width box
-' (taking into account the unit specified in the neighboring dropdown).
-Private Function getImageWidthInPixels(ByVal UnitOfMeasurement As MeasurementUnit) As Double
+'This function is just a thin wrapper to the public convertOtherUnitToPixels function.  The only difference is that this function requests
+' a reference to the actual textUpDown control requesting conversion, and it will automatically validate that control as necessary.
+Private Function convertUnitToPixels(ByVal UnitOfMeasurement As MeasurementUnit, ByRef tudSource As textUpDown, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
-    'If the current width value is invalid, this function will simply return the original image width
-    If Not tudWidth.IsValid Then
-        getImageWidthInPixels = initWidth
+    If tudSource.IsValid(False) Then
+        convertUnitToPixels = convertOtherUnitToPixels(UnitOfMeasurement, tudSource.Value, srcUnitResolution, initPixelValue)
     Else
-
-        'The translation function used depends on the currently selected unit
-        Select Case UnitOfMeasurement
-        
-            'Percent
-            Case MU_PERCENT
-                getImageWidthInPixels = CDbl(tudWidth / 100) * initWidth
-            
-            'Pixels
-            Case MU_PIXELS
-                getImageWidthInPixels = tudWidth
-        
-        End Select
-    
+        convertUnitToPixels = initPixelValue
     End If
-
-End Function
-
-'These functions can be used to return the image's height, in pixels, that corresponds to the user's current input for the height box
-' (taking into account the unit specified in the neighboring dropdown)
-Private Function getImageHeightInPixels(ByVal UnitOfMeasurement As MeasurementUnit) As Double
-
-    'If the current height value is invalid, this function will simply return the original image height
-    If Not tudHeight.IsValid Then
-        getImageHeightInPixels = initHeight
-    Else
-
-        'The translation function used depends on the currently selected unit
-        Select Case UnitOfMeasurement
-        
-            'Percent
-            Case MU_PERCENT
-                getImageHeightInPixels = CDbl(tudHeight / 100) * initHeight
-            
-            'Pixels
-            Case MU_PIXELS
-                getImageHeightInPixels = tudHeight
-        
-        End Select
-        
-    End If
-
-End Function
-
-'Given a width measurement in pixels, convert it to some other unit of measurement
-Private Function getCustomWidthValue(ByVal UnitOfMeasurement As MeasurementUnit, ByVal srcPixelWidth As Double) As Double
-
-    Select Case UnitOfMeasurement
-    
-        Case MU_PERCENT
-            getCustomWidthValue = (srcPixelWidth / initWidth) * 100
-        
-        Case MU_PIXELS
-            getCustomWidthValue = srcPixelWidth
-    
-    End Select
-
-End Function
-
-'Given a height measurement in pixels, convert it to some other unit of measurement
-Private Function getCustomHeightValue(ByVal UnitOfMeasurement As MeasurementUnit, ByVal srcPixelHeight As Double) As Double
-
-    Select Case UnitOfMeasurement
-    
-        Case MU_PERCENT
-            getCustomHeightValue = (srcPixelHeight / initHeight) * 100
-        
-        Case MU_PIXELS
-            getCustomHeightValue = srcPixelHeight
-    
-    End Select
 
 End Function
