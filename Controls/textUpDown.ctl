@@ -66,8 +66,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / UpDown custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 13/September/13
-'Last update: fix non-96dpi layout issues
+'Last updated: 10/February/14
+'Last update: add additional safety checks when changing significant digits, min, and max values; this was
+'              necessary to avoid issues when switching between units on the resize dialog.
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -238,7 +239,15 @@ End Property
 Public Property Let Min(ByVal NewValue As Double)
     
     controlMin = NewValue
-    vsPrimary.Max = -1 * controlMin * (10 ^ significantDigits)
+    
+    'As a failsafe, make sure the max value does not exceed the scroll bar's limits
+    Dim newScrollLimit As Long
+    newScrollLimit = -1 * controlMin * (10 ^ significantDigits)
+    
+    If newScrollLimit < -32765 Then newScrollLimit = -32765
+    If newScrollLimit > 32765 Then newScrollLimit = 32765
+    
+    vsPrimary.Max = newScrollLimit
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
@@ -260,7 +269,15 @@ End Property
 Public Property Let Max(ByVal NewValue As Double)
     
     controlMax = NewValue
-    vsPrimary.Min = -1 * controlMax * (10 ^ significantDigits)
+    
+    'As a failsafe, make sure the max value does not exceed the scroll bar's limits
+    Dim newScrollLimit As Long
+    newScrollLimit = -1 * controlMax * (10 ^ significantDigits)
+    
+    If newScrollLimit < -32765 Then newScrollLimit = -32765
+    If newScrollLimit > 32765 Then newScrollLimit = 32765
+    
+    vsPrimary.Min = newScrollLimit
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
@@ -283,9 +300,19 @@ Public Property Let SigDigits(ByVal NewValue As Long)
     
     significantDigits = NewValue
     
+    'Calculate new max/min values, and make sure they stay within VB Int limits
+    Dim newMin As Long, newMax As Long
+    newMax = -1 * controlMin * (10 ^ significantDigits)
+    newMin = -1 * controlMax * (10 ^ significantDigits)
+    
+    If newMax < -32765 Then newMax = -32765
+    If newMax > 32765 Then newMax = 32765
+    If newMin < -32765 Then newMin = -32765
+    If newMin > 32765 Then newMin = 32765
+    
     'Update the scroll bar's min and max values accordingly
-    vsPrimary.Max = -1 * controlMin * (10 ^ significantDigits)
-    vsPrimary.Min = -1 * controlMax * (10 ^ significantDigits)
+    vsPrimary.Max = newMax
+    vsPrimary.Min = newMin
     
     PropertyChanged "SigDigits"
     
