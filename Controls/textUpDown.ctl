@@ -194,7 +194,7 @@ End Property
 Public Property Let Value(ByVal NewValue As Double)
     
     'Don't make any changes unless the new value deviates from the existing one
-    If NewValue <> controlVal Then
+    If (NewValue <> controlVal) Or (Not IsValid(False)) Then
     
         'Internally track the value of the control
         controlVal = NewValue
@@ -214,7 +214,12 @@ Public Property Let Value(ByVal NewValue As Double)
         
         'Mirror the value to the text box
         If Not textBoxInitiated Then
-            If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+            If (Not IsValid(False)) Then
+                txtPrimary = getFormattedStringValue(controlVal)
+                shpError.Visible = False
+            Else
+                If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+            End If
         End If
         
         'Mark the value property as being changed, and raise the corresponding event.
