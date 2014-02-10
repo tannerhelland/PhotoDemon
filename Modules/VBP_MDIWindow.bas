@@ -36,15 +36,6 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     
     Set pdImages(g_NumOfImagesLoaded) = New pdImage
     
-    'Assign it a 32bpp icon matching the PD one; this will be overwritten momentarily, but as the user may sneak a peak
-    ' if the image takes a long time to load (e.g. RAW photos), it's nice to display something other than the crappy
-    ' stock VB form icon.
-    'SetIcon newImageForm.hWnd, "AAA", False
-    
-    'IMPORTANT: the form tag is the only way we can keep track of separate forms
-    'DO NOT CHANGE THIS TAG VALUE!
-    'newImageForm.Tag = g_NumOfImagesLoaded
-    
     'Remember this ID in the associated image class
     pdImages(g_NumOfImagesLoaded).IsActive = True
     pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
@@ -63,18 +54,10 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     g_WindowManager.getActualMainFormClientRect mainClientRect
     pdImages(g_NumOfImagesLoaded).WindowLeft = mainClientRect.x1
     pdImages(g_NumOfImagesLoaded).WindowTop = mainClientRect.y1
-    'newImageForm.Left = 0
-    'newImageForm.Top = g_cMonitors.DesktopHeight * Screen.TwipsPerPixelY
     
     'Previously we used the .Show event here to display the form, but we now rely on the window manager to handle this
     ' later in the load process.  (This reduces flicker while loading images.)
     'If MacroStatus <> MacroBATCH Then newImageForm.Show vbModeless, FormMain
-    
-    'Use the window manager to properly assign the main form ownership over this window
-    'g_WindowManager.requestNewOwner newImageForm.hWnd, FormMain.hWnd
-    
-    'Supply a temporary caption (again, only necessary if the image takes a long time to load)
-    'newImageForm.Caption = g_Language.TranslateMessage("Loading image...")
     
     'Set this image as the current one
     g_CurrentImage = g_NumOfImagesLoaded

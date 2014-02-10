@@ -30,7 +30,8 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 '
 'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
-'Those code modules are no longer relevant to the current implementation, but I thought it worthwhile to mention them.
+'Those code modules are no longer relevant to the current implementation, but I thought it worthwhile to mention them
+' in case others find them useful.
 '
 'This project was originally designed against v9.37 of ExifTool (14 Sep '13).  While I do test newer versions, it's
 ' impossible to test all metadata possibilities, so problems may arise if used with other versions of the software.
