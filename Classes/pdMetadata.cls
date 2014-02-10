@@ -88,8 +88,8 @@ Public Function getResolution(ByRef xResolution As Double, ByRef yResolution As 
         
         'If the units are in centimeters, convert them to inches
         If unitIsCentimeters Then
-            xResolution = xResolution * 0.393700787
-            yResolution = yResolution * 0.393700787
+            xResolution = getInchesFromCM(xResolution)
+            yResolution = getInchesFromCM(yResolution)
         End If
         
         'Return TRUE!

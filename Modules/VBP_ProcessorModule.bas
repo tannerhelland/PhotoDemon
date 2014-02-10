@@ -25,7 +25,7 @@ Attribute VB_Name = "Processor"
 Option Explicit
 Option Compare Text
 
-'Data type for tracking processor calls - used for macros (NOTE: this is the 2014 model; older models are no longer supported.)
+'Data type for tracking processor calls - used for macros (NOTE: this is the 2013 model; older models are no longer supported.)
 Public Type ProcessCall
     Id As String
     Dialog As Boolean
@@ -358,7 +358,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormResize
             Else
-                FormResize.ResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetByte(3), cParams.GetLong(4), cParams.GetLong(5)
+                FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96)
             End If
         
         Case "Content-aware resize"

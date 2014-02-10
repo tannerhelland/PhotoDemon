@@ -3,7 +3,7 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   5505
+   ClientHeight    =   5805
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   9645
@@ -19,7 +19,7 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   367
+   ScaleHeight     =   387
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   643
    ShowInTaskbar   =   0   'False
@@ -53,18 +53,18 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   1560
+      Left            =   840
       Style           =   2  'Dropdown List
       TabIndex        =   2
-      Top             =   3360
-      Width           =   6255
+      Top             =   3960
+      Width           =   7935
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   4755
+      Top             =   5055
       Width           =   9645
       _ExtentX        =   17013
       _ExtentY        =   1323
@@ -80,13 +80,13 @@ Begin VB.Form FormResize
       AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.smartResize ucResize 
-      Height          =   2295
-      Left            =   1200
+      Height          =   2850
+      Left            =   480
       TabIndex        =   1
       Top             =   480
-      Width           =   6975
-      _ExtentX        =   12303
-      _ExtentY        =   4048
+      Width           =   8775
+      _ExtentX        =   15478
+      _ExtentY        =   5027
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -99,9 +99,9 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   480
-      Left            =   1560
+      Left            =   840
       TabIndex        =   3
-      Top             =   3840
+      Top             =   4440
       Width           =   2265
       _ExtentX        =   3995
       _ExtentY        =   847
@@ -142,7 +142,7 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   1200
+      Left            =   480
       TabIndex        =   9
       Top             =   120
       Width           =   990
@@ -205,9 +205,9 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   1200
+      Left            =   480
       TabIndex        =   4
-      Top             =   2880
+      Top             =   3480
       Width           =   1470
    End
 End
@@ -402,7 +402,7 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
 
-    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleTypes(cboResample.ListIndex).ProgramID, 0, colorPicker.Color)
+    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleTypes(cboResample.ListIndex).ProgramID, 0, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPI)
 
 End Sub
 
@@ -419,9 +419,9 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
+    ucResize.unitOfMeasurement = MU_PIXELS
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
     ucResize.lockAspectRatio = True
-    ucResize.UnitOfMeasurement = MU_PIXELS
     
     'Use friendly resample names by default
     chkNames.Value = vbUnchecked
@@ -509,7 +509,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resampleMethod As Byte, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite)
+Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
 
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
@@ -518,6 +518,12 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(g_CurrentImage).Width
     srcHeight = pdImages(g_CurrentImage).Height
+    
+    'In past versions of the software, we could assume the passed measurements were always in pixels.  That is no
+    ' longer possible, however!  Using the supplied "unit of measurement", convert the passed width and height
+    ' to pixel measurements.
+    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, srcWidth)
+    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, srcHeight)
     
     Select Case fitMethod
     
@@ -728,8 +734,9 @@ Public Sub ResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, ByVal resamp
     'We are finished with the temporary DIB, so release it
     Set tmpDIB = Nothing
     
-    'Update the main image's size values
+    'Update the main image's size and DPI values
     pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).setDPI iDPI, iDPI
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
