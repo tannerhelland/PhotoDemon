@@ -22,25 +22,33 @@ Option Explicit
 Public Enum MeasurementUnit
     MU_PERCENT = 0
     MU_PIXELS = 1
+    MU_INCHES = 2
+    MU_CENTIMETERS = 3
 End Enum
 
 #If False Then
-    Const MU_PERCENT = 0, MU_PIXELS = 1
+    Const MU_PERCENT = 0, MU_PIXELS = 1, MU_INCHES = 2, MU_CENTIMETERS = 3
 #End If
 
 'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
 ' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
 ' or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.
-Public Function convertPixelToOtherUnit(ByVal UnitOfMeasurement As MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Public Function convertPixelToOtherUnit(ByVal unitOfMeasurement As MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
-    Select Case UnitOfMeasurement
+    Select Case unitOfMeasurement
     
         Case MU_PERCENT
             convertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
         
         Case MU_PIXELS
             convertPixelToOtherUnit = srcPixelValue
+            
+        Case MU_INCHES
+            convertPixelToOtherUnit = srcPixelValue / srcPixelResolution
+        
+        Case MU_CENTIMETERS
+            convertPixelToOtherUnit = getCMFromInches(srcPixelValue / srcPixelResolution)
     
     End Select
 
@@ -51,10 +59,10 @@ End Function
 ' optional parameters may also be necessary: a resolution, expressed as PPI (needed to convert from absolute measurements like
 ' inches or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.  Note that in the unique case of percent,
 ' the "srcUnitValue" will be the percent used for conversion (as a percent, e.g. 100.0 for 100%).
-Public Function convertOtherUnitToPixels(ByVal UnitOfMeasurement As MeasurementUnit, ByVal srcUnitValue As Double, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Public Function convertOtherUnitToPixels(ByVal unitOfMeasurement As MeasurementUnit, ByVal srcUnitValue As Double, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
     'The translation function used depends on the currently selected unit
-    Select Case UnitOfMeasurement
+    Select Case unitOfMeasurement
     
         'Percent
         Case MU_PERCENT
@@ -63,7 +71,24 @@ Public Function convertOtherUnitToPixels(ByVal UnitOfMeasurement As MeasurementU
         'Pixels
         Case MU_PIXELS
             convertOtherUnitToPixels = srcUnitValue
+        
+        'Inches
+        Case MU_INCHES
+            convertOtherUnitToPixels = srcUnitValue * srcUnitResolution
+        
+        'CM
+        Case MU_CENTIMETERS
+            convertOtherUnitToPixels = getInchesFromCM(srcUnitValue) * srcUnitResolution
             
     End Select
     
+End Function
+
+'Basic metric/imperial conversions for length
+Public Function getInchesFromCM(ByVal srcCM As Double) As Double
+    getInchesFromCM = srcCM * 0.393700787
+End Function
+
+Public Function getCMFromInches(ByVal srcInches As Double) As Double
+    getCMFromInches = srcInches * 2.54
 End Function

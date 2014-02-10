@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 31/January/14
-'Last update: add read/write preset support for the new "SmartResize" user control
+'Last updated: 10/February/14
+'Last update: add read/write preset support for resize UC unit of measurement and DPI
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -966,7 +966,9 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "smartResize"
-                controlValue = CStr(eControl.imgWidth) & "|" & CStr(eControl.imgHeight) & "|" & CStr(eControl.lockAspectRatio)
+                controlValue = CStr(eControl.imgWidth) & "|" & CStr(eControl.imgHeight) & "|" & CStr(eControl.lockAspectRatio) _
+                                & "|" & CStr(eControl.unitOfMeasurement) & "|" & CStr(eControl.imgDPI)
+                
         
         End Select
         
@@ -1119,6 +1121,9 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
                     ' aspect ratio!)
                     eControl.lockAspectRatio = False
+                    
+                    eControl.unitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
+                    eControl.imgDPI = cParam.GetLong(5, 96)
                     
                     eControl.imgWidth = cParam.GetDouble(1, 1920)
                     eControl.imgHeight = cParam.GetDouble(2, 1080)
