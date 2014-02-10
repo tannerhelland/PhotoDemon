@@ -402,7 +402,7 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
 
-    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleTypes(cboResample.ListIndex).ProgramID, cmbFit.ListIndex, colorPicker.Color)
+    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleTypes(cboResample.ListIndex).ProgramID, 0, colorPicker.Color)
 
 End Sub
 
