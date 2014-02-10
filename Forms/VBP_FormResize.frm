@@ -394,9 +394,7 @@ Private Sub cmbFit_Click()
 End Sub
 
 Private Sub cmdBar_ExtraValidations()
-
     If Not ucResize.IsValid(True) Then cmdBar.validationFailed
-    
 End Sub
 
 'OK button

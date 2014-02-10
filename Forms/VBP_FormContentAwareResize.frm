@@ -3,7 +3,7 @@ Begin VB.Form FormResizeContentAware
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Content-aware resize"
-   ClientHeight    =   3420
+   ClientHeight    =   4275
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   9705
@@ -19,7 +19,7 @@ Begin VB.Form FormResizeContentAware
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   228
+   ScaleHeight     =   285
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
@@ -28,7 +28,7 @@ Begin VB.Form FormResizeContentAware
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   2670
+      Top             =   3525
       Width           =   9705
       _ExtentX        =   17119
       _ExtentY        =   1323
@@ -43,18 +43,17 @@ Begin VB.Form FormResizeContentAware
       EndProperty
       AutoloadLastPreset=   -1  'True
    End
-   Begin PhotoDemon.textUpDown tudWidth 
-      Height          =   405
-      Left            =   3960
+   Begin PhotoDemon.smartResize ucResize 
+      Height          =   2850
+      Left            =   480
       TabIndex        =   1
-      Top             =   705
-      Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Max             =   32767
+      Top             =   480
+      Width           =   8775
+      _ExtentX        =   15478
+      _ExtentY        =   5027
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -62,49 +61,7 @@ Begin VB.Form FormResizeContentAware
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.textUpDown tudHeight 
-      Height          =   405
-      Left            =   3960
-      TabIndex        =   2
-      Top             =   1335
-      Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   714
-      Max             =   32767
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.Label lblWarning 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "WARNING! This tool is currently under heavy development.  It may not work as intended."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   1815
-      Left            =   120
-      TabIndex        =   9
-      Top             =   720
-      Visible         =   0   'False
-      Width           =   2775
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
+   Begin VB.Label lblSize 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
@@ -121,121 +78,10 @@ Begin VB.Form FormResizeContentAware
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Index           =   0
-      Left            =   3120
-      TabIndex        =   8
-      Top             =   240
+      Left            =   480
+      TabIndex        =   2
+      Top             =   120
       Width           =   990
-   End
-   Begin VB.Label lblAspectRatio 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "new aspect ratio will be"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3135
-      TabIndex        =   7
-      Top             =   2040
-      Width           =   2490
-   End
-   Begin VB.Label lblHeightUnit 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
-      Height          =   375
-      Left            =   5250
-      TabIndex        =   6
-      Top             =   1365
-      Width           =   855
-   End
-   Begin VB.Label lblWidthUnit 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
-      Height          =   480
-      Left            =   5250
-      TabIndex        =   5
-      Top             =   735
-      Width           =   855
-   End
-   Begin VB.Label lblHeight 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "height:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3120
-      TabIndex        =   4
-      Top             =   1365
-      Width           =   750
-   End
-   Begin VB.Label lblWidth 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "width:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3120
-      TabIndex        =   3
-      Top             =   735
-      Width           =   675
    End
 End
 Attribute VB_Name = "FormResizeContentAware"
@@ -284,50 +130,43 @@ Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+Private Sub cmdBar_ExtraValidations()
+    If Not ucResize.IsValid(True) Then cmdBar.validationFailed
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Content-aware resize", , buildParams(tudWidth, tudHeight)
+    Process "Content-aware resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPI)
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
-    tudWidth = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    tudHeight = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    
+    ucResize.lockAspectRatio = False
+    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    
 End Sub
 
 Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(g_CurrentImage).Width
-    tudHeight.Value = pdImages(g_CurrentImage).Height
+    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    ucResize.lockAspectRatio = True
     
 End Sub
 
-'Upon form activation, determine the ratio between the width and height of the image
-Private Sub Form_Activate()
+'LOAD dialog
+Private Sub Form_Load()
+    
+    'Automatically set the width and height text boxes to match the image's current dimensions
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-        
-End Sub
-
-'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
-Private Sub Form_Load()
-    
-    'To prevent aspect ratio changes to one box resulting in recursion-type changes to the other, we only
-    ' allow one box at a time to be updated.
-    allowedToUpdateWidth = True
-    allowedToUpdateHeight = True
-    
-    'Establish ratios
-    wRatio = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
-    hRatio = pdImages(g_CurrentImage).Height / pdImages(g_CurrentImage).Width
-    
-    'Automatically set the width and height text boxes to match the image's current dimensions
-    tudWidth.Value = pdImages(g_CurrentImage).Width
-    tudHeight.Value = pdImages(g_CurrentImage).Height
     
 End Sub
 
@@ -336,12 +175,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Small wrapper for the seam carve function
-Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
+Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
 
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+    
+    'In past versions of the software, we could assume the passed measurements were always in pixels,
+    ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
+    ' width and height values to pixel measurements.
+    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, pdImages(g_CurrentImage).Width)
+    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).Height)
     
     'Pass the temporary DIB to the master seam carve function
     SeamCarveDIB tmpDIB, iWidth, iHeight
@@ -350,8 +195,9 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long)
     pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
     
-    'Update the main image's size values
+    'Update the main image's size and DPI values
     pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).setDPI iDPI, iDPI
     DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
     
     'Fit the new image on-screen and redraw its viewport
@@ -404,36 +250,3 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     If Not cancelCurrentAction Then srcDIB.createFromExistingDIB seamCarver.getCarvedImage()
     
 End Function
-
-'PhotoDemon now displays an approximate aspect ratio for the selected values.  This can be helpful when
-' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
-Private Sub updateAspectRatio()
-
-    'This sub may be called before all on-screen controls have been filled.  To prevent overflow errors, check for
-    ' DIV-BY-0 in advance.
-    If tudHeight = 0 Then Exit Sub
-
-    Dim wholeNumber As Double, Numerator As Double, Denominator As Double
-    
-    If tudWidth.IsValid And tudHeight.IsValid Then
-        convertToFraction tudWidth / tudHeight, wholeNumber, Numerator, Denominator, 4, 99.9
-        
-        'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-        If CLng(Denominator) = 5 Then
-            Numerator = Numerator * 2
-            Denominator = Denominator * 2
-        End If
-        
-        lblAspectRatio.Caption = g_Language.TranslateMessage("new aspect ratio will be %1:%2", Numerator, Denominator)
-    End If
-
-End Sub
-
-'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
-Private Sub tudHeight_Change()
-    updateAspectRatio
-End Sub
-
-Private Sub tudWidth_Change()
-    updateAspectRatio
-End Sub

@@ -365,7 +365,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormResizeContentAware
             Else
-                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2)
+                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96)
             End If
         
         Case "Canvas size"
