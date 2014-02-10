@@ -832,8 +832,6 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         ' list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
         If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
             setHandCursor eControl
-            If (TypeOf eControl Is ComboBox) Then Debug.Print eControl.Name
-            'setHandCursorToHwnd eControl.hWnd
         End If
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
