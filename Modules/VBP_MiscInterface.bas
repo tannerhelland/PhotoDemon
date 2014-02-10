@@ -121,6 +121,9 @@ Public Sub syncInterfaceToCurrentImage()
                 
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
+        'Assign a generic caption to the main window
+        FormMain.Caption = getPhotoDemonNameAndVersion()
+        
         'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
         destroyAllIcons
         setNewTaskbarIcon origIcon32, FormMain.hWnd
@@ -162,7 +165,10 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tImageOps, True
         metaToggle tEffects, True
         metaToggle tMacro, True
-                
+        
+        'Display this image's path in the title bar.
+        FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
+        
         'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
         ' the image has not already been saved in its current state.
         
@@ -973,6 +979,44 @@ Public Sub ReleaseFormTheming(ByRef tForm As Object)
     g_Themer.releaseContainerSubclass tForm.hWnd
     Set tForm = Nothing
 End Sub
+
+'Given a pdImage object, generate an appropriate caption for the main PhotoDemon window.
+Private Function getWindowCaption(ByRef srcImage As pdImage) As String
+
+    Dim captionBase As String
+    captionBase = ""
+    
+    'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
+    ' but better safe than sorry!
+    If Len(srcImage.originalFileNameAndExtension) > 0 Then
+    
+        'This image has a filename!  Next, check the user's preference for long or short window captions
+        If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
+            
+            'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
+            captionBase = srcImage.originalFileNameAndExtension
+        Else
+        
+            'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
+            ' and use just the filename.
+            If Len(srcImage.locationOnDisk) > 0 Then
+                captionBase = srcImage.locationOnDisk
+            Else
+                captionBase = srcImage.originalFileNameAndExtension
+            End If
+            
+        End If
+    
+    'This image does not have a filename.  Assign it a default title.
+    Else
+        captionBase = g_Language.TranslateMessage("[untitled image]")
+    End If
+    
+    'Append the current PhotoDemon version number and exit
+    getWindowCaption = captionBase & "  -  " & getPhotoDemonNameAndVersion()
+
+End Function
+
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
