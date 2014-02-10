@@ -1100,7 +1100,11 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.Value = CLng(controlValue)
                     
                 Case "ListBox", "ComboBox"
-                    eControl.ListIndex = CLng(controlValue)
+                    If CLng(controlValue) < eControl.ListCount Then
+                        eControl.ListIndex = CLng(controlValue)
+                    Else
+                        eControl.ListIndex = eControl.ListCount - 1
+                    End If
                     
                 Case "TextBox"
                     eControl.Text = controlValue
