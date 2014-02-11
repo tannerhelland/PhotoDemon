@@ -3,7 +3,7 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   6450
+   ClientHeight    =   7500
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   9630
@@ -19,7 +19,7 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   430
+   ScaleHeight     =   500
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
@@ -37,7 +37,7 @@ Begin VB.Form FormResize
       Height          =   360
       Left            =   840
       Style           =   2  'Dropdown List
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   3960
       Visible         =   0   'False
       Width           =   7935
@@ -54,11 +54,11 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   11760
+      Left            =   840
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   960
-      Width           =   6255
+      Top             =   5640
+      Width           =   7935
    End
    Begin VB.ComboBox cboResampleTechnical 
       BeginProperty Font 
@@ -83,7 +83,7 @@ Begin VB.Form FormResize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5700
+      Top             =   6750
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
@@ -136,11 +136,12 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
-      Left            =   11760
+      Left            =   840
       TabIndex        =   7
-      Top             =   1800
-      Width           =   5415
-      _ExtentX        =   9551
+      ToolTipText     =   "Click to change the color used for empty borders"
+      Top             =   6120
+      Width           =   7935
+      _ExtentX        =   13996
       _ExtentY        =   873
    End
    Begin VB.Label lblSize 
@@ -161,35 +162,16 @@ Begin VB.Form FormResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   480
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   120
       Width           =   990
-   End
-   Begin VB.Label lblFitDescriptions 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "                                                                           "
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   210
-      Left            =   11760
-      TabIndex        =   8
-      Top             =   1425
-      Width           =   4500
    End
    Begin VB.Label lblFit 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "fit image to new size by:"
+      Caption         =   "when changing aspect ratio, fit image to new size by:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -201,10 +183,10 @@ Begin VB.Form FormResize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   11400
+      Left            =   480
       TabIndex        =   5
-      Top             =   480
-      Width           =   2610
+      Top             =   5160
+      Width           =   5655
    End
    Begin VB.Label lblResample 
       Appearance      =   0  'Flat
@@ -410,31 +392,10 @@ Private Sub chkNames_Click()
 End Sub
 
 Private Sub cmbFit_Click()
-
-    'When the fit option is changed, change the hint text to match
-    Select Case cmbFit.ListIndex
-    
-        'Stretch
-        Case 0
-            lblFitDescriptions.Caption = g_Language.TranslateMessage("if aspect ratio changes, the final image may look distorted")
-        
-        'Fit inclusive
-        Case 1
-            If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32 Then
-                lblFitDescriptions.Caption = g_Language.TranslateMessage("if aspect ratio changes, transparent borders may exist")
-            Else
-                lblFitDescriptions.Caption = g_Language.TranslateMessage("if aspect ratio changes, empty borders will be filled with:")
-            End If
-        
-        'Fit exclusive
-        Case 2
-            lblFitDescriptions.Caption = g_Language.TranslateMessage("if aspect ratio changes, some cropping may occur")
-            
-    End Select
     
     'Hide the color picker as necessary
     If cmbFit.ListIndex = 1 Then
-        If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth <> 32 Then colorPicker.Visible = True
+        colorPicker.Visible = True
     Else
         colorPicker.Visible = False
     End If
@@ -457,7 +418,7 @@ Private Sub cmdBar_OKClick()
         resampleAlgorithm = resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ProgramID
     End If
     
-    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, 0, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI)
+    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI)
     
 End Sub
 
@@ -468,13 +429,6 @@ Private Sub cmdBar_RandomizeClick()
     ucResize.lockAspectRatio = False
     ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
     ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
-
-End Sub
-
-Private Sub cmdBar_ReadCustomPresetData()
-
-    'Automatically set the width and height text boxes to match the image's current dimensions
-    'ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
 
 End Sub
 
@@ -498,10 +452,6 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-Private Sub colorPicker_ColorChanged()
-    cmbFit.ListIndex = 1
-End Sub
-
 Private Sub Form_Activate()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
@@ -519,9 +469,13 @@ Private Sub Form_Load()
     
     'Populate the "fit" options
     cmbFit.Clear
-    cmbFit.AddItem "stretching as necessary", 0
-    cmbFit.AddItem "fitting smallest dimension"
-    cmbFit.AddItem "fitting largest dimension"
+    cmbFit.AddItem "stretching to new size  (default)", 0
+    If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32 Then
+        cmbFit.AddItem "fitting inclusively, with transparent borders as necessary", 1
+    Else
+        cmbFit.AddItem "fitting inclusively, with colored borders as necessary", 1
+    End If
+    cmbFit.AddItem "fitting exclusively, and cropping as necessary", 2
     cmbFit.ListIndex = 0
     
     'Automatically set the width and height text boxes to match the image's current dimensions.  (Note that we must
@@ -534,6 +488,7 @@ Private Sub Form_Load()
     cboResampleFriendly.ToolTipText = g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
     cboResampleTechnical.ToolTipText = g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
     chkNames.ToolTipText = g_Language.TranslateMessage("By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.")
+    cmbFit.ToolTipText = g_Language.TranslateMessage("When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.")
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
