@@ -62,6 +62,10 @@ Private mouseHandler As bluMouseEvents
 'The control's current color
 Private curColor As OLE_COLOR
 
+Public Property Get hWnd() As Long
+    hWnd = UserControl.hWnd
+End Property
+
 'At present, all this control does is store a color value
 Public Property Get Color() As OLE_COLOR
     Color = curColor
