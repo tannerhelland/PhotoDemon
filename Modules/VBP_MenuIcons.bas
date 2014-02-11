@@ -214,7 +214,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "RESIZE", 3, 4         'Resize
     addMenuIcon "SMRTRESIZE", 3, 5     'Content-aware resize
     addMenuIcon "CANVASSIZE", 3, 6     'Canvas resize
-    addMenuIcon "CROPSEL", 3, 7        'Crop to Selection
+    addMenuIcon "CROPSEL", 3, 8        'Crop to Selection
     addMenuIcon "AUTOCROP", 3, 9      'Autocrop
     addMenuIcon "ROTATECW", 3, 11      'Rotate top-level
         '--> Rotate sub-menu
