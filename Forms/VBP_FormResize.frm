@@ -394,7 +394,7 @@ End Sub
 Private Sub cmbFit_Click()
     
     'Hide the color picker as necessary
-    If cmbFit.ListIndex = 1 Then
+    If (cmbFit.ListIndex = 1) And (pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32) Then
         colorPicker.Visible = True
     Else
         colorPicker.Visible = False
@@ -469,13 +469,13 @@ Private Sub Form_Load()
     
     'Populate the "fit" options
     cmbFit.Clear
-    cmbFit.AddItem "stretching to new size  (default)", 0
+    cmbFit.AddItem " stretching to new size  (default)", 0
     If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32 Then
-        cmbFit.AddItem "fitting inclusively, with transparent borders as necessary", 1
+        cmbFit.AddItem " fitting inclusively, with transparent borders as necessary", 1
     Else
-        cmbFit.AddItem "fitting inclusively, with colored borders as necessary", 1
+        cmbFit.AddItem " fitting inclusively, with colored borders as necessary", 1
     End If
-    cmbFit.AddItem "fitting exclusively, and cropping as necessary", 2
+    cmbFit.AddItem " fitting exclusively, and cropping as necessary", 2
     cmbFit.ListIndex = 0
     
     'Automatically set the width and height text boxes to match the image's current dimensions.  (Note that we must
