@@ -98,8 +98,8 @@ Option Explicit
   '   e. At a minimum, review shk_SetHook, shk_Unhook & shk_TerminateHooks
   
     '-SelfHook specific declarations----------------------------------------------------------------------------
-    Private Declare Function SetWindowsHookExA Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadId As Long) As Long
-    Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadId As Long) As Long
+    Private Declare Function SetWindowsHookExA Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
+    Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
     Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
         Private Declare Function GetDesktopWindow Lib "user32" () As Long
     
@@ -396,13 +396,13 @@ Public Sub ssc_DelMsg(ByVal lng_hWnd As Long, ByVal When As eMsgWhen, ParamArray
 End Sub
 
 'Let the subclasser lParamUser callback parameter
-Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal newValue As Long)
+Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal NewValue As Long)
     ' can be removed if you never will retrieve or replace the user-defined parameter
     If vType <> CallbackThunk Then
         Dim z_ScMem       As Long         'Thunk base address
         z_ScMem = zMap_VFunction(hWnd_Hook_ID, vType)
         If z_ScMem Then                 'Ensure that the thunk hasn't already released its memory
-          zData(IDX_PARM_USER, z_ScMem) = newValue                                         'Set the lParamUser callback parameter
+          zData(IDX_PARM_USER, z_ScMem) = NewValue                                         'Set the lParamUser callback parameter
         End If
     End If
 End Sub
