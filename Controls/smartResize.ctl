@@ -355,7 +355,7 @@ Private previousUnitOfMeasurement As MeasurementUnit
 
 'Similar to changing measurement units for width/height, the user can also switch between PPI and PPCM for resolution.
 ' However, because this does not offer percent and measurement values, we track it separately.
-Private previousUnitOfResolution As Long
+Private previousUnitOfResolution As ResolutionUnit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -399,10 +399,10 @@ Private Sub cmbResolution_Click()
     Select Case cmbResolution.ListIndex
     
         'Current unit is PPI
-        Case 0
+        Case RU_PPI
         
             'If the user previously had PPCM selected, convert the resolution now
-            If previousUnitOfResolution = 1 Then
+            If previousUnitOfResolution = RU_PPCM Then
                 If tudResolution.IsValid(False) Then
                     tudResolution = getCMFromInches(tudResolution)
                 Else
@@ -411,10 +411,10 @@ Private Sub cmbResolution_Click()
             End If
             
         'Current unit is PPCM
-        Case 1
+        Case RU_PPCM
         
             'If the user previously had PPI selected, convert the resolution now
-            If previousUnitOfResolution = 0 Then
+            If previousUnitOfResolution = RU_PPI Then
                 If tudResolution.IsValid(False) Then
                     tudResolution = getInchesFromCM(tudResolution)
                 Else
@@ -527,6 +527,19 @@ End Property
 
 'Resolution can be set/retrieved via this property.  Note that if the current text value for resolution is invalid,
 ' this function will simply return the image's original resolution.
+Public Property Get imgDPIAsPPI() As Long
+    If tudResolution.IsValid(False) Then
+        imgDPIAsPPI = getResolutionAsPPI()
+    Else
+        imgDPIAsPPI = initDPI
+    End If
+End Property
+
+Public Property Let imgDPIAsPPI(newDPI As Long)
+    tudResolution = newDPI
+    syncDimensions True
+End Property
+
 Public Property Get imgDPI() As Long
     If tudResolution.IsValid(False) Then
         imgDPI = tudResolution
@@ -547,6 +560,15 @@ End Property
 
 Public Property Let unitOfMeasurement(newUnit As MeasurementUnit)
     cmbWidthUnit.ListIndex = newUnit
+End Property
+
+'The current unit of resolution (e.g. PPI).
+Public Property Get unitOfResolution() As ResolutionUnit
+    unitOfResolution = cmbResolution.ListIndex
+End Property
+
+Public Property Let unitOfResolution(newUnit As ResolutionUnit)
+    cmbResolution.ListIndex = newUnit
 End Property
 
 Private Sub cmbHeightUnit_Click()
@@ -686,8 +708,8 @@ Public Sub setInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long,
     previousUnitOfMeasurement = MU_PIXELS
     
     'Set the "previous unit of resolution" to equal PPI, as that is PD's default
-    previousUnitOfResolution = 0
-    cmbResolution.ListIndex = 0
+    previousUnitOfResolution = RU_PPI
+    cmbResolution.ListIndex = RU_PPI
     
 End Sub
 
@@ -734,7 +756,7 @@ Private Sub UserControl_Initialize()
     cmbResolution.Clear
     cmbResolution.AddItem " pixels / inch (PPI)"
     cmbResolution.AddItem " pixels / centimeter (PPCM)"
-    cmbResolution.ListIndex = 0
+    cmbResolution.ListIndex = RU_PPI
     
     'Restore automatic unit syncing
     unitSyncingSuspended = False
@@ -973,7 +995,7 @@ Private Function getResolutionAsPPI() As Double
     If tudResolution.IsValid Then
     
         'cmbResolution only has two entries: inches (0), and cm (1).
-        If cmbResolution.ListIndex = 0 Then
+        If cmbResolution.ListIndex = RU_PPI Then
             getResolutionAsPPI = tudResolution
         Else
             getResolutionAsPPI = getInchesFromCM(tudResolution)
