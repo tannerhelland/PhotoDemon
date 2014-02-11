@@ -3,10 +3,10 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Image"
-   ClientHeight    =   5805
+   ClientHeight    =   6450
    ClientLeft      =   45
    ClientTop       =   225
-   ClientWidth     =   9645
+   ClientWidth     =   9630
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,10 +19,29 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   387
+   ScaleHeight     =   430
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   643
+   ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
+   Begin VB.ComboBox cboResampleFriendly 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   840
+      Style           =   2  'Dropdown List
+      TabIndex        =   10
+      Top             =   3960
+      Visible         =   0   'False
+      Width           =   7935
+   End
    Begin VB.ComboBox cmbFit 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -41,7 +60,7 @@ Begin VB.Form FormResize
       Top             =   960
       Width           =   6255
    End
-   Begin VB.ComboBox cboResample 
+   Begin VB.ComboBox cboResampleTechnical 
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -64,9 +83,9 @@ Begin VB.Form FormResize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5055
-      Width           =   9645
-      _ExtentX        =   17013
+      Top             =   5700
+      Width           =   9630
+      _ExtentX        =   16986
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -77,7 +96,6 @@ Begin VB.Form FormResize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
@@ -242,123 +260,153 @@ Private Type resampleAlgorithm
 End Type
 
 Dim resampleTypes() As resampleAlgorithm
-Dim numResamples As Long
+Dim numResamples() As Long
 Dim lastSelectedResample As Long
+
+Private Enum ResampleNameType
+    rsFriendly = 0
+    rsTechnical = 1
+End Enum
+
+#If False Then
+    Const rsFriendly = 0, rsTechnical = 1
+#End If
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-Private Sub addResample(ByVal rName As String, ByVal rID As Long)
-    resampleTypes(numResamples).Name = rName
-    resampleTypes(numResamples).ProgramID = rID
-    numResamples = numResamples + 1
-    ReDim Preserve resampleTypes(0 To numResamples) As resampleAlgorithm
+'Whenever the user toggles technical and friendly resample options, this sub is called.  It will translate between
+' friendly and technical choices, as well as displaying the proper combo box.
+Private Sub switchResampleOption()
+
+    Dim i As Long
+
+    'Technical names
+    If CBool(chkNames) Then
+    
+        'Show a descriptive label
+        lblResample.Caption = g_Language.TranslateMessage("resampling algorithm:")
+    
+        'Show the proper combo box
+        cboResampleTechnical.Visible = True
+        cboResampleFriendly.Visible = False
+        
+        'Find the list entry that corresponds to the current "friendly name" option
+'        For i = 0 To numResamples(rsTechnical) - 1
+'            If resampleTypes(rsTechnical, i).ProgramID = resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ProgramID Then
+'                cboResampleTechnical.ListIndex = i
+'                Exit For
+'            End If
+'        Next i
+    
+    'Friendly names are selected
+    Else
+    
+        'Show a descriptive label
+        lblResample.Caption = g_Language.TranslateMessage("resampling quality:")
+        
+        'Show the proper combo box
+        cboResampleFriendly.Visible = True
+        cboResampleTechnical.Visible = False
+        
+'        'Find the list entry that corresponds to the current "technical name" option.  If one does not exist,
+'        ' select "Best for photographs"
+'        Dim entryFound As Boolean
+'        entryFound = False
+'
+'        For i = 0 To numResamples(rsFriendly) - 1
+'            If resampleTypes(rsFriendly, i).ProgramID = resampleTypes(rsTechnical, cboResampleTechnical.ListIndex).ProgramID Then
+'                entryFound = True
+'                cboResampleFriendly.ListIndex = i
+'                Exit For
+'            End If
+'        Next i
+'
+'        'No friendly entry was found that matches the user's selected technical entry.  Select "best for photographs".
+'        If Not entryFound Then cboResampleFriendly.ListIndex = 0
+        
+    End If
+    
+End Sub
+
+'Used by refillResampleBoxes, below, to keep track of what resample algorithms we have available
+Private Sub addResample(ByVal rName As String, ByVal rID As Long, ByVal rCategory As ResampleNameType)
+    resampleTypes(rCategory, numResamples(rCategory)).Name = rName
+    resampleTypes(rCategory, numResamples(rCategory)).ProgramID = rID
+    numResamples(rCategory) = numResamples(rCategory) + 1
 End Sub
 
 'Display all available resample algorithms in the combo box (contingent on the "show technical names" check box as well)
-Private Sub refillResampleBox(Optional ByVal isFirstTime As Boolean = False)
+Private Sub refillResampleBoxes()
 
-    ReDim resampleTypes(0) As resampleAlgorithm
-    numResamples = 0
-
-    'Use friendly names
-    If Not CBool(chkNames) Then
-        
-        lblResample.Caption = g_Language.TranslateMessage("resampling method:")
-        
-        'FreeImage is required for best output.  Without it, only a small number of resample algorithms are implemented.
-        If g_ImageFormats.FreeImageEnabled Then
-            addResample g_Language.TranslateMessage("best for photographs"), RESIZE_LANCZOS
-            addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BICUBIC_MITCHELL
-            addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL
-        Else
-            addResample g_Language.TranslateMessage("best for photographs"), RESIZE_BILINEAR
-            addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_HALFTONE
-            addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL
-        End If
+    'Resample Types stores resample data for two combo boxes: one that displays "friendly" names (0),
+    ' and one that displays "technical" ones (1).  The numResamples() array stores the number of
+    ' resample algorithms available as "friendly" entries (0) and "technical" entries (1).
+    ReDim resampleTypes(0 To 1, 0 To 20) As resampleAlgorithm
+    ReDim numResamples(0 To 1) As Long
     
-    'Use technical names
+    'Start with the "friendly" names options.  If FreeImage is available, we will map the friendly
+    ' names to more advanced resample algorithms.  Without it, we are stuck with standard algorithms.
+    If g_ImageFormats.FreeImageEnabled Then
+        addResample g_Language.TranslateMessage("best for photographs"), RESIZE_LANCZOS, rsFriendly
+        addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BICUBIC_MITCHELL, rsFriendly
+        addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
     Else
-        
-        lblResample.Caption = g_Language.TranslateMessage("resampling algorithm:")
-        
-        'Prepare a list of available resample algorithms
-        addResample g_Language.TranslateMessage("Nearest Neighbor"), RESIZE_NORMAL
-        addResample g_Language.TranslateMessage("Halftone"), RESIZE_HALFTONE
-        addResample g_Language.TranslateMessage("Bilinear"), RESIZE_BILINEAR
-        
-        'If the FreeImage library is available, add additional resize options to the combo box
-        If g_ImageFormats.FreeImageEnabled Then
-            addResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE
-            addResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL
-            addResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL
-            addResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), RESIZE_LANCZOS
-        End If
-                
+        addResample g_Language.TranslateMessage("best for photographs"), RESIZE_BILINEAR, rsFriendly
+        addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_HALFTONE, rsFriendly
+        addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
     End If
     
-    'Populate the combo box
-    cboResample.Clear
+    'Next, populate the "technical" names options.  This list should expose every algorithm we have
+    ' access to.  Again, if FreeImage is available, far more options exist.
+    addResample g_Language.TranslateMessage("Nearest Neighbor"), RESIZE_NORMAL, rsTechnical
+    addResample g_Language.TranslateMessage("Halftone"), RESIZE_HALFTONE, rsTechnical
+    addResample g_Language.TranslateMessage("Bilinear"), RESIZE_BILINEAR, rsTechnical
+    
+    'If the FreeImage library is available, add additional resize options to the combo box
+    If g_ImageFormats.FreeImageEnabled Then
+        addResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE, rsTechnical
+        addResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL, rsTechnical
+        addResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL, rsTechnical
+        addResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), RESIZE_LANCZOS, rsTechnical
+    End If
+    
+    'Populate the Friendly combo box with friendly names, and the Technical box with technical ones.
     Dim i As Long
-    For i = 0 To numResamples - 1
-        cboResample.AddItem " " & resampleTypes(i).Name, i
+    
+    cboResampleFriendly.Clear
+    For i = 0 To numResamples(rsFriendly) - 1
+        cboResampleFriendly.AddItem " " & resampleTypes(rsFriendly, i).Name, i
     Next i
     
-    'If this is the first time we are filling the combo box, provide an intelligent default setting
-    If isFirstTime Then
+    cboResampleTechnical.Clear
+    For i = 0 To numResamples(rsTechnical) - 1
+        cboResampleTechnical.AddItem " " & resampleTypes(rsTechnical, i).Name, i
+    Next i
     
-        'Friendly names
-        If Not CBool(chkNames) Then
-            cboResample.ListIndex = 0
-            
-        'Technical names
+    'Intelligently select default values for the user.
+    
+    'Technical drop-down:
+    
+        'FreeImage enabled; select Bicubic (Catmull-Rom)
+        If g_ImageFormats.FreeImageEnabled Then
+            cboResampleTechnical.ListIndex = 5
+        
+        'FreeImage not enabled; select Bilinear
         Else
-        
-            'FreeImage enabled
-            If g_ImageFormats.FreeImageEnabled Then
-                cboResample.ListIndex = 5
-                
-            'FreeImage not enabled
-            Else
-                cboResample.ListIndex = 2
-            End If
-        
-        End If
-    
-    'If this is not the first time we are creating a list of resample methods, re-select whatever method the
-    ' user had previously selected (if available; otherwise, redirect them to the best general-purpose algorithm)
-    Else
-    
-        Dim targetResampleMethod As Long
-        targetResampleMethod = lastSelectedResample
-        
-        'Some technical options are not available under friendly names, so redirect them to something similar
-        If CBool(chkNames) And g_ImageFormats.FreeImageEnabled Then
-            Select Case lastSelectedResample
-                Case 1 To 3
-                    targetResampleMethod = RESIZE_BICUBIC_CATMULL
-            End Select
+            cboResampleTechnical.ListIndex = 2
         End If
         
-        'Find the matching resample method in the new combo box
-        For i = 0 To cboResample.ListCount - 1
-            If resampleTypes(i).ProgramID = targetResampleMethod Then
-                cboResample.ListIndex = i
-                Exit For
-            End If
-        Next i
+    'Friendly drop-down:
     
-    End If
-
-End Sub
-
-Private Sub cboResample_Click()
-    lastSelectedResample = resampleTypes(cboResample.ListIndex).ProgramID
+        'Always select "best for photos"
+        cboResampleFriendly.ListIndex = 0
+    
 End Sub
 
 'New to v6.0, PhotoDemon gives the user friendly resample names by default.  They can toggle these off at their liking.
 Private Sub chkNames_Click()
-    refillResampleBox
+    switchResampleOption
 End Sub
 
 Private Sub cmbFit_Click()
@@ -399,7 +447,18 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleTypes(cboResample.ListIndex).ProgramID, 0, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPI)
+    
+    'Retrieve the resample type selected by the user, which will vary depending on whether they used
+    ' "technical" names or "friendly" ones.
+    Dim resampleAlgorithm As Long
+    If CBool(chkNames) Then
+        resampleAlgorithm = resampleTypes(rsTechnical, cboResampleTechnical.ListIndex).ProgramID
+    Else
+        resampleAlgorithm = resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ProgramID
+    End If
+    
+    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, 0, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI)
+    
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
@@ -412,6 +471,13 @@ Private Sub cmdBar_RandomizeClick()
 
 End Sub
 
+Private Sub cmdBar_ReadCustomPresetData()
+
+    'Automatically set the width and height text boxes to match the image's current dimensions
+    'ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+
+End Sub
+
 Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
@@ -420,8 +486,9 @@ Private Sub cmdBar_ResetClick()
     ucResize.lockAspectRatio = True
     
     'Use friendly resample names by default
+    cboResampleTechnical.ListIndex = 0
+    cboResampleFriendly.ListIndex = 0
     chkNames.Value = vbUnchecked
-    cboResample.ListIndex = 0
     
     'Stretch to new aspect ratio by default
     cmbFit.ListIndex = 0
@@ -435,11 +502,20 @@ Private Sub colorPicker_ColorChanged()
     cmbFit.ListIndex = 1
 End Sub
 
+Private Sub Form_Activate()
+
+    'Automatically set the width and height text boxes to match the image's current dimensions
+    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    ucResize.lockAspectRatio = True
+
+End Sub
+
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
 Private Sub Form_Load()
     
-    'Populate the number of available resampling algorithms
-    refillResampleBox True
+    'Populate the dropdowns with all available resampling algorithms.  (Availability depends on FreeImage.)
+    refillResampleBoxes
     
     'Populate the "fit" options
     cmbFit.Clear
@@ -448,11 +524,15 @@ Private Sub Form_Load()
     cmbFit.AddItem "fitting largest dimension"
     cmbFit.ListIndex = 0
     
-    'Automatically set the width and height text boxes to match the image's current dimensions
+    'Automatically set the width and height text boxes to match the image's current dimensions.  (Note that we must
+    ' do this again in the Activate step, as the last-used settings will automatically override these values.  However,
+    ' if we do not also provide these values here, the resize control may attempt to set parameters while having
+    ' a width/height/resolution of 0, which will cause divide-by-zero errors.)
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
     
     'Add some tooltips
-    cboResample.ToolTipText = g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
+    cboResampleFriendly.ToolTipText = g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
+    cboResampleTechnical.ToolTipText = g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
     chkNames.ToolTipText = g_Language.TranslateMessage("By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.")
     
     'Assign the system hand cursor to all relevant objects

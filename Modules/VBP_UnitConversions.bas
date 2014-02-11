@@ -30,6 +30,15 @@ End Enum
     Const MU_PERCENT = 0, MU_PIXELS = 1, MU_INCHES = 2, MU_CENTIMETERS = 3
 #End If
 
+Public Enum ResolutionUnit
+    RU_PPI = 0
+    RU_PPCM = 1
+End Enum
+
+#If False Then
+    Const RU_PPI = 0, RU_PPCM = 1
+#End If
+
 'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
 ' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
@@ -40,7 +49,7 @@ Public Function convertPixelToOtherUnit(ByVal unitOfMeasurement As MeasurementUn
     
         Case MU_PERCENT
             convertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
-        
+            
         Case MU_PIXELS
             convertPixelToOtherUnit = srcPixelValue
             

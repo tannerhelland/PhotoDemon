@@ -967,7 +967,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             ' a single control), we must combine its various values into a single string.
             Case "smartResize"
                 controlValue = CStr(eControl.imgWidth) & "|" & CStr(eControl.imgHeight) & "|" & CStr(eControl.lockAspectRatio) _
-                                & "|" & CStr(eControl.unitOfMeasurement) & "|" & CStr(eControl.imgDPI)
+                                & "|" & CStr(eControl.unitOfMeasurement) & "|" & CStr(eControl.imgDPI) & "|" & CStr(eControl.unitOfResolution)
                 
         
         End Select
@@ -1123,8 +1123,9 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.lockAspectRatio = False
                     
                     eControl.unitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
-                    eControl.imgDPI = cParam.GetLong(5, 96)
+                    eControl.unitOfResolution = cParam.GetLong(6, RU_PPI)
                     
+                    eControl.imgDPI = cParam.GetLong(5, 96)
                     eControl.imgWidth = cParam.GetDouble(1, 1920)
                     eControl.imgHeight = cParam.GetDouble(2, 1080)
                     
