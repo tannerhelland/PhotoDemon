@@ -49,6 +49,7 @@ Begin VB.UserControl smartResize
       Caption         =   ""
       Mode            =   1
       Value           =   -1  'True
+      HandPointer     =   -1  'True
       PictureNormal   =   "smartResize.ctx":0312
       PictureDown     =   "smartResize.ctx":1764
       PictureEffectOnDown=   0
