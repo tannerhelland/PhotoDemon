@@ -25,6 +25,31 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.jcbutton cmdCapture 
+      Height          =   600
+      Left            =   10320
+      TabIndex        =   38
+      Top             =   3720
+      Width           =   1095
+      _ExtentX        =   1931
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormColorSelector.frx":0000
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      TooltipTitle    =   "Select color from screen"
+   End
    Begin VB.PictureBox picRecColor 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -721,14 +746,16 @@ Attribute VB_Exposed = False
 'Color Selection Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 11/November/13
-'Last updated: 12/January/14
-'Last update: remember a handful of last-used colors as XML presets
+'Last updated: 11/February/14
+'Last update: allow color selection from anywhere on the screen
 '
 'Basic color selection dialog.  I've modeled this after the comparable color selector in GIMP; of all the color
 ' selectors I've used (and there have been many!), I find GIMP's the most intuitive... strange, I know, considering
 ' what a mess the rest of their interface is.
 '
-'More features are certainly possible in the future, but for now, the dialog is pretty minimalist.
+'Special thanks goes out to VB coder LaVolpe for a great deal of help in implementing the "select color from screen"
+' tool.  My implementation draws heavily from his implementation here:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=52878&lngWId=1
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -795,6 +822,39 @@ Private xmlFilename As String
 ' recent color list.  We have to create special DIBs of each color, then blt those onto the respective boxes.
 Private recentColors() As Long
 
+'***
+'All declarations below this line are necessary for capturing a color from an arbitrary point on the screen.
+
+'Many thanks to VB coder LaVolpe for his original implementation of this technique, available here:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=52878&lngWId=1
+
+'Is capture mode active?
+Private screenCaptureActive As Boolean
+
+'A subclasser is required to retrieve mouse events
+Private cSubclass As cSelfSubHookCallback
+
+'Constants for sending and receiving various mouse events
+Private Const WM_LBUTTONDOWN As Long = &H201
+Private Const WM_LBUTTONUP As Long = &H202
+Private Const WM_RBUTTONDOWN As Long = &H204
+Private Const WM_RBUTTONUP As Long = &H205
+Private Const WM_MOUSEMOVE As Long = &H200
+Private Const MOUSEEVENTF_LEFTDOWN As Long = &H2
+Private Const MOUSEEVENTF_LEFTUP As Long = &H4
+
+'Various API declarations for capturing mosue events and retrieving colors accordingly
+Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal srcDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function GetWindowDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
+Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
+Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseCapture Lib "user32" () As Long
+Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
+
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -813,9 +873,96 @@ Private Sub CmdCancel_Click()
     
 End Sub
 
+'During screen capture, this sub is used to update the current color under the mouse cursor.  Note that such rapid
+' redraws will be a bit slow in the IDE - compile for better results.
+Private Sub updateHoveredColor()
+
+    'Retrieve the current mouse location
+    Dim mouseLocation As POINTAPI
+    GetCursorPos mouseLocation
+    
+    'Retrieve a handle to the screen
+    Dim srcDC As Long
+    srcDC = GetWindowDC(GetDesktopWindow())
+    
+    'Retrieve the color at the given pixel location
+    Dim newColor As Long
+    newColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
+    
+    'Extract RGB components from the Long-type color
+    curRed = ExtractR(newColor)
+    curGreen = ExtractG(newColor)
+    curBlue = ExtractB(newColor)
+    
+    'Calculate new HSV values to match
+    RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
+    
+    'Resync the interface to match the new value!
+    syncInterfaceToCurrentColor
+    
+End Sub
+
+'Activate or deactivate "capture a color from the screen" mode.  Optionally, the original color can be restored if the
+' user decides they don't actually want to capture a color from the screen.
+Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
+
+    Static prevCursorHandle As Long
+    
+    'Activation is requested!
+    If toActivate And (Not screenCaptureActive) Then
+        
+        screenCaptureActive = True
+        
+        'Assign a color dropper cursor to the screen
+        prevCursorHandle = SetCursor(requestCustomCursor("C_PIPETTE", 0, 0))
+        
+        'Start capture mode, and use a fake mouse click to retain capture even though the user isn't holding
+        ' down a mouse button.  (Thank you to VB coder LaVolpe for this handy trick!)
+        SetCapture Me.hWnd
+        mouse_event MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
+        
+        'Start subclassing relevant mouse event messages
+        Set cSubclass = New cSelfSubHookCallback
+        cSubclass.ssc_Subclass Me.hWnd, , , Me
+        cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_MOUSEMOVE, WM_LBUTTONDOWN, WM_LBUTTONUP ', WM_RBUTTONDOWN, WM_RBUTTONUP
+    
+    End If
+    
+    'Deactivation is requested!
+    If (Not toActivate) And screenCaptureActive Then
+    
+        screenCaptureActive = False
+        
+        'As part of fooling the mouse capture function (see above), we must now make sure to release the mouse
+        mouse_event MOUSEEVENTF_LEFTUP, 0, 0, 0, 0
+        ReleaseCapture
+        
+        'Restore the original cursor
+        SetCursor prevCursorHandle
+        
+        'Terminate and unload the subclasser
+        cSubclass.ssc_UnSubclass Me.hWnd
+        cSubclass.ssc_Terminate
+        Set cSubclass = Nothing
+        
+    End If
+
+End Sub
+
+'Capture color button
+Private Sub cmdCapture_Click()
+    
+    'If it isn't already active, start mouse capture mode
+    If (Not screenCaptureActive) Then
+        toggleCaptureMode True
+    End If
+    
+End Sub
+
 'OK button
 Private Sub CmdOK_Click()
     
+    'Store the newUserColor value (which the dialog handler will use to return the selected color)
     newUserColor = RGB(curRed, curGreen, curBlue)
     
     'Save the current list of recently used colors
@@ -864,10 +1011,11 @@ Public Sub showDialog(ByVal initialColor As Long)
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
         
-    'Message "Waiting for user to select color..."
-        
     'Render the vertical hue box
     drawHueBox
+    
+    'Apply extra tooltips to certain controls
+    cmdCapture.ToolTip = g_Language.TranslateMessage("Click this button to enable color capturing from anywhere on the screen.")
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -1045,7 +1193,11 @@ Private Sub resetXMLData()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    
+    'As a failsafe, check for ongoing subclassing and release as necessary
+    If screenCaptureActive Then toggleCaptureMode False
     ReleaseFormTheming Me
+    
 End Sub
 
 'The hue box only needs to be drawn once, when the dialog is first created
@@ -1339,6 +1491,21 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
     
 End Sub
 
+Private Sub picOriginal_Click()
+
+    'Update the current color values with the color of this box
+    curRed = ExtractR(oldColor)
+    curGreen = ExtractG(oldColor)
+    curBlue = ExtractB(oldColor)
+    
+    'Calculate new HSV values to match
+    RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
+    
+    'Resync the interface to match the new value!
+    syncInterfaceToCurrentColor
+
+End Sub
+
 'When a recent color is clicked, update the screen with the new color
 Private Sub picRecColor_Click(Index As Integer)
 
@@ -1563,4 +1730,70 @@ Private Sub txtHex_Validate(Cancel As Boolean)
     syncInterfaceToCurrentColor
 
 End Sub
+
+'All events subclassed by this window are processed here.
+Private Sub myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal lng_hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
+'*************************************************************************************************
+'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
+'*              you will know unless the callback for the uMsg value is specified as
+'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
+'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
+'*              message being passed to the original WndProc and (if set to do so) the after
+'*              original WndProc callback.
+'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
+'*              and/or, in an after the original WndProc callback, act on the return value as set
+'*              by the original WndProc.
+'* lng_hWnd   - Window handle.
+'* uMsg       - Message value.
+'* wParam     - Message related data.
+'* lParam     - Message related data.
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+
+    Select Case uMsg
+    
+        'While the mouse is moving, update the color on-screen so the user can see it.
+        Case WM_MOUSEMOVE
+            If screenCaptureActive Then
+                updateHoveredColor
+                bHandled = True
+            End If
+        
+        'If the user clicks with the left button, select that as the new color.
+        Case WM_LBUTTONDOWN
+            If screenCaptureActive Then
+                updateHoveredColor
+                toggleCaptureMode False
+            End If
+        
+        'As a failsafe, if we somehow detect a mouse_up event, turn off toggle capture mode.
+        Case WM_LBUTTONUP
+            If screenCaptureActive Then
+                updateHoveredColor
+                toggleCaptureMode False
+            End If
+            
+    End Select
+    
+    'bHandled = True
+    
+    
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
+End Sub
+
+
+
+
 
