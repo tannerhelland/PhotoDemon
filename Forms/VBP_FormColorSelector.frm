@@ -370,14 +370,14 @@ Begin VB.Form dialog_ColorSelector
       Width           =   3975
    End
    Begin PhotoDemon.textUpDown tudRGB 
-      Height          =   375
+      Height          =   405
       Index           =   0
       Left            =   10320
       TabIndex        =   15
-      Top             =   1920
+      Top             =   1905
       Width           =   1095
       _ExtentX        =   1931
-      _ExtentY        =   661
+      _ExtentY        =   714
       Max             =   255
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -390,14 +390,14 @@ Begin VB.Form dialog_ColorSelector
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudRGB 
-      Height          =   375
+      Height          =   405
       Index           =   1
       Left            =   10320
       TabIndex        =   17
-      Top             =   2520
+      Top             =   2505
       Width           =   1095
       _ExtentX        =   1931
-      _ExtentY        =   661
+      _ExtentY        =   714
       Max             =   255
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -410,14 +410,14 @@ Begin VB.Form dialog_ColorSelector
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudRGB 
-      Height          =   375
+      Height          =   405
       Index           =   2
       Left            =   10320
       TabIndex        =   19
-      Top             =   3120
+      Top             =   3105
       Width           =   1095
       _ExtentX        =   1931
-      _ExtentY        =   661
+      _ExtentY        =   714
       Max             =   255
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -430,14 +430,14 @@ Begin VB.Form dialog_ColorSelector
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudHSV 
-      Height          =   375
+      Height          =   405
       Index           =   0
       Left            =   10320
       TabIndex        =   22
-      Top             =   120
+      Top             =   105
       Width           =   1095
       _ExtentX        =   1931
-      _ExtentY        =   661
+      _ExtentY        =   714
       Max             =   359
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -450,14 +450,14 @@ Begin VB.Form dialog_ColorSelector
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudHSV 
-      Height          =   375
+      Height          =   405
       Index           =   1
       Left            =   10320
       TabIndex        =   24
-      Top             =   720
+      Top             =   705
       Width           =   1095
       _ExtentX        =   1931
-      _ExtentY        =   661
+      _ExtentY        =   714
       Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -470,14 +470,14 @@ Begin VB.Form dialog_ColorSelector
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudHSV 
-      Height          =   375
+      Height          =   405
       Index           =   2
       Left            =   10320
       TabIndex        =   26
-      Top             =   1320
+      Top             =   1305
       Width           =   1095
       _ExtentX        =   1931
-      _ExtentY        =   661
+      _ExtentY        =   714
       Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
