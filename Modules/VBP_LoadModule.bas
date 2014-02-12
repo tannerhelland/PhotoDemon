@@ -934,8 +934,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'Register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage
             
-            'Give the image form a chance to detect its parent monitor
-            FormMain.mainCanvas(0).checkParentMonitor True
+            'Just to be safe, update the color management profile of the current monitor
+            checkParentMonitor True
             
             Message "Resizing image to fit screen..."
     

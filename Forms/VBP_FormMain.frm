@@ -3181,6 +3181,7 @@ Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
     End If
     
     makeFormPretty Me, m_ToolTip, , useDoEvents
+    
 End Sub
 
 'Append any new data to our master metadata string

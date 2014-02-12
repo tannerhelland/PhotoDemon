@@ -148,9 +148,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 01/February/14
-'Last update: Improve "select next image" logic when an image is unloaded, but other images are still active.
-'              The behavior should now properly mimic a standard tabstrip.
+'Last updated: 11/February/14
+'Last update: move color management stuff out of this control and back into FormMain
 '
 'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
 ' specialized program components in the pdWindowManager class.
@@ -163,10 +162,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'A handle (HMONITOR, specifically) to this canvas's current monitor.  This value is updated by firing the
-' checkParentMonitor() function, below.
-Public currentMonitor As Long
 
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Private ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
@@ -399,33 +394,6 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
         
     End If
   
-End Sub
-
-'When this window is moved, the window manager will trigger this function.
-Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
-
-    'Use the API to determine the monitor with the largest intersect with this window
-    Dim monitorCheck As Long
-    monitorCheck = MonitorFromWindow(FormMain.hWnd, MONITOR_DEFAULTTONEAREST)
-    
-    'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
-    If monitorCheck <> currentMonitor Then
-        
-        currentMonitor = monitorCheck
-        
-        If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
-        
-        If suspendRedraw Then Exit Sub
-        
-        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(UserControl.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
-            RenderViewport pdImages(g_CurrentImage), Me
-        End If
-        
-        'The image tabstrip also needs to be redrawn!
-        toolbar_ImageTabs.forceRedraw
-    
-    End If
-    
 End Sub
 
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
