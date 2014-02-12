@@ -1971,8 +1971,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Remember the main window's location
                 updateStoredWindowLocation mainWindowIndex
                 
-                'Notify the child window that it may have changed monitors, so it may need to redraw itself with a new color profile
-                If g_OpenImageCount > 0 Then FormMain.mainCanvas(0).checkParentMonitor
+                'Notify the color management engine that the main window may have changed monitors, so it may need to
+                ' be redrawn with a new color profile.
+                If g_OpenImageCount > 0 Then checkParentMonitor
                 
             'The parent window is currently being resized
             Case WM_SIZING, WM_SIZE

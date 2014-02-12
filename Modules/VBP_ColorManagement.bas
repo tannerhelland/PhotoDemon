@@ -34,6 +34,15 @@ Attribute VB_Name = "Color_Management"
 
 Option Explicit
 
+
+'A handle (HMONITOR, specifically) to the main form's current monitor.  This value is updated by firing the
+' checkParentMonitor() function, below.
+Private currentMonitor As Long
+
+'When the main form's monitor changes, this string will automatically be updated with the corresponding ICC
+' profile path of that monitor (if the user has selected a custom one)
+Private currentColorProfile As String
+
 'ICC Profile header; this stores basic information about a given profile, and is use to interact with various
 ' ICC-related API functions.
 Private Type ICC_PROFILE
@@ -170,11 +179,8 @@ Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal obj
     Else
         
         'Use the form's containing monitor to retrieve a matching profile from the preferences file
-        Dim newICMProfile As String
-        newICMProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & MonitorFromWindow(objectHWnd, MONITOR_DEFAULTTONEAREST), "")
-        
-        If Len(newICMProfile) > 0 Then
-            SetICMProfile objectHDC, newICMProfile
+        If Len(currentColorProfile) > 0 Then
+            SetICMProfile objectHDC, currentColorProfile
         Else
             SetICMProfile objectHDC, currentSystemColorProfile
         End If
@@ -493,4 +499,36 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
     End If
 
 End Function
+
+'When the main PD window is moved, the window manager will trigger this function.  (Because the user can set color management
+' on a per-monitor basis, we must keep track of which monitor contains this PD instance.)
+Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
+
+    'Use the API to determine the monitor with the largest intersect with this window
+    Dim monitorCheck As Long
+    monitorCheck = MonitorFromWindow(FormMain.hWnd, MONITOR_DEFAULTTONEAREST)
+    
+    'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
+    If monitorCheck <> currentMonitor Then
+        
+        currentMonitor = monitorCheck
+        currentColorProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & currentMonitor, "")
+        
+        'If the user doesn't want us to redraw the main window to match the new profile, exit
+        If suspendRedraw Then Exit Sub
+        
+        'If no images have been loaded, exit
+        If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
+        
+        'If an image has been loaded, and it is valid, redraw it now
+        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
+            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+        'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well
+        toolbar_ImageTabs.forceRedraw
+    
+    End If
+    
+End Sub
 

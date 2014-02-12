@@ -474,7 +474,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         Debug.Print "(Image #" & g_CurrentImage & " was activated because " & reasonForActivation & ")"
         
         'Double-check which monitor we are appearing on (for color management reasons)
-        FormMain.mainCanvas(0).checkParentMonitor True
+        checkParentMonitor True
         
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
         PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Form received focus"
