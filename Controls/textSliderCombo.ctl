@@ -23,7 +23,6 @@ Begin VB.UserControl sliderTextCombo
    ToolboxBitmap   =   "textSliderCombo.ctx":0000
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   345

@@ -23,7 +23,6 @@ Begin VB.UserControl pdCanvas
    ScaleWidth      =   886
    Begin VB.PictureBox picScrollV 
       Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   5415
@@ -38,7 +37,6 @@ Begin VB.UserControl pdCanvas
    End
    Begin VB.PictureBox picScrollH 
       Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   255
@@ -201,7 +199,9 @@ Private m_suspendRedraws As Boolean
 
 'API scroll bars are used in place of crappy VB ones
 Private WithEvents HScroll As pdScrollAPI
+Attribute HScroll.VB_VarHelpID = -1
 Private WithEvents VScroll As pdScrollAPI
+Attribute VScroll.VB_VarHelpID = -1
 
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
@@ -448,7 +448,6 @@ Private Sub UserControl_Initialize()
         
         'Assign the system hand cursor to all relevant objects
         Set m_ToolTip = New clsToolTip
-        'makeFormPretty Me, m_ToolTip
         
         'Allow the control to generate its own redraw requests
         m_suspendRedraws = False
@@ -463,7 +462,7 @@ Private Sub UserControl_Initialize()
         
         HScroll.initializeScrollBarWindow picScrollH.hWnd, True, 0, 10, 0, 1, 1
         VScroll.initializeScrollBarWindow picScrollV.hWnd, False, 0, 10, 0, 1, 1
-        
+                
     End If
     
 End Sub
@@ -980,6 +979,15 @@ End Sub
 
 Private Sub UserControl_Resize()
     fixChromeLayout
+End Sub
+
+Private Sub UserControl_Show()
+
+    'Convert all labels to the current interface font
+    lblCoordinates.FontName = g_InterfaceFont
+    lblImgSize.FontName = g_InterfaceFont
+    lblMessages.FontName = g_InterfaceFont
+
 End Sub
 
 Private Sub VScroll_Scroll()
