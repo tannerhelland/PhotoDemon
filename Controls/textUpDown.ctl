@@ -21,9 +21,16 @@ Begin VB.UserControl textUpDown
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   75
    ToolboxBitmap   =   "textUpDown.ctx":0000
-   Begin VB.VScrollBar vsPrimary 
+   Begin VB.PictureBox picScroll 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
       Height          =   360
       Left            =   720
+      ScaleHeight     =   24
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   17
       TabIndex        =   1
       Top             =   15
       Width           =   255
@@ -66,9 +73,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / UpDown custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 10/February/14
-'Last update: add additional safety checks when changing significant digits, min, and max values; this was
-'              necessary to avoid issues when switching between units on the resize dialog.
+'Last updated: 12/February/14
+'Last update: replace inherent VB scrollbar with new pdScrollAPI class.  This should finally let us use huge
+'              values with many significant digits - yay!
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -78,7 +85,7 @@ Attribute VB_Exposed = False
 ' This got the job done, but it had a number of limitations - such as requiring an enormous amount of time if
 ' changes ever needed to be made, and custom code being required in every form to handle text / scroll synching.
 '
-'In April 2014, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
+'In April 2013, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
 ' for float values.  Rather than go through and add custom support for this to every damn form, I finally did
 ' the smart thing and built a custom text/scroll user control.  This effectively replaces all other text/scroll
 ' combos in the program.
@@ -118,8 +125,9 @@ Private significantDigits As Long
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
 
-'Used to prevent the obnoxious blinking effect of the vertical scroll bar
-Private Declare Function DestroyCaret Lib "user32" () As Long
+'API scroll bars are used in place of VB ones
+Private WithEvents vsPrimary As pdScrollAPI
+Attribute vsPrimary.VB_VarHelpID = -1
 
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
@@ -143,10 +151,10 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
-    UserControl.Enabled = NewValue
-    vsPrimary.Enabled = -NewValue
-    txtPrimary.Enabled = NewValue
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    vsPrimary.Enabled = newValue
+    txtPrimary.Enabled = newValue
     PropertyChanged "Enabled"
 End Property
 
@@ -167,14 +175,9 @@ Public Property Set Font(mNewFont As StdFont)
     PropertyChanged "Font"
 End Property
 
-Private Sub vsPrimary_Change()
-    If Not textBoxInitiated Then copyValToTextBox -1 * vsPrimary.Value
-    Value = -1 * (vsPrimary / (10 ^ significantDigits))
-End Sub
-
 Private Sub vsPrimary_Scroll()
-    copyValToTextBox -1 * vsPrimary.Value
-    Value = -1 * (vsPrimary / (10 ^ significantDigits))
+    If Not textBoxInitiated Then copyValToTextBox -1 * vsPrimary.Value
+    Value = -1 * (vsPrimary.Value / (10 ^ significantDigits))
 End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
@@ -192,13 +195,13 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal NewValue As Double)
+Public Property Let Value(ByVal newValue As Double)
     
     'Don't make any changes unless the new value deviates from the existing one
-    If (NewValue <> controlVal) Or (Not IsValid(False)) Then
+    If (newValue <> controlVal) Or (Not IsValid(False)) Then
     
         'Internally track the value of the control
-        controlVal = NewValue
+        controlVal = newValue
         
         'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
         ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
@@ -206,10 +209,10 @@ Public Property Let Value(ByVal NewValue As Double)
         Dim newScrollVal As Long
         newScrollVal = -1 * CLng(controlVal * (10 ^ significantDigits))
         
-        If vsPrimary <> newScrollVal Then
+        If vsPrimary.Value <> newScrollVal Then
             
             'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-            If newScrollVal >= vsPrimary.Min And newScrollVal <= vsPrimary.Max Then vsPrimary = newScrollVal
+            If newScrollVal >= vsPrimary.Min And newScrollVal <= vsPrimary.Max Then vsPrimary.Value = newScrollVal
             
         End If
         
@@ -236,23 +239,22 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal NewValue As Double)
+Public Property Let Min(ByVal newValue As Double)
     
-    controlMin = NewValue
+    controlMin = newValue
     
-    'As a failsafe, make sure the max value does not exceed the scroll bar's limits
+    'Calculate a new scroll bar limit
     Dim newScrollLimit As Long
     newScrollLimit = -1 * controlMin * (10 ^ significantDigits)
     
-    If newScrollLimit < -32765 Then newScrollLimit = -32765
-    If newScrollLimit > 32765 Then newScrollLimit = 32765
-    
+    'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
+    ' it automatically.
     vsPrimary.Max = newScrollLimit
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        vsPrimary = -1 * controlVal * (10 ^ significantDigits)
+        vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -266,23 +268,22 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal NewValue As Double)
+Public Property Let Max(ByVal newValue As Double)
     
-    controlMax = NewValue
+    controlMax = newValue
     
-    'As a failsafe, make sure the max value does not exceed the scroll bar's limits
+    'Calculate a new scroll bar limit
     Dim newScrollLimit As Long
     newScrollLimit = -1 * controlMax * (10 ^ significantDigits)
     
-    If newScrollLimit < -32765 Then newScrollLimit = -32765
-    If newScrollLimit > 32765 Then newScrollLimit = 32765
-    
+    'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
+    ' it automatically.
     vsPrimary.Min = newScrollLimit
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
         controlVal = controlMax
-        vsPrimary = -1 * controlVal * (10 ^ significantDigits)
+        vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -296,21 +297,17 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal NewValue As Long)
+Public Property Let SigDigits(ByVal newValue As Long)
     
-    significantDigits = NewValue
+    significantDigits = newValue
     
-    'Calculate new max/min values, and make sure they stay within VB Int limits
+    'Calculate a new scroll bar limit
     Dim newMin As Long, newMax As Long
     newMax = -1 * controlMin * (10 ^ significantDigits)
     newMin = -1 * controlMax * (10 ^ significantDigits)
     
-    If newMax < -32765 Then newMax = -32765
-    If newMax > 32765 Then newMax = 32765
-    If newMin < -32765 Then newMin = -32765
-    If newMin > 32765 Then newMin = 32765
-    
-    'Update the scroll bar's min and max values accordingly
+    'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
+    ' it automatically.
     vsPrimary.Max = newMax
     vsPrimary.Min = newMin
     
@@ -347,22 +344,20 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Apply a hand cursor to the scroll bar
-    setHandCursor vsPrimary
-    
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
     If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
         g_Themer.requestContainerSubclass UserControl.hWnd
     End If
-            
-    'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    'If g_UseFancyFonts Then hsPrimary.Height = 23 Else hsPrimary.Height = 22
     
     origForecolor = ForeColor
         
     'Prepare a font object for use
     Set mFont = New StdFont
     Set UserControl.Font = mFont
+    
+    'Prepare an API scroll bar
+    Set vsPrimary = New pdScrollAPI
+    vsPrimary.initializeScrollBarWindow picScroll.hWnd, False, 0, 10, 0, 1, 1
                     
 End Sub
 
@@ -403,24 +398,27 @@ End Sub
 
 Private Sub UserControl_Resize()
 
-    'Keep the text box and scroll bar perfectly aligned, with a 1px border for the red "error" box
+    'Keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
     If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then
-        vsPrimary.Width = fixDPI(19)
-        vsPrimary.Top = 0
-        vsPrimary.Height = UserControl.ScaleHeight
+        picScroll.Width = fixDPI(19)
+        picScroll.Top = 0
+        picScroll.Height = UserControl.ScaleHeight
     Else
-        vsPrimary.Width = fixDPI(17)
-        vsPrimary.Top = fixDPI(1)
-        vsPrimary.Height = UserControl.ScaleHeight - fixDPI(2)
+        picScroll.Width = fixDPI(17)
+        picScroll.Top = fixDPI(1)
+        picScroll.Height = UserControl.ScaleHeight - fixDPI(2)
     End If
     
+    'Leave a 1px border around the text box, to be used for displaying red during range and numeric errors
     txtPrimary.Left = 1
     txtPrimary.Top = 1
-    txtPrimary.Width = UserControl.ScaleWidth - 2 - vsPrimary.Width
+    txtPrimary.Width = UserControl.ScaleWidth - 2 - picScroll.Width
     txtPrimary.Height = UserControl.ScaleHeight - 2
     
-    vsPrimary.Left = txtPrimary.Left + txtPrimary.Width
-            
+    'Align the scroll bar container to the right of the text box
+    picScroll.Left = txtPrimary.Left + txtPrimary.Width
+    
+    'Make the shape control (used for errors) the size of the user control
     shpError.Left = 0
     shpError.Top = 0
     shpError.Height = UserControl.ScaleHeight
@@ -429,10 +427,6 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_Show()
-        
-    'Apply a hand cursor to the scroll bar.  (It is necessary to do this here, in addition to the _Initialize event,
-    ' if the control exists inside a container like a picture box.)
-    setHandCursor vsPrimary
         
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
@@ -565,7 +559,3 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     End If
     
 End Function
-
-Private Sub vsPrimary_GotFocus()
-    DestroyCaret
-End Sub
