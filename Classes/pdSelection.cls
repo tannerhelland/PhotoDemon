@@ -1300,8 +1300,8 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
     Dim hScrollVal As Long, vScrollVal As Long
-    hScrollVal = dstCanvas.getHScrollReference.Value
-    vScrollVal = dstCanvas.getVScrollReference.Value
+    hScrollVal = dstCanvas.getScrollValue(PD_HORIZONTAL)
+    vScrollVal = dstCanvas.getScrollValue(PD_VERTICAL)
     
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
@@ -1388,8 +1388,8 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
     Dim hScrollVal As Long, vScrollVal As Long
-    hScrollVal = dstCanvas.getHScrollReference.Value
-    vScrollVal = dstCanvas.getVScrollReference.Value
+    hScrollVal = dstCanvas.getScrollValue(PD_HORIZONTAL)
+    vScrollVal = dstCanvas.getScrollValue(PD_VERTICAL)
     
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double

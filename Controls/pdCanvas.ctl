@@ -21,23 +21,33 @@ Begin VB.UserControl pdCanvas
    ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
-   Begin VB.VScrollBar VScroll 
-      Height          =   3615
-      LargeChange     =   10
-      Left            =   5400
+   Begin VB.PictureBox picScrollV 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   5415
+      Left            =   5520
+      ScaleHeight     =   361
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   17
       TabIndex        =   5
-      TabStop         =   0   'False
-      Top             =   0
+      Top             =   480
       Visible         =   0   'False
       Width           =   255
    End
-   Begin VB.HScrollBar HScroll 
+   Begin VB.PictureBox picScrollH 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
       Height          =   255
-      LargeChange     =   10
-      Left            =   0
+      Left            =   120
+      ScaleHeight     =   17
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   361
       TabIndex        =   4
-      TabStop         =   0   'False
-      Top             =   3600
+      Top             =   5880
       Visible         =   0   'False
       Width           =   5415
    End
@@ -163,6 +173,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+
+Private Const SM_CXVSCROLL As Long = 2
+Private Const SM_CYHSCROLL As Long = 3
+
 'These are used to track use of the Ctrl, Alt, and Shift keys
 Private ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
 
@@ -175,9 +189,6 @@ Private hasMouseMoved As Long
 'Track initial mouse button locations
 Private m_initMouseX As Double, m_initMouseY As Double
 
-'Used to prevent the obnoxious blinking effect of scroll bars
-Private Declare Function DestroyCaret Lib "user32" () As Long
-
 'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
@@ -187,6 +198,10 @@ Dim m_ToolTip As clsToolTip
 
 'To improve performance, we can ask the canvas to not refresh itself until we say so.
 Private m_suspendRedraws As Boolean
+
+'API scroll bars are used in place of crappy VB ones
+Private WithEvents HScroll As pdScrollAPI
+Private WithEvents VScroll As pdScrollAPI
 
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
@@ -204,17 +219,164 @@ End Property
 
 Public Sub clearCanvas()
     UserControl.Picture = LoadPicture("")
-    'UserControl.Cls
     UserControl.Refresh
 End Sub
 
-Public Function getHScrollReference() As HScrollBar
-    Set getHScrollReference = HScroll
+'Get/Set scroll bar visibility
+Public Function getScrollVisibility(ByVal barType As PD_ORIENTATION) As Boolean
+
+    If barType = PD_HORIZONTAL Then
+        getScrollVisibility = picScrollH.Visible
+    Else
+        getScrollVisibility = picScrollV.Visible
+    End If
+
 End Function
 
-Public Function getVScrollReference() As VScrollBar
-    Set getVScrollReference = VScroll
+Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
+    
+    If barType = PD_HORIZONTAL Then
+        picScrollH.Visible = newVisibility
+    Else
+        picScrollV.Visible = newVisibility
+    End If
+    
+End Sub
+
+'Get/Set scroll bar value
+Public Function getScrollValue(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollValue = HScroll.Value
+    Else
+        getScrollValue = VScroll.Value
+    End If
+
 End Function
+
+Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
+    
+    Select Case barType
+    
+        Case PD_HORIZONTAL
+            HScroll.Value = newValue
+            
+        Case PD_VERTICAL
+            VScroll.Value = newValue
+        
+        Case PD_BOTH
+            HScroll.Value = newValue
+            VScroll.Value = newValue
+        
+    End Select
+    
+End Sub
+
+'Get/Set scroll max/min
+Public Function getScrollMax(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollMax = HScroll.Max
+    Else
+        getScrollMax = VScroll.Max
+    End If
+
+End Function
+
+Public Function getScrollMin(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollMin = HScroll.Min
+    Else
+        getScrollMin = VScroll.Min
+    End If
+
+End Function
+
+Public Sub setScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
+    
+    If barType = PD_HORIZONTAL Then
+        HScroll.Max = newMax
+    Else
+        VScroll.Max = newMax
+    End If
+    
+End Sub
+
+Public Sub setScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
+    
+    If barType = PD_HORIZONTAL Then
+        HScroll.Min = newMin
+    Else
+        VScroll.Min = newMin
+    End If
+    
+End Sub
+
+'Get scroll bar size.  Note that scroll bar size cannot be set by external functions; it is automatically set to the system default
+' upon user control initialization.
+Public Function getScrollWidth(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollWidth = picScrollH.Width
+    Else
+        getScrollWidth = picScrollV.Width
+    End If
+
+End Function
+
+Public Function getScrollHeight(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollHeight = picScrollH.Height
+    Else
+        getScrollHeight = picScrollV.Height
+    End If
+
+End Function
+
+'Get scroll bar position (left, top).
+Public Function getScrollLeft(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollLeft = picScrollH.Left
+    Else
+        getScrollLeft = picScrollV.Left
+    End If
+
+End Function
+
+Public Function getScrollTop(ByVal barType As PD_ORIENTATION) As Long
+
+    If barType = PD_HORIZONTAL Then
+        getScrollTop = picScrollH.Top
+    Else
+        getScrollTop = picScrollV.Top
+    End If
+
+End Function
+
+'Move a scroll bar to a new position
+Public Sub moveScrollBar(ByVal barType As PD_ORIENTATION, ByVal newX As Long, ByVal newY As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+
+    If barType = PD_HORIZONTAL Then
+        picScrollH.Move newX, newY, newWidth, newHeight
+    Else
+        picScrollV.Move newX, newY, newWidth, newHeight
+    End If
+
+End Sub
+
+'Set scroll bar LargeChange value
+Public Sub setScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
+        
+    If barType = PD_HORIZONTAL Then
+        HScroll.LargeChange = newLargeChange
+    Else
+        VScroll.LargeChange = newLargeChange
+    End If
+        
+End Sub
 
 Public Sub displayImageSize(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal clearSize As Boolean = False)
     If clearSize Then
@@ -291,8 +453,19 @@ Private Sub UserControl_Initialize()
         'Allow the control to generate its own redraw requests
         m_suspendRedraws = False
         
+        'Set scroll bar size to match the current system default (which changes based on DPI, theming, and other factors)
+        picScrollH.Height = GetSystemMetrics(SM_CYHSCROLL)
+        picScrollV.Width = GetSystemMetrics(SM_CXVSCROLL)
+        
+        'Initialize scroll bars
+        Set HScroll = New pdScrollAPI
+        Set VScroll = New pdScrollAPI
+        
+        HScroll.initializeScrollBarWindow picScrollH.hWnd, True, 0, 10, 0, 1, 1
+        VScroll.initializeScrollBarWindow picScrollV.hWnd, False, 0, 10, 0, 1, 1
+        
     End If
-
+    
 End Sub
 
 'Mousekey back triggers the same thing as clicking Undo
@@ -312,9 +485,11 @@ End Sub
 Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
-    If HScroll.Visible And Not (Shift And vbCtrlMask) Then
-  
+    If picScrollH.Visible And Not (Shift And vbCtrlMask) Then
+        
         If CharsScrolled < 0 Then
+        
+            m_suspendRedraws = True
             
             If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
                 HScroll.Value = HScroll.Max
@@ -322,15 +497,21 @@ Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button
                 HScroll.Value = HScroll.Value + HScroll.LargeChange
             End If
             
+            m_suspendRedraws = False
+            
             ScrollViewport pdImages(g_CurrentImage), Me
         
         ElseIf CharsScrolled > 0 Then
+        
+            m_suspendRedraws = True
             
             If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
                 HScroll.Value = HScroll.Min
             Else
                 HScroll.Value = HScroll.Value - HScroll.LargeChange
             End If
+            
+            m_suspendRedraws = False
             
             ScrollViewport pdImages(g_CurrentImage), Me
             
@@ -349,9 +530,11 @@ End Sub
 Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If VScroll.Visible And Not (Shift And vbCtrlMask) Then
+    If picScrollV.Visible And Not (Shift And vbCtrlMask) Then
       
         If LinesScrolled < 0 Then
+            
+            m_suspendRedraws = True
             
             If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
                 VScroll.Value = VScroll.Max
@@ -359,15 +542,21 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
                 VScroll.Value = VScroll.Value + VScroll.LargeChange
             End If
             
+            m_suspendRedraws = False
+            
             ScrollViewport pdImages(g_CurrentImage), Me
         
         ElseIf LinesScrolled > 0 Then
+            
+            m_suspendRedraws = True
             
             If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
                 VScroll.Value = VScroll.Min
             Else
                 VScroll.Value = VScroll.Value - VScroll.LargeChange
             End If
+            
+            m_suspendRedraws = False
             
             ScrollViewport pdImages(g_CurrentImage), Me
             
@@ -785,28 +974,12 @@ Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button A
     
 End Sub
 
-Private Sub HScroll_Change()
-    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
-End Sub
-
-Private Sub HScroll_GotFocus()
-    DestroyCaret
-End Sub
-
 Private Sub HScroll_Scroll()
     If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
 End Sub
 
 Private Sub UserControl_Resize()
     fixChromeLayout
-End Sub
-
-Private Sub VScroll_Change()
-    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
-End Sub
-
-Private Sub VScroll_GotFocus()
-    DestroyCaret
 End Sub
 
 Private Sub VScroll_Scroll()

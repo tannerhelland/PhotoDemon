@@ -22,8 +22,8 @@ Private m_InitHScroll As Long, m_InitVScroll As Long
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
 Public Sub setInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
 
-    m_InitHScroll = srcCanvas.getHScrollReference.Value
-    m_InitVScroll = srcCanvas.getVScrollReference.Value
+    m_InitHScroll = srcCanvas.getScrollValue(PD_HORIZONTAL)
+    m_InitVScroll = srcCanvas.getScrollValue(PD_VERTICAL)
 
 End Sub
 
@@ -34,7 +34,7 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.setRedrawSuspension True
 
     'If the canvas in question has a horizontal scrollbar, process it
-    If srcCanvas.getHScrollReference.Visible Then
+    If srcCanvas.getScrollVisibility(PD_HORIZONTAL) Then
     
         'Calculate a new scroll value
         Dim hOffset As Long
@@ -49,18 +49,18 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
         hOffset = m_InitHScroll + hOffset
         
         'If that value lies within the bounds of the scroll bar, apply it
-        If (hOffset < srcCanvas.getHScrollReference.Min) Then
-            srcCanvas.getHScrollReference.Value = srcCanvas.getHScrollReference.Min
-        ElseIf (hOffset > srcCanvas.getHScrollReference.Max) Then
-            srcCanvas.getHScrollReference.Value = srcCanvas.getHScrollReference.Max
+        If (hOffset < srcCanvas.getScrollMin(PD_HORIZONTAL)) Then
+            srcCanvas.setScrollValue PD_HORIZONTAL, srcCanvas.getScrollMin(PD_HORIZONTAL)
+        ElseIf (hOffset > srcCanvas.getScrollMax(PD_HORIZONTAL)) Then
+            srcCanvas.setScrollValue PD_HORIZONTAL, srcCanvas.getScrollMax(PD_HORIZONTAL)
         Else
-            srcCanvas.getHScrollReference.Value = hOffset
+            srcCanvas.setScrollValue PD_HORIZONTAL, hOffset
         End If
     
     End If
     
     'If the canvas in question has a vertical scrollbar, process it
-    If srcCanvas.getVScrollReference.Visible Then
+    If srcCanvas.getScrollVisibility(PD_VERTICAL) Then
     
         'Calculate a new scroll value
         Dim vOffset As Long
@@ -75,12 +75,12 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
         vOffset = m_InitVScroll + vOffset
         
         'If that value lies within the bounds of the scroll bar, apply it
-        If (vOffset < srcCanvas.getVScrollReference.Min) Then
-            srcCanvas.getVScrollReference.Value = srcCanvas.getVScrollReference.Min
-        ElseIf (vOffset > srcCanvas.getVScrollReference.Max) Then
-            srcCanvas.getVScrollReference.Value = srcCanvas.getVScrollReference.Max
+        If (vOffset < srcCanvas.getScrollMin(PD_VERTICAL)) Then
+            srcCanvas.setScrollValue PD_VERTICAL, srcCanvas.getScrollMin(PD_VERTICAL)
+        ElseIf (vOffset > srcCanvas.getScrollMax(PD_VERTICAL)) Then
+            srcCanvas.setScrollValue PD_VERTICAL, srcCanvas.getScrollMax(PD_VERTICAL)
         Else
-            srcCanvas.getVScrollReference.Value = vOffset
+            srcCanvas.setScrollValue PD_VERTICAL, vOffset
         End If
     
     End If

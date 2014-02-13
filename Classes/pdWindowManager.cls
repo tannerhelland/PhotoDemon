@@ -298,7 +298,7 @@ Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As
 Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHWnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
-Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+'Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'Child window tracking
@@ -499,7 +499,7 @@ End Function
 
 'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
 ' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
-Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerhWnd As Long, Optional ByVal windowUnloading As Boolean = False)
+Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
 
     'By default, windows are ADDED to our collection, not removed.
     If Not windowUnloading Then
@@ -514,7 +514,7 @@ Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerhWnd As 
         SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
         
         'Dynamically set the window's owner to match
-        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerhWnd
+        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerHwnd
         
         'NOW we can display the window.  (Doing this via anything besides VB's in-built .Show method breaks stuff.  I'll need
         ' to investigate further to see if it's possible to mimic the .Show event via API.)

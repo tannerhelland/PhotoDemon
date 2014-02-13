@@ -77,3 +77,14 @@ Public Const MOUSESELACCURACY As Double = 8#
 Public Const BIF_RETURNONLYFSDIRS = 1
 Public Const BFFM_INITIALIZED = 1
 Public Const MAX_PATH_LEN = 260
+
+'Orientation (used in a whole bunch of different situations)
+Public Enum PD_ORIENTATION
+    PD_HORIZONTAL = 0
+    PD_VERTICAL = 1
+    PD_BOTH = 2
+End Enum
+
+#If False Then
+    Const PD_HORIZONTAL = 0, PD_VERTICAL = 1, PD_BOTH = 2
+#End If

@@ -367,6 +367,15 @@ Public Property Let Max(newValue As Long)
 
 End Property
 
+'Get/Set scroll bar LargeChange
+Public Property Get LargeChange() As Long
+    LargeChange = m_LargeChange
+End Property
+
+Public Property Let LargeChange(newValue As Long)
+    m_LargeChange = newValue
+End Property
+
 'INITIALIZE class
 Private Sub Class_Initialize()
     Set cSubclass = New cSelfSubHookCallback
