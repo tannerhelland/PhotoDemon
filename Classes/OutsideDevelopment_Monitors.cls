@@ -65,8 +65,7 @@ End Type
 
 Public Monitors As New Collection
 
-Private Declare Function GetSystemMetrics Lib "user32" ( _
-        ByVal nIndex As Long) As Long
+'Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 
 'These API's are not present in Pre Windows 98 and
 'Pre Windows NT 5 operating systems, you will need
@@ -119,9 +118,9 @@ Private Sub Class_Initialize()
             
         For i = 1 To Monitors.Count
             If Monitors(i).isPrimary Then
-                Debug.Print "Found primary monitor: " & Monitors(i).FriendlyName & " (" & Monitors(i).Description & ")"
+                Debug.Print "Found primary monitor: " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
             Else
-                Debug.Print "Found secondary monitor: " & Monitors(i).FriendlyName & " (" & Monitors(i).Description & ")"
+                Debug.Print "Found secondary monitor: " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
         End If
         Next i
         
@@ -244,7 +243,7 @@ CenterFormOnMonitor_Err:
     End If
 End Function
 
-Public Function GetMonitorFromXYPoint(X As Long, Y As Long, dwFlags As Long) As Long
+Public Function GetMonitorFromXYPoint(x As Long, y As Long, dwFlags As Long) As Long
     '==========================================
     'Gets a monitor handle from the xy point
     'Workaround for the GetMonitorFromPoint API
@@ -256,10 +255,10 @@ Public Function GetMonitorFromXYPoint(X As Long, Y As Long, dwFlags As Long) As 
     
     'Transfer the x y into a rect 1 pixel square
     With rcRect
-        .Top = Y
-        .Left = X
-        .Right = X + 1
-        .Bottom = Y + 1
+        .Top = y
+        .Left = x
+        .Right = x + 1
+        .Bottom = y + 1
     End With
     On Error Resume Next
     lReturn = MonitorFromRect(rcRect, dwFlags)
@@ -404,7 +403,7 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
     
     'Repeat the call a second time, providing the monitor's name, in order to receive even *more* information
     If EnumDisplayDevices(cMon.Name, 0, monitorInfoDetailed, 1&) <> 0 Then
-        cMon.FriendlyName = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
+        cMon.friendlyName = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
     End If
         
     GetMonitorInformation = lReturn

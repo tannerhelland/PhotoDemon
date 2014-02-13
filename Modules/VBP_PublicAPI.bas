@@ -64,9 +64,9 @@ Public Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, By
 Public Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean
 Public Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Public Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
-Public Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
-Public Declare Function SetDIBitsToDC Lib "gdi32" Alias "SetDIBitsToDevice" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long) As Long
-Public Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Public Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
+Public Declare Function SetDIBitsToDC Lib "gdi32" Alias "SetDIBitsToDevice" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long) As Long
+Public Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Public Const STRETCHBLT_COLORONCOLOR As Long = 3
 Public Const STRETCHBLT_HALFTONE As Long = 4
 
@@ -91,8 +91,6 @@ Public Declare Function HttpQueryInfo Lib "wininet.dll" Alias "HttpQueryInfoA" (
 Public Const INTERNET_OPEN_TYPE_PRECONFIG As Long = 0
 Public Const INTERNET_FLAG_RELOAD = &H80000000
 Public Const HTTP_QUERY_CONTENT_LENGTH As Long = 5
-'I've experimented with this constant with no luck; VB simply doesn't like asynchronous connections :(
-'Public Const INTERNET_FLAG_ASYNC = &H10000000
 
 'Some PhotoDemon functions are capable of timing themselves.  GetTickCount is used to do this.
 Public Declare Function GetTickCount Lib "kernel32" () As Long
@@ -114,3 +112,11 @@ Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'Wait for external actions to finish by using Sleep
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+
+'Retrieve various system metrics.  (Constants for this function are typically declared in the module where they are relevant.)
+Public Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+
+
+
+
+

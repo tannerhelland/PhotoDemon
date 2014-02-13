@@ -565,9 +565,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             g_AllowViewportRendering = False
         
-            FormMain.mainCanvas(0).getHScrollReference.Value = 0
-            FormMain.mainCanvas(0).getVScrollReference.Value = 0
-        
+            FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
+            
         End If
         
         
@@ -1640,8 +1639,8 @@ Public Sub DuplicateCurrentImage()
         
     g_AllowViewportRendering = False
         
-    FormMain.mainCanvas(0).getHScrollReference.Value = 0
-    FormMain.mainCanvas(0).getVScrollReference.Value = 0
+    'Reset scroll bars
+    FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
         
     'Copy the picture from the previous form to this new one
     pdImages(g_CurrentImage).mainDIB.createFromExistingDIB pdImages(imageToBeDuplicated).mainDIB

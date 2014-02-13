@@ -85,8 +85,8 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     If g_CanvasDropShadow Then
     
         'We'll handle this in two steps; first, render the horizontal shadows
-        If Not dstCanvas.getVScrollReference.Visible Then
-                    
+        If Not dstCanvas.getScrollVisibility(PD_VERTICAL) Then
+            
             'Make sure the image isn't snugly fit inside the viewport; if it is, rendering drop shadows is a waste of time
             If srcImage.imgViewport.targetTop <> 0 Then
                 'Top edge
@@ -98,7 +98,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         End If
         
         'Second, the vertical shadows
-        If Not dstCanvas.getHScrollReference.Visible Then
+        If Not dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then
                     
             'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
             If srcImage.imgViewport.targetLeft <> 0 Then
@@ -111,7 +111,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         End If
         
         'Finally, the corners, which are only drawn if both scroll bars are invisible
-        If (Not dstCanvas.getVScrollReference.Visible) And (Not dstCanvas.getHScrollReference.Visible) Then
+        If (Not dstCanvas.getScrollVisibility(PD_HORIZONTAL)) And (Not dstCanvas.getScrollVisibility(PD_VERTICAL)) Then
         
             'NW corner
             StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
@@ -138,16 +138,16 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     BitBlt dstCanvas.hDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
         
     'If both scrollbars are active, copy a gray square over the small space between them
-    If dstCanvas.getHScrollReference.Visible And dstCanvas.getVScrollReference.Visible Then
+    If dstCanvas.getScrollVisibility(PD_HORIZONTAL) And dstCanvas.getScrollVisibility(PD_VERTICAL) Then
         
         'Only initialize the corner fix image once
         If cornerFix Is Nothing Then
             Set cornerFix = New pdDIB
-            cornerFix.createBlank dstCanvas.getVScrollReference.Width, dstCanvas.getHScrollReference.Height, 24, vbButtonFace
+            cornerFix.createBlank dstCanvas.getScrollWidth(PD_VERTICAL), dstCanvas.getScrollHeight(PD_HORIZONTAL), 24, vbButtonFace
         End If
         
         'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
-        BitBlt dstCanvas.hDC, dstCanvas.getVScrollReference.Left, dstCanvas.getHScrollReference.Top, cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt dstCanvas.hDC, dstCanvas.getScrollLeft(PD_VERTICAL), dstCanvas.getScrollTop(PD_HORIZONTAL), cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
         
     End If
     
@@ -195,8 +195,8 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     srcHeight = srcImage.imgViewport.targetHeight / zoomVal
         
     'These variables are the offset, as determined by the scroll bar values
-    If dstCanvas.getHScrollReference.Visible Then srcX = dstCanvas.getHScrollReference.Value Else srcX = 0
-    If dstCanvas.getVScrollReference.Visible Then srcY = dstCanvas.getVScrollReference.Value Else srcY = 0
+    If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
+    If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
         
     'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
@@ -369,10 +369,10 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     If Int(zWidth) > canvasWidth Then hScrollEnabled = True
     
     'Step 2: compare viewport height to zoomed image height.  If the horizontal scrollbar has been enabled, factor that into our calculations
-    If (Int(zHeight) > canvasHeight) Or (hScrollEnabled And (Int(zHeight) > (canvasHeight - dstCanvas.getHScrollReference.Height))) Then vScrollEnabled = True
+    If (Int(zHeight) > canvasHeight) Or (hScrollEnabled And (Int(zHeight) > (canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL)))) Then vScrollEnabled = True
     
     'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled, the horizontal viewport width has changed.
-    If vScrollEnabled And (Not hScrollEnabled) And (Int(zWidth) > (canvasWidth - dstCanvas.getVScrollReference.Width)) Then hScrollEnabled = True
+    If vScrollEnabled And (Not hScrollEnabled) And (Int(zWidth) > (canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL))) Then hScrollEnabled = True
     
     'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
     ' be located - on the edge if scroll bars are enabled, or centered in the viewable area if scroll bars are NOT enabled.
@@ -386,14 +386,14 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
         If Not vScrollEnabled Then
             viewportWidth = canvasWidth
         Else
-            viewportWidth = canvasWidth - dstCanvas.getVScrollReference.Width
+            viewportWidth = canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL)
         End If
     Else
         viewportWidth = zWidth
         If Not vScrollEnabled Then
             viewportLeft = (canvasWidth - zWidth) / 2
         Else
-            viewportLeft = ((canvasWidth - dstCanvas.getVScrollReference.Width) - zWidth) / 2
+            viewportLeft = ((canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL)) - zWidth) / 2
         End If
     End If
     
@@ -402,14 +402,14 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
         If Not hScrollEnabled Then
             viewportHeight = canvasHeight
         Else
-            viewportHeight = canvasHeight - dstCanvas.getHScrollReference.Height
+            viewportHeight = canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL)
         End If
     Else
         viewportHeight = zHeight
         If Not hScrollEnabled Then
             viewportTop = (canvasHeight - zHeight) / 2
         Else
-            viewportTop = ((canvasHeight - dstCanvas.getHScrollReference.Height) - zHeight) / 2
+            viewportTop = ((canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL)) - zHeight) / 2
         End If
     End If
     
@@ -421,13 +421,12 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     
         'Reset the scroll bar values so ScrollViewport doesn't assume we want scrolling
         dstCanvas.setRedrawSuspension True
-        dstCanvas.getHScrollReference.Value = 0
-        dstCanvas.getVScrollReference.Value = 0
+        dstCanvas.setScrollValue PD_BOTH, 0
         dstCanvas.setRedrawSuspension False
     
         'Hide the scroll bars if necessary
-        If dstCanvas.getHScrollReference.Visible Then dstCanvas.getHScrollReference.Visible = False
-        If dstCanvas.getVScrollReference.Visible Then dstCanvas.getVScrollReference.Visible = False
+        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then dstCanvas.setScrollVisibility PD_HORIZONTAL, False
+        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then dstCanvas.setScrollVisibility PD_VERTICAL, False
             
         'Resize the buffer and store the relevant painting information into this pdImages object
         srcImage.backBuffer.createBlank canvasWidth, canvasHeight, 24, g_CanvasBackground
@@ -457,14 +456,20 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
             newScrollMax = srcImage.Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         End If
         
-        If dstCanvas.getHScrollReference.Value > newScrollMax Then dstCanvas.getHScrollReference.Value = newScrollMax
-        dstCanvas.getHScrollReference.Max = newScrollMax
+        'If the current scroll value exceeds the new scroll maximum, reduce the scroll bar value to compensate
+        If dstCanvas.getScrollValue(PD_HORIZONTAL) > newScrollMax Then
+            dstCanvas.setRedrawSuspension True
+            dstCanvas.setScrollValue PD_HORIZONTAL, newScrollMax
+            dstCanvas.setRedrawSuspension False
+        End If
+        
+        dstCanvas.setScrollMax PD_HORIZONTAL, newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If dstCanvas.getHScrollReference.Max > 15 Then
-            dstCanvas.getHScrollReference.LargeChange = dstCanvas.getHScrollReference.Max \ 16
+        If dstCanvas.getScrollMax(PD_HORIZONTAL) > 15 Then
+            dstCanvas.setScrollLargeChange PD_HORIZONTAL, dstCanvas.getScrollMax(PD_HORIZONTAL) \ 16
         Else
-            dstCanvas.getHScrollReference.LargeChange = 1
+            dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
         End If
         
     End If
@@ -480,14 +485,20 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
             newScrollMax = srcImage.Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         End If
         
-        If dstCanvas.getVScrollReference.Value > newScrollMax Then dstCanvas.getVScrollReference.Value = newScrollMax
-        dstCanvas.getVScrollReference.Max = newScrollMax
+        'If the current scroll value exceeds the new scroll maximum, reduce the scroll bar value to compensate
+        If dstCanvas.getScrollValue(PD_VERTICAL) > newScrollMax Then
+            dstCanvas.setRedrawSuspension True
+            dstCanvas.setScrollValue PD_VERTICAL, newScrollMax
+            dstCanvas.setRedrawSuspension False
+        End If
+        
+        dstCanvas.setScrollMax PD_VERTICAL, newScrollMax
         
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If dstCanvas.getVScrollReference.Max > 15 Then
-            dstCanvas.getVScrollReference.LargeChange = dstCanvas.getVScrollReference.Max \ 16
+        If dstCanvas.getScrollMax(PD_VERTICAL) > 15 Then
+            dstCanvas.setScrollLargeChange PD_VERTICAL, dstCanvas.getScrollMax(PD_VERTICAL) \ 16
         Else
-            dstCanvas.getVScrollReference.LargeChange = 1
+            dstCanvas.setScrollLargeChange PD_VERTICAL, 1
         End If
         
     End If
@@ -497,28 +508,28 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     
     'Horizontal scroll bar gets rendered first...
     If hScrollEnabled Then
-        dstCanvas.getHScrollReference.Move 0, canvasHeight - dstCanvas.getHScrollReference.Height, viewportWidth, dstCanvas.getHScrollReference.Height
-        If (Not dstCanvas.getHScrollReference.Visible) Then dstCanvas.getHScrollReference.Visible = True
+        dstCanvas.moveScrollBar PD_HORIZONTAL, 0, canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL), viewportWidth, dstCanvas.getScrollHeight(PD_HORIZONTAL)
+        If (Not dstCanvas.getScrollVisibility(PD_HORIZONTAL)) Then dstCanvas.setScrollVisibility PD_HORIZONTAL, True
     Else
         
         'Note that we disable automatic canvas redraws prior to changing the scroll bar value; otherwise, the change will
         ' force a redraw, and we don't want that yet.
         dstCanvas.setRedrawSuspension True
-        dstCanvas.getHScrollReference.Value = 0
-        If dstCanvas.getHScrollReference.Visible Then dstCanvas.getHScrollReference.Visible = False
+        dstCanvas.setScrollValue PD_HORIZONTAL, 0
+        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then dstCanvas.setScrollVisibility PD_HORIZONTAL, False
         dstCanvas.setRedrawSuspension False
         
     End If
     
     'Then vertical scroll bar...
     If vScrollEnabled Then
-        dstCanvas.getVScrollReference.Move canvasWidth - dstCanvas.getVScrollReference.Width, srcImage.imgViewport.getTopOffset, dstCanvas.getVScrollReference.Width, viewportHeight
-        If (Not dstCanvas.getVScrollReference.Visible) Then dstCanvas.getVScrollReference.Visible = True
+        dstCanvas.moveScrollBar PD_VERTICAL, canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL), srcImage.imgViewport.getTopOffset, dstCanvas.getScrollWidth(PD_VERTICAL), viewportHeight
+        If (Not dstCanvas.getScrollVisibility(PD_VERTICAL)) Then dstCanvas.setScrollVisibility PD_VERTICAL, True
     Else
     
         dstCanvas.setRedrawSuspension True
-        dstCanvas.getVScrollReference.Value = 0
-        If dstCanvas.getVScrollReference.Visible Then dstCanvas.getVScrollReference.Visible = False
+        dstCanvas.setScrollValue PD_VERTICAL, 0
+        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then dstCanvas.setScrollVisibility PD_VERTICAL, False
         dstCanvas.setRedrawSuspension False
         
     End If

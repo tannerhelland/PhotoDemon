@@ -12,8 +12,7 @@ Attribute VB_Name = "Outside_SetIcon"
 
 Option Explicit
 
-Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
-
+'System constants for retrieving system default icon size
 Private Const SM_CXICON = 11
 Private Const SM_CYICON = 12
 
@@ -93,9 +92,9 @@ Public Sub SetIcon(ByVal hWnd As Long, ByVal sIconResName As String, Optional By
 End Sub
 
 'During run-time, the program can use this function to assign a custom icon to any form
-Public Sub setNewTaskbarIcon(ByVal iconhWnd32 As Long, ByVal targetHwnd As Long)
+Public Sub setNewTaskbarIcon(ByVal iconhWnd32 As Long, ByVal targetHWnd As Long)
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
-    SendMessageLong targetHwnd, WM_SETICON, ICON_BIG, iconhWnd32
+    SendMessageLong targetHWnd, WM_SETICON, ICON_BIG, iconhWnd32
 End Sub
 
 'Previously, we changed the main program icon to match the thumbnail of the currently active image.  Now that each

@@ -166,8 +166,8 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     y1 = y1 - srcImage.imgViewport.getTopOffset
     
     'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcCanvas.getHScrollReference.Value + Int((x1 - srcImage.imgViewport.targetLeft) / zoomVal)
-    y1 = srcCanvas.getVScrollReference.Value + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
+    x1 = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((x1 - srcImage.imgViewport.targetLeft) / zoomVal)
+    y1 = srcCanvas.getScrollValue(PD_VERTICAL) + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
             
     'If the user has requested copies of these coordinates, assign them now
     If copyX Then copyX = x1
