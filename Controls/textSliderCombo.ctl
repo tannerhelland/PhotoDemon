@@ -21,12 +21,17 @@ Begin VB.UserControl sliderTextCombo
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
    ToolboxBitmap   =   "textSliderCombo.ctx":0000
-   Begin VB.HScrollBar hsPrimary 
+   Begin VB.PictureBox picScroll 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
       Height          =   345
       Left            =   120
-      Max             =   100
-      Min             =   -100
-      TabIndex        =   0
+      ScaleHeight     =   23
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   329
+      TabIndex        =   1
       Top             =   60
       Width           =   4935
    End
@@ -44,7 +49,7 @@ Begin VB.UserControl sliderTextCombo
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   5160
-      TabIndex        =   1
+      TabIndex        =   0
       Text            =   "0"
       Top             =   60
       Width           =   735
@@ -119,6 +124,10 @@ Private significantDigits As Long
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
 
+'API scroll bars are used in place of VB ones
+Private WithEvents hsPrimary As pdScrollAPI
+Attribute hsPrimary.VB_VarHelpID = -1
+
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
     
@@ -141,10 +150,10 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
-    UserControl.Enabled = NewValue
-    hsPrimary.Enabled = NewValue
-    txtPrimary.Enabled = NewValue
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    hsPrimary.Enabled = newValue
+    txtPrimary.Enabled = newValue
     PropertyChanged "Enabled"
 End Property
 
@@ -165,14 +174,9 @@ Public Property Set Font(mNewFont As StdFont)
     PropertyChanged "Font"
 End Property
 
-Private Sub hsPrimary_Change()
-    If Not textBoxInitiated Then copyValToTextBox hsPrimary.Value
-    Value = hsPrimary / (10 ^ significantDigits)
-End Sub
-
 Private Sub hsPrimary_Scroll()
-    copyValToTextBox hsPrimary.Value
-    Value = hsPrimary / (10 ^ significantDigits)
+    If Not textBoxInitiated Then copyValToTextBox hsPrimary.Value
+    Value = hsPrimary.Value / (10 ^ significantDigits)
 End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
@@ -190,13 +194,13 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal NewValue As Double)
+Public Property Let Value(ByVal newValue As Double)
     
     'Don't make any changes unless the new value deviates from the existing one
-    If NewValue <> controlVal Then
+    If newValue <> controlVal Then
     
         'Internally track the value of the control
-        controlVal = NewValue
+        controlVal = newValue
         
         'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
         ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
@@ -204,13 +208,13 @@ Public Property Let Value(ByVal NewValue As Double)
         Dim newScrollVal As Long
         newScrollVal = CLng(controlVal * (10 ^ significantDigits))
         
-        If hsPrimary <> newScrollVal Then
+        If hsPrimary.Value <> newScrollVal Then
             
             'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
             If newScrollVal <= hsPrimary.Min Then newScrollVal = hsPrimary.Min
             If newScrollVal >= hsPrimary.Max Then newScrollVal = hsPrimary.Max
             
-            hsPrimary = newScrollVal
+            hsPrimary.Value = newScrollVal
             
         End If
         
@@ -232,15 +236,15 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal NewValue As Double)
+Public Property Let Min(ByVal newValue As Double)
     
-    controlMin = NewValue
+    controlMin = newValue
     hsPrimary.Min = controlMin * (10 ^ significantDigits)
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        hsPrimary = controlVal * (10 ^ significantDigits)
+        hsPrimary.Value = controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -254,9 +258,9 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal NewValue As Double)
+Public Property Let Max(ByVal newValue As Double)
     
-    controlMax = NewValue
+    controlMax = newValue
     hsPrimary.Max = controlMax * (10 ^ significantDigits)
     
     'If the current control .Value is greater than the new max, change it to match
@@ -276,9 +280,9 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal NewValue As Long)
+Public Property Let SigDigits(ByVal newValue As Long)
     
-    significantDigits = NewValue
+    significantDigits = newValue
     
     'Update the scroll bar's min and max values accordingly
     hsPrimary.Min = controlMin * (10 ^ significantDigits)
@@ -317,21 +321,22 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'Apply a hand cursor to the entire control (good enough for the IDE) and also the option button (when compiled)
-    setHandCursor hsPrimary
-    
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
     If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.requestContainerSubclass UserControl.hWnd
     
     'If fancy fonts are being used, increase the horizontal scroll bar height by one pixel equivalent (to make it fit better)
-    If g_UseFancyFonts Then hsPrimary.Height = fixDPI(23) Else hsPrimary.Height = fixDPI(22)
+    If g_UseFancyFonts Then picScroll.Height = fixDPI(23) Else picScroll.Height = fixDPI(22)
     
     origForecolor = ForeColor
         
     'Prepare a font object for use
     Set mFont = New StdFont
     Set UserControl.Font = mFont
-                    
+    
+    'Prepare an API scroll bar
+    Set hsPrimary = New pdScrollAPI
+    hsPrimary.initializeScrollBarWindow picScroll.hWnd, True, 0, 10, 0, 1, 1
+    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -374,15 +379,11 @@ Private Sub UserControl_Resize()
     'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
     txtPrimary.Left = UserControl.ScaleWidth - fixDPI(56)
     shpError.Left = txtPrimary.Left - fixDPI(4)
-    If txtPrimary.Left - fixDPI(15) > 0 Then hsPrimary.Width = txtPrimary.Left - fixDPI(15)         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
+    If txtPrimary.Left - fixDPI(15) > 0 Then picScroll.Width = txtPrimary.Left - fixDPI(15)         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
 
 End Sub
 
 Private Sub UserControl_Show()
-    
-    'Apply a hand cursor to the scroll bar.  (It is necessary to do this here, in addition to the _Initialize event,
-    ' if the control exists inside a container like a picture box.)
-    setHandCursor hsPrimary
     
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
