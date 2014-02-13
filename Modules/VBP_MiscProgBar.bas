@@ -3,8 +3,8 @@ Attribute VB_Name = "ProgressBar_Support_Functions"
 'Miscellaneous Functions Related to the Progress Bar
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 03/October/12
-'Last update: First build
+'Last updated: 13/February/13
+'Last update: Rewrite the progress bar code against an API progress bar on the main canvas object
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -56,17 +56,11 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
         If curProgBar Is Nothing Then
             Set curProgBar = New cProgressBarOfficial
             
-            'Create the progress bar form and position it properly (at the bottom of the main form's client area).
-            special_ProgressBar.Visible = False
-            g_WindowManager.moveProgressBarIntoPosition special_ProgressBar
-            
-            'Assign the progress bar control to its container form
-            With special_ProgressBar
+            'Assign the progress bar control to its container picture box on the primary canvas, then display it.
+            With FormMain.mainCanvas(0).getProgBarReference()
                 curProgBar.CreateProgressBar .hWnd, 0, 0, .ScaleWidth, .ScaleHeight, True, False, False, True
+                .Visible = True
             End With
-            
-            'Use the window manager to display the progress bar form.  (It will do some extra work to ensure z-order is correct.)
-            g_WindowManager.displayProgressBar special_ProgressBar
             
             prevProgBarValue = 0
             
@@ -142,12 +136,12 @@ Public Sub releaseProgressBar()
         curProgBar.Refresh
     
         'Release the progress bar and container picture box
+        FormMain.mainCanvas(0).getProgBarReference.Visible = False
         Set curProgBar = Nothing
+        
     End If
     
-    special_ProgressBar.Hide
-    Unload special_ProgressBar
-    
+    'On Win 7+, also reset the taskbar progress indicator
     If g_IsWin7OrLater Then SetTaskbarProgressState TBPF_NOPROGRESS
     
 End Sub

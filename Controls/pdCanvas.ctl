@@ -21,6 +21,21 @@ Begin VB.UserControl pdCanvas
    ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
+   Begin VB.PictureBox picProgressBar 
+      Align           =   2  'Align Bottom
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   255
+      Left            =   0
+      ScaleHeight     =   17
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   886
+      TabIndex        =   6
+      Top             =   7140
+      Visible         =   0   'False
+      Width           =   13290
+   End
    Begin VB.PictureBox picScrollV 
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
@@ -416,6 +431,10 @@ End Function
 
 Public Function getStatusBarHeight() As Long
     getStatusBarHeight = picStatusBar.ScaleHeight
+End Function
+
+Public Function getProgBarReference() As PictureBox
+    Set getProgBarReference = picProgressBar
 End Function
 
 Public Property Get hWnd()
