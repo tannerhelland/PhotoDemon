@@ -31,7 +31,7 @@ Attribute VB_Exposed = False
 ' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62935&lngWId=1
 '
 'None of William's original code is in use here, but perhaps that project would be useful to individuals looking
-' for traditional "per-DC" scroll bars.
+' for traditional Windows-managed client-area scroll bars.
 '
 'A few notes, just in case I forget in the future:
 ' 1) The class must be initialized via initializeScrollBarWindow() before attempting to set value, min, or max.
