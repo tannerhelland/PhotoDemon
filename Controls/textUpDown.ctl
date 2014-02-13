@@ -212,7 +212,10 @@ Public Property Let Value(ByVal newValue As Double)
         If vsPrimary.Value <> newScrollVal Then
             
             'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-            If newScrollVal >= vsPrimary.Min And newScrollVal <= vsPrimary.Max Then vsPrimary.Value = newScrollVal
+            If newScrollVal < vsPrimary.Min Then newScrollVal = vsPrimary.Min
+            If newScrollVal > vsPrimary.Max Then newScrollVal = vsPrimary.Max
+            
+            vsPrimary.Value = newScrollVal
             
         End If
         
