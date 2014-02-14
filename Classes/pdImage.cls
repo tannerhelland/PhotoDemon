@@ -93,6 +93,9 @@ Option Explicit
     'For JPEG-2000 files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
     Public hasSeenJP2Prompt As Boolean
     
+    'For WEBP files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
+    Public hasSeenWebPPrompt As Boolean
+    
     'For PNG files, if the original PNG file has a background color, it will be stored here.
     Public pngBackgroundColor As Long
     

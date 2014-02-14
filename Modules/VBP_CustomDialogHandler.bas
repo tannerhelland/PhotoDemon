@@ -3,8 +3,8 @@ Attribute VB_Name = "Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 19/January/14
-'Last update: added support for the new Autosave detected dialog
+'Last updated: 14/February/14
+'Last update: added support for the new WebP export dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -94,6 +94,22 @@ Public Function promptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
     
     Unload dialog_ExportJP2
     Set dialog_ExportJP2 = Nothing
+
+End Function
+
+'Present a dialog box to ask the user for various WebP export settings
+Public Function promptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+
+    Load dialog_ExportWebP
+    Set dialog_ExportWebP.imageBeingExported = srcImage
+    dialog_ExportWebP.showDialog
+
+    promptWebPSettings = dialog_ExportWebP.DialogResult
+    
+    Set dialog_ExportWebP.imageBeingExported = Nothing
+    
+    Unload dialog_ExportWebP
+    Set dialog_ExportWebP = Nothing
 
 End Function
 

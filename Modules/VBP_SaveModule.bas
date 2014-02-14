@@ -340,7 +340,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         'JPEG-2000
         Case FIF_JP2
         
-            If loadRelevantForm = True Then
+            If loadRelevantForm Then
                 
                 Dim gotJP2Settings As VbMsgBoxResult
                 gotJP2Settings = promptJP2Settings(srcPDImage)
@@ -391,6 +391,38 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 Exit Function
             End If
+        
+        'WebP
+        Case FIF_WEBP
+        
+            If loadRelevantForm Then
+                
+                Dim gotWebPSettings As VbMsgBoxResult
+                gotWebPSettings = promptWebPSettings(srcPDImage)
+                
+                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
+                If gotWebPSettings = vbOK Then
+                    srcPDImage.hasSeenWebPPrompt = True
+                    PhotoDemon_SaveImage = True
+                Else
+                    PhotoDemon_SaveImage = False
+                    Message "Save canceled."
+                    
+                    'Convert back to premultiplied alpha if 32bpp
+                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
+                
+                    Exit Function
+                End If
+                
+                'If the user clicked OK, replace the functions save parameters with the ones set by the user
+                cParams.setParamString CStr(g_WebPCompression)
+                
+            End If
+            
+            'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
+            srcPDImage.saveParameters = cParams.getParamString
+        
+            updateMRU = SaveWebPImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
         
         'Anything else must be a bitmap
         Case FIF_BMP
@@ -1672,6 +1704,78 @@ SaveJP2Error:
     
 End Function
 
+'Save to WebP format using the FreeImage library.
+Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As String, ByVal outputColorDepth As Long, Optional ByVal WebPParams As String = "") As Boolean
+    
+    On Error GoTo SaveWebPError
+    
+    'Parse all possible WebP params
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    If Len(WebPParams) > 0 Then cParams.setParamString WebPParams
+    Dim WebPQuality As Long
+    If cParams.doesParamExist(1) Then WebPQuality = cParams.GetLong(1) Else WebPQuality = 0
+    
+    Dim sFileType As String
+    sFileType = "WebP"
+    
+    'Make sure we found the plug-in when we loaded the program
+    If Not g_ImageFormats.FreeImageEnabled Then
+        
+        pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        SaveWebPImage = False
+        Exit Function
+        
+    End If
+    
+    Message "Preparing %1 image...", sFileType
+    
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    
+    'Convert our current DIB to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    
+    'Use that handle to save the image to WebP format
+    If fi_DIB <> 0 Then
+                
+        Dim fi_Check As Long
+        fi_Check = FreeImage_SaveEx(fi_DIB, WebPPath, FIF_WEBP, WebPQuality, outputColorDepth, , , , , True)
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+            
+            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            SaveWebPImage = False
+            Exit Function
+            
+        End If
+        
+    Else
+    
+        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+        SaveWebPImage = False
+        Exit Function
+        
+    End If
+    
+    SaveWebPImage = True
+    Exit Function
+    
+SaveWebPError:
+
+    SaveWebPImage = False
+    
+End Function
+
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JPEG" dialog.
 Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JPEGQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
@@ -1947,19 +2051,44 @@ Public Sub fillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
         
-    'Now comes the actual JPEG conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
-    ' the image in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
+    'Now comes the actual JPEG-2000 conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
+    ' the image in JPEG-2000 format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim jp2Array() As Byte
     Dim fi_Check As Long
     fi_Check = FreeImage_SaveToMemoryEx(FIF_JP2, fi_DIB, jp2Array, JP2Quality, True)
     
     fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0)
     
+    'Copy the newly decompressed JPEG-2000 into the destination pdDIB object.
+    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+    
+    'Release the FreeImage copy of the DIB.
+    FreeImage_Unload fi_DIB
+    Erase jp2Array
+
+End Sub
+
+'Given a source and destination DIB reference, fill the destination with a post-WebP-compression of the original.  This
+' is used to generate the live preview used in PhotoDemon's "export WebP" dialog.
+Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal WebPQuality As Long)
+    
+    'Pass the DIB to FreeImage, which will make a copy for itself.
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        
+    'Now comes the actual WebP conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
+    ' the image in WebP format to a byte array; we then hand that byte array back to it and request a decompression.
+    Dim webPArray() As Byte
+    Dim fi_Check As Long
+    fi_Check = FreeImage_SaveToMemoryEx(FIF_WEBP, fi_DIB, webPArray, WebPQuality, True)
+    
+    fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, 0)
+    
     'Copy the newly decompressed JPEG into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
     
-    'Release the FreeImage copy of the DIB.  (This shouldn't technically be necessary, but it doesn't hurt.)
+    'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
-    Erase jp2Array
+    Erase webPArray
 
 End Sub
