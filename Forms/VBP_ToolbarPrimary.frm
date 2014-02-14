@@ -26,31 +26,10 @@ Begin VB.Form toolbar_File
    ScaleWidth      =   70
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.ComboBox CmbZoom 
-      CausesValidation=   0   'False
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   360
-      ItemData        =   "VBP_ToolbarPrimary.frx":0000
-      Left            =   60
-      List            =   "VBP_ToolbarPrimary.frx":0002
-      Style           =   2  'Dropdown List
-      TabIndex        =   0
-      ToolTipText     =   "Click to adjust image zoom"
-      Top             =   4320
-      Width           =   960
-   End
    Begin PhotoDemon.jcbutton cmdOpen 
       Height          =   615
       Left            =   60
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   60
       Width           =   930
       _ExtentX        =   1640
@@ -68,7 +47,7 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":0004
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":0000
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Open"
@@ -76,7 +55,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   615
       Left            =   60
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   1440
       Width           =   930
       _ExtentX        =   1640
@@ -94,7 +73,7 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":1456
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":1452
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Save"
@@ -102,7 +81,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdUndo 
       Height          =   615
       Left            =   60
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2820
       Width           =   930
       _ExtentX        =   1640
@@ -120,7 +99,7 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":26B8
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":26B4
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Undo"
@@ -129,7 +108,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdRedo 
       Height          =   615
       Left            =   60
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3450
       Width           =   930
       _ExtentX        =   1640
@@ -147,7 +126,7 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":370A
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":3706
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Redo"
@@ -156,7 +135,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdClose 
       Height          =   615
       Left            =   60
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   690
       Width           =   930
       _ExtentX        =   1640
@@ -174,7 +153,7 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":475C
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":4758
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Close"
@@ -182,7 +161,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdSaveAs 
       Height          =   615
       Left            =   60
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   2070
       Width           =   930
       _ExtentX        =   1640
@@ -200,64 +179,10 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":57AE
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":57AA
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Save As"
-   End
-   Begin PhotoDemon.jcbutton cmdZoomIn 
-      Height          =   450
-      Left            =   525
-      TabIndex        =   7
-      Top             =   4800
-      Width           =   480
-      _ExtentX        =   847
-      _ExtentY        =   794
-      ButtonStyle     =   13
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   15199212
-      Caption         =   ""
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":6A10
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      ToolTip         =   "Use this button to increase image zoom."
-      TooltipTitle    =   "Zoom In"
-   End
-   Begin PhotoDemon.jcbutton cmdZoomOut 
-      Height          =   450
-      Left            =   45
-      TabIndex        =   8
-      Top             =   4800
-      Width           =   480
-      _ExtentX        =   847
-      _ExtentY        =   794
-      ButtonStyle     =   13
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   15199212
-      Caption         =   ""
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":6E62
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      ToolTip         =   "Use this button to decrease image zoom."
-      TooltipTitle    =   "Zoom Out"
    End
    Begin VB.Label lblRecording 
       Alignment       =   2  'Center
@@ -277,19 +202,11 @@ Begin VB.Form toolbar_File
       ForeColor       =   &H000000FF&
       Height          =   1620
       Left            =   30
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   6840
       Visible         =   0   'False
       Width           =   960
       WordWrap        =   -1  'True
-   End
-   Begin VB.Line lineMain 
-      BorderColor     =   &H80000002&
-      Index           =   0
-      X1              =   2
-      X2              =   68
-      Y1              =   279
-      Y2              =   279
    End
 End
 Attribute VB_Name = "toolbar_File"
@@ -317,32 +234,6 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'When the zoom combo box is changed, redraw the image using the new zoom value
-Private Sub CmbZoom_Click()
-    
-    'Track the current zoom value
-    If g_OpenImageCount > 0 Then
-    
-        pdImages(g_CurrentImage).currentZoomValue = toolbar_File.CmbZoom.ListIndex
-        
-        If toolbar_File.CmbZoom.ListIndex = 0 Then
-            toolbar_File.cmdZoomIn.Enabled = False
-        Else
-            If Not toolbar_File.cmdZoomIn.Enabled Then toolbar_File.cmdZoomIn.Enabled = True
-        End If
-        
-        If toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListCount - 1 Then
-            toolbar_File.cmdZoomOut.Enabled = False
-        Else
-            If Not toolbar_File.cmdZoomOut.Enabled Then toolbar_File.cmdZoomOut.Enabled = True
-        End If
-        
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by user"
-        
-    End If
-    
-End Sub
-
 Private Sub cmdClose_Click()
     g_ClosingAllImages = False
     fullPDImageUnload g_CurrentImage
@@ -366,14 +257,6 @@ End Sub
 
 Private Sub cmdUndo_Click()
     Process "Undo", , , False
-End Sub
-
-Private Sub cmdZoomIn_Click()
-    toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
-End Sub
-
-Private Sub cmdZoomOut_Click()
-    toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
 End Sub
 
 Private Sub Form_Load()

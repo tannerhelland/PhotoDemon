@@ -2704,27 +2704,33 @@ End Sub
 'These menu items correspond to specific zoom values
 Private Sub MnuSpecificZoom_Click(Index As Integer)
 
-    Select Case Index
-    
-        Case 0
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 2
-        Case 1
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 4
-        Case 2
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 8
-        Case 3
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 10
-        Case 4
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = g_Zoom.getZoom100Index
-        Case 5
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 14
-        Case 6
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 16
-        Case 7
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 19
-        Case 8
-            If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 21
-    End Select
+    'Only attempt to change zoom if the primary zoom box is not currently disabled
+    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then
+
+        Select Case Index
+        
+            Case 0
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 2
+            Case 1
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 4
+            Case 2
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 8
+            Case 3
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 10
+            Case 4
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            Case 5
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 14
+            Case 6
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 16
+            Case 7
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 19
+            Case 8
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 21
+                
+        End Select
+
+    End If
 
 End Sub
 
@@ -2929,50 +2935,50 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Zoom in
     If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
-        If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex > 0 Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
     End If
     
     'Zoom out
     If ctlAccelerator.Key(nIndex) = "Zoom_Out" Then
-        If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex < (FormMain.mainCanvas(0).getZoomDropDownReference().ListCount - 1) Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
     End If
     
     'Actual size
     If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = g_Zoom.getZoom100Index
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
     End If
     
     'Various zoom values
     If ctlAccelerator.Key(nIndex) = "Zoom_161" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 2
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 2
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_81" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 4
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 4
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_41" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 8
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 8
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_21" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 10
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 10
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_12" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 14
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 14
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_14" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 16
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 16
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_18" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 19
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 19
     End If
     
     If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
-        If toolbar_File.CmbZoom.Enabled Then toolbar_File.CmbZoom.ListIndex = 21
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 21
     End If
     
     'Remove selection
@@ -3115,11 +3121,11 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
 End Sub
 
 Private Sub MnuZoomIn_Click()
-    If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex > 0 Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex - 1
+    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If toolbar_File.CmbZoom.Enabled And toolbar_File.CmbZoom.ListIndex < (toolbar_File.CmbZoom.ListCount - 1) Then toolbar_File.CmbZoom.ListIndex = toolbar_File.CmbZoom.ListIndex + 1
+    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex < (FormMain.mainCanvas(0).getZoomDropDownReference().ListCount - 1) Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
 End Sub
 
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
