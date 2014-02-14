@@ -196,7 +196,7 @@ Attribute Value.VB_UserMemId = 0
 End Property
 
 Public Property Let Value(ByVal newValue As Double)
-    
+        
     'Don't make any changes unless the new value deviates from the existing one
     If (newValue <> controlVal) Or (Not IsValid(False)) Then
     
@@ -209,13 +209,17 @@ Public Property Let Value(ByVal newValue As Double)
         Dim newScrollVal As Long
         newScrollVal = -1 * CLng(controlVal * (10 ^ significantDigits))
         
-        If vsPrimary.Value <> newScrollVal Then
-            
-            'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-            If newScrollVal < vsPrimary.Min Then newScrollVal = vsPrimary.Min
-            If newScrollVal > vsPrimary.Max Then newScrollVal = vsPrimary.Max
-            
-            vsPrimary.Value = newScrollVal
+        If g_UserModeFix Then
+        
+            If vsPrimary.Value <> newScrollVal Then
+                
+                'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
+                If newScrollVal < vsPrimary.Min Then newScrollVal = vsPrimary.Min
+                If newScrollVal > vsPrimary.Max Then newScrollVal = vsPrimary.Max
+                
+                vsPrimary.Value = newScrollVal
+                
+            End If
             
         End If
         
@@ -243,7 +247,7 @@ Public Property Get Min() As Double
 End Property
 
 Public Property Let Min(ByVal newValue As Double)
-    
+        
     controlMin = newValue
     
     'Calculate a new scroll bar limit
@@ -252,12 +256,12 @@ Public Property Let Min(ByVal newValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    vsPrimary.Max = newScrollLimit
+    If g_UserModeFix Then vsPrimary.Max = newScrollLimit
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If g_UserModeFix Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -272,7 +276,7 @@ Public Property Get Max() As Double
 End Property
 
 Public Property Let Max(ByVal newValue As Double)
-    
+        
     controlMax = newValue
     
     'Calculate a new scroll bar limit
@@ -281,12 +285,12 @@ Public Property Let Max(ByVal newValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    vsPrimary.Min = newScrollLimit
+    If g_UserModeFix Then vsPrimary.Min = newScrollLimit
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
         controlVal = controlMax
-        vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If g_UserModeFix Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -301,7 +305,7 @@ Public Property Get SigDigits() As Long
 End Property
 
 Public Property Let SigDigits(ByVal newValue As Long)
-    
+        
     significantDigits = newValue
     
     'Calculate a new scroll bar limit
@@ -311,8 +315,10 @@ Public Property Let SigDigits(ByVal newValue As Long)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    vsPrimary.Max = newMax
-    vsPrimary.Min = newMin
+    If g_UserModeFix Then
+        vsPrimary.Max = newMax
+        vsPrimary.Min = newMin
+    End If
     
     PropertyChanged "SigDigits"
     
@@ -359,8 +365,10 @@ Private Sub UserControl_Initialize()
     Set UserControl.Font = mFont
     
     'Prepare an API scroll bar
-    Set vsPrimary = New pdScrollAPI
-    vsPrimary.initializeScrollBarWindow picScroll.hWnd, False, 0, 10, 0, 1, 1
+    If g_UserModeFix Then
+        Set vsPrimary = New pdScrollAPI
+        vsPrimary.initializeScrollBarWindow picScroll.hWnd, False, 0, 10, 0, 1, 1
+    End If
                     
 End Sub
 
