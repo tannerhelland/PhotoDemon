@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2014 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 22/January/14
-'Last update: when an image's save state is changed, write a new Autosave entry to the user's Autosave folder.
+'Last updated: 14/February/14
+'Last update: added save tracking variables for WebP and JPEG-XR formats
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -95,6 +95,9 @@ Option Explicit
     
     'For WEBP files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
     Public hasSeenWebPPrompt As Boolean
+    
+    'For JPEG XR files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
+    Public hasSeenJXRPrompt As Boolean
     
     'For PNG files, if the original PNG file has a background color, it will be stored here.
     Public pngBackgroundColor As Long

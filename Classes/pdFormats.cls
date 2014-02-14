@@ -230,6 +230,7 @@ Public Sub generateInputFormats()
     addInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", FIF_JPEG
     
     If FreeImageEnabled Then
+        addInputFormat "JXR/HDP - JPEG XR (HD Photo)", "*.jxr;*.hdp;*.wdp", FIF_JXR
         addInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", FIF_KOALA
         addInputFormat "LBM - Deluxe Paint", "*.lbm", FIF_LBM
         addInputFormat "MNG - Multiple Network Graphics", "*.mng", FIF_MNG
@@ -339,6 +340,8 @@ Public Sub generateOutputFormats()
     If FreeImageEnabled Then addOutputFormat "JP2 - JPEG 2000", "jp2", FIF_JP2
         
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg", FIF_JPEG
+        
+    If FreeImageEnabled Then addOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", FIF_JXR
         
     If g_ZLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", 100
     
@@ -478,6 +481,8 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "raw"
         Case FIF_WEBP
             getExtensionFromFIF = "webp"
+        Case FIF_JXR
+            getExtensionFromFIF = "jxr"
         Case 100
             getExtensionFromFIF = "pdi"
         Case Else
@@ -570,7 +575,21 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
             Case FIF_JPEG
             
                 If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
-                                        
+            
+            'JXR (JPEG XR)
+            Case FIF_JXR
+            
+                Select Case desiredColorDepth
+                
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+                
             'PNG
             Case FIF_PNG
         
@@ -791,6 +810,14 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
         'JPEG only supports 24bpp (8bpp grayscale is not currently handled)
         Case FIF_JPEG
             getClosestColorDepth = 24
+        
+        'JXR (JPEG XR) supports 24/32bpp
+        Case FIF_JXR
+            If desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
         
         'PNG supports all available color depths
         Case FIF_PNG
