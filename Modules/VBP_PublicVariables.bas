@@ -171,6 +171,9 @@ End Enum
 'JPEG-2000 export compression ratio; this is set by the JP2 export dialog if the user clicks "OK" (not Cancel)
 Public g_JP2Compression As Long
 
+'WebP export compression ratio; this is set by the WebP export dialog if the user clicks "OK" (not Cancel)
+Public g_WebPCompression As Long
+
 'Exported color depth
 Public g_ColorDepth As Long
 

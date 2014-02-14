@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 16/January/14
-'Last update: added WebP support (import only; export may be added in the coming weeks)
+'Last update: added WebP export support
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -27,8 +27,8 @@ Attribute VB_Exposed = False
 ' have any connection to the other.
 '
 'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
-' individual FreeImage version numbers if necessary.  As of FreeImage 3.16.0 (pre-release custom compiled be me in
-' January '14) no formats are disabled due to known FreeImage bugs.
+' individual FreeImage version numbers if necessary.  As of FreeImage 3.16.0 (pre-release custom compiled by me in
+' February '14) no formats are disabled due to known FreeImage bugs.
 '
 'GDIPlus is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
 ' is not as well-tested as FreeImage.  In some cases, however, it IS faster to use GDI+ due to the need to make a
@@ -350,7 +350,9 @@ Public Sub generateOutputFormats()
     End If
     
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "TIFF - Tagged Image File Format", "tif", FIF_TIFF
-        
+    
+    If FreeImageEnabled Then addOutputFormat "WEBP - Google WebP", "webp", FIF_WEBP
+    
     'Resize our description and extension arrays to match their final size
     numOfOutputFormats = curFormatIndex
     ReDim Preserve outputDescriptions(0 To numOfOutputFormats) As String
@@ -474,6 +476,8 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "pct"
         Case FIF_RAW
             getExtensionFromFIF = "raw"
+        Case FIF_WEBP
+            getExtensionFromFIF = "webp"
         Case 100
             getExtensionFromFIF = "pdi"
         Case Else
@@ -627,6 +631,20 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
                         isColorDepthSupported = False
                         
                 End Select
+                
+            'WebP
+            Case FIF_WEBP
+            
+                Select Case desiredColorDepth
+                
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
         
         End Select
         
@@ -699,7 +717,7 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
     
     End If
     
-    'Finally, if FreeImage can't be found, and GDI+ can't be found, the user better like outputting BMP files, because that's all they've got.
+    'Finally, if FreeImage can't be found, and GDI+ can't be found, the user better like outputting BMP files, because that's all they get.
     If outputFIF = FIF_BMP Then
     
         If (desiredColorDepth = 24) Or (desiredColorDepth = 32) Then isColorDepthSupported = True Else isColorDepthSupported = False
@@ -813,6 +831,14 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
             ElseIf desiredColorDepth <= 8 Then
                 getClosestColorDepth = 8
             ElseIf desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
+            
+        'WebP supports 24/32bpp
+        Case FIF_WEBP
+            If desiredColorDepth <= 24 Then
                 getClosestColorDepth = 24
             Else
                 getClosestColorDepth = 32

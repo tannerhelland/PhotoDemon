@@ -29,7 +29,7 @@ End Sub
 
 'Pass this function a string array, and it will fill it with a list of files selected by the user.
 ' The commondialog filters are automatically set according to image formats supported by the program.
-Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerhWnd As Long) As Boolean
+Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerHwnd As Long) As Boolean
 
     'Common dialog interface
     Dim CC As cCommonDialog
@@ -47,7 +47,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     g_WindowManager.resetTopmostForAllWindows False
     
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerhWnd, 0) Then
+    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd, 0) Then
         
         'Message "Preparing to load image..."
         
@@ -167,16 +167,21 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
-        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (pdImages(imageID).hasSeenJPEGPrompt = False) Then
+        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).hasSeenJPEGPrompt) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JPEG-2000
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (pdImages(imageID).hasSeenJP2Prompt = False) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).hasSeenJP2Prompt) Then
+            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
+            
+        'WebP
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).hasSeenWebPPrompt) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'All other formats
         Else
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, False, pdImages(imageID).saveParameters)
+            
         End If
     End If
 
@@ -252,17 +257,6 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
                         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         MenuSaveAs = PhotoDemon_SaveImage(pdImages(imageID), sFile, imageID, True)
-        
-        'If the save was successful, update the associated window caption to reflect the new name and/or location
-        If MenuSaveAs Then
-            
-            If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) Then
-                'g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, getFilename(sFile)
-            Else
-                'g_WindowManager.requestWindowCaptionChange pdImages(imageID).containingForm, sFile
-            End If
-            
-        End If
         
     Else
         MenuSaveAs = False
