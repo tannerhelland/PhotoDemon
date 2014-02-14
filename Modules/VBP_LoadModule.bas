@@ -210,7 +210,7 @@ Public Sub LoadTheProgram()
     g_Zoom.initializeViewportEngine
     
     'Populate the main form's zoom drop-down
-    g_Zoom.populateZoomComboBox toolbar_File.CmbZoom
+    g_Zoom.populateZoomComboBox FormMain.mainCanvas(0).getZoomDropDownReference()
     
     
     
@@ -251,19 +251,7 @@ Public Sub LoadTheProgram()
         
     LoadMessage "Initializing image tools..."
         
-    'Note that selection tools are initialized in the selection toolbar's Form_Load event
-            
-        
-        
-    '*************************************************************************************************************************************
-    ' PhotoDemon draws its own drop shadows.  Prepare the engine that handles such shadows.
-    '*************************************************************************************************************************************
-    
-    LoadMessage "Initializing drop shadow renderer..."
-            
-    'Initialize the drop shadow engine
-    Set g_CanvasShadow = New pdShadow
-    g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
+    'Note that selection tools are initialized in the Tool toolbar's Form_Load event
     
     
     
@@ -272,6 +260,10 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     
     LoadMessage "Initializing user interface..."
+    
+    'Initialize the drop shadow engine
+    Set g_CanvasShadow = New pdShadow
+    g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
     
     'Manually create multi-line tooltips for some command buttons
     toolbar_File.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
@@ -297,12 +289,6 @@ Public Sub LoadTheProgram()
     
     'Before displaying the main window, check its last-used location and move the window into place.
     restoreMainWindowLocation
-        
-    'If Segoe UI is in use, the zoom buttons need to be adjusted to match the combo box
-    If g_UseFancyFonts Then
-        toolbar_File.cmdZoomIn.Height = toolbar_File.cmdZoomIn.Height + 1
-        toolbar_File.cmdZoomOut.Height = toolbar_File.cmdZoomOut.Height + 1
-    End If
     
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.
@@ -944,7 +930,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
             ' update the zoom combo box to match the zoom assigned by the window-fit function.
             g_AllowViewportRendering = False
-            toolbar_File.CmbZoom.ListIndex = targetImage.currentZoomValue
+            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = targetImage.currentZoomValue
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
@@ -1682,7 +1668,7 @@ Public Sub DuplicateCurrentImage()
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
     ' update the zoom combo box to match the zoom assigned by the window-fit function.
     g_AllowViewportRendering = False
-    toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).currentZoomValue
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
         
     'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True

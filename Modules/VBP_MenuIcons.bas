@@ -982,6 +982,8 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                     loadResourceToDIB = True
                     Exit Function
                 
+                Else
+                    Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
                 End If
                 
                 'Release the GDI+ bitmap and mark the load as failed
@@ -989,6 +991,8 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 loadResourceToDIB = False
                 Exit Function
                     
+            Else
+                Debug.Print "GDI+ failed to load requested resource " & resTitle & " stream."
             End If
         
             'Free the memory stream
@@ -996,6 +1000,8 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             loadResourceToDIB = False
             Exit Function
         
+        Else
+            Debug.Print "Could not load requested resource " & resTitle & " from file."
         End If
         
         loadResourceToDIB = False

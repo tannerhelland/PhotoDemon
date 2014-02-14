@@ -124,7 +124,10 @@ Public Sub syncInterfaceToCurrentImage()
         'Assign a generic caption to the main window
         FormMain.Caption = getPhotoDemonNameAndVersion()
         
-        'Finally, because dynamic icons are enabled, restore the main program icon and clear the icon cache
+        'Erase the main viewport's status bar
+        FormMain.mainCanvas(0).drawStatusBarIcons False
+        
+        'Because dynamic icons are enabled, restore the main program icon and clear the icon cache
         destroyAllIcons
         setNewTaskbarIcon origIcon32, FormMain.hWnd
         setNewAppIcon origIcon16, origIcon32
@@ -168,6 +171,9 @@ Public Sub syncInterfaceToCurrentImage()
         
         'Display this image's path in the title bar.
         FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
+        
+        'Draw icons onto the main viewport's status bar
+        FormMain.mainCanvas(0).drawStatusBarIcons True
         
         'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
         ' the image has not already been saved in its current state.
@@ -218,7 +224,7 @@ Public Sub syncInterfaceToCurrentImage()
         'Restore the zoom value for this particular image (again, only if the form has been initialized)
         If pdImages(g_CurrentImage).Width <> 0 Then
             g_AllowViewportRendering = False
-            toolbar_File.CmbZoom.ListIndex = pdImages(g_CurrentImage).currentZoomValue
+            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
             g_AllowViewportRendering = True
         End If
         
@@ -470,14 +476,14 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
             
         Case tZoom
-            If toolbar_File.CmbZoom.Enabled <> newState Then
-                toolbar_File.CmbZoom.Enabled = newState
-                toolbar_File.cmdZoomIn.Enabled = newState
-                toolbar_File.cmdZoomOut.Enabled = newState
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> newState Then
+                FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = newState
+                FormMain.mainCanvas(0).enableZoomIn newState
+                FormMain.mainCanvas(0).enableZoomOut newState
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not newState Then toolbar_File.CmbZoom.ListIndex = g_Zoom.getZoom100Index
+            If Not newState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
             
     End Select
     

@@ -126,7 +126,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     End If
     
     'Change the zoom combo box to reflect the new zoom value
-    toolbar_File.CmbZoom.ListIndex = zVal
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = zVal
     pdImages(g_CurrentImage).currentZoomValue = zVal
     
     'Re-enable scrolling
@@ -179,7 +179,7 @@ Public Sub FitOnScreen()
         End If
     Next i
     
-    toolbar_File.CmbZoom.ListIndex = zVal
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = zVal
     pdImages(g_CurrentImage).currentZoomValue = zVal
     
     'Re-enable scrolling
