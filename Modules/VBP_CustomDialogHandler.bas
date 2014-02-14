@@ -113,6 +113,22 @@ Public Function promptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 
 End Function
 
+'Present a dialog box to ask the user for various JPEG XR export settings
+Public Function promptJXRSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+
+    Load dialog_ExportJXR
+    Set dialog_ExportJXR.imageBeingExported = srcImage
+    dialog_ExportJXR.showDialog
+
+    promptJXRSettings = dialog_ExportJXR.DialogResult
+    
+    Set dialog_ExportJXR.imageBeingExported = Nothing
+    
+    Unload dialog_ExportJXR
+    Set dialog_ExportJXR = Nothing
+
+End Function
+
 'Present a dialog box to ask the user for desired output color depth
 Public Function promptColorDepth(ByVal outputFormat As Long) As VbMsgBoxResult
 

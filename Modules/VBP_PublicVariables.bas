@@ -174,6 +174,10 @@ Public g_JP2Compression As Long
 'WebP export compression ratio; this is set by the WebP export dialog if the user clicks "OK" (not Cancel)
 Public g_WebPCompression As Long
 
+'JPEG XR export settings; these are set by the JPEG XR export dialog if the user clicks "OK" (not Cancel)
+Public g_JXRCompression As Long
+Public g_JXRProgressive As Boolean
+
 'Exported color depth
 Public g_ColorDepth As Long
 

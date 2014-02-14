@@ -3,9 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/September/13
-'Last update: Implemented full support for metadata caching.  If metadata is not loaded at image load-time, the save function will now
-'              detect this and cache any relevant metadata before overwriting a file.
+'Last updated: 14/February/14
+'Last update: Added support for WebP and JPEG XR formats.
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -424,6 +423,38 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
             updateMRU = SaveWebPImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
         
+        'JPEG XR
+        Case FIF_JXR
+        
+            If loadRelevantForm Then
+                
+                Dim gotJXRSettings As VbMsgBoxResult
+                gotJXRSettings = promptJXRSettings(srcPDImage)
+                
+                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
+                If gotJXRSettings = vbOK Then
+                    srcPDImage.hasSeenJXRPrompt = True
+                    PhotoDemon_SaveImage = True
+                Else
+                    PhotoDemon_SaveImage = False
+                    Message "Save canceled."
+                    
+                    'Convert back to premultiplied alpha if 32bpp
+                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
+                
+                    Exit Function
+                End If
+                
+                'If the user clicked OK, replace the functions save parameters with the ones set by the user
+                cParams.setParamString CStr(g_JXRCompression) & "|" & CStr(g_JXRProgressive)
+                
+            End If
+            
+            'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
+            srcPDImage.saveParameters = cParams.getParamString
+        
+            updateMRU = SaveJXRImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
+            
         'Anything else must be a bitmap
         Case FIF_BMP
             
@@ -1704,6 +1735,86 @@ SaveJP2Error:
     
 End Function
 
+'Save to JPEG XR format using the FreeImage library.
+Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As String, ByVal outputColorDepth As Long, Optional ByVal jxrParams As String = "") As Boolean
+    
+    On Error GoTo SaveJXRError
+    
+    'Parse all possible JXR params
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    If Len(jxrParams) > 0 Then cParams.setParamString jxrParams
+    Dim jxrQuality As Long, jxrProgressive As Boolean
+    
+    'Quality is the first parameter
+    If cParams.doesParamExist(1) Then jxrQuality = cParams.GetLong(1) Else jxrQuality = 0
+    
+    'Progressive encoding is the second parameter
+    If cParams.doesParamExist(2) Then jxrProgressive = cParams.GetBool(2) Else jxrProgressive = False
+    
+    'FreeImage just accepts a single Long-type set of flags, so merge the progressive setting with the quality one
+    If jxrProgressive Then jxrQuality = jxrQuality Or JXR_PROGRESSIVE
+    
+    Dim sFileType As String
+    sFileType = "JPEG XR"
+    
+    'Make sure we found the plug-in when we loaded the program
+    If Not g_ImageFormats.FreeImageEnabled Then
+        
+        pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        SaveJXRImage = False
+        Exit Function
+        
+    End If
+    
+    Message "Preparing %1 image...", sFileType
+    
+    'Copy the image into a temporary DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    
+    'Convert our current DIB to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    
+    'Use that handle to save the image to JPEG XR format
+    If fi_DIB <> 0 Then
+                
+        Dim fi_Check As Long
+        fi_Check = FreeImage_SaveEx(fi_DIB, jxrPath, FIF_JXR, jxrQuality, outputColorDepth, , , , , True)
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+            
+            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            SaveJXRImage = False
+            Exit Function
+            
+        End If
+        
+    Else
+    
+        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+        SaveJXRImage = False
+        Exit Function
+        
+    End If
+    
+    SaveJXRImage = True
+    Exit Function
+    
+SaveJXRError:
+
+    SaveJXRImage = False
+    
+End Function
+
 'Save to WebP format using the FreeImage library.
 Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As String, ByVal outputColorDepth As Long, Optional ByVal WebPParams As String = "") As Boolean
     
@@ -2084,7 +2195,7 @@ Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, 0)
     
-    'Copy the newly decompressed JPEG into the destination pdDIB object.
+    'Copy the newly decompressed image into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
     
     'Release the FreeImage copy of the DIB.
@@ -2092,3 +2203,29 @@ Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     Erase webPArray
 
 End Sub
+
+'Given a source and destination DIB reference, fill the destination with a post-JXR-compression of the original.  This
+' is used to generate the live preview used in PhotoDemon's "export JXR" dialog.
+Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jxrQuality As Long)
+    
+    'Pass the DIB to FreeImage, which will make a copy for itself.
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        
+    'Now comes the actual JPEG XR conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
+    ' the image in JPEG XR format to a byte array; we then hand that byte array back to it and request a decompression.
+    Dim jxrArray() As Byte
+    Dim fi_Check As Long
+    fi_Check = FreeImage_SaveToMemoryEx(FIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
+    
+    fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0)
+    
+    'Copy the newly decompressed image into the destination pdDIB object.
+    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+    
+    'Release the FreeImage copy of the DIB.
+    FreeImage_Unload fi_DIB
+    Erase jxrArray
+
+End Sub
+
