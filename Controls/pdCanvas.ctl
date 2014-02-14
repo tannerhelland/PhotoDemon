@@ -1155,6 +1155,11 @@ Private Sub UserControl_Show()
     If g_UserModeFix Then
     
         'Convert all labels to the current interface font
+        If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
+        
+        'XP users may not have Segoe UI available, so default to "On Error Resume NexT" for now
+        On Error Resume Next
+        
         lblCoordinates.FontName = g_InterfaceFont
         lblImgSize.FontName = g_InterfaceFont
         lblMessages.FontName = g_InterfaceFont
