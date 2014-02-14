@@ -3,10 +3,10 @@ Begin VB.Form dialog_ExportJP2
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG 2000 Export Options"
-   ClientHeight    =   7815
+   ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   9255
+   ClientWidth     =   12135
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,24 +19,10 @@ Begin VB.Form dialog_ExportJP2
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   521
+   ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   617
+   ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picPreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Left            =   240
-      ScaleHeight     =   311
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   583
-      TabIndex        =   5
-      Top             =   120
-      Width           =   8775
-   End
    Begin VB.ComboBox CmbSaveQuality 
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -49,18 +35,18 @@ Begin VB.Form dialog_ExportJP2
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      Left            =   480
+      Left            =   6240
       Style           =   2  'Dropdown List
       TabIndex        =   0
-      Top             =   5430
-      Width           =   8295
+      Top             =   2550
+      Width           =   5535
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   495
-      Left            =   360
+      Left            =   6120
       TabIndex        =   4
-      Top             =   6000
-      Width           =   8535
+      Top             =   3120
+      Width           =   5775
       _ExtentX        =   15055
       _ExtentY        =   873
       Min             =   1
@@ -80,10 +66,10 @@ Begin VB.Form dialog_ExportJP2
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
-      Top             =   7065
-      Width           =   9255
-      _ExtentX        =   16325
+      TabIndex        =   5
+      Top             =   5835
+      Width           =   12135
+      _ExtentX        =   21405
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -94,6 +80,15 @@ Begin VB.Form dialog_ExportJP2
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   6
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.Label lblBefore 
       AutoSize        =   -1  'True
@@ -110,9 +105,9 @@ Begin VB.Form dialog_ExportJP2
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   480
+      Left            =   6240
       TabIndex        =   3
-      Top             =   6480
+      Top             =   3600
       Width           =   1545
    End
    Begin VB.Label lblAfter 
@@ -131,9 +126,9 @@ Begin VB.Form dialog_ExportJP2
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   6240
+      Left            =   9480
       TabIndex        =   2
-      Top             =   6480
+      Top             =   3600
       Width           =   1470
    End
    Begin VB.Label lblTitle 
@@ -152,9 +147,9 @@ Begin VB.Form dialog_ExportJP2
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   240
+      Left            =   6000
       TabIndex        =   1
-      Top             =   5040
+      Top             =   2160
       Width           =   2700
    End
 End
@@ -167,8 +162,8 @@ Attribute VB_Exposed = False
 'JPEG-2000 (JP2) Export Dialog
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 04/December/12
-'Last updated: 22/November/13
-'Last update: added live previews!
+'Last updated: 14/February/14
+'Last update: reworked layout to incorporate preview UC and more closely mimic the JPEG dialog
 '
 'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
@@ -193,11 +188,6 @@ Dim m_ToolTip As clsToolTip
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
 Private origImageCopy As pdDIB
 Private previewWidth As Long, previewHeight As Long
-
-'As a further optimizations, we keep a persistent copy of the image in FreeImage format; FreeImage is used to save the
-' JP2 in-memory, then render it back out to the picture box.  As JP2 encoding/decoding is an intensive process,
-' anything we can do to alleviate its burden is helpful.
-Private fi_DIB As Long
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -252,13 +242,11 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-
     ReleaseFormTheming Me
-    
-    'Release any remaining FreeImage handles
-    If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
-    If Not origImageCopy Is Nothing Then Set origImageCopy = Nothing
-    
+End Sub
+
+Private Sub fxPreview_ViewportChanged()
+    updatePreview
 End Sub
 
 Private Sub sltQuality_Change()
@@ -313,43 +301,7 @@ Public Sub showDialog()
     CmbSaveQuality.ListIndex = 0
     
     Message "Waiting for user to specify JPEG-2000 export options... "
-        
-    'Make a copy of the main image; we'll use this to render the preview image
-    Set origImageCopy = New pdDIB
-    convertAspectRatio imageBeingExported.Width, imageBeingExported.Height, picPreview.Width, picPreview.Height, previewWidth, previewHeight
-    origImageCopy.createFromExistingDIB imageBeingExported.getActiveDIB, previewWidth, previewHeight
-    If origImageCopy.getDIBColorDepth = 32 Then origImageCopy.convertTo24bpp
     
-    'FreeImage is required to perform the live JPEG-2000 transformation.
-    If g_ImageFormats.FreeImageEnabled Then
-    
-        'Convert our DIB into FreeImage-format; we will maintain this copy to improve JPEG preview performance.
-        fi_DIB = FreeImage_CreateFromDC(origImageCopy.getDIBDC)
-        
-    'If FreeImage is not available, notify the user.  (It should not be possible to trigger this dialog without
-    ' FreeImage being present, but it doesn't hurt to provide this fallback!)
-    Else
-        
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight
-    
-        Dim notifyFont As pdFont
-        Set notifyFont = New pdFont
-        notifyFont.setFontFace g_InterfaceFont
-        notifyFont.setFontSize 14
-        notifyFont.setFontColor 0
-        notifyFont.setFontBold True
-        notifyFont.setTextAlignment vbCenter
-        notifyFont.createFontObject
-        notifyFont.attachToDC tmpDIB.getDIBDC
-    
-        notifyFont.fastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("Live previews require the FreeImage plugin.")
-        tmpDIB.renderToPictureBox picPreview
-        Set tmpDIB = Nothing
-        
-    End If
-        
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
@@ -367,23 +319,17 @@ Private Sub updatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         
-        'Perform a live, in-memory conversion to JP2 using FreeImage.  Basically, we ask it to save the image
-        ' in JP2 format to a byte array; we then hand that byte array back to it and request a decompression.
-        Dim jp2Array() As Byte
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveToMemoryEx(FIF_JP2, fi_DIB, jp2Array, Abs(sltQuality.Value), False)
+        'Start by retrieving the relevant portion of the image, according to the preview window
+        Dim tmpSafeArray As SAFEARRAY2D
+        previewNonStandardImage tmpSafeArray, imageBeingExported.getCompositedImage, fxPreview
         
-        Dim tmpFI_DIB As Long
-        tmpFI_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0)
-        
-        'Copy the newly decompressed JPEG-2000 into our original pdDIB object.
-        SetDIBitsToDevice origImageCopy.getDIBDC, 0, 0, origImageCopy.getDIBWidth, origImageCopy.getDIBHeight, 0, 0, 0, origImageCopy.getDIBHeight, ByVal FreeImage_GetBits(tmpFI_DIB), ByVal FreeImage_GetInfo(tmpFI_DIB), 0&
+        'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
+        ' obtain a JPEG-ified version of the image data.
+        fillDIBWithJP2Version workingDIB, workingDIB, Abs(sltQuality.Value)
         
         'Paint the final image to screen and release all temporary objects
-        origImageCopy.renderToPictureBox picPreview
-        FreeImage_Unload tmpFI_DIB
-        Erase jp2Array
-    
+        finalizeNonstandardPreview fxPreview
+        
     End If
 
 End Sub

@@ -1609,8 +1609,8 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     Dim cParams As pdParamString
     Set cParams = New pdParamString
     If Len(jp2Params) > 0 Then cParams.setParamString jp2Params
-    Dim jp2Quality As Long
-    If cParams.doesParamExist(1) Then jp2Quality = cParams.GetLong(1) Else jp2Quality = 16
+    Dim JP2Quality As Long
+    If cParams.doesParamExist(1) Then JP2Quality = cParams.GetLong(1) Else JP2Quality = 16
     
     Dim sFileType As String
     sFileType = "JPEG-2000"
@@ -1643,7 +1643,7 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     If fi_DIB <> 0 Then
                 
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, jp2Quality, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2Quality, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
@@ -1939,3 +1939,27 @@ Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcA
 
 End Function
 
+'Given a source and destination DIB reference, fill the destination with a post-JPEG-2000-compression of the original.  This
+' is used to generate the live preview used in PhotoDemon's "export JPEG-2000" dialog.
+Public Sub fillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JP2Quality As Long)
+    
+    'Pass the DIB to FreeImage, which will make a copy for itself.
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        
+    'Now comes the actual JPEG conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
+    ' the image in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
+    Dim jp2Array() As Byte
+    Dim fi_Check As Long
+    fi_Check = FreeImage_SaveToMemoryEx(FIF_JP2, fi_DIB, jp2Array, JP2Quality, True)
+    
+    fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0)
+    
+    'Copy the newly decompressed JPEG into the destination pdDIB object.
+    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+    
+    'Release the FreeImage copy of the DIB.  (This shouldn't technically be necessary, but it doesn't hurt.)
+    FreeImage_Unload fi_DIB
+    Erase jp2Array
+
+End Sub
