@@ -384,17 +384,21 @@ End Sub
 'TERMINATE class
 Private Sub Class_Terminate()
 
-    'Restore the original scroll bar class cursor
-    SetClassLong m_ScrollHwnd, GCL_HCURSOR, m_PreviousCursor
-
-    'Stop subclassing the parent
-    cSubclass.ssc_UnSubclass m_OwnerHwnd
+    If m_ScrollHwnd <> 0 Then
     
-    'Release the subclasser entirely
-    cSubclass.ssc_Terminate
+        'Restore the original scroll bar class cursor
+        SetClassLong m_ScrollHwnd, GCL_HCURSOR, m_PreviousCursor
     
-    'Destroy the scroll bar window we created
-    DestroyWindow m_ScrollHwnd
+        'Stop subclassing the parent
+        cSubclass.ssc_UnSubclass m_OwnerHwnd
+        
+        'Release the subclasser entirely
+        cSubclass.ssc_Terminate
+        
+        'Destroy the scroll bar window we created
+        DestroyWindow m_ScrollHwnd
+        
+    End If
     
 End Sub
 

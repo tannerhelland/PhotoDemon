@@ -151,7 +151,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    hsPrimary.Enabled = newValue
+    If g_UserModeFix Then hsPrimary.Enabled = newValue
     txtPrimary.Enabled = newValue
     PropertyChanged "Enabled"
 End Property
@@ -207,13 +207,17 @@ Public Property Let Value(ByVal newValue As Double)
         Dim newScrollVal As Long
         newScrollVal = CLng(controlVal * (10 ^ significantDigits))
         
-        If hsPrimary.Value <> newScrollVal Then
-            
-            'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-            If newScrollVal <= hsPrimary.Min Then newScrollVal = hsPrimary.Min
-            If newScrollVal >= hsPrimary.Max Then newScrollVal = hsPrimary.Max
-            
-            hsPrimary.Value = newScrollVal
+        If g_UserModeFix Then
+        
+            If hsPrimary.Value <> newScrollVal Then
+                
+                'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
+                If newScrollVal <= hsPrimary.Min Then newScrollVal = hsPrimary.Min
+                If newScrollVal >= hsPrimary.Max Then newScrollVal = hsPrimary.Max
+                
+                hsPrimary.Value = newScrollVal
+                
+            End If
             
         End If
         
@@ -238,12 +242,12 @@ End Property
 Public Property Let Min(ByVal newValue As Double)
     
     controlMin = newValue
-    hsPrimary.Min = controlMin * (10 ^ significantDigits)
+    If g_UserModeFix Then hsPrimary.Min = controlMin * (10 ^ significantDigits)
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        hsPrimary.Value = controlVal * (10 ^ significantDigits)
+        If g_UserModeFix Then hsPrimary.Value = controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -260,12 +264,12 @@ End Property
 Public Property Let Max(ByVal newValue As Double)
     
     controlMax = newValue
-    hsPrimary.Max = controlMax * (10 ^ significantDigits)
+    If g_UserModeFix Then hsPrimary.Max = controlMax * (10 ^ significantDigits)
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
         controlVal = controlMax
-        hsPrimary = controlVal * (10 ^ significantDigits)
+        If g_UserModeFix Then hsPrimary = controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -284,8 +288,10 @@ Public Property Let SigDigits(ByVal newValue As Long)
     significantDigits = newValue
     
     'Update the scroll bar's min and max values accordingly
-    hsPrimary.Min = controlMin * (10 ^ significantDigits)
-    hsPrimary.Max = controlMax * (10 ^ significantDigits)
+    If g_UserModeFix Then
+        hsPrimary.Min = controlMin * (10 ^ significantDigits)
+        hsPrimary.Max = controlMax * (10 ^ significantDigits)
+    End If
     
     PropertyChanged "SigDigits"
     
@@ -333,8 +339,10 @@ Private Sub UserControl_Initialize()
     Set UserControl.Font = mFont
     
     'Prepare an API scroll bar
-    Set hsPrimary = New pdScrollAPI
-    hsPrimary.initializeScrollBarWindow picScroll.hWnd, True, 0, 10, 0, 1, 1
+    If g_UserModeFix Then
+        Set hsPrimary = New pdScrollAPI
+        hsPrimary.initializeScrollBarWindow picScroll.hWnd, True, 0, 10, 0, 1, 1
+    End If
     
 End Sub
 
