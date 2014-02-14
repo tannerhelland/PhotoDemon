@@ -1153,16 +1153,6 @@ End Sub
 Private Sub UserControl_Show()
 
     If g_UserModeFix Then
-    
-        'Convert all labels to the current interface font
-        If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
-        
-        'XP users may not have Segoe UI available, so default to "On Error Resume NexT" for now
-        On Error Resume Next
-        
-        lblCoordinates.FontName = g_InterfaceFont
-        lblImgSize.FontName = g_InterfaceFont
-        lblMessages.FontName = g_InterfaceFont
         
         'Load various status bar icons from the resource file
         Set sbIconSize = New pdDIB
@@ -1171,7 +1161,27 @@ Private Sub UserControl_Show()
         loadResourceToDIB "SB_IMG_SIZE", sbIconSize
         loadResourceToDIB "SB_MOUSE_POS", sbIconCoords
         
+        'Now comes a bit of an odd case.  This control's _Show event happens very early in the load process due to it being
+        ' present on FormMain.  Because of that, the global interface font value may not be loaded yet.  To avoid problems
+        ' from this, we will just load Segoe UI by default, and if that fails (as it may on XP), the labels will retain
+        ' their default Tahoma label.
+        
+        'Convert all labels to the current interface font
+        If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
+        
+        'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
+        ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
+        On Error GoTo CanvasShowError
+        
+        lblCoordinates.FontName = g_InterfaceFont
+        lblImgSize.FontName = g_InterfaceFont
+        lblMessages.FontName = g_InterfaceFont
+        
     End If
+    
+    Exit Sub
+    
+CanvasShowError:
 
 End Sub
 

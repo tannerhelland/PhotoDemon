@@ -65,10 +65,10 @@ Public Sub Main()
     ' Kroc of camendesign.com for suggesting this fix.
     g_UserModeFix = True
     
+    'FormMain can now be loaded.  It will handle the rest of the load process.
     Load FormMain
     
-    'FormMain will be now be loaded.  If the shell32 library was loaded successfully, once FormMain is closed, we
-    ' need to unload the library handle.
+    'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.
     If hMod Then FreeLibrary hMod
     
 End Sub
