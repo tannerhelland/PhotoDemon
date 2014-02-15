@@ -3,8 +3,8 @@ Attribute VB_Name = "Screen_Capture"
 'Screen Capture Interface
 'Copyright ©1999-2014 by Tanner Helland
 'Created: 12/June/99
-'Last updated: 04/September/12
-'Last update: use the Sleep API call to prevent the capture message box from being caught in the capture.
+'Last updated: 15/February/14
+'Last update: use the window manager to refresh all windows after minimize/restore fires
 '
 'Description: this module captures the screen.  The options are fairly minimal - it only captures
 '             the entire screen, but it does give the user the option to minimize the form first.
@@ -41,6 +41,12 @@ Private Const GWL_HWNDPARENT = (-8)
 Private Const LB_ADDSTRING = &H180
 Private Const LB_SETITEMDATA = &H19A
 
+'ShowWindow is used to minimize and restore the PhotoDemon window, if requested.  Using VB's internal .WindowState
+' command doesn't notify the window manager (I have no idea why) so this necessary to prevent parts of the toolbar
+' client areas from disappearing upon restoration.
+Private Const SW_MINIMIZE As Long = 6
+Private Const SW_RESTORE As Long = 9
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
 
 'Simple routine for capturing the screen and loading it as an image
 Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD As Boolean, ByVal alternateWindowHwnd As Long, ByVal includeChrome As Boolean, Optional ByVal windowName As String)
@@ -48,11 +54,11 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Message "Capturing screen..."
         
     'If the user wants us to minimize the form, obey their orders
-    If captureFullDesktop And minimizePD Then FormMain.WindowState = vbMinimized
-
+    If captureFullDesktop And minimizePD Then ShowWindow FormMain.hWnd, SW_MINIMIZE
+    
     'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/4 of a second
     ' to give the message box time to disappear
-    Sleep 250
+    Sleep 500
     
     'Use the getDesktopAsDIB function to copy the requested screen contents into a temporary DIB
     Dim tmpDIB As pdDIB
@@ -68,7 +74,10 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     End If
     
     'If we minimized the main window, now's the time to return it to normal size
-    If captureFullDesktop And minimizePD Then FormMain.WindowState = vbNormal
+    If captureFullDesktop And minimizePD Then
+        ShowWindow FormMain.hWnd, SW_RESTORE
+        g_WindowManager.refreshAllWindows
+    End If
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
