@@ -227,6 +227,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'Custom Screen Capture Dialog
+'Copyright ©2012-2014 by Tanner Helland
+'Created: 01/January/14 (approx)
+'Last updated: 15/January/14
+'Last update: minor bugfixes to account for delays caused by window animations
+'
+'Basic screen and window capture dialog.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
+
+
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -248,9 +263,25 @@ Private Sub CmdCancel_Click()
 End Sub
 
 Private Sub CmdOK_Click()
-    Me.Visible = False
-    Process "Screen capture", False, buildParams(optSource(0), CBool(chkMinimize), IIf(lstWindows.ListIndex > -1, lstWindows.ItemData(lstWindows.ListIndex), 0), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), 0
+    
+    If optSource(0) Then
+        Me.Visible = False
+        Process "Screen capture", False, buildParams(True, CBool(chkMinimize), 0, CBool(chkChrome), "Screen capture"), 0
+    Else
+        
+        'Make sure the user has selected a window to capture
+        If lstWindows.ListIndex = -1 Then
+            pdMsgBox "Please select a window to capture.", vbInformation + vbApplicationModal + vbOKOnly, "Target window required"
+            Exit Sub
+        End If
+        
+        Me.Visible = False
+        Process "Screen capture", False, buildParams(False, CBool(chkMinimize), IIf(lstWindows.ListIndex > -1, lstWindows.ItemData(lstWindows.ListIndex), 0), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), 0
+        
+    End If
+    
     Unload Me
+    
 End Sub
 
 Private Sub Form_Load()
@@ -262,6 +293,10 @@ Private Sub Form_Load()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
+    
+    'Wait just a moment before continuing, to give the corresponding menu time to animate away (otherwise it may
+    ' get caught in the capture preview)
+    Sleep 500
     
     'Render a preview of whichever item is currently selected
     updatePreview

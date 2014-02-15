@@ -1756,6 +1756,18 @@ Private Sub moveWindowToLastKnownLocation(ByVal windowIndex As Long, ByRef mainF
 
 End Sub
 
+'If the main program knows an action is likely to screw up window appearance (such as forcible hide/restore during screen capture),
+' this function can be used to refresh all windows.
+Public Sub refreshAllWindows()
+
+    'Refresh each tracked window
+    Dim i As Long
+    For i = 0 To numOfPDWindows - 1
+        forceFullWindowRefresh i
+    Next i
+
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
