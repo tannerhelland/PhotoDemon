@@ -24,6 +24,25 @@ Begin VB.Form FormGrayscale
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin VB.ComboBox cboDithering 
+      Appearance      =   0  'Flat
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   14
+      Top             =   4080
+      Width           =   5535
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -47,7 +66,7 @@ Begin VB.Form FormGrayscale
       Height          =   495
       Left            =   6000
       TabIndex        =   11
-      Top             =   3240
+      Top             =   3000
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   873
@@ -89,7 +108,7 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   1
-      Top             =   1800
+      Top             =   1560
       Width           =   5535
    End
    Begin VB.PictureBox picChannel 
@@ -99,10 +118,11 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   6120
-      ScaleHeight     =   495
-      ScaleWidth      =   4935
+      ScaleHeight     =   33
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   329
       TabIndex        =   4
-      Top             =   2280
+      Top             =   2040
       Width           =   4935
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
@@ -173,10 +193,11 @@ Begin VB.Form FormGrayscale
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   6120
-      ScaleHeight     =   495
-      ScaleWidth      =   4935
+      ScaleHeight     =   33
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   329
       TabIndex        =   3
-      Top             =   2280
+      Top             =   2040
       Width           =   4935
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
@@ -220,24 +241,25 @@ Begin VB.Form FormGrayscale
          EndProperty
       End
    End
-   Begin PhotoDemon.smartCheckBox chkDither 
-      Height          =   480
-      Left            =   6000
-      TabIndex        =   13
-      Top             =   3840
-      Width           =   1635
-      _ExtentX        =   2884
-      _ExtentY        =   847
-      Caption         =   "apply dithering"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+   Begin VB.Label lblDithering 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "dithering options:"
+      BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   3720
+      Width           =   1890
    End
    Begin VB.Label lblShades 
       AutoSize        =   -1  'True
@@ -256,7 +278,7 @@ Begin VB.Form FormGrayscale
       Height          =   285
       Left            =   6000
       TabIndex        =   12
-      Top             =   2880
+      Top             =   2640
       Width           =   2535
    End
    Begin VB.Label lblAlgorithm 
@@ -276,7 +298,7 @@ Begin VB.Form FormGrayscale
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1440
+      Top             =   1200
       Width           =   570
    End
 End
@@ -290,10 +312,12 @@ Attribute VB_Exposed = False
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 16/February/14
-'Last update: rewrite code so that all conversion methods provide an option for specific # of gray shades and/or dithering
+'Last update: rewrite code so that all conversion methods provide an option for specific # of gray shades and/or dithering,
+'              and implement a full-power dithering engine with all known diffusion dithering algorithms.
 '
 'Updated version of the grayscale handler; utilizes five different methods (average, ISU, desaturate, max/min decomposition,
-' single color channel) with the option for variable # of gray shades with/without dithering for all available methods.
+' single color channel) with the option for variable # of gray shades with/without dithering for all available methods. A
+' comprehensive dithering list is also available for all methods, should the user desire it.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -307,7 +331,11 @@ Dim m_ToolTip As clsToolTip
 
 'Preview the current grayscale conversion technique
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, IIf(CBool(chkDither), 1, 0), True, fxPreview
+    If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex, True, fxPreview
+End Sub
+
+Private Sub cboDithering_Click()
+    updatePreview
 End Sub
 
 Private Sub cboMethod_Click()
@@ -338,7 +366,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Black and white", False, buildParams(cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, IIf(CBool(chkDither), 1, 0))
+    Process "Black and white", False, buildParams(cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex)
 End Sub
 
 'Some grayscale functions require extra parameters.  Some do not.  Call this function to retrieve any extra parameters
@@ -391,7 +419,6 @@ End Sub
 Private Sub cmdBar_ResetClick()
     cboMethod.ListIndex = 1
     sltShades.Value = 256
-    chkDither.Value = vbUnchecked
 End Sub
 
 Private Sub Form_Activate()
@@ -488,7 +515,7 @@ Public Sub masterGrayscaleFunction(Optional ByVal grayscaleMethod As Long, Optio
                 fGrayscaleCustom numOfShades, workingDIB, toPreview, progBarMax, workingDIB.getDIBWidth
                 
             Case Else
-                fGrayscaleCustomDither numOfShades, workingDIB, toPreview, progBarMax, workingDIB.getDIBWidth
+                fGrayscaleCustomDither numOfShades, ditheringOptions, workingDIB, toPreview, progBarMax, workingDIB.getDIBWidth
             
         End Select
         
@@ -589,7 +616,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
 End Function
 
 'Reduce to X # gray shades (dithered)
-Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Point an array at the source DIB's image data
     Dim ImageData() As Byte
@@ -614,7 +641,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByRef srcDIB A
     Dim progBarCheck As Long
     If Not suppressMessages Then
         If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
+            SetProgBarMax finalY
         Else
             SetProgBarMax modifyProgBarMax
         End If
@@ -628,66 +655,323 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByRef srcDIB A
     Dim conversionFactor As Double
     conversionFactor = (255 / (numOfShades - 1))
     
-    'Build another look-up table for our initial grayscale index calculation
-    Dim grayLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        grayLookUp(x) = x \ 3
+    'Build a look-up table for our custom grayscale conversion results
+    Dim LookUp(0 To 255) As Long
+    
+    For x = 0 To 255
+        grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
+        If grayVal > 255 Then grayVal = 255
+        LookUp(x) = grayVal
     Next x
     
-    'Unfortunately, this algorithm (unlike its non-dithering counterpart) is not well-suited to using a look-up table,
-    ' so all calculations have been moved into the loop
-    Dim grayTempCalc As Double
+    Dim xModQuick As Long
+    Dim DitherTable() As Byte
+    Dim xLeft As Long, xRight As Long, yDown As Long
+    Dim errorVal As Double
+    Dim dDivisor As Double
+    Dim l As Long, newL As Long
     
-    'This value tracks the drifting error of our conversions, which allows us to dither
-    Dim errorValue As Double
-    errorValue = 0
+    'Start by preparing a dithering table, which is obviously dependent on the requested dithering method
+    Select Case ditherMethod
         
-    'Loop through each pixel in the image, converting values as we go
-    For y = initY To finalY
-    For x = initX To finalX
+        'No dithering
+        Case 0
+        
+        'False Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 1
+        
+            'First, prepare a dither table
+            ReDim DitherTable(0 To 1, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 3
+            DitherTable(0, 1) = 3
+            DitherTable(1, 1) = 2
+            
+            dDivisor = 8
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = 0
+            xRight = 1
+            yDown = 1
+            
+        'Genuine Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 2
+        
+            'First, prepare a Floyd-Steinberg dither table
+            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 7
+            DitherTable(-1, 1) = 3
+            DitherTable(0, 1) = 5
+            DitherTable(1, 1) = 1
+            
+            dDivisor = 16
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -1
+            xRight = 1
+            yDown = 1
+            
+        'Jarvis, Judice, Ninke.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 3
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 7
+            DitherTable(2, 0) = 5
+            
+            DitherTable(-2, 1) = 3
+            DitherTable(-1, 1) = 5
+            DitherTable(0, 1) = 7
+            DitherTable(1, 1) = 5
+            DitherTable(2, 1) = 3
+            
+            DitherTable(-2, 2) = 1
+            DitherTable(-1, 2) = 3
+            DitherTable(0, 2) = 5
+            DitherTable(1, 2) = 3
+            DitherTable(2, 2) = 1
+            
+            dDivisor = 48
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        'Stucki.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 4
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 8
+            DitherTable(2, 0) = 4
+            
+            DitherTable(-2, 1) = 2
+            DitherTable(-1, 1) = 4
+            DitherTable(0, 1) = 8
+            DitherTable(1, 1) = 4
+            DitherTable(2, 1) = 2
+            
+            DitherTable(-2, 2) = 1
+            DitherTable(-1, 2) = 2
+            DitherTable(0, 2) = 4
+            DitherTable(1, 2) = 2
+            DitherTable(2, 2) = 1
+            
+            dDivisor = 42
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        'Burkes.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 5
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 8
+            DitherTable(2, 0) = 4
+            
+            DitherTable(-2, 1) = 2
+            DitherTable(-1, 1) = 4
+            DitherTable(0, 1) = 8
+            DitherTable(1, 1) = 4
+            DitherTable(2, 1) = 2
+            
+            dDivisor = 32
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 1
+            
+        'Sierra-3.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 6
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 5
+            DitherTable(2, 0) = 3
+            
+            DitherTable(-2, 1) = 2
+            DitherTable(-1, 1) = 4
+            DitherTable(0, 1) = 5
+            DitherTable(1, 1) = 4
+            DitherTable(2, 1) = 2
+            
+            DitherTable(-2, 2) = 0
+            DitherTable(-1, 2) = 2
+            DitherTable(0, 2) = 3
+            DitherTable(1, 2) = 2
+            DitherTable(2, 2) = 0
+            
+            dDivisor = 32
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        'Sierra-2.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 7
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 4
+            DitherTable(2, 0) = 3
+            
+            DitherTable(-2, 1) = 1
+            DitherTable(-1, 1) = 2
+            DitherTable(0, 1) = 3
+            DitherTable(1, 1) = 2
+            DitherTable(2, 1) = 1
+            
+            dDivisor = 16
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -2
+            xRight = 2
+            yDown = 1
+            
+        'Sierra-2-4A.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 8
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            
+            DitherTable(1, 0) = 2
+
+            DitherTable(-1, 1) = 1
+            DitherTable(0, 1) = 1
+            
+            dDivisor = 4
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -1
+            xRight = 1
+            yDown = 1
+            
+        'Bill Atkinson's original Hyperdither/HyperScan algorithm.  (Note: Bill invented MacPaint, QuickDraw, and HyperCard.)
+        ' This is the dithering algorithm used on the original Apple Macintosh.
+        ' Coefficients derived from http://gazs.github.com/canvas-atkinson-dither/
+        Case 9
+        
+            'First, prepare a dither table
+            ReDim DitherTable(-1 To 2, 0 To 2) As Byte
+            
+            DitherTable(1, 0) = 1
+            DitherTable(2, 0) = 1
+            
+            DitherTable(-1, 1) = 1
+            DitherTable(0, 1) = 1
+            DitherTable(1, 1) = 1
+            
+            DitherTable(0, 2) = 1
+            
+            dDivisor = 8
+        
+            'Second, mark the size of the array in the left, right, and down directions
+            xLeft = -1
+            xRight = 2
+            yDown = 2
+            
+    End Select
     
-        QuickVal = x * qvDepth
     
-        'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+    'With out dithering table complete, we can now proceed to process the image
+    If ditherMethod > 0 Then
+    
+        'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
+        ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
+        Dim dErrors() As Single
+        ReDim dErrors(0 To workingDIB.getDIBWidth, 0 To workingDIB.getDIBHeight) As Single
         
-        'Look up our initial grayscale value in the table
-        grayVal = grayLookUp(r + g + b)
+        Dim i As Long, j As Long
         
-        'Add the error value (a cumulative value of the difference between actual gray values and gray values we've selected) to the current gray value
-        grayTempCalc = grayVal + errorValue
+        Dim QuickX As Long, QuickY As Long
         
-        'Rebuild our temporary calculation variable using the shade reduction formula
-        grayTempCalc = Int((CSng(grayTempCalc) / conversionFactor) + 0.5) * conversionFactor
+        'Now loop through the image, calculating errors as we go
+        For y = initY To finalY
+        For x = initX To finalX
         
-        'Adjust our error value to include this latest calculation
-        errorValue = CLng(grayVal) + errorValue - grayTempCalc
-        
-        If grayTempCalc < 0 Then grayTempCalc = 0
-        If grayTempCalc > 255 Then grayTempCalc = 255
-        
-        grayVal = CByte(grayTempCalc)
-        
-        'Assign all color channels the new gray value
-        ImageData(QuickVal + 2, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal, y) = grayVal
-        
-    Next x
-        
-        'Reset the error value at the end of each line
-        errorValue = 0
-        
-        If Not suppressMessages Then
-            If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal y + modifyProgBarOffset
+            QuickVal = x * qvDepth
+            
+            'Get the source pixel color values.  Because we know the image we're handed is already going to be grayscale,
+            ' we can shortcut this calculation by only grabbing the red channel.
+            r = ImageData(QuickVal + 2, y)
+            'g = ImageData(QuickVal + 1, y)
+            'b = ImageData(QuickVal, y)
+            
+            'Convert those to a luminance value and add the value of the error at this location
+            l = r + dErrors(x, y)
+            
+            'Convert that to a lookup-table-safe luminance (e.g. 0-255)
+            If l < 0 Then
+                newL = 0
+            ElseIf l > 255 Then
+                newL = 255
+            Else
+                newL = l
             End If
-        End If
-        
-    Next y
+            
+            'Write the new luminance value out to the image array
+            ImageData(QuickVal + 2, y) = LookUp(newL)
+            ImageData(QuickVal + 1, y) = LookUp(newL)
+            ImageData(QuickVal, y) = LookUp(newL)
+            
+            'Calculate an error for this calculation
+            errorVal = l - LookUp(newL)
+            
+            'If there is an error, spread it
+            If errorVal <> 0 Then
+            
+                'Now, spread that error across the relevant pixels according to the dither table formula
+                For i = xLeft To xRight
+                For j = 0 To yDown
+                
+                    'First, ignore already processed pixels
+                    If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
+                    
+                    'Second, ignore pixels that have a zero in the dither table
+                    If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
+                    
+                    QuickX = x + i
+                    QuickY = y + j
+                    
+                    'Next, ignore target pixels that are off the image boundary
+                    If QuickX < initX Then GoTo NextDitheredPixel
+                    If QuickX > finalX Then GoTo NextDitheredPixel
+                    If QuickY > finalY Then GoTo NextDitheredPixel
+                    
+                    'If we've made it all the way here, we are able to actually spread the error to this location
+                    dErrors(QuickX, QuickY) = dErrors(QuickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                
+NextDitheredPixel:     Next j
+                Next i
+            
+            End If
+                
+        Next x
+
+            If Not suppressMessages Then
+                If (y And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal y + modifyProgBarOffset
+                End If
+            End If
+
+        Next y
+    
+    
+    
+    End If
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -1077,11 +1361,27 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Set up the grayscale options combo box
-    cboMethod.AddItem "Fastest Calculation (average value)", 0
-    cboMethod.AddItem "Highest Quality (ITU Standard)", 1
-    cboMethod.AddItem "Desaturate", 2
-    cboMethod.AddItem "Decompose", 3
-    cboMethod.AddItem "Single color channel", 4
+    cboMethod.Clear
+    cboMethod.AddItem " Fastest Calculation (average value)", 0
+    cboMethod.AddItem " Highest Quality (ITU Standard)", 1
+    cboMethod.AddItem " Desaturate", 2
+    cboMethod.AddItem " Decompose", 3
+    cboMethod.AddItem " Single color channel", 4
+    cboMethod.ListIndex = 1
+    
+    'Populate the dither combobox
+    cboDithering.Clear
+    cboDithering.AddItem " None", 0
+    cboDithering.AddItem " False (Fast) Floyd-Steinberg", 1
+    cboDithering.AddItem " Genuine Floyd-Steinberg", 2
+    cboDithering.AddItem " Jarvis, Judice, and Ninke", 3
+    cboDithering.AddItem " Stucki", 4
+    cboDithering.AddItem " Burkes", 5
+    cboDithering.AddItem " Sierra-3", 6
+    cboDithering.AddItem " Two-Row Sierra", 7
+    cboDithering.AddItem " Sierra Lite", 8
+    cboDithering.AddItem " Atkinson / Classic Macintosh", 9
+    cboDithering.ListIndex = 0
     
     'Draw an initial preview
     UpdateVisibleControls
