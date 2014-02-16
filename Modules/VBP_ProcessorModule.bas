@@ -627,7 +627,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormGrayscale
             Else
-                FormGrayscale.masterGrayscaleFunction cParams.GetLong(1), cParams.GetString(2)
+                FormGrayscale.masterGrayscaleFunction cParams.GetLong(1), cParams.GetString(2), cParams.GetLong(3, 256), cParams.GetLong(4, 0)
             End If
         
         'Invert operations
