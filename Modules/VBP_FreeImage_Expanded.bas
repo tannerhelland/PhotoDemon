@@ -398,6 +398,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     Dim fi_BPP As Long
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
+    'Because it could be helpful later on, also retrieve the image datatype.  This is an internal FreeImage value
+    ' corresponding to various data encodings (floating-point, complex, integer, etc)
+    Dim fi_DataType As FREE_IMAGE_TYPE
+    fi_DataType = FreeImage_GetImageType(fi_hDIB)
+    
+    Debug.Print "Image bit-depth of " & fi_BPP & " and data type " & fi_DataType & " detected."
+    
     'If a high bit-depth image is incoming, we need to use a temporary DIB to hold the image's alpha data (which will
     ' be erased by the tone-mapping algorithm we'll use).  This is that object
     Dim tmpAlphaRequired As Boolean, tmpAlphaCopySuccess As Boolean
