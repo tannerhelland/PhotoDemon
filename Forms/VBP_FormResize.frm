@@ -394,7 +394,7 @@ End Sub
 Private Sub cmbFit_Click()
     
     'Hide the color picker as necessary
-    If (cmbFit.ListIndex = 1) And (pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32) Then
+    If (cmbFit.ListIndex = 1) And (pdImages(g_CurrentImage).mainDIB.getDIBColorDepth <> 32) Then
         colorPicker.Visible = True
     Else
         colorPicker.Visible = False
