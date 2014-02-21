@@ -987,7 +987,10 @@ Public Sub showDialog(ByVal initialColor As Long)
     loadResourceToDIB "CLR_ARROW_L", leftSideArrow
     loadResourceToDIB "CLR_ARROW_R", rightSideArrow
     loadResourceToDIB "CLR_ARROW_U", upArrow
-        
+    
+    'The passed color may be an OLE constant rather than an actual RGB triplet, so convert it now.
+    initialColor = ConvertSystemColor(initialColor)
+    
     'Cache the currentColor parameter so we can access it elsewhere
     oldColor = initialColor
     
