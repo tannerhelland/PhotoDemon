@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 17/January/14
-'Last update: if images are supplied on the command line, wait until *after* the main form has loaded to process them.
+'Last updated: 20/February/14
+'Last update: add a fail-safe termination for metadata parsing if it exceeds four seconds
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -965,7 +965,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             
                 'Forcibly disable the main form to avoid DoEvents allowing click-through
                 FormMain.Enabled = False
-            
+                
+                'We don't want to pause for more than 4 additional seconds, so make a note of the time.
+                Dim timeWaitMetadata As Double
+                timeWaitMetadata = Timer
+                
                 'Pause for 1/2 second
                 Do
                     PauseProgram 0.5
@@ -973,13 +977,15 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     'If the user shuts down the program while we are still waiting for input, exit immediately
                     If g_ProgramShuttingDown Then Exit Sub
                     
-                Loop While (Not isMetadataFinished)
+                Loop While (Not isMetadataFinished) And ((Timer - timeWaitMetadata) < 4)
                 
                 'Re-enable the main form
                 FormMain.Enabled = True
                 
-                Message "Metadata retrieved successfully."
-                targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
+                If isMetadataFinished Then
+                    Message "Metadata retrieved successfully."
+                    targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
+                End If
                 
             End If
             
