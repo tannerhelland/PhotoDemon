@@ -602,6 +602,11 @@ Private Sub cMouseEvents_MouseIn()
 
 End Sub
 
+'If an image is loaded, double-clicking the image size label launches the resize dialog
+Private Sub lblImgSize_DblClick()
+    If g_OpenImageCount > 0 Then Process "Resize", True
+End Sub
+
 Private Sub UserControl_Initialize()
 
     If g_UserModeFix Then
