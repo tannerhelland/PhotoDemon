@@ -174,11 +174,6 @@
 </phrase>
 
 <phrase>
-<original>Initializing drop shadow renderer</original>
-<translation>Inizializzazione del generatore dell'ombra</translation>
-</phrase>
-
-<phrase>
 <original>Initializing user interface</original>
 <translation>Inzializzazione dell'interfaccia utente</translation>
 </phrase>
@@ -445,7 +440,7 @@ Per favore, utilizza un altro programma per salvarla in un formato generico (com
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 71 phrases. 12 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 70 phrases. 12 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -624,7 +619,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Colori trovati. Salvataggio a 24bit di colore JPEG.</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 87 phrases. 54 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 103 phrases. 70 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -759,68 +754,13 @@ Per attivare il supporto per questa funzionalità, per favore copia il file FreeI
 </phrase>
 
 <phrase>
-<original>Basic options</original>
-<translation>Opzioni base</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Options dell'interfaccia</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options</original>
-<translation>Opzioni avanzate</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Opzioni di caricamento (Importa)</translation>
-</phrase>
-
-<phrase>
-<original>stretching</original>
-<translation>allungamento</translation>
-</phrase>
-
-<phrase>
-<original>fit inclusively</original>
-<translation>adatta inclusivamente</translation>
-</phrase>
-
-<phrase>
-<original>fit exclusively</original>
-<translation>adatta esclusivamente</translation>
-</phrase>
-
-<phrase>
-<original>fit image to new size by</original>
-<translation>adatta l'immagine alla nuova dimensione attraverso</translation>
-</phrase>
-
-<phrase>
-<original>no distortion; empty borders will be filled with</original>
-<translation>nessuna distorsione; i bordi vuoti saranno riempiti con</translation>
-</phrase>
-
-<phrase>
-<original>no distortion; image edges will be cropped to fit</original>
-<translation>Nessuna distorsione; i bordi dell'immagine verranno ritagliati per adattarsi</translation>
-</phrase>
-
-<phrase>
-<original>maintain aspect ratio or the final image may look distorted</original>
-<translation>mantenere il rapporto dell'aspetto o l'immagine finale potrà sembrare distorta</translation>
-</phrase>
-
-<phrase>
 <original>show technical names</original>
 <translation>mostra i nomi tecnici</translation>
 </phrase>
 
 <phrase>
-<original>resize quality</original>
-<translation>qualità di ridimensionamento</translation>
+<original>Click to change the color used for empty borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -829,8 +769,23 @@ Per attivare il supporto per questa funzionalità, per favore copia il file FreeI
 </phrase>
 
 <phrase>
-<original>resampling method</original>
-<translation>metodo di ricampionamento</translation>
+<original>when changing aspect ratio, fit image to new size by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize quality</original>
+<translation>qualità di ridimensionamento</translation>
+</phrase>
+
+<phrase>
+<original>resampling algorithm</original>
+<translation>algoritmo di ricampionamento</translation>
+</phrase>
+
+<phrase>
+<original>resampling quality</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -846,11 +801,6 @@ Per attivare il supporto per questa funzionalità, per favore copia il file FreeI
 <phrase>
 <original>fastest</original>
 <translation>più veloce</translation>
-</phrase>
-
-<phrase>
-<original>resampling algorithm</original>
-<translation>algoritmo di ricampionamento</translation>
 </phrase>
 
 <phrase>
@@ -894,8 +844,38 @@ Per attivare il supporto per questa funzionalità, per favore copia il file FreeI
 </phrase>
 
 <phrase>
-<original>no distortion; empty borders will be transparent</original>
-<translation>nessuna distorsione; i bordi vuoti saranno trasparenti</translation>
+<original>stretching to new size  (default)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fitting inclusively, with transparent borders as necessary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fitting inclusively, with colored borders as necessary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fitting exclusively, and cropping as necessary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -918,7 +898,7 @@ Per attivare il supporto per questa funzionalità, per favore copia il file FreeI
 <translation>Finito.</translation>
 </phrase>
 
-<!-- VBP_FormResize.frm contains 55 phrases. 22 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- VBP_FormResize.frm contains 54 phrases. 24 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for VBP_FormResize.frm-->
 
@@ -3408,8 +3388,13 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>additional options</original>
-<translation>opzioni supplementari</translation>
+<original>dithering options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>number of gray shades</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3418,38 +3403,8 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>decompose using these values</original>
-<translation>scomponi utilizzando questi valori</translation>
-</phrase>
-
-<phrase>
-<original>use this channel</original>
-<translation>usa questo canale</translation>
-</phrase>
-
-<phrase>
-<original>use this many shades of gray</original>
-<translation>usa questa tonalità di grigio</translation>
-</phrase>
-
-<phrase>
-<original>Converting image to %1 shades of gray</original>
-<translation>Conversione dell'immagine a %1 tonalità di grigio</translation>
-</phrase>
-
-<phrase>
-<original>Converting to %1 shades of gray, with dithering</original>
-<translation>Conversione a %1 tonalità di grigio, con retinatura</translation>
-</phrase>
-
-<phrase>
 <original>Converting image to black and white</original>
 <translation>Conversione dell'immagine in bianco e nero</translation>
-</phrase>
-
-<phrase>
-<original>Converting image to black and white using %1 values</original>
-<translation>Conversione dell'immagine in bianco e nero utilizzando i valori %1</translation>
 </phrase>
 
 <phrase>
@@ -3478,16 +3433,51 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>Specific # of shades</original>
-<translation>Specifica il # della tonalità</translation>
+<original>False (Fast) Floyd-Steinberg</original>
+<translation>Falso (Rapido) Floyd-Steinberg</translation>
 </phrase>
 
 <phrase>
-<original>Specific # of shades (dithered)</original>
-<translation>Specifica il # dei colori (retinato)</translation>
+<original>Genuine Floyd-Steinberg</original>
+<translation>Genuino Floyd-Steinberg</translation>
 </phrase>
 
-<!-- VBP_FormGrayscale.frm contains 37 phrases. 19 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<phrase>
+<original>Jarvis, Judice, and Ninke</original>
+<translation>Jarvis, Judice e Ninke</translation>
+</phrase>
+
+<phrase>
+<original>Stucki</original>
+<translation>Stucki</translation>
+</phrase>
+
+<phrase>
+<original>Burkes</original>
+<translation>Burkes</translation>
+</phrase>
+
+<phrase>
+<original>Sierra-3</original>
+<translation>Sierra-3</translation>
+</phrase>
+
+<phrase>
+<original>Two-Row Sierra</original>
+<translation>Sierra a due righe</translation>
+</phrase>
+
+<phrase>
+<original>Sierra Lite</original>
+<translation>Sierra Lite</translation>
+</phrase>
+
+<phrase>
+<original>Atkinson / Classic Macintosh</original>
+<translation>Atkinson/Macintosh Classico</translation>
+</phrase>
+
+<!-- VBP_FormGrayscale.frm contains 26 phrases. 6 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGrayscale.frm-->
 
@@ -3788,56 +3778,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>False (Fast) Floyd-Steinberg</original>
-<translation>Falso (Rapido) Floyd-Steinberg</translation>
-</phrase>
-
-<phrase>
-<original>Genuine Floyd-Steinberg</original>
-<translation>Genuino Floyd-Steinberg</translation>
-</phrase>
-
-<phrase>
-<original>Jarvis, Judice, and Ninke</original>
-<translation>Jarvis, Judice e Ninke</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>Burkes</translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
-<translation>Sierra-3</translation>
-</phrase>
-
-<phrase>
-<original>Two-Row Sierra</original>
-<translation>Sierra a due righe</translation>
-</phrase>
-
-<phrase>
-<original>Sierra Lite</original>
-<translation>Sierra Lite</translation>
-</phrase>
-
-<phrase>
-<original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson/Macintosh Classico</translation>
-</phrase>
-
-<phrase>
 <original>Converting image to two colors</original>
 <translation>Conversione dell'immagine a due colori</translation>
 </phrase>
 
-<!-- VBP_FormBlackAndWhite.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_FormBlackAndWhite.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBlackAndWhite.frm-->
 
@@ -3861,6 +3806,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>Interface</original>
 <translation>Interfaccia</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Options dell'interfaccia</translation>
 </phrase>
 
 <phrase>
@@ -3889,6 +3839,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
+<original>Advanced Options</original>
+<translation>Opzioni avanzate</translation>
+</phrase>
+
+<phrase>
 <original>Color and Transparency</original>
 <translation>Colore e Trasparenza</translation>
 </phrase>
@@ -3901,6 +3856,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>Loading</original>
 <translation>Caricamento</translation>
+</phrase>
+
+<phrase>
+<original>Load (Import) Options</original>
+<translation>Opzioni di caricamento (Importa)</translation>
 </phrase>
 
 <phrase>
@@ -4805,7 +4765,7 @@ Questo incrementerà il tempo del processo, così spunta questa opzione solo se de
 <translation>ATTENZIONE: questa cartella non è valida (accesso proibito). Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 267 phrases. 78 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 267 phrases. 75 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -6297,6 +6257,11 @@ Per favore inserisci un valore numerico.</translation>
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
+<original>[untitled image]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Recording</original>
 <translation>Registrazione</translation>
 </phrase>
@@ -6326,7 +6291,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>ignorali</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -6944,12 +6909,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona  '
 <translation>In attesa della specifica utente per le opzioni di esportazione delle JPEG-2000</translation>
 </phrase>
 
-<phrase>
-<original>Live previews require the FreeImage plugin.</original>
-<translation>Le anteprime in tempo reale richiedono il plugin FreeImage.</translation>
-</phrase>
-
-<!-- VBP_FormExportJP2.frm contains 13 phrases.  One was a duplicate of an existing phrase, so only 12 new phrases were written to file. -->
+<!-- VBP_FormExportJP2.frm contains 11 phrases.  All 11 were unique, so 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormExportJP2.frm-->
 
@@ -9415,11 +9375,6 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 </phrase>
 
 <phrase>
-<original>lock aspect ratio</original>
-<translation>blocca le proporzioni</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>posizione di ancoraggio</translation>
 </phrase>
@@ -9434,7 +9389,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <translation>nota: le aree vuote saranno rese trasparenti</translation>
 </phrase>
 
-<!-- VBP_FormCanvasSize.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_FormCanvasSize.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCanvasSize.frm-->
 
@@ -9615,6 +9570,11 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 </phrase>
 
 <phrase>
+<original>additional options</original>
+<translation>opzioni supplementari</translation>
+</phrase>
+
+<phrase>
 <original>Applying new luminance curve to image</original>
 <translation>Applica la nuova curva di luminanza all'immagine</translation>
 </phrase>
@@ -9644,7 +9604,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <translation>logaritmico</translation>
 </phrase>
 
-<!-- VBP_FormCurves.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_FormCurves.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCurves.frm-->
 
@@ -9934,6 +9894,11 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <!-- BEGIN text for VBP_FormLanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save this translation and proceed to the next phrase</original>
 <translation>Salva questa traduzione e passa alla frase successiva</translation>
 </phrase>
@@ -10051,6 +10016,26 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un 
 <phrase>
 <original>Step 1: select a language file</original>
 <translation>Fase 1: seleziona un file della lingua</translation>
+</phrase>
+
+<phrase>
+<original>This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Automatic translation warning</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Processing phrase %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Automatic translation complete!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10309,7 +10294,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>salvato automaticamente su</translation>
 </phrase>
 
-<!-- VBP_FormLanguageEditor.frm contains 128 phrases. 56 were duplicates of existing phrases, so only 72 new phrases were written to file. -->
+<!-- VBP_FormLanguageEditor.frm contains 135 phrases. 58 were duplicates of existing phrases, so only 77 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLanguageEditor.frm-->
 
@@ -10350,36 +10335,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <!-- BEGIN text for VBP_ToolbarPrimary.frm (toolbar_File) -->
 
 <phrase>
-<original>Click to adjust image zoom</original>
-<translation>Clicca per regolare lo zoom dell'immagine</translation>
-</phrase>
-
-<phrase>
-<original>Use this button to increase image zoom.</original>
-<translation>Utilizza questo pulsante per aumentare lo zoom dell'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Zoom In</original>
-<translation>Zoom avanti</translation>
-</phrase>
-
-<phrase>
-<original>Use this button to decrease image zoom.</original>
-<translation>Utilizza questo pulsante per diminuire lo zoom dell'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Zoom Out</original>
-<translation>Zoom indietro</translation>
-</phrase>
-
-<phrase>
 <original>macro recording in progress</original>
 <translation>Registrazione della Macro in corso</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -10745,6 +10705,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>Select color from screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>recent colors</original>
 <translation>colori recenti</translation>
 </phrase>
@@ -10769,7 +10734,12 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>corrente</translation>
 </phrase>
 
-<!-- VBP_FormColorSelector.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Click this button to enable color capturing from anywhere on the screen.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorSelector.frm-->
 
@@ -10878,6 +10848,16 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>Please select a window to capture.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Target window required</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, that program has exited.</original>
 <translation>Purtroppo, quel programma è stato terminato.</translation>
 </phrase>
@@ -10887,7 +10867,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Si prega di selezionarne un altro.</translation>
 </phrase>
 
-<!-- VBP_FormScreenCapture.frm contains 14 phrases. 5 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_FormScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormScreenCapture.frm-->
 
@@ -10908,12 +10888,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <!-- ShellPipe.ctl contains 0 phrases. -->
 
 <!-- END text for ShellPipe.ctl-->
-
-<!-- BEGIN text for VBP_ProgressBar.frm (special_ProgressBar) -->
-
-<!-- VBP_ProgressBar.frm contains 0 phrases. -->
-
-<!-- END text for VBP_ProgressBar.frm-->
 
 <!-- BEGIN text for pdViewport.cls -->
 
@@ -10936,11 +10910,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <!-- BEGIN text for VBP_FormContentAwareResize.frm (FormResizeContentAware) -->
 
 <phrase>
-<original>WARNING! This tool is currently under heavy development.  It may not work as intended.</original>
-<translation>ATTENZIONE! Questo strumento è attualmente in fase di sviluppo. Potrebbe non funzionare come previsto.</translation>
-</phrase>
-
-<phrase>
 <original>Initializing content-aware resize engine</original>
 <translation>Inizializzazione del motore di ridimensionamento consapevole del contenuto</translation>
 </phrase>
@@ -10950,7 +10919,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Applicazione ridimensionamento consapevole del contenuto</translation>
 </phrase>
 
-<!-- VBP_FormContentAwareResize.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormContentAwareResize.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormContentAwareResize.frm-->
 
@@ -11035,11 +11004,76 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <!-- BEGIN text for smartResize.ctl -->
 
-<!-- smartResize.ctl contains 13 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>resolution</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dimensions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>percent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inches</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>centimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pixels / inch (PPI)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pixels / centimeter (PPCM)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation></translation>
+</phrase>
+
+<!-- smartResize.ctl contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
 <!-- BEGIN text for pdCanvas.ctl -->
+
+<phrase>
+<original>Zoom in</original>
+<translation>Zoom avanti</translation>
+</phrase>
+
+<phrase>
+<original>Zoom Out</original>
+<translation>Zoom indietro</translation>
+</phrase>
 
 <phrase>
 <original>size</original>
@@ -11066,7 +11100,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Ridimensiona la selezione</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -11076,13 +11110,82 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <!-- END text for VBP_ToolSupport.bas-->
 
+<!-- BEGIN text for VBP_UnitConversions.bas -->
+
+<!-- VBP_UnitConversions.bas contains 0 phrases. -->
+
+<!-- END text for VBP_UnitConversions.bas-->
+
+<!-- BEGIN text for pdScrollBar.cls -->
+
+<!-- pdScrollBar.cls contains 0 phrases. -->
+
+<!-- END text for pdScrollBar.cls-->
+
+<!-- BEGIN text for VBP_FormExportWebP.frm (dialog_ExportWebP) -->
+
+<phrase>
+<original>WebP Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lossless (100)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Low compression, good image quality (80)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Moderate compression, medium image quality (60)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>High compression, poor image quality (40)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Super compression, very poor image quality (20)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify WebP export options</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormExportWebP.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for VBP_FormExportWebP.frm-->
+
+<!-- BEGIN text for VBP_FormExportJXR.frm (dialog_ExportJXR) -->
+
+<phrase>
+<original>JPEG XR Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify JPEG XR export options</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormExportJXR.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormExportJXR.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>1944</phrasecount>
+<phrasecount>1961</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3310 phrases. -->
-<!-- 1366 are duplicates, so only 1944 unique phrases have been written to file. -->
-<!-- These 1944 phrases contain approximately 11995 total words. -->
+<!-- As of this build, PhotoDemon contains 3350 phrases. -->
+<!-- 1389 are duplicates, so only 1961 unique phrases have been written to file. -->
+<!-- These 1961 phrases contain approximately 12146 total words. -->
 
 </pdData>
 
