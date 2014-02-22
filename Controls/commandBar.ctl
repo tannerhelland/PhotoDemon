@@ -235,8 +235,8 @@ Public Property Get dontAutoLoadLastPreset() As Boolean
     dontAutoLoadLastPreset = suspendLastUsedAutoLoad
 End Property
 
-Public Property Let dontAutoLoadLastPreset(ByVal NewValue As Boolean)
-    suspendLastUsedAutoLoad = NewValue
+Public Property Let dontAutoLoadLastPreset(ByVal newValue As Boolean)
+    suspendLastUsedAutoLoad = newValue
     PropertyChanged "dontAutoLoadLastPreset"
 End Property
 
@@ -582,12 +582,12 @@ Private Sub CmdOK_Click()
     
     'At this point, we are now free to proceed like any normal OK click.
     
-    'Hide the parent form from view
-    UserControl.Parent.Visible = False
-    
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
     fillXMLSettings
     xmlEngine.writeXMLToFile parentToolPath
+    
+    'Hide the parent form from view
+    UserControl.Parent.Visible = False
     
     'Finally, let the user proceed with whatever comes next!
     RaiseEvent OKClick
@@ -1105,7 +1105,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     If CLng(controlValue) < eControl.ListCount Then
                         eControl.ListIndex = CLng(controlValue)
                     Else
-                        eControl.ListIndex = eControl.ListCount - 1
+                        If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
                     End If
                     
                 Case "TextBox"
