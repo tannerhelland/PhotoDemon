@@ -97,6 +97,14 @@ Begin VB.Form FormLanguageEditor
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
+      Begin VB.CommandButton cmdAutoTranslate 
+         Caption         =   "Initiate auto-translation of all missing phrases"
+         Height          =   615
+         Left            =   240
+         TabIndex        =   45
+         Top             =   6600
+         Width           =   4455
+      End
       Begin VB.CommandButton cmdNextPhrase 
          Caption         =   "Save this translation and proceed to the next phrase"
          Height          =   615
@@ -179,7 +187,7 @@ Begin VB.Form FormLanguageEditor
          Left            =   240
          Style           =   2  'Dropdown List
          TabIndex        =   14
-         Top             =   6825
+         Top             =   5985
          Width           =   4500
       End
       Begin VB.ListBox lstPhrases 
@@ -193,7 +201,7 @@ Begin VB.Form FormLanguageEditor
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H00404040&
-         Height          =   5820
+         Height          =   5100
          Left            =   240
          TabIndex        =   13
          Top             =   360
@@ -278,7 +286,7 @@ Begin VB.Form FormLanguageEditor
          Index           =   2
          Left            =   0
          TabIndex        =   27
-         Top             =   6465
+         Top             =   5625
          Width           =   1995
       End
       Begin VB.Label lblPhraseBox 
@@ -885,8 +893,9 @@ Attribute VB_Exposed = False
 'Interactive Language (Translation) Editor
 'Copyright ©2013-2014 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
-'Last updated: 12/September/13
-'Last update: completed initial build
+'Last updated: 22/February/14
+'Last update: add "automatic machine translation" option so I can include at least basic language files for popular
+'              locales that don't yet have human-curated translations.
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon includes a fully functional language translation engine.
 ' Many thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but also
@@ -894,8 +903,8 @@ Attribute VB_Exposed = False
 ' project, as PhotoDemon contains a LOT of text.)
 '
 'During the translation process, Frank pointed out that translating PhotoDemon's 1,000+ unique phrases takes a loooong
-' time.  This new language editor aims to greatly speed up the process.  I have borrowed many concepts and code pieces
-' from a similar project by Frank, which he used to create the original translation files.
+' time.  This new language editor aims to accelerate the process.  I have borrowed many concepts and code pieces from
+' a similar project by Frank, which he used to create the original translation files.
 '
 'This integrated language editor requires a source language file to start.  This can either be a blank English
 ' language file (provided with all PD downloads) or an existing language file.
@@ -906,7 +915,9 @@ Attribute VB_Exposed = False
 ' phrase will be lost.
 '
 'To accelerate the translation process, Google Translate can be used to automatically populate an "estimated"
-' translation.  This was Frank's idea and Frank's code - many thanks to him for such a clever feature!
+' translation.  This was Frank's idea and Frank's code - many thanks to him for such a clever feature!  As of
+' 22 February 2014, I have added an option to perform a full automatic translation of all untranslated phrases.  This
+' is helpful for creating a translation file from scratch, which can then be reviewed by a human at their own leisure.
 '
 'Note: for the Google Translate© Terms of Use, please visit http://www.google.com/policies/terms/
 '
@@ -934,6 +945,7 @@ Private Type Phrase
     Translation As String
     Length As Long
     ListBoxEntry As String
+    isMachineTranslation As Boolean
 End Type
 Private numOfPhrases As Long
 Private allPhrases() As Phrase
@@ -1000,6 +1012,75 @@ Private Sub cmbPhraseFilter_Click()
     
     updatePhraseBoxTitle
     
+End Sub
+
+'Use Google Translate to auto-translate all untranslated messages.  Note that this is not a great implementation, but it
+' should be "good enough" for PD's purposes.
+Private Sub cmdAutoTranslate_Click()
+
+    'Because this process can take a very long time, warn the user in advance.
+    Dim msgReturn As VbMsgBoxResult
+    msgReturn = pdMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
+
+    If msgReturn <> vbYes Then Exit Sub
+    
+    'The user has given the go-ahead, so start translating!
+    Dim i As Long
+    
+    'Start by counting the number of untranslated phrases (so we can provide a status report to the user)
+    Dim totalUntranslated As Long, totalTranslated As Long
+    totalUntranslated = 0
+    totalTranslated = 0
+    
+    For i = 0 To numOfPhrases - 1
+        If Len(allPhrases(i).Translation) = 0 Then totalUntranslated = totalUntranslated + 1
+    Next i
+    
+    Dim srcPhrase As String, retString As String
+    
+    'Iterate through all untranslated phrases, requesting Google translates as we go
+    For i = 0 To numOfPhrases - 1
+        If Len(allPhrases(i).Translation) = 0 Then
+        
+            'Regardless of whether or not we succeed, increment the counter
+            totalTranslated = totalTranslated + 1
+            cmdAutoTranslate.Caption = g_Language.TranslateMessage("Processing phrase %1 of %2", totalTranslated, totalUntranslated)
+            
+            allPhrases(i).isMachineTranslation = True
+            
+            'This phrase is not translated.  Apply a minimal amount of preprocessing, then request a translation from Google.
+            srcPhrase = allPhrases(i).Original
+            
+            'Remove ampersands, as Google will treat these as the word "and"
+            If InStr(1, srcPhrase, "&") Then srcPhrase = Replace(srcPhrase, "&", "")
+            
+            'Request a translation from Google
+            retString = autoTranslate.getGoogleTranslation(srcPhrase)
+            
+            'If Google succeeded, store the new translation to file
+            If Len(retString) > 0 Then
+                
+                'Store the translation
+                allPhrases(i).Translation = retString
+                
+                'Insert this translation into the original XML file
+                xmlEngine.updateTagAtLocation "translation", allPhrases(i).Translation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(i).Original)
+    
+            End If
+            
+            'Translations can sometimes get "stuck" (for reasons unknown), so forcibly refresh them after attempting a translation
+            srcPhrase = ""
+            retString = ""
+            
+        End If
+        
+    Next i
+    
+    cmdAutoTranslate.Caption = g_Language.TranslateMessage("Automatic translation complete!")
+    
+    'Select the "show untranslated phrases" option, which will refresh the list of untranslated phrases
+    cmbPhraseFilter.ListIndex = 2
+
 End Sub
 
 Private Sub CmdCancel_Click()
