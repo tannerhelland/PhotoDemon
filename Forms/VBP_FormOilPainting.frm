@@ -190,12 +190,6 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     
     If Not toPreview Then Message "Repainting image with oils..."
     
-    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    If toPreview Then
-        mRadius = mRadius * curDIBValues.previewModifier
-        If mRadius < 1 Then mRadius = 1
-    End If
-    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -214,6 +208,12 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     Dim srcSA As SAFEARRAY2D
     prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
+    If toPreview Then
+        mRadius = mRadius * curDIBValues.previewModifier
+        If mRadius < 1 Then mRadius = 1
+    End If
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
