@@ -220,7 +220,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
         'Update the current image size
         pdImages(g_CurrentImage).updateSize
-        DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        DisplaySize pdImages(g_CurrentImage)
         
         Message "Finished. "
         SetProgBarVal 0
@@ -269,7 +269,7 @@ Public Sub MenuCropToSelection()
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize
-    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    DisplaySize pdImages(g_CurrentImage)
     
     Message "Finished. "
     
@@ -415,7 +415,7 @@ Public Sub MenuRotate90Clockwise()
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize
-    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    DisplaySize pdImages(g_CurrentImage)
     
     Message "Finished. "
     
@@ -529,7 +529,7 @@ Public Sub MenuRotate270Clockwise()
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize
-    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    DisplaySize pdImages(g_CurrentImage)
     
     Message "Finished. "
     

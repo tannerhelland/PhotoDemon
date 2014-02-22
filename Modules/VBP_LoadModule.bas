@@ -303,7 +303,7 @@ Public Sub LoadTheProgram()
     
     'Clear the main canvas coordinate and size displays
     FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
-    FormMain.mainCanvas(0).displayImageSize 0, 0, True
+    FormMain.mainCanvas(0).displayImageSize Nothing, True
     
     'Apply visual styles
     FormMain.requestMakeFormPretty

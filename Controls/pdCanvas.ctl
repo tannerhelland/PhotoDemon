@@ -79,6 +79,17 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   0
       Top             =   7350
       Width           =   13290
+      Begin VB.ComboBox cmbSizeUnit 
+         CausesValidation=   0   'False
+         Height          =   315
+         ItemData        =   "pdCanvas.ctx":0000
+         Left            =   2760
+         List            =   "pdCanvas.ctx":0002
+         Style           =   2  'Dropdown List
+         TabIndex        =   10
+         Top             =   15
+         Width           =   600
+      End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   345
          Left            =   1440
@@ -100,19 +111,19 @@ Begin VB.UserControl pdCanvas
          BackColor       =   -2147483626
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0000
+         PictureNormal   =   "pdCanvas.ctx":0004
          PictureAlign    =   7
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          ToolTip         =   "Zoom in"
          ColorScheme     =   3
       End
-      Begin VB.ComboBox CmbZoom 
+      Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0852
+         ItemData        =   "pdCanvas.ctx":0856
          Left            =   450
-         List            =   "pdCanvas.ctx":0854
+         List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   7
          Top             =   15
@@ -139,7 +150,7 @@ Begin VB.UserControl pdCanvas
          BackColor       =   -2147483626
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0856
+         PictureNormal   =   "pdCanvas.ctx":085A
          PictureAlign    =   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -179,8 +190,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   1
-         X1              =   236
-         X2              =   236
+         X1              =   256
+         X2              =   256
          Y1              =   1
          Y2              =   22
       End
@@ -208,8 +219,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   2
-         X1              =   360
-         X2              =   360
+         X1              =   344
+         X2              =   344
          Y1              =   1
          Y2              =   22
       End
@@ -471,7 +482,7 @@ Public Sub setScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeC
         
 End Sub
 
-Public Sub displayImageSize(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal clearSize As Boolean = False)
+Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize As Boolean = False)
     
     'The size display is cleared whenever the user has no images loaded
     If clearSize Then
@@ -479,7 +490,32 @@ Public Sub displayImageSize(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
-        lblImgSize.Caption = iWidth & " x " & iHeight
+    
+        Dim iWidth As Double, iHeight As Double
+        Dim sizeString As String
+        
+        'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
+        Select Case cmbSizeUnit.ListIndex
+            
+            'Pixels
+            Case 0
+                sizeString = srcImage.Width & " x " & srcImage.Height
+                
+            'Inches
+            Case 1
+                iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
+                iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
+            
+            'CM
+            Case 2
+                iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
+                iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
+            
+        End Select
+        
+        lblImgSize.Caption = sizeString
         drawStatusBarIcons True
         
     End If
@@ -551,8 +587,12 @@ Public Sub enableZoomOut(ByVal isEnabled As Boolean)
 End Sub
 
 Public Function getZoomDropDownReference() As ComboBox
-    Set getZoomDropDownReference = CmbZoom
+    Set getZoomDropDownReference = cmbZoom
 End Function
+
+Private Sub cmbSizeUnit_Click()
+    If g_OpenImageCount > 0 Then displayImageSize pdImages(g_CurrentImage)
+End Sub
 
 Private Sub CmbZoom_Click()
 
@@ -560,16 +600,16 @@ Private Sub CmbZoom_Click()
     If g_OpenImageCount > 0 Then
     
         'Store the current zoom value in this object (so the user can switch between images without losing zoom values)
-        pdImages(g_CurrentImage).currentZoomValue = CmbZoom.ListIndex
+        pdImages(g_CurrentImage).currentZoomValue = cmbZoom.ListIndex
         
         'Disable the zoom in/out buttons when they reach the end of the available zoom levels
-        If CmbZoom.ListIndex = 0 Then
+        If cmbZoom.ListIndex = 0 Then
             cmdZoomIn.Enabled = False
         Else
             If Not cmdZoomIn.Enabled Then cmdZoomIn.Enabled = True
         End If
         
-        If CmbZoom.ListIndex = CmbZoom.ListCount - 1 Then
+        If cmbZoom.ListIndex = cmbZoom.ListCount - 1 Then
             cmdZoomOut.Enabled = False
         Else
             If Not cmdZoomOut.Enabled Then cmdZoomOut.Enabled = True
@@ -621,7 +661,7 @@ Private Sub UserControl_Initialize()
         m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
         m_ToolTip.DelayTime(ttDelayShow) = 10000
         
-        m_ToolTip.AddTool CmbZoom, "Click to adjust image zoom"
+        m_ToolTip.AddTool cmbZoom, "Click to adjust image zoom"
         
         'Allow the control to generate its own redraw requests
         m_suspendRedraws = False
@@ -745,12 +785,12 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
       
         If LinesScrolled > 0 Then
             
-            If CmbZoom.ListIndex > 0 Then CmbZoom.ListIndex = CmbZoom.ListIndex - 1
+            If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
             'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
             
         ElseIf LinesScrolled < 0 Then
             
-            If CmbZoom.ListIndex < (CmbZoom.ListCount - 1) Then CmbZoom.ListIndex = CmbZoom.ListIndex + 1
+            If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
             
         End If
         
@@ -1182,6 +1222,13 @@ Private Sub UserControl_Show()
         lblImgSize.FontName = g_InterfaceFont
         lblMessages.FontName = g_InterfaceFont
         
+        'Add size units to the size unit drop-down box
+        cmbSizeUnit.Clear
+        cmbSizeUnit.AddItem g_Language.TranslateMessage(" px"), 0
+        cmbSizeUnit.AddItem g_Language.TranslateMessage(" in"), 1
+        cmbSizeUnit.AddItem g_Language.TranslateMessage(" cm"), 2
+        cmbSizeUnit.ListIndex = 0
+        
     End If
     
     Exit Sub
@@ -1325,9 +1372,13 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         ' plus a 5px buffer on either size (contingent on DPI)
         lblImgSize.Left = lineStatusBar(0).x1 + fixDPI(14) + 16
         
-        'The image size label is autosized.  Move the next vertical line separator just past it.
+        'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
+        ' separator just past it.
+        If (Not cmbSizeUnit.Visible) Then cmbSizeUnit.Visible = True
+        cmbSizeUnit.Left = lblImgSize.Left + lblImgSize.Width + fixDPI(10)
+        
         If (Not lineStatusBar(1).Visible) Then lineStatusBar(1).Visible = True
-        lineStatusBar(1).x1 = lblImgSize.Left + lblImgSize.Width + fixDPI(10)
+        lineStatusBar(1).x1 = cmbSizeUnit.Left + cmbSizeUnit.Width + fixDPI(10)
         lineStatusBar(1).x2 = lineStatusBar(1).x1
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
@@ -1335,11 +1386,14 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lblCoordinates.Left = lineStatusBar(1).x1 + fixDPI(14) + 16
         
         If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
+        lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.Width + fixDPI(10)
+        lineStatusBar(2).x2 = lineStatusBar(2).x1
         
         'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
         
     'Images are not loaded.  Hide the lines and other items.
     Else
+        cmbSizeUnit.Visible = False
         lineStatusBar(0).Visible = False
         lineStatusBar(1).Visible = False
         lineStatusBar(2).Visible = False

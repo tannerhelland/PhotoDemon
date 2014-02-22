@@ -198,7 +198,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     'Update the main image's size and DPI values
     pdImages(g_CurrentImage).updateSize
     pdImages(g_CurrentImage).setDPI iDPI, iDPI
-    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    DisplaySize pdImages(g_CurrentImage)
     
     'Fit the new image on-screen and redraw its viewport
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Content-aware resize"

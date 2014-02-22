@@ -286,7 +286,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 
                 'Update the size variables
                 pdImages(g_CurrentImage).updateSize
-                DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+                DisplaySize pdImages(g_CurrentImage)
                 
                 'If the original image is 32bpp, re-apply premultiplication now.
                 If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True

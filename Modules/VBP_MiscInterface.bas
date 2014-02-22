@@ -203,7 +203,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
         
         'Display the size of this image in the status bar
-        If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage)
         
         'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
         If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
@@ -1025,22 +1025,22 @@ End Function
 
 
 'Display the specified size in the main form's status bar
-Public Sub DisplaySize(ByVal iWidth As Long, ByVal iHeight As Long)
+Public Sub DisplaySize(ByRef srcImage As pdImage)
     
-    If g_OpenImageCount > 0 Then
-        FormMain.mainCanvas(0).displayImageSize iWidth, iHeight
+    If Not (srcImage Is Nothing) Then
+        FormMain.mainCanvas(0).displayImageSize srcImage
     End If
     
-    'Size is only displayed when it is changed, so if any controls have a maxmimum value linked to the size of the image,
+    'Size is only displayed when it is changed, so if any controls have a maximum value linked to the size of the image,
     ' now is an excellent time to update them.
-    If iWidth < iHeight Then
-        toolbar_Tools.sltSelectionBorder.Max = iWidth
-        toolbar_Tools.sltCornerRounding.Max = iWidth
-        toolbar_Tools.sltSelectionLineWidth.Max = iHeight
+    If srcImage.Width < srcImage.Height Then
+        toolbar_Tools.sltSelectionBorder.Max = srcImage.Width
+        toolbar_Tools.sltCornerRounding.Max = srcImage.Width
+        toolbar_Tools.sltSelectionLineWidth.Max = srcImage.Height
     Else
-        toolbar_Tools.sltSelectionBorder.Max = iHeight
-        toolbar_Tools.sltCornerRounding.Max = iHeight
-        toolbar_Tools.sltSelectionLineWidth.Max = iWidth
+        toolbar_Tools.sltSelectionBorder.Max = srcImage.Height
+        toolbar_Tools.sltCornerRounding.Max = srcImage.Height
+        toolbar_Tools.sltSelectionLineWidth.Max = srcImage.Width
     End If
     
 End Sub
