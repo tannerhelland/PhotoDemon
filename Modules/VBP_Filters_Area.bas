@@ -464,7 +464,7 @@ Public Sub FilterIsometric()
     
     'Update the current image size
     pdImages(g_CurrentImage).updateSize
-    DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+    DisplaySize pdImages(g_CurrentImage)
     
     Message "Finished. "
     

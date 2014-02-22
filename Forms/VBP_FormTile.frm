@@ -437,7 +437,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         
         'Display the new size
         pdImages(g_CurrentImage).updateSize
-        DisplaySize pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        DisplaySize pdImages(g_CurrentImage)
         
         SetProgBarVal 0
         releaseProgressBar
