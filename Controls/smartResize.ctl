@@ -737,11 +737,13 @@ Private Sub UserControl_Initialize()
     'Populate the width unit drop-down box
     cmbWidthUnit.Clear
     
-    cmbWidthUnit.AddItem " percent", 0
-    cmbWidthUnit.AddItem " pixels", 1
-    cmbWidthUnit.AddItem " inches", 2
-    cmbWidthUnit.AddItem " centimeters", 3
-    cmbWidthUnit.ListIndex = MU_PIXELS
+    If g_UserModeFix Then
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" percent"), 0
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels"), 1
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches"), 2
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" centimeters"), 3
+        cmbWidthUnit.ListIndex = MU_PIXELS
+    End If
     
     'Rather than manually populate the height unit box, just copy whatever entries we've set for the width box
     cmbHeightUnit.Clear
@@ -755,9 +757,12 @@ Private Sub UserControl_Initialize()
     
     'Populate the resolution unit box
     cmbResolution.Clear
-    cmbResolution.AddItem " pixels / inch (PPI)"
-    cmbResolution.AddItem " pixels / centimeter (PPCM)"
-    cmbResolution.ListIndex = RU_PPI
+    
+    If g_UserModeFix Then
+        cmbResolution.AddItem g_Language.TranslateMessage(" pixels / inch (PPI)"), 0
+        cmbResolution.AddItem g_Language.TranslateMessage(" pixels / centimeter (PPCM)"), 1
+        cmbResolution.ListIndex = RU_PPI
+    End If
     
     'Restore automatic unit syncing
     unitSyncingSuspended = False
