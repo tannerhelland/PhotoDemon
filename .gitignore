@@ -116,6 +116,7 @@ README_PSC-version.txt
 /Support/Master language XML generator/MasterTranslation.exe
 /Data/PhotoDemon_settings.xml
 /Data/Presets
+/Data/Macros
 /Data/Languages
 /Data/Autosave
 *.tmpxml
