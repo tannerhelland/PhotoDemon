@@ -857,10 +857,14 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         'If this is a list box or combo box, replacing the text is a bit more confusing
         If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
             
-            'Enumerate through each entry in the control
-            For i = 0 To eControl.ListCount - 1
-                If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
-            Next i
+            'Enumerate through each entry in the control (if any are present!)
+            If eControl.ListCount > 0 Then
+            
+                For i = 0 To eControl.ListCount - 1
+                    If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
+                Next i
+                
+            End If
             
             'Translate the tooltip as well
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
