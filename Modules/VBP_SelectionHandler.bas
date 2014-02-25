@@ -287,7 +287,6 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'Release our temporary image
     Set tmpDIB = Nothing
-    Set tmpImage.mainDIB = Nothing
     Set tmpImage = Nothing
     
 End Function
@@ -349,7 +348,6 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Set CC = Nothing
     
     'Release our temporary image
-    Set tmpImage.getActiveDIB() = Nothing
     Set tmpImage = Nothing
 
 End Function
