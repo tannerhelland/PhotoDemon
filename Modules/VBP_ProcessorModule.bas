@@ -74,7 +74,7 @@ Private m_ProcessingTime As Double
 '                  to prevent them from being executed twice.
 Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As Long = 1, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
-    'Main error handler for the entire program is initialized by this line
+    'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
     
     'Mark the software processor as busy
