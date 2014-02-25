@@ -122,7 +122,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Set CC = New cCommonDialog
         
         Dim cdFilter As String
-        cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
+        cdFilter = g_Language.TranslateMessage("PhotoDemon Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
         cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
         
         Dim cdTitle As String
@@ -187,7 +187,7 @@ Public Sub SaveSelectionToFile()
     Set CC = New cCommonDialog
     
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT
+    cdFilter = g_Language.TranslateMessage("PhotoDemon Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT
     
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
