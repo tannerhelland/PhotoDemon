@@ -1273,13 +1273,15 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: 
-%1
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
 
 Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation></translation>
+<translation>PhotoDemon hat automatisch eine GitHub Fehlerbericht Webseite für Sie geöffnet. In das Feld Titel geben Sie bitte die folgende Fehlermeldung Nummer mit einer kurzen Beschreibung des Problems: %1 
+
+ Etwaige zusätzliche Details, die Sie in das große Textfeld geben können, einschließlich die Schritte, die bis zu diesem Fehler geführt, hilft es so schnell wie möglich behoben. 
+ Wenn Sie fertig sind, klicken Sie auf die Submit New Issue  -Taste. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -1290,11 +1292,14 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <phrase>
 <original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
 
-Also in that box, please include the following error number: 
-%1
+Also in that box, please include the following error number: %1
 
 When finished, click the Submit button.  Thank you!</original>
-<translation></translation>
+<translation>PhotoDemon hat automatisch einen Fehlerbericht Webseite für Sie geöffnet. In das Feld Kommentar, beschreiben Sie bitte die Schritte, die zu diesem error.
+
+Also in diesem Feld führte, geben Sie bitte die folgende Fehlermeldung Nummer: %1
+
+When abgeschlossen, klicken Sie auf die Schaltfläche Senden. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -9393,8 +9398,8 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <!-- BEGIN text for VBP_SelectionHandler.bas -->
 
 <phrase>
-<original>Selection</original>
-<translation>Auswahl</translation>
+<original>PhotoDemon Selection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9443,11 +9448,6 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 </phrase>
 
 <phrase>
-<original>PhotoDemon selection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Export selection as image</original>
 <translation></translation>
 </phrase>
@@ -9482,7 +9482,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>Finden Textauswahlbegrenzung</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 24 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_SelectionHandler.bas contains 42 phrases. 25 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -11086,7 +11086,22 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Resize Auswahl</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>px</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -11167,11 +11182,11 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>1961</phrasecount>
+<phrasecount>1963</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3350 phrases. -->
-<!-- 1389 are duplicates, so only 1961 unique phrases have been written to file. -->
-<!-- These 1961 phrases contain approximately 12146 total words. -->
+<!-- As of this build, PhotoDemon contains 3357 phrases. -->
+<!-- 1394 are duplicates, so only 1963 unique phrases have been written to file. -->
+<!-- These 1963 phrases contain approximately 12148 total words. -->
 
 </pdData>
 
