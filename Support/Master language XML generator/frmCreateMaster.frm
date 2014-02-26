@@ -296,7 +296,7 @@ Private Sub cmdMaster_Click()
     
         'Load the file into a string
         m_MasterText = getFileAsString(fPath)
-        
+                
     End If
     
 End Sub
@@ -356,14 +356,14 @@ Private Sub cmdMerge_Click()
         translatedText = getTranslationTagFromCaption(origText)
                 
         'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-        If translatedText = "" Then
+        If Len(translatedText) = 0 Then
             If (InStr(1, origText, vbCrLf) > 0) Then
                 translatedText = getTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
             End If
         End If
                 
         'If a translation was found, insert it into the new file
-        If translatedText <> "" Then
+        If Len(translatedText) > 0 Then
             findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation></translation>"
             replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
             m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
@@ -410,7 +410,7 @@ End Sub
 
 'Given a string, return the location of the <phrase> tag enclosing said string
 Private Function getPhraseTagLocation(ByRef srcString As String) As Long
-
+    
     Dim sLocation As Long
     sLocation = InStr(1, m_OldLanguageText, srcString, vbTextCompare)
     
@@ -641,7 +641,7 @@ Private Sub cmdOldLanguage_Click()
         'Load the file into a string
         m_OldLanguageText = getFileAsString(tmpLangFile)
         m_OldLanguagePath = tmpLangFile
-        
+                
     End If
     
 End Sub

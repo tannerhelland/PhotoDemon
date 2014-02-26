@@ -200,10 +200,11 @@ Begin VB.Form toolbar_File
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   1620
+      Height          =   2160
       Left            =   30
       TabIndex        =   6
-      Top             =   6840
+      Top             =   4200
+      UseMnemonic     =   0   'False
       Visible         =   0   'False
       Width           =   960
       WordWrap        =   -1  'True

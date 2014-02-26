@@ -216,7 +216,7 @@ Begin VB.Form FormRotateDistort
       BackStyle       =   0  'Transparent
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -224,11 +224,11 @@ Begin VB.Form FormRotateDistort
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   765
+      Height          =   1125
       Index           =   1
       Left            =   6000
       TabIndex        =   9
-      Top             =   4920
+      Top             =   4560
       Width           =   5925
       WordWrap        =   -1  'True
    End
