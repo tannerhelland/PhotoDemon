@@ -268,11 +268,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         Case "Internet import"
-            If Not FormInternetImport.Visible Then
+            If showDialog Then
                 showPDDialog vbModal, FormInternetImport
-                Exit Sub
             End If
-        
+            
         
         
         'EDIT MENU FUNCTIONS
