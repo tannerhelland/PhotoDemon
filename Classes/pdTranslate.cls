@@ -568,6 +568,11 @@ End Function
 'Given the original caption of a message or control, return the matching translation from the active translation file
 Private Function getTranslationTagFromCaption(ByVal origCaption As String) As String
 
+    If xmlEngine Is Nothing Then
+        getTranslationTagFromCaption = origCaption
+        Exit Function
+    End If
+
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
     preProcessText origCaption
     
