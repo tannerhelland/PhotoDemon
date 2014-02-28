@@ -4,8 +4,8 @@ Begin VB.Form FormSoftwareUpdate
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Update Notifier"
-   ClientHeight    =   5310
-   ClientLeft      =   45
+   ClientHeight    =   5313
+   ClientLeft      =   42
    ClientTop       =   315
    ClientWidth     =   10710
    BeginProperty Font 
@@ -20,9 +20,9 @@ Begin VB.Form FormSoftwareUpdate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   354
+   ScaleHeight     =   759
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   714
+   ScaleWidth      =   1530
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdOKNo 
       Caption         =   "&OK"
@@ -41,9 +41,9 @@ Begin VB.Form FormSoftwareUpdate
       Height          =   5295
       Left            =   0
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   353
+      ScaleHeight     =   756
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   721
+      ScaleWidth      =   1545
       TabIndex        =   11
       Top             =   5520
       Visible         =   0   'False
@@ -415,9 +415,9 @@ Private Sub Form_Load()
     ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
     Set cImgCtl = New clsControlImage
     With cImgCtl
-        .LoadImageFromStream cmdYesDownload.hWnd, LoadResData("LRGUPDATE", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdNoDownload.hWnd, LoadResData("LRGDELAY", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdNoDownloadNoReminder.hWnd, LoadResData("LRGCANCEL", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdYesDownload.hWnd, LoadResData("LRGUPDATE", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdNoDownload.hWnd, LoadResData("LRGDELAY", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdNoDownloadNoReminder.hWnd, LoadResData("LRGCANCEL", "CUSTOM"), fixDPI(32), fixDPI(32)
         
         .SetMargins cmdYesDownload.hWnd, 10
         .Align(cmdYesDownload.hWnd) = Icon_Left

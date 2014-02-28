@@ -5,10 +5,10 @@ Begin VB.Form dialog_MultiImage
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Multiple Images Found"
-   ClientHeight    =   3765
-   ClientLeft      =   45
+   ClientHeight    =   3766
+   ClientLeft      =   42
    ClientTop       =   315
-   ClientWidth     =   5550
+   ClientWidth     =   5551
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,9 +21,9 @@ Begin VB.Form dialog_MultiImage
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   251
+   ScaleHeight     =   538
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   370
+   ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "Load only the first page"
@@ -67,8 +67,8 @@ Begin VB.Form dialog_MultiImage
       TabIndex        =   1
       Top             =   3120
       Width           =   4110
-      _ExtentX        =   7250
-      _ExtentY        =   847
+      _ExtentX        =   7382
+      _ExtentY        =   820
       Caption         =   "always apply this action to multi-image files"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -150,8 +150,8 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
     Set cImgCtl = New clsControlImage
     With cImgCtl
-        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGIMGMULTI", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGIMGSMALL", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGIMGMULTI", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGIMGSMALL", "CUSTOM"), fixDPI(32), fixDPI(32)
         
         Dim i As Long
         For i = 0 To 1

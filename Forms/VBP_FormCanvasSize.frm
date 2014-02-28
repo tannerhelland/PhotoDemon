@@ -3,10 +3,10 @@ Begin VB.Form FormCanvasSize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Canvas"
-   ClientHeight    =   7680
-   ClientLeft      =   45
-   ClientTop       =   225
-   ClientWidth     =   9705
+   ClientHeight    =   7679
+   ClientLeft      =   42
+   ClientTop       =   224
+   ClientWidth     =   9709
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,19 +19,19 @@ Begin VB.Form FormCanvasSize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   512
+   ScaleHeight     =   1097
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   647
+   ScaleWidth      =   1387
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
-      Height          =   750
+      Height          =   805
       Left            =   0
       TabIndex        =   0
-      Top             =   6930
-      Width           =   9705
-      _ExtentX        =   17119
-      _ExtentY        =   1323
+      Top             =   6874
+      Width           =   9716
+      _ExtentX        =   17132
+      _ExtentY        =   1416
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -303,7 +303,7 @@ Private Sub updateAnchorButtons()
             For i = 0 To 8
                 If Len(arrowLocations(i)) > 0 Then
                     With cImgCtl
-                        .LoadImageFromStream cmdAnchor(i).hWnd, LoadResData(arrowLocations(i), "CUSTOM"), 16, 16
+                        .LoadImageFromStream cmdAnchor(i).hWnd, LoadResData(arrowLocations(i), "CUSTOM"), fixDPI(16), fixDPI(16)
                         .SetMargins cmdAnchor(i).hWnd, 0
                         .Align(cmdAnchor(i).hWnd) = Icon_Center
                     End With

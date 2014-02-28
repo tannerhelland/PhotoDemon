@@ -3,10 +3,10 @@ Begin VB.Form FormBatchWizard
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Batch Process Wizard"
-   ClientHeight    =   9060
-   ClientLeft      =   45
+   ClientHeight    =   9058
+   ClientLeft      =   42
    ClientTop       =   315
-   ClientWidth     =   15360
+   ClientWidth     =   15365
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,9 +19,9 @@ Begin VB.Form FormBatchWizard
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   604
+   ScaleHeight     =   1294
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1024
+   ScaleWidth      =   2195
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdPrevious 
       Caption         =   "&Previous"
@@ -47,7 +47,7 @@ Begin VB.Form FormBatchWizard
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   525
+      Height          =   245
       Left            =   720
       Picture         =   "VBP_FormBatchWizard.frx":0000
       ScaleHeight     =   33
@@ -56,7 +56,7 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   6
       Top             =   7680
       Visible         =   0   'False
-      Width           =   525
+      Width           =   245
    End
    Begin VB.PictureBox picDragDisallow 
       Appearance      =   0  'Flat
@@ -64,7 +64,7 @@ Begin VB.Form FormBatchWizard
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
-      Height          =   540
+      Height          =   252
       Left            =   120
       Picture         =   "VBP_FormBatchWizard.frx":09F6
       ScaleHeight     =   34
@@ -73,7 +73,7 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   5
       Top             =   7680
       Visible         =   0   'False
-      Width           =   540
+      Width           =   252
    End
    Begin VB.CommandButton cmdCancel 
       Caption         =   "&Cancel"
@@ -118,9 +118,9 @@ Begin VB.Form FormBatchWizard
       Height          =   7455
       Index           =   4
       Left            =   3480
-      ScaleHeight     =   497
+      ScaleHeight     =   1065
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
+      ScaleWidth      =   1682
       TabIndex        =   119
       Top             =   720
       Width           =   11775
@@ -131,9 +131,9 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H80000008&
          Height          =   375
          Left            =   240
-         ScaleHeight     =   25
+         ScaleHeight     =   54
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   753
+         ScaleWidth      =   1614
          TabIndex        =   120
          Top             =   3360
          Width           =   11295
@@ -170,9 +170,9 @@ Begin VB.Form FormBatchWizard
       Height          =   7455
       Index           =   3
       Left            =   3480
-      ScaleHeight     =   497
+      ScaleHeight     =   1065
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
+      ScaleWidth      =   1682
       TabIndex        =   32
       Top             =   720
       Width           =   11775
@@ -183,7 +183,7 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   50
          Top             =   5640
          Width           =   1260
-         _ExtentX        =   2223
+         _ExtentX        =   2236
          _ExtentY        =   582
          Caption         =   "lowercase"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -254,8 +254,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   43
          Top             =   3000
          Width           =   2955
-         _ExtentX        =   5212
-         _ExtentY        =   847
+         _ExtentX        =   5278
+         _ExtentY        =   820
          Caption         =   "add a prefix to each filename:"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -317,8 +317,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   44
          Top             =   3000
          Width           =   2925
-         _ExtentX        =   5159
-         _ExtentY        =   847
+         _ExtentX        =   5252
+         _ExtentY        =   820
          Caption         =   "add a suffix to each filename:"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -336,8 +336,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   45
          Top             =   4080
          Width           =   5205
-         _ExtentX        =   9181
-         _ExtentY        =   847
+         _ExtentX        =   9313
+         _ExtentY        =   820
          Caption         =   "remove the following text (if found) from each filename:"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -355,8 +355,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   49
          Top             =   5160
          Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   847
+         _ExtentX        =   10358
+         _ExtentY        =   820
          Caption         =   "force each filename, including extension, to the following case:"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -375,7 +375,7 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   51
          Top             =   5640
          Width           =   1410
-         _ExtentX        =   2487
+         _ExtentX        =   2540
          _ExtentY        =   582
          Caption         =   "UPPERCASE"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -394,8 +394,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   52
          Top             =   6240
          Width           =   4275
-         _ExtentX        =   7541
-         _ExtentY        =   847
+         _ExtentX        =   7607
+         _ExtentY        =   820
          Caption         =   "replace spaces in filenames with underscores"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -413,8 +413,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   53
          Top             =   4515
          Width           =   2775
-         _ExtentX        =   4895
-         _ExtentY        =   847
+         _ExtentX        =   5014
+         _ExtentY        =   820
          Caption         =   "use case-sensitive matching"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -497,7 +497,7 @@ Begin VB.Form FormBatchWizard
       Index           =   2
       Left            =   3480
       ScaleHeight     =   7455
-      ScaleWidth      =   11775
+      ScaleWidth      =   11774
       TabIndex        =   10
       Top             =   720
       Width           =   11775
@@ -526,8 +526,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   33
          Top             =   120
          Width           =   4185
-         _ExtentX        =   7382
-         _ExtentY        =   661
+         _ExtentX        =   7408
+         _ExtentY        =   688
          Caption         =   "keep images in their original format"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -547,8 +547,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   34
          Top             =   1320
          Width           =   4080
-         _ExtentX        =   7197
-         _ExtentY        =   661
+         _ExtentX        =   7276
+         _ExtentY        =   688
          Caption         =   "convert all images to a new format"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -568,9 +568,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   1
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
+         ScaleWidth      =   1562
          TabIndex        =   63
          TabStop         =   0   'False
          Tag             =   "PNG - Portable Network Graphic"
@@ -591,8 +591,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   64
             Top             =   2520
             Width           =   4830
-            _ExtentX        =   8520
-            _ExtentY        =   847
+            _ExtentX        =   8559
+            _ExtentY        =   820
             Caption         =   "preserve file's original background color, if available"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -610,8 +610,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   65
             Top             =   2040
             Width           =   2430
-            _ExtentX        =   4286
-            _ExtentY        =   847
+            _ExtentX        =   4366
+            _ExtentY        =   820
             Caption         =   "use interlacing (Adam7)"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -717,9 +717,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   6
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   737
+         ScaleWidth      =   1579
          TabIndex        =   87
          Tag             =   "GIF - Graphics Interchange Format"
          Top             =   2520
@@ -855,9 +855,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   2
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   737
+         ScaleWidth      =   1579
          TabIndex        =   59
          Tag             =   "PPM - Portable Pixel Map"
          Top             =   2520
@@ -930,9 +930,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   4
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   721
+         ScaleWidth      =   1545
          TabIndex        =   54
          Tag             =   "TIFF - Tagged Image File Format"
          Top             =   2520
@@ -961,8 +961,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   55
             Top             =   1560
             Width           =   4230
-            _ExtentX        =   7461
-            _ExtentY        =   847
+            _ExtentX        =   7567
+            _ExtentY        =   820
             Caption         =   " save TIFFs as separated CMYK (for printing)"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1025,9 +1025,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   7
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   705
+         ScaleWidth      =   1511
          TabIndex        =   93
          Tag             =   "JP2 - JPEG 2000"
          Top             =   2520
@@ -1164,9 +1164,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   0
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   705
+         ScaleWidth      =   1511
          TabIndex        =   74
          Tag             =   "BMP - Windows Bitmap"
          Top             =   2520
@@ -1177,8 +1177,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   75
             Top             =   600
             Width           =   4890
-            _ExtentX        =   8625
-            _ExtentY        =   847
+            _ExtentX        =   8758
+            _ExtentY        =   820
             Caption         =   "use RLE compression when saving 8bpp BMP images"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1220,9 +1220,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4695
          Index           =   3
          Left            =   600
-         ScaleHeight     =   313
+         ScaleHeight     =   671
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   713
+         ScaleWidth      =   1528
          TabIndex        =   71
          Tag             =   "TGA - Truevision (TARGA)"
          Top             =   2520
@@ -1233,8 +1233,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   72
             Top             =   600
             Width           =   4410
-            _ExtentX        =   7779
-            _ExtentY        =   847
+            _ExtentX        =   7898
+            _ExtentY        =   820
             Caption         =   "use RLE compression when saving TGA images"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1276,9 +1276,9 @@ Begin VB.Form FormBatchWizard
          Height          =   4575
          Index           =   5
          Left            =   600
-         ScaleHeight     =   305
+         ScaleHeight     =   654
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
+         ScaleWidth      =   1562
          TabIndex        =   77
          TabStop         =   0   'False
          Tag             =   "JPG - Joint Photographic Experts Group"
@@ -1348,8 +1348,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   79
             Top             =   1920
             Width           =   2805
-            _ExtentX        =   4948
-            _ExtentY        =   847
+            _ExtentX        =   5014
+            _ExtentY        =   820
             Caption         =   "optimize compression tables"
             Value           =   1
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -1368,8 +1368,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   81
             Top             =   2400
             Width           =   2445
-            _ExtentX        =   4313
-            _ExtentY        =   847
+            _ExtentX        =   4405
+            _ExtentY        =   820
             Caption         =   "embed thumbnail image"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1387,8 +1387,8 @@ Begin VB.Form FormBatchWizard
             TabIndex        =   82
             Top             =   2880
             Width           =   2550
-            _ExtentX        =   4498
-            _ExtentY        =   847
+            _ExtentX        =   4564
+            _ExtentY        =   820
             Caption         =   "use progressive encoding"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1407,8 +1407,8 @@ Begin VB.Form FormBatchWizard
             ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
             Top             =   3360
             Width           =   2565
-            _ExtentX        =   4524
-            _ExtentY        =   847
+            _ExtentX        =   4591
+            _ExtentY        =   820
             Caption         =   "use specific subsampling:"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1511,9 +1511,9 @@ Begin VB.Form FormBatchWizard
       Height          =   7455
       Index           =   0
       Left            =   3480
-      ScaleHeight     =   497
+      ScaleHeight     =   1065
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
+      ScaleWidth      =   1682
       TabIndex        =   9
       Top             =   720
       Width           =   11775
@@ -1525,9 +1525,9 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H80000008&
          Height          =   750
          Left            =   6600
-         ScaleHeight     =   50
+         ScaleHeight     =   107
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   191
+         ScaleWidth      =   409
          TabIndex        =   116
          Top             =   3210
          Width           =   2865
@@ -1584,8 +1584,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   102
          Top             =   4320
          Width           =   3750
-         _ExtentX        =   6615
-         _ExtentY        =   847
+         _ExtentX        =   6694
+         _ExtentY        =   820
          Caption         =   "custom actions from a saved macro file"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1604,8 +1604,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   103
          Top             =   2040
          Width           =   1560
-         _ExtentX        =   2752
-         _ExtentY        =   847
+         _ExtentX        =   2778
+         _ExtentY        =   820
          Caption         =   "resize images"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1664,8 +1664,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   113
          Top             =   120
          Width           =   3675
-         _ExtentX        =   6482
-         _ExtentY        =   635
+         _ExtentX        =   6720
+         _ExtentY        =   648
          Caption         =   "do not apply photo editing actions"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -1685,8 +1685,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   114
          Top             =   1080
          Width           =   4260
-         _ExtentX        =   7514
-         _ExtentY        =   635
+         _ExtentX        =   7739
+         _ExtentY        =   648
          Caption         =   "apply one or more photo editing actions"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1705,8 +1705,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   117
          Top             =   1560
          Width           =   3315
-         _ExtentX        =   5847
-         _ExtentY        =   847
+         _ExtentX        =   5953
+         _ExtentY        =   820
          Caption         =   "fix exposure and lighting problems"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1896,9 +1896,9 @@ Begin VB.Form FormBatchWizard
       Height          =   7500
       Index           =   1
       Left            =   3480
-      ScaleHeight     =   500
+      ScaleHeight     =   1071
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
+      ScaleWidth      =   1682
       TabIndex        =   8
       Top             =   720
       Width           =   11775
@@ -1932,7 +1932,7 @@ Begin VB.Form FormBatchWizard
       End
       Begin VB.ListBox lstFiles 
          ForeColor       =   &H00800000&
-         Height          =   2400
+         Height          =   2296
          Left            =   240
          MultiSelect     =   2  'Extended
          OLEDragMode     =   1  'Automatic
@@ -1957,9 +1957,9 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H00FFFFFF&
          Height          =   2445
          Left            =   8160
-         ScaleHeight     =   161
+         ScaleHeight     =   347
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   231
+         ScaleWidth      =   497
          TabIndex        =   20
          Top             =   1080
          Width           =   3495
@@ -2050,8 +2050,8 @@ Begin VB.Form FormBatchWizard
          TabIndex        =   21
          Top             =   3600
          Width           =   2235
-         _ExtentX        =   3942
-         _ExtentY        =   847
+         _ExtentX        =   3969
+         _ExtentY        =   820
          Caption         =   "show image previews"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -3233,9 +3233,9 @@ Private Sub Form_Load()
     ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
     Set cImgCtl = New clsControlImage
     With cImgCtl
-        .LoadImageFromStream cmdNext.hWnd, LoadResData("ARROWRIGHT", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdPrevious.hWnd, LoadResData("ARROWLEFT", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdAddFiles.hWnd, LoadResData("ARROWDOWN", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdNext.hWnd, LoadResData("ARROWRIGHT", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdPrevious.hWnd, LoadResData("ARROWLEFT", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdAddFiles.hWnd, LoadResData("ARROWDOWN", "CUSTOM"), fixDPI(32), fixDPI(32)
         
         .SetMargins cmdNext.hWnd, , , 4
         .Align(cmdNext.hWnd) = Icon_Right

@@ -137,9 +137,12 @@ Public Sub loadMenuIcons()
         g_IsThemingEnabled = .CanWeTheme
     
         'Disable menu icon drawing if on Windows XP and uncompiled (to prevent subclassing crashes on unclean IDE breaks)
-        If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then Exit Sub
+        If (Not g_IsVistaOrLater) And (Not g_IsProgramCompiled) Then
+            Debug.Print "XP + IDE detected.  Menu icons will be disabled for this session."
+            Exit Sub
+        End If
         
-        .Init FormMain.hWnd, 16, 16
+        .Init FormMain.hWnd, fixDPI(16), fixDPI(16)
         
     End With
             
@@ -149,9 +152,9 @@ Public Sub loadMenuIcons()
     '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
     If g_IsVistaOrLater Then
-        cMRUIcons.Init FormMain.hWnd, 64, 64
+        cMRUIcons.Init FormMain.hWnd, fixDPI(64), fixDPI(64)
     Else
-        cMRUIcons.Init FormMain.hWnd, 16, 16
+        cMRUIcons.Init FormMain.hWnd, fixDPI(16), fixDPI(16)
     End If
         
 End Sub
