@@ -3,7 +3,7 @@ Begin VB.UserControl commandBar
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   ClientHeight    =   750
+   ClientHeight    =   749
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   9555
@@ -17,9 +17,9 @@ Begin VB.UserControl commandBar
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   50
+   ScaleHeight     =   107
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   637
+   ScaleWidth      =   1365
    ToolboxBitmap   =   "commandBar.ctx":0000
    Begin VB.CommandButton cmdRandomize 
       Caption         =   "Randomize"
@@ -705,15 +705,15 @@ Private Sub UserControl_Initialize()
         With cImgCtl
             
             cmdReset.Caption = ""
-            .LoadImageFromStream cmdReset.hWnd, LoadResData("RESETBUTTON", "CUSTOM"), 24, 24
+            .LoadImageFromStream cmdReset.hWnd, LoadResData("RESETBUTTON", "CUSTOM"), fixDPI(24), fixDPI(24)
             .Align(cmdReset.hWnd) = Icon_Center
             
             cmdSavePreset.Caption = ""
-            .LoadImageFromStream cmdSavePreset.hWnd, LoadResData("PRESETSAVE", "CUSTOM"), 24, 24
+            .LoadImageFromStream cmdSavePreset.hWnd, LoadResData("PRESETSAVE", "CUSTOM"), fixDPI(24), fixDPI(24)
             .Align(cmdSavePreset.hWnd) = Icon_Center
             
             cmdRandomize.Caption = ""
-            .LoadImageFromStream cmdRandomize.hWnd, LoadResData("RANDOMIZE24", "CUSTOM"), 24, 24
+            .LoadImageFromStream cmdRandomize.hWnd, LoadResData("RANDOMIZE24", "CUSTOM"), fixDPI(24), fixDPI(24)
             .Align(cmdRandomize.hWnd) = Icon_Center
             
         End With

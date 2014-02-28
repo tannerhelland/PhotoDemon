@@ -5,10 +5,10 @@ Begin VB.Form dialog_UnsavedChanges
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Unsaved Changes"
-   ClientHeight    =   4590
-   ClientLeft      =   45
+   ClientHeight    =   4592
+   ClientLeft      =   42
    ClientTop       =   315
-   ClientWidth     =   9360
+   ClientWidth     =   9366
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -21,9 +21,9 @@ Begin VB.Form dialog_UnsavedChanges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   306
+   ScaleHeight     =   656
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   624
+   ScaleWidth      =   1338
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "Cancel, and return to editing"
@@ -58,8 +58,8 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   2
       Top             =   4005
       Width           =   4875
-      _ExtentX        =   8599
-      _ExtentY        =   847
+      _ExtentX        =   8758
+      _ExtentY        =   820
       Caption         =   "Repeat this action for all unsaved images (X in total)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -87,9 +87,9 @@ Begin VB.Form dialog_UnsavedChanges
       ForeColor       =   &H80000008&
       Height          =   3495
       Left            =   120
-      ScaleHeight     =   231
+      ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   231
+      ScaleWidth      =   497
       TabIndex        =   0
       Top             =   120
       Width           =   3495
@@ -174,9 +174,9 @@ Public Sub showDialog(ByRef ownerForm As Form)
     ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
     Set cImgCtl = New clsControlImage
     With cImgCtl
-        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGSAVE", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGDONTSAVE", "CUSTOM"), 32, 32
-        .LoadImageFromStream cmdAnswer(2).hWnd, LoadResData("LRGUNDO", "CUSTOM"), 32, 32
+        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGSAVE", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGDONTSAVE", "CUSTOM"), fixDPI(32), fixDPI(32)
+        .LoadImageFromStream cmdAnswer(2).hWnd, LoadResData("LRGUNDO", "CUSTOM"), fixDPI(32), fixDPI(32)
         
         For i = 0 To 2
             .SetMargins cmdAnswer(i).hWnd, 10

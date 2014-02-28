@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.UserControl jcbutton 
    AutoRedraw      =   -1  'True
-   ClientHeight    =   375
+   ClientHeight    =   378
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   1335
+   ClientWidth     =   1337
    ClipControls    =   0   'False
    DefaultCancel   =   -1  'True
    BeginProperty Font 
@@ -16,9 +16,9 @@ Begin VB.UserControl jcbutton
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   25
+   ScaleHeight     =   54
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   89
+   ScaleWidth      =   191
    ToolboxBitmap   =   "jcButton.ctx":0000
 End
 Attribute VB_Name = "jcbutton"
@@ -767,8 +767,8 @@ Dim a1               As Long
 
     srcDC = CreateCompatibleDC(hDC)
 
-    If DstW < 0 Then DstW = UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode)
-    If DstH < 0 Then DstH = UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode)
+    If DstW < 0 Then DstW = fixDPI(UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode))
+    If DstH < 0 Then DstH = fixDPI(UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode))
 
     If SrcPic.Type = vbPicTypeBitmap Then 'check if it's an icon or a bitmap
         tObj = SelectObject(srcDC, SrcPic)
@@ -940,9 +940,14 @@ Dim a1               As Long
 
     srcDC = CreateCompatibleDC(hDC)
 
-    If DstW < 0 Then DstW = UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode)
-    If DstH < 0 Then DstH = UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode)
+    If DstW < 0 Then DstW = fixDPI(UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode))
+    If DstH < 0 Then DstH = fixDPI(UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode))
 
+    'Edit by Tanner: use GDI+ for resizing the image to account for DPI!
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.CreateFromPicture SrcPic
+    
     tObj = SelectObject(srcDC, SrcPic)
 
     TmpDC = CreateCompatibleDC(srcDC)
@@ -963,9 +968,20 @@ Dim a1               As Long
     End With
     ReDim DataDest(Info.bmiHeader.biSizeImage - 1)
     ReDim DataSrc(UBound(DataDest))
-
+    
+    
+    
+    Dim dstDIB As pdDIB
+    Set dstDIB = New pdDIB
+    dstDIB.createBlank DstW, DstH, 32, RGB(127, 127, 127)
+    
+    GDIPlusResizeDIB dstDIB, 0, 0, DstW, DstH, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    
     BitBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, vbSrcCopy
-    BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
+    'StretchBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode), UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode), vbSrcCopy
+    'BitBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, vbSrcCopy
+    'StretchBlt Sr2DC, 0, 0, DstW, DstH, srcDC, 0, 0, UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode), UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode), vbSrcCopy
+    BitBlt Sr2DC, 0, 0, DstW, DstH, dstDIB.getDIBDC, 0, 0, vbSrcCopy
     GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
     GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
 
@@ -1390,8 +1406,8 @@ Dim lShadowClr       As Long
     End If
 
     ' --Adjust Picture Sizes
-    picH = ScaleX(tmppic.Height, vbHiMetric, vbPixels)
-    PicW = ScaleX(tmppic.Width, vbHiMetric, vbPixels)
+    picH = fixDPI(ScaleX(tmppic.Height, vbHiMetric, vbPixels))
+    PicW = fixDPI(ScaleX(tmppic.Width, vbHiMetric, vbPixels))
 
     ' --Get the drawing area of caption
     If m_DropDownSymbol <> ebsNone Or m_bDropDownSep Then
