@@ -3,10 +3,10 @@ Begin VB.Form FormMain
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   10455
-   ClientLeft      =   225
-   ClientTop       =   855
-   ClientWidth     =   17205
+   ClientHeight    =   6923
+   ClientLeft      =   77
+   ClientTop       =   693
+   ClientWidth     =   12271
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,9 +20,9 @@ Begin VB.Form FormMain
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   697
+   ScaleHeight     =   989
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1147
+   ScaleWidth      =   1753
    StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdCanvas mainCanvas 
       Height          =   3735
@@ -37,21 +37,21 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
+      _ExtentX        =   595
+      _ExtentY        =   529
       Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
-      Left            =   120
+      Left            =   119
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _ExtentX        =   423
+      _ExtentY        =   423
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
-      Left            =   960
-      Top             =   360
-      _ExtentX        =   635
-      _ExtentY        =   635
+      Left            =   959
+      Top             =   357
+      _ExtentX        =   675
+      _ExtentY        =   675
       PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
@@ -1153,6 +1153,9 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+
+
 'When the main form is resized, we must re-align the main canvas
 Private Sub Form_Resize()
 
@@ -1170,7 +1173,9 @@ Public Sub refreshAllCanvases()
     Dim mainRect As winRect
     
     g_WindowManager.getActualMainFormClientRect mainRect, False, False
-    mainCanvas(0).Move mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1
+    
+    'mainCanvas(0).Move mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1
+    MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
     mainCanvas(0).fixChromeLayout
     
     'Refresh any current windows
