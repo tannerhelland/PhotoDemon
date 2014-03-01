@@ -3,10 +3,10 @@ Begin VB.UserControl pdCanvas
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000003&
-   ClientHeight    =   7695
+   ClientHeight    =   7693
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   13290
+   ClientWidth     =   13293
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,9 +18,9 @@ Begin VB.UserControl pdCanvas
    EndProperty
    ForeColor       =   &H8000000D&
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   513
+   ScaleHeight     =   1099
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   886
+   ScaleWidth      =   1899
    Begin VB.PictureBox picProgressBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -28,9 +28,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   0
-      ScaleHeight     =   17
+      ScaleHeight     =   36
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   886
+      ScaleWidth      =   1899
       TabIndex        =   6
       Top             =   7095
       Visible         =   0   'False
@@ -42,9 +42,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H80000008&
       Height          =   5415
       Left            =   5520
-      ScaleHeight     =   361
+      ScaleHeight     =   774
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   17
+      ScaleWidth      =   36
       TabIndex        =   5
       Top             =   480
       Visible         =   0   'False
@@ -56,9 +56,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   120
-      ScaleHeight     =   17
+      ScaleHeight     =   36
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   361
+      ScaleWidth      =   774
       TabIndex        =   4
       Top             =   5880
       Visible         =   0   'False
@@ -73,9 +73,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H00808080&
       Height          =   345
       Left            =   0
-      ScaleHeight     =   23
+      ScaleHeight     =   49
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   886
+      ScaleWidth      =   1899
       TabIndex        =   0
       Top             =   7350
       Width           =   13290
@@ -1192,6 +1192,11 @@ Private Sub HScroll_Scroll()
 End Sub
 
 Private Sub UserControl_Resize()
+
+    'Center all combo boxes vertically (this is necessary for high-DPI displays)
+    cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
+    cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
+
     fixChromeLayout
 End Sub
 
@@ -1228,6 +1233,13 @@ Private Sub UserControl_Show()
         cmbSizeUnit.AddItem g_Language.TranslateMessage(" in"), 1
         cmbSizeUnit.AddItem g_Language.TranslateMessage(" cm"), 2
         cmbSizeUnit.ListIndex = 0
+        
+        'Make all status bar lines a proper height (again, necessary on high-DPI displays)
+        Dim i As Long
+        For i = 0 To lineStatusBar.Count - 1
+            lineStatusBar(i).y1 = fixDPI(1)
+            lineStatusBar(i).y2 = picStatusBar.ScaleHeight - fixDPI(1)
+        Next i
         
     End If
     
@@ -1363,14 +1375,18 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
     'If no images are loaded, do not draw status bar icons.
     If enabledState Then
         
+        'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
+        ' on high-DPI displays)
         lineStatusBar(0).Visible = True
+        lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + fixDPI(6)
+        lineStatusBar(0).x2 = lineStatusBar(0).x1
         
         'Start with the "image size" icon
-        sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4)
+        sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconSize.getDIBWidth), fixDPI(sbIconSize.getDIBHeight)
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by 16 px for the icon,
         ' plus a 5px buffer on either size (contingent on DPI)
-        lblImgSize.Left = lineStatusBar(0).x1 + fixDPI(14) + 16
+        lblImgSize.Left = lineStatusBar(0).x1 + fixDPI(14) + fixDPI(16)
         
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
         ' separator just past it.
@@ -1382,8 +1398,8 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(1).x2 = lineStatusBar(1).x1
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
-        sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + fixDPI(8), fixDPI(4)
-        lblCoordinates.Left = lineStatusBar(1).x1 + fixDPI(14) + 16
+        sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconCoords.getDIBWidth), fixDPI(sbIconCoords.getDIBHeight)
+        lblCoordinates.Left = lineStatusBar(1).x1 + fixDPI(14) + fixDPI(16)
         
         If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
         lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.Width + fixDPI(10)
