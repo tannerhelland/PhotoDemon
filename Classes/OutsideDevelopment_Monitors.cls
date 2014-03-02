@@ -103,6 +103,12 @@ Private Declare Function EnumDisplayDevices Lib "user32" _
    
 Private Const DD_PRIMARY_DEVICE As Long = &H4
 
+'MORE ADDITIONS BY TANNER: we can use the registry to retrieve a monitor's EDID value, which in turn can be used to
+' retrieve things like physical dimensions.
+Private Declare Function RegOpenKeyEx Lib "advapi32" Alias "RegOpenKeyExA" (ByVal hKey As Long, ByVal lpSubKey As String, ByVal ulOptions As Long, ByVal samDesired As Long, ByRef phkResult As Long) As Long
+Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExA" (ByVal hKey As Long, ByVal lpszValueName As String, ByVal lpReserved As Long, ByRef lpType As Long, ByRef lpData As Any, ByRef lpcbData As Long) As Long
+
+
 '==================================================================================================
 'Public Members
 '==================================================================================================
@@ -118,9 +124,9 @@ Private Sub Class_Initialize()
             
         For i = 1 To Monitors.Count
             If Monitors(i).isPrimary Then
-                Debug.Print "Found primary monitor: " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
+                Debug.Print "Found primary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
             Else
-                Debug.Print "Found secondary monitor: " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
+                Debug.Print "Found secondary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
         End If
         Next i
         
@@ -288,6 +294,7 @@ Public Sub Refresh()
     lMonitors = GetSystemMetrics(SM_CMONITORS)
     
     If lMonitors = 0 Then
+    
         'Non multimonitor OS, just do the screen size
         ClearMonitorsCollection
         Set cMonitor = New clsMonitor
@@ -381,6 +388,7 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
     'Enumerate display devices until we find one that matches this monitor
     Dim displayCount As Long
     displayCount = 0
+    
     Do While EnumDisplayDevices(0&, displayCount, monitorInfoDetailed, 0&)
     
         'A match was found; retrieve the display driver's description
@@ -404,6 +412,44 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
     'Repeat the call a second time, providing the monitor's name, in order to receive even *more* information
     If EnumDisplayDevices(cMon.Name, 0, monitorInfoDetailed, 1&) <> 0 Then
         cMon.friendlyName = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
+        
+        'If we have not yet retrieved an EDID value for this monitor, attempt to do so now
+        If Not cMon.hasEDID Then
+        
+            'We can also retrieve a DeviceID from this second instance, which in turn can be translated to a registry path
+            ' containing the monitor's EDID (which contains a *wealth* of information)
+            Dim devID As String
+            devID = TrimNull(StrConv(monitorInfoDetailed.DeviceID, vbUnicode))
+            
+            'If successful, the EDID contents will be saved to this byte array
+            Dim edidArray() As Byte
+            
+            'If a device ID was successfully retrieved (this should always happen), attempt to retrieve a matching EDID
+            If Len(devID) > 0 Then
+            
+                'Convert the device ID to a registry path
+                Dim regPath As String, tmpStringArray() As String
+                tmpStringArray = Split(devID, "#")
+                regPath = "System\CurrentControlSet\Enum\Display\" & tmpStringArray(1) & "\" & tmpStringArray(2) & "\Device Parameters"
+                
+                'Using that path, retrieve this monitor's EDID from the registry
+                Dim regSuccess As Long
+                
+                regSuccess = retrieveEDIDFromRegistry(edidArray, regPath)
+                
+                'If successful, copy the contents of the EDID array into this monitor object.
+                If regSuccess = 0 Then
+                    cMon.setEDID edidArray
+                Else
+                    cMon.setEDID edidArray, True
+                End If
+                
+            Else
+                cMon.setEDID edidArray, True
+            End If
+        
+        End If
+        
     End If
         
     GetMonitorInformation = lReturn
@@ -429,3 +475,68 @@ Private Sub ClearMonitorsCollection()
     Next
 End Sub
 
+'Given a registry path (created from a monitor's device ID), retrieve the corresponding EDID value.  If the EDID is found, this
+' will return 0, otherwise it will return the registry API's error code (or 13 if a non-specific error occurred).
+Private Function retrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal registryPath As String) As Long
+
+    On Error GoTo registryFetchError
+
+    'Make sure the array has been dimensioned at least once; that way, even if this function fails, the caller will not
+    ' experience OOB errors.
+    ReDim dstArray(0) As Byte
+
+    'EDID data is stored in the local machine branch; note that WRITING values here requires admin access, but QUERYING does not.
+    ' (we will only be querying)
+    Const HKEY_LOCAL_MACHINE As Long = &H80000002
+    
+    'To avoid UAC, we must only use QUERY access rights
+    Const KEY_QUERY_VALUE As Long = &H1
+
+    Dim successCheck As Long
+    
+    'Before we can retrieve the EDID, we first have to open its registry key.  Get a handle to the key (if possible).
+    Dim regHandle As Long
+    successCheck = RegOpenKeyEx(HKEY_LOCAL_MACHINE, registryPath, 0&, KEY_QUERY_VALUE, regHandle)
+    
+    'The registry key was opened successfully.  Use it to query the actual value at that location.
+    If (successCheck = 0) And (regHandle <> 0) Then
+    
+        'EDIDs are always stored as BINARY type
+        Const REG_BINARY As Long = 3
+        
+        'Before retrieving the array itself, we need to find out its size.
+        Dim edidSize As Long
+        successCheck = RegQueryValueEx(regHandle, "EDID", 0&, REG_BINARY, ByVal 0&, edidSize)
+
+        'Size was retrieved successfully.  Dimension the array and receive the EDID data.
+        If (successCheck = 0) And (edidSize > 0) Then
+        
+            ReDim dstArray(0 To edidSize - 1) As Byte
+            successCheck = RegQueryValueEx(regHandle, "EDID", 0&, REG_BINARY, dstArray(0), edidSize)
+            
+        Else
+        
+            'If the key was queried successfully but the EDID size was 0 (note: this should never happen), return
+            ' an arbitrary failure number.
+            If successCheck = 0 Then successCheck = 13
+            
+        End If
+    
+    'Couldn't open the registry key.  Exit.
+    Else
+    
+        'If the registry key opened successfully but something else went wrong, assign an arbitrary failure number
+        If successCheck = 0 Then successCheck = 13
+            
+    End If
+    
+    retrieveEDIDFromRegistry = successCheck
+    
+    Exit Function
+    
+registryFetchError:
+
+    'Return the API fail state, or an arbitrary number if no fail state occurred but something else went wrong
+    If successCheck <> 0 Then retrieveEDIDFromRegistry = successCheck Else retrieveEDIDFromRegistry = 13
+
+End Function
