@@ -44,8 +44,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   119
       Top             =   840
-      _ExtentX        =   423
-      _ExtentY        =   423
+      _ExtentX        =   450
+      _ExtentY        =   450
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   959
@@ -1546,10 +1546,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Store the main window's location to file now.  We will use this in the future to determine which monitor
     ' to display the splash screen on
     g_UserPreferences.SetPref_Long "Core", "Last Window State", Me.WindowState
-    g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / Screen.TwipsPerPixelX
-    g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / Screen.TwipsPerPixelY
-    g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / Screen.TwipsPerPixelX
-    g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPref_Long "Core", "Last Window Left", Me.Left / TwipsPerPixelXFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Top", Me.Top / TwipsPerPixelYFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Width", Me.Width / TwipsPerPixelXFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Height", Me.Height / TwipsPerPixelYFix
     
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
     g_ProgramShuttingDown = True

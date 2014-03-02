@@ -404,7 +404,7 @@ Private Sub Form_Load()
         Me.ScaleMode = vbPixels
         
         'Resize the form to match
-        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + fixDPI(24)) * Screen.TwipsPerPixelY
+        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + fixDPI(24)) * TwipsPerPixelYFix
         
     End If
     

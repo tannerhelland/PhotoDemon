@@ -210,8 +210,8 @@ Public Sub restoreMainWindowLocation()
             
         lWindowLeft = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
         lWindowTop = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
-        FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX
-        FormMain.Top = lWindowTop * Screen.TwipsPerPixelY
+        FormMain.Left = lWindowLeft * TwipsPerPixelXFix
+        FormMain.Top = lWindowTop * TwipsPerPixelYFix
         FormMain.WindowState = vbMaximized
         
     'If the window state is normal, attempt to restore the last-used values
@@ -245,10 +245,10 @@ Public Sub restoreMainWindowLocation()
             'If lWindowHeight < 200 Then lWindowHeight = 200
                 
             'With all values now set to guaranteed-safe values, set the main window's location
-            FormMain.Left = lWindowLeft * Screen.TwipsPerPixelX
-            FormMain.Top = lWindowTop * Screen.TwipsPerPixelY
-            FormMain.Width = lWindowWidth * Screen.TwipsPerPixelX
-            FormMain.Height = lWindowHeight * Screen.TwipsPerPixelY
+            FormMain.Left = lWindowLeft * TwipsPerPixelXFix
+            FormMain.Top = lWindowTop * TwipsPerPixelYFix
+            FormMain.Width = lWindowWidth * TwipsPerPixelXFix
+            FormMain.Height = lWindowHeight * TwipsPerPixelYFix
             
         End If
             
@@ -257,10 +257,10 @@ Public Sub restoreMainWindowLocation()
         
     'Store the current window location to file (in case it hasn't been saved before, or we had to move it from
     ' an unavailable monitor to an available one)
-    g_UserPreferences.SetPref_Long "Core", "Last Window Left", FormMain.Left / Screen.TwipsPerPixelX
-    g_UserPreferences.SetPref_Long "Core", "Last Window Top", FormMain.Top / Screen.TwipsPerPixelY
-    g_UserPreferences.SetPref_Long "Core", "Last Window Width", FormMain.Width / Screen.TwipsPerPixelX
-    g_UserPreferences.SetPref_Long "Core", "Last Window Height", FormMain.Height / Screen.TwipsPerPixelY
+    g_UserPreferences.SetPref_Long "Core", "Last Window Left", FormMain.Left / TwipsPerPixelXFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Top", FormMain.Top / TwipsPerPixelYFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Width", FormMain.Width / TwipsPerPixelXFix
+    g_UserPreferences.SetPref_Long "Core", "Last Window Height", FormMain.Height / TwipsPerPixelYFix
     
 End Sub
 

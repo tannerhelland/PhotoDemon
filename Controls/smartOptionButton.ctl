@@ -3,10 +3,10 @@ Begin VB.UserControl smartOptionButton
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
-   ClientHeight    =   390
+   ClientHeight    =   392
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   3270
+   ClientWidth     =   3269
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -19,9 +19,9 @@ Begin VB.UserControl smartOptionButton
    EndProperty
    ForeColor       =   &H00404040&
    MousePointer    =   99  'Custom
-   ScaleHeight     =   26
+   ScaleHeight     =   56
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   218
+   ScaleWidth      =   467
    ToolboxBitmap   =   "smartOptionButton.ctx":0000
    Begin VB.CheckBox chkFirst 
       Appearance      =   0  'Flat
@@ -140,12 +140,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
-    UserControl.Enabled = NewValue
-    optButton.Enabled = NewValue
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    optButton.Enabled = newValue
     
     'Also change the label color to help indicate disablement
-    If NewValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
+    If newValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
     PropertyChanged "Enabled"
 End Property
 
@@ -180,8 +180,8 @@ Attribute Value.VB_UserMemId = 0
     Value = optButton.Value
 End Property
 
-Public Property Let Value(ByVal NewValue As Boolean)
-    optButton.Value = NewValue
+Public Property Let Value(ByVal newValue As Boolean)
+    optButton.Value = newValue
     updateValue
     PropertyChanged "Value"
     If Value Then
@@ -234,7 +234,7 @@ End Sub
 ' the control is set to TRUE, there is no need for a focus rectangle.  But if it isn't TRUE, the focus rectangle makes
 ' sense, because the user needs to be notified what control will be toggled.
 
-'UPDATE 27 Aug 2014 - I am disabling focus rendering until I can solve why VB doesn't generate Enter and ExitFocus
+'UPDATE 27 Aug 2013 - I am disabling focus rendering until I can solve why VB doesn't generate Enter and ExitFocus
 ' events correctly.  The focus rectangle is being drawn randomly and not removed, and it's driving me nuts...
 Private Sub UserControl_EnterFocus()
     'If Not g_IsProgramCompiled Then lblCaption.Font.Underline = True
@@ -351,8 +351,8 @@ Private Sub updateControlSize()
     'Force the height to match that of the label
     Dim fontModifier As Long
     If (g_UseFancyFonts And g_IsProgramCompiled) Then fontModifier = fixDPI(1) Else fontModifier = fixDPI(4)
-    UserControl.Height = (lblCaption.Height + lblCaption.Top * 2 + fontModifier) * Screen.TwipsPerPixelY
-    UserControl.Width = (lblCaption.Left + lblCaption.Width + fixDPI(2)) * Screen.TwipsPerPixelX
+    UserControl.Height = (lblCaption.Height + lblCaption.Top * 2 + fontModifier) * TwipsPerPixelYFix
+    UserControl.Width = (lblCaption.Left + lblCaption.Width + fixDPI(2)) * TwipsPerPixelXFix
     
     'Center the option button vertically
     optButton.Top = (UserControl.ScaleHeight - optButton.Height) \ 2
