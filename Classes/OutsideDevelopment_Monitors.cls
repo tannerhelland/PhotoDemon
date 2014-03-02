@@ -137,11 +137,11 @@ Public Property Get DesktopTop() As Long
 End Property
 
 Public Property Get DesktopWidth() As Long
-    DesktopWidth = GetSystemMetrics2(SM_CXVIRTUALSCREEN, Screen.Width \ Screen.TwipsPerPixelX)
+    DesktopWidth = GetSystemMetrics2(SM_CXVIRTUALSCREEN, Screen.Width \ TwipsPerPixelXFix)
 End Property
 
 Public Property Get DesktopHeight() As Long
-    DesktopHeight = GetSystemMetrics2(SM_CYVIRTUALSCREEN, Screen.Height \ Screen.TwipsPerPixelY)
+    DesktopHeight = GetSystemMetrics2(SM_CYVIRTUALSCREEN, Screen.Height \ TwipsPerPixelYFix)
 End Property
 
 Public Function GetMonitorFromWindow(hWnd As Long, dwFlags As Long) As Long
@@ -226,9 +226,9 @@ Public Function CenterFormOnMonitor(FormToCenter As Form, Optional ReferenceForm
         'If the Call does not fail then center the form over that monitor
         If lReturn Then
             With monitorInfo
-                lMonitorWidth = (.rcWork.Right - .rcWork.Left) * Screen.TwipsPerPixelX
-                lMonitorHeight = (.rcWork.Bottom - .rcWork.Top) * Screen.TwipsPerPixelY
-                FormToCenter.Move ((lMonitorWidth - FormToCenter.Width) \ 2) + .rcMonitor.Left * Screen.TwipsPerPixelX, ((lMonitorHeight - FormToCenter.Height) \ 2) + monitorInfo.rcMonitor.Top * Screen.TwipsPerPixelX
+                lMonitorWidth = (.rcWork.Right - .rcWork.Left) * TwipsPerPixelXFix
+                lMonitorHeight = (.rcWork.Bottom - .rcWork.Top) * TwipsPerPixelYFix
+                FormToCenter.Move ((lMonitorWidth - FormToCenter.Width) \ 2) + .rcMonitor.Left * TwipsPerPixelXFix, ((lMonitorHeight - FormToCenter.Height) \ 2) + monitorInfo.rcMonitor.Top * TwipsPerPixelXFix
             End With
         End If
     Else
@@ -293,9 +293,9 @@ Public Sub Refresh()
         Set cMonitor = New clsMonitor
         With cMonitor
             .Handle = 0
-            .Bottom = Screen.Height \ Screen.TwipsPerPixelY
+            .Bottom = Screen.Height \ TwipsPerPixelYFix
             .Left = 0
-            .Right = Screen.Width \ Screen.TwipsPerPixelX
+            .Right = Screen.Width \ TwipsPerPixelXFix
             .Top = 0
             .WorkBottom = .Bottom
             .WorkLeft = 0

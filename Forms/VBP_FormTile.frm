@@ -4,10 +4,10 @@ Begin VB.Form FormTile
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   6525
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   11595
+   ClientHeight    =   6524
+   ClientLeft      =   -14
+   ClientTop       =   224
+   ClientWidth     =   11592
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,19 +20,19 @@ Begin VB.Form FormTile
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   435
+   ScaleHeight     =   932
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   773
+   ScaleWidth      =   1656
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
-      Height          =   750
+      Height          =   805
       Left            =   0
       TabIndex        =   0
-      Top             =   5775
-      Width           =   11595
+      Top             =   5719
+      Width           =   11592
       _ExtentX        =   20452
-      _ExtentY        =   1323
+      _ExtentY        =   1416
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -298,8 +298,8 @@ Private Sub cboTarget_Click()
             
             'Determine the current screen size, in pixels; this is used to provide a "render to screen size" option
             Dim cScreenWidth As Long, cScreenHeight As Long
-            cScreenWidth = Screen.Width / Screen.TwipsPerPixelX
-            cScreenHeight = Screen.Height / Screen.TwipsPerPixelY
+            cScreenWidth = Screen.Width / TwipsPerPixelXFix
+            cScreenHeight = Screen.Height / TwipsPerPixelYFix
             
             'Add one to the displayed width and height, since we store them -1 for loops
             tudWidth.Value = cScreenWidth
@@ -384,8 +384,8 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     Select Case tType
         Case 0
             'Current wallpaper size
-            targetWidth = Screen.Width / Screen.TwipsPerPixelX
-            targetHeight = Screen.Height / Screen.TwipsPerPixelY
+            targetWidth = Screen.Width / TwipsPerPixelXFix
+            targetHeight = Screen.Height / TwipsPerPixelYFix
         Case 1
             'Custom size
             targetWidth = xTarget

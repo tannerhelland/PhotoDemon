@@ -3,17 +3,17 @@ Begin VB.UserControl bluDownload
    Appearance      =   0  'Flat
    BackColor       =   &H00FFAF00&
    CanGetFocus     =   0   'False
-   ClientHeight    =   480
+   ClientHeight    =   483
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   480
+   ClientWidth     =   483
    ClipBehavior    =   0  'None
    ClipControls    =   0   'False
    HasDC           =   0   'False
    HitBehavior     =   0  'None
    InvisibleAtRuntime=   -1  'True
-   ScaleHeight     =   480
-   ScaleWidth      =   480
+   ScaleHeight     =   483
+   ScaleWidth      =   483
    ToolboxBitmap   =   "bluDownload.ctx":0000
    Windowless      =   -1  'True
    Begin VB.Image imgIcon 
@@ -131,8 +131,8 @@ End Sub
 Private Sub UserControl_Resize()
     
     'You can't resize this control, it just appears as a box
-    UserControl.Width = 32 * Screen.TwipsPerPixelX
-    UserControl.Height = 32 * Screen.TwipsPerPixelY
+    UserControl.Width = 32 * TwipsPerPixelXFix
+    UserControl.Height = 32 * TwipsPerPixelYFix
     UserControl.imgIcon.Width = UserControl.ScaleWidth
     UserControl.imgIcon.Height = UserControl.ScaleHeight
     

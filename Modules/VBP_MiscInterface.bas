@@ -728,7 +728,7 @@ Public Function fixDPI(ByVal pxMeasurement As Long) As Long
     If dpiRatio = 0# Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        dpiRatio = 1440 / Screen.TwipsPerPixelX
+        dpiRatio = 1440 / TwipsPerPixelXFix
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
@@ -746,7 +746,7 @@ Public Function fixDPIFloat(ByVal pxMeasurement As Long) As Double
     If dpiRatio = 0# Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        dpiRatio = 1440 / Screen.TwipsPerPixelX
+        dpiRatio = 1440 / TwipsPerPixelXFix
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
@@ -756,6 +756,30 @@ Public Function fixDPIFloat(ByVal pxMeasurement As Long) As Double
     
     fixDPIFloat = dpiRatio * CDbl(pxMeasurement)
     
+End Function
+
+'Fun fact: there are 15 twips per pixel at 96 DPI.  Not fun fact: at 200% DPI (e.g. 192 DPI), VB's internal
+' TwipsPerPixelXFix will return 7, when actually we need the value 7.5.  This causes problems when resizing
+' certain controls (like SmartCheckBox) because the size will actually come up short due to rounding errors!
+' So whenever TwipsPerPixelXFix/Y is required, use these functions instead.
+Public Function TwipsPerPixelXFix() As Double
+
+    If Screen.TwipsPerPixelX = 7 Then
+        TwipsPerPixelXFix = 7.5
+    Else
+        TwipsPerPixelXFix = Screen.TwipsPerPixelX
+    End If
+
+End Function
+
+Public Function TwipsPerPixelYFix() As Double
+
+    If Screen.TwipsPerPixelY = 7 Then
+        TwipsPerPixelYFix = 7.5
+    Else
+        TwipsPerPixelYFix = Screen.TwipsPerPixelY
+    End If
+
 End Function
 
 Public Sub displayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)

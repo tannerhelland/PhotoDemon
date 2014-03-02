@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.UserControl smartCheckBox 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
-   ClientHeight    =   375
+   ClientHeight    =   378
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   2520
@@ -17,9 +17,9 @@ Begin VB.UserControl smartCheckBox
       Strikethrough   =   0   'False
    EndProperty
    MousePointer    =   99  'Custom
-   ScaleHeight     =   25
+   ScaleHeight     =   54
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   168
+   ScaleWidth      =   360
    ToolboxBitmap   =   "smartCheckBox.ctx":0000
    Begin VB.CheckBox chkBox 
       Appearance      =   0  'Flat
@@ -107,12 +107,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
-    UserControl.Enabled = NewValue
-    chkBox.Enabled = NewValue
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    chkBox.Enabled = newValue
     
     'Also change the label color to help indicate disablement
-    If NewValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
+    If newValue Then lblCaption.ForeColor = origForecolor Else lblCaption.ForeColor = vbGrayText
     PropertyChanged "Enabled"
 End Property
 
@@ -162,8 +162,8 @@ Attribute Value.VB_UserMemId = 0
     Value = chkBox.Value
 End Property
 
-Public Property Let Value(ByVal NewValue As CheckBoxConstants)
-    chkBox.Value = NewValue
+Public Property Let Value(ByVal newValue As CheckBoxConstants)
+    chkBox.Value = newValue
     PropertyChanged "Value"
     RaiseEvent Click
 End Property
@@ -287,10 +287,10 @@ Private Sub updateControlSize()
 
     'Force the height to match that of the label
     Dim newHeight As Long
-    newHeight = (lblCaption.Height * 2) '* Screen.TwipsPerPixelY
+    newHeight = (lblCaption.Height * 2) '* TwipsPerPixelYFix
     If newHeight < chkBox.Height Then newHeight = chkBox.Height
-    UserControl.Height = newHeight * Screen.TwipsPerPixelY
-    UserControl.Width = (lblCaption.Left + lblCaption.Width + fixDPI(2)) * Screen.TwipsPerPixelX
+    UserControl.Height = newHeight * TwipsPerPixelYFix
+    UserControl.Width = (lblCaption.Left + lblCaption.Width + fixDPI(2)) * TwipsPerPixelXFix
     
     'Center the option button vertically
     Dim hModifier As Long
