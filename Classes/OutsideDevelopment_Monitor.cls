@@ -55,7 +55,7 @@ Private m_Description   As String
 
 'Addition by Tanner: EDID-based properties.  This is the only way I know to retrieve actual monitor size, and it's great
 ' for retrieving other detailed monitor info.  The way I've implemented it at present is to simply pass the EDID
-' (if found) at creation time.  The setEDID function handles all parsing duties, and a copy of the EDID is stored
+' (if found) at creation time.  The setEDID function handles all parsing duties, and a copy of the full EDID is stored
 ' "just in case".
 Private m_hasEDID As Boolean
 Private m_EDID() As Byte
@@ -64,16 +64,43 @@ Private m_EDIDHeightMM As Long
 Private m_EDIDWidthInches As Double
 Private m_EDIDHeightInches As Double
 Private m_EDIDDiagonalInches As Double
+Private m_EDIDModelName As String
+Private m_EDIDSerialNumber As String
+Private m_EDIDNativeResH As Long
+Private m_EDIDNativeResV As Long
 
 Private m_Primary As Boolean
 
-'Retrieve the monitors size, as a string (useful for displaying to the user)
+'Retrieve the best available name for this monitor.  If available, an EDID model name will be used.  If that doesn't
+' exist, we'll use the Windows fallback (which is often something dumb like "Generic PnP Monitor").
+Public Function getBestMonitorName() As String
+    
+    If Len(m_EDIDModelName) > 0 Then
+        getBestMonitorName = m_EDIDModelName
+    Else
+        getBestMonitorName = m_FriendlyName
+    End If
+    
+End Function
+
+'Retrieve the monitor's size, as a string (useful for displaying to the user)
 Public Function getMonitorSizeAsString() As String
 
     If m_hasEDID Then
         getMonitorSizeAsString = Format(m_EDIDDiagonalInches, "#0.0") & """"
     Else
         getMonitorSizeAsString = ""
+    End If
+
+End Function
+
+'Retrieve the monitor's native resolution, as a string (useful for displaying to the user)
+Public Function getMonitorResolutionAsString() As String
+
+    If m_hasEDID Then
+        getMonitorResolutionAsString = m_EDIDNativeResH & "x" & m_EDIDNativeResV
+    Else
+        getMonitorResolutionAsString = ""
     End If
 
 End Function
@@ -107,7 +134,7 @@ Public Sub setEDID(edidArray() As Byte, Optional ByVal noEDIDFound As Boolean = 
     
     'With the EDID successfully retrieved, parse it for useful values.
     
-    'Start with the monitor's physical dimensions, specifically the monitor's physical size in MM.
+    'Start with the monitor's physical dimensions, specifically the monitor's physical size (in mm).
     m_EDIDWidthMM = ((m_EDID(68) And &HF0) * 16) + m_EDID(66)
     m_EDIDHeightMM = ((m_EDID(68) And &HF) * 256) + m_EDID(67)
     
@@ -116,42 +143,76 @@ Public Sub setEDID(edidArray() As Byte, Optional ByVal noEDIDFound As Boolean = 
     m_EDIDHeightInches = (m_EDIDHeightMM / 25.4)
     m_EDIDDiagonalInches = Sqr(m_EDIDWidthInches * m_EDIDWidthInches + m_EDIDHeightInches * m_EDIDHeightInches)
     
-    'Debug.Print m_EDIDWidthInches, m_EDIDHeightInches, m_EDIDDiagonalInches
+    'Next, retrieve the monitor's native resolution.  Note that this is only ACTIVE pixels.  CRT monitors may also
+    ' include blanking and/or border pixels; these are not retrieved.
+    m_EDIDNativeResH = ((m_EDID(58) And &HF0) * 16) + m_EDID(56)
+    m_EDIDNativeResV = ((m_EDID(61) And &HF0) * 16) + m_EDID(59)
     
-    'Next, we will try to retrieve a monitor name.  Monitor name is an optional descriptor (but provided 99.9% of the time) in one of the
-    ' four VESA Descriptor blocks of the EDID.  Those descriptor blocks are found in locations:
-    ' 54–71, 72–89, 90–107, 108–125
+    'Next, we will try to retrieve a monitor name.  Monitor name is an optional descriptor (but provided 99.9% of the
+    ' time) found in one of the four VESA Descriptor blocks of the EDID.  Those descriptor blocks are found in
+    ' locations: 54–71, 72–89, 90–107, 108–125.
     ' Location of the name is not guaranteed in advance, so each block must be parsed individually until found.
     
-'    Dim descriptorText As String
-'    descriptorText = ""
-'
-'    For i = 54 To 71
-'        descriptorText = descriptorText & Chr(m_EDID(i))
-'    Next i
-'
-'    Debug.Print "Descriptor 1: " & descriptorText
-'
-'    descriptorText = ""
-'    For i = 72 To 89
-'        descriptorText = descriptorText & Chr(m_EDID(i))
-'    Next i
-'
-'    Debug.Print "Descriptor 2: " & descriptorText
-'
-'    descriptorText = ""
-'    For i = 90 To 107
-'        descriptorText = descriptorText & Chr(m_EDID(i))
-'    Next i
-'
-'    Debug.Print "Descriptor 3: " & descriptorText
-'
-'    descriptorText = ""
-'    For i = 108 To 125
-'        descriptorText = descriptorText & Chr(m_EDID(i))
-'    Next i
-'
-'    Debug.Print "Descriptor 4: " & descriptorText
+    Dim descriptorBlock As Long
+    Dim startOffset As Long
+    
+    Dim monName As String, monSerial As String
+    
+    'Search each descriptor block for the "monitor name" identifier
+    For descriptorBlock = 0 To 3
+    
+        'Determine a proper offset based on which descriptor block we're searching
+        Select Case descriptorBlock
+        
+            Case 0
+                startOffset = 54
+            
+            Case 1
+                startOffset = 72
+            
+            Case 2
+                startOffset = 90
+            
+            Case 3
+                startOffset = 108
+        
+        End Select
+        
+        'Check the first three bytes of the descriptor.  These must always be 0 (per the EDID spec); if they aren't,
+        ' this is the primary timing descriptor.
+        If (m_EDID(startOffset) = 0) And (m_EDID(startOffset + 1) = 0) And (m_EDID(startOffset + 2) = 0) Then
+        
+            'This is not the primary timing block.  Look for the #FC identifier in byte 3, which indicates
+            ' a monitor name block.
+            If (m_EDID(startOffset + 3) = &HFC) Then
+            
+                'Retrieve the monitor name and trim any null bytes
+                monName = ""
+                For i = (startOffset + 4) To (startOffset + 17)
+                    If (m_EDID(i) <> 0) And (m_EDID(i) <> Asc(vbLf)) Then monName = monName & Chr(m_EDID(i))
+                Next i
+                
+                'Save the retrieved monitor name in its parent object
+                m_EDIDModelName = Trim$(monName)
+                
+            'Since we're here, grab the serial number too.  This may be helpful as a unique ID for storing
+            ' extra color management data (in the future).
+            ElseIf (m_EDID(startOffset + 3) = &HFF) Then
+            
+                'Retrieve the monitor name and trim any null bytes
+                monSerial = ""
+                For i = (startOffset + 4) To (startOffset + 17)
+                    If (m_EDID(i) <> 0) And (m_EDID(i) <> Asc(vbLf)) Then monSerial = monSerial & Chr(m_EDID(i))
+                Next i
+                
+                'Save the retrieved monitor name in its parent object
+                m_EDIDSerialNumber = Trim$(monSerial)
+            
+            End If
+        
+        End If
+    
+    Next descriptorBlock
     
 End Sub
 

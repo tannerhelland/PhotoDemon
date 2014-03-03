@@ -124,9 +124,9 @@ Private Sub Class_Initialize()
             
         For i = 1 To Monitors.Count
             If Monitors(i).isPrimary Then
-                Debug.Print "Found primary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
+                Debug.Print "Found primary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).getMonitorResolutionAsString & " " & Monitors(i).getBestMonitorName & " (powered by " & Monitors(i).Description & ")"
             Else
-                Debug.Print "Found secondary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).friendlyName & " (" & Monitors(i).Description & ")"
+                Debug.Print "Found secondary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).getMonitorResolutionAsString & " " & Monitors(i).getBestMonitorName & " (powered by " & Monitors(i).Description & ")"
         End If
         Next i
         
