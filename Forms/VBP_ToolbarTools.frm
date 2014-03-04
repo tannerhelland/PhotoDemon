@@ -4,10 +4,10 @@ Begin VB.Form toolbar_Tools
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tools"
-   ClientHeight    =   2355
-   ClientLeft      =   45
+   ClientHeight    =   2352
+   ClientLeft      =   42
    ClientTop       =   315
-   ClientWidth     =   13665
+   ClientWidth     =   13671
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,9 +21,9 @@ Begin VB.Form toolbar_Tools
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   157
+   ScaleHeight     =   336
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   911
+   ScaleWidth      =   1953
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -63,9 +63,9 @@ Begin VB.Form toolbar_Tools
       Height          =   1575
       Index           =   0
       Left            =   15
-      ScaleHeight     =   105
+      ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   918
+      ScaleWidth      =   1967
       TabIndex        =   0
       Top             =   1020
       Visible         =   0   'False
@@ -645,7 +645,12 @@ End Sub
 
 Private Sub Form_Load()
 
-     Dim i As Long
+    Dim i As Long
+    
+    'Because line controls aren't automatically made DPI-aware by VB, we must manually move this dialog's line
+    ' control into place.
+    lineMain(2).y1 = picTools(0).Top - fixDPI(2)
+    lineMain(2).y2 = lineMain(2).y1
     
     'INITIALIZE ALL TOOLS
     
