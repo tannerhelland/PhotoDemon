@@ -3,10 +3,10 @@ Begin VB.UserControl pdCanvas
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000003&
-   ClientHeight    =   7693
+   ClientHeight    =   7695
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   13293
+   ClientWidth     =   13290
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,9 +18,9 @@ Begin VB.UserControl pdCanvas
    EndProperty
    ForeColor       =   &H8000000D&
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   1099
+   ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1899
+   ScaleWidth      =   886
    Begin VB.PictureBox picProgressBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -28,9 +28,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   0
-      ScaleHeight     =   36
+      ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1899
+      ScaleWidth      =   886
       TabIndex        =   6
       Top             =   7095
       Visible         =   0   'False
@@ -42,9 +42,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H80000008&
       Height          =   5415
       Left            =   5520
-      ScaleHeight     =   774
+      ScaleHeight     =   361
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   36
+      ScaleWidth      =   17
       TabIndex        =   5
       Top             =   480
       Visible         =   0   'False
@@ -56,9 +56,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H80000008&
       Height          =   255
       Left            =   120
-      ScaleHeight     =   36
+      ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   774
+      ScaleWidth      =   361
       TabIndex        =   4
       Top             =   5880
       Visible         =   0   'False
@@ -73,9 +73,9 @@ Begin VB.UserControl pdCanvas
       ForeColor       =   &H00808080&
       Height          =   345
       Left            =   0
-      ScaleHeight     =   49
+      ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1899
+      ScaleWidth      =   886
       TabIndex        =   0
       Top             =   7350
       Width           =   13290
@@ -96,34 +96,26 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0004
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom in"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0004
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "pdCanvas.ctx":002C
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   7
+         tooltip         =   "Zoom in"
+         colorscheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0856
+         ItemData        =   "pdCanvas.ctx":087E
          Left            =   450
-         List            =   "pdCanvas.ctx":0858
+         List            =   "pdCanvas.ctx":0880
          Style           =   2  'Dropdown List
          TabIndex        =   7
          Top             =   15
@@ -135,27 +127,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":085A
-         PictureAlign    =   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom Out"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0882
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "pdCanvas.ctx":08AA
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   0
+         tooltip         =   "Zoom Out"
+         colorscheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -1211,6 +1195,10 @@ Private Sub UserControl_Show()
         loadResourceToDIB "SB_IMG_SIZE", sbIconSize
         loadResourceToDIB "SB_MOUSE_POS", sbIconCoords
         
+        'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
+        ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
+        On Error GoTo CanvasShowError
+        
         'Now comes a bit of an odd case.  This control's _Show event happens very early in the load process due to it being
         ' present on FormMain.  Because of that, the global interface font value may not be loaded yet.  To avoid problems
         ' from this, we will just load Segoe UI by default, and if that fails (as it may on XP), the labels will retain
@@ -1219,20 +1207,9 @@ Private Sub UserControl_Show()
         'Convert all labels to the current interface font
         If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
         
-        'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
-        ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
-        On Error GoTo CanvasShowError
-        
         lblCoordinates.FontName = g_InterfaceFont
         lblImgSize.FontName = g_InterfaceFont
         lblMessages.FontName = g_InterfaceFont
-        
-        'Add size units to the size unit drop-down box
-        cmbSizeUnit.Clear
-        cmbSizeUnit.AddItem g_Language.TranslateMessage(" px"), 0
-        cmbSizeUnit.AddItem g_Language.TranslateMessage(" in"), 1
-        cmbSizeUnit.AddItem g_Language.TranslateMessage(" cm"), 2
-        cmbSizeUnit.ListIndex = 0
         
         'Make all status bar lines a proper height (again, necessary on high-DPI displays)
         Dim i As Long
@@ -1420,3 +1397,15 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
     picStatusBar.Refresh
     
 End Sub
+
+'Fill the "size units" drop-down.  We must do this later in the load process, as we have to wait for the translation engine to load.
+Public Function populateSizeUnits()
+
+    'Add size units to the size unit drop-down box
+    cmbSizeUnit.Clear
+    cmbSizeUnit.AddItem g_Language.TranslateMessage(" px"), 0
+    cmbSizeUnit.AddItem g_Language.TranslateMessage(" in"), 1
+    cmbSizeUnit.AddItem g_Language.TranslateMessage(" cm"), 2
+    cmbSizeUnit.ListIndex = 0
+
+End Function
