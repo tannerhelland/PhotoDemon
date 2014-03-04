@@ -212,7 +212,8 @@ Public Sub LoadTheProgram()
     'Populate the main form's zoom drop-down
     g_Zoom.populateZoomComboBox FormMain.mainCanvas(0).getZoomDropDownReference()
     
-    
+    'Populate the main canvas's size unit dropdown
+    FormMain.mainCanvas(0).populateSizeUnits
     
     '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
