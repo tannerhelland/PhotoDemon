@@ -5,9 +5,9 @@ Begin VB.Form FormAbout
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
    ClientHeight    =   8925
-   ClientLeft      =   2340
-   ClientTop       =   1875
-   ClientWidth     =   11685
+   ClientLeft      =   2338
+   ClientTop       =   1876
+   ClientWidth     =   11690
    ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,9 +20,9 @@ Begin VB.Form FormAbout
    EndProperty
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   595
+   ScaleHeight     =   1275
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   779
+   ScaleWidth      =   1670
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin VB.PictureBox picBuffer 
@@ -33,9 +33,9 @@ Begin VB.Form FormAbout
       ForeColor       =   &H80000008&
       Height          =   5535
       Left            =   600
-      ScaleHeight     =   369
+      ScaleHeight     =   791
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   697
+      ScaleWidth      =   1494
       TabIndex        =   1
       Top             =   600
       Width           =   10455
@@ -220,7 +220,7 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
-    GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2014 Tanner Helland and Contributors"
+    GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2014 Tanner Helland and contributors"
     GenerateThankyou g_Language.TranslateMessage("the fast, free, portable photo editor"), ""
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
