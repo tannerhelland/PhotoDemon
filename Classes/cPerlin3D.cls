@@ -24,7 +24,7 @@ Attribute VB_Exposed = False
 ' You may access a complete copy of this license at the following link:
 ' http://creativecommons.org/licenses/by/1.0/
 
-'Many thanks to Steve McMahon and vbaccelerator.com for this excellent progress bar class.
+'Many thanks to Steve McMahon and vbaccelerator.com for this excellent perlin noise class.
 
 Option Explicit
 
@@ -94,9 +94,11 @@ End Function
 Private Function Fade(ByVal t As Double) As Double
    Fade = t * t * t * (t * (t * 6# - 15#) + 10#)
 End Function
+
 Private Function lerp(ByVal t As Double, ByVal a As Double, ByVal b As Double) As Double
    lerp = a + t * (b - a)
 End Function
+
 Private Function grad(ByVal hash As Long, ByVal x As Double, ByVal y As Double, ByVal z As Double) As Double
 Dim h As Long
 Dim u As Double
