@@ -51,8 +51,7 @@ Begin VB.Form FormFiguredGlass
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
+      Max             =   500
       Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -142,7 +141,6 @@ Begin VB.Form FormFiguredGlass
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.01
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -254,8 +252,8 @@ Attribute VB_Exposed = False
 'Image "Figured Glass" Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 15/September/13
-'Last update: fix the preview to show the same distortion size as the final effect.  (It should be almost 1:1 perfect now!)
+'Last updated: 07/March/14
+'Last update: improve spatial accuracy and output quality; thanks to Robert Rayment for additional testing and discussion!
 '
 'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
 ' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
@@ -265,7 +263,7 @@ Attribute VB_Exposed = False
 'As with other distorts in the program, bilinear interpolation (via reverse-mapping) is available for a
 ' high-quality transformation.
 '
-'Unlike other distortsr, no radius is required for this effect.  It always operates on the entire image/selection.
+'Unlike other distorts, no radius is required for this effect.  It always operates on the entire image/selection.
 '
 'Finally, the transformation used by this tool is a modified version of a transformation originally written by
 ' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
@@ -335,54 +333,42 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     
     'During a preview, shrink the scale so that the preview accurately reflects how the final image will appear
     If toPreview Then fxScale = fxScale * curDIBValues.previewModifier
-      
-    'Our etched glass effect requires some specialized variables
-        
-    'Invert turbulence
-    fxTurbulence = 1.01 - fxTurbulence
-        
-    'Sin and cosine look-up tables
-    Dim sinTable(0 To 255) As Single, cosTable(0 To 255) As Single
     
-    'Populate the look-up tables
-    Dim fxAngle As Double
-    
-    Dim i As Long
-    For i = 0 To 255
-        fxAngle = (PI_DOUBLE * i) / (256 * fxTurbulence)
-        sinTable(i) = -fxScale * Sin(fxAngle)
-        cosTable(i) = fxScale * Cos(fxAngle)
-    Next i
-        
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
-                                  
+    
     'This effect requires a noise function to operate.  I use Steve McMahon's excellent Perlin Noise class for this.
     Dim cPerlin As cPerlin3D
     Set cPerlin = New cPerlin3D
-        
+    
     'Finally, an integer displacement will be used to move pixel values around
-    Dim pDisplace As Long
-                                  
+    Dim perlinCache As Double
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-    
-        'Calculate a displacement for this point
-        pDisplace = 127 * (1 + cPerlin.Noise(x / fxScale, y / fxScale, m_zOffset))
-        If pDisplace < 0 Then pDisplace = 0
-        If pDisplace > 255 Then pDisplace = 255
         
-        'Calculate a new source pixel using the sin and cos look-up tables and our calculated displacement
-        srcX = x + sinTable(pDisplace)
-        srcY = y + sinTable(pDisplace)
+        'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
+        ' user's turbulence value.
+        If fxScale > 0 Then
+            perlinCache = Sin(PI_DOUBLE * cPerlin.Noise(x / fxScale, y / fxScale, m_zOffset) * fxTurbulence)
+            perlinCache = perlinCache * fxScale
+        Else
+            perlinCache = 0
+        End If
+        
+        'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
+        ' of the conversion, but technically it would work fine without an additional modifier due to the way
+        ' Perlin noise is generated.)
+        srcX = x + perlinCache
+        srcY = y + perlinCache
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
-        If toPreview = False Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
