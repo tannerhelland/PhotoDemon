@@ -501,8 +501,8 @@ End Function
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -690,8 +690,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -777,8 +777,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -803,8 +803,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -813,8 +813,8 @@ Private Sub UserControl_Show()
         End With
         
         'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
         
         'In the IDE, we also need to translate the left-hand buttons
         If Not g_IsProgramCompiled Then
@@ -875,6 +875,11 @@ Private Sub UserControl_Show()
     'For now, I'm going to set a standard font size of 10.  May revisit later.
     mFont.Size = 10
     mFont_FontChanged ""
+    
+    'At run-time, give the OK button focus by default.  (Note that using the .Default property to do this will
+    ' BREAK THINGS.  .Default overrides catching the Enter key anywhere else in the form, so we cannot do things
+    ' like save a preset via Enter keypress, because the .Default control will always eat the Enter keypress.)
+    If g_UserModeFix Then cmdOK.SetFocus
     
     'Enable previews, and request a refresh
     controlFullyLoaded = True
