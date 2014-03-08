@@ -709,61 +709,65 @@ End Function
 ' The calling function is responsible for deleting the cursor once they are done with it.
 Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
     
-    'Start by extracting the PNG data into a bytestream
-    Dim ImageData() As Byte
-    ImageData() = LoadResData(resTitle, "CUSTOM")
-    
-    Dim IStream As IUnknown
-    Dim tmpRect As RECTF
-    Dim gdiBitmap As Long, hBitmap As Long
-        
-    CreateStreamOnHGlobal ImageData(0), 0&, IStream
-    
-    If Not IStream Is Nothing Then
-        
-        'Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine
-        If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
-        
-            'Retrieve the image's size
-            GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
-        
-            'Convert the GDI+ bitmap to a standard Windows hBitmap
-            If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
-                        
-                'Generate a blank monochrome mask to pass to the icon creation function.
-                Dim monoBmp As Long
-                monoBmp = CreateBitmap(CLng(tmpRect.fWidth), CLng(tmpRect.fHeight), 1, 1, ByVal 0&)
-                            
-                'With the transfer complete, release the FreeImage DIB and unload the library
-                Dim icoInfo As ICONINFO
-                With icoInfo
-                    .fIcon = False
-                    .xHotspot = curHotspotX
-                    .yHotspot = curHotspotY
-                    .hbmMask = monoBmp
-                    .hbmColor = hBitmap
-                End With
-                    
-                'Create the 32x32 cursor
-                createCursorFromResource = CreateIconIndirect(icoInfo)
+    'Start by extracting the PNG resource data into a pdLayer object.
+    Dim resDIB As pdDIB
+    Set resDIB = New pdDIB
                 
-                DeleteObject monoBmp
-                DeleteObject hBitmap
-                
-                'Debug.Print "Custom cursor (""" & resTitle & """ : " & createCursorFromResource & ") created successfully!"
-            
-            Else
-                Debug.Print "GDI+ couldn't create HBITMAP from resource image - sorry!"
-            End If
-            
-            GdipDisposeImage gdiBitmap
+    If loadResourceToDIB(resTitle, resDIB) Then
+    
+        'If the user is running at non-96 DPI, we now need to perform DPI correction on the cursor.
+        ' NOTE: this line will need to be revisited if high-DPI cursors are added to the resource file.  The reason
+        '       I'm not making the change now is because PD's current cursor are not implemented uniformly, so I
+        '       need to standardize their size and layout before implementing a universal "resize per DPI" check.
+        '       The proper way to do this would be to retrieve cursor size from the system, then resize anything
+        '       that isn't already that size - I've made a note to do this soon.
+        If fixDPI(96) <> 96 Then
         
-        Else
-            Debug.Print "GDI+ couldn't load resource image - sorry!"
+            'Create a temporary copy of the image
+            Dim dpiDIB As pdDIB
+            Set dpiDIB = New pdDIB
+            
+            dpiDIB.createFromExistingDIB resDIB
+            
+            'Erase and resize the primary DIB
+            resDIB.createBlank fixDPI(dpiDIB.getDIBWidth), fixDPI(dpiDIB.getDIBHeight), dpiDIB.getDIBColorDepth
+            
+            'Use GDI+ to resize the cursor from dpiDIB into resDIB
+            GDIPlusResizeDIB resDIB, 0, 0, resDIB.getDIBWidth, resDIB.getDIBHeight, dpiDIB, 0, 0, dpiDIB.getDIBWidth, dpiDIB.getDIBHeight, InterpolationModeNearestNeighbor
+        
+            'Release our temporary DIB
+            Set dpiDIB = Nothing
+        
         End If
-    
-        Set IStream = Nothing
-    
+        
+        'Generate a blank monochrome mask to pass to the icon creation function.
+        ' (This is a stupid Windows workaround for 32bpp cursors.  The cursor creation function always assumes
+        '  the presence of a mask bitmap, so we have to submit one even if we want the PNG's alpha channel
+        '  used for transparency!)
+        Dim monoBmp As Long
+        monoBmp = CreateBitmap(resDIB.getDIBWidth, resDIB.getDIBHeight, 1, 1, ByVal 0&)
+        
+        'Create an icon header and point it at our temp mask bitmap and our PNG resource
+        Dim icoInfo As ICONINFO
+        With icoInfo
+            .fIcon = False
+            .xHotspot = fixDPI(curHotspotX)
+            .yHotspot = fixDPI(curHotspotY)
+            .hbmMask = monoBmp
+            .hbmColor = resDIB.getDIBHandle
+        End With
+                    
+        'Create the cursor
+        createCursorFromResource = CreateIconIndirect(icoInfo)
+        
+        'Release our temporary mask and resource container, as Windows has now made its own copies
+        DeleteObject monoBmp
+        Set resDIB = Nothing
+        
+        'Debug.Print "Custom cursor (""" & resTitle & """ : " & createCursorFromResource & ") created successfully!"
+        
+    Else
+        Debug.Print "GDI+ couldn't load resource image - sorry!"
     End If
     
     Exit Function
