@@ -4,10 +4,10 @@ Begin VB.Form FormFiguredGlass
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Figured Glass"
-   ClientHeight    =   6555
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   12090
+   ClientHeight    =   6559
+   ClientLeft      =   -14
+   ClientTop       =   224
+   ClientWidth     =   12089
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,22 +20,22 @@ Begin VB.Form FormFiguredGlass
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   437
+   ScaleHeight     =   937
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
+   ScaleWidth      =   1727
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
-      Height          =   750
+      Height          =   805
       Left            =   0
       TabIndex        =   0
-      Top             =   5805
-      Width           =   12090
+      Top             =   5754
+      Width           =   12089
       _ExtentX        =   21325
-      _ExtentY        =   1323
+      _ExtentY        =   1416
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   10.125
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -51,8 +51,9 @@ Begin VB.Form FormFiguredGlass
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   500
-      Value           =   50
+      Max             =   100
+      SigDigits       =   1
+      Value           =   10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -70,8 +71,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   7
       Top             =   4200
       Width           =   1005
-      _ExtentX        =   1773
-      _ExtentY        =   635
+      _ExtentX        =   2037
+      _ExtentY        =   675
       Caption         =   "quality"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -120,8 +121,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   8
       Top             =   4200
       Width           =   975
-      _ExtentX        =   1720
-      _ExtentY        =   635
+      _ExtentX        =   1905
+      _ExtentY        =   675
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -332,7 +333,15 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     progBarCheck = findBestProgBarValue()
     
     'During a preview, shrink the scale so that the preview accurately reflects how the final image will appear
-    If toPreview Then fxScale = fxScale * curDIBValues.previewModifier
+    'If toPreview Then fxScale = fxScale * curDIBValues.previewModifier
+    
+    'Scale is used as a fraction of the image's smallest dimension.  There's no problem with using larger
+    ' values, but at some point it distorts the image beyond recognition.
+    If curDIBValues.Width > curDIBValues.Height Then
+        fxScale = (fxScale / 100) * curDIBValues.Height
+    Else
+        fxScale = (fxScale / 100) * curDIBValues.Width
+    End If
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
@@ -341,8 +350,13 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     Dim cPerlin As cPerlin3D
     Set cPerlin = New cPerlin3D
     
+    'Cache the z-value used in the Perlin Noise function.  This is faster than constantly passing
+    ' it as a value.  (Note that this caching mechanism and resulting function is NOT part of
+    ' Steve's initial implementation, so if it gives anyone trouble, blame me!)
+    cPerlin.cacheZValue m_zOffset
+    
     'Finally, an integer displacement will be used to move pixel values around
-    Dim perlinCache As Double
+    Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -352,17 +366,19 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
         ' user's turbulence value.
         If fxScale > 0 Then
-            perlinCache = Sin(PI_DOUBLE * cPerlin.Noise(x / fxScale, y / fxScale, m_zOffset) * fxTurbulence)
-            perlinCache = perlinCache * fxScale
+            pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(x / fxScale, y / fxScale) * fxTurbulence
+            perlinCacheSin = Sin(pNoiseCache) * fxScale
+            perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
         Else
-            perlinCache = 0
+            perlinCacheSin = 0
+            perlinCacheCos = 0
         End If
         
         'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
         ' of the conversion, but technically it would work fine without an additional modifier due to the way
         ' Perlin noise is generated.)
-        srcX = x + perlinCache
-        srcY = y + perlinCache
+        srcX = x + perlinCacheSin
+        srcY = y + perlinCacheCos
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
         fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
@@ -400,7 +416,7 @@ Private Sub cmdBar_ResetClick()
 
     'Set the edge handler to match the default in Form_Load
     cmbEdges.ListIndex = 1
-    sltScale.Value = 50
+    sltScale.Value = 10#
     sltTurbulence.Value = 0.5
 
 End Sub
@@ -424,7 +440,7 @@ Private Sub Form_Load()
     
     'Calculate a random z offset for the noise function
     Randomize Timer
-    m_zOffset = Rnd
+    m_zOffset = Rnd * &HFFFFFFFF
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.

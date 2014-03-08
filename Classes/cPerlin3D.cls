@@ -26,6 +26,11 @@ Attribute VB_Exposed = False
 
 'Many thanks to Steve McMahon and vbaccelerator.com for this excellent perlin noise class.
 
+'NOTE: in March '14, I profiled a bunch of the functions in this class and rewrote some of them to
+'      improve performance.  If 3D noise is not needed, I strongly recommend caching a z variable
+'      in advance and using the Noise2D function.  Depending on other variables, this can result
+'      in 10%+ faster performance, which is especially helpful when calculating noise per-pixel.
+
 Option Explicit
 
 '
@@ -42,19 +47,101 @@ Option Explicit
 Private p() As Long
 Private permutation() As Long
 
+Private m_cachedZ As Double, m_cachedIZ As Long, m_cachedW As Double
+
+'Part of the optimized NoiseCache() function, for callers only splicing a single level of the noise cube
+Public Sub cacheZValue(ByVal srcZ As Double)
+    m_cachedIZ = Int(srcZ) And &HFF&
+    m_cachedZ = srcZ - Int(srcZ)
+    m_cachedW = Fade(m_cachedZ)
+End Sub
+
+'2D noise function, designed for use with the cacheZValue sub above.  If a functions is only using
+' a single plane of the 3D noise cube, this is quite a bit faster than a full 3D calculation.
+Public Function Noise2D(ByVal x As Double, ByVal y As Double) As Double
+
+    'Note that we'll be doing a full 3D calculation, but using cached values for everything related to z
+    Dim iX As Long, iY As Long
+    Dim u As Double, v As Double
+    Dim a As Long, aa As Long, ab As Long, b As Long, ba As Long, bb As Long
+
+    'Find unit cube that contains point:
+    iX = Int(x) And &HFF&
+    iY = Int(y) And &HFF&
+   
+    'Find relative x,y,z of point in cube:
+    x = x - Int(x)
+    y = y - Int(y)
+   
+    'Compute Fade curves for each of x,y,z
+    u = Fade(x)
+    v = Fade(y)
+   
+    'Hash coordinates of the 8 cube corners:
+    a = p(iX) + iY
+    aa = p(a) + m_cachedIZ
+    ab = p(a + 1) + m_cachedIZ
+    b = p(iX + 1) + iY
+    ba = p(b) + m_cachedIZ
+    bb = p(b + 1) + m_cachedIZ
+   
+    'Add the blended results from 8 corners of the cube:
+    'Noise2D = lerp(m_cachedW, lerp(v, lerp(u, grad(p(aa), x, y, m_cachedZ), _
+                              grad(p(ba), x - 1, y, m_cachedZ)), _
+                           lerp(u, grad(p(ab), x, y - 1, m_cachedZ), _
+                              grad(p(bb), x - 1, y - 1, m_cachedZ))), _
+                     lerp(v, lerp(u, grad(p(aa + 1), x, y, m_cachedZ - 1), _
+                              grad(p(ba + 1), x - 1, y, m_cachedZ - 1)), _
+                           lerp(u, grad(p(ab + 1), x, y - 1, m_cachedZ - 1), _
+                              grad(p(bb + 1), x - 1, y - 1, m_cachedZ - 1))))
+    
+    'Subsequent testing has shown a slight (2-3%) performance improvement on modern processors
+    ' (Intel Haswell, specifically) if I unroll the function above into discrete parts.  Others
+    ' are welcome to test this on their own PCs...
+    Dim gradCache1 As Double, gradCache2 As Double, gradCache3 As Double
+    Dim gradCache4 As Double, gradCache5 As Double, gradCache6 As Double
+    Dim gradCache7 As Double, gradCache8 As Double
+    
+    Dim lerpCache1 As Double, lerpCache2 As Double, lerpCache3 As Double, lerpCache4 As Double
+    Dim lerpCache5 As Double, lerpCache6 As Double
+    
+    gradCache8 = grad(p(aa), x, y, m_cachedZ)
+    gradCache4 = grad(p(ba), x - 1, y, m_cachedZ)
+    gradCache7 = grad(p(ab), x, y - 1, m_cachedZ)
+    gradCache3 = grad(p(bb), x - 1, y - 1, m_cachedZ)
+    gradCache5 = grad(p(ab + 1), x, y - 1, m_cachedZ - 1)
+    gradCache1 = grad(p(bb + 1), x - 1, y - 1, m_cachedZ - 1)
+    gradCache6 = grad(p(aa + 1), x, y, m_cachedZ - 1)
+    gradCache2 = grad(p(ba + 1), x - 1, y, m_cachedZ - 1)
+    
+    lerpCache1 = lerp(u, gradCache8, gradCache4)
+    lerpCache2 = lerp(u, gradCache7, gradCache3)
+    lerpCache5 = lerp(v, lerpCache1, lerpCache2)
+    
+    lerpCache4 = lerp(u, gradCache5, gradCache1)
+    lerpCache3 = lerp(u, gradCache6, gradCache2)
+    lerpCache6 = lerp(v, lerpCache3, lerpCache4)
+    
+    Noise2D = lerp(m_cachedW, lerpCache5, lerpCache6)
+    
+End Function
+
+
+'The original Noise() function, copied directly from Ken Perlin's reference implementation
 Public Function Noise(ByVal x As Double, ByVal y As Double, ByVal z As Double) As Double
-Dim iX As Long
-Dim iY As Long
-Dim iZ As Long
-Dim u As Double
-Dim v As Double
-Dim w As Double
-Dim a As Long
-Dim aa As Long
-Dim ab As Long
-Dim b As Long
-Dim ba As Long
-Dim bb As Long
+
+    Dim iX As Long
+    Dim iY As Long
+    Dim iZ As Long
+    Dim u As Double
+    Dim v As Double
+    Dim w As Double
+    Dim a As Long
+    Dim aa As Long
+    Dim ab As Long
+    Dim b As Long
+    Dim ba As Long
+    Dim bb As Long
 
    ' Find unit cube that contains point:
    iX = Int(x) And &HFF&
@@ -79,7 +166,7 @@ Dim bb As Long
    ba = p(b) + iZ
    bb = p(b + 1) + iZ
    
-   ' Add the blended results from 8 corners of the cube:
+   'Add the blended results from 8 corners of the cube:
    Noise = lerp(w, lerp(v, lerp(u, grad(p(aa), x, y, z), _
                               grad(p(ba), x - 1, y, z)), _
                            lerp(u, grad(p(ab), x, y - 1, z), _
@@ -88,52 +175,51 @@ Dim bb As Long
                               grad(p(ba + 1), x - 1, y, z - 1)), _
                            lerp(u, grad(p(ab + 1), x, y - 1, z - 1), _
                               grad(p(bb + 1), x - 1, y - 1, z - 1))))
-   
+    
 End Function
 
-Private Function Fade(ByVal t As Double) As Double
-   Fade = t * t * t * (t * (t * 6# - 15#) + 10#)
+Private Function Fade(ByRef t As Double) As Double
+    Fade = t * t * t * (t * (t * 6# - 15#) + 10#)
 End Function
 
-Private Function lerp(ByVal t As Double, ByVal a As Double, ByVal b As Double) As Double
-   lerp = a + t * (b - a)
+Private Function lerp(ByRef t As Double, ByRef a As Double, ByRef b As Double) As Double
+    lerp = a + t * (b - a)
 End Function
 
-Private Function grad(ByVal hash As Long, ByVal x As Double, ByVal y As Double, ByVal z As Double) As Double
-Dim h As Long
-Dim u As Double
-Dim v As Double
-Dim g As Double
+Private Function grad(ByVal hash As Long, ByRef x As Double, ByRef y As Double, ByRef z As Double) As Double
 
-   '// CONVERT LO 4 BITS OF HASH CODE
-   h = hash And &HF&
+    Dim h As Long
+    Dim u As Double, v As Double, g As Double
+
+    '// CONVERT LO 4 BITS OF HASH CODE
+    h = hash And &HF&
    
-   '// INTO 12 GRADIENT DIRECTIONS.
-   If (h < 8) Or (h = 12) Or (h = 13) Then
-      u = x
-   Else
-      u = y
-   End If
+    '// INTO 12 GRADIENT DIRECTIONS.
+    If (h < 8) Or (h = 12) Or (h = 13) Then
+       u = x
+    Else
+       u = y
+    End If
    
-   If (h < 4) Or (h = 12) Or (h = 13) Then
-      v = y
-   Else
-      y = z
-   End If
+    If (h < 4) Or (h = 12) Or (h = 13) Then
+       v = y
+    Else
+       v = z
+    End If
    
-   If ((h And 1) = 0) Then
-      g = u
-   Else
-      g = -u
-   End If
+    If ((h And 1) = 0) Then
+       g = u
+    Else
+       g = -u
+    End If
    
-   If ((h And 2) = 0) Then
-      g = g + v
-   Else
-      g = g - v
-   End If
+    If ((h And 2) = 0) Then
+       g = g + v
+    Else
+       g = g - v
+    End If
    
-   grad = g
+    grad = g
    
 End Function
 
