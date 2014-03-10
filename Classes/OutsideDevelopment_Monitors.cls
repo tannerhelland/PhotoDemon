@@ -414,7 +414,7 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
         cMon.friendlyName = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
         
         'If we have not yet retrieved an EDID value for this monitor, attempt to do so now
-        If Not cMon.hasEDID Then
+        If (Not cMon.hasEDID) And g_IsVistaOrLater Then
         
             'We can also retrieve a DeviceID from this second instance, which in turn can be translated to a registry path
             ' containing the monitor's EDID (which contains a *wealth* of information)
