@@ -411,6 +411,7 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
     
     'Repeat the call a second time, providing the monitor's name, in order to receive even *more* information
     If EnumDisplayDevices(cMon.Name, 0, monitorInfoDetailed, 1&) <> 0 Then
+    
         cMon.friendlyName = TrimNull(StrConv(monitorInfoDetailed.DeviceString, vbUnicode))
         
         'If we have not yet retrieved an EDID value for this monitor, attempt to do so now
@@ -425,7 +426,7 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
             Dim edidArray() As Byte
             
             'If a device ID was successfully retrieved (this should always happen), attempt to retrieve a matching EDID
-            If Len(devID) > 0 Then
+            If (Len(devID) > 0) And (InStr(1, devID, "#") > 0) Then
             
                 'Convert the device ID to a registry path
                 Dim regPath As String, tmpStringArray() As String
