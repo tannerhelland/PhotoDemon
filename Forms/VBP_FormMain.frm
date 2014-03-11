@@ -3,10 +3,10 @@ Begin VB.Form FormMain
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   6923
-   ClientLeft      =   77
-   ClientTop       =   693
-   ClientWidth     =   12271
+   ClientHeight    =   9750
+   ClientLeft      =   225
+   ClientTop       =   855
+   ClientWidth     =   14040
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,9 +20,9 @@ Begin VB.Form FormMain
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   989
+   ScaleHeight     =   650
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1753
+   ScaleWidth      =   936
    StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdCanvas mainCanvas 
       Height          =   3735
@@ -37,21 +37,21 @@ Begin VB.Form FormMain
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   595
-      _ExtentY        =   529
+      _ExtentX        =   1191
+      _ExtentY        =   1058
       Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
-      Left            =   119
+      Left            =   120
       Top             =   840
-      _ExtentX        =   450
-      _ExtentY        =   450
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
-      Left            =   959
-      Top             =   357
-      _ExtentX        =   675
-      _ExtentY        =   675
+      Left            =   960
+      Top             =   360
+      _ExtentX        =   635
+      _ExtentY        =   635
       PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
