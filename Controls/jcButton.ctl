@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.UserControl jcbutton 
    AutoRedraw      =   -1  'True
-   ClientHeight    =   378
+   ClientHeight    =   375
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   1337
+   ClientWidth     =   1335
    ClipControls    =   0   'False
    DefaultCancel   =   -1  'True
    BeginProperty Font 
@@ -16,9 +16,9 @@ Begin VB.UserControl jcbutton
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   54
+   ScaleHeight     =   25
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   191
+   ScaleWidth      =   89
    ToolboxBitmap   =   "jcButton.ctx":0000
 End
 Attribute VB_Name = "jcbutton"
@@ -26,7 +26,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
+'Note: this file has been heavily modified for use within PhotoDemon.
 
 'This code was originally written by Juned Chhipa.
 
@@ -627,7 +627,7 @@ Private PicW            As Long
 Private aLighten(255)   As Byte                 'Light Picture
 Private aDarken(255)    As Byte                 'Dark Picture
 
-Private tmppic          As New StdPicture       'Temp picture
+Private tmpPic          As New StdPicture       'Temp picture
 'Private PicX            As Long                 'X position of picture
 'Private PicY            As Long                 'Y Position of Picture
 Private m_PicRect       As RECT                 'Picture drawing area
@@ -664,6 +664,14 @@ Private Enum eParamUser
 End Enum
 
 Private m_NGSubclass                                    As cSelfSubHookCallback
+
+'The damn button doesn't always redraw itself after resize events.  (I can't blame it, as VB is at fault for not raising
+' resize events properly.)  To circumvent this, actions that resize the button programmatically can now force a redraw
+' by calling this function.
+Public Sub forceButtonRedraw()
+    CreateRegion
+    RedrawButton
+End Sub
 
 Private Sub DrawLineApi(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal Color As Long)
 
@@ -1323,14 +1331,20 @@ Private Sub CreateRegion()
 '***************************************************************************
 
     If m_lButtonRgn Then DeleteObject m_lButtonRgn
+    
     Select Case m_ButtonStyle
-    Case eWindowsXP, eVistaAero, eVistaToolbar, eInstallShield
-        m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 3, 3)
-    Case eGelButton, eXPToolbar
-        m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 4, 4)
-    Case Else
-        m_lButtonRgn = CreateRectRgn(0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight)
+    
+        Case eWindowsXP, eVistaAero, eVistaToolbar, eInstallShield
+            m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 3, 3)
+        
+        Case eGelButton, eXPToolbar
+            m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 4, 4)
+        
+        Case Else
+            m_lButtonRgn = CreateRectRgn(0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight)
+    
     End Select
+    
     SetWindowRgn UserControl.hWnd, m_lButtonRgn, True       'Set Button Region
     DeleteObject m_lButtonRgn                               'Free memory
 
@@ -1385,42 +1399,43 @@ Dim lShadowClr       As Long
     If (m_Buttonstate = eStateDown Or (m_ButtonMode <> ebmCommandButton And m_bValue = True)) Then
         '-- Mouse down
         If Not m_PictureDown Is Nothing Then
-            Set tmppic = m_PictureDown
+            Set tmpPic = m_PictureDown
         Else
             If Not m_PictureHot Is Nothing Then
-                Set tmppic = m_PictureHot
+                Set tmpPic = m_PictureHot
             Else
-                Set tmppic = m_Picture
+                Set tmpPic = m_Picture
             End If
         End If
     ElseIf (m_Buttonstate = eStateOver) Then
         '-- Mouse in (over)
         If Not m_PictureHot Is Nothing Then
-            Set tmppic = m_PictureHot
+            Set tmpPic = m_PictureHot
         Else
-            Set tmppic = m_Picture
+            Set tmpPic = m_Picture
         End If
     Else
         '-- Mouse out (normal)
-        Set tmppic = m_Picture
+        Set tmpPic = m_Picture
     End If
 
     ' --Adjust Picture Sizes
-    picH = fixDPI(ScaleX(tmppic.Height, vbHiMetric, vbPixels))
-    PicW = fixDPI(ScaleX(tmppic.Width, vbHiMetric, vbPixels))
+    PicW = fixDPI(ScaleX(tmpPic.Width, vbHiMetric, vbPixels))
+    picH = fixDPI(ScaleY(tmpPic.Height, vbHiMetric, vbPixels))
+    
 
     ' --Get the drawing area of caption
     If m_DropDownSymbol <> ebsNone Or m_bDropDownSep Then
         If m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
-            SetRect m_TextRect, 0, 0, lw - 24 - PicW, lh
+            SetRect m_TextRect, 0, 0, lw - fixDPI(24) - PicW, lh
         Else
-            SetRect m_TextRect, PicW, 0, lw - 16, lh
+            SetRect m_TextRect, PicW, 0, lw - fixDPI(16), lh
         End If
     Else
         If m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
-            SetRect m_TextRect, 0, 0, lw - 8 - PicW, lh
+            SetRect m_TextRect, 0, 0, lw - fixDPI(8) - PicW, lh
         Else
-            SetRect m_TextRect, PicW, 0, lw - 8, lh
+            SetRect m_TextRect, PicW, 0, lw - fixDPI(8), lh
         End If
     End If
 
@@ -1437,19 +1452,19 @@ Dim lShadowClr       As Long
     ' --Move the caption area according to Caption alignments
     Select Case m_CaptionAlign
     Case ecLeftAlign
-        OffsetRect lpRect, 2, (lh - lpRect.Bottom) \ 2
+        OffsetRect lpRect, fixDPI(2), (lh - lpRect.Bottom) \ 2
 
     Case ecCenterAlign
         OffsetRect lpRect, (lw - lpRect.Right + PicW) \ 2, (lh - lpRect.Bottom) \ 2
         If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-            OffsetRect lpRect, -8, 0
+            OffsetRect lpRect, -fixDPI(8), 0
         End If
         If m_PictureAlign = epBottomEdge Or m_PictureAlign = epBottomOfCaption Or m_PictureAlign = epTopOfCaption Or m_PictureAlign = epTopEdge Then
             OffsetRect lpRect, 0, -(picH \ 2)
         End If
 
     Case ecRightAlign
-        OffsetRect lpRect, (lw - lpRect.Right - 4), (lh - lpRect.Bottom) \ 2
+        OffsetRect lpRect, (lw - lpRect.Right - fixDPI(4)), (lh - lpRect.Bottom) \ 2
 
     End Select
 
@@ -1459,17 +1474,17 @@ Dim lShadowClr       As Long
             Select Case m_PictureAlign
             Case epLeftEdge, epLeftOfCaption
                 If m_CaptionAlign <> ecCenterAlign Then
-                    If .Left < PicW + 4 Then
-                        .Left = PicW + 4: .Right = .Right + PicW + 4
+                    If .Left < PicW + fixDPI(4) Then
+                        .Left = PicW + fixDPI(4): .Right = .Right + PicW + fixDPI(4)
                     End If
                 End If
 
             Case epRightEdge, epRightOfCaption
-                If .Right > lw - PicW - 4 Then
-                    .Right = lw - PicW - 4: .Left = .Left - PicW - 4
+                If .Right > lw - PicW - fixDPI(4) Then
+                    .Right = lw - PicW - fixDPI(4): .Left = .Left - PicW - fixDPI(4)
                 End If
                 If m_CaptionAlign = ecCenterAlign Then
-                    OffsetRect lpRect, -12, 0
+                    OffsetRect lpRect, -fixDPI(12), 0
                 End If
 
             Case epTopOfCaption, epTopEdge
@@ -1480,25 +1495,26 @@ Dim lShadowClr       As Long
 
             Case epBackGround
                 If m_CaptionAlign = ecCenterAlign Then
-                    OffsetRect lpRect, -16, 0
+                    OffsetRect lpRect, -fixDPI(16), 0
                 End If
             End Select
         End If
 
         If m_CaptionAlign = ecRightAlign Then
             If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                OffsetRect lpRect, -16, 0
+                OffsetRect lpRect, -fixDPI(16), 0
             End If
         End If
 
         ' --For themed style, we are not able to draw borders
         ' --after drawing the caption. i mean the whole button is painted at once.
         If m_ButtonStyle = eWindowsTheme Then
-            If .Left < 4 Then .Left = 4
-            If .Right > ScaleWidth - 4 Then .Right = ScaleWidth - 4
-            If .Top < 4 Then .Top = 4
-            If .Bottom > ScaleHeight - 4 Then .Bottom = ScaleHeight - 4
+            If .Left < fixDPI(4) Then .Left = fixDPI(4)
+            If .Right > ScaleWidth - fixDPI(4) Then .Right = ScaleWidth - fixDPI(4)
+            If .Top < fixDPI(4) Then .Top = fixDPI(4)
+            If .Bottom > ScaleHeight - fixDPI(4) Then .Bottom = ScaleHeight - fixDPI(4)
         End If
+        
     End With
 
     ' --Save the caption rect
@@ -1531,10 +1547,10 @@ Dim lShadowClr       As Long
         If m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or _
            m_ButtonStyle = eGelButton Or m_ButtonStyle = eOffice2003 _
            Or m_ButtonStyle = eXPToolbar Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eStandard Then
-            OffsetRect m_TextRect, 1, 1
+            OffsetRect m_TextRect, fixDPI(1), fixDPI(1)
             'TANNER EDIT: don't offset the image in a down state; this makes toolbars look better
             'OffsetRect m_PicRect, 1, 1
-            OffsetRect lpSignRect, 1, 1
+            OffsetRect lpSignRect, fixDPI(1), fixDPI(1)
         End If
     End If
 
@@ -1543,7 +1559,7 @@ Dim lShadowClr       As Long
         lShadowClr = TranslateColor(&HC0C0C0)
         DrawPicture m_PicRect, lShadowClr
         CopyRect pRect, m_PicRect
-        OffsetRect pRect, -2, -2
+        OffsetRect pRect, -fixDPI(2), -fixDPI(2)
         DrawPicture pRect
     Else
         DrawPicture m_PicRect
@@ -1605,7 +1621,7 @@ Private Sub CalcPicRects()
             Select Case m_PictureAlign
 
             Case epLeftEdge
-                .Left = 12
+                .Left = fixDPI(12)
                 .Top = (lh - picH) \ 2
                 If m_PicRect.Left < 0 Then
                     OffsetRect m_PicRect, PicW, 0
@@ -1613,57 +1629,57 @@ Private Sub CalcPicRects()
                 End If
 
             Case epLeftOfCaption
-                .Left = m_TextRect.Left - PicW - 12
+                .Left = m_TextRect.Left - PicW - fixDPI(12)
                 .Top = (lh - picH) \ 2
 
             Case epRightEdge
-                .Left = lw - PicW - 3
+                .Left = lw - PicW - fixDPI(3)
                 .Top = (lh - picH) \ 2
                 ' --If picture overlaps text
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -16, 0
+                    OffsetRect m_PicRect, -fixDPI(16), 0
                 End If
-                If .Left < m_TextRect.Right + 2 Then
-                    .Left = m_TextRect.Right + 2
+                If .Left < m_TextRect.Right + fixDPI(2) Then
+                    .Left = m_TextRect.Right + fixDPI(2)
                 End If
 
             Case epRightOfCaption
-                .Left = m_TextRect.Right + 4
+                .Left = m_TextRect.Right + fixDPI(4)
                 .Top = (lh - picH) \ 2
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -16, 0
+                    OffsetRect m_PicRect, -fixDPI(16), 0
                 End If
                 ' --If picture overlaps text
-                If .Left < m_TextRect.Right + 2 Then
-                    .Left = m_TextRect.Right + 2
+                If .Left < m_TextRect.Right + fixDPI(2) Then
+                    .Left = m_TextRect.Right + fixDPI(2)
                 End If
 
             Case epTopOfCaption
                 .Left = (lw - PicW) \ 2
-                .Top = m_TextRect.Top - picH - 2
+                .Top = m_TextRect.Top - picH - fixDPI(2)
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -8, 0
+                    OffsetRect m_PicRect, -fixDPI(8), 0
                 End If
 
             Case epTopEdge
                 .Left = (lw - PicW) \ 2
-                .Top = 4
+                .Top = fixDPI(4)
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -8, 0
+                    OffsetRect m_PicRect, -fixDPI(8), 0
                 End If
 
             Case epBottomOfCaption
                 .Left = (lw - PicW) \ 2
-                .Top = m_TextRect.Bottom + 2
+                .Top = m_TextRect.Bottom + fixDPI(2)
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -8, 0
+                    OffsetRect m_PicRect, -fixDPI(8), 0
                 End If
 
             Case epBottomEdge
                 .Left = (lw - PicW) \ 2
-                .Top = lh - picH - 4
+                .Top = lh - picH - fixDPI(4)
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -8, 0
+                    OffsetRect m_PicRect, -fixDPI(8), 0
                 End If
 
             End Select
@@ -1671,7 +1687,7 @@ Private Sub CalcPicRects()
             .Left = (lw - PicW) \ 2
             .Top = (lh - picH) \ 2
             If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                OffsetRect m_PicRect, -8, 0
+                OffsetRect m_PicRect, -fixDPI(8), 0
             End If
         End If
 
@@ -1693,16 +1709,16 @@ Dim tmpMaskColor     As Long
 
 ' --Draw picture
 
-    If tmppic.Type = vbPicTypeIcon Then
+    If tmpPic.Type = vbPicTypeIcon Then
         tmpMaskColor = TranslateColor(&HC0C0C0)
     Else
         tmpMaskColor = m_lMaskColor
     End If
 
-    If Is32BitBMP(tmppic) Then
-        TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, picH, tmppic, lBrushColor
+    If Is32BitBMP(tmpPic) Then
+        TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, picH, tmpPic, lBrushColor
     Else
-        TransBlt hDC, lpRect.Left, lpRect.Top, PicW, picH, tmppic, tmpMaskColor, lBrushColor
+        TransBlt hDC, lpRect.Left, lpRect.Top, PicW, picH, tmpPic, tmpMaskColor, lBrushColor
     End If
 
 End Sub
@@ -2128,8 +2144,8 @@ Private Sub DrawVistaToolbarStyle(ByVal vState As enumButtonStates)
 Dim lpRect           As RECT
 'Dim FocusRect        As RECT
 
-    lh = ScaleHeight
-    lw = ScaleWidth
+    lh = ScaleHeight '- 1
+    lw = ScaleWidth '- 1
 
     If Not m_bEnabled Then
         ' --Draw Disabled button
@@ -2146,6 +2162,7 @@ Dim lpRect           As RECT
         ' --Simply fill the button with one color (No gradient effect here!!)
         PaintRect TranslateColor(m_bColors.tBackColor), lpRect
         DrawPicwithCaption
+        
     ElseIf vState = eStateOver Then
 
         ' --Draws a gradient effect with the folowing colors
@@ -3142,8 +3159,8 @@ Private Sub UserControl_Resize()
 
 ' --At least, a checkbox will also need this much of size!!!!
 
-    If Height < 220 Then Height = 220
-    If Width < 220 Then Width = 220
+    'If Height < 220 Then Height = 220
+    'If Width < 220 Then Width = 220
 
     ' --On resize, create button region again
     CreateRegion
