@@ -70,9 +70,6 @@ End Enum
 'Maximum width (in pixels) for custom-built tooltips
 Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400
 
-'Distance value for mouse_over events and selections; a literal "radius" below which the mouse cursor is considered "over" a point
-Public Const MOUSESELACCURACY As Double = 8#
-
 'Constants used for pulling up an API browse-for-folder box
 Public Const BIF_RETURNONLYFSDIRS = 1
 Public Const BFFM_INITIALIZED = 1

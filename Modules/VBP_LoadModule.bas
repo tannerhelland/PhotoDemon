@@ -306,6 +306,10 @@ Public Sub LoadTheProgram()
     FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
     FormMain.mainCanvas(0).displayImageSize Nothing, True
     
+    'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
+    ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
+    g_MouseAccuracy = fixDPIFloat(6)
+    
     'Apply visual styles
     FormMain.requestMakeFormPretty
     
