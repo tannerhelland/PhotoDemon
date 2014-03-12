@@ -29,7 +29,7 @@ Begin VB.UserControl fxPreviewCtl
       Width           =   450
       _ExtentX        =   794
       _ExtentY        =   794
-      ButtonStyle     =   13
+      ButtonStyle     =   7
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -39,6 +39,7 @@ Begin VB.UserControl fxPreviewCtl
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   -2147483643
       Caption         =   ""
       Mode            =   1
       Value           =   -1  'True
@@ -46,6 +47,7 @@ Begin VB.UserControl fxPreviewCtl
       PictureNormal   =   "fxPreview.ctx":0312
       PictureEffectOnDown=   0
       CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -682,15 +684,20 @@ End Sub
 Private Sub redrawControl()
     
     'Always make the preview picture box the width of the user control (at present)
-    picPreview.Width = ScaleWidth
+    picPreview.Width = UserControl.ScaleWidth
     
     'Adjust the preview picture box's height to be just above the "show original image" link
-    lblBeforeToggle.Top = ScaleHeight - fixDPI(24)
-    picPreview.Height = lblBeforeToggle.Top - (ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
+    lblBeforeToggle.Top = UserControl.ScaleHeight - fixDPI(24)
+    picPreview.Height = lblBeforeToggle.Top - (UserControl.ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
     
     'Align the fit/100% toggle button
-    cmdFit.Left = ScaleWidth - cmdFit.Width
-    cmdFit.Top = picPreview.Height + ((ScaleHeight - (picPreview.Height + cmdFit.Height)) / 2)
+    'cmdFit.Left = UserControl.ScaleWidth - cmdFit.Width
+    'cmdFit.Top = picPreview.Height + ((UserControl.ScaleHeight - (picPreview.Height + cmdFit.Height)) / 2)
+    cmdFit.Height = UserControl.ScaleHeight - picPreview.Height - (fixDPI(2) * 2)
+    cmdFit.Width = cmdFit.Height
+    cmdFit.Top = picPreview.Height + fixDPI(2)
+    cmdFit.Left = UserControl.ScaleWidth - cmdFit.Width '- fixDPI(2)
+    cmdFit.forceButtonRedraw
     
     'If zoom/pan is not allowed, hide that button entirely
     If disableZoomPanAbility Then cmdFit.Visible = False Else cmdFit.Visible = True
