@@ -12,7 +12,6 @@
 	"languages": { "en": "English" },
 	"links": {
 		"Download PhotoDemon": "http://photodemon.org/download/",
-		"Download source code": "https://github.com/tannerhelland/PhotoDemon/archive/master.zip",
 		"Submit feedback": "https://github.com/tannerhelland/photodemon/issues",
 		"Donate": "http://photodemon.org/donate",
 		"Docs by Daux.io": "http://daux.io"

@@ -26,7 +26,7 @@ PhotoDemon is a **portable application**.  This means it does not need to be ins
 
 The first time you run PhotoDemon, the following window may appear:
 
-![open file warning](/images/open_file_warning.png)
+![open file warning](/docimg/open_file_warning.png)
 
 Don't be alarmed.  This is the standard warning for _unsigned software_, which includes almost all free, open-source projects like PhotoDemon.  Simply click *Run* to start the program, and if you plan to use the software more than once, uncheck the _Always ask before opening this file_ box.
 
