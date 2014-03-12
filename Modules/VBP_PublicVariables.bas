@@ -258,3 +258,8 @@ Public g_MouseOverImageTabstrip As Boolean
 
 'Global color management setting.  If the user has requested use of custom profiles, this will be set to FALSE.
 Public g_UseSystemColorProfile As Boolean
+
+'Mouse accuracy for collision detection with on-screen objects.  This is typically 6 pixels, but it's re-calculated
+' at run-time to account for high-DPI screens.  (It may even be worthwhile to let users adjust this value, or to
+' retrieve some system metric for it... if such a thing exists.)
+Public g_MouseAccuracy As Double

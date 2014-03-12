@@ -3,7 +3,7 @@ Begin VB.Form FormGrayscale
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black and White"
-   ClientHeight    =   6540
+   ClientHeight    =   6555
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   11895
@@ -19,7 +19,7 @@ Begin VB.Form FormGrayscale
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
@@ -48,7 +48,7 @@ Begin VB.Form FormGrayscale
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
+      Top             =   5805
       Width           =   11895
       _ExtentX        =   20981
       _ExtentY        =   1323
@@ -616,7 +616,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
 End Function
 
 'Reduce to X # gray shades (dithered)
-Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMethod As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Point an array at the source DIB's image data
     Dim ImageData() As Byte
@@ -672,7 +672,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
     Dim l As Long, newL As Long
     
     'Start by preparing a dithering table, which is obviously dependent on the requested dithering method
-    Select Case ditherMethod
+    Select Case DitherMethod
         
         'No dithering
         Case 0
@@ -886,7 +886,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
     
     
     'With out dithering table complete, we can now proceed to process the image
-    If ditherMethod > 0 Then
+    If DitherMethod > 0 Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)

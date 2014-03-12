@@ -477,7 +477,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = MOUSESELACCURACY * (1 / zoomVal)
+    mouseAccuracy = g_MouseAccuracy * (1 / zoomVal)
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
     'If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then

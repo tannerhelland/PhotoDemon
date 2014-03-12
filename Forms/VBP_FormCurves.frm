@@ -245,9 +245,6 @@ Private isMouseDown As Boolean
 'Currently selected node in the workspace area
 Private selectedNode As Long
 
-'How close to a node the user must click to select that node
-Private Const mouseAccuracy As Byte = 6
-
 'Two additional arrays are needed to generate the cubic spline used for the curve function
 Private p() As Double
 Private u() As Double
@@ -596,7 +593,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
-
+    
     cmdBar.markPreviewStatus False
     
     'Populate the histogram display drop-down
@@ -909,7 +906,7 @@ Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
         pDist = pDistance(x, y, cNodes(i).pX, cNodes(i).pY)
         
         'If we're close to an existing point, return the index of that point
-        If pDist < mouseAccuracy Then
+        If pDist < g_MouseAccuracy Then
             checkClick = i
             Exit Function
         End If

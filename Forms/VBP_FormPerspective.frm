@@ -273,9 +273,6 @@ Dim m_isMouseDown As Boolean
 'Currently selected node in the workspace area
 Dim m_selPoint As Long
 
-'How close to a node the user must click to select that node
-Private Const mouseAccuracy As Byte = 6
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -819,7 +816,7 @@ Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
     For i = 0 To 3
         dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
         'If we're close to an existing point, return the index of that point
-        If dist < mouseAccuracy Then
+        If dist < g_MouseAccuracy Then
             checkClick = i
             Exit Function
         End If
