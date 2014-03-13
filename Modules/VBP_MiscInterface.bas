@@ -125,6 +125,7 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.Caption = getPhotoDemonNameAndVersion()
         
         'Erase the main viewport's status bar
+        FormMain.mainCanvas(0).displayImageSize Nothing, True
         FormMain.mainCanvas(0).drawStatusBarIcons False
         
         'Because dynamic icons are enabled, restore the main program icon and clear the icon cache
