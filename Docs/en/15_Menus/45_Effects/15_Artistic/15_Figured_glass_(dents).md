@@ -2,7 +2,7 @@ The "Figured glass" effect projects an image through an imaginary sheet of [figu
 
 ![figured glass dialog](/docimg/figured_glass.jpg)
 
-For information about standard parts of the tool interface (such as the preview area on the left, or the colored bar with buttons along the bottom), please refer to the [general tool window article](/en/Interface_and_Toolboxes/Individual_Tool_Windows).
+For information about standard parts of the interface (such as the preview area on the left, or the buttons along the bottom), please visit the [general tool dialog article](/en/Interface_and_Toolboxes/Individual_Tool_Windows).
 
 ### Options
 
@@ -28,7 +28,9 @@ For information about standard parts of the tool interface (such as the preview 
 	
 * * *
 	
-### Developer Notes	
+### Technical Notes	
+
+*Source code for this tool is available [here](https://github.com/tannerhelland/PhotoDemon/blob/master/Forms/VBP_FormFiguredGlass.frm).*
 
 The "Figured glass" filter uses [Perlin Noise](http://en.wikipedia.org/wiki/Perlin_noise) to calculate a custom displacement map for the image.  PhotoDemon uses a heavily modified version of an algorithm first made available by [Jerry Huxtable](http://www.jhlabs.com/index.html), and a heavily modified version of a Perlin Noise class first made available by [Steve McMahon](http://www.vbaccelerator.com/home/VB/Code/vbMedia/Algorithmic_Images/Perlin_Noise/article.asp).
 
