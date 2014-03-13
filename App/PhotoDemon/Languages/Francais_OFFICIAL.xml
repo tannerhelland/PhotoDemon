@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.0.0</langversion>
+<langversion>6.2.0</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -27,7 +27,7 @@
 
 <phrase>
 <original>click to visit</original>
-<translation></translation>
+<translation>cliquez pour visiter</translation>
 </phrase>
 
 <phrase>
@@ -47,7 +47,7 @@
 
 <phrase>
 <original>For more information on licensing, please visit</original>
-<translation></translation>
+<translation>Pour plus d'informations sur les licences, s'il vous plaît visitez</translation>
 </phrase>
 
 <phrase>
@@ -155,7 +155,7 @@
 
 <phrase>
 <original>Initializing theme engine</original>
-<translation></translation>
+<translation>Initialisation de Moteur de thème </translation>
 </phrase>
 
 <phrase>
@@ -165,7 +165,7 @@
 
 <phrase>
 <original>Initializing window manager</original>
-<translation></translation>
+<translation>Initialisation gestionnaire de fenêtre</translation>
 </phrase>
 
 <phrase>
@@ -231,7 +231,7 @@ ATTENTION: ceci va écraser le fichier image en cours. Pour enregistrer dans un f
 
 <phrase>
 <original>Finishing final program initialization steps</original>
-<translation></translation>
+<translation>Finition dernières étapes d'initialisation programme</translation>
 </phrase>
 
 <phrase>
@@ -250,7 +250,7 @@ Si cette image était à l'origine située sur un support amovible (DVD, clé USB, e
 
 <phrase>
 <original>Starting separate metadata extraction thread</original>
-<translation></translation>
+<translation>À partird'extraction de métadonnées thread séparé</translation>
 </phrase>
 
 <phrase>
@@ -338,12 +338,12 @@ S'il vous plaît utiliser un autre programme pour enregistrer cette image dans un
 
 <phrase>
 <original>Metadata retrieved successfully.</original>
-<translation></translation>
+<translation>Métadonnées récupérées avec succès.</translation>
 </phrase>
 
 <phrase>
 <original>Finishing image metadata parsing</original>
-<translation></translation>
+<translation>Finition analyse métadonnées de l'image </translation>
 </phrase>
 
 <phrase>
@@ -598,12 +598,12 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 
 <phrase>
 <original>Testing JPEG quality values to determine best setting</original>
-<translation></translation>
+<translation>Test de valeurs de qualité JPEG pour déterminer la meilleure mise en</translation>
 </phrase>
 
 <phrase>
 <original>Ideal quality of %1 found.  Continuing with save</original>
-<translation></translation>
+<translation>Qualité idéal de %1 trouvé. Poursuivant sauvegarde</translation>
 </phrase>
 
 <phrase>
@@ -762,7 +762,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
-<translation></translation>
+<translation>Cliquez pour changer la couleur utilisée pour les bords vides</translation>
 </phrase>
 
 <phrase>
@@ -772,7 +772,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation></translation>
+<translation>lors du changement de rapport d'aspect, image s'adaptent au nouveau format par</translation>
 </phrase>
 
 <phrase>
@@ -787,7 +787,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>resampling quality</original>
-<translation></translation>
+<translation>qualité de rééchantillonnage</translation>
 </phrase>
 
 <phrase>
@@ -847,37 +847,37 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation></translation>
+<translation>étirement à un nouveau format (par défaut)</translation>
 </phrase>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation></translation>
+<translation>montage inclusivement, avec des bords transparentes que nécessaire</translation>
 </phrase>
 
 <phrase>
 <original>fitting inclusively, with colored borders as necessary</original>
-<translation></translation>
+<translation>montage inclusivement, avec des bords colorées que nécessaire</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation></translation>
+<translation>montage exclusivement, et le recadrage nécessaire</translation>
 </phrase>
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation></translation>
+<translation>Rééchantillonnage affecte la qualité d'une image redimensionnée. Pour un bon résumé des techniques de rééchantillonnage, visitez le rééchantillonnage image article sur Wikipedia.</translation>
 </phrase>
 
 <phrase>
 <original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation></translation>
+<translation>Par défaut, les noms descriptifs sont utilisés à la place des techniques. Les utilisateurs avancés peuvent changer cette option pour exposer plusieurs techniques de rééchantillonnage.</translation>
 </phrase>
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation></translation>
+<translation>Lorsque vous modifiez le format d'une image, d'étirement indésirable peut se produire. PhotoDemon peut éviter cela en utilisant les bords vides ou de culture à la place.</translation>
 </phrase>
 
 <phrase>
@@ -975,12 +975,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Capturing screen</original>
-<translation></translation>
+<translation>capture d'écran</translation>
 </phrase>
 
 <phrase>
 <original>Could not retrieve program window - the program appears to have been unloaded.</original>
-<translation></translation>
+<translation>Impossible de récupérer fenêtre du programme - le programme semble avoir été déchargés.</translation>
 </phrase>
 
 <phrase>
@@ -1832,7 +1832,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Load all recent images</original>
-<translation></translation>
+<translation>Charger toutes les images récentes</translation>
 </phrase>
 
 <phrase>
@@ -1867,7 +1867,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Screenshot</original>
-<translation></translation>
+<translation>Captures d'écran</translation>
 </phrase>
 
 <phrase>
@@ -1892,7 +1892,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Revert</original>
-<translation></translation>
+<translation>revenir</translation>
 </phrase>
 
 <phrase>
@@ -2002,7 +2002,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Content-aware resize</original>
-<translation></translation>
+<translation>Redimensionnement sensible au contenu</translation>
 </phrase>
 
 <phrase>
@@ -2092,7 +2092,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>&Select</original>
-<translation>dossier...</translation>
+<translation>&Dossier</translation>
 </phrase>
 
 <phrase>
@@ -2147,17 +2147,17 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Export</original>
-<translation></translation>
+<translation>Export</translation>
 </phrase>
 
 <phrase>
 <original>Selected area as image</original>
-<translation></translation>
+<translation>Zone sélectionnée en tant qu'image</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask as image</original>
-<translation></translation>
+<translation>Masque de sélection que l'image</translation>
 </phrase>
 
 <phrase>
@@ -2252,7 +2252,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Replace color</original>
-<translation></translation>
+<translation>remplacer une couleur</translation>
 </phrase>
 
 <phrase>
@@ -2277,7 +2277,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Invert CMYK (film negative)</original>
-<translation>Inverser CMJN (film négatif)</translation>
+<translation>Inverser CMYK (film négatif)</translation>
 </phrase>
 
 <phrase>
@@ -2402,7 +2402,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Chroma blur</original>
-<translation></translation>
+<translation>Chroma flou</translation>
 </phrase>
 
 <phrase>
@@ -2717,57 +2717,57 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>File toolbar</original>
-<translation></translation>
+<translation>Barre d'outils Fichier</translation>
 </phrase>
 
 <phrase>
 <original>Selection toolbar</original>
-<translation></translation>
+<translation>Barre d'outils de sélection</translation>
 </phrase>
 
 <phrase>
 <original>Image tabstrip</original>
-<translation></translation>
+<translation>image tabstrip</translation>
 </phrase>
 
 <phrase>
 <original>Always show</original>
-<translation></translation>
+<translation>toujours montrer</translation>
 </phrase>
 
 <phrase>
 <original>Show when multiple images are loaded</original>
-<translation></translation>
+<translation>Voir si plusieurs images sont chargées</translation>
 </phrase>
 
 <phrase>
 <original>Never show</original>
-<translation></translation>
+<translation>Ne jamais montrer</translation>
 </phrase>
 
 <phrase>
 <original>Left</original>
-<translation></translation>
+<translation>gauche</translation>
 </phrase>
 
 <phrase>
 <original>Top</original>
-<translation></translation>
+<translation>haut</translation>
 </phrase>
 
 <phrase>
 <original>Right</original>
-<translation></translation>
+<translation>droit</translation>
 </phrase>
 
 <phrase>
 <original>Bottom</original>
-<translation></translation>
+<translation>bas</translation>
 </phrase>
 
 <phrase>
 <original>Floating toolboxes</original>
-<translation></translation>
+<translation>boîtes à outils flottantes</translation>
 </phrase>
 
 <phrase>
@@ -2827,7 +2827,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Checking for old autosave data</original>
-<translation></translation>
+<translation>Vérification des anciennes données de sauvegarde automatique</translation>
 </phrase>
 
 <phrase>
@@ -2837,32 +2837,32 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Loading requested images</original>
-<translation></translation>
+<translation>Chargement demandé images</translation>
 </phrase>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation></translation>
+<translation>Initialisation de mise à jour du logiciel (cette fonction peut être désactivée dans le menu Outils -> Options)</translation>
 </phrase>
 
 <phrase>
 <original>Checking for previously downloaded update data</original>
-<translation></translation>
+<translation>Vérification des données de mise à jour téléchargé précédemment</translation>
 </phrase>
 
 <phrase>
 <original>An error occurred while looking for an update file.</original>
-<translation></translation>
+<translation>Une erreur s'est produite lors de la recherche d'un fichier de mise à jour.</translation>
 </phrase>
 
 <phrase>
 <original>Update data found, but this copy of PhotoDemon is already up-to-date.</original>
-<translation></translation>
+<translation>Données de mise à jour trouvé, mais cette copie de PhotoDemon est déjà à jour.</translation>
 </phrase>
 
 <phrase>
 <original>New PhotoDemon update found!  Launching update notifier</original>
-<translation></translation>
+<translation>Nouvelle mise à jour PhotoDemon trouvé! Lancement de la mise à jour notifiant</translation>
 </phrase>
 
 <phrase>
@@ -2997,24 +2997,26 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>PhotoDemon Updates</original>
-<translation></translation>
+<translation>PhotoDemon Mises à jour</translation>
 </phrase>
 
 <phrase>
 <original>Software update check postponed.</original>
-<translation></translation>
+<translation>Mise à jour logicielle chèque reportée.</translation>
 </phrase>
 
 <phrase>
 <original>This copy of PhotoDemon is the newest version available.
 
 (Current version: %1.%2.%3)</original>
-<translation></translation>
+<translation>Cette copie de PhotoDemon est la dernière version available.
+
+(version actuelle: %1.%2.%3)</translation>
 </phrase>
 
 <phrase>
 <original>This copy of PhotoDemon is up to date.</original>
-<translation></translation>
+<translation>Cette copie de PhotoDemon est à jour.</translation>
 </phrase>
 
 <phrase>
@@ -3085,12 +3087,14 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifie
 <original>Language changed successfully!
 
 Note: some minor program text (such as hover tooltips) cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation></translation>
+<translation>Langue changé avec succès
+
+Note: un texte de programme de la mineure (comme les info-bulles de survol) ne peut pas être mise à jour en direct. Ce texte sera traduit correctement la prochaine fois que vous démarrez l'application.</translation>
 </phrase>
 
 <phrase>
 <original>Language changed successfully</original>
-<translation></translation>
+<translation>Langue changé avec succès</translation>
 </phrase>
 
 <phrase>
@@ -3210,12 +3214,12 @@ Note: some minor program text (such as hover tooltips) cannot be live-updated.  
 
 <phrase>
 <original>Export selected area as image</original>
-<translation></translation>
+<translation>Export zone sélectionnée comme l'image</translation>
 </phrase>
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation></translation>
+<translation>l'exportation à masque de sélection comme l'image</translation>
 </phrase>
 
 <phrase>
@@ -3385,12 +3389,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>dithering options</original>
-<translation></translation>
+<translation>options de tramage</translation>
 </phrase>
 
 <phrase>
 <original>number of gray shades</original>
-<translation></translation>
+<translation>nombre de nuances de gris</translation>
 </phrase>
 
 <phrase>
@@ -3841,12 +3845,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Color and Transparency</original>
-<translation></translation>
+<translation>Couleur et transparence</translation>
 </phrase>
 
 <phrase>
 <original>Color and Transparency Options</original>
-<translation></translation>
+<translation>Des options Couleur et transparence</translation>
 </phrase>
 
 <phrase>
@@ -4002,7 +4006,7 @@ de fichiers</translation>
 
 <phrase>
 <original>hardware acceleration report</original>
-<translation></translation>
+<translation>rapport de l'accélération matérielle</translation>
 </phrase>
 
 <phrase>
@@ -4072,12 +4076,12 @@ de fichiers</translation>
 
 <phrase>
 <original>maximum number of recent file entries</original>
-<translation></translation>
+<translation>nombre maximum d'entrées de fichiers récents</translation>
 </phrase>
 
 <phrase>
 <original>recent files list</original>
-<translation></translation>
+<translation>liste des fichiers récemment ouverts</translation>
 </phrase>
 
 <phrase>
@@ -4107,7 +4111,7 @@ de fichiers</translation>
 
 <phrase>
 <original>use the system color profile</original>
-<translation></translation>
+<translation>utiliser le profil de couleur du système</translation>
 </phrase>
 
 <phrase>
@@ -4117,27 +4121,27 @@ de fichiers</translation>
 
 <phrase>
 <original>use one or more custom color profiles</original>
-<translation></translation>
+<translation>utiliser un ou plusieurs profils de couleurs personnalisés</translation>
 </phrase>
 
 <phrase>
 <original>color profile for selected monitor</original>
-<translation></translation>
+<translation>profil de couleur pour moniteur sélectionné</translation>
 </phrase>
 
 <phrase>
 <original>available monitors</original>
-<translation></translation>
+<translation>moniteurs disponibles</translation>
 </phrase>
 
 <phrase>
 <original>when rendering images to the screen</original>
-<translation></translation>
+<translation>lors du rendu des images à l'écran</translation>
 </phrase>
 
 <phrase>
 <original>color management</original>
-<translation></translation>
+<translation>gestion des couleurs</translation>
 </phrase>
 
 <phrase>
@@ -4152,7 +4156,7 @@ de fichiers</translation>
 
 <phrase>
 <original>transparency management</original>
-<translation></translation>
+<translation>la gestion de la transparence</translation>
 </phrase>
 
 <phrase>
@@ -4207,7 +4211,7 @@ de fichiers</translation>
 
 <phrase>
 <original>save TIFFs as separated CMYK (for printing)</original>
-<translation>TIFF CMJN Enregistrer séparés (pour l'impression)</translation>
+<translation>TIFF CMYK Enregistrer séparés (pour l'impression)</translation>
 </phrase>
 
 <phrase>
@@ -4237,17 +4241,17 @@ de fichiers</translation>
 
 <phrase>
 <original>(none)</original>
-<translation></translation>
+<translation>(aucun)</translation>
 </phrase>
 
 <phrase>
 <original>ICC Profiles</original>
-<translation></translation>
+<translation>Profils ICC</translation>
 </phrase>
 
 <phrase>
 <original>Please select a color profile</original>
-<translation></translation>
+<translation>S'il vous plaît sélectionner un profil de couleur</translation>
 </phrase>
 
 <phrase>
@@ -4565,7 +4569,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
-<translation>TIFF en charge les espaces couleurs RVB et CMJN. RVB est utilisé par défaut, mais si un fichier TIFF va être utilisé dans le document imprimé, CMJN est parfois nécessaire.</translation>
+<translation>TIFF en charge les espaces couleurs RVB et CMYK. RVB est utilisé par défaut, mais si un fichier TIFF va être utilisé dans le document imprimé, CMYK est parfois nécessaire.</translation>
 </phrase>
 
 <phrase>
@@ -4575,32 +4579,32 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Primary monitor</original>
-<translation></translation>
+<translation>moniteur principal</translation>
 </phrase>
 
 <phrase>
 <original>Secondary monitor</original>
-<translation></translation>
+<translation>moniteur secondaire</translation>
 </phrase>
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation></translation>
+<translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utiliser ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows, utilisez également ce paramètre.</translation>
 </phrase>
 
 <phrase>
 <original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation></translation>
+<translation>Pour configurer des profils de couleurs personnalisés sur une base par moniteur, s'il vous plaît utiliser ce paramètre.</translation>
 </phrase>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation></translation>
+<translation>S'il vous plaît spécifier un profil de couleur pour chaque moniteur actuellement connecté au système. Notez que le texte entre parenthèses est la carte graphique la conduite du moniteur nommé.</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation></translation>
+<translation>Cliquez sur ce bouton pour faire apparaître une boîte de dialogue "parcourir pour le profil de couleur".</translation>
 </phrase>
 
 <phrase>
@@ -4688,7 +4692,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Copy the report to the system clipboard</original>
-<translation></translation>
+<translation>Copiez le rapport au presse-papiers du système</translation>
 </phrase>
 
 <phrase>
@@ -4708,7 +4712,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>NOTE: options on this page have been disabled because the FreeImage plugin could not be located.</original>
-<translation></translation>
+<translation>REMARQUE: Les options sur cette page ont été désactivées car le plugin FreeImage pas pu être localisé.</translation>
 </phrase>
 
 <phrase>
@@ -4743,7 +4747,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Color and transparency options include settings for color management (ICC profiles), and alpha channel handling.</original>
-<translation></translation>
+<translation>Des options Couleur et transparence comprennent les paramètres de gestion des couleurs (profils ICC), et le traitement de canal alpha.</translation>
 </phrase>
 
 <phrase>
@@ -5125,7 +5129,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Could not write Autosave data - did the containing drive run out of free space?</original>
-<translation></translation>
+<translation>Impossible d'écrire des données de sauvegarde automatique - n'a le lecteur contenant un manque d'espace libre?</translation>
 </phrase>
 
 <!-- pdImage.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5471,14 +5475,18 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
 
 To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s)</original>
-<translation></translation>
+<translation>Merci d'utiliser PhotoDemon. Malheureusement, un ou plusieurs plugins de base n'ont pas pu être localisés. PhotoDemon va toujours fonctionner sans ces plugins, mais un certain nombre de caractéristiques sera désactivé.
+
+Pour améliorer votre expérience utilisateur, s'il vous plaît vous connecter à Internet, puis laissez le programme télécharge automatiquement ces plug-in (s) libres, open-source.</translation>
 </phrase>
 
 <phrase>
 <original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
 
 To improve your user experience, please allow the program to automatically download these free, open-source plugin(s)</original>
-<translation></translation>
+<translation>Merci d'utiliser PhotoDemon. Malheureusement, un ou plusieurs plugins de base n'ont pas pu être localisés. PhotoDemon va toujours fonctionner sans ces plugins, mais un certain nombre de caractéristiques sera désactivé.
+
+To améliorer votre expérience utilisateur, s'il vous plaît laissez le programme télécharge automatiquement cesplug-in (s) libres, open-source.</translation>
 </phrase>
 
 <phrase>
@@ -5802,17 +5810,17 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>Failed to load embedded image; invalid header found.</original>
-<translation></translation>
+<translation>Impossible de charger l'image intégré; tête non valide trouvé.</translation>
 </phrase>
 
 <phrase>
 <original>DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue.</original>
-<translation></translation>
+<translation>Données DIB doivent être décompressées, mais zLib est désactivé ou manquant. S'il vous plaît installer le plugin zLib pour continuer.</translation>
 </phrase>
 
 <phrase>
 <original>Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned.</original>
-<translation></translation>
+<translation>Décompression n'a pas réussi (non spécifié erreur plugin zLib). Traitement des DIB abandonné.</translation>
 </phrase>
 
 <phrase>
@@ -5848,12 +5856,12 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>Copying newly transformed sRGB data</original>
-<translation></translation>
+<translation>Copie de données sRGB nouvellement transformée</translation>
 </phrase>
 
 <phrase>
 <original>ICC-based CMYK transformation failed.  Falling back to default CMYK conversion</original>
-<translation></translation>
+<translation>Transformation CMYK basé CPI a échoué. Retomber à défaut conversion CMYK</translation>
 </phrase>
 
 <phrase>
@@ -6029,7 +6037,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>CMYK image detected.  Preparing transform into RGB space</original>
-<translation></translation>
+<translation>L'image CMYK détecté. Préparation transformer en espace RGB</translation>
 </phrase>
 
 <phrase>
@@ -6251,7 +6259,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>[untitled image]</original>
-<translation></translation>
+<translation>[image anonyme]</translation>
 </phrase>
 
 <phrase>
@@ -6490,52 +6498,52 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>General image actions</original>
-<translation></translation>
+<translation>Actions générales d'image</translation>
 </phrase>
 
 <phrase>
 <original>Alpha-blending</original>
-<translation></translation>
+<translation>Mélange-Alpha</translation>
 </phrase>
 
 <phrase>
 <original>Lines</original>
-<translation></translation>
+<translation>lignes</translation>
 </phrase>
 
 <phrase>
 <original>Polygons</original>
-<translation></translation>
+<translation>polygones</translation>
 </phrase>
 
 <phrase>
 <original>Text</original>
-<translation></translation>
+<translation>texte</translation>
 </phrase>
 
 <phrase>
 <original>Final results</original>
-<translation></translation>
+<translation>Les résultats définitifs</translation>
 </phrase>
 
 <phrase>
 <original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
-<translation></translation>
+<translation>Avertissement: toutes les données de l'accélération matérielle est fournie par le système d'exploitation. Il représente en particulier une accélération GDI, qui est indépendant de DirectX et OpenGL. Version de l'OS et le mode de bureau affectent également les capacités de soutien. Pour de meilleurs résultats, s'il vous plaît exécuter PhotoDemon sur Windows 7 ou 8, sur un ordinateur de bureau Aero activé.</translation>
 </phrase>
 
 <phrase>
 <original>For more information on GDI hardware acceleration, visit http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</original>
-<translation></translation>
+<translation>Pour plus d'informations sur l'accélération matérielle GDI, visitez http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</translation>
 </phrase>
 
 <phrase>
 <original>accelerated</original>
-<translation></translation>
+<translation>accéléré</translation>
 </phrase>
 
 <phrase>
 <original>not accelerated</original>
-<translation></translation>
+<translation>pas accéléré</translation>
 </phrase>
 
 <!-- VBP_MiscOSInteractions.bas contains 28 phrases. 18 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -6653,17 +6661,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>click here to review the image's metadata</original>
-<translation></translation>
+<translation>cliquer ici pour consulter les métadonnées de l'image</translation>
 </phrase>
 
 <phrase>
 <original>other metadata options</original>
-<translation></translation>
+<translation>d'autres options de métadonnées</translation>
 </phrase>
 
 <phrase>
 <original>general metadata setting for this image</original>
-<translation></translation>
+<translation>réglage de métadonnées général pour cette image</translation>
 </phrase>
 
 <phrase>
@@ -6688,17 +6696,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use perceptive color matching (slower, more accurate)</original>
-<translation></translation>
+<translation>utiliser perspicace correspondance des couleurs (plus lent, plus précis)</translation>
 </phrase>
 
 <phrase>
 <original>automatic quality detection</original>
-<translation></translation>
+<translation>détection automatique de la qualité</translation>
 </phrase>
 
 <phrase>
 <original>advanced quality settings</original>
-<translation></translation>
+<translation>paramètres de qualité de pointe</translation>
 </phrase>
 
 <phrase>
@@ -6738,37 +6746,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Do not set quality automatically</original>
-<translation></translation>
+<translation>Ne pas régler la qualité automatiquement </translation>
 </phrase>
 
 <phrase>
 <original>No noticeable differences allowed</original>
-<translation></translation>
+<translation>Pas de différences notables permis</translation>
 </phrase>
 
 <phrase>
 <original>Slight differences allowed</original>
-<translation></translation>
+<translation>De légères différences permis</translation>
 </phrase>
 
 <phrase>
 <original>Some minor differences allowed</original>
-<translation></translation>
+<translation>Quelques différences mineures autorisés</translation>
 </phrase>
 
 <phrase>
 <original>Many minor differences allowed</original>
-<translation></translation>
+<translation>Beaucoup de différences mineures autorisés</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.</original>
-<translation></translation>
+<translation>PhotoDemon peut automatiquement sélectionner un paramètre de qualité JPEG pour vous. La analyses statistiques qu'il utilise sont conçus autour de photographies, les images de synthèse ou des images avec de grandes régions de couleur unie peuvent ne pas fonctionner ainsi.</translation>
 </phrase>
 
 <phrase>
 <original>Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds.</original>
-<translation></translation>
+<translation>Correspondance Perceptive des couleurs utilise la CIEL*a*b* de l'espace de couleur pour la modélisation des couleurs extrêmement fidèle. L'activation de ce paramètre peut augmenter le temps de traitement de quelques secondes.</translation>
 </phrase>
 
 <phrase>
@@ -6793,22 +6801,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use program-wide setting (default)</original>
-<translation></translation>
+<translation>utilisez le réglage de l'ensemble du programme (par défaut)</translation>
 </phrase>
 
 <phrase>
 <original>preserve all relevant metadata, but remove personal tags</original>
-<translation></translation>
+<translation>préserver toutes les métadonnées pertinentes, mais supprimer les balises personnelles</translation>
 </phrase>
 
 <phrase>
 <original>The current program-wide setting is</original>
-<translation></translation>
+<translation>Le réglage de l'ensemble du programme en cours est</translation>
 </phrase>
 
 <phrase>
 <original>You can change the program-wide setting from the Tools -> Options menu.</original>
-<translation></translation>
+<translation>Vous pouvez modifier le réglage de l'ensemble du programme de la commande Outils -> Options.</translation>
 </phrase>
 
 <phrase>
@@ -6838,7 +6846,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>JPEG previews require the FreeImage plugin.</original>
-<translation></translation>
+<translation>Aperçus JPEG nécessitent le plugin FreeImage.</translation>
 </phrase>
 
 <!-- VBP_FormExportJPEG.frm contains 66 phrases. 26 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
@@ -6961,7 +6969,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>background color for compositing</original>
-<translation></translation>
+<translation>couleur de fond pour le compositing</translation>
 </phrase>
 
 <phrase>
@@ -7351,12 +7359,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation></translation>
+<translation>Remarque: vous pouvez également définir une position centrale en cliquant sur la fenêtre de prévisualisation.</translation>
 </phrase>
 
 <phrase>
 <original>center position (x, y)</original>
-<translation></translation>
+<translation>position de point (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -7377,7 +7385,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Set a new center position by clicking the preview window</original>
-<translation></translation>
+<translation>Définir une nouvelle position centrale en cliquant sur la fenêtre de prévisualisation</translation>
 </phrase>
 
 <phrase>
@@ -7775,17 +7783,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fit to image</original>
-<translation></translation>
+<translation>s'adapter à l'image</translation>
 </phrase>
 
 <phrase>
 <original>circular</original>
-<translation></translation>
+<translation>circulaire</translation>
 </phrase>
 
 <phrase>
 <original>shape</original>
-<translation></translation>
+<translation>forme</translation>
 </phrase>
 
 <phrase>
@@ -7926,7 +7934,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>midtone target color (right-click preview to change)</original>
-<translation></translation>
+<translation>demi-teinte couleur cible (clic droit aperçu pour modifier)</translation>
 </phrase>
 
 <phrase>
@@ -7967,7 +7975,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
-<translation></translation>
+<translation>(processus de conversion par lots apparaît ici au moment de l'exécution)</translation>
 </phrase>
 
 <phrase>
@@ -8217,12 +8225,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Are you sure you want to cancel the current batch process?</original>
-<translation></translation>
+<translation>Etes-vous sûr de vouloir annuler le processus de lot en cours?</translation>
 </phrase>
 
 <phrase>
 <original>Cancel batch processing</original>
-<translation></translation>
+<translation>Annuler le traitement par lots</translation>
 </phrase>
 
 <phrase>
@@ -8411,17 +8419,17 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Batch processing is now underway.</original>
-<translation></translation>
+<translation>Le traitement par lot est en cours.</translation>
 </phrase>
 
 <phrase>
 <original>Once the batch processor has processed several images, it will display an estimated time remaining.</original>
-<translation></translation>
+<translation>Une fois le traitement par lots a traité plusieurs images, il affiche un temps restant estimé.</translation>
 </phrase>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation></translation>
+<translation>Vous pouvez annuler le traitement par lots à tout moment en appuyant sur le bouton "Annuler" dans le coin en bas à droite. Si vous décidez d'annuler, des images traitées seront toujours présents dans le dossier de sortie, donc vous pouvez avoir besoin de les supprimer manuellement.</translation>
 </phrase>
 
 <phrase>
@@ -8505,12 +8513,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Preparing batch processing engine</original>
-<translation></translation>
+<translation>Préparation moteur de traitement par lots</translation>
 </phrase>
 
 <phrase>
 <original>Processing image # %1 of %2. %3</original>
-<translation></translation>
+<translation>L'image de traitement # %1 %2. 3%</translation>
 </phrase>
 
 <phrase>
@@ -8540,12 +8548,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Exit</original>
-<translation></translation>
+<translation>Quitter</translation>
 </phrase>
 
 <phrase>
 <original>%1 files were successfully processed!</original>
-<translation></translation>
+<translation> %1 fichiers ont été traitées avec succès!</translation>
 </phrase>
 
 <phrase>
@@ -8733,22 +8741,22 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation></translation>
+<translation>ExifTool pas pu être démarré. Métadonnées disponibles pour cette session.</translation>
 </phrase>
 
 <phrase>
 <original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation></translation>
+<translation>ExifTool initié avec succès. Prêt à traiter les métadonnées.</translation>
 </phrase>
 
 <phrase>
 <original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation></translation>
+<translation>ATTENTION! ExifTool tuyaux d'entrée/sortie ne peuvent pas être créés.</translation>
 </phrase>
 
 <phrase>
 <original>WARNING! ExifTool.exe could not be started.</original>
-<translation></translation>
+<translation>ATTENTION! ExifTool.exe pas pu être démarré.</translation>
 </phrase>
 
 <phrase>
@@ -9401,7 +9409,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>PhotoDemon Selection</original>
-<translation></translation>
+<translation>PhotoDemon sélection</translation>
 </phrase>
 
 <phrase>
@@ -9446,12 +9454,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation></translation>
+<translation>Cette action nécessite une sélection active. S'il vous plaît créer une sélection avant de poursuivre.</translation>
 </phrase>
 
 <phrase>
 <original>Export selection as image</original>
-<translation></translation>
+<translation>Exporter la sélection en tant qu'image</translation>
 </phrase>
 
 <phrase>
@@ -9771,7 +9779,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation></translation>
+<translation>Préréglages précédemment enregistrés peuvent être sélectionnés ici. Vous pouvez enregistrer les paramètres actuels en tant que nouveau paramètre prédéfini, en cliquant sur le bouton Enregistrer sur la droite.</translation>
 </phrase>
 
 <phrase>
@@ -9803,7 +9811,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation></translation>
+<translation>couleur à effacer (clic droit pour sélectionner l)</translation>
 </phrase>
 
 <!-- VBP_FormColorToTransparency.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9883,7 +9891,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
-<translation></translation>
+<translation>Initier l'auto-traduction de toutes les phrases manquantes</translation>
 </phrase>
 
 <phrase>
@@ -10008,22 +10016,22 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Cette action peut prendre un temps très long à compléter. Une fois lancé, il ne peut pas être annulée. Etes-vous sûr de vouloir continuer?</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translation warning</original>
-<translation></translation>
+<translation>Avertissement de traduction automatique</translation>
 </phrase>
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation></translation>
+<translation>traitement de phrase %1 de %2</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translation complete!</original>
-<translation></translation>
+<translation>Traduction automatique complet!</translation>
 </phrase>
 
 <phrase>
@@ -10357,12 +10365,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>size (w, h)</original>
-<translation></translation>
+<translation>taille (w, h)</translation>
 </phrase>
 
 <phrase>
 <original>position (x, y)</original>
-<translation></translation>
+<translation>la position (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -10372,7 +10380,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>area</original>
-<translation></translation>
+<translation>région</translation>
 </phrase>
 
 <phrase>
@@ -10382,27 +10390,27 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>nav</original>
-<translation></translation>
+<translation>nav</translation>
 </phrase>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation></translation>
+<translation>Main (image, cliquez et faites glisser le défilement)</translation>
 </phrase>
 
 <phrase>
 <original>Rectangular Selection</original>
-<translation></translation>
+<translation>sélection rectangulaire</translation>
 </phrase>
 
 <phrase>
 <original>Elliptical (Oval) Selection</original>
-<translation></translation>
+<translation>Sélection elliptique (ovale)</translation>
 </phrase>
 
 <phrase>
 <original>Line Selection</original>
-<translation></translation>
+<translation>Sélection de ligne</translation>
 </phrase>
 
 <phrase>
@@ -10477,17 +10485,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>size (x, y)</original>
-<translation></translation>
+<translation>taille (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>1st point (x, y)</original>
-<translation></translation>
+<translation>1er point (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>2nd point (x, y)</original>
-<translation></translation>
+<translation>2ème point (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -10503,17 +10511,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Images</original>
-<translation></translation>
+<translation>images</translation>
 </phrase>
 
 <phrase>
 <original>This image does not have a filename.</original>
-<translation></translation>
+<translation>Cette image n'a pas de nom de fichier.</translation>
 </phrase>
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation></translation>
+<translation>Une fois cette image a été enregistrée sur le disque, son nom apparaîtra ici.</translation>
 </phrase>
 
 <!-- VBP_ToolbarImageTabs.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10536,22 +10544,22 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>new color</original>
-<translation></translation>
+<translation>couleur nouvelle</translation>
 </phrase>
 
 <phrase>
 <original>replace threshold</original>
-<translation></translation>
+<translation>remplacer seuil</translation>
 </phrase>
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation></translation>
+<translation>couleur à remplacer (clic droit pour sélectionner l)</translation>
 </phrase>
 
 <phrase>
 <original>Replacing color</original>
-<translation></translation>
+<translation>remplacement de couleur</translation>
 </phrase>
 
 <!-- VBP_FormReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10562,7 +10570,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>List of recently opened images seems to be invalid.  A new recent images list has been created.</original>
-<translation></translation>
+<translation>Liste des images récemment ouverts semble être invalide. Une nouvelle liste de récentes images a été créé.</translation>
 </phrase>
 
 <phrase>
@@ -10582,7 +10590,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation></translation>
+<translation>Sauvegarde vignette a échoué (erreur non spécifiée GDI).</translation>
 </phrase>
 
 <!-- pdRecentFiles.cls contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10593,52 +10601,52 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation></translation>
+<translation>CPI transformer demandé, mais aucune donnée trouvée. Abandonnant tentative.</translation>
 </phrase>
 
 <phrase>
 <original>Using embedded ICC profile to convert image to sRGB space for editing</original>
-<translation></translation>
+<translation>Utilisation du profil ICC intégré à convertir l'image à l'espace sRGB pour l'édition</translation>
 </phrase>
 
 <phrase>
 <original>ICC profile transformation successful.  Image is now sRGB.</original>
-<translation></translation>
+<translation>Transformation profil ICC réussie. L'image est maintenant sRGB.</translation>
 </phrase>
 
 <phrase>
 <original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation></translation>
+<translation>Profil ICC ne peut pas être appliquée. L'image reste dans le profil d'origine.</translation>
 </phrase>
 
 <phrase>
 <original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation></translation>
+<translation>Les deux profils ICC chargés avec succès, mais la transformation ne peuvent pas être créés.</translation>
 </phrase>
 
 <phrase>
 <original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation></translation>
+<translation>Impossible d'obtenir le profil standard de couleur sRGB. La gestion des couleurs a été désactivé pour cette image.</translation>
 </phrase>
 
 <phrase>
 <original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation></translation>
+<translation>Profil ICC intégré n'est pas valide. La gestion des couleurs a été désactivé pour cette image.</translation>
 </phrase>
 
 <phrase>
 <original>Image contains ICC profile.  Copying profile now</original>
-<translation></translation>
+<translation>Image contient un profil ICC. Copie profil maintenant</translation>
 </phrase>
 
 <phrase>
 <original>ICC profile copied successfully.</original>
-<translation></translation>
+<translation>Profil ICC copié avec succès.</translation>
 </phrase>
 
 <phrase>
 <original>ICC profile could not be copied (unknown error).</original>
-<translation></translation>
+<translation>Profil ICC ne peut pas être copié (erreur inconnue).</translation>
 </phrase>
 
 <!-- pdICCProfile.cls contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -10649,37 +10657,37 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Using embedded ICC profile to convert image from CMYK to sRGB color space</original>
-<translation></translation>
+<translation>Utilisation du profil ICC intégré à convertir l'image de CMYK à l'espace couleur sRGB</translation>
 </phrase>
 
 <phrase>
 <original>CMYK to sRGB transform data created successfully.  Applying transform</original>
-<translation></translation>
+<translation>CMYK à sRGB transformer les données créées avec succès. application d'une transformée</translation>
 </phrase>
 
 <phrase>
 <original>CMYK to sRGB transformation successful.</original>
-<translation></translation>
+<translation>CMYK à sRGB transformation réussie.</translation>
 </phrase>
 
 <phrase>
 <original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
-<translation></translation>
+<translation>sRGB transformer ne pouvait être appliquée. L'image reste au format CMYK.</translation>
 </phrase>
 
 <phrase>
 <original>Both ICC profiles loaded successfully, but CMYK transformation could not be created.</original>
-<translation></translation>
+<translation>Les deux profils ICC chargés avec succès, mais la transformation CMYK ne peuvent pas être créés.</translation>
 </phrase>
 
 <phrase>
 <original>Could not obtain standard sRGB color profile.  CMYK transform abandoned.</original>
-<translation></translation>
+<translation>Impossible d'obtenir le profil standard de couleur sRGB. transformer  CMYK abandonné.</translation>
 </phrase>
 
 <phrase>
 <original>Embedded ICC profile is invalid.  CMYK transform could not be performed.</original>
-<translation></translation>
+<translation>Profil ICC intégré n'est pas valide. CMYK transforme pas pu être effectuée.</translation>
 </phrase>
 
 <!-- VBP_ColorManagement.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
@@ -10690,42 +10698,42 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Change color</original>
-<translation></translation>
+<translation>Changer de couleur</translation>
 </phrase>
 
 <phrase>
 <original>Select color from screen</original>
-<translation></translation>
+<translation>Choisir la couleur de l'écran</translation>
 </phrase>
 
 <phrase>
 <original>recent colors</original>
-<translation></translation>
+<translation>couleurs récentes</translation>
 </phrase>
 
 <phrase>
 <original>HTML / CSS</original>
-<translation></translation>
+<translation>HTML/CSS</translation>
 </phrase>
 
 <phrase>
 <original>value</original>
-<translation></translation>
+<translation>valeur</translation>
 </phrase>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>original</translation>
 </phrase>
 
 <phrase>
 <original>current</original>
-<translation></translation>
+<translation>courant</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to enable color capturing from anywhere on the screen.</original>
-<translation></translation>
+<translation>Cliquez sur ce bouton pour activer les couleurs de la capture depuis n'importe où sur l'écran.</translation>
 </phrase>
 
 <!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10736,47 +10744,47 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>one image per page</original>
-<translation></translation>
+<translation>une image par page</translation>
 </phrase>
 
 <phrase>
 <original>multiple images per page</original>
-<translation></translation>
+<translation>plusieurs images par page</translation>
 </phrase>
 
 <phrase>
 <original>one image spread across multiple pages (poster print)</original>
-<translation></translation>
+<translation>une image répartie sur plusieurs pages (impression d'affiche)</translation>
 </phrase>
 
 <phrase>
 <original>type of print job</original>
-<translation></translation>
+<translation>type de travail d'impression</translation>
 </phrase>
 
 <phrase>
 <original>print quality</original>
-<translation></translation>
+<translation>la qualité d'impression</translation>
 </phrase>
 
 <phrase>
 <original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation></translation>
+<translation>Dans l'étape suivante, vous pouvez spécifier des informations de plan détaillé (marges, positionnement, etc)</translation>
 </phrase>
 
 <phrase>
 <original>Step 1 of 2: basic print settings</original>
-<translation></translation>
+<translation>Étape 1 de 2: les paramètres d'impression de base</translation>
 </phrase>
 
 <phrase>
 <original>Draft (least ink)</original>
-<translation></translation>
+<translation>Projet (moins d'encre)</translation>
 </phrase>
 
 <phrase>
 <original>Best (most ink)</original>
-<translation></translation>
+<translation>Meilleur (plus d'encre)</translation>
 </phrase>
 
 <!-- VBP_FormPrintWizard.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -10787,12 +10795,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Preparing image for printing</original>
-<translation></translation>
+<translation>Préparation Image pour l'impression</translation>
 </phrase>
 
 <phrase>
 <original>Image successfully sent to Windows Photo Printer.</original>
-<translation></translation>
+<translation>Image envoyée avec succès à Windows Photo Printer.</translation>
 </phrase>
 
 <!-- VBP_PrinterSupport.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -10803,57 +10811,57 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Screenshot options</original>
-<translation></translation>
+<translation>Options de Captures d'écran</translation>
 </phrase>
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation></translation>
+<translation>minimiser PhotoDemon avant de capturer</translation>
 </phrase>
 
 <phrase>
 <original>entire desktop</original>
-<translation></translation>
+<translation>tout le bureau</translation>
 </phrase>
 
 <phrase>
 <original>specific program (listed by window title)</original>
-<translation></translation>
+<translation>programme spécifique (classés par titre de la fenêtre)</translation>
 </phrase>
 
 <phrase>
 <original>include window decorations</original>
-<translation></translation>
+<translation>inclure les décorations de fenêtres</translation>
 </phrase>
 
 <phrase>
 <original>screenshot preview</original>
-<translation></translation>
+<translation>Aperçu capture d'écran</translation>
 </phrase>
 
 <phrase>
 <original>screenshot source</original>
-<translation></translation>
+<translation>source de capture d'écran</translation>
 </phrase>
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation></translation>
+<translation>S'il vous plaît sélectionner une fenêtre à capturer.</translation>
 </phrase>
 
 <phrase>
 <original>Target window required</original>
-<translation></translation>
+<translation>Fenêtre cible requis</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, that program has exited.</original>
-<translation></translation>
+<translation>Malheureusement, ce programme s'est terminé.</translation>
 </phrase>
 
 <phrase>
 <original>Please select another one.</original>
-<translation></translation>
+<translation>S'il vous plaît sélectionner un autre.</translation>
 </phrase>
 
 <!-- VBP_FormScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -10900,12 +10908,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Initializing content-aware resize engine</original>
-<translation></translation>
+<translation>Initialisation moteur de redimensionnement sensible au contenu</translation>
 </phrase>
 
 <phrase>
 <original>Applying content-aware resize</original>
-<translation></translation>
+<translation>L'application de redimensionnement sensible au contenu</translation>
 </phrase>
 
 <!-- VBP_FormContentAwareResize.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10922,12 +10930,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Blurring chroma (color) data</original>
-<translation></translation>
+<translation>Chroma flou (couleur) des données</translation>
 </phrase>
 
 <phrase>
 <original>Merging luminance and chroma into final image</original>
-<translation></translation>
+<translation>Fusion luminance et la chrominance dans l'image finale</translation>
 </phrase>
 
 <!-- VBP_FormChromaBlur.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10938,7 +10946,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>unknown image %1</original>
-<translation></translation>
+<translation>Image inconnue %1</translation>
 </phrase>
 
 <!-- VBP_AutosaveHandler.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -10949,42 +10957,42 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Autosave data detected</original>
-<translation></translation>
+<translation>Données de sauvegarde automatique détectés</translation>
 </phrase>
 
 <phrase>
 <original>Restore selected images</original>
-<translation></translation>
+<translation>Restaurer les images sélectionnées</translation>
 </phrase>
 
 <phrase>
 <original>Discard all images</original>
-<translation></translation>
+<translation>Jeter toutes les images</translation>
 </phrase>
 
 <phrase>
 <original>autosave entries found</original>
-<translation></translation>
+<translation>entrées enregistrées automatiquement trouvés</translation>
 </phrase>
 
 <phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
-<translation></translation>
+<translation>Données de sauvegarde automatique trouvés. Voulez-vous restaurer?</translation>
 </phrase>
 
 <phrase>
 <original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
-<translation></translation>
+<translation>Une séance de PhotoDemon précédente terminé de manière inattendue. Voulez-vous récupérer automatiquement les images enregistrées automatiquement suivants?</translation>
 </phrase>
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation></translation>
+<translation>Si vous quittez maintenant, ces données de sauvegarde automatique seront perdus à jamais. Etes-vous sûr de vouloir quitter?</translation>
 </phrase>
 
 <phrase>
 <original>Warning: autosave data will be deleted</original>
-<translation></translation>
+<translation>Avertissement: les données de sauvegarde automatique seront supprimés</translation>
 </phrase>
 
 <!-- VBP_FormAutosaveWarning.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10995,57 +11003,57 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>resolution</original>
-<translation></translation>
+<translation>résolution</translation>
 </phrase>
 
 <phrase>
 <original>dimensions</original>
-<translation></translation>
+<translation>dimensions</translation>
 </phrase>
 
 <phrase>
 <original>aspect ratio</original>
-<translation></translation>
+<translation>rapport d'aspect</translation>
 </phrase>
 
 <phrase>
 <original>percent</original>
-<translation></translation>
+<translation>pour cent</translation>
 </phrase>
 
 <phrase>
 <original>inches</original>
-<translation></translation>
+<translation>pouces</translation>
 </phrase>
 
 <phrase>
 <original>centimeters</original>
-<translation></translation>
+<translation>centimètres</translation>
 </phrase>
 
 <phrase>
 <original>pixels / inch (PPI)</original>
-<translation></translation>
+<translation>pixels/pouce (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
-<translation></translation>
+<translation>Pixel/centimètre (PPCM)</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation></translation>
+<translation>Conserver les proportions d'aspect (parfois appelé les proportions). Utilisez cette option pour redimensionner une image tout en conservant la largeur et la hauteur en synchronisation.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation></translation>
+<translation>Modifier l'unité de mesure utilisée pour redimensionner l'image.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation></translation>
+<translation>Modifier l'unité de mesure utilisée pour la résolution de l'image (densité de pixels).</translation>
 </phrase>
 
 <!-- smartResize.ctl contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -11071,7 +11079,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>(messages will appear here at run-time)</original>
-<translation></translation>
+<translation>(les messages apparaissent ici au moment de l'exécution)</translation>
 </phrase>
 
 <phrase>
@@ -11091,17 +11099,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>px</original>
-<translation></translation>
+<translation>px</translation>
 </phrase>
 
 <phrase>
 <original>in</original>
-<translation></translation>
+<translation>dans</translation>
 </phrase>
 
 <phrase>
 <original>cm</original>
-<translation></translation>
+<translation>cm</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -11130,37 +11138,37 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>WebP Export Options</original>
-<translation></translation>
+<translation>Options d'exportation WebP</translation>
 </phrase>
 
 <phrase>
 <original>Lossless (100)</original>
-<translation></translation>
+<translation>Lossless (100)</translation>
 </phrase>
 
 <phrase>
 <original>Low compression, good image quality (80)</original>
-<translation></translation>
+<translation>Faible compression, bonne qualité d'image (80)</translation>
 </phrase>
 
 <phrase>
 <original>Moderate compression, medium image quality (60)</original>
-<translation></translation>
+<translation>Compression modérée, une qualité d'image moyenne (60)</translation>
 </phrase>
 
 <phrase>
 <original>High compression, poor image quality (40)</original>
-<translation></translation>
+<translation>Compression élevée, une mauvaise qualité d'image (40)</translation>
 </phrase>
 
 <phrase>
 <original>Super compression, very poor image quality (20)</original>
-<translation></translation>
+<translation>Compression Super, très mauvaise qualité de l'image (20)</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify WebP export options</original>
-<translation></translation>
+<translation>Attente pour l'utilisateur de spécifier des options d'exportation WebP</translation>
 </phrase>
 
 <!-- VBP_FormExportWebP.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -11171,12 +11179,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>JPEG XR Export Options</original>
-<translation></translation>
+<translation>Options d'exportation JPEG XR</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify JPEG XR export options</original>
-<translation></translation>
+<translation>Attente pour l'utilisateur de spécifier les options d'exportation JPEG XR</translation>
 </phrase>
 
 <!-- VBP_FormExportJXR.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -11192,4 +11200,8 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <!-- These 1963 phrases contain approximately 12148 total words. -->
 
 </pdData>
+
+
+
+
 
