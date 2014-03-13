@@ -1,10 +1,10 @@
-# PhotoDemon 6.2 beta
+# PhotoDemon 6.2
 
-![PhotoDemon Screenshot] (http://photodemon.org/images/screenshot_6-2a1.jpg)
+![PhotoDemon Screenshot] (http://photodemon.org/images/PD_6-2.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive selection of photo editing tools in a tiny 7 MB download.  It runs on any Windows machine (XP through Win 8.1) and *does not* require installation.  It can easily be run from a portable USB drive or SD card.  English, Dutch, French, German, and Italian translations are currently provided.
+It provides a comprehensive selection of photo editing tools in a tiny 7 MB download.  It runs on any Windows machine (XP through Win 8.1) and *does not* require installation.  It can easily be run from a portable USB drive or SD card.  English, Dutch, French, German, Italian, Portuguese, and Spanish translations are currently provided.
 
 PhotoDemon is written in VB6.  (Don't laugh until you've tried it - its performance will surprise you!)  Outside contributions from both coders and translators are always welcome.
 
@@ -30,7 +30,7 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 ### It provides a comprehensive selection of pro-grade features and tools
 * Extensive file format support, including all major RAW formats (via LibRaw).
 * Powerful selection tools, with full support for antialiasing, feathering, and on-canvas sizing/moving.
-* Fully color-managed workflow, including support for embedded ICC profiles (even CMYK ones!).
+* Fully color-managed workflow, including support for embedded ICC profiles.
 * 2D transformations:  advanced resize (Sinc, Catmull-Rom, etc), content-aware scaling, crop (including autocrop), rotate, shear, tiling.
 * Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram, green screen, Wratten filters, and many more.
 * Filters and effects: content-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, film grain, and many more.
@@ -38,7 +38,7 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 
 ### What doesn't PhotoDemon do?
 
-* PhotoDemon does not support layers, but layer support is actively being developed as of January 2014.
+* PhotoDemon does not support layers, but layer support will be included in the next release (version 6.4).
 * PhotoDemon does not provide any on-canvas painting tools.  Many have been prototyped, but their integration has been postponed pending a final layers implementation.
 * PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later.
 
