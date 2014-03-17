@@ -627,7 +627,7 @@ Private PicW            As Long
 Private aLighten(255)   As Byte                 'Light Picture
 Private aDarken(255)    As Byte                 'Dark Picture
 
-Private tmpPic          As New StdPicture       'Temp picture
+Private tmppic          As New StdPicture       'Temp picture
 'Private PicX            As Long                 'X position of picture
 'Private PicY            As Long                 'Y Position of Picture
 Private m_PicRect       As RECT                 'Picture drawing area
@@ -955,6 +955,7 @@ Dim a1               As Long
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromPicture SrcPic
+    'If (Not g_IsVistaOrLater) Then srcDIB.fixPremultipliedAlpha False
     
     tObj = SelectObject(srcDC, SrcPic)
 
@@ -983,7 +984,15 @@ Dim a1               As Long
     Set dstDIB = New pdDIB
     dstDIB.createBlank DstW, DstH, 32, RGB(127, 127, 127)
     
-    GDIPlusResizeDIB dstDIB, 0, 0, DstW, DstH, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    If g_IsVistaOrLater Then
+        GDIPlusResizeDIB dstDIB, 0, 0, DstW, DstH, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    Else
+        srcDIB.fixPremultipliedAlpha True
+        GDIPlusResizeDIB dstDIB, 0, 0, DstW, DstH, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeNearestNeighbor
+        'dstDIB.fixPremultipliedAlpha False
+    End If
+    
+    'If (Not g_IsVistaOrLater) Then dstDIB.fixPremultipliedAlpha False
     
     BitBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, vbSrcCopy
     'StretchBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode), UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode), vbSrcCopy
@@ -1399,29 +1408,29 @@ Dim lShadowClr       As Long
     If (m_Buttonstate = eStateDown Or (m_ButtonMode <> ebmCommandButton And m_bValue = True)) Then
         '-- Mouse down
         If Not m_PictureDown Is Nothing Then
-            Set tmpPic = m_PictureDown
+            Set tmppic = m_PictureDown
         Else
             If Not m_PictureHot Is Nothing Then
-                Set tmpPic = m_PictureHot
+                Set tmppic = m_PictureHot
             Else
-                Set tmpPic = m_Picture
+                Set tmppic = m_Picture
             End If
         End If
     ElseIf (m_Buttonstate = eStateOver) Then
         '-- Mouse in (over)
         If Not m_PictureHot Is Nothing Then
-            Set tmpPic = m_PictureHot
+            Set tmppic = m_PictureHot
         Else
-            Set tmpPic = m_Picture
+            Set tmppic = m_Picture
         End If
     Else
         '-- Mouse out (normal)
-        Set tmpPic = m_Picture
+        Set tmppic = m_Picture
     End If
 
     ' --Adjust Picture Sizes
-    PicW = fixDPI(ScaleX(tmpPic.Width, vbHiMetric, vbPixels))
-    picH = fixDPI(ScaleY(tmpPic.Height, vbHiMetric, vbPixels))
+    PicW = fixDPI(ScaleX(tmppic.Width, vbHiMetric, vbPixels))
+    picH = fixDPI(ScaleY(tmppic.Height, vbHiMetric, vbPixels))
     
 
     ' --Get the drawing area of caption
@@ -1709,16 +1718,16 @@ Dim tmpMaskColor     As Long
 
 ' --Draw picture
 
-    If tmpPic.Type = vbPicTypeIcon Then
+    If tmppic.Type = vbPicTypeIcon Then
         tmpMaskColor = TranslateColor(&HC0C0C0)
     Else
         tmpMaskColor = m_lMaskColor
     End If
 
-    If Is32BitBMP(tmpPic) Then
-        TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, picH, tmpPic, lBrushColor
+    If Is32BitBMP(tmppic) Then
+        TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, picH, tmppic, lBrushColor
     Else
-        TransBlt hDC, lpRect.Left, lpRect.Top, PicW, picH, tmpPic, tmpMaskColor, lBrushColor
+        TransBlt hDC, lpRect.Left, lpRect.Top, PicW, picH, tmppic, tmpMaskColor, lBrushColor
     End If
 
 End Sub
