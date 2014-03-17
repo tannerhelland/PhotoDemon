@@ -104,7 +104,7 @@ Begin VB.Form FormRotate
       _ExtentY        =   873
       Min             =   -360
       Max             =   360
-      SigDigits       =   1
+      SigDigits       =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
