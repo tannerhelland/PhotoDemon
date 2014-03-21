@@ -201,6 +201,7 @@ Module=Unit_Conversion_Functions; Modules\VBP_UnitConversions.bas
 Class=pdScrollAPI; Classes\pdScrollBar.cls
 Form=Forms\VBP_FormExportWebP.frm
 Form=Forms\VBP_FormExportJXR.frm
+Class=pdLayer; Classes\pdLayer.cls
 ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"

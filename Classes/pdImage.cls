@@ -140,7 +140,18 @@ Option Explicit
     
     'Various viewport actions are now handled through a separate pdViewport class
     Public imgViewport As pdViewport
-
+    
+    'Image layers!  All layers are stored in this array.
+    Private imgLayers() As pdLayer
+    
+    'Current layer.  Layers in PD are zero-based, with the 0 layer being created by default when a pdImage is created.
+    ' To ensure proper behavior for things like caching viewports, this value is not publicly accessible - you must access
+    ' it via the relevant get/set functions.
+    Private curLayer As Long
+    
+    'Total number of layers.
+    Private numOfLayers As Long
+    
 'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the current image's state,
 ' but it should be good enough to reconstruct an approximation for data recovery purposes.
 Public Function writeInternalDataToFile(ByVal dstFilename As String) As Boolean
@@ -286,10 +297,40 @@ Public Function getCompositedImage() As pdDIB
     Set getCompositedImage = mainDIB
 End Function
 
-'In preparation for layers support, I will be switching various external modules to use this function instead of a
-' direct reference to the mainDIB object.  DO NOT DIRECTLY ACCESS THIS pdImage's MAINLAYER OBJECT IN NEW CODE!
+'Get the currently active layer index
+Public Function getActiveLayerIndex() As Long
+    getActiveLayerIndex = curLayer
+End Function
+
+'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
+' in calling functions!)
+Public Function getNumOfLayers() As Long
+    getNumOfLayers = numOfLayers
+End Function
+
+'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when someone
+' needs access to the current layer's DIB, and they don't want to retrieve it via a bunch of helper functions.
 Public Function getActiveDIB() As pdDIB
-    Set getActiveDIB = mainDIB
+    If numOfLayers > 0 Then
+        Set getActiveDIB = imgLayers(curLayer).layerDIB
+    Else
+        Set getActiveDIB = Nothing
+    End If
+End Function
+
+'Retrieve the currently active layer
+Public Function getActiveLayer() As pdLayer
+    If numOfLayers > 0 Then
+        Set getActiveLayer = imgLayers(curLayer)
+    Else
+        Set getActiveLayer = Nothing
+    End If
+End Function
+
+'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
+' Also, this function does not check bounds, so make sure the passed value is valid!
+Public Function getLayer(ByVal layerIndex As Long) As pdLayer
+    Set getLayer = imgLayers(layerIndex)
 End Function
 
 'External functions can use this function to request a thumbnail version of the contained image.  Previously, thumbnail
@@ -507,6 +548,10 @@ Private Sub Class_Initialize()
     
     'Initialize the viewport manager
     Set imgViewport = New pdViewport
+    
+    'Create at least one blank layer
+    ReDim imgLayers(0) As pdLayer
+    curLayer = 0
         
 End Sub
 

@@ -12,13 +12,13 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon DIB Wrapper class (formerly known as "pdDIB")
+'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 10/January/14
-'Last update: renamed to pdDIB instead of pdDIB.  DIBs need extra metadata associated with them (name, opacity, etc)
+'Last update: renamed to pdDIB instead of pdLayer.  Layers need extra metadata associated with them (name, opacity, etc)
 '             and that extra data is too heavy for the many functions that just need a single DIB for fx or whatever else.
-'             To that end, this class is now pdDIB, and all it does is store DIB data, whereas the new pdDIB class will
+'             To that end, this class is now pdDIB, and all it does is store DIB data, whereas the new pdLayer class will
 '             actually be FOR LAYERS, e.g. it will include all relevant layer data, as well as a single pdDIB object with
 '             the image data for that DIB.  (Confused yet?  :)
 '
