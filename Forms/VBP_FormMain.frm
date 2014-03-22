@@ -1466,9 +1466,11 @@ Private Sub Form_Load()
         
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
-    'TODO: As of 17 Oct '13, I am removing the interface warning.  I think things are now "stable enough" for people to once again
-    '       play with nightly builds.
-    'MsgBox "WARNING!  PhotoDemon's current interface is undergoing a huge overhaul.  As long as this message remains, the program may not work as expected.  I've suspended nightly builds for now, but if you've downloaded this from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the 6.0 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.2 Development Warning"
+    'TODO: As of 22 March '14, I'm adding a warning box to the project.  Layers implementation is going to break a lot
+    '       of things, but because it's convenient for me to use GitHub to transfer work between PCs (and VB makes
+    '       multiple branches very unpleasant, thanks to garbage .frx handling), I'm going to be posting updates to
+    '       the master branch, even if they break the program completely.
+    MsgBox "WARNING!  I am currently adding Layers support to PhotoDemon.  This has made many parts of the program unstable, or in some cases, completely non-functional." & vbCrLf & vbCrLf & "As long as this message remains, PhotoDemon may not function properly (or at all).  I've suspended nightly builds until things are stable again.  If you've manually downloaded this build from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the 6.2 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.4 Development Warning"
     
     
     '*************************************************************************************************************************************
