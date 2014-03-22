@@ -63,18 +63,15 @@ Private Type LayerData
     l_GroupID As Long               'Layer group (0 if not assigned to a group)
     l_Opacity As Long               'Layer opacity (defaults to 100)
     l_BlendMode As LAYER_BLENDMODE  'Layer blend mode; defaults to BL_NORMAL
+    l_OffsetX As Double             'X/Y offset of the layer's top-left corner
+    l_OffsetY As Double
+    l_Angle As Double               'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
+    l_Visibility As Boolean         'Layer visibility
+    
 End Type
 
 'Local instance of layer data for this layer
 Private myLayerData As LayerData
-
-'Layer x/y offset, as doubles.
-Private layerOffsetX As Double, layerOffsetY As Double
-
-'Layer angle.  The long-term goal is to support non-destructive rotation of layers, using GDI+ to render them dynamically as necessary.
-' This will be messy due to zoom/scroll considerations (e.g. detecting if a layer is in the viewport, while rotated), but it may
-' eventually be possible!
-Private layerAngle As Double
 
 'Layer width, height.  Note that this values are automatically updated as necessary, depending on the contents of the layer
 'Private layerWidth As Long, layerHeight As Long
@@ -89,9 +86,6 @@ Private layerAngle As Double
 ' That said, any function that directly modifies the DIB must also take care of any management functions as well (e.g. redrawing
 ' the viewport), as layers have no way tp propagate commands up to their parent image.
 Public layerDIB As pdDIB
-
-'Layer visibility.
-Private layerVisibility As Boolean
 
 'Get layer type.  Note that there is no SET layer type function; layer type is set at creation, and cannot currently be changed.
 Public Function getLayerType() As LAYER_TYPE
@@ -136,37 +130,37 @@ End Sub
 
 'Get/set visibility
 Public Function getLayerVisibility() As Boolean
-    getLayerVisibility = layerVisibility
+    getLayerVisibility = myLayerData.l_Visibility
 End Function
 
 Public Sub setLayerVisibility(ByVal newVisibility As Boolean)
-    layerVisibility = newVisibility
+    myLayerData.l_Visibility = newVisibility
 End Sub
 
 'Get/set layer offsets
 Public Function getLayerOffsetX() As Double
-    getLayerOffsetX = layerOffsetX
+    getLayerOffsetX = myLayerData.l_OffsetX
 End Function
 
 Public Function getLayerOffsetY() As Double
-    getLayerOffsetY = layerOffsetY
+    getLayerOffsetY = myLayerData.l_OffsetY
 End Function
 
 Public Sub setLayerOffsetX(ByVal newOffsetX As Double)
-    layerOffsetX = newOffsetX
+    myLayerData.l_OffsetX = newOffsetX
 End Sub
 
 Public Sub setLayerOffsetY(ByVal newOffsetY As Double)
-    layerOffsetY = newOffsetY
+    myLayerData.l_OffsetY = newOffsetY
 End Sub
 
 'Get/set layer angle
 Public Function getLayerAngle() As Double
-    getLayerAngle = layerAngle
+    getLayerAngle = myLayerData.l_Angle
 End Function
 
 Public Sub setLayerAngle(ByVal newAngle As Double)
-    layerAngle = newAngle
+    myLayerData.l_Angle = newAngle
 End Sub
 
 Private Sub Class_Initialize()
@@ -177,16 +171,12 @@ Private Sub Class_Initialize()
         .l_GroupID = 0
         .l_Opacity = 100
         .l_BlendMode = BL_NORMAL
+        .l_OffsetX = 0
+        .l_OffsetY = 0
+        .l_Angle = 0
+        .l_Visibility = True
     End With
     
-    'Assign default positioning values
-    layerOffsetX = 0
-    layerOffsetY = 0
-    layerAngle = 0
-    
-    'Layers are visible by default
-    layerVisibility = True
-
 End Sub
 
 'Create a new image-type layer, using a DIB as the reference.  Note that this will automatically set the layer type to PDL_IMAGE.
@@ -215,10 +205,10 @@ Public Sub CreateNewImageLayer(ByVal newLayerType As LAYER_TYPE, ByRef srcDIB As
         
         Dim layerDiff As Double
         layerDiff = parentImage.Width - layerDIB.getDIBWidth
-        layerOffsetX = layerDiff / 2
+        myLayerData.l_OffsetX = layerDiff / 2
         
         layerDiff = parentImage.Height - layerDIB.getDIBHeight
-        layerOffsetY = layerDiff / 2
+        myLayerData.l_OffsetY = layerDiff / 2
         
     End If
     
@@ -236,18 +226,17 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_GroupID = srcLayer.getLayerGroup
         .l_Opacity = srcLayer.getLayerOpacity
         .l_BlendMode = srcLayer.getLayerBlendMode
+        .l_OffsetX = srcLayer.getLayerOffsetX
+        .l_OffsetY = srcLayer.getLayerOffsetY
+        .l_Angle = srcLayer.getLayerAngle
+        .l_Visibility = srcLayer.getLayerVisibility
     End With
-    
-    layerOffsetX = srcLayer.getLayerOffsetX
-    layerOffsetY = srcLayer.getLayerOffsetY
-    layerAngle = srcLayer.getLayerAngle
-    
-    layerVisibility = srcLayer.getLayerVisibility
     
     'Finally, copy the source layer's DIB.
     layerDIB.createFromExistingDIB srcLayer.layerDIB
     
-    'Depending on the type of layer we are copying, copy any extra layer data
+    'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
+    ' match the layer's vector contents.
     Select Case srcLayer.getLayerType
     
         Case PDL_IMAGE
