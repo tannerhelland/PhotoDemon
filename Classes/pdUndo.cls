@@ -15,10 +15,13 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 26/October/13
-'Last update: new revertToLastSavedState function, and support for Undo-ing to an arbitrary location in the Undo stack.
-'              This was actually quite trivial to implement, which hopefully means that a History browser will not be
-'              too much work... <fingers crossed>
+'Last updated: 21/March/14
+'Last update: in preparation for Layers support, the entire Undo/Redo engine has been rewritten to operative
+'              actively instead of passively.  This means that Undo data is created *immediately* after any action
+'              is performed, instead of waiting to see if a future action requires us to create Undo/Redo data.
+'              This results in slightly more Undo data being written to file, especially for images that are
+'              loaded but not edited, but the benefits are many: including being able to write Undo/Redo data in
+'              only the relevant format, and on a per-layer basis.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -30,6 +33,16 @@ Attribute VB_Exposed = False
 ' the Undo/Redo code completely self-contained, and should make future improvements much, much easier.  As part
 ' of this change, the Undo/Redo engine was largely rewritten, and all interface-related code was moved outside the
 ' class.  (Specifically, it is now handled by the separate syncInterfaceToCurrentImage function.)
+'
+'In 2014, as part of adding Layers support, the Undo/Redo engine was changed from a lazy implementation to an active
+' one.  Basically, the previous "lazy" implementation did not create Undo/Redo data until absolutely necessary.  This
+' had some benefits; for example, Undo data was not created until an image was actually edited, improving image load
+' time, and Redo data was never created until Undo was pressed.  While good for conserving memory, this system
+' ultimately proved untenable, as it required the storage of a lot of "what happened previously" data in order to
+' handle Undo creation correctly for odd cases (like when an image edit is applied after a selection modification).
+' To work around this, Undo/Redo data is now created immediately for the active function.
+'
+'As an added benefit, the Active system also works much better with PD's Autosave engine.
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if you run out of free
