@@ -3470,20 +3470,22 @@ Private Sub updatePreview(ByVal srcImagePath As String)
         Dim tmpImagePath(0) As String
         tmpImagePath(0) = srcImagePath
         
+        'TODO: rework previews to work with the lack of a .mainDIB object
+        
         Dim tmpImage As pdImage
         Set tmpImage = New pdImage
-        LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainDIB, -1
+        'LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainDIB, -1
         
-        If Not (tmpImage.mainDIB Is Nothing) And (tmpImage.mainDIB.getDIBWidth > 0) And (tmpImage.mainDIB.getDIBHeight > 0) Then
-            tmpImage.mainDIB.renderToPictureBox picPreview
-        Else
+        'If Not (tmpImage.mainDIB Is Nothing) And (tmpImage.mainDIB.getDIBWidth > 0) And (tmpImage.mainDIB.getDIBHeight > 0) Then
+            'tmpImage.mainDIB.renderToPictureBox picPreview
+        'Else
             picPreview.Picture = LoadPicture("")
             Dim strToPrint As String
             strToPrint = g_Language.TranslateMessage("Preview not available")
             picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.TextWidth(strToPrint)) \ 2
             picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.TextHeight(strToPrint)) \ 2
             picPreview.Print strToPrint
-        End If
+        'End If
     
         m_CurImagePreview = srcImagePath
     
@@ -3807,7 +3809,7 @@ Private Sub prepareForBatchConversion()
                             'If it isn't, save as JPEG or PNG contingent on color depth
                             
                             '24bpp images default to JPEG
-                            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 24 Then
+                            If pdImages(g_CurrentImage).getCompositeImageColorDepth = 24 Then
                                 tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
                                 pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
                             

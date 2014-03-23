@@ -316,10 +316,10 @@ Private Sub updatePreview(ByVal srcImagePath As String)
         
     Dim tmpImage As pdImage
     Set tmpImage = New pdImage
-    LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainDIB, -1
+    LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.getActiveDIB, -1
     
-    If Not (tmpImage.mainDIB Is Nothing) And (tmpImage.mainDIB.getDIBWidth > 0) And (tmpImage.mainDIB.getDIBHeight > 0) Then
-        tmpImage.mainDIB.renderToPictureBox picPreview
+    If Not (tmpImage.getActiveDIB Is Nothing) And (tmpImage.getActiveDIB.getDIBWidth > 0) And (tmpImage.getActiveDIB.getDIBHeight > 0) Then
+        tmpImage.getActiveDIB.renderToPictureBox picPreview
     Else
         picPreview.Picture = LoadPicture("")
         Dim strToPrint As String

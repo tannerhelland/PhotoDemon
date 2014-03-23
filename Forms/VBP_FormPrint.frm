@@ -637,7 +637,12 @@ Private Sub Form_Load()
     picOut.Width = pdImages(g_CurrentImage).Width
     picOut.Height = pdImages(g_CurrentImage).Height
     picOut.ScaleMode = vbPixels
-    pdImages(g_CurrentImage).getCompositedImage().renderToPictureBox picOut
+    
+    Dim tmpComposite As pdDIB
+    Set tmpComposite = New pdDIB
+    pdImages(g_CurrentImage).getCompositedImage tmpComposite
+    tmpComposite.renderToPictureBox picOut
+    
     picOut.ScaleMode = vbTwips
     
     'Determine base DPI (should be screen DPI, but calculate it manually to be sure)
@@ -882,17 +887,19 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         PrnPicHeight = tmpHeight
     End If
     
+    'TODO!  Rewrite this whole dialog.  It needs a ton of help.
+    
     'Draw a new preview
     If cbOrientation.ListIndex = 0 Then
         DrawPreviewImage picThumb, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(g_CurrentImage).getCompositedImage().previewX, pdImages(g_CurrentImage).getCompositedImage().previewY, pdImages(g_CurrentImage).getCompositedImage().previewWidth, pdImages(g_CurrentImage).getCompositedImage().previewHeight, vbSrcCopy
+        'StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumb.hDC, pdImages(g_CurrentImage).getOldCompositedImage().previewX, pdImages(g_CurrentImage).getOldCompositedImage().previewY, pdImages(g_CurrentImage).getOldCompositedImage().previewWidth, pdImages(g_CurrentImage).getOldCompositedImage().previewHeight, vbSrcCopy
     Else
         DrawPreviewImage picThumb90, , , True
         iSrc.Picture = LoadPicture("")
         SetStretchBltMode iSrc.hDC, STRETCHBLT_HALFTONE
-        StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(g_CurrentImage).getCompositedImage().previewY, pdImages(g_CurrentImage).getCompositedImage().previewX, pdImages(g_CurrentImage).getCompositedImage().previewHeight, pdImages(g_CurrentImage).getCompositedImage().previewWidth, vbSrcCopy
+        'StretchBlt iSrc.hDC, offsetX, offsetY, PrnPicWidth, PrnPicHeight, picThumbFinal.hDC, pdImages(g_CurrentImage).getOldCompositedImage().previewY, pdImages(g_CurrentImage).getOldCompositedImage().previewX, pdImages(g_CurrentImage).getOldCompositedImage().previewHeight, pdImages(g_CurrentImage).getOldCompositedImage().previewWidth, vbSrcCopy
     End If
     
     iSrc.Picture = iSrc.Image

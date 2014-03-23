@@ -42,7 +42,7 @@ Public Sub ClipboardCopy()
     Else
     
         'If a selection is NOT active, just make a copy of the full image
-        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getCompositedImage()
+        pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
         
     End If
     

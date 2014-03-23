@@ -201,12 +201,17 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
     
+    'Retrieve a composited copy of the image.  (TODO: optimize this process... somehow.)
+    Dim compositedImage As pdDIB
+    Set compositedImage = New pdDIB
+    srcImage.getCompositedImage compositedImage
+    
     If zoomVal < 1 Then
         
         'ZOOMED OUT
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If srcImage.getCompositedImage().getDIBColorDepth = 32 Then
+        If compositedImage.getDIBColorDepth = 32 Then
             
             'Before rendering the image, apply a checkerboard pattern to the target image's back buffer
             Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
@@ -214,12 +219,12 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             'Update 14 Feb '14: If GDI+ is available, use it to render 32bpp images when zoomed out.  (This is preferable to StretchBlt,
             ' as StretchBlt erases all alpha channel data if HALFTONE mode is used, limiting it to nearest-neighbor only!)
             If g_GDIPlusAvailable Then
-                GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.mainDIB, srcX, srcY, srcWidth, srcHeight, InterpolationModeLowQuality
+                GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeLowQuality
             Else
             
                 'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size of the viewport.)
                 srcImage.alphaFixDIB.createBlank srcWidth, srcHeight, 32
-                BitBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, srcImage.mainDIB.getDIBDC, srcX, srcY, vbSrcCopy
+                BitBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, compositedImage.getDIBDC, srcX, srcY, vbSrcCopy
                 
                 'Paint that chopped-out DIB to the target image's back buffer
                 srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
@@ -228,7 +233,7 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             
         Else
             SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_HALFTONE
-            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.getCompositedImage().getDIBDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     Else
@@ -246,8 +251,7 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         srcHeight = bltHeight / zoomVal
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If srcImage.getCompositedImage().getDIBColorDepth = 32 Then
-            
+        If compositedImage.getDIBColorDepth = 32 Then
             
             'Fill the target area with the alpha checkerboard
             Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
@@ -255,14 +259,14 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             'Create a temporary streched copy of the image
             srcImage.alphaFixDIB.createBlank bltWidth, bltHeight, 32
             SetStretchBltMode srcImage.alphaFixDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, bltWidth, bltHeight, srcImage.getCompositedImage().getDIBDC(), srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, bltWidth, bltHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
             
             'Alpha blend the DIB onto the checkerboard background
             srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
             
         Else
             SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, bltWidth, bltHeight, srcImage.getCompositedImage().getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, bltWidth, bltHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
         End If
         
     End If

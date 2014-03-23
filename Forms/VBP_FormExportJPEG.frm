@@ -872,9 +872,14 @@ Private Sub updatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         
+        'Retrieve a composited version of the target image
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        imageBeingExported.getCompositedImage tmpDIB, True
+        
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, imageBeingExported.getCompositedImage, fxPreview
+        previewNonStandardImage tmpSafeArray, tmpDIB, fxPreview
         
         If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp
         

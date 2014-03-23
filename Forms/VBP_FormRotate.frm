@@ -193,6 +193,8 @@ Dim m_ToolTip As clsToolTip
 
 Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal isPreview As Boolean = False)
 
+    'TODO!  Rewrite this function so it works with layers!
+
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -202,6 +204,9 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
     ' unintuitive for casual users.  PD reverses the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     rotationAngle = -rotationAngle
+
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
 
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
@@ -214,8 +219,11 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         If isPreview Then
             fi_DIB = FreeImage_CreateFromDC(smallDIB.getDIBDC)
         Else
-            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage().fixPremultipliedAlpha
-            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).getCompositedImage().getDIBDC)
+            
+            'TEMPORARY FIX! Retrieve a composited copy of the image and rotate that.
+            pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
+            fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+            
         End If
         
         'Use that handle to request an image rotation
@@ -260,9 +268,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             'If this is only a preview, use a temporary object to hold the rotated image
             If isPreview Then
             
-                Dim tmpDIB As pdDIB
-                Set tmpDIB = New pdDIB
-                tmpDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+                tmpDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).getCompositeImageColorDepth()
             
                 'Copy the bits from the FreeImage DIB to our DIB
                 SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
@@ -279,17 +285,17 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             Else
                 
                 'Resize the image's main DIB in preparation for the transfer
-                pdImages(g_CurrentImage).mainDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+                'pdImages(g_CurrentImage).mainDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
                 
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                'SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 
                 'Update the size variables
                 pdImages(g_CurrentImage).updateSize
                 DisplaySize pdImages(g_CurrentImage)
                 
                 'If the original image is 32bpp, re-apply premultiplication now.
-                If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
+                'If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
                 
                 'Fit the new image on-screen and redraw it
                 FitImageToViewport
@@ -314,7 +320,7 @@ End Sub
 Private Sub cmdBar_CancelClick()
 
     'If the original image is 32bpp, re-apply premultiplication.
-    If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
+    'If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
 
 End Sub
 
@@ -359,16 +365,16 @@ Private Sub Form_Load()
             
     'Create a new, smaller image at those dimensions
     If (dWidth < pdImages(g_CurrentImage).Width) Or (dHeight < pdImages(g_CurrentImage).Height) Then
-        smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, dWidth, dHeight, True
+        'smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, dWidth, dHeight, True
     Else
-        smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
+        'smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
     End If
         
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
     
     'To ensure proper interaction with FreeImage, remove premultiplication from the sample image
-    If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then smallDIB.fixPremultipliedAlpha
+    'If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then smallDIB.fixPremultipliedAlpha
     
 End Sub
 

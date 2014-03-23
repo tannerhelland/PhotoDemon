@@ -5,10 +5,10 @@ Begin VB.Form dialog_UnsavedChanges
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Unsaved Changes"
-   ClientHeight    =   4592
-   ClientLeft      =   42
+   ClientHeight    =   4590
+   ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   9366
+   ClientWidth     =   9360
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -21,9 +21,9 @@ Begin VB.Form dialog_UnsavedChanges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   656
+   ScaleHeight     =   306
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1338
+   ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "Cancel, and return to editing"
@@ -58,8 +58,8 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   2
       Top             =   4005
       Width           =   4875
-      _ExtentX        =   8758
-      _ExtentY        =   820
+      _ExtentX        =   8599
+      _ExtentY        =   847
       Caption         =   "Repeat this action for all unsaved images (X in total)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -87,9 +87,9 @@ Begin VB.Form dialog_UnsavedChanges
       ForeColor       =   &H80000008&
       Height          =   3495
       Left            =   120
-      ScaleHeight     =   497
+      ScaleHeight     =   231
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   497
+      ScaleWidth      =   231
       TabIndex        =   0
       Top             =   120
       Width           =   3495
@@ -294,8 +294,12 @@ End Sub
 Private Sub Form_Activate()
 
     'Draw the image being closed to the preview box
-    If (Not pdImages(imageBeingClosed) Is Nothing) And (Not pdImages(imageBeingClosed).getCompositedImage Is Nothing) Then
-        pdImages(imageBeingClosed).getCompositedImage().renderToPictureBox picPreview
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    If (Not pdImages(imageBeingClosed) Is Nothing) Then pdImages(imageBeingClosed).getCompositedImage tmpDIB, True
+    
+    If (Not pdImages(imageBeingClosed) Is Nothing) And (Not tmpDIB Is Nothing) Then
+        tmpDIB.renderToPictureBox picPreview
     Else
         Unload Me
     End If

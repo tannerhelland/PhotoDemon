@@ -137,16 +137,19 @@ End Sub
 Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal newBackColor As Long = vbWhite)
 
     Message "Converting image mode..."
-
+    
+    'TODO: handle this with layers.  I'm not sure how best to do this, just yet - I may move all transparency
+    '      concepts to the Layer menu.
+    
     If newColorDepth = 24 Then
     
         'Ask the current DIB to convert itself to 24bpp mode
-        pdImages(g_CurrentImage).mainDIB.convertTo24bpp newBackColor
+        'pdImages(g_CurrentImage).mainDIB.convertTo24bpp newBackColor
         
     Else
     
         'Ask the current DIB to convert itself to 32bpp mode
-        pdImages(g_CurrentImage).mainDIB.convertTo32bpp
+        'pdImages(g_CurrentImage).mainDIB.convertTo32bpp
     
     End If
     
