@@ -40,30 +40,30 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Iterate through the image, converting colors as we go
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, QuickX As Long
     
     finalX = srcDIB.getDIBWidth - 1
     finalY = srcDIB.getDIBHeight - 1
     
     Dim r As Long, g As Long, b As Long
-    Dim LabL As Double, LabA As Double, LabB As Double
+    Dim labL As Double, labA As Double, labB As Double
     
     For x = 0 To finalX
-        quickX = x * 3
+        QuickX = x * 3
     For y = 0 To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickX + 2, y)
-        g = ImageData(quickX + 1, y)
-        b = ImageData(quickX, y)
+        r = ImageData(QuickX + 2, y)
+        g = ImageData(QuickX + 1, y)
+        b = ImageData(QuickX, y)
         
         'Convert the color to the L*a*b* color space
-        RGBtoLAB r, g, b, LabL, LabA, LabB
+        RGBtoLAB r, g, b, labL, labA, labB
         
         'Store the L*a*b* values
-        dstArray(quickX, y) = LabL
-        dstArray(quickX + 1, y) = LabA
-        dstArray(quickX + 2, y) = LabB
+        dstArray(QuickX, y) = labL
+        dstArray(QuickX + 1, y) = labA
+        dstArray(QuickX + 2, y) = labB
     
     Next y
     Next x
@@ -154,7 +154,7 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcImage.getActiveDIB()
+    prepSafeArray tmpSA, srcImage.getCompositedImage
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -570,11 +570,11 @@ End Sub
 
 
 'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB.
-Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef LabL As Double, ByRef LabA As Double, ByRef LabB As Double)
+Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
 
     Dim x As Double, y As Double, z As Double
     RGBtoXYZ r, g, b, x, y, z
-    XYZtoLab x, y, z, LabL, LabA, LabB
+    XYZtoLab x, y, z, labL, labA, labB
 
 End Sub
 

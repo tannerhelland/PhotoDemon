@@ -92,7 +92,7 @@ Public Sub ClipboardPaste()
                 sFile(0) = tmpClipboardFile
                 sTitle = g_Language.TranslateMessage("Clipboard Image")
                 sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                PreLoadImage sFile, False, sTitle, sFilename
+                LoadFileAsNewImage sFile, False, sTitle, sFilename
                     
                 'Be polite and remove the temporary file
                 If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
@@ -136,7 +136,7 @@ Public Sub ClipboardPaste()
         sFile(0) = tmpClipboardFile
         sTitle = g_Language.TranslateMessage("Clipboard Image")
         sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-        PreLoadImage sFile, False, sTitle, sFilename
+        LoadFileAsNewImage sFile, False, sTitle, sFilename
             
         'Be polite and remove the temporary file
         If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
@@ -159,7 +159,7 @@ Public Sub ClipboardPaste()
         Dim listFiles() As String
         listFiles = ClipboardGetFiles()
         
-        PreLoadImage listFiles
+        LoadFileAsNewImage listFiles
     
     Else
         pdMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"

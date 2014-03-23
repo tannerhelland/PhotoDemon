@@ -907,7 +907,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     If tmpDIB.getDIBColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpDIB.compositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB

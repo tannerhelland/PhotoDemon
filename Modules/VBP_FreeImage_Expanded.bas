@@ -22,7 +22,7 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 Option Explicit
 
 'When loading a multipage image, the user will be prompted to load each page as an individual image.  If the user agrees,
-' this variable will be set to TRUE.  PreLoadImage will then use this variable to launch the import of the subsequent pages.
+' this variable will be set to TRUE.  LoadFileAsNewImage will then use this variable to launch the import of the subsequent pages.
 Public g_imageHasMultiplePages As Boolean
 Public g_imagePageCount As Long
     

@@ -85,7 +85,7 @@ Public Function hasProfileBeenApplied() As Boolean
 End Function
 
 'If external functions (such as our new CMYK conversion code) apply a profile independently, they can use this function
-' to mark the image as successfully converted.  This saves us the extra work of checking again in the PreLoadImage function.
+' to mark the image as successfully converted.  This saves us the extra work of checking again in the LoadFileAsNewImage function.
 Public Sub markSuccessfulProfileApplication()
     iccProfileHasBeenApplied = True
 End Sub

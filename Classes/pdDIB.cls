@@ -238,8 +238,8 @@ End Sub
 
 'If this DIB was created from an image file, and that file specified a preferred background color, use this
 ' function to copy the value into this DIB.
-Public Sub setBackgroundColor(ByVal newBackcolor As Long)
-    originalBackgroundColor = newBackcolor
+Public Sub setBackgroundColor(ByVal newBackColor As Long)
+    originalBackgroundColor = newBackColor
 End Sub
 
 Public Function getBackgroundColor() As Long
@@ -632,7 +632,7 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
 End Function
 
 'Convert this DIB to 24bpp mode
-Public Function convertTo24bpp(Optional ByVal newBackcolor As Long = vbWhite) As Boolean
+Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
 
     'Make sure this DIB is 32bpp. If it isn't, running this function pointless.
     If dibColorDepth = 32 Then
@@ -646,7 +646,7 @@ Public Function convertTo24bpp(Optional ByVal newBackcolor As Long = vbWhite) As
             tmpDIB.createFromExistingDIB Me
                         
             'Composite the temporary DIB against a white background, per convention.
-            tmpDIB.compositeBackgroundColor ExtractR(newBackcolor), ExtractG(newBackcolor), ExtractB(newBackcolor)
+            tmpDIB.compositeBackgroundColor ExtractR(newBackColor), ExtractG(newBackColor), ExtractB(newBackColor)
             
             'Now erase our own DIB
             eraseDIB
@@ -1131,6 +1131,10 @@ End Sub
 'TERMINATE class
 Private Sub Class_Terminate()
     eraseDIB
+    
+    'Release the ICC profile manager
+    Set ICCProfile = Nothing
+    
 End Sub
 
 'Draw this DIB to a picture box. The image will be automatically resized and centered.
