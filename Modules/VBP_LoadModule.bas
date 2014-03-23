@@ -359,7 +359,7 @@ Public Sub LoadImagesFromCommandLine()
 
     Message "Loading image(s)..."
         
-    'NOTE: Windows can pass the program multiple filenames via the command line, but it does so in a confusing and overly complex way.
+    'NOTE: Windows will pass multiple filenames via the command line, but it does so in a confusing and overly complex way.
     ' Specifically, quotation marks are placed around filenames IFF they contain a space; otherwise, file names are separated from
     ' neighboring filenames by a space.  This creates a problem when passing a mixture of filenames with spaces and filenames without,
     ' because Windows will switch between using and not using quotation marks to delimit the filenames.  Thus, we must perform complex,
@@ -423,7 +423,10 @@ Public Sub LoadImagesFromCommandLine()
 
 End Sub
 
+
+
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
+' As of 22 March '14, much of the messy work in this function has been offloaded to a new LoadImageFileToLayer() function.
 Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
         
     '*************************************************************************************************************************************
@@ -634,9 +637,47 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             ' VB's internal LoadPicture function.
             Case Else
                                 
-                If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV3(sFile(thisImage), targetDIB, targetImage, pageNumber, isThisPrimaryImage)
+                'If FreeImage is available, use it to try and load the image
+                If g_ImageFormats.FreeImageEnabled Then
                 
-                If loadSuccessful Then loadedByOtherMeans = False
+                    'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
+                    If isMultiImage(sFile(thisImage)) > 0 Then
+                        
+                        'TODO: load each page individually, to a unique layer
+                        
+                        'TEMP SOLUTION: just load the first page
+                        pageNumber = 0
+                        loadSuccessful = LoadFreeImageV4(sFile(thisImage), targetDIB, pageNumber, isThisPrimaryImage)
+                     
+                    'The image only has one page.
+                    Else
+                        
+                        pageNumber = 0
+                        loadSuccessful = LoadFreeImageV4(sFile(thisImage), targetDIB, pageNumber, isThisPrimaryImage)
+                    
+                    End If
+                    
+                    'FreeImage worked!  Copy any relevant information from the DIB to the parent object (such as file format), then
+                    ' continue with the load process.
+                    If loadSuccessful Then
+                    
+                        loadedByOtherMeans = False
+                        
+                        'Mirror the determined file format from the DIB to the parent pdImage object
+                        targetImage.originalFileFormat = targetDIB.getOriginalFormat
+                        
+                        'Mirror the discovered resolution, if any, from the DIB
+                        targetImage.setDPI targetDIB.getDPI, targetDIB.getDPI
+                        
+                        'Mirror the original file's color depth
+                        targetImage.originalColorDepth = targetDIB.getOriginalColorDepth
+                        
+                        'Finally, copy the background color (if any) from the DIB
+                        targetImage.pngBackgroundColor = targetDIB.getBackgroundColor
+                        
+                    End If
+                    
+                End If
                 
                 'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
                 ' GDI+ to experience a silent fail, thus bringing down the entire program.
@@ -647,8 +688,13 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     
                     'If GDI+ loaded the image successfully, note that we have to determine color depth manually
                     If loadSuccessful Then
+                    
                         loadedByOtherMeans = True
                         mustCountColors = True
+                        
+                        'Also, mirror the discovered resolution, if any, from the DIB
+                        targetImage.setDPI targetDIB.getDPI, targetDIB.getDPI
+                        
                     End If
                         
                 End If
@@ -678,7 +724,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         '*************************************************************************************************************************************
         
         'Double-check to make sure the image was loaded successfully
-        If ((Not loadSuccessful) Or (targetImage.getActiveDIB().getDIBWidth = 0) Or (targetImage.getActiveDIB().getDIBHeight = 0)) And isThisPrimaryImage Then
+        If ((Not loadSuccessful) Or (targetDIB.getDIBWidth = 0) Or (targetDIB.getDIBHeight = 0)) And isThisPrimaryImage Then
+            
             Message "Failed to load %1", sFile(thisImage)
             
             'Deactivating the image will remove the reference to the containing form - this is desired behavior, because VB counts object references,
@@ -745,10 +792,10 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If the image has an alpha channel, verify it.  If it contains all 0 or all 255, convert it to 24bpp to conserve resources.
+        ' If the loaded image contains alpha data, verify it.  If its all 0 or all 255, convert it to 24bpp to conserve resources.
         '*************************************************************************************************************************************
         
-        If targetImage.getActiveDIB().getDIBColorDepth = 32 Then
+        If targetDIB.getDIBColorDepth = 32 Then
             
             'Make sure the user hasn't disabled this capability
             If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
@@ -761,7 +808,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
                 
                     'Transparently convert the main DIB to 24bpp
-                    targetImage.getActiveDIB().convertTo24bpp
+                    targetDIB.convertTo24bpp
                 
                 Else
                     If isThisPrimaryImage Then Message "Alpha channel verified.  Leaving image in 32bpp mode."
@@ -774,7 +821,30 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         End If
         
         DoEvents
+                
         
+        '*************************************************************************************************************************************
+        ' If the image contained an embedded ICC profile, apply it now (before counting colors, etc).
+        '*************************************************************************************************************************************
+        
+        If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
+            
+            '32bpp images must be un-premultiplied before the transformation
+            If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha
+            
+            targetDIB.ICCProfile.applyICCtoParentImage targetImage
+            
+            '32bpp images must be re-premultiplied after the transformation
+            If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
+            
+        End If
+        
+        DoEvents
+        
+        
+        'TEMPORARY SOLUTION!!!  Copy the contents of the created DIB into the old mainDIB object, so we can test
+        ' our rewritten image load functions.
+        targetImage.mainDIB.createFromExistingDIB targetDIB
         
         
         '*************************************************************************************************************************************
@@ -784,26 +854,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         targetImage.updateSize
         If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
         targetImage.currentFileFormat = targetImage.originalFileFormat
-        
-        DoEvents
-                
-                
-        
-        '*************************************************************************************************************************************
-        ' If the image contains an embedded ICC profile, apply it now (before counting colors, etc).
-        '*************************************************************************************************************************************
-        
-        If targetImage.ICCProfile.hasICCData And (Not targetImage.ICCProfile.hasProfileBeenApplied) Then
-            
-            '32bpp images must be un-premultiplied before the transformation
-            If targetImage.mainDIB.getDIBColorDepth = 32 Then targetImage.mainDIB.fixPremultipliedAlpha
-            
-            targetImage.ICCProfile.applyICCtoParentImage targetImage
-            
-            '32bpp images must be re-premultiplied after the transformation
-            If targetImage.mainDIB.getDIBColorDepth = 32 Then targetImage.mainDIB.fixPremultipliedAlpha True
-            
-        End If
         
         DoEvents
         
@@ -1101,13 +1151,6 @@ PreloadMoreImages:
         
 End Sub
 
-'Load any file that hasn't explicitly been sent elsewhere.  FreeImage will automatically determine filetype.
-Public Function LoadFreeImageV3(ByVal sFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal pageNumber As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
-
-    LoadFreeImageV3 = LoadFreeImageV3_Advanced(sFile, dstDIB, dstImage, pageNumber, showMessages)
-    
-End Function
-
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
 Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
@@ -1142,7 +1185,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
             
     Dim verifyGDISuccess As Boolean
     
-    verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstImage, dstDIB)
+    verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstDIB)
     
     If verifyGDISuccess And (dstDIB.getDIBWidth <> 0) And (dstDIB.getDIBHeight <> 0) Then
         LoadGDIPlusImage = True

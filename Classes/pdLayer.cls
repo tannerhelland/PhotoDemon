@@ -177,6 +177,9 @@ Private Sub Class_Initialize()
         .l_Visibility = True
     End With
     
+    'Initialize the layer's DIB
+    Set layerDIB = New pdDIB
+    
 End Sub
 
 'Create a new image-type layer, using a DIB as the reference.  Note that this will automatically set the layer type to PDL_IMAGE.
@@ -191,14 +194,12 @@ Public Sub CreateNewImageLayer(ByVal newLayerType As LAYER_TYPE, ByRef srcDIB As
         .l_GroupID = 0
         .l_Opacity = 100
         .l_BlendMode = BL_NORMAL
+        .l_Visibility = True
     End With
     
     'Create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
     layerDIB.createFromExistingDIB srcDIB
-    
-    'Mark the layer as visible
-    layerVisibility = True
     
     'Set the initial offset so that the image is centered on the parent canvas
     If Not (parentImage Is Nothing) Then
