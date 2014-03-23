@@ -154,7 +154,7 @@ Public Sub Twain32Scan()
     'If the image was successfully scanned, load it
     If ScanCheck = 0 Then
         
-        'Because PreLoadImage requires a string array, create one to send it
+        'Because LoadFileAsNewImage requires a string array, create one to send it
         Dim sFile(0) As String
         sFile(0) = ScannerCaptureFile
         
@@ -164,7 +164,7 @@ Public Sub Twain32Scan()
         Dim sFilename As String
         sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
         
-        PreLoadImage sFile, False, sTitle, sFilename
+        LoadFileAsNewImage sFile, False, sTitle, sFilename
         
         'Be polite and remove the temporary file acquired from the scanner
         Kill ScannerCaptureFile

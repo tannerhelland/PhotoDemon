@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, getModalOwner().hWnd) Then PreLoadImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, getModalOwner().hWnd) Then LoadFileAsNewImage sFile
 
     Erase sFile
 

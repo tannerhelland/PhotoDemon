@@ -104,10 +104,6 @@ Option Explicit
     
     'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
     Private hasBeenSaved As Boolean
-    
-    'These two variables are only used at form load; they can be safely ignored once the image is visible.
-    Public WindowLeft As Long
-    Public WindowTop As Long
         
     'A copy of the form's current icon
     Public curFormIcon32 As Long, curFormIcon16 As Long
@@ -116,7 +112,7 @@ Option Explicit
     Public forInternalUseOnly As Boolean
     
     'Image's actual image data (stored as a DIB inside the mainDIB object)
-    Public mainDIB As pdDIB
+    'Public mainDIB As pdDIB
     
     'Image's back buffer (also a DIB; this is used to hold the final composite before everything is rendered on-screen
     Public backBuffer As pdDIB
@@ -289,10 +285,25 @@ Public Function getSaveState() As Boolean
     getSaveState = hasBeenSaved
 End Function
 
-'Returns all layers of the image as a single, composited image (in pdDIB format, of course).
-Public Function getCompositedImage() As pdDIB
-    Set getCompositedImage = mainDIB
-End Function
+'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
+' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
+' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
+' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
+Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
+    
+    'TODO: actually composite image layers instead of just copying the active layer!
+    Set dstDIB = imgLayers(curLayer).layerDIB
+    
+    'If the user requested non-premultiplied alpha, calculate it now.
+    'TODO: how we handle premultiplication will depend on how I implement compositing, above, so this needs to be revisited
+    '       after actual compositing has been written.
+    If premultiplicationStatus Then
+        
+    Else
+        If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha False
+    End If
+    
+End Sub
 
 'Get the currently active layer index
 Public Function getActiveLayerIndex() As Long
@@ -519,7 +530,7 @@ Private Sub Class_Initialize()
     pngBackgroundColor = -1
     
     'Initialize the main DIB (currently, just the image data - layers aren't actually implemented)
-    Set mainDIB = New pdDIB
+    'Set mainDIB = New pdDIB
     
     'Initialize the back buffer
     Set backBuffer = New pdDIB
@@ -665,3 +676,13 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     retrieveProcessedSelection = True
 
 End Function
+
+Private Sub Class_Terminate()
+
+    'Forcibly release all image layers
+    Dim i As Long
+    For i = 0 To UBound(imgLayers)
+        imgLayers(i) = Nothing
+    Next i
+
+End Sub

@@ -1299,7 +1299,7 @@ Private Sub Form_Load()
                     autosaveEntries(i) = listOfFilesToSave(i).latestUndoPath
                 Next i
                 
-                PreLoadImage autosaveEntries
+                LoadFileAsNewImage autosaveEntries
                                 
                 'With all data successfully loaded, purge the now-unnecessary Autosave entries.
                 Image_Autosave_Handler.purgeOldAutosaveData
@@ -1515,8 +1515,8 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         'Because the OLE drop may include blank strings, verify the size of the array against countFiles
         ReDim Preserve sFile(0 To countFiles - 1) As String
         
-        'Pass the list of filenames to PreLoadImage, which will load the images one-at-a-time
-        PreLoadImage sFile
+        'Pass the list of filenames to LoadFileAsNewImage, which will load the images one-at-a-time
+        LoadFileAsNewImage sFile
         
     End If
     
@@ -2372,7 +2372,7 @@ Private Sub MnuLoadAllMRU_Click()
     Next i
     
     'Load all images in the list
-    PreLoadImage sFile
+    LoadFileAsNewImage sFile
     
     'If the image loaded successfully, activate it and bring it to the foreground
     If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "finished loading all recent images"
@@ -2567,11 +2567,11 @@ Public Sub mnuRecDocs_Click(Index As Integer)
         
         'Message "Preparing to load recent file entry..."
         
-        'Because PreLoadImage requires a string array, create an array to pass it
+        'Because LoadFileAsNewImage requires a string array, create an array to pass it
         Dim sFile(0) As String
         sFile(0) = tmpString
         
-        PreLoadImage sFile
+        LoadFileAsNewImage sFile
     End If
     
     'If the image loaded successfully, activate it and bring it to the foreground

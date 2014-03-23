@@ -419,7 +419,7 @@ Public Sub LoadImagesFromCommandLine()
     End If
     
     'Finally, pass the array of filenames to the image loading routine
-    PreLoadImage sFile
+    LoadFileAsNewImage sFile
 
 End Sub
 
@@ -427,12 +427,12 @@ End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
 ' As of 22 March '14, much of the messy work in this function has been offloaded to a new LoadImageFileToLayer() function.
-Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
+Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
         
     '*************************************************************************************************************************************
     ' Prepare all variables related to image loading
     '*************************************************************************************************************************************
-        
+    
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
             
@@ -515,10 +515,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' Reset all variables used on a per-image level
         '*************************************************************************************************************************************
     
-        'Before doing anything else, reset the multipage checker
+        'Reset the multipage checker (which is now handled on a per-image basis)
         g_imageHasMultiplePages = False
         
-        '...and reset the "need to check colors" variable
+        '...and reset the "need to check colors" variable.  If FreeImage is used, color depth of the source file is retrieved automatically.
+        ' If FreeImage is not used, we manually calculate a bit-depth for incoming images.
         mustCountColors = False
     
     
@@ -530,7 +531,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'If isThisPrimaryImage Then Message "Verifying that file exists..."
     
         If isThisPrimaryImage And (Not FileExist(sFile(thisImage))) Then
-            'Message "File not found (%1). Image load canceled.", sFile(thisImage)
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
@@ -539,7 +539,9 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", sFile(thisImage)
             End If
             
+            'If the missing image was part of a list of images, try loading the next entry in the list
             GoTo PreloadMoreImages
+            
         End If
         
         
@@ -550,15 +552,16 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         If isThisPrimaryImage Then
             
-            'Message "Image found. Initializing blank form..."
-
             CreateNewPDImage
-        
+            
+            'If this is a primary image, we will automatically set the targetImage and targetDIB parameters.  If this is NOT a primary image,
+            ' the calling function must have specified this for us.
             Set targetImage = pdImages(g_CurrentImage)
             Set targetDIB = pdImages(g_CurrentImage).getActiveDIB()
         
             g_AllowViewportRendering = False
-        
+            
+            'Reset the main viewport's scroll bars
             FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
             
         End If
@@ -572,7 +575,6 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Note that metadata extraction is handled asynchronously (e.g. in parallel to the core image loading process), which is
         ' why we launch it so early in the load process.  If the image load fails, we simply ignore any received metadata.
         ' ExifTool is extremely robust, so any errors it experiences during processing will not affect PD.
-                
         Set targetImage.imgMetadata = New pdMetadata
         
         If g_ExifToolEnabled And isThisPrimaryImage Then
@@ -594,7 +596,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         'Initially, set the filetype of the target image to "unknown".  If the load is successful, this value will
         ' be changed to something >= 0. (Note: if FreeImage is used to load the file, this value will be set by the
-        ' LoadFreeImageV3 function.)
+        ' LoadFreeImageV4 function.)
         If Not (targetImage Is Nothing) Then targetImage.originalFileFormat = -1
         
         'Strip the extension from the file
@@ -606,7 +608,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         'Depending on the file's extension, load the image using the most appropriate image decoding routine
         Select Case FileExtension
         
-            'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it)
+            'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it!)
             Case "PDI"
             
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
@@ -615,17 +617,21 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 targetImage.originalFileFormat = 100
                 mustCountColors = True
         
-            'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable, but .LoadPicture works too.
+            'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as it handles
+            ' 32bpp images as well, but if we must, we can use VB's internal .LoadPicture command.
             Case "TMP"
             
                 If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB, targetImage)
                 
                 If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB, targetImage)
                 
+                'Lie and say that the original file format of this image was JPEG.  We do this because tmp images are typically images
+                ' captured via non-traditional means (screenshot's, scans), and when the user tries to save the file, they should not
+                ' be prompted to save it as a BMP.
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
             
-            'PDTMP files are raw image buffers saved as part of Undo/Redo or Autosaving
+            'PDTMP files are raw image buffers saved as part of Undo/Redo or Autosaving.
             Case "PDTMP"
             
                 loadSuccessful = LoadRawImageBuffer(sFile(thisImage), targetDIB, targetImage)
@@ -633,11 +639,11 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
             
-            'All other formats follow a prescribed behavior - try to load via FreeImage (if available), then GDI+, then finally
+            'All other formats follow a set pattern: try to load them via FreeImage (if available), then GDI+, then finally
             ' VB's internal LoadPicture function.
             Case Else
                                 
-                'If FreeImage is available, use it to try and load the image
+                'If FreeImage is available, we first use it to try and load the image.
                 If g_ImageFormats.FreeImageEnabled Then
                 
                     'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
@@ -649,7 +655,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                         pageNumber = 0
                         loadSuccessful = LoadFreeImageV4(sFile(thisImage), targetDIB, pageNumber, isThisPrimaryImage)
                      
-                    'The image only has one page.
+                    'The image only has one page.  Load it!
                     Else
                         
                         pageNumber = 0
@@ -657,8 +663,8 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     
                     End If
                     
-                    'FreeImage worked!  Copy any relevant information from the DIB to the parent object (such as file format), then
-                    ' continue with the load process.
+                    'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),
+                    ' then continue with the load process.
                     If loadSuccessful Then
                     
                         loadedByOtherMeans = False
@@ -686,13 +692,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                     If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB, targetImage)
                     
-                    'If GDI+ loaded the image successfully, note that we have to determine color depth manually
+                    'If GDI+ loaded the image successfully, note that we have to determine color depth manually.  (There may be a way
+                    ' to retrieve that info from GDI+, but I haven't bothered to look!)
                     If loadSuccessful Then
                     
                         loadedByOtherMeans = True
                         mustCountColors = True
                         
-                        'Also, mirror the discovered resolution, if any, from the DIB
+                        'Also, mirror the discovered resolution, if any, from the source DIB
                         targetImage.setDPI targetDIB.getDPI, targetDIB.getDPI
                         
                     End If
@@ -720,17 +727,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' Make sure the image data was loaded successfully
+        ' Run a few checks to confirm that the image data was loaded successfully
         '*************************************************************************************************************************************
         
-        'Double-check to make sure the image was loaded successfully
+        'Sometimes, our image load functions will think the image loaded correctly, but they will return a blank image.  Check for
+        ' non-zero width and height before continuing.
         If ((Not loadSuccessful) Or (targetDIB.getDIBWidth = 0) Or (targetDIB.getDIBHeight = 0)) And isThisPrimaryImage Then
             
             Message "Failed to load %1", sFile(thisImage)
-            
-            'Deactivating the image will remove the reference to the containing form - this is desired behavior, because VB counts object references,
-            ' and doesn't free an object until all references are resolved.  To work around this, we make a copy of the reference prior to deactivation.
-            ' We then use this reference copy to unload the form.
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
@@ -739,6 +743,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
                 If MacroStatus <> MacroBATCH Then pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
             End If
             
+            'Deactivate the (now useless) pdImage object, and forcibly unload whatever resources it has claimed
             targetImage.deactivateImage
             fullPDImageUnload targetImage.imageID
             
@@ -755,7 +760,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If GDI+ or LoadPicture was used to grab the image data, populate some related fields manually (filetype, color depth, etc)
+        ' If GDI+ or VB's LoadPicture was used to load the file, populate some data fields manually (filetype, color depth, etc)
         '*************************************************************************************************************************************
         
         If loadedByOtherMeans Then
@@ -792,17 +797,17 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         
         '*************************************************************************************************************************************
-        ' If the loaded image contains alpha data, verify it.  If its all 0 or all 255, convert it to 24bpp to conserve resources.
+        ' If the loaded image contains alpha data, verify it.  If the alpha channel is blank (e.g. all 0 or all 255), convert it to 24bpp
         '*************************************************************************************************************************************
         
         If targetDIB.getDIBColorDepth = 32 Then
             
-            'Make sure the user hasn't disabled this capability
+            'Make sure the user hasn't disabled alpha channel validation
             If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
             
                 If isThisPrimaryImage Then Message "Verfiying alpha channel..."
             
-                'Verify the alpha channel.  If this function returns FALSE, the alpha channel is unnecessary.
+                'Verify the alpha channel.  If this function returns FALSE, the current alpha channel is unnecessary.
                 If Not targetImage.getActiveDIB().verifyAlphaChannel Then
                 
                     If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
@@ -827,11 +832,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         ' If the image contained an embedded ICC profile, apply it now (before counting colors, etc).
         '*************************************************************************************************************************************
         
+        'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
+        ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
         If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
             
             '32bpp images must be un-premultiplied before the transformation
             If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha
             
+            'Apply the ICC transform
             targetDIB.ICCProfile.applyICCtoParentImage targetImage
             
             '32bpp images must be re-premultiplied after the transformation
@@ -844,7 +852,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
         'TEMPORARY SOLUTION!!!  Copy the contents of the created DIB into the old mainDIB object, so we can test
         ' our rewritten image load functions.
-        targetImage.mainDIB.createFromExistingDIB targetDIB
+        'targetImage.mainDIB.createFromExistingDIB targetDIB
         
         
         '*************************************************************************************************************************************
@@ -989,7 +997,7 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
         
             'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
-            PrepareViewport targetImage, FormMain.mainCanvas(0), "PreLoadImage"
+            PrepareViewport targetImage, FormMain.mainCanvas(0), "LoadFileAsNewImage"
                                     
             'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
@@ -1096,14 +1104,14 @@ Public Sub PreLoadImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As B
             Dim tmpStringArray(0) As String
             tmpStringArray(0) = sFile(thisImage)
             
-            'Call PreLoadImage again for each individual frame in the multipage file
+            'Call LoadFileAsNewImage again for each individual frame in the multipage file
             For pageTracker = 1 To g_imagePageCount
                 If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
-                    PreLoadImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
-                    PreLoadImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 Else
-                    PreLoadImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
                 End If
             Next pageTracker
         
@@ -1682,9 +1690,9 @@ Public Sub DuplicateCurrentImage()
     'Reset scroll bars
     FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
         
-    'Copy the picture from the previous form to this new one
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB pdImages(imageToBeDuplicated).mainDIB
-
+    'TODO!  Copy all layers, not just the active one!
+    pdImages(g_CurrentImage).getActiveDIB.createFromExistingDIB pdImages(imageToBeDuplicated).getActiveDIB
+    
     'Store important data about the image to the pdImages array
     pdImages(g_CurrentImage).updateSize
     pdImages(g_CurrentImage).originalFileSize = pdImages(imageToBeDuplicated).originalFileSize

@@ -91,7 +91,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Set tmpDIB = Nothing
         
     'Once the capture is saved, load it up like any other bitmap
-    ' NOTE: Because PreLoadImage requires an array of strings, create an array to send to it
+    ' NOTE: Because LoadFileAsNewImage requires an array of strings, create an array to send to it
     Dim sFile(0) As String
     sFile(0) = tmpFilename
     
@@ -105,7 +105,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Dim sTitlePlusDate As String
     sTitlePlusDate = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
-    PreLoadImage sFile, False, sTitle, sTitlePlusDate
+    LoadFileAsNewImage sFile, False, sTitle, sTitlePlusDate
     
     'Erase the temp file
     If FileExist(tmpFilename) Then Kill tmpFilename

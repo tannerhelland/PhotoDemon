@@ -282,7 +282,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     Dim sFile(0) As String
     sFile(0) = tmpFile
     
-    PreLoadImage sFile, False, tmpFilename, tmpFilename
+    LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename
     
     'Unique to this particular import is remembering the full filename + extension (because this method of import
     ' actually supplies a file extension, unlike scanning or screen capturing or something else)

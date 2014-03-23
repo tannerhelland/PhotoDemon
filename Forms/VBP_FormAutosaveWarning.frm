@@ -316,7 +316,7 @@ Private Sub updatePreview(ByVal srcImagePath As String)
         
     Dim tmpImage As pdImage
     Set tmpImage = New pdImage
-    PreLoadImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainDIB, -1
+    LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.mainDIB, -1
     
     If Not (tmpImage.mainDIB Is Nothing) And (tmpImage.mainDIB.getDIBWidth > 0) And (tmpImage.mainDIB.getDIBHeight > 0) Then
         tmpImage.mainDIB.renderToPictureBox picPreview

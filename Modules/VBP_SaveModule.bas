@@ -22,7 +22,7 @@ Attribute VB_Name = "Saving"
 Option Explicit
 
 
-'This routine will blindly save the mainDIB contents (from the pdImage object specified by srcPDImage) to dstPath.
+'This routine will blindly save the composited layer contents (from the pdImage object specified by srcPDImage) to dstPath.
 ' It is up to the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
 ' at dstPath, so BE VERY CAREFUL with what you send here!)
 '
@@ -43,13 +43,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     ' or by copying the image's original format - or, if in the midst of a batch process, by the user via the batch wizard).
     Dim saveFormat As Long
     saveFormat = srcPDImage.currentFileFormat
-
-    
-    '****************************************************************************************************
-    ' 32bpp images are premultiplied by default.  Prior to saving, any premultiplication needs to be removed.
-    '****************************************************************************************************
-    
-    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha
     
     
     '****************************************************************************************************
@@ -150,9 +143,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                         PhotoDemon_SaveImage = False
                         Message "Save canceled."
                         
-                        'Convert back to premultiplied alpha if 32bpp
-                        If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                        
                         Exit Function
                     End If
                 
@@ -222,9 +212,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
                     
-                    'Convert back to premultiplied alpha if 32bpp
-                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                        
                     Exit Function
                 End If
                 
@@ -256,9 +243,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 Message "No %1 encoder found. Save aborted.", "JPEG"
                 PhotoDemon_SaveImage = False
                 
-                'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                
                 Exit Function
             End If
             
@@ -271,9 +255,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'If zLib doesn't exist...
                 pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
                 Message "No %1 encoder found. Save aborted.", "PDI"
-                
-                'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -293,9 +274,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Else
                 Message "No %1 encoder found. Save aborted.", "GIF"
                 PhotoDemon_SaveImage = False
-                
-                'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -319,9 +297,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Else
                 Message "No %1 encoder found. Save aborted.", "PNG"
                 PhotoDemon_SaveImage = False
-                
-                'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
                 
                 Exit Function
             End If
@@ -352,9 +327,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
                     
-                    'Convert back to premultiplied alpha if 32bpp
-                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                
                     Exit Function
                 End If
                 
@@ -385,9 +357,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 Message "No %1 encoder found. Save aborted.", "TIFF"
                 PhotoDemon_SaveImage = False
                 
-                'Convert back to premultiplied alpha if 32bpp
-                If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                
                 Exit Function
             End If
         
@@ -407,9 +376,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
                     
-                    'Convert back to premultiplied alpha if 32bpp
-                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                
                     Exit Function
                 End If
                 
@@ -439,9 +405,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
                     
-                    'Convert back to premultiplied alpha if 32bpp
-                    If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                
                     Exit Function
                 End If
                 
@@ -475,8 +438,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     '****************************************************************************************************
     
     'Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
-    ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant file to be
-    ' used as its source (unless you want to request writing of each file specifically, which we do not).
+    ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
+    ' to be used as its source.
     
     'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
     ' If the file was not written successfully, abandon any attempts at metadata embedding.
@@ -516,9 +479,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             srcPDImage.setSaveState True
             
             PhotoDemon_SaveImage = True
-            
-            'Convert back to premultiplied alpha if 32bpp
-            If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
             
             'Update the interface to match the newly saved image (e.g. disable the Save button)
             If Not srcPDImage.forInternalUseOnly Then syncInterfaceToCurrentImage
@@ -564,14 +524,19 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     Dim sFileType As String
     sFileType = "BMP"
     
+    'Retrieve a composited copy of the image, at full size
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.getCompositedImage tmpImageCopy, False
+    
     'If the output color depth is 24 or 32bpp, or if both GDI+ and FreeImage are missing, use our own internal methods
-    ' to save a BMP file
-    If (outputColorDepth = 24) Or (outputColorDepth = 32) Or ((Not g_ImageFormats.GDIPlusEnabled) And (Not g_ImageFormats.FreeImageEnabled)) Then
+    ' to save the BMP file.
+    If ((outputColorDepth = 24) And (tmpImageCopy.getDIBColorDepth = 24)) Or ((outputColorDepth = 32) And (tmpImageCopy.getDIBColorDepth = 32)) Or ((Not g_ImageFormats.GDIPlusEnabled) And (Not g_ImageFormats.FreeImageEnabled)) Then
     
         Message "Saving %1 file...", sFileType
     
         'The DIB class is capable of doing this without any outside help.
-        srcPDImage.getCompositedImage().writeToBitmapFile BMPPath
+        tmpImageCopy.writeToBitmapFile BMPPath
     
         Message "%1 save complete.", sFileType
         
@@ -585,10 +550,10 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
             'Copy the image into a temporary DIB
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+            tmpDIB.createFromExistingDIB tmpImageCopy
             
             'If the output color depth is 24 but the current image is 32, composite the image against a white background
-            If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+            If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
             
             'Convert our current DIB to a FreeImage-type DIB
             Dim fi_DIB As Long
@@ -651,11 +616,13 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     Message "Saving %1 image...", sFileType
 
+    'TODO: write an actual PDI save function.
+    
     'First, have the DIB write itself to file in BMP format
-    srcPDImage.getCompositedImage().writeToBitmapFile PDIPath
+    'srcPDImage.getCompositedImage().writeToBitmapFile PDIPath
     
     'Then compress the file using zLib
-    CompressFile PDIPath
+    'CompressFile PDIPath
     
     Message "%1 save complete.", sFileType
     
@@ -686,15 +653,15 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the current image is 32bpp, we will need to apply some additional actions to the image to prepare the
     ' transparency.  Mark a bool value, because we will reference it in multiple places throughout the save function.
     Dim handleAlpha As Boolean
-    If srcPDImage.getCompositedImage().getDIBColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
+    If tmpDIB.getDIBColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
     
     'If the current image contains transparency, we need to modify it in order to retain the alpha channel.
     If handleAlpha Then
@@ -824,14 +791,14 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -895,10 +862,10 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
+        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
         'Also, if pngnq is enabled, we will use that for the transformation - so we need to reset the outgoing color depth to 24bpp
-        If (srcPDImage.getCompositedImage().getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
+        If (tmpDIB.getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
     
     End If
     
@@ -1107,10 +1074,12 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     Dim ppm_Encoding As FREE_IMAGE_SAVE_OPTIONS
     If ppmFormat = 0 Then ppm_Encoding = FISO_PNM_SAVE_RAW Else ppm_Encoding = FISO_PNM_SAVE_ASCII
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
+    
+    'PPM only supports 24bpp
     If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
         
     'Convert our current DIB to a FreeImage-type DIB
@@ -1175,14 +1144,14 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -1223,7 +1192,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
+        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
     End If
     
@@ -1327,16 +1296,23 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
             ' (This should still result in a good value, but at a much smaller time investment.)
             Dim testDIB As pdDIB
             Set testDIB = New pdDIB
-            testDIB.createFromExistingDIB srcPDImage.getCompositedImage
+            srcPDImage.getCompositedImage testDIB, False
             If testDIB.getDIBColorDepth = 32 Then testDIB.convertTo24bpp
             
-            If testDIB.getDIBWidth > 1024 Or testDIB.getDIBHeight > 1024 Then
+            If (testDIB.getDIBWidth > 1024) Or (testDIB.getDIBHeight > 1024) Then
             
                 'Find new dimensions
                 Dim newWidth As Long, newHeight As Long
                 convertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
                 
-                testDIB.createFromExistingDIB srcPDImage.getCompositedImage, newWidth, newHeight
+                'Create a temporary source image (resizing requires separate source and destination images)
+                Dim tmpSourceDIB As pdDIB
+                Set tmpSourceDIB = New pdDIB
+                tmpSourceDIB.createFromExistingDIB testDIB
+                
+                'Resize the temp image and continue
+                testDIB.createFromExistingDIB tmpSourceDIB, newWidth, newHeight
+                Set tmpSourceDIB = Nothing
             
             End If
             
@@ -1367,10 +1343,12 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
         
     End If
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
+    
+    'JPEGs can only save 24bpp images, so flatten the alpha as necessary
     If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
         
     'Convert our current DIB to a FreeImage-type DIB
@@ -1493,14 +1471,14 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
             
     End Select
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -1540,7 +1518,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (srcPDImage.getCompositedImage().getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
+        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
     End If
     
@@ -1690,13 +1668,13 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -1770,13 +1748,13 @@ Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As Strin
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -1842,13 +1820,13 @@ Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As Str
     
     Message "Preparing %1 image...", sFileType
     
-    'Copy the image into a temporary DIB
+    'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcPDImage.getCompositedImage()
+    srcPDImage.getCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long

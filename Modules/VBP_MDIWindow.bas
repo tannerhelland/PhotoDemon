@@ -26,8 +26,10 @@ Option Explicit
 'Create a new, blank MDI child
 Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
 
-    'The viewport will automatically attempt to update whenever a form is resized.  We forcibly disable such updating by setting
-    ' this value to FALSE prior to working with the viewport.  When we are finished, we must set it to TRUE for the viewport to work!
+    'The viewport automatically updates itself under various circumstances (such as a parent form resize).  We can forcibly disable
+    ' these automatic updates by setting g_AllowViewportRendering to FALSE.  (This is important, because we don't want it attempting
+    ' to refresh itself while we're still loading and processing an image.)  When we're finished, restore the value to TRUE, or the
+    ' primary viewport won't work.
     g_AllowViewportRendering = False
 
     'Increase the number of images we're tracking
@@ -43,21 +45,11 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
     pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
         
-    'Note the current vertical offset of the viewport
+    'Note the initial vertical offset of the viewport.  (This accounts for the current state of the status bar, rulers, etc.)
     pdImages(g_NumOfImagesLoaded).imgViewport.setBottomOffset FormMain.mainCanvas(0).getStatusBarHeight
     
-    'Set a default zoom of 100% (this is likely to change, assuming the user has auto-zoom enabled)
+    'Set a default zoom of 100% (note: this is likely to change, assuming the user has auto-zoom enabled)
     pdImages(g_NumOfImagesLoaded).currentZoomValue = g_Zoom.getZoom100Index
-    
-    'Hide the form off-screen while the loading takes place, but remember its location so we can restore it post-load.
-    Dim mainClientRect As winRect
-    g_WindowManager.getActualMainFormClientRect mainClientRect
-    pdImages(g_NumOfImagesLoaded).WindowLeft = mainClientRect.x1
-    pdImages(g_NumOfImagesLoaded).WindowTop = mainClientRect.y1
-    
-    'Previously we used the .Show event here to display the form, but we now rely on the window manager to handle this
-    ' later in the load process.  (This reduces flicker while loading images.)
-    'If MacroStatus <> MacroBATCH Then newImageForm.Show vbModeless, FormMain
     
     'Set this image as the current one
     g_CurrentImage = g_NumOfImagesLoaded
@@ -68,7 +60,7 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     'Run a separate subroutine to enable/disable menus (important primarily if this is the first image to be loaded)
     syncInterfaceToCurrentImage
     
-    'Re-enable viewport adjustments
+    'Re-enable automatic viewport updates
     g_AllowViewportRendering = True
     
 End Sub

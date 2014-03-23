@@ -1163,8 +1163,8 @@ Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button A
         'Because the OLE drop may include blank strings, verify the size of the array against countFiles
         ReDim Preserve sFile(0 To countFiles - 1) As String
         
-        'Pass the list of filenames to PreLoadImage, which will load the images one-at-a-time
-        PreLoadImage sFile
+        'Pass the list of filenames to LoadFileAsNewImage, which will load the images one-at-a-time
+        LoadFileAsNewImage sFile
         
     End If
     
