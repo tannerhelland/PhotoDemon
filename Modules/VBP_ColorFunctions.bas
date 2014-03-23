@@ -151,10 +151,15 @@ Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal ima
     'Mark the image ID to the global tracking variable
     g_LastImageScanned = imageID
     
+    'Retrieve a composited version of the target image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    srcImage.getCompositedImage tmpDIB, True
+    
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcImage.getCompositedImage
+    prepSafeArray tmpSA, tmpDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here

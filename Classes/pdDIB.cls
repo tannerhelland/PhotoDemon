@@ -194,13 +194,6 @@ Private dibColorDepth As Long
 Private Const DIB_IDENTIFIER As String * 4 = "PDlr"
 Private Const DIB_FILE_VERSION_2012 As Long = &H1000
 
-'These variables are a temporary addition to ensure that print previewing still works. They will be removed in a future
-' update as part of a print preview revamp, so DO NOT add features that rely on them.
-Public previewX As Long
-Public previewY As Long
-Public previewWidth As Long
-Public previewHeight As Long
-
 'When converting a 32bpp DIB to 8bpp with transparency, we need to know the location of a transparent pixel.
 ' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
 Private trnsX As Long, trnsY As Long
@@ -1156,7 +1149,7 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     srcAspect = srcWidth / srcHeight
     dstAspect = dstWidth / dstHeight
         
-    Dim dWidth As Long, dHeight As Long
+    Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
     
     If srcAspect > dstAspect Then
         dWidth = dstWidth
@@ -1164,21 +1157,11 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         previewY = CLng((dstHeight - dHeight) / 2)
         previewX = 0
         
-        'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
-        ' to render its picture box). They will be removed in a future update so DO NOT rely on them elsewhere.
-        previewWidth = dWidth
-        previewHeight = dHeight
-        
     Else
         dHeight = dstHeight
         dWidth = (srcAspect * dHeight)
         previewX = CLng((dstWidth - dWidth) / 2)
         previewY = 0
-        
-        'PreviewWidth and PreviewHeight are only generated so that the "Print Preview" function works (it relies on those values
-        ' to render its picture box). They will be removed in a future update so DO NOT rely on them elsewhere.
-        previewWidth = dWidth
-        previewHeight = dHeight
         
     End If
     

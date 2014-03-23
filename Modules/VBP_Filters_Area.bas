@@ -344,6 +344,8 @@ End Sub
 'Convert an image to its isometric equivalent.  This can be very useful for developers of isometric games.
 Public Sub FilterIsometric()
 
+    'TODO!  Warn the user that this action requires flattening.
+
     'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -373,7 +375,7 @@ Public Sub FilterIsometric()
     
     Dim dstDIB As pdDIB
     Set dstDIB = New pdDIB
-    dstDIB.createBlank nWidth + 1, nHeight + 1, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+    dstDIB.createBlank nWidth + 1, nHeight + 1, pdImages(g_CurrentImage).getCompositeImageColorDepth()
     
     prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
@@ -455,8 +457,8 @@ Public Sub FilterIsometric()
     If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
     
     'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
-    pdImages(g_CurrentImage).mainDIB.eraseDIB
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
+    'pdImages(g_CurrentImage).mainDIB.eraseDIB
+    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
     
     'With that transfer complete, we can erase our temporary DIB
     dstDIB.eraseDIB

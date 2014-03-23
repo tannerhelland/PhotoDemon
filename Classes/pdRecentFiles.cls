@@ -506,7 +506,7 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Else
         Dim tmpImage As pdImage
         Set tmpImage = New pdImage
-        Set tmpImage.mainDIB = mruThumb
+        'Set tmpImage.getActiveDIB = mruThumb
         
         If GDIPlusSavePicture(tmpImage, sFilename, ImagePNG, mruThumb.getDIBColorDepth) Then
             Message "Thumbnail saved successfully."

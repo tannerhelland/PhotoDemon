@@ -111,9 +111,6 @@ Option Explicit
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
     
-    'Image's actual image data (stored as a DIB inside the mainDIB object)
-    'Public mainDIB As pdDIB
-    
     'Image's back buffer (also a DIB; this is used to hold the final composite before everything is rendered on-screen
     Public backBuffer As pdDIB
     
@@ -285,6 +282,22 @@ Public Function getSaveState() As Boolean
     getSaveState = hasBeenSaved
 End Function
 
+'Some functions (like saving the image) need to know whether to present the user with 24 or 32bpp options.  Because the composited
+' image's color depth depends on a variety of factors, the calling function can simply rely on this function to determine the
+' appropriate color depth for us.
+Public Function getCompositeImageColorDepth() As Long
+
+    'Single-layer images are much easier to deal with!
+    If numOfLayers = 0 Then
+        getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
+    Else
+    
+        'TODO!  Use magic to determine the orioer color depth of the composited image.
+    
+    End If
+
+End Function
+
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
@@ -379,13 +392,21 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         
     End If
     
+    'Retrieve a composite version of the image
+    Dim compositeImage As pdDIB
+    Set compositeImage = New pdDIB
+    Me.getCompositedImage compositeImage, True
+    
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
     ' provides superior results, but if it is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
         
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(getCompositedImage().getDIBDC)
+        fi_DIB = FreeImage_CreateFromDC(compositeImage.getDIBDC)
+        
+        'Release our copy of the composite image
+        Set compositeImage = Nothing
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -433,11 +454,7 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Else
     
         dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
-        
-        Dim compositedImage As New pdDIB
-        Set compositedImage = getCompositedImage()
-        
-        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositedImage, 0, 0, compositedImage.getDIBWidth, compositedImage.getDIBHeight, InterpolationModeHighQualityBilinear)
+        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositeImage, 0, 0, compositeImage.getDIBWidth, compositeImage.getDIBHeight, InterpolationModeHighQualityBilinear)
         
     End If
     
@@ -447,10 +464,10 @@ End Function
 Public Sub deactivateImage()
     
     'Erase the main DIB
-    If Not (mainDIB Is Nothing) Then
-        mainDIB.eraseDIB
-        Set mainDIB = Nothing
-    End If
+    'If Not (mainDIB Is Nothing) Then
+    '    mainDIB.eraseDIB
+    '    Set mainDIB = Nothing
+    'End If
     
     'Erase the back buffer
     If Not (backBuffer Is Nothing) Then
@@ -514,8 +531,8 @@ End Sub
 'If the images's size has somehow changed, this can be called to update it.  (At present, it simply copies over the size of
 ' the main DIB, but in the future it may need to take into account multiple layers.)
 Public Function updateSize()
-    Me.Width = mainDIB.getDIBWidth
-    Me.Height = mainDIB.getDIBHeight
+    Me.Width = imgLayers(0).layerDIB.getDIBWidth
+    Me.Height = imgLayers(0).layerDIB.getDIBHeight
 End Function
 
 'INITIALIZE class
@@ -682,7 +699,7 @@ Private Sub Class_Terminate()
     'Forcibly release all image layers
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        imgLayers(i) = Nothing
+        Set imgLayers(i) = Nothing
     Next i
 
 End Sub

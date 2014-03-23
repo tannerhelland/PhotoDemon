@@ -102,14 +102,19 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     colorCountCheck = getQuickColorCount(srcPDImage)
                 End If
                 
+                'Retrieve a composited copy of the current image
+                Dim tmpCompositeDIB As pdDIB
+                Set tmpCompositeDIB = New pdDIB
+                srcPDImage.getCompositedImage tmpCompositeDIB, False
+                
                 'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-                outputColorDepth = getColorDepthFromColorCount(colorCountCheck, srcPDImage.getCompositedImage())
+                outputColorDepth = getColorDepthFromColorCount(colorCountCheck, tmpCompositeDIB)
                 
                 'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
                 ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
                 ' images to be exported as 32bpp.
-                If (outputColorDepth <= 8) And (srcPDImage.getCompositedImage().getDIBColorDepth = 32) Then
-                    If (Not srcPDImage.getCompositedImage().isAlphaBinary) Then outputColorDepth = 32
+                If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
+                    If (Not tmpCompositeDIB.isAlphaBinary) Then outputColorDepth = 32
                 End If
                 
                 Message "Color count successful (%1 bpp recommended)", outputColorDepth
@@ -495,10 +500,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         If Not suspendMRUUpdating Then
             Message "Save canceled."
             PhotoDemon_SaveImage = False
-            
-            'Convert back to premultiplied alpha if 32bpp
-            If srcPDImage.getCompositedImage.getDIBColorDepth = 32 Then srcPDImage.mainDIB.fixPremultipliedAlpha True
-                
             Exit Function
         End If
         
@@ -957,7 +958,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 'Now, add options that the user may have specified.
                 
                 'Alpha extenuation (only relevant for 32bpp images)
-                If srcPDImage.getCompositedImage().getDIBColorDepth = 32 Then
+                If tmpDIB.getDIBColorDepth = 32 Then
                     If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq Alpha Extenuation", False) Then
                         shellPath = shellPath & "-t15 "
                     Else

@@ -220,6 +220,8 @@ End Sub
 ' JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format from the common dialog).
 Public Function ExportSelectedAreaAsImage() As Boolean
 
+    'TODO: make this function work with layers
+
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
     If Not pdImages(g_CurrentImage).selectionActive Then
         Message "This action requires an active selection.  Please create a selection before continuing."
@@ -240,11 +242,11 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Set tmpDIB = New pdDIB
     
     pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB
-    Set tmpImage.mainDIB = tmpDIB
+    'Set tmpImage.mainDIB = tmpDIB
     tmpImage.updateSize
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not tmpImage.mainDIB.verifyAlphaChannel Then tmpImage.mainDIB.convertTo24bpp
+    'If Not tmpImage.mainDIB.verifyAlphaChannel Then tmpImage.mainDIB.convertTo24bpp
     
     'Give the selection a basic filename
     tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
@@ -259,7 +261,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
-    If tmpImage.getCompositedImage().getDIBColorDepth = 24 Then
+    If tmpImage.getCompositeImageColorDepth = 24 Then
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
     Else
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
@@ -293,6 +295,8 @@ End Function
 
 'Export the current selection mask as an image.  PNG is recommended by default, but the user can choose from any of PD's available formats.
 Public Function ExportSelectionMaskAsImage() As Boolean
+
+    'TODO: make this function work with layers
 
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
     If Not pdImages(g_CurrentImage).selectionActive Then

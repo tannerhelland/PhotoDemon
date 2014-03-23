@@ -224,7 +224,13 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         Dim tmpSA As SAFEARRAY2D
         prepImageData tmpSA, toPreview, dstPic
     End If
-
+    
+    'TODO!  Warn the user that this requires flattening the image.
+    
+    Dim tmpCompositeDIB As pdDIB
+    Set tmpCompositeDIB = New pdDIB
+    pdImages(g_CurrentImage).getCompositedImage tmpCompositeDIB, False
+    
     'Make sure we found the FreeImage plug-in when the program was loaded
     If g_ImageFormats.FreeImageEnabled Then
         
@@ -237,8 +243,8 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             If workingDIB.getDIBColorDepth = 32 Then workingDIB.compositeBackgroundColor 255, 255, 255
             fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
         Else
-            If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then pdImages(g_CurrentImage).mainDIB.compositeBackgroundColor 255, 255, 255
-            fi_DIB = FreeImage_CreateFromDC(pdImages(g_CurrentImage).mainDIB.getDIBDC)
+            If tmpCompositeDIB.getDIBColorDepth = 32 Then tmpCompositeDIB.compositeBackgroundColor 255, 255, 255
+            fi_DIB = FreeImage_CreateFromDC(tmpCompositeDIB.getDIBDC)
         End If
         
         'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
@@ -253,8 +259,12 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
                 workingDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, 24
                 SetDIBitsToDevice workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             Else
-                pdImages(g_CurrentImage).mainDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 24
-                SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 0, 0, 0, pdImages(g_CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                
+                'TODO!  Remove all images, and apply the results of the color reduction to a new Layer 0
+                
+                'pdImages(g_CurrentImage).mainDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 24
+                'SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 0, 0, 0, pdImages(g_CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library

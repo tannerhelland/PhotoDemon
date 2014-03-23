@@ -19,6 +19,11 @@ Option Explicit
 ' (The threshold is required for JPEG images; pixels may not be identical due to lossy compression.)
 Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
 
+    'TODO: rework this to operate on layers.  In theory, we can simply crop the pdImage width height, without
+    '      actually modifying any individual layers!  The best way to do it may be to retrieve a composited
+    '      copy of the image, autocrop it, then use its dimensions to change the original image's height/width.
+    '      (NOTE: for left/top, all layer offsets will need to be adjusted to match.)
+
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -32,7 +37,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Make a copy of the current image
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
+    'tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte
@@ -48,8 +53,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = pdImages(g_CurrentImage).mainDIB.getDIBColorDepth \ 8
-
+    'qvDepth = pdImages(g_CurrentImage).mainDIB.getDIBColorDepth \ 8
+    
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     SetProgBarMax 4
@@ -209,10 +214,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         SetProgBarVal 4
         
         'Resize the current image's main DIB
-        pdImages(g_CurrentImage).mainDIB.createBlank newRight - newLeft, newBottom - newTop, tmpDIB.getDIBColorDepth
+        'pdImages(g_CurrentImage).mainDIB.createBlank newRight - newLeft, newBottom - newTop, tmpDIB.getDIBColorDepth
         
         'Copy the autocropped area to the new main DIB
-        BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBHeight, tmpDIB.getDIBDC, newLeft, newTop, vbSrcCopy
+        'BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBHeight, tmpDIB.getDIBDC, newLeft, newTop, vbSrcCopy
     
         'Erase the temporary DIB
         tmpDIB.eraseDIB
@@ -235,6 +240,8 @@ End Sub
 
 'Crop the image to the current selection
 Public Sub MenuCropToSelection()
+
+    'TODO: make this work with layers.
 
     'First, make sure there is an active selection
     If Not pdImages(g_CurrentImage).selectionActive Then
@@ -261,7 +268,7 @@ Public Sub MenuCropToSelection()
     'BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
     
     'Transfer the newly cropped image back into the main DIB object
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     
     'Erase the temporary DIB
     tmpDIB.eraseDIB
@@ -301,6 +308,8 @@ End Sub
 'Flip an image vertically
 Public Sub MenuFlip()
 
+    'TODO: make this function work with layers.
+
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -308,7 +317,7 @@ Public Sub MenuFlip()
     End If
     
     Message "Flipping image..."
-    StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
+    'StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -317,7 +326,9 @@ End Sub
 
 'Flip an image horizontally
 Public Sub MenuMirror()
-
+    
+    'TODO: make this function work with layers.
+    
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -325,7 +336,7 @@ Public Sub MenuMirror()
     End If
 
     Message "Mirroring image..."
-    StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
+    'StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
     Message "Finished. "
     
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -334,6 +345,8 @@ End Sub
 
 'Rotate an image 90° clockwise
 Public Sub MenuRotate90Clockwise()
+
+    'TODO: make this function work with layers.
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
@@ -356,7 +369,7 @@ Public Sub MenuRotate90Clockwise()
     
     Dim dstDIB As pdDIB
     Set dstDIB = New pdDIB
-    dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+    'dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
     
     prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
@@ -407,7 +420,7 @@ Public Sub MenuRotate90Clockwise()
     If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
     
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
+    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
     
     'With that transfer complete, we can erase our temporary DIB
     dstDIB.eraseDIB
@@ -430,6 +443,8 @@ End Sub
 'Rotate an image 180°
 Public Sub MenuRotate180()
 
+    'TODO: make this function work with layers.
+
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -439,7 +454,7 @@ Public Sub MenuRotate180()
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
         
-    StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, pdImages(g_CurrentImage).Height - 1, -pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
+    'StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, pdImages(g_CurrentImage).Height - 1, -pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
         
     Message "Finished. "
     
@@ -449,6 +464,8 @@ End Sub
 
 'Rotate an image 90° counter-clockwise
 Public Sub MenuRotate270Clockwise()
+
+    'TODO: make this function work with layers.
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
@@ -471,7 +488,7 @@ Public Sub MenuRotate270Clockwise()
     
     Dim dstDIB As pdDIB
     Set dstDIB = New pdDIB
-    dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+    'dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
     
     prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
@@ -521,7 +538,7 @@ Public Sub MenuRotate270Clockwise()
     If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
     
     'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
+    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
     
     'With that transfer complete, we can erase our temporary DIB
     dstDIB.eraseDIB

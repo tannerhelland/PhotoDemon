@@ -394,7 +394,7 @@ End Sub
 Private Sub cmbFit_Click()
     
     'Hide the color picker as necessary
-    If (cmbFit.ListIndex = 1) And (pdImages(g_CurrentImage).mainDIB.getDIBColorDepth <> 32) Then
+    If (cmbFit.ListIndex = 1) And (pdImages(g_CurrentImage).getCompositeImageColorDepth <> 32) Then
         colorPicker.Visible = True
     Else
         colorPicker.Visible = False
@@ -470,7 +470,7 @@ Private Sub Form_Load()
     'Populate the "fit" options
     cmbFit.Clear
     cmbFit.AddItem " stretching to new size  (default)", 0
-    If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
         cmbFit.AddItem " fitting inclusively, with transparent borders as necessary", 1
     Else
         cmbFit.AddItem " fitting inclusively, with colored borders as necessary", 1
@@ -542,6 +542,9 @@ End Sub
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
 
+    'TODO!  - Add GDI+ as a resize option
+    'TODO!  Rework this function to work with layers
+
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
     Dim fitWidth As Long, fitHeight As Long
@@ -594,7 +597,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             Message "Resizing image..."
             
             'Copy the current DIB into this temporary DIB at the new size
-            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, False
+            'tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, False
             
         'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
         ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that
@@ -603,7 +606,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             Message "Resizing image..."
             
             'Copy the current DIB into this temporary DIB at the new size
-            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, True
+            'tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, True
         
         'True bilinear sampling
         Case RESIZE_BILINEAR
@@ -611,10 +614,13 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             'If FreeImage is enabled, use their bilinear filter.  Similar results, much faster.
             If g_ImageFormats.FreeImageEnabled Then
             
-                FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BILINEAR
+                'FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BILINEAR
             
             'If FreeImage is not enabled, we have to do the resample ourselves.
             Else
+            
+                'TODO!  Probably kill this function, as it's going to be a lot of work to rework it for layers.
+                '        Instead, rely on GDI+ for bilinear resizes when FreeImage is not available.
             
                 Message "Resampling image..."
         
@@ -625,7 +631,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
                 'Resize the temporary DIB to the target size, and point a second local array at it
-                tmpDIB.createBlank fitWidth, fitHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+                'tmpDIB.createBlank fitWidth, fitHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
                 
                 Dim dstImageData() As Byte
                 Dim dstSA As SAFEARRAY2D
@@ -693,16 +699,16 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             End If
         
         Case RESIZE_BSPLINE
-            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BSPLINE
+            'FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BSPLINE
             
         Case RESIZE_BICUBIC_MITCHELL
-            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BICUBIC
+            'FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_BICUBIC
             
         Case RESIZE_BICUBIC_CATMULL
-            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_CATMULLROM
+            'FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_CATMULLROM
         
         Case RESIZE_LANCZOS
-            FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_LANCZOS3
+            'FreeImageResize tmpDIB, pdImages(g_CurrentImage).mainDIB, fitWidth, fitHeight, FILTER_LANCZOS3
             
     End Select
     
@@ -722,14 +728,14 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         Case 0
     
             'Very simple - just copy the resized image back into the main DIB
-            pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+            'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     
         'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
         ' blank space - that space is filled by the background color parameter passed in.
         Case 1
         
             'Resize the main DIB (destructively!) to fit the new dimensions
-            pdImages(g_CurrentImage).mainDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
+            'pdImages(g_CurrentImage).mainDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
         
             'BitBlt the old image, centered, onto the new DIB
             If srcAspect > dstAspect Then
@@ -740,14 +746,14 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 dstY = 0
             End If
             
-            BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+            'BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
         
         'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
         ' blank space - but parts of the image may get cropped out.
         Case 2
         
             'Resize the main DIB (destructively!) to fit the new dimensions
-            pdImages(g_CurrentImage).mainDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
+            'pdImages(g_CurrentImage).mainDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
         
             'BitBlt the old image, centered, onto the new DIB
             If srcAspect < dstAspect Then
@@ -758,7 +764,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 dstY = 0
             End If
             
-            BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+            'BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
         
     End Select
     

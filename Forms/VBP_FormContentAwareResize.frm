@@ -177,6 +177,9 @@ End Sub
 'Small wrapper for the seam carve function
 Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
 
+    'TODO: make this function work with layers.  It may be best to restrict the function to layers, and warn of
+    '       flattening if used at the Image level.
+
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -192,7 +195,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     SeamCarveDIB tmpDIB, iWidth, iHeight
     
     'Copy the newly resized DIB back into its parent image
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
     
     'Update the main image's size and DPI values

@@ -3,10 +3,10 @@ Begin VB.Form FormCanvasSize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Canvas"
-   ClientHeight    =   7679
-   ClientLeft      =   42
-   ClientTop       =   224
-   ClientWidth     =   9709
+   ClientHeight    =   7680
+   ClientLeft      =   45
+   ClientTop       =   225
+   ClientWidth     =   9705
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,19 +19,19 @@ Begin VB.Form FormCanvasSize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   1097
+   ScaleHeight     =   512
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1387
+   ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
-      Height          =   805
+      Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6874
-      Width           =   9716
-      _ExtentX        =   17132
-      _ExtentY        =   1416
+      Top             =   6930
+      Width           =   9705
+      _ExtentX        =   17119
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -393,7 +393,7 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
     
         'Hide the background color selectors
         colorPicker.Visible = False
@@ -412,7 +412,7 @@ Private Sub Form_Load()
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
     
     'If the source image is 32bpp, hide the color selection box and change the text to match
-    If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then
+    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
         lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
     Else
         lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")
@@ -429,6 +429,8 @@ End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
+
+    'TODO!  Make this function work with layers.
 
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(g_CurrentImage).Width
@@ -501,13 +503,13 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     'Create a temporary DIB to hold the new canvas
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
+    'tmpDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
 
     'Bitblt the old image into its new position on the canvas
-    BitBlt tmpDIB.getDIBDC, dstX, dstY, srcWidth, srcHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, vbSrcCopy
+    'BitBlt tmpDIB.getDIBDC, dstX, dstY, srcWidth, srcHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, vbSrcCopy
     
     'The temporary DIB now holds the new canvas and image.  Copy it back into the main image.
-    pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
     
     'Update the main image's size and DPI values

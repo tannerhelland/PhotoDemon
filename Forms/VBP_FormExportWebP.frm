@@ -323,9 +323,14 @@ Private Sub updatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         
+        'Retrieve a composited version of the target image
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        imageBeingExported.getCompositedImage tmpDIB, True
+        
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, imageBeingExported.getCompositedImage, fxPreview
+        previewNonStandardImage tmpSafeArray, tmpDIB, fxPreview
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
