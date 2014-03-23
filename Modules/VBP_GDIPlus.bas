@@ -727,8 +727,8 @@ Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte
     fillQuadWithVBRGB = placeHolder.lngResult
 End Function
 
-'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any common image type.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
@@ -756,7 +756,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
         GdipGetPropertyItem hImage, PropertyTagICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
-        dstImage.ICCProfile.loadICCFromGDIPlus profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
+        dstDIB.ICCProfile.loadICCFromGDIPlus profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
         
         Erase iccProfileBuffer
         
@@ -770,7 +770,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
     Dim imgHResolution As Single, imgVResolution As Single
     GdipGetImageHorizontalResolution hImage, imgHResolution
     GdipGetImageVerticalResolution hImage, imgVResolution
-    dstImage.setDPI imgHResolution, imgVResolution
+    dstDIB.setDPI imgHResolution, imgVResolution
     
     'Retrieve the image's alpha channel data (if any)
     Dim hasAlpha As Boolean
@@ -859,12 +859,12 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstImage A
             GdipBitmapUnlockBits hImage, copyBitmapData
                         
             'Apply the transformation using the dedicated CMYK transform handler
-            If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB, dstImage.ICCProfile.getSourceRenderIntent) Then
+            If applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
             
                 Message "Copying newly transformed sRGB data..."
             
                 'The transform was successful, and the destination DIB is ready to go!
-                dstImage.ICCProfile.markSuccessfulProfileApplication
+                dstDIB.ICCProfile.markSuccessfulProfileApplication
                 
             'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
             Else

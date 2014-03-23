@@ -208,6 +208,83 @@ Private trnsX As Long, trnsY As Long
 'Remember the original color of the pixels made transparent, then restore it after the "magic magenta" has served its purpose
 Private originalTransparentColor As Long
 
+'If this DIB was loaded from file, its original file format will be set here.  (By default, this value will be -1).
+Private originalFIF As Long
+
+'DIBs may require ICC profile handling.  All ICC Profile interactions are handled through a publicly available ICCProfile class,
+' on a per-DIB basis.
+Public ICCProfile As pdICCProfile
+
+'DIBs created from loaded image files contain resolution data.  This data isn't important on a per-DIB basis, but the parent
+' pdImage object will copy the resolution data from its first-loaded child DIB (if it has a resolution)
+Private xResolution As Double, yResolution As Double, dibDPI As Double
+
+'Some image formats (e.g. PNG) will specify a preferred background color.  If available at load-time, that color value
+' will be stored here.
+Private originalBackgroundColor As Long
+
+'DIBs created from loaded image files will have their original color depth stored here.  Note that PD only works in 24/32 bpp
+' mode at present, but this value may contain other bit-depths (e.g. 8bpp if the source data was a GIF).
+Private originalColorDepth As Long
+
+'Get/set original color depth
+Public Function getOriginalColorDepth() As Long
+    getOriginalColorDepth = originalColorDepth
+End Function
+
+Public Sub setOriginalColorDepth(ByVal origColorDepth As Long)
+    originalColorDepth = origColorDepth
+End Sub
+
+'If this DIB was created from an image file, and that file specified a preferred background color, use this
+' function to copy the value into this DIB.
+Public Sub setBackgroundColor(ByVal newBackcolor As Long)
+    originalBackgroundColor = newBackcolor
+End Sub
+
+Public Function getBackgroundColor() As Long
+    getBackgroundColor = originalBackgroundColor
+End Function
+
+'Set the DPI of this DIB.  This is only relevant if this DIB has been created directly from an image file.
+Public Sub setDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
+    
+    'Many image types do not store resolution information; default to 96 in this case
+    If xRes = 0 Then xRes = 96
+    If yRes = 0 Then yRes = 96
+    
+    'FreeImage is pretty damn stupid when it comes to DPI.  If no DPI information is found, it will return "72" by default.
+    ' If the source of this call is FreeImage, we want to replace 72 with a more modern default of 96.  Obviously this creates
+    ' a problem when images have an actual resolution of 72 DPI, as there is no way to tell if FreeImage set that by default,
+    ' or if it is the actual DPI value of the file.  If this occurs, we can use ExifTool to retrieve an actual value as
+    ' stored in the file.
+    If sourceIsFreeImage Then
+        If xRes = 72 Then xRes = 96
+        If yRes = 72 Then yRes = 96
+    End If
+    
+    xResolution = xRes
+    yResolution = yRes
+    
+    'It is extremely rare for x/y resolution to differ, but just in case, calculate an average resolution as well
+    dibDPI = (xRes + yRes) \ 2
+
+End Sub
+
+'Even though we store separate x and y DPI, PD only deals in a single per-DIB DPI value
+Public Function getDPI() As Double
+    getDPI = dibDPI
+End Function
+
+'Get/Set original DIB format
+Public Function getOriginalFormat() As Long
+    getOriginalFormat = originalFIF
+End Function
+
+Public Sub setOriginalFormat(ByVal origFIF As Long)
+    originalFIF = origFIF
+End Sub
+
 'Return the original transparent color (set as part of the MarkAlpha routine).
 Public Function getOriginalTransparentColor() As Long
     getOriginalTransparentColor = originalTransparentColor
@@ -555,7 +632,7 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
 End Function
 
 'Convert this DIB to 24bpp mode
-Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
+Public Function convertTo24bpp(Optional ByVal newBackcolor As Long = vbWhite) As Boolean
 
     'Make sure this DIB is 32bpp. If it isn't, running this function pointless.
     If dibColorDepth = 32 Then
@@ -569,7 +646,7 @@ Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
             tmpDIB.createFromExistingDIB Me
                         
             'Composite the temporary DIB against a white background, per convention.
-            tmpDIB.compositeBackgroundColor ExtractR(newBackColor), ExtractG(newBackColor), ExtractB(newBackColor)
+            tmpDIB.compositeBackgroundColor ExtractR(newBackcolor), ExtractG(newBackcolor), ExtractB(newBackcolor)
             
             'Now erase our own DIB
             eraseDIB
@@ -1045,6 +1122,9 @@ Private Sub Class_Initialize()
     'Reset DIB size
     dibWidth = 0
     dibHeight = 0
+    
+    'Initialize the ICC profile manager
+    Set ICCProfile = New pdICCProfile
     
 End Sub
 

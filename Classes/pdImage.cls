@@ -134,10 +134,7 @@ Option Explicit
     
     'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
     Public undoManager As pdUndo
-    
-    'All ICC Profile interactions are handled through a publicly available ICCProfile class
-    Public ICCProfile As pdICCProfile
-    
+        
     'Various viewport actions are now handled through a separate pdViewport class
     Public imgViewport As pdViewport
     
@@ -311,11 +308,11 @@ End Function
 'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when someone
 ' needs access to the current layer's DIB, and they don't want to retrieve it via a bunch of helper functions.
 Public Function getActiveDIB() As pdDIB
-    If numOfLayers > 0 Then
+    'If numOfLayers > 0 Then
         Set getActiveDIB = imgLayers(curLayer).layerDIB
-    Else
-        Set getActiveDIB = Nothing
-    End If
+    'Else
+    '    Set getActiveDIB = Nothing
+    'End If
 End Function
 
 'Retrieve the currently active layer
@@ -328,7 +325,7 @@ Public Function getActiveLayer() As pdLayer
 End Function
 
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
-' Also, this function does not check bounds, so make sure the passed value is valid!
+' Also, this function does not check bounds, so make sure the passed index is valid!
 Public Function getLayer(ByVal layerIndex As Long) As pdLayer
     Set getLayer = imgLayers(layerIndex)
 End Function
@@ -543,14 +540,13 @@ Private Sub Class_Initialize()
     Set undoManager = New pdUndo
     Set undoManager.parentPDImage = Me
     
-    'Initialize the ICC profile manager
-    Set ICCProfile = New pdICCProfile
-    
     'Initialize the viewport manager
     Set imgViewport = New pdViewport
     
     'Create at least one blank layer
     ReDim imgLayers(0) As pdLayer
+    Set imgLayers(0) = New pdLayer
+    
     curLayer = 0
         
 End Sub

@@ -32,9 +32,9 @@ Public Function isFreeImageAvailable() As Boolean
 End Function
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
+Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
 
-    On Error GoTo FreeImageV3_AdvancedError
+    On Error GoTo FreeImageV4_AdvancedError
     
     '****************************************************************************
     ' Make sure FreeImage exists and is usable
@@ -42,7 +42,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     
     'Double-check that FreeImage.dll was located at start-up
     If Not g_ImageFormats.FreeImageEnabled Then
-        LoadFreeImageV3_Advanced = False
+        LoadFreeImageV4 = False
         Exit Function
     End If
     
@@ -65,13 +65,14 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     If Not FreeImage_FIFSupportsReading(fileFIF) Then
     
         If showMessages Then Message "Filetype not supported by FreeImage.  Import abandoned."
-        LoadFreeImageV3_Advanced = False
+        LoadFreeImageV4 = False
         Exit Function
         
     End If
     
-    'Store this file format inside the relevant pdImage object
-    dstImage.originalFileFormat = fileFIF
+    'Store this file format inside the DIB
+    dstDIB.setOriginalFormat fileFIF
+    
     
     '****************************************************************************
     ' Based on the detected format, prepare any necessary load flags
@@ -170,109 +171,13 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     'If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA
     
     '****************************************************************************
-    ' Check GIF, TIFF, and ICO files for multiple pages (frames)
+    ' If the user has requested a specific page from a multipage image, prepare a few extra items
     '****************************************************************************
     
     Dim fi_multi_hDIB As Long
-    Dim chkPageCount As Long
     Dim needToCloseMulti As Boolean
-        
+    
     If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
-    
-    'This is a temporary fix for batch convert.  For now, ignore all extra images.  A better option needs to be developed for handling
-    ' these types of files during batch processing.
-    If MacroStatus = MacroBATCH Then
-        g_imageHasMultiplePages = False
-        g_imagePageCount = 0
-    End If
-    
-    'If the image is a GIF, TIFF, or icon, it might contain multiple images.  Check for that now.
-    If ((fileFIF = FIF_GIF) Or (fileFIF = FIF_TIFF) Or (fileFIF = FIF_ICO)) And (pageToLoad = 0) And (MacroStatus <> MacroBATCH) Then
-    
-        If fileFIF = FIF_GIF Then
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename)
-        ElseIf fileFIF = FIF_ICO Then
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename)
-        Else
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename)
-        End If
-        
-        'Check the "page count" (e.g. frames) of the loaded GIF
-        chkPageCount = FreeImage_GetPageCount(fi_multi_hDIB)
-        
-        FreeImage_CloseMultiBitmap fi_multi_hDIB
-        
-        'If the page count is more than 1, offer to load each page as an individual image
-        If chkPageCount > 1 Then
-            
-            If fileFIF = FIF_GIF Then
-                If showMessages Then Message "Animated GIF file detected."
-            ElseIf fileFIF = FIF_ICO Then
-                If showMessages Then Message "Multiple icons detected."
-            Else
-                If showMessages Then Message "Multipage TIFF file detected."
-            End If
-            
-            'Based on the user's preference for multipage images, we can handle the image one of several ways
-            Select Case g_UserPreferences.GetPref_Long("Loading", "Multipage Image Prompt", 0)
-            
-                'Prompt the user for an action
-                Case 0
-                
-                    Dim mpImportAnswer As VbMsgBoxResult
-                    
-                    mpImportAnswer = promptMultiImage(srcFilename, chkPageCount)
-                    
-                    'If the user said "yes", import each page as its own image
-                    If mpImportAnswer = vbYes Then
-                    
-                        If fileFIF = FIF_GIF Then
-                            If showMessages Then Message "All frames will be loaded, per the user's request."
-                        ElseIf fileFIF = FIF_ICO Then
-                            If showMessages Then Message "All icons will be loaded, per the user's request."
-                        Else
-                            If showMessages Then Message "All pages will be loaded, per the user's request."
-                        End If
-                    
-                        g_imageHasMultiplePages = True
-                        g_imagePageCount = chkPageCount - 1
-                                    
-                    'If the user just wants the first frame, close the image and resume normal loading
-                    
-                    Else
-                        
-                        If fileFIF = FIF_GIF Then
-                            If showMessages Then Message "Only the first frame will be loaded, per the user's request."
-                        ElseIf fileFIF = FIF_ICO Then
-                            If showMessages Then Message "Only the first icon will be loaded, per the user's request."
-                        Else
-                            If showMessages Then Message "Only the first page will be loaded, per the user's request."
-                        End If
-                        
-                        g_imageHasMultiplePages = False
-                        g_imagePageCount = 0
-                    
-                    End If
-                
-                'Ignore additional images, and treat this as a single-image file.  (Load just the first frame or page, basically.)
-                Case 1
-                
-                    If showMessages Then Message "Ignoring extra images in the file, per user's saved preference."
-                    g_imageHasMultiplePages = False
-                    g_imagePageCount = 0
-                
-                'Load every image in the file.
-                Case 2
-                
-                    If showMessages Then Message "Loading all images in the file, per user's saved preference."
-                    g_imageHasMultiplePages = True
-                    g_imagePageCount = chkPageCount - 1
-                
-            End Select
-            
-        End If
-        
-    End If
     
     '****************************************************************************
     ' Load the image into a FreeImage container
@@ -281,7 +186,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     'With all flags set and filetype correctly determined, import the image
     Dim fi_hDIB As Long
     
-    If (pageToLoad <= 0) And (chkPageCount <= 1) Then
+    If (pageToLoad <= 0) Then
         If showMessages Then Message "Importing image from file..."
         fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
     Else
@@ -305,7 +210,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
         If FreeImage_GetBPP(fi_hDIB) < 32 Then
         
             'If this is the first frame of the icon, unload it and try again
-            If (pageToLoad <= 0) And (chkPageCount <= 1) Then
+            If (pageToLoad <= 0) Then
                 If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
                 fi_hDIB = FreeImage_Load(fileFIF, srcFilename, FILO_ICO_MAKEALPHA)
             
@@ -330,7 +235,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     If fi_hDIB = 0 Then
     
         If showMessages Then Message "Import via FreeImage failed (blank handle)."
-        LoadFreeImageV3_Advanced = False
+        LoadFreeImageV4 = False
         Exit Function
         
     End If
@@ -341,18 +246,18 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     ' Retrieve generic metadata, like X and Y resolution (if available)
     '****************************************************************************
     
-    dstImage.setDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
+    dstDIB.setDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
     
     
     
     '****************************************************************************
-    ' Retrieve any attached ICC profiles, and copy their contents into this pdImage's ICC manager
+    ' Retrieve any attached ICC profiles, and copy their contents into this DIB's ICC manager
     '****************************************************************************
     
     If FreeImage_HasICCProfile(fi_hDIB) Then
     
         'This image has an attached profile.  Retrieve it and stick it inside the image.
-        dstImage.ICCProfile.loadICCFromFreeImage fi_hDIB
+        dstDIB.ICCProfile.loadICCFromFreeImage fi_hDIB
         
     End If
     
@@ -373,11 +278,11 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
             If rQuad.rgbReserved <> 0 Then
                 Dim fi_Palette() As Long
                 fi_Palette = FreeImage_GetPaletteExLong(fi_hDIB)
-                dstImage.pngBackgroundColor = fi_Palette(rQuad.rgbReserved)
-            
+                dstDIB.setBackgroundColor fi_Palette(rQuad.rgbReserved)
+                
             'Otherwise it's easy - just reassemble the RGB values from the quad
             Else
-                dstImage.pngBackgroundColor = RGB(rQuad.rgbRed, rQuad.rgbGreen, rQuad.rgbBlue)
+                dstDIB.setBackgroundColor RGB(rQuad.rgbRed, rQuad.rgbGreen, rQuad.rgbBlue)
             End If
         
         End If
@@ -399,7 +304,8 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
     'Because it could be helpful later on, also retrieve the image datatype.  This is an internal FreeImage value
-    ' corresponding to various data encodings (floating-point, complex, integer, etc)
+    ' corresponding to various data encodings (floating-point, complex, integer, etc).  If we ever want to handle
+    ' high-bit-depth images, that value will be crucial!
     Dim fi_DataType As FREE_IMAGE_TYPE
     fi_DataType = FreeImage_GetImageType(fi_hDIB)
     
@@ -548,10 +454,10 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     
     
     '****************************************************************************
-    ' Now that we have filtered out > 32bpp images, store the current color depth of the image.
+    ' Now that we have filtered out > 32bpp images, store the current color depth of the original image.
     '****************************************************************************
     
-    dstImage.originalColorDepth = FreeImage_GetBPP(fi_hDIB)
+    dstDIB.setOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
     
     
     '****************************************************************************
@@ -672,7 +578,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
         tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If applyCMYKTransform(dstImage.ICCProfile.getICCDataPointer, dstImage.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstImage.ICCProfile.getSourceRenderIntent) Then
+        If applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
         
             Message "Copying newly transformed sRGB data..."
         
@@ -680,7 +586,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
             FreeImage_Unload fi_hDIB
             fi_hDIB = FreeImage_CreateFromDC(tmpRGBDIB.getDIBDC)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
-            dstImage.ICCProfile.markSuccessfulProfileApplication
+            dstDIB.ICCProfile.markSuccessfulProfileApplication
             
         'Something went horribly wrong.  Re-load the image and use FreeImage to apply the CMYK -> RGB transform.
         Else
@@ -725,7 +631,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
     ' - but it prevents a hard program crash, so I consider it the lesser of two evils.)
     If (fi_Width > 1000000) Or (fi_Height > 1000000) Then
-        LoadFreeImageV3_Advanced = False
+        LoadFreeImageV4 = False
         Exit Function
     Else
         creationSuccess = dstDIB.createBlank(fi_Width, fi_Height, fi_BPP)
@@ -742,12 +648,12 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
             If (fi_multi_hDIB <> 0) Then FreeImage_CloseMultiBitmap fi_multi_hDIB
         End If
         
-        LoadFreeImageV3_Advanced = False
+        LoadFreeImageV4 = False
         Exit Function
     End If
     
     '****************************************************************************
-    ' Copy the data from the FreeImage object to the pdDIB object
+    ' Copy the data from the FreeImage object to the target pdDIB object
     '****************************************************************************
     
     If showMessages Then Message "Memory secured.  Finalizing image load..."
@@ -796,7 +702,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     '****************************************************************************
     
     'Mark this load as successful
-    LoadFreeImageV3_Advanced = True
+    LoadFreeImageV4 = True
     
     Exit Function
     
@@ -804,7 +710,7 @@ Public Function LoadFreeImageV3_Advanced(ByVal srcFilename As String, ByRef dstD
     ' Error handling
     '****************************************************************************
     
-FreeImageV3_AdvancedError:
+FreeImageV4_AdvancedError:
 
     'Release the FreeImage DIB if available
     If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
@@ -813,7 +719,7 @@ FreeImageV3_AdvancedError:
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
     
     'Mark this load as unsuccessful
-    LoadFreeImageV3_Advanced = False
+    LoadFreeImageV4 = False
     
 End Function
 
@@ -841,7 +747,7 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
         Exit Function
     End If
     
-    'At this point, we are guaranteed that the image is a GIF or TIFF file.
+    'At this point, we are guaranteed that the image is a GIF, TIFF, or icon file.
     ' Open the file using the multipage function
     Dim fi_multi_hDIB As Long
     If fileFIF = FIF_GIF Then
