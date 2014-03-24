@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/February/14
-'Last update: add a fail-safe termination for metadata parsing if it exceeds four seconds
+'Last updated: 23/March/14
+'Last update: epic rewrite to account for layers
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -557,7 +557,11 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             'If this is a primary image, we will automatically set the targetImage and targetDIB parameters.  If this is NOT a primary image,
             ' the calling function must have specified this for us.
             Set targetImage = pdImages(g_CurrentImage)
-            Set targetDIB = pdImages(g_CurrentImage).getActiveDIB()
+            
+            'Create a blank layer in the receiving image, and retrieve a pointer to it
+            Dim newLayerID As Long
+            newLayerID = pdImages(g_CurrentImage).createBlankLayer
+            Set targetDIB = pdImages(g_CurrentImage).getLayerByID(newLayerID).layerDIB
         
             g_AllowViewportRendering = False
             

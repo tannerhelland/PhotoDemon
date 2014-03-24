@@ -97,7 +97,7 @@ Public layerDIB As pdDIB
 ' parent image (including persistence when writing image data to/from file).
 '
 'Note that the set function is preferenced by "assign" - I do this on purpose, to help me remember that the function should only
-' ever be called once, right after the layer is first created.  After that point, it should never again be used!
+' ever be called once, right after the layer is first created.  After that, it should never, ever be changed!
 Public Function getLayerID() As Long
     getLayerID = layerID
 End Function
