@@ -55,6 +55,13 @@ End Enum
     Const BL_NORMAL = 0, BL_MULTIPLY = 1, BL_SCREEN = 2, BL_OVERLAY = 3, BL_HARDLIGHT = 4, BL_SOFTLIGHT = 5
 #End If
 
+'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
+' persistent for the life of the layer, the life of the parent pdImage object (meaning no other layer in that image will
+' ever be assigned this ID value), and the life of any copies of the parent pdImage saved to file.
+'
+'Because this value cannot be changed once created, I have separated it out from the LayerData enum.
+Private layerID As Long
+
 'Layers store a lot of layer-type-agnostic metadata. **All of these entries can be changed by the user at run-time.**
 ' Default values will be set at creation time, but never assume that those values are constant, and never attempt to reference
 '  a layer by one of these properties (INCLUDING NAME, as it can be modified without warning)
@@ -67,7 +74,6 @@ Private Type LayerData
     l_OffsetY As Double
     l_Angle As Double               'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
     l_Visibility As Boolean         'Layer visibility
-    
 End Type
 
 'Local instance of layer data for this layer
@@ -86,6 +92,26 @@ Private myLayerData As LayerData
 ' That said, any function that directly modifies the DIB must also take care of any management functions as well (e.g. redrawing
 ' the viewport), as layers have no way tp propagate commands up to their parent image.
 Public layerDIB As pdDIB
+
+'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
+' parent image (including persistence when writing image data to/from file).
+'
+'Note that the set function is preferenced by "assign" - I do this on purpose, to help me remember that the function should only
+' ever be called once, right after the layer is first created.  After that point, it should never again be used!
+Public Function getLayerID() As Long
+    getLayerID = layerID
+End Function
+
+Public Sub assignLayerID(ByVal thisLayerID As Long)
+    
+    'As a failsafe, warn me if this layer has already been assigned an ID.  (This should *never* happen, but I like to verify.)
+    If Not g_IsProgramCompiled Then
+        If layerID <> -1 Then Debug.Print "WARNING! This layer already has an ID!"
+    End If
+    
+    layerID = thisLayerID
+    
+End Sub
 
 'Get layer type.  Note that there is no SET layer type function; layer type is set at creation, and cannot currently be changed.
 Public Function getLayerType() As LAYER_TYPE
@@ -179,6 +205,9 @@ Private Sub Class_Initialize()
     
     'Initialize the layer's DIB
     Set layerDIB = New pdDIB
+    
+    'Set the canonical ID to -1.  This can be used to determine if the layer has been activated.
+    layerID = -1
     
 End Sub
 
