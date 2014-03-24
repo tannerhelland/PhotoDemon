@@ -139,9 +139,154 @@ Option Explicit
     ' it via the relevant get/set functions.
     Private curLayer As Long
     
-    'Total number of layers.
-    Private numOfLayers As Long
+    'Total number of layers EVER created for this image.  This is used to assign canonical layer IDs to individual layers.
+    ' It has no relation to layer position or order, and will be constant for the life of both the layer itself, and this
+    ' pdImage object (including persistence when saving to/from file).
+    Private numOfLayersEverCreated As Long
     
+    'Number of ACTIVE layers in the current image.  This is equal to or less than numOfLayers, above.  Note that it is not
+    ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
+    Private numOfLayers As Long
+
+'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
+' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
+
+'Optionally, a layer position can be passed.  The position is assumed to be the position of the
+' new layer; e.g. if zero is passed, the layer will be placed at the bottom of the stack.  If no position is requested,
+' the layer will be created above the currently active layer.
+'
+'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  Note that layers can be accessed by
+' either ID or index; after calling this function, make sure to use the CANONICAL ID function.
+Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
+
+    'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
+    If numOfLayersEverCreated = 0 Then
+    
+        'Make sure the current layer pointer is correct
+        curLayer = 0
+        
+    'The layer has images.  Extra work is involved
+    Else
+
+        'If no layer has been specified, insert the new layer above the currently active layer
+        If layerPosition = -1 Then curLayer = curLayer + 1 Else curLayer = layerPosition
+        
+        'Resize the layers array by one, and shift all existing layers upward.
+        ReDim Preserve imgLayers(0 To UBound(imgLayers) + 1) As pdLayer
+        
+        Dim i As Long
+        For i = curLayer + 1 To UBound(imgLayers)
+            Set imgLayers(i) = imgLayers(i - 1)
+        Next i
+        
+    End If
+    
+    'Initialize the new layer.  (This should already have been done at creation time, but it doesn't hurt to make sure.)
+    Set imgLayers(curLayer) = New pdLayer
+    
+    'Assign the layer a canonical ID value.
+    imgLayers(curLayer).assignLayerID numOfLayersEverCreated
+    
+    'Increment our internal layer counts
+    numOfLayersEverCreated = numOfLayersEverCreated + 1
+    numOfLayers = numOfLayers + 1
+
+End Function
+
+'Some functions (like saving the image) need to know whether to present the user with 24 or 32bpp options.  Because the composited
+' image's color depth depends on a variety of factors, the calling function can simply rely on this function to determine the
+' appropriate color depth for us.
+Public Function getCompositeImageColorDepth() As Long
+
+    'Single-layer images are much easier to deal with!
+    If numOfLayers = 0 Then
+        getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
+    Else
+    
+        'TODO!  Use magic to determine the color depth of the composited image.
+    
+    End If
+
+End Function
+
+'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
+' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
+' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
+' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
+Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
+    
+    'TODO: actually composite image layers instead of just copying the active layer!
+    Set dstDIB = imgLayers(curLayer).layerDIB
+    
+    'If the user requested non-premultiplied alpha, calculate it now.
+    'TODO: how we handle premultiplication will depend on how I implement compositing, above, so this needs to be revisited
+    '       after actual compositing has been written.
+    If premultiplicationStatus Then
+        
+    Else
+        If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha False
+    End If
+    
+End Sub
+
+'Get the currently active layer index
+Public Function getActiveLayerIndex() As Long
+    getActiveLayerIndex = curLayer
+End Function
+
+'Get the currently active layer canonical ID
+Public Function getActiveLayerID() As Long
+    getActiveLayerID = imgLayers(curLayer).getLayerID
+End Function
+
+'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
+' in calling functions!)
+Public Function getNumOfLayers() As Long
+    getNumOfLayers = numOfLayers
+End Function
+
+'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when we
+' need quick access to the current layer's DIB.
+Public Function getActiveDIB() As pdDIB
+    'If numOfLayers > 0 Then
+        Set getActiveDIB = imgLayers(curLayer).layerDIB
+    'Else
+    '    Set getActiveDIB = Nothing
+    'End If
+End Function
+
+'Retrieve the currently active layer
+Public Function getActiveLayer() As pdLayer
+    If numOfLayers > 0 Then
+        Set getActiveLayer = imgLayers(curLayer)
+    Else
+        Set getActiveLayer = Nothing
+    End If
+End Function
+
+'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
+' Also, this function does not check bounds, so make sure the passed index is valid!
+Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
+    Set getLayerByIndex = imgLayers(layerIndex)
+End Function
+
+'Retrieve a layer using its canonical ID.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
+' Also, this function does not check bounds, so make sure the passed index is valid!
+Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
+    
+    Dim i As Long
+    For i = 0 To UBound(imgLayers)
+        If imgLayers(i).getLayerID = requestedID Then
+            Set getLayerByID = imgLayers(i)
+            Exit Function
+        End If
+    Next i
+    
+    'If we made it all the way here, the requested layer was not found.  Return Nothing.
+    Set getLayerByID = Nothing
+    
+End Function
+
 'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the current image's state,
 ' but it should be good enough to reconstruct an approximation for data recovery purposes.
 Public Function writeInternalDataToFile(ByVal dstFilename As String) As Boolean
@@ -280,78 +425,6 @@ End Sub
 ' whether to enable a Save button, for example.
 Public Function getSaveState() As Boolean
     getSaveState = hasBeenSaved
-End Function
-
-'Some functions (like saving the image) need to know whether to present the user with 24 or 32bpp options.  Because the composited
-' image's color depth depends on a variety of factors, the calling function can simply rely on this function to determine the
-' appropriate color depth for us.
-Public Function getCompositeImageColorDepth() As Long
-
-    'Single-layer images are much easier to deal with!
-    If numOfLayers = 0 Then
-        getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
-    Else
-    
-        'TODO!  Use magic to determine the orioer color depth of the composited image.
-    
-    End If
-
-End Function
-
-'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
-' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
-' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
-' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
-Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
-    
-    'TODO: actually composite image layers instead of just copying the active layer!
-    Set dstDIB = imgLayers(curLayer).layerDIB
-    
-    'If the user requested non-premultiplied alpha, calculate it now.
-    'TODO: how we handle premultiplication will depend on how I implement compositing, above, so this needs to be revisited
-    '       after actual compositing has been written.
-    If premultiplicationStatus Then
-        
-    Else
-        If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha False
-    End If
-    
-End Sub
-
-'Get the currently active layer index
-Public Function getActiveLayerIndex() As Long
-    getActiveLayerIndex = curLayer
-End Function
-
-'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
-' in calling functions!)
-Public Function getNumOfLayers() As Long
-    getNumOfLayers = numOfLayers
-End Function
-
-'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when someone
-' needs access to the current layer's DIB, and they don't want to retrieve it via a bunch of helper functions.
-Public Function getActiveDIB() As pdDIB
-    'If numOfLayers > 0 Then
-        Set getActiveDIB = imgLayers(curLayer).layerDIB
-    'Else
-    '    Set getActiveDIB = Nothing
-    'End If
-End Function
-
-'Retrieve the currently active layer
-Public Function getActiveLayer() As pdLayer
-    If numOfLayers > 0 Then
-        Set getActiveLayer = imgLayers(curLayer)
-    Else
-        Set getActiveLayer = Nothing
-    End If
-End Function
-
-'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
-' Also, this function does not check bounds, so make sure the passed index is valid!
-Public Function getLayer(ByVal layerIndex As Long) As pdLayer
-    Set getLayer = imgLayers(layerIndex)
 End Function
 
 'External functions can use this function to request a thumbnail version of the contained image.  Previously, thumbnail
@@ -546,9 +619,6 @@ Private Sub Class_Initialize()
     hasSeenJPEGPrompt = False
     pngBackgroundColor = -1
     
-    'Initialize the main DIB (currently, just the image data - layers aren't actually implemented)
-    'Set mainDIB = New pdDIB
-    
     'Initialize the back buffer
     Set backBuffer = New pdDIB
     
@@ -571,11 +641,17 @@ Private Sub Class_Initialize()
     'Initialize the viewport manager
     Set imgViewport = New pdViewport
     
-    'Create at least one blank layer
+    'Create at least one blank layer, so that functions referencing a layer object don't break
     ReDim imgLayers(0) As pdLayer
     Set imgLayers(0) = New pdLayer
     
+    'The current layer marker always starts at zero (which is considered the background layer).  To check for the case of
+    ' no active layers, do not use curLayer, use
     curLayer = 0
+    
+    'By default, list this image as having zero layers
+    numOfLayers = 0
+    numOfLayersEverCreated = 0
         
 End Sub
 
