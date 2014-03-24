@@ -376,6 +376,9 @@ Begin VB.Form FormMain
          End
       End
    End
+   Begin VB.Menu MnuLayerTop 
+      Caption         =   "&Layer"
+   End
    Begin VB.Menu MnuSelectTop 
       Caption         =   "&Select"
       Begin VB.Menu MnuSelect 
