@@ -237,194 +237,196 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "COUNTCOLORS", 3, 19, 2  'Count Colors
         addMenuIcon "MAPPHOTO", 3, 19, 3     'Map photo location
     
+    'Layer menu
+    
     'Select Menu
-    addMenuIcon "SELECTALL", 4, 0       'Select all
-    addMenuIcon "SELECTNONE", 4, 1      'Select none
-    addMenuIcon "SELECTINVERT", 4, 2    'Invert selection
-    addMenuIcon "SELECTGROW", 4, 4      'Grow selection
-    addMenuIcon "SELECTSHRINK", 4, 5    'Shrink selection
-    addMenuIcon "SELECTBORDER", 4, 6    'Border selection
-    addMenuIcon "SELECTFTHR", 4, 7      'Feather selection
-    addMenuIcon "SELECTSHRP", 4, 8      'Sharpen selection
-    addMenuIcon "SELECTLOAD", 4, 10     'Load selection from file
-    addMenuIcon "SELECTSAVE", 4, 11     'Save selection to file
-    addMenuIcon "SELECTEXPORT", 4, 12   'Export selection (top-level)
+    addMenuIcon "SELECTALL", 5, 0       'Select all
+    addMenuIcon "SELECTNONE", 5, 1      'Select none
+    addMenuIcon "SELECTINVERT", 5, 2    'Invert selection
+    addMenuIcon "SELECTGROW", 5, 4      'Grow selection
+    addMenuIcon "SELECTSHRINK", 5, 5    'Shrink selection
+    addMenuIcon "SELECTBORDER", 5, 6    'Border selection
+    addMenuIcon "SELECTFTHR", 5, 7      'Feather selection
+    addMenuIcon "SELECTSHRP", 5, 8      'Sharpen selection
+    addMenuIcon "SELECTLOAD", 5, 10     'Load selection from file
+    addMenuIcon "SELECTSAVE", 5, 11     'Save selection to file
+    addMenuIcon "SELECTEXPORT", 5, 12   'Export selection (top-level)
         '--> Export Selection sub-menu
-        addMenuIcon "EXPRTSELAREA", 4, 12, 0  'Export selected area as image
-        addMenuIcon "EXPRTSELMASK", 4, 12, 1  'Export selection mask as image
+        addMenuIcon "EXPRTSELAREA", 5, 12, 0  'Export selected area as image
+        addMenuIcon "EXPRTSELMASK", 5, 12, 1  'Export selection mask as image
     
     'Adjustments Menu
     
     'Adjustment shortcuts (top-level menu items)
-    addMenuIcon "GRAYSCALE", 5, 0       'Black and white
-    addMenuIcon "BRIGHT", 5, 1          'Brightness/Contrast
-    addMenuIcon "COLORBALANCE", 5, 2    'Color balance
-    addMenuIcon "CURVES", 5, 3          'Curves
-    addMenuIcon "LEVELS", 5, 4          'Levels
-    addMenuIcon "VIBRANCE", 5, 5        'Vibrance
-    addMenuIcon "WHITEBAL", 5, 6        'White Balance
+    addMenuIcon "GRAYSCALE", 6, 0       'Black and white
+    addMenuIcon "BRIGHT", 6, 1          'Brightness/Contrast
+    addMenuIcon "COLORBALANCE", 6, 2    'Color balance
+    addMenuIcon "CURVES", 6, 3          'Curves
+    addMenuIcon "LEVELS", 6, 4          'Levels
+    addMenuIcon "VIBRANCE", 6, 5        'Vibrance
+    addMenuIcon "WHITEBAL", 6, 6        'White Balance
        
     'Channels
-    addMenuIcon "CHANNELMIX", 5, 8     'Channels top-level
-        addMenuIcon "CHANNELMIX", 5, 8, 0    'Channel mixer
-        addMenuIcon "RECHANNEL", 5, 8, 1     'Rechannel
-        addMenuIcon "CHANNELMAX", 5, 8, 3    'Channel max
-        addMenuIcon "CHANNELMIN", 5, 8, 4    'Channel min
-        addMenuIcon "COLORSHIFTL", 5, 8, 6   'Shift Left
-        addMenuIcon "COLORSHIFTR", 5, 8, 7   'Shift Right
+    addMenuIcon "CHANNELMIX", 6, 8     'Channels top-level
+        addMenuIcon "CHANNELMIX", 6, 8, 0    'Channel mixer
+        addMenuIcon "RECHANNEL", 6, 8, 1     'Rechannel
+        addMenuIcon "CHANNELMAX", 6, 8, 3    'Channel max
+        addMenuIcon "CHANNELMIN", 6, 8, 4    'Channel min
+        addMenuIcon "COLORSHIFTL", 6, 8, 6   'Shift Left
+        addMenuIcon "COLORSHIFTR", 6, 8, 7   'Shift Right
             
     'Color
-    addMenuIcon "HSL", 5, 9            'Color balance
-        addMenuIcon "COLORBALANCE", 5, 9, 0  'Color balance
-        addMenuIcon "WHITEBAL", 5, 9, 1      'White Balance
-        addMenuIcon "HSL", 5, 9, 3           'HSL adjustment
-        addMenuIcon "PHOTOFILTER", 5, 9, 4   'Photo filters
-        addMenuIcon "VIBRANCE", 5, 9, 5      'Vibrance
-        addMenuIcon "GRAYSCALE", 5, 9, 7     'Black and white
-        addMenuIcon "COLORIZE", 5, 9, 8      'Colorize
-        addMenuIcon "REPLACECLR", 5, 9, 9    'Replace color
-        addMenuIcon "SEPIA", 5, 9, 10        'Sepia
+    addMenuIcon "HSL", 6, 9            'Color balance
+        addMenuIcon "COLORBALANCE", 6, 9, 0  'Color balance
+        addMenuIcon "WHITEBAL", 6, 9, 1      'White Balance
+        addMenuIcon "HSL", 6, 9, 3           'HSL adjustment
+        addMenuIcon "PHOTOFILTER", 6, 9, 4   'Photo filters
+        addMenuIcon "VIBRANCE", 6, 9, 5      'Vibrance
+        addMenuIcon "GRAYSCALE", 6, 9, 7     'Black and white
+        addMenuIcon "COLORIZE", 6, 9, 8      'Colorize
+        addMenuIcon "REPLACECLR", 6, 9, 9    'Replace color
+        addMenuIcon "SEPIA", 6, 9, 10        'Sepia
     
     'Histogram
-    addMenuIcon "HISTOGRAM", 5, 10      'Histogram top-level
-        addMenuIcon "HISTOGRAM", 5, 10, 0     'Display Histogram
-        addMenuIcon "EQUALIZE", 5, 10, 2      'Equalize
-        addMenuIcon "STRETCH", 5, 10, 3       'Stretch
+    addMenuIcon "HISTOGRAM", 6, 10      'Histogram top-level
+        addMenuIcon "HISTOGRAM", 6, 10, 0     'Display Histogram
+        addMenuIcon "EQUALIZE", 6, 10, 2      'Equalize
+        addMenuIcon "STRETCH", 6, 10, 3       'Stretch
     
     'Invert
-    addMenuIcon "INVERT", 5, 11         'Invert top-level
-        addMenuIcon "INVCMYK", 5, 11, 0     'Invert CMYK
-        addMenuIcon "INVHUE", 5, 11, 1       'Invert Hue
-        addMenuIcon "INVRGB", 5, 11, 2       'Invert RGB
-        addMenuIcon "INVCOMPOUND", 5, 11, 4  'Compound Invert
+    addMenuIcon "INVERT", 6, 11         'Invert top-level
+        addMenuIcon "INVCMYK", 6, 11, 0     'Invert CMYK
+        addMenuIcon "INVHUE", 6, 11, 1       'Invert Hue
+        addMenuIcon "INVRGB", 6, 11, 2       'Invert RGB
+        addMenuIcon "INVCOMPOUND", 6, 11, 4  'Compound Invert
         
     'Lighting
-    addMenuIcon "LIGHTING", 5, 12       'Lighting top-level
-        addMenuIcon "BRIGHT", 5, 12, 0       'Brightness/Contrast
-        addMenuIcon "CURVES", 5, 12, 1       'Curves
-        addMenuIcon "EXPOSURE", 5, 12, 2     'Exposure
-        addMenuIcon "GAMMA", 5, 12, 3        'Gamma Correction
-        addMenuIcon "LEVELS", 5, 12, 4       'Levels
-        addMenuIcon "SHDWHGHLGHT", 5, 12, 5  'Shadow/Highlight
-        addMenuIcon "TEMPERATURE", 5, 12, 6  'Temperature
+    addMenuIcon "LIGHTING", 6, 12       'Lighting top-level
+        addMenuIcon "BRIGHT", 6, 12, 0       'Brightness/Contrast
+        addMenuIcon "CURVES", 6, 12, 1       'Curves
+        addMenuIcon "EXPOSURE", 6, 12, 2     'Exposure
+        addMenuIcon "GAMMA", 6, 12, 3        'Gamma Correction
+        addMenuIcon "LEVELS", 6, 12, 4       'Levels
+        addMenuIcon "SHDWHGHLGHT", 6, 12, 5  'Shadow/Highlight
+        addMenuIcon "TEMPERATURE", 6, 12, 6  'Temperature
     
     'Monochrome
-    addMenuIcon "MONOCHROME", 5, 13      'Monochrome
-        addMenuIcon "COLORTOMONO", 5, 13, 0   'Color to monochrome
-        addMenuIcon "MONOTOCOLOR", 5, 13, 1   'Monochrome to grayscale
+    addMenuIcon "MONOCHROME", 6, 13      'Monochrome
+        addMenuIcon "COLORTOMONO", 6, 13, 0   'Color to monochrome
+        addMenuIcon "MONOTOCOLOR", 6, 13, 1   'Monochrome to grayscale
     
     
     'Effects (Filters) Menu
-    addMenuIcon "FADELAST", 6, 0        'Fade Last
-    addMenuIcon "ARTISTIC", 6, 2        'Artistic
+    addMenuIcon "FADELAST", 7, 0        'Fade Last
+    addMenuIcon "ARTISTIC", 7, 2        'Artistic
         '--> Artistic sub-menu
-        addMenuIcon "COMICBOOK", 6, 2, 0      'Comic book
-        addMenuIcon "FIGGLASS", 6, 2, 1       'Figured glass
-        addMenuIcon "FILMNOIR", 6, 2, 2       'Film Noir
-        addMenuIcon "KALEIDOSCOPE", 6, 2, 3   'Kaleidoscope
-        addMenuIcon "MODERNART", 6, 2, 4      'Modern Art
-        addMenuIcon "OILPAINTING", 6, 2, 5    'Oil painting
-        addMenuIcon "PENCIL", 6, 2, 6         'Pencil
-        addMenuIcon "POSTERIZE", 6, 2, 7      'Posterize
-        addMenuIcon "RELIEF", 6, 2, 8         'Relief
-    addMenuIcon "BLUR", 6, 3            'Blur
+        addMenuIcon "COMICBOOK", 7, 2, 0      'Comic book
+        addMenuIcon "FIGGLASS", 7, 2, 1       'Figured glass
+        addMenuIcon "FILMNOIR", 7, 2, 2       'Film Noir
+        addMenuIcon "KALEIDOSCOPE", 7, 2, 3   'Kaleidoscope
+        addMenuIcon "MODERNART", 7, 2, 4      'Modern Art
+        addMenuIcon "OILPAINTING", 7, 2, 5    'Oil painting
+        addMenuIcon "PENCIL", 7, 2, 6         'Pencil
+        addMenuIcon "POSTERIZE", 7, 2, 7      'Posterize
+        addMenuIcon "RELIEF", 7, 2, 8         'Relief
+    addMenuIcon "BLUR", 7, 3            'Blur
         '--> Blur sub-menu
-        addMenuIcon "BOXBLUR", 6, 3, 0        'Box Blur
-        addMenuIcon "CHROMABLUR", 6, 3, 1     'Chroma Blur
-        addMenuIcon "GAUSSBLUR", 6, 3, 2      'Gaussian Blur
-        addMenuIcon "GRIDBLUR", 6, 3, 3       'Grid Blur
-        addMenuIcon "MOTIONBLUR", 6, 3, 4     'Motion Blur
-        addMenuIcon "PIXELATE", 6, 3, 5       'Pixelate (formerly Mosaic)
-        addMenuIcon "RADIALBLUR", 6, 3, 6     'Radial Blur
-        addMenuIcon "SMARTBLUR", 6, 3, 7      'Smart Blur
-        addMenuIcon "ZOOMBLUR", 6, 3, 8       'Zoom Blur
-    addMenuIcon "DISTORT", 6, 4         'Distort
+        addMenuIcon "BOXBLUR", 7, 3, 0        'Box Blur
+        addMenuIcon "CHROMABLUR", 7, 3, 1     'Chroma Blur
+        addMenuIcon "GAUSSBLUR", 7, 3, 2      'Gaussian Blur
+        addMenuIcon "GRIDBLUR", 7, 3, 3       'Grid Blur
+        addMenuIcon "MOTIONBLUR", 7, 3, 4     'Motion Blur
+        addMenuIcon "PIXELATE", 7, 3, 5       'Pixelate (formerly Mosaic)
+        addMenuIcon "RADIALBLUR", 7, 3, 6     'Radial Blur
+        addMenuIcon "SMARTBLUR", 7, 3, 7      'Smart Blur
+        addMenuIcon "ZOOMBLUR", 7, 3, 8       'Zoom Blur
+    addMenuIcon "DISTORT", 7, 4         'Distort
         '--> Distort sub-menu
-        addMenuIcon "LENSDISTORT", 6, 4, 0    'Apply lens distortion
-        addMenuIcon "FIXLENS", 6, 4, 1        'Remove or correct existing lens distortion
-        addMenuIcon "MISCDISTORT", 6, 4, 2    'Miscellaneous distort functions
-        addMenuIcon "PANANDZOOM", 6, 4, 3     'Pan and zoom
-        addMenuIcon "PERSPECTIVE", 6, 4, 4    'Perspective (free)
-        addMenuIcon "PINCHWHIRL", 6, 4, 5     'Pinch and whirl
-        addMenuIcon "POKE", 6, 4, 6           'Poke
-        addMenuIcon "POLAR", 6, 4, 7          'Polar conversion
-        addMenuIcon "RIPPLE", 6, 4, 8         'Ripple
-        addMenuIcon "ROTATECW", 6, 4, 9       'Rotate
-        addMenuIcon "SHEAR", 6, 4, 10         'Shear
-        addMenuIcon "SPHERIZE", 6, 4, 11      'Spherize
-        addMenuIcon "SQUISH", 6, 4, 12        'Squish (formerly Fixed Perspective)
-        addMenuIcon "SWIRL", 6, 4, 13         'Swirl
-        addMenuIcon "WAVES", 6, 4, 14         'Waves
+        addMenuIcon "LENSDISTORT", 7, 4, 0    'Apply lens distortion
+        addMenuIcon "FIXLENS", 7, 4, 1        'Remove or correct existing lens distortion
+        addMenuIcon "MISCDISTORT", 7, 4, 2    'Miscellaneous distort functions
+        addMenuIcon "PANANDZOOM", 7, 4, 3     'Pan and zoom
+        addMenuIcon "PERSPECTIVE", 7, 4, 4    'Perspective (free)
+        addMenuIcon "PINCHWHIRL", 7, 4, 5     'Pinch and whirl
+        addMenuIcon "POKE", 7, 4, 6           'Poke
+        addMenuIcon "POLAR", 7, 4, 7          'Polar conversion
+        addMenuIcon "RIPPLE", 7, 4, 8         'Ripple
+        addMenuIcon "ROTATECW", 7, 4, 9       'Rotate
+        addMenuIcon "SHEAR", 7, 4, 10         'Shear
+        addMenuIcon "SPHERIZE", 7, 4, 11      'Spherize
+        addMenuIcon "SQUISH", 7, 4, 12        'Squish (formerly Fixed Perspective)
+        addMenuIcon "SWIRL", 7, 4, 13         'Swirl
+        addMenuIcon "WAVES", 7, 4, 14         'Waves
         
-    addMenuIcon "EDGES", 6, 5           'Edges
+    addMenuIcon "EDGES", 7, 5           'Edges
         '--> Edges sub-menu
-        addMenuIcon "EMBOSS", 6, 5, 0         'Emboss / Engrave
-        addMenuIcon "EDGEENHANCE", 6, 5, 1    'Enhance Edges
-        addMenuIcon "EDGES", 6, 5, 2          'Find Edges
-        addMenuIcon "TRACECONTOUR", 6, 5, 3   'Trace Contour
-    addMenuIcon "OTHER", 6, 6           'Fun
+        addMenuIcon "EMBOSS", 7, 5, 0         'Emboss / Engrave
+        addMenuIcon "EDGEENHANCE", 7, 5, 1    'Enhance Edges
+        addMenuIcon "EDGES", 7, 5, 2          'Find Edges
+        addMenuIcon "TRACECONTOUR", 7, 5, 3   'Trace Contour
+    addMenuIcon "OTHER", 7, 6           'Fun
         '--> Fun sub-menu
-        addMenuIcon "ALIEN", 6, 6, 0          'Alien
-        addMenuIcon "BLACKLIGHT", 6, 6, 1     'Blacklight
-        addMenuIcon "DREAM", 6, 6, 2          'Dream
-        addMenuIcon "RADIOACTIVE", 6, 6, 3    'Radioactive
-        addMenuIcon "SYNTHESIZE", 6, 6, 4     'Synthesize
-        addMenuIcon "HEATMAP", 6, 6, 5        'Thermograph
-        addMenuIcon "VIBRATE", 6, 6, 6        'Vibrate
-    addMenuIcon "NATURAL", 6, 7         'Natural
+        addMenuIcon "ALIEN", 7, 6, 0          'Alien
+        addMenuIcon "BLACKLIGHT", 7, 6, 1     'Blacklight
+        addMenuIcon "DREAM", 7, 6, 2          'Dream
+        addMenuIcon "RADIOACTIVE", 7, 6, 3    'Radioactive
+        addMenuIcon "SYNTHESIZE", 7, 6, 4     'Synthesize
+        addMenuIcon "HEATMAP", 7, 6, 5        'Thermograph
+        addMenuIcon "VIBRATE", 7, 6, 6        'Vibrate
+    addMenuIcon "NATURAL", 7, 7         'Natural
         '--> Natural sub-menu
-        addMenuIcon "ATMOSPHERE", 6, 7, 0     'Atmosphere
-        addMenuIcon "BURN", 6, 7, 1           'Burn
-        addMenuIcon "FOG", 6, 7, 2            'Fog
-        addMenuIcon "FREEZE", 6, 7, 3         'Freeze
-        addMenuIcon "LAVA", 6, 7, 4           'Lava
-        addMenuIcon "RAINBOW", 6, 7, 5        'Rainbow
-        addMenuIcon "STEEL", 6, 7, 6          'Steel
-        addMenuIcon "RAIN", 6, 7, 7           'Water
-    addMenuIcon "NOISE", 6, 8           'Noise
+        addMenuIcon "ATMOSPHERE", 7, 7, 0     'Atmosphere
+        addMenuIcon "BURN", 7, 7, 1           'Burn
+        addMenuIcon "FOG", 7, 7, 2            'Fog
+        addMenuIcon "FREEZE", 7, 7, 3         'Freeze
+        addMenuIcon "LAVA", 7, 7, 4           'Lava
+        addMenuIcon "RAINBOW", 7, 7, 5        'Rainbow
+        addMenuIcon "STEEL", 7, 7, 6          'Steel
+        addMenuIcon "RAIN", 7, 7, 7           'Water
+    addMenuIcon "NOISE", 7, 8           'Noise
         '--> Noise sub-menu
-        addMenuIcon "FILMGRAIN", 6, 8, 0      'Film grain
-        addMenuIcon "ADDNOISE", 6, 8, 1       'Add Noise
-        addMenuIcon "MEDIAN", 6, 8, 3         'Median
-    addMenuIcon "SHARPEN", 6, 9         'Sharpen
+        addMenuIcon "FILMGRAIN", 7, 8, 0      'Film grain
+        addMenuIcon "ADDNOISE", 7, 8, 1       'Add Noise
+        addMenuIcon "MEDIAN", 7, 8, 3         'Median
+    addMenuIcon "SHARPEN", 7, 9         'Sharpen
         '--> Sharpen sub-menu
-        addMenuIcon "SHARPEN", 6, 9, 0       'Sharpen
-        addMenuIcon "UNSHARP", 6, 9, 1       'Unsharp
-    addMenuIcon "STYLIZE", 6, 10        'Stylize
+        addMenuIcon "SHARPEN", 7, 9, 0       'Sharpen
+        addMenuIcon "UNSHARP", 7, 9, 1       'Unsharp
+    addMenuIcon "STYLIZE", 7, 10        'Stylize
         '--> Stylize sub-menu
-        addMenuIcon "ANTIQUE", 6, 10, 0       'Antique (Sepia)
-        addMenuIcon "DIFFUSE", 6, 10, 1       'Diffuse
-        addMenuIcon "DILATE", 6, 10, 2        'Dilate
-        addMenuIcon "ERODE", 6, 10, 3         'Erode
-        addMenuIcon "SOLARIZE", 6, 10, 4      'Solarize
-        addMenuIcon "TWINS", 6, 10, 5         'Twins
-        addMenuIcon "VIGNETTE", 6, 10, 6      'Vignetting
-    addMenuIcon "CUSTFILTER", 6, 12     'Custom Filter
+        addMenuIcon "ANTIQUE", 7, 10, 0       'Antique (Sepia)
+        addMenuIcon "DIFFUSE", 7, 10, 1       'Diffuse
+        addMenuIcon "DILATE", 7, 10, 2        'Dilate
+        addMenuIcon "ERODE", 7, 10, 3         'Erode
+        addMenuIcon "SOLARIZE", 7, 10, 4      'Solarize
+        addMenuIcon "TWINS", 7, 10, 5         'Twins
+        addMenuIcon "VIGNETTE", 7, 10, 6      'Vignetting
+    addMenuIcon "CUSTFILTER", 7, 12     'Custom Filter
     
     'Tools Menu
-    addMenuIcon "LANGUAGES", 7, 0       'Languages
-    addMenuIcon "LANGEDITOR", 7, 1      'Language editor
-    addMenuIcon "RECORD", 7, 3          'Macros
+    addMenuIcon "LANGUAGES", 8, 0       'Languages
+    addMenuIcon "LANGEDITOR", 8, 1      'Language editor
+    addMenuIcon "RECORD", 8, 3          'Macros
         '--> Macro sub-menu
-        addMenuIcon "OPENMACRO", 7, 3, 0      'Open Macro
-        addMenuIcon "RECORD", 7, 3, 2         'Start Recording
-        addMenuIcon "RECORDSTOP", 7, 3, 3     'Stop Recording
-    addMenuIcon "PREFERENCES", 7, 5           'Options (Preferences)
-    addMenuIcon "PLUGIN", 7, 6          'Plugin Manager
+        addMenuIcon "OPENMACRO", 8, 3, 0      'Open Macro
+        addMenuIcon "RECORD", 8, 3, 2         'Start Recording
+        addMenuIcon "RECORDSTOP", 8, 3, 3     'Stop Recording
+    addMenuIcon "PREFERENCES", 8, 5           'Options (Preferences)
+    addMenuIcon "PLUGIN", 8, 6          'Plugin Manager
     
     'Window Menu
-    addMenuIcon "NEXTIMAGE", 8, 6       'Next image
-    addMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    addMenuIcon "NEXTIMAGE", 9, 6       'Next image
+    addMenuIcon "PREVIMAGE", 9, 7       'Previous image
     
     'Help Menu
-    addMenuIcon "FAVORITE", 9, 0        'Donate
-    addMenuIcon "UPDATES", 9, 2         'Check for updates
-    addMenuIcon "FEEDBACK", 9, 3        'Submit Feedback
-    addMenuIcon "BUG", 9, 4             'Submit Bug
-    addMenuIcon "PDWEBSITE", 9, 6       'Visit the PhotoDemon website
-    addMenuIcon "DOWNLOADSRC", 9, 7     'Download source code
-    addMenuIcon "LICENSE", 9, 8         'License
-    addMenuIcon "ABOUT", 9, 10          'About PD
+    addMenuIcon "FAVORITE", 10, 0        'Donate
+    addMenuIcon "UPDATES", 10, 2         'Check for updates
+    addMenuIcon "FEEDBACK", 10, 3        'Submit Feedback
+    addMenuIcon "BUG", 10, 4             'Submit Bug
+    addMenuIcon "PDWEBSITE", 10, 6       'Visit the PhotoDemon website
+    addMenuIcon "DOWNLOADSRC", 10, 7     'Download source code
+    addMenuIcon "LICENSE", 10, 8         'License
+    addMenuIcon "ABOUT", 10, 10          'About PD
     
     'When we're done, reset the doEvents tracker
     m_refreshOutsideProgressBar = False
