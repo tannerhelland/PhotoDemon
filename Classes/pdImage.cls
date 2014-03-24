@@ -155,8 +155,9 @@ Option Explicit
 ' new layer; e.g. if zero is passed, the layer will be placed at the bottom of the stack.  If no position is requested,
 ' the layer will be created above the currently active layer.
 '
-'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  Note that layers can be accessed by
-' either ID or index; after calling this function, make sure to use the CANONICAL ID function.
+'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  (Returning its index would be pointless,
+' as the calling function knows that in advance.)  Note that layers can be accessed by either ID or index; after calling this
+' function, make sure to use the CANONICAL ID function with the returned value.
 Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
 
     'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
