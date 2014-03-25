@@ -429,6 +429,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         
         
+        'LAYER FUNCTIONS
+        ' Any action triggered from the Layer menu, or the Layer toolbox - creating layers, moving them, etc
+        
+        Case "New Layer from File"
+            If showDialog Then
+            
+            Else
+            
+            End If
+        
+        
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc
         

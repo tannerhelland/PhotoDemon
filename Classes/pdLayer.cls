@@ -212,14 +212,15 @@ Private Sub Class_Initialize()
 End Sub
 
 'Create a new image-type layer, using a DIB as the reference.  Note that this will automatically set the layer type to PDL_IMAGE.
-Public Sub CreateNewImageLayer(ByVal newLayerType As LAYER_TYPE, ByRef srcDIB As pdDIB, Optional ByRef parentImage As pdImage, Optional ByVal newLayerName As String = "")
+' If the parentImage parameter is supplied, the layer will automatically center itself on the parent image.
+Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage As pdImage, Optional ByVal newLayerName As String = "")
 
     'Mark the layer as being IMAGE type.
     myLayerType = PDL_IMAGE
     
     'Copy the name locally, and set other values to their natural defaults
     With myLayerData
-        If Len(newLayerName) > 0 Then .l_Name = g_Language.TranslateMessage("New Image Layer")
+        If Len(newLayerName) > 0 Then .l_Name = newLayerName Else .l_Name = g_Language.TranslateMessage("New Image Layer")
         .l_GroupID = 0
         .l_Opacity = 100
         .l_BlendMode = BL_NORMAL
@@ -240,6 +241,9 @@ Public Sub CreateNewImageLayer(ByVal newLayerType As LAYER_TYPE, ByRef srcDIB As
         layerDiff = parentImage.Height - layerDIB.getDIBHeight
         myLayerData.l_OffsetY = layerDiff / 2
         
+    Else
+        myLayerData.l_OffsetX = 0
+        myLayerData.l_OffsetY = 0
     End If
     
 End Sub

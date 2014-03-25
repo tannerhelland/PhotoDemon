@@ -561,8 +561,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             'Create a blank layer in the receiving image, and retrieve a pointer to it
             Dim newLayerID As Long
             newLayerID = pdImages(g_CurrentImage).createBlankLayer
-            Set targetDIB = pdImages(g_CurrentImage).getLayerByID(newLayerID).layerDIB
-        
+            
+            Set targetDIB = New pdDIB
+            
             g_AllowViewportRendering = False
             
             'Reset the main viewport's scroll bars
@@ -854,16 +855,22 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         DoEvents
         
         
-        'TEMPORARY SOLUTION!!!  Copy the contents of the created DIB into the old mainDIB object, so we can test
-        ' our rewritten image load functions.
-        'targetImage.mainDIB.createFromExistingDIB targetDIB
+        '*************************************************************************************************************************************
+        ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
+        '*************************************************************************************************************************************
         
+        pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilename(sFile(thisImage))
+        
+        DoEvents
         
         '*************************************************************************************************************************************
         ' Store some universally important information in the target image object
         '*************************************************************************************************************************************
         
+        'Update the pdImage container to be the same size as its (newly created) base layer
         targetImage.updateSize
+        
+        'Mark the original file size and file format of the image
         If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
         targetImage.currentFileFormat = targetImage.originalFileFormat
         
@@ -871,7 +878,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         
         '*************************************************************************************************************************************
-        ' If requested by the user, manually count the number of unique colors in the image (to determine absolutely accurate color depth)
+        ' If requested by the user, manually count the number of unique colors in the image (to accurately determine color depth)
         '*************************************************************************************************************************************
                 
         'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
@@ -979,7 +986,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         
         '*************************************************************************************************************************************
-        ' If this is a primary image, do preparations, then render the image to the screen
+        ' If this is a primary image, do a few additional preparations, then render the image to the screen
         '*************************************************************************************************************************************
             
             
