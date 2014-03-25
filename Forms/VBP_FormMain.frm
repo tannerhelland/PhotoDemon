@@ -1008,18 +1008,23 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
       Begin VB.Menu MnuWindow 
-         Caption         =   "File toolbar"
+         Caption         =   "File toolbox"
          Checked         =   -1  'True
          Index           =   0
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Selection toolbar"
+         Caption         =   "Layers toolbox"
          Checked         =   -1  'True
          Index           =   1
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Image tabstrip"
+         Caption         =   "Tools toolbox"
+         Checked         =   -1  'True
          Index           =   2
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "Image tabstrip"
+         Index           =   3
          Begin VB.Menu MnuWindowTabstrip 
             Caption         =   "Always show"
             Index           =   0
@@ -1055,24 +1060,24 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuWindow 
          Caption         =   "-"
-         Index           =   3
+         Index           =   4
       End
       Begin VB.Menu MnuWindow 
          Caption         =   "Floating toolboxes"
          Checked         =   -1  'True
-         Index           =   4
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "-"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
+         Caption         =   "-"
          Index           =   6
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Previous image"
+         Caption         =   "Next image"
          Index           =   7
+      End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "Previous image"
+         Index           =   8
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -1273,14 +1278,18 @@ Private Sub Form_Load()
     
     'Register all toolbox forms with the window manager
     g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
-    g_WindowManager.registerChildForm toolbar_Tools, TOOLBAR_WINDOW, 3, SELECTION_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Tools, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
+    
     g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
     
-    'Display the file and tool toolboxes per the user's display settings
+    'Display the various toolboxes per the user's display settings
     toolbar_File.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_File.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     toolbar_Tools.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    toolbar_Layers.Show vbModeless, Me
+    g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
@@ -3040,29 +3049,33 @@ Private Sub MnuWindow_Click(Index As Integer)
         Case 0
             toggleToolbarVisibility FILE_TOOLBOX
         
-        'Show/hide selection toolbox
+        'Show/hide layer toolbox
         Case 1
-            toggleToolbarVisibility SELECTION_TOOLBOX
+            toggleToolbarVisibility LAYER_TOOLBOX
+            
+        'Show/hide selection toolbox
+        Case 2
+            toggleToolbarVisibility TOOLS_TOOLBOX
         
         '<top-level Image tabstrip>
-        Case 2
+        Case 3
         
         '<separator>
-        Case 3
+        Case 4
     
         'Floating toolbars
-        Case 4
-            toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(4).Checked
+        Case 5
+            toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(5).Checked
         
         '<separator>
-        Case 5
+        Case 6
         
         'Next image
-        Case 6
+        Case 7
             moveToNextChildWindow True
             
         'Previous image
-        Case 7
+        Case 8
             moveToNextChildWindow False
 
     End Select

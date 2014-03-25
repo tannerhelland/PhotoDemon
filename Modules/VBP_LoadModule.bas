@@ -237,6 +237,7 @@ Public Sub LoadTheProgram()
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     
     'Retrieve two additional settings for the image tabstrip menu: when to display the image tabstrip...
     toggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True
@@ -1445,8 +1446,8 @@ Public Sub LoadAccelerators()
         .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuPlayMacroRecording, True, True, True, False
         
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(6), False, True, False, False
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(7), False, True, False, False
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(7), False, True, False, False
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(8), False, True, False, False
                 
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"

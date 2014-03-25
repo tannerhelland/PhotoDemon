@@ -4,10 +4,10 @@ Begin VB.Form toolbar_Tools
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tools"
-   ClientHeight    =   2352
-   ClientLeft      =   42
+   ClientHeight    =   2355
+   ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   13671
+   ClientWidth     =   13665
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,9 +21,9 @@ Begin VB.Form toolbar_Tools
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   336
+   ScaleHeight     =   157
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1953
+   ScaleWidth      =   911
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -63,9 +63,9 @@ Begin VB.Form toolbar_Tools
       Height          =   1575
       Index           =   0
       Left            =   15
-      ScaleHeight     =   225
+      ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1967
+      ScaleWidth      =   918
       TabIndex        =   0
       Top             =   1020
       Visible         =   0   'False
@@ -964,7 +964,7 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.unregisterForm Me
     Else
         Cancel = True
-        toggleToolbarVisibility SELECTION_TOOLBOX
+        toggleToolbarVisibility TOOLS_TOOLBOX
     End If
     
 End Sub
