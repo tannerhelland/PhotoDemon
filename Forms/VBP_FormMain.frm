@@ -378,6 +378,14 @@ Begin VB.Form FormMain
    End
    Begin VB.Menu MnuLayerTop 
       Caption         =   "&Layer"
+      Begin VB.Menu MnuLayer 
+         Caption         =   "New"
+         Index           =   0
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "From file..."
+            Index           =   0
+         End
+      End
    End
    Begin VB.Menu MnuSelectTop 
       Caption         =   "&Select"
@@ -1186,6 +1194,19 @@ Public Sub refreshAllCanvases()
         PrepareViewport pdImages(g_CurrentImage), mainCanvas(0), "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
+End Sub
+
+'Menu: create a new layer
+Private Sub MnuLayerNew_Click(Index As Integer)
+
+    Select Case Index
+    
+        'New layer from file
+        Case 0
+            Process "New Layer from File", True
+    
+    End Select
+
 End Sub
 
 'When download of the update information is complete, write out the current date to the preferences file

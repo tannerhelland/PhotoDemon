@@ -602,11 +602,24 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
     
 End Sub
 
-'If the images's size has somehow changed, this can be called to update it.  (At present, it simply copies over the size of
-' the main DIB, but in the future it may need to take into account multiple layers.)
-Public Function updateSize()
-    Me.Width = imgLayers(0).layerDIB.getDIBWidth
-    Me.Height = imgLayers(0).layerDIB.getDIBHeight
+'If the images's size has somehow changed, this can be called to update it.
+'
+'The first optional parameter, assumed to be TRUE, makes the image the same size as its base layer.  This is helpful when
+' an image file is first loaded, as the pdImage container should be made to be the same size.
+'
+'If this is another type of resize action, the caller must supply the new width/height values desired.
+'
+'Note that this function performs NO VALIDATION on the passed width/height values.  Make sure they are correct in advance!
+Public Function updateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+    
+    If useBaseLayer Then
+        Me.Width = imgLayers(0).layerDIB.getDIBWidth
+        Me.Height = imgLayers(0).layerDIB.getDIBHeight
+    Else
+        Me.Width = newWidth
+        Me.Height = newHeight
+    End If
+    
 End Function
 
 'INITIALIZE class
