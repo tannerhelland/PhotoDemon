@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 06/February/14
-'Last update: huge refactoring to account for the removal of floating image windows
+'Last updated: 25/March/14
+'Last update: add Layers toolbox to the list of windows with specialized handling
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
@@ -217,11 +217,12 @@ End Enum
 Public Enum pdToolbarType
     NOT_A_TOOLBAR = 0
     FILE_TOOLBOX = 1
-    SELECTION_TOOLBOX = 2
+    LAYER_TOOLBOX = 2
+    TOOLS_TOOLBOX = 3
 End Enum
 
 #If False Then
-    Private Const NOT_A_TOOLBAR = 0, FILE_TOOLBOX = 1, SELECTION_TOOLBOX = 2
+    Private Const NOT_A_TOOLBAR = 0, FILE_TOOLBOX = 1, LAYER_TOOLBOX = 2, TOOLS_TOOLBOX = 3
 #End If
 
 Private Enum renderedBorderStyle
@@ -439,6 +440,9 @@ End Sub
 ' certain that VB uses this exact same code to assign ownership when it encounters code like FormChild.Show vbModeless, FormOwner.)
 ' Technically we should also track the previous window owner and restore it upon form exiting, but VB makes that unnecessary due to the way it
 ' couples owner/child unload behavior.
+'
+'NOTE: I have left this code here because it may be helpful in the future, but at present, it is not used (due to the removal of
+'       floating image windows).
 'Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerhWnd As Long)
 '    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerhWnd
 'End Sub
@@ -725,17 +729,24 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
     Dim mainClientRect As winRect
     GetClientRect mainWindowHwnd, mainClientRect
         
-    'For all windows but the file toolbox, offset them to the right (to account for the file toolbox's width)
-    Dim i As Long, fileToolboxIndex As Long
+    'PhotoDemon toolboxes have a sort of hierarchy in how they are arranged.  In order, the preference for sizing goes:
+    ' 1) File toolbox (on left)
+    ' 2) Tools toolbox (on bottom)
+    ' 3) Layers toolbox (on right)
+    Dim i As Long, fileToolboxIndex As Long, toolsToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
-        If pdWindows(i).optionalToolbarType = FILE_TOOLBOX Then
-            fileToolboxIndex = i
-            Exit For
-        End If
+        If pdWindows(i).optionalToolbarType = FILE_TOOLBOX Then fileToolboxIndex = i
+        If pdWindows(i).optionalToolbarType = TOOLS_TOOLBOX Then toolsToolboxIndex = i
     Next i
     
-    If (pdWindows(winIndex).optionalToolbarType <> FILE_TOOLBOX) And (pdWindows(fileToolboxIndex).isVisible) Then
+    'For the tools toolbox, add the width of the file toolbox to the x1 position
+    If (pdWindows(winIndex).optionalToolbarType = TOOLS_TOOLBOX) And (pdWindows(fileToolboxIndex).isVisible) Then
         mainClientRect.x1 = mainClientRect.x1 + getClientWidth(toolbar_File.hWnd)
+    End If
+    
+    'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
+    If (pdWindows(winIndex).optionalToolbarType = LAYER_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
+        mainClientRect.y2 = mainClientRect.y2 - getClientHeight(toolbar_Tools.hWnd)
     End If
     
     'At present, we assume that a window is either aligned top or bottom, right or left.  (e.g. it must be aligned to a corner)
@@ -792,19 +803,27 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     ' into a second row.  To accomodate this case, also recalculate the proper top client coordinate.
     Dim curMainFormClient As winRect
     GetClientRect mainWindowHwnd, curMainFormClient
-    
-    'For all windows but the file toolbox, offset them right
-    Dim i As Long, fileToolboxIndex As Long
+        
+    'PhotoDemon toolboxes have a sort of hierarchy in how they are arranged.  In order, the preference for sizing goes:
+    ' 1) File toolbox (on left)
+    ' 2) Tools toolbox (on bottom)
+    ' 3) Layers toolbox (on right)
+    Dim i As Long, fileToolboxIndex As Long, toolsToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
-        If pdWindows(i).optionalToolbarType = FILE_TOOLBOX Then
-            fileToolboxIndex = i
-            Exit For
-        End If
+        If pdWindows(i).optionalToolbarType = FILE_TOOLBOX Then fileToolboxIndex = i
+        If pdWindows(i).optionalToolbarType = TOOLS_TOOLBOX Then toolsToolboxIndex = i
     Next i
     
-    If (pdWindows(winIndex).optionalToolbarType <> FILE_TOOLBOX) And (pdWindows(fileToolboxIndex).isVisible) Then
+    'For the tools toolbox, add the width of the file toolbox to the x1 position
+    If (pdWindows(winIndex).optionalToolbarType = TOOLS_TOOLBOX) And (pdWindows(fileToolboxIndex).isVisible) Then
         clientWidth = clientWidth - getClientWidth(toolbar_File.hWnd)
         curMainFormClient.x1 = curMainFormClient.x1 + getClientWidth(toolbar_File.hWnd)
+    End If
+    
+    'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
+    If (pdWindows(winIndex).optionalToolbarType = LAYER_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
+        clientHeight = clientHeight - getClientHeight(toolbar_Tools.hWnd)
+        curMainFormClient.y2 = curMainFormClient.y2 - getClientHeight(toolbar_Tools.hWnd)
     End If
     
     'Get this toolbar window's current location and size.  (We only care about size, as location will have already been set
@@ -1018,8 +1037,12 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                         pdWindows(winIndex).alignmentOptions.alignLeft = True
                         
                     'Selection toolbar gets embedded at the bottom
-                    Case SELECTION_TOOLBOX
+                    Case TOOLS_TOOLBOX
                         pdWindows(winIndex).alignmentOptions.alignBottom = True
+                        
+                    'Layers toolbar gets embedded at the right
+                    Case LAYER_TOOLBOX
+                        pdWindows(winIndex).alignmentOptions.alignRight = True
                         
                 End Select
                 
@@ -1138,11 +1161,17 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
                 Else
                     .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthClient
                 End If
-            ElseIf (.typeOfWindow = TOOLBAR_WINDOW) And (.optionalToolbarType = SELECTION_TOOLBOX) Then
+            ElseIf (.typeOfWindow = TOOLBAR_WINDOW) And (.optionalToolbarType = TOOLS_TOOLBOX) Then
                 If toolbarsFloating Then
                     .lastPosition.y2 = .lastPosition.y1 + pdWindows(windowIndex).originalHeightFull
                 Else
                     .lastPosition.y2 = .lastPosition.y1 + pdWindows(windowIndex).originalHeightClient
+                End If
+            ElseIf (.typeOfWindow = TOOLBAR_WINDOW) And (.optionalToolbarType = LAYER_TOOLBOX) Then
+                If toolbarsFloating Then
+                    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthFull
+                Else
+                    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthClient
                 End If
             End If
             

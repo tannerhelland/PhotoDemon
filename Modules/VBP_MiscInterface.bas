@@ -281,11 +281,11 @@ Public Sub syncInterfaceToCurrentImage()
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
     If g_OpenImageCount >= 2 Then
-        FormMain.MnuWindow(6).Enabled = True
         FormMain.MnuWindow(7).Enabled = True
+        FormMain.MnuWindow(8).Enabled = True
     Else
-        FormMain.MnuWindow(6).Enabled = False
         FormMain.MnuWindow(7).Enabled = False
+        FormMain.MnuWindow(8).Enabled = False
     End If
     
 End Sub
@@ -689,7 +689,7 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
     Select Case whichWindowType
     
         Case TOOLBAR_WINDOW
-            FormMain.MnuWindow(4).Checked = floatStatus
+            FormMain.MnuWindow(5).Checked = floatStatus
             g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", floatStatus
             g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus
             
@@ -710,11 +710,16 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
             FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindow(0).Checked
             g_WindowManager.setWindowVisibility toolbar_File.hWnd, FormMain.MnuWindow(0).Checked
-        
-        Case SELECTION_TOOLBOX
+            
+        Case LAYER_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(1).Checked
-            g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, FormMain.MnuWindow(1).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Layers Toolbox", FormMain.MnuWindow(1).Checked
+            g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(1).Checked
+    
+        Case TOOLS_TOOLBOX
+            FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(2).Checked
+            g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, FormMain.MnuWindow(2).Checked
     
     End Select
     
