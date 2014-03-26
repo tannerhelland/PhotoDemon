@@ -282,3 +282,98 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     End Select
 
 End Sub
+
+'External functions can use this function to request a thumbnail version of the layer contents.
+'
+'FreeImage is preferred for thumbnail resizing, but if it's not available, GDI+ will be used.
+Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+    
+    'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
+    ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
+    
+    'Start by determining an aspect ratio for the current image.
+    Dim aspectRatio As Double
+    aspectRatio = CDbl(layerDIB.getDIBWidth) / CDbl(layerDIB.getDIBHeight)
+    
+    'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
+    ' aspect ratio and center the image on the thumbnail.
+    Dim tIcoWidth As Double, tIcoHeight As Double, tX As Double, tY As Double
+    
+    'If the form is wider than it is tall...
+    If aspectRatio > 1 Then
+        
+        'Determine proper sizes and (x, y) positioning so the icon will be centered
+        tIcoWidth = thumbnailSize
+        tIcoHeight = thumbnailSize * (1 / aspectRatio)
+        tX = 0
+        tY = (thumbnailSize - tIcoHeight) / 2
+        
+    Else
+    
+        'Same thing, but with the math adjusted for images taller than they are wide
+        tIcoHeight = thumbnailSize
+        tIcoWidth = thumbnailSize * aspectRatio
+        tY = 0
+        tX = (thumbnailSize - tIcoWidth) / 2
+        
+    End If
+    
+    'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
+    ' provides superior results, but if it is not available, GDI+ will suffice.
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        'Convert our current DIB to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(layerDIB.getDIBDC)
+        
+        'Use that handle to request an image resize
+        If fi_DIB <> 0 Then
+            
+            'Rescale the image
+            Dim returnDIB As Long
+            returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
+            
+            'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
+            Dim newDIB32 As Long
+            newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
+            
+            'Unload the original DIB
+            If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
+            'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
+            
+            'Start by preparing a transparent quad, which we'll assign to the background of the enlarged area
+            Dim newColor As RGBQUAD
+            With newColor
+                .rgbBlue = 255
+                .rgbGreen = 255
+                .rgbRed = 255
+                .rgbReserved = 0
+            End With
+                
+            'Enlarge the canvas as necessary
+            Dim finalDIB As Long
+            finalDIB = FreeImage_EnlargeCanvas(newDIB32, tX, tY, tX, tY, newColor, FI_COLOR_IS_RGBA_COLOR)
+            
+            'Unload the original DIB
+            If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
+                
+            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination DIB.
+            dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32
+            SetDIBitsToDevice dstThumbnailDIB.getDIBDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
+                
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            requestThumbnail = True
+        
+        Else
+            requestThumbnail = False
+        End If
+        
+    Else
+    
+        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBilinear)
+        
+    End If
+    
+End Function
