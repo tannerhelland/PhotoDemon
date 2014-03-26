@@ -272,7 +272,8 @@ PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      6_2_splash.jpg
 PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_2_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
-//Toolbox icons
+//Tool toolbox icons
+//NOTE: these have since been replaced by jcButton controls
 //T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
 //T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
 //T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
