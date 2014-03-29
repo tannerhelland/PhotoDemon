@@ -1259,6 +1259,8 @@ Private Sub Form_Load()
     'Instantiate the themed tooltip class
     Set m_ToolTip = New clsToolTip
     
+    'Create a blank pdImages() array, to avoid errors
+    ReDim pdImages(0) As pdImage
     
     '*************************************************************************************************************************************
     ' Reroute control to "LoadTheProgram", which initializes all key PD systems
