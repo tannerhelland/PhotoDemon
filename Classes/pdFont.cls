@@ -198,6 +198,20 @@ Public Sub fastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcStrin
     ExtTextOutNoRect curDC, dstX, dstY, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
 End Sub
 
+'A roughly identical function to fastRenderText, above, but with a constraining rect
+Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcString As String)
+    
+    Dim tmpRect As RECT
+    tmpRect.Left = dstX
+    tmpRect.Top = dstY
+    tmpRect.Right = dstX + dstWidth
+    tmpRect.Bottom = dstY + dstHeight
+    
+    'ExtTextOut curDC, dstX, dstY, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    DrawText curDC, srcString, Len(srcString), tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
+    
+End Sub
+
 'Select the current font and other text settings into the specified DC.  Ideally, this should only be done when absolutely
 ' necessary to keep speed high.  (Also, note the DC so we can do fast font rendering later.)
 Public Sub attachToDC(ByVal targetDC As Long)

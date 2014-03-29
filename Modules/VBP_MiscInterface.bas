@@ -128,7 +128,7 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.mainCanvas(0).displayImageSize Nothing, True
         FormMain.mainCanvas(0).drawStatusBarIcons False
         
-        'Because dynamic icons are enabled, restore the main program icon and clear the icon cache
+        'Because dynamic icons are enabled, restore the main program icon and clear the custom image icon cache
         destroyAllIcons
         setNewTaskbarIcon origIcon32, FormMain.hWnd
         setNewAppIcon origIcon16, origIcon32
@@ -287,6 +287,9 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.MnuWindow(7).Enabled = False
         FormMain.MnuWindow(8).Enabled = False
     End If
+    
+    'Redraw the layer box
+    toolbar_Layers.forceRedraw
     
 End Sub
 

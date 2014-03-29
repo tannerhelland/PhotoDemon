@@ -217,7 +217,8 @@ Dim m_ToolTip As clsToolTip
 Dim bufferDIB As pdDIB
 Dim m_BufferWidth As Long, m_BufferHeight As Long
 
-'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
+'Two font objects; one for names and one for descriptions.  (Two are needed because they have different sizes and colors,
+' and it is faster to cache these values rather than constantly recreating them on a single pdFont object.)
 Dim firstFont As pdFont, secondFont As pdFont
 
 'A primary and secondary color for font rendering
@@ -246,7 +247,7 @@ Private Sub redrawFilterList()
     
 End Sub
 
-'Render an individual "block" filter content (name, description, color)
+'Render an individual "block" for a given filter (including name, description, color)
 Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
@@ -406,7 +407,7 @@ Private Sub Form_Load()
     m_BufferWidth = picBuffer.ScaleWidth
     m_BufferHeight = picBuffer.ScaleHeight
     
-    'Initialize a custom font objects for names
+    'Initialize a custom font object for names
     primaryColor = RGB(64, 64, 64)
     Set firstFont = New pdFont
     firstFont.setFontColor primaryColor
