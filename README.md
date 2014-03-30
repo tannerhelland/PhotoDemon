@@ -1,4 +1,4 @@
-# PhotoDemon 6.2
+# PhotoDemon 6.4 beta
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/PD_6-2.jpg)
 
@@ -38,7 +38,7 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 
 ### What doesn't PhotoDemon do?
 
-* PhotoDemon does not support layers, but layer support will be included in the next release (version 6.4).
+* The latest stable release (6.2) does not support layers.  The latest development release has some layer features working, and full layer support is being actively developed.  (Seriously, check the commit log!)
 * PhotoDemon does not provide any on-canvas painting tools.  Many have been prototyped, but their integration has been postponed pending a final layers implementation.
 * PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB support in March 2012. Because PhotoDemon relies heavily on DIB sections, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later.
 

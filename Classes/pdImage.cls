@@ -156,8 +156,8 @@ Option Explicit
 ' the layer will be created above the currently active layer.
 '
 'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  (Returning its index would be pointless,
-' as the calling function knows that in advance.)  Note that layers can be accessed by either ID or index; after calling this
-' function, make sure to use the CANONICAL ID function with the returned value.
+' as the calling function likely knows that in advance.)  Note that layers can be accessed by either ID or index; after
+' calling this function, make sure to use the CANONICAL ID function with the returned value.
 Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
 
     'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
@@ -176,7 +176,7 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
         ReDim Preserve imgLayers(0 To UBound(imgLayers) + 1) As pdLayer
         
         Dim i As Long
-        For i = curLayer + 1 To UBound(imgLayers)
+        For i = UBound(imgLayers) To curLayer Step -1
             Set imgLayers(i) = imgLayers(i - 1)
         Next i
         
@@ -191,6 +191,9 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
     'Increment our internal layer counts
     numOfLayersEverCreated = numOfLayersEverCreated + 1
     numOfLayers = numOfLayers + 1
+    
+    'Return the new layer's ID value (which is the number of layers ever created for this image)
+    createBlankLayer = numOfLayersEverCreated - 1
 
 End Function
 
@@ -264,6 +267,27 @@ Public Function getActiveLayer() As pdLayer
         Set getActiveLayer = Nothing
     End If
 End Function
+
+'Set the currently active layer by its cardinal ID value
+Public Sub setActiveLayerByID(ByVal newActiveLayerID As Long)
+    
+    Dim i As Long
+    For i = 0 To UBound(imgLayers)
+        If imgLayers(i).getLayerID = newActiveLayerID Then
+            curLayer = i
+            Exit For
+        End If
+    Next i
+    
+    'If we made it all the way here, the requested layer was not found.  Do nothing (e.g. do not change the active layer).
+    
+End Sub
+
+Public Sub setActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
+    If newActiveLayerIndex >= 0 And newActiveLayerIndex < numOfLayers Then
+        curLayer = newActiveLayerIndex
+    End If
+End Sub
 
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!

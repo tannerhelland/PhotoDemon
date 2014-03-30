@@ -124,6 +124,57 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
 
 End Function
 
+'Provide a common dialog that allows the user to retrieve a single image filename, which the calling function can
+' then use as it pleases.
+Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String, ByVal ownerHwnd As Long) As Boolean
+
+    'Common dialog interface
+    Dim CC As cCommonDialog
+    
+    'Get the last "open image" path from the preferences file
+    Dim tempPathString As String
+    tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
+    
+    Set CC = New cCommonDialog
+    
+    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
+    ' appear over the top of the common dialog.
+    g_WindowManager.resetTopmostForAllWindows False
+    
+    'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
+    If CC.VBGetOpenFileName(userImagePath, , True, False, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd, 0) Then
+        
+        'Because the returned string will be null-padded, we must manually trim it down to only the relevant bits
+        userImagePath = TrimNull(userImagePath)
+        
+        'Save the new directory as the default path for future usage
+        tempPathString = userImagePath
+        StripDirectory tempPathString
+        g_UserPreferences.SetPref_String "Paths", "Open Image", tempPathString
+        
+        'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
+        g_UserPreferences.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
+        
+        'All done!
+        PhotoDemon_OpenImageDialog_Simple = True
+        
+    'If the user cancels the common dialog box, simply exit out
+    Else
+        
+        If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: %1", vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error", CC.ExtendedError
+    
+        PhotoDemon_OpenImageDialog_Simple = False
+        
+    End If
+    
+    'Restore window status
+    g_WindowManager.resetTopmostForAllWindows True
+    
+    'Release the common dialog object
+    Set CC = Nothing
+
+End Function
+
 'Subroutine for saving an image to file.  This function assumes the image already exists on disk and is simply
 ' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As...
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.

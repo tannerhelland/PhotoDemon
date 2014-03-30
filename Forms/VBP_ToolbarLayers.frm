@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form toolbar_Layers 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Layers"
@@ -8,7 +7,6 @@ Begin VB.Form toolbar_Layers
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   3735
-   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -36,6 +34,7 @@ Begin VB.Form toolbar_Layers
    End
    Begin VB.PictureBox picLayerButtons 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
@@ -453,7 +452,7 @@ Private Sub redrawLayerBox()
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
             For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
-                renderLayerBlock i, 0, fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
+                renderLayerBlock (pdImages(g_CurrentImage).getNumOfLayers - 1) - i, 0, fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
             Next i
             
         End If
@@ -532,3 +531,55 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
     End If
 
 End Sub
+
+'Layer box was clicked; set that layer as the new active layer, and notify the parent pdImage object
+Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    Dim clickedLayer As Long
+    clickedLayer = getLayerAtPosition(x, y)
+    
+    If clickedLayer >= 0 Then
+        If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).setActiveLayerByIndex clickedLayer
+    End If
+    
+    redrawLayerBox
+    
+End Sub
+
+Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    curLayerHover = getLayerAtPosition(x, y)
+    redrawLayerBox
+    
+End Sub
+
+'Given mouse coordinates over the buffer picture box, return the layer at that location
+Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long) As Long
+    
+    If pdImages(g_CurrentImage) Is Nothing Then
+        getLayerAtPosition = -1
+        Exit Function
+    End If
+    
+    Dim vOffset As Long
+    vOffset = vsLayer.Value
+    
+    Dim tmpLayerCheck As Long
+    tmpLayerCheck = (y + vOffset) \ fixDPI(BLOCKHEIGHT)
+    
+    'It's a bit counterintuitive, but we draw the layer box in reverse order: layer 0 is at the BOTTOM,
+    ' and layer(max) is at the TOP.  Because of this, all layer positioning checks must be reversed.
+    tmpLayerCheck = (pdImages(g_CurrentImage).getNumOfLayers - 1) - tmpLayerCheck
+    
+    'Is the mouse over an actual layer, or just dead space in the box?
+    If Not pdImages(g_CurrentImage) Is Nothing Then
+    
+        If (tmpLayerCheck >= 0) And (tmpLayerCheck < pdImages(g_CurrentImage).getNumOfLayers) Then
+            getLayerAtPosition = tmpLayerCheck
+        Else
+            getLayerAtPosition = -1
+        End If
+    
+    End If
+    
+End Function

@@ -100,9 +100,8 @@ Public Function getICCDataSize() As Long
     getICCDataSize = UBound(iccData) + 1
 End Function
 
-'If an ICC profile is present, apply it to the parent pdImage object.  The parent must be explicitly passed, as this
-' small class does not maintain a persistent link on its own.
-Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
+'If an ICC profile is present, apply it to this DIB.
+Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
 
     'Before doing anything else, make sure we actually have an ICC profile to apply!
     If Not iccDataPresent Then
@@ -145,12 +144,13 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
                 Dim transformCheck As Boolean
-                transformCheck = applyColorTransformToDIB(iccTransformation, parentPDImage.getActiveDIB)
+                transformCheck = applyColorTransformToDIB(iccTransformation, copyOfThisInstance)
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
                     Message "ICC profile transformation successful.  Image is now sRGB."
                     iccProfileHasBeenApplied = True
+                    applyICCtoSelf = True
                 Else
                     Message "ICC profile could not be applied.  Image remains in original profile."
                 End If
@@ -160,21 +160,21 @@ Public Function applyICCtoParentImage(ByRef parentPDImage As pdImage) As Boolean
                                 
             Else
                 Message "Both ICC profiles loaded successfully, but transformation could not be created."
-                applyICCtoParentImage = False
+                applyICCtoSelf = False
             End If
         
             releaseICCProfile dstProfile
         
         Else
             Message "Could not obtain standard sRGB color profile.  Color management has been disabled for this image."
-            applyICCtoParentImage = False
+            applyICCtoSelf = False
         End If
         
         releaseICCProfile srcProfile
     
     Else
         Message "Embedded ICC profile is invalid.  Color management has been disabled for this image."
-        applyICCtoParentImage = False
+        applyICCtoSelf = False
     End If
     
 End Function

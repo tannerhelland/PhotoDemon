@@ -288,6 +288,12 @@ End Sub
 'FreeImage is preferred for thumbnail resizing, but if it's not available, GDI+ will be used.
 Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
+    'If the layer has not been instantiated properly, reject the thumbnail request
+    If (layerDIB Is Nothing) Or (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then
+        requestThumbnail = False
+        Exit Function
+    End If
+    
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
     
