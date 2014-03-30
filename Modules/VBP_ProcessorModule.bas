@@ -432,12 +432,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'LAYER FUNCTIONS
         ' Any action triggered from the Layer menu, or the Layer toolbox - creating layers, moving them, etc
         
+        'Add an image file to the current image (as a new layer)
         Case "New Layer from File"
-            If showDialog Then
-            
-            Else
-            
-            End If
+            Layer_Handler.loadImageAsNewLayer showDialog, processParameters
         
         
         'SELECTION FUNCTIONS

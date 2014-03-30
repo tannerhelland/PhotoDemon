@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Font Manager (and Renderer)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 31/May/13
-'Last updated: 31/May/13
-'Last update: initial build
+'Last updated: 30/March/14
+'Last update: added a new function for rendering text to a specific RECT, with support for ellipses (as necessary)
 '
 'While VB6 actually provides pretty good font support, PhotoDemon has some unique needs (as usual).  Chief among these
 ' are detailed handling over font positioning, rendering to arbitrary DCs, and managing fonts in a more speed-friendly
@@ -31,7 +31,7 @@ Attribute VB_Exposed = False
 ' 4) (Optional) Render font to attached DC.  At present, ClearType antialiasing is assumed, but in the future it may
 '     become user-settable.
 '
-'Obviously, this class relies heavily on the API.  Functions are documented to the best of my knowledge and ability.
+'Obviously, this class relies heavily on WAPI.  Functions are documented to the best of my knowledge and ability.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -207,7 +207,7 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     tmpRect.Right = dstX + dstWidth
     tmpRect.Bottom = dstY + dstHeight
     
-    'ExtTextOut curDC, dstX, dstY, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    'If the text is going to extend past the target rect, draw it with ellipses
     DrawText curDC, srcString, Len(srcString), tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
     
 End Sub

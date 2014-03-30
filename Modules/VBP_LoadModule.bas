@@ -424,10 +424,7 @@ Public Sub LoadImagesFromCommandLine()
 
 End Sub
 
-
-
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
-' As of 22 March '14, much of the messy work in this function has been offloaded to a new LoadImageFileToLayer() function.
 Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
         
     '*************************************************************************************************************************************
@@ -627,9 +624,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             ' 32bpp images as well, but if we must, we can use VB's internal .LoadPicture command.
             Case "TMP"
             
-                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB, targetImage)
+                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB)
                 
-                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB, targetImage)
+                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB)
                 
                 'Lie and say that the original file format of this image was JPEG.  We do this because tmp images are typically images
                 ' captured via non-traditional means (screenshot's, scans), and when the user tries to save the file, they should not
@@ -696,7 +693,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
                     If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB, targetImage)
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB)
                     
                     'If GDI+ loaded the image successfully, note that we have to determine color depth manually.  (There may be a way
                     ' to retrieve that info from GDI+, but I haven't bothered to look!)
@@ -716,7 +713,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 If (Not loadSuccessful) Then
                     
                     If isThisPrimaryImage Then Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
-                    loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB, targetImage)
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB)
                 
                     'If VB managed to load the image successfully, note that we have to deteremine color depth manually
                     If loadSuccessful Then
@@ -846,7 +843,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha
             
             'Apply the ICC transform
-            targetDIB.ICCProfile.applyICCtoParentImage targetImage
+            targetDIB.ICCProfile.applyICCtoSelf targetDIB
             
             '32bpp images must be re-premultiplied after the transformation
             If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
@@ -1171,6 +1168,131 @@ PreloadMoreImages:
         
 End Sub
 
+'Quick and dirty function for loading an image file to a containing DIB.  This function provides none of the extra scans or features
+' that the more advanced LoadFileAsNewImage does; instead, it is assumed that the calling function will handle any extra work.
+' (Note that things like metadata will not be processed *at all* for the image file.)
+'
+'That said, FreeImage/GDI+ are still used intelligently.  The function will return TRUE if successful.
+Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB) As Boolean
+    
+    'Even though this function is designed to operate as quickly as possible, some images may take a long time to load.
+    ' Display a busy cursor
+    If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
+            
+    'To improve load time, declare a variety of other variables outside the image load loop
+    Dim FileExtension As String
+    Dim loadSuccessful As Boolean
+    
+    'To prevent re-entry problems, forcibly disable the main form until loading is complete
+    FormMain.Enabled = False
+    
+    'Before attempting to load an image, make sure it exists
+    If Not FileExist(imagePath) Then
+        pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
+        QuickLoadImageToDIB = False
+        Exit Function
+    End If
+        
+    'Prepare a dummy pdImage object, which some external functions may require
+    Dim tmpPDImage As pdImage
+    Set tmpPDImage = New pdImage
+    
+    'Determine the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture)
+    
+    'Start by stripping the extension from the file path
+    FileExtension = UCase(GetExtension(imagePath))
+    loadSuccessful = False
+    
+    'Depending on the file's extension, load the image using the most appropriate image decoding routine
+    Select Case FileExtension
+    
+        'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it!)
+        Case "PDI"
+        
+            'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
+            loadSuccessful = LoadPhotoDemonImage(imagePath, targetDIB, tmpPDImage)
+            
+        'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as it handles
+        ' 32bpp images as well, but if we must, we can use VB's internal .LoadPicture command.
+        Case "TMP"
+        
+            If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
+            If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
+            
+        'PDTMP files are raw image buffers saved as part of Undo/Redo or Autosaving.
+        Case "PDTMP"
+            
+            loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
+            
+        'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
+        ' VB's internal LoadPicture function.
+        Case Else
+            
+            'If FreeImage is available, use it to try and load the image.
+            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV4(imagePath, targetDIB, 0, False)
+                
+            'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
+            ' GDI+ to experience a silent fail, thus bringing down the entire program.
+            If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
+            
+            'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture
+            If (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
+                    
+    End Select
+    
+    
+    'Sometimes, our image load functions will think the image loaded correctly, but they will return a blank image.  Check for
+    ' non-zero width and height before continuing.
+    If (Not loadSuccessful) Or (targetDIB.getDIBWidth = 0) Or (targetDIB.getDIBHeight = 0) Then
+        
+        Message "Failed to load %1", imagePath
+        pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
+        
+        'Deactivate the (now useless) DIB
+        targetDIB.eraseDIB
+        
+        'Exit with failure status
+        QuickLoadImageToDIB = False
+        Exit Function
+        
+    End If
+    
+    'If the loaded image contains alpha data, verify it.  If the alpha channel is blank (e.g. all 0 or all 255), convert it to 24bpp
+    If targetDIB.getDIBColorDepth = 32 Then
+        
+        'Make sure the user hasn't disabled alpha channel validation
+        If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
+            
+            'Verify the alpha channel.  If this function returns FALSE, the current alpha channel is unnecessary.
+            If Not targetDIB.verifyAlphaChannel Then targetDIB.convertTo24bpp
+            
+        
+        End If
+        
+    End If
+    
+    'If the image contained an embedded ICC profile, apply it now.
+    '
+    'Note that we need to check if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
+    ' the image load function.  (If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!)
+    If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
+        
+        '32bpp images must be un-premultiplied before the transformation
+        If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha
+        
+        'Apply the ICC transform
+        targetDIB.ICCProfile.applyICCtoSelf targetDIB
+        
+        '32bpp images must be re-premultiplied after the transformation
+        If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
+    
+    End If
+
+    'If we made it all the way here, the image file was loaded successfully!
+    QuickLoadImageToDIB = True
+
+End Function
+
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
 Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
@@ -1201,7 +1323,7 @@ End Function
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As Boolean
             
     Dim verifyGDISuccess As Boolean
     
@@ -1216,7 +1338,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
 End Function
 
 'BITMAP loading
-Public Function LoadVBImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+Public Function LoadVBImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As Boolean
     
     On Error GoTo LoadVBImageFail
     

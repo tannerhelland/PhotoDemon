@@ -3,8 +3,8 @@ Attribute VB_Name = "File_And_Path_Handling"
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 12/September/13
-'Last update: merged file functions from other modules into this one
+'Last updated: 30/March/14
+'Last update: add $ qualifier to various string functions (e.g. Mid$())
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -229,7 +229,7 @@ End Function
 
 'Make sure the right backslash of a path is existant
 Public Function FixPath(ByVal tempString As String) As String
-    If Right(tempString, 1) <> "\" Then
+    If Right$(tempString, 1) <> "\" Then
         FixPath = tempString & "\"
     Else
         FixPath = tempString
@@ -242,8 +242,8 @@ Public Sub StripDirectory(ByRef sString As String)
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
-            sString = Left(sString, x)
+        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
+            sString = Left$(sString, x)
             Exit Sub
         End If
     Next x
@@ -256,7 +256,7 @@ Public Function getDirectory(ByRef sString As String) As String
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
+        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
             getDirectory = Left(sString, x)
             Exit Function
         End If
@@ -270,7 +270,7 @@ Public Sub StripFilename(ByRef sString As String)
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
+        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
             sString = Right(sString, Len(sString) - x)
             Exit Sub
         End If
@@ -284,8 +284,8 @@ Public Function getFilename(ByVal sString As String) As String
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, i, 1) = "/") Or (Mid(sString, i, 1) = "\") Then
-            getFilename = Right(sString, Len(sString) - i)
+        If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
+            getFilename = Right$(sString, Len(sString) - i)
             Exit Function
         End If
     Next i
@@ -300,8 +300,8 @@ Public Function getFilenameWithoutExtension(ByVal sString As String) As String
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, i, 1) = "/") Or (Mid(sString, i, 1) = "\") Then
-            tmpFilename = Right(sString, Len(sString) - i)
+        If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
+            tmpFilename = Right$(sString, Len(sString) - i)
             Exit For
         End If
     Next i
@@ -318,8 +318,8 @@ Public Sub StripOffExtension(ByRef sString As String)
     Dim x As Long
 
     For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = ".") Then
-            sString = Left(sString, x - 1)
+        If (Mid$(sString, x, 1) = ".") Then
+            sString = Left$(sString, x - 1)
             Exit Sub
         End If
     Next x
