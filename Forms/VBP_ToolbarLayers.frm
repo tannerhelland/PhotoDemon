@@ -291,8 +291,8 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
     If refreshThumbnailCache Then cacheLayerThumbnails
     
-    'Form_Resize already calls all the proper redraw functions for us, so simply link it here
-    Form_Resize
+    'resizeLayerUI already calls all the proper redraw functions for us, so simply link it here
+    resizeLayerUI
     
 End Sub
 

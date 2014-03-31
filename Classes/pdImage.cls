@@ -219,8 +219,56 @@ End Function
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
 Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
-    'TODO: actually composite image layers instead of just copying the active layer!
-    Set dstDIB = imgLayers(curLayer).layerDIB
+    'TODO: perform special checks for 24bpp single-layer images.  For these, we can simply copy the current layer out,
+    '       saving a lot of time!
+    
+    'Start by resizing the DIB to be the size of the current image
+    dstDIB.createBlank Me.Width, Me.Height, 32
+    
+    'Paint a checkerboard background to the destination DIB
+    ' NOTE: this is currently handled by the viewport renderer itself - is that okay??
+    
+    'We now composite layers starting from the bottom and working our way up.
+    Dim i As Long
+    For i = 0 To numOfLayers - 1
+    
+        'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
+        
+        '24bpp case
+        If imgLayers(i).layerDIB.getDIBColorDepth = 24 Then
+        
+'            'Check layer opacity.  If it is 100%, use BitBlt to copy the layer into position.
+'            If imgLayers(i).getLayerOpacity = 100 Then
+'
+'                With imgLayers(i)
+'                    BitBlt dstDIB.getDIBDC, .getLayerOffsetX, .getLayerOffsetY, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, imgLayers(i).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+'                End With
+'
+'            'Layer is not 100% opaque.  Use AlphaBlend API instead.
+'            Else
+'
+
+            Debug.Print "Drawing layer #" & i & " at opacity " & imgLayers(i).getLayerOpacity
+            
+                With imgLayers(i)
+                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, 255, .getLayerOffsetX, .getLayerOffsetY
+                End With
+'
+'            End If
+            
+        '32bpp case
+        Else
+        
+            'Always use the AlphaBlend API
+            With imgLayers(i)
+                .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+            End With
+        
+        End If
+    
+    Next i
+    
+    'Set dstDIB = imgLayers(curLayer).layerDIB
     
     'If the user requested non-premultiplied alpha, calculate it now.
     'TODO: how we handle premultiplication will depend on how I implement compositing, above, so this needs to be revisited

@@ -829,6 +829,19 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         End If
         
         DoEvents
+        
+        'TODO: at present, I'm running some optimization tests on a new model: all layers 32bpp by default.  This has some trade-offs.  First
+        '      is memory usage - 24bpp layers will consume an extra 33% space under this model.  Various edit actions will also take longer,
+        '      because the alpha channel must be processed (in most cases).  BitBlt and StretchBlt for various actions is also off the table.
+        '
+        '      That said, there are some big benefits for always using 32bpp layers.  First is the ease of implementing stuff like erase tools
+        '      and/or layer adjustments.  32bpp also plays nicer than 24bpp with various alpha-related APIs (e.g. AlphaBlend).  All modern
+        '      displays are in 32bpp anyway, so there will no longer be 24/32bpp conversions when rendering to/from the screen.
+        '
+        '      I'm going to try running the program in 32bpp mode while I get layers working.  If it looks good and runs well, I may look at
+        '      always forcing layers to 32bpp.  To that end, this ugly line of code (which will be optimized if kept) will forcibly convert
+        '      all incoming 24bpp images to 32bpp.
+        If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
                 
         
         '*************************************************************************************************************************************
