@@ -41,6 +41,9 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
         'Load the file in question
         If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
             
+            'Forcibly convert the new layer to 32bpp
+            If tmpDIB.getDIBColorDepth = 24 Then tmpDIB.convertTo32bpp
+            
             'Ask the current image to prepare a blank layer for us
             Dim newLayerID As Long
             newLayerID = pdImages(g_CurrentImage).createBlankLayer()
@@ -49,6 +52,9 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, pdImages(g_CurrentImage), Trim$(getFilename(imagePath))
             
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).getLayerByID(newLayerID).getLayerName & ")"
+            
+            'Render the new image to screen
+            PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
             
             'Synchronize the interface to the new image
             syncInterfaceToCurrentImage

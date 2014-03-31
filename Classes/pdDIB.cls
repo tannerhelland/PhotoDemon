@@ -1054,6 +1054,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
                 dibHandleOriginal = SelectObject(dibDC, dibHandle)
                 
                 'Finally, set the backColor
+                If colorDepth = 24 Then
                 Dim dibRect As RECT
                 SetRect dibRect, 0, 0, iWidth, iHeight
                 
@@ -1061,6 +1062,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
                 hBrush = CreateSolidBrush(BackColor)
                 FillRect dibDC, dibRect, hBrush
                 DeleteObject hBrush
+                End If
                 
             'If the DIB is 32bpp, apply any transparency now
             'Else
@@ -1804,7 +1806,7 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
-Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     Dim bfParams As Long
     
@@ -1813,7 +1815,7 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional customAlpha As Long = 25
         bfParams = customAlpha * &H10000 Or &H1000000
     Else
         'Ignore alpha channel, and only use the supplied customAlpha value
-        bfParams = customAlpha * &H10000
+        bfParams = (customAlpha * &H10000)
     End If
     
     AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, dibWidth, newWidth), IIf(newHeight = 0, dibHeight, newHeight), dibDC, 0, 0, dibWidth, dibHeight, bfParams

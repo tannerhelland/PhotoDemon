@@ -232,19 +232,19 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
     layerDIB.createFromExistingDIB srcDIB
     
     'Set the initial offset so that the image is centered on the parent canvas
-    If Not (parentImage Is Nothing) Then
-        
-        Dim layerDiff As Double
-        layerDiff = parentImage.Width - layerDIB.getDIBWidth
-        myLayerData.l_OffsetX = layerDiff / 2
-        
-        layerDiff = parentImage.Height - layerDIB.getDIBHeight
-        myLayerData.l_OffsetY = layerDiff / 2
-        
-    Else
+    'If Not (parentImage Is Nothing) Then
+    '
+    '    Dim layerDiff As Double
+    '    layerDiff = parentImage.Width - layerDIB.getDIBWidth
+    '    myLayerData.l_OffsetX = layerDiff / 2
+    '
+    '    layerDiff = parentImage.Height - layerDIB.getDIBHeight
+    '    myLayerData.l_OffsetY = layerDiff / 2
+    '
+    'Else
         myLayerData.l_OffsetX = 0
         myLayerData.l_OffsetY = 0
-    End If
+    'End If
     
 End Sub
 
