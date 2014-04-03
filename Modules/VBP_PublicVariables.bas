@@ -40,19 +40,24 @@ Public g_Language As pdTranslate
 Public g_CurrentTool As PDTools
 Public g_PreviousTool As PDTools
 
-'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form
+'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
+' In theory, adding new tools should be as easy as changing these numbers.  All tool-related code is tied into these
+' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to
+' double-check everything!!)
 Public Enum PDTools
     NAV_DRAG = 0
-    SELECT_RECT = 1
-    SELECT_CIRC = 2
-    SELECT_LINE = 3
+    NAV_MOVE = 1
+    SELECT_RECT = 2
+    SELECT_CIRC = 3
+    SELECT_LINE = 4
 End Enum
 
 #If False Then
     Const NAV_DRAG = 0
-    Const SELECT_RECT = 1
-    Const SELECT_CIRC = 2
-    Const SELECT_LINE = 3
+    Const NAV_MOVE = 1
+    Const SELECT_RECT = 2
+    Const SELECT_CIRC = 3
+    Const SELECT_LINE = 4
 #End If
 
 'How should the selection be rendered?

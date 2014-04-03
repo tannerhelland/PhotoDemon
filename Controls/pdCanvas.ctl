@@ -859,6 +859,12 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                 UserControl.MousePointer = vbCustom
                 setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
                 setInitialCanvasScrollValues FormMain.mainCanvas(0)
+                
+            'Move stuff around
+            Case NAV_MOVE
+                UserControl.MousePointer = vbCustom
+                setSizeAllCursor Me
+                setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer
         
             'Rectangular selection
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -956,6 +962,12 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                 UserControl.MousePointer = vbCustom
                 setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
                 panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            
+            'Move stuff around
+            Case NAV_MOVE
+                UserControl.MousePointer = vbCustom
+                setSizeAllCursor Me
+                moveCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -995,6 +1007,11 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                 Else
                     setArrowCursorToHwnd Me.hWnd
                 End If
+                
+            'Move stuff around
+            Case NAV_MOVE
+                UserControl.MousePointer = vbCustom
+                setSizeAllCursor Me
         
             'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -1066,7 +1083,12 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
             Case NAV_DRAG
                 UserControl.MousePointer = vbCustom
                 setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
-                
+            
+            'Move stuff around
+            Case NAV_MOVE
+                UserControl.MousePointer = vbDefault
+                setArrowCursorToHwnd Me.hWnd
+            
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             

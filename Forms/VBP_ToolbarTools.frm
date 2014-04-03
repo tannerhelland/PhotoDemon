@@ -27,8 +27,8 @@ Begin VB.Form toolbar_Tools
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   1
-      Left            =   1230
+      Index           =   2
+      Left            =   1950
       TabIndex        =   16
       Top             =   315
       Width           =   720
@@ -451,8 +451,8 @@ Begin VB.Form toolbar_Tools
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   2
-      Left            =   1950
+      Index           =   3
+      Left            =   2670
       TabIndex        =   17
       Top             =   315
       Width           =   720
@@ -479,8 +479,8 @@ Begin VB.Form toolbar_Tools
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   3
-      Left            =   2670
+      Index           =   4
+      Left            =   3390
       TabIndex        =   18
       Top             =   315
       Width           =   720
@@ -529,6 +529,34 @@ Begin VB.Form toolbar_Tools
       Mode            =   1
       HandPointer     =   -1  'True
       PictureNormal   =   "VBP_ToolbarTools.frx":23B2
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdTools 
+      Height          =   600
+      Index           =   1
+      Left            =   840
+      TabIndex        =   24
+      Top             =   315
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":3104
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -582,7 +610,7 @@ Begin VB.Form toolbar_Tools
       ForeColor       =   &H00606060&
       Height          =   240
       Index           =   1
-      Left            =   1200
+      Left            =   1920
       TabIndex        =   21
       Top             =   30
       Width           =   840
@@ -655,10 +683,11 @@ Private Sub Form_Load()
     'INITIALIZE ALL TOOLS
     
         'Tool button tooltips
-        cmdTools(0).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
-        cmdTools(1).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
-        cmdTools(2).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
-        cmdTools(3).ToolTip = g_Language.TranslateMessage("Line Selection")
+        cmdTools(NAV_DRAG).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+        cmdTools(NAV_DRAG).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+        cmdTools(SELECT_RECT).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
+        cmdTools(SELECT_CIRC).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
+        cmdTools(SELECT_LINE).ToolTip = g_Language.TranslateMessage("Line Selection")
     
         'Selection visual styles (currently lightbox or highlight)
         toolbar_Tools.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
