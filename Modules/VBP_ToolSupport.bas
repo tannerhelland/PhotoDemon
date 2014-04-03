@@ -19,6 +19,15 @@ Option Explicit
 'The drag-to-pan tool uses these values to store the original image offset
 Private m_InitHScroll As Long, m_InitVScroll As Long
 
+'The move tool uses these values to store the original layer offset
+Private m_InitX As Double, m_InitY As Double
+
+'The move tool uses this function to set the initiali layer offsets for a move operation
+Public Sub setInitialLayerOffsets(ByRef srcLayer As pdLayer)
+    m_InitX = srcLayer.getLayerOffsetX
+    m_InitY = srcLayer.getLayerOffsetY
+End Sub
+
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
 Public Sub setInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
 
@@ -27,7 +36,7 @@ Public Sub setInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
 
 End Sub
 
-'The drag-to-pan tool uses this function to actually scroll
+'The drag-to-pan tool uses this function to actually scroll the viewport area
 Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
 
     'Prevent the canvas from redrawing itself until our pan operation is complete.  (This prevents juddery movement.)
@@ -92,3 +101,34 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     ScrollViewport srcImage, srcCanvas
 
 End Sub
+
+'The nav tool uses this function to move the current layer around
+Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
+
+    'Prevent the canvas from redrawing itself until our pan operation is complete.  (This prevents juddery movement.)
+    srcCanvas.setRedrawSuspension True
+    
+    'Start by converting the mouse coordinates we were passed from screen units to image units
+    Dim initImgX As Double, initImgY As Double, curImgX As Double, curImgY As Double
+    convertCanvasCoordsToImageCoords srcCanvas, srcImage, initX, initY, initImgX, initImgY
+    convertCanvasCoordsToImageCoords srcCanvas, srcImage, curX, curY, curImgX, curImgY
+    
+    'Calculate offsets between the initial mouse coordinates and the current ones
+    Dim hOffset As Long, vOffset As Long
+    hOffset = curImgX - initImgX
+    vOffset = curImgY - initImgY
+    
+    'Assign the new layer offsets and redraw the screen
+    With srcImage.getActiveLayer
+        .setLayerOffsetX m_InitX + hOffset
+        .setLayerOffsetY m_InitY + vOffset
+    End With
+    
+    'Reinstate canvas redraws
+    srcCanvas.setRedrawSuspension False
+    
+    'Manually request a canvas redraw
+    ScrollViewport srcImage, srcCanvas
+
+End Sub
+

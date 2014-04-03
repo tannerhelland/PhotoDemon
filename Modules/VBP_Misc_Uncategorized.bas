@@ -177,23 +177,31 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     
 End Sub
 
-'If an x or y location is NOT in the image, find the nearest coordinate that IS in the image
-Public Sub findNearestImageCoordinates(ByRef x1 As Double, ByRef y1 As Double, ByRef srcForm As Form)
+'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
+Public Sub convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False)
 
-    'Grab the current zoom value
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(pdImages(srcForm.Tag).currentZoomValue)
-
-    'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcForm.HScroll.Value + Int((x1 - pdImages(srcForm.Tag).imgViewport.targetLeft) / zoomVal)
-    y1 = srcForm.VScroll.Value + Int((y1 - pdImages(srcForm.Tag).imgViewport.targetTop) / zoomVal)
+    If srcImage.imgViewport Is Nothing Then Exit Sub
     
-    'Force any invalid values to their nearest matching point in the image
-    If x1 < 0 Then x1 = 0
-    If y1 < 0 Then y1 = 0
-    If x1 >= pdImages(srcForm.Tag).Width Then x1 = pdImages(srcForm.Tag).Width - 1
-    If y1 >= pdImages(srcForm.Tag).Height Then y1 = pdImages(srcForm.Tag).Height - 1
-
+    'Get the current zoom value from the source image
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                
+    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
+    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
+    canvasY = canvasY - srcImage.imgViewport.getTopOffset
+    
+    'Calculate image x and y positions, while taking into account zoom and scroll values
+    imgX = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((canvasX - srcImage.imgViewport.targetLeft) / zoomVal)
+    imgY = srcCanvas.getScrollValue(PD_VERTICAL) + Int((canvasY - srcImage.imgViewport.targetTop) / zoomVal)
+    
+    'If the caller wants the coordinates bound-checked, apply it now
+    If forceInBounds Then
+        If imgX < 0 Then imgX = 0
+        If imgY < 0 Then imgY = 0
+        If imgX >= srcImage.Width Then imgX = srcImage.Width - 1
+        If imgY >= srcImage.Height Then imgY = srcImage.Height - 1
+    End If
+    
 End Sub
 
 'This beautiful little function comes courtesy of coder Merri:
