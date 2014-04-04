@@ -28,7 +28,7 @@ Begin VB.Form toolbar_Layers
    Begin VB.VScrollBar vsLayer 
       Height          =   4905
       LargeChange     =   32
-      Left            =   3375
+      Left            =   3360
       Max             =   100
       TabIndex        =   9
       Top             =   1200
@@ -55,25 +55,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0000
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -82,25 +74,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   7
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0D7A
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -109,25 +93,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   8
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":1AF4
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -169,19 +145,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   3
       Top             =   480
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4868
+      _extenty        =   873
+      font            =   "VBP_ToolbarLayers.frx":286E
+      max             =   100
+      value           =   100
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H8000000D&
@@ -518,11 +486,23 @@ Private Sub cacheLayerThumbnails()
         
         vsLayer.Value = 0
         If maxLayerBoxSize < picLayers.ScaleHeight Then
+            
+            'Hide the layer box scroll bar
             vsLayer.Visible = False
             vsLayer.Value = 0
+            
+            'Extend the layer box to be the full size of the form
+            picLayers.Width = (vsLayer.Left + vsLayer.Width) - picLayers.Left
+            
         Else
+            
+            'Show the layer box scroll bar
             vsLayer.Visible = True
             vsLayer.Max = maxLayerBoxSize - picLayers.ScaleHeight
+            
+            'Shrink the layer box so that it does not cover the vertical scroll bar
+            picLayers.Width = (vsLayer.Left - picLayers.Left)
+            
         End If
         
         End If
@@ -700,4 +680,12 @@ Private Sub sltLayerOpacity_Change()
     
     End If
 
+End Sub
+
+Private Sub vsLayer_Change()
+    redrawLayerBox
+End Sub
+
+Private Sub vsLayer_Scroll()
+    redrawLayerBox
 End Sub
