@@ -360,6 +360,49 @@ Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
     
 End Function
 
+'Simple function for moving a given layer up/down in the layer stack.
+Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
+
+    'Before doing anything else, make sure the requested move is a valid one
+    If moveLayerUp Then
+        If srcLayerIndex = numOfLayers - 1 Then Exit Sub
+    Else
+        If srcLayerIndex = 0 Then Exit Sub
+    End If
+    
+    'Process the actual move
+    If moveLayerUp Then
+    
+        'Move the selected layer UP.
+        swapTwoLayers srcLayerIndex, srcLayerIndex + 1
+    
+    Else
+    
+        'Move the selected layer DOWN.
+        swapTwoLayers srcLayerIndex, srcLayerIndex - 1
+    
+    End If
+
+End Sub
+
+'Used by various layer movement functions.  Given two layer indices, swap them.
+Private Sub swapTwoLayers(ByVal srcLayerID_1 As Long, ByVal srcLayerID_2 As Long)
+
+    'Create a temporary reference to the first layer
+    Dim tmpLayerRef As pdLayer
+    Set tmpLayerRef = imgLayers(srcLayerID_1)
+    
+    'Overwrite the first layer's reference with the second one
+    Set imgLayers(srcLayerID_1) = imgLayers(srcLayerID_2)
+    
+    'Overwrite the second layer's reference with our temporary copy of the first layer
+    Set imgLayers(srcLayerID_2) = tmpLayerRef
+    
+    'Release our temporary reference
+    Set tmpLayerRef = Nothing
+
+End Sub
+
 'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the current image's state,
 ' but it should be good enough to reconstruct an approximation for data recovery purposes.
 Public Function writeInternalDataToFile(ByVal dstFilename As String) As Boolean
