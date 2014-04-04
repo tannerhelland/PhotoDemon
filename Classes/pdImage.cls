@@ -23,9 +23,8 @@ Attribute VB_Exposed = False
 ' in the MDIWindow module.
 '
 'The purpose of this class is to store a bunch of variables related to a given image - things like size, zoom,
-' name, file path, format containing form, Undo/Redo tracking - as well as a reference to a pdDIB object
-' called "mainDIB", which contains an in-memory copy of the relevant image's data.  In the future,
-' additional DIBs may be utilized within each image.
+' name, file path, format containing form, Undo/Redo tracking - as well as an array of pdLayer objects, which
+' comprise the actual image data.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -332,9 +331,13 @@ Public Sub setActiveLayerByID(ByVal newActiveLayerID As Long)
 End Sub
 
 Public Sub setActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
-    If newActiveLayerIndex >= 0 And newActiveLayerIndex < numOfLayers Then
-        curLayer = newActiveLayerIndex
-    End If
+
+    'Validate the incoming layer index
+    If newActiveLayerIndex < 0 Then newActiveLayerIndex = 0
+    If newActiveLayerIndex > numOfLayers - 1 Then newActiveLayerIndex = numOfLayers - 1
+    
+    curLayer = newActiveLayerIndex
+    
 End Sub
 
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
@@ -400,6 +403,27 @@ Private Sub swapTwoLayers(ByVal srcLayerID_1 As Long, ByVal srcLayerID_2 As Long
     
     'Release our temporary reference
     Set tmpLayerRef = Nothing
+
+End Sub
+
+'Delete a given layer.  The pdLayers stack will automatically be resized to match.
+Public Sub deleteLayerByIndex(ByVal srcLayerIndex As Long)
+
+    'Validate the layer index
+    If srcLayerIndex < 0 Or srcLayerIndex >= numOfLayers Then Exit Sub
+    
+    'If this is the last remaining layer, exit
+    If numOfLayers = 1 Then Exit Sub
+    
+    'Shift all layer references above this one downward
+    Dim i As Long
+    For i = srcLayerIndex To numOfLayers - 2
+        Set imgLayers(i) = imgLayers(i + 1)
+    Next i
+    
+    'Shrink the layers array
+    numOfLayers = numOfLayers - 1
+    ReDim Preserve imgLayers(0 To numOfLayers - 1) As pdLayer
 
 End Sub
 
