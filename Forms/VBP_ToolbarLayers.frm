@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form toolbar_Layers 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Layers"
@@ -59,7 +60,7 @@ Begin VB.Form toolbar_Layers
          font            =   "VBP_ToolbarLayers.frx":0000
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_ToolbarLayers.frx":0028
          disabledpicturemode=   1
          captioneffects  =   0
@@ -78,7 +79,7 @@ Begin VB.Form toolbar_Layers
          font            =   "VBP_ToolbarLayers.frx":0D7A
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
          disabledpicturemode=   1
          captioneffects  =   0
@@ -97,7 +98,7 @@ Begin VB.Form toolbar_Layers
          font            =   "VBP_ToolbarLayers.frx":1AF4
          backcolor       =   15199212
          caption         =   ""
-         handpointer     =   -1
+         handpointer     =   -1  'True
          picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
          disabledpicturemode=   1
          captioneffects  =   0
@@ -253,6 +254,17 @@ Private layerNameFont As pdFont, layerNameColor As Long
 ' pdImage object, rather than stored locally.)
 Private curLayerHover As Long
 
+'Layer buttons are more easily referenced by this enum rather than their actual indices
+Private Enum LAYER_BUTTON_ID
+    LYR_BTN_MOVE_UP = 0
+    LYR_BTN_MOVE_DOWN = 1
+    LYR_BTN_DELETE = 2
+End Enum
+
+#If False Then
+    Private Const LYR_BTN_MOVE_UP = 0, LYR_BTN_MOVE_DOWN = 1, LYR_BTN_DELETE = 2
+#End If
+
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
 Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
@@ -261,6 +273,73 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
     'resizeLayerUI already calls all the proper redraw functions for us, so simply link it here
     resizeLayerUI
+    
+    'Determine which buttons need to be activated.
+    checkButtonEnablement
+    
+End Sub
+
+'Whenever a layer is activated, we must re-determine which buttons the user has access to.  Move up/down are disabled for
+' entries at either end, and the last layer of an image cannot be deleted.
+Private Sub checkButtonEnablement()
+
+    'Make sure at least one image has been loaded
+    If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
+
+        'Merge down is only allowed for layer indexes > 0
+        If pdImages(g_CurrentImage).getActiveLayerIndex = 0 Then
+            cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = False
+        Else
+            cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = True
+        End If
+        
+        'Merge up is only allowed for layer indexes < NUM_OF_LAYERS
+        If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
+            cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = True
+        Else
+            cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = False
+        End If
+        
+        'Delete layer is only allowed if there are multiple layers present
+        If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+            cmdLayerAction(LYR_BTN_DELETE).Enabled = True
+        Else
+            cmdLayerAction(LYR_BTN_DELETE).Enabled = False
+        End If
+    
+    'If no images are loaded, disable all layer action buttons
+    Else
+    
+        Dim i As Long
+        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
+            cmdLayerAction(i).Enabled = False
+        Next i
+        
+    End If
+    
+End Sub
+
+'Layer action buttons - move layers up/down, delete layers, etc.
+Private Sub cmdLayerAction_Click(Index As Integer)
+
+    Dim copyOfCurLayerID As Long
+    copyOfCurLayerID = pdImages(g_CurrentImage).getActiveLayerID
+
+    Select Case Index
+    
+        Case LYR_BTN_MOVE_UP
+            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, True
+            cacheLayerThumbnails
+            Layer_Handler.setActiveLayerByID copyOfCurLayerID, True
+        
+        Case LYR_BTN_MOVE_DOWN
+            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, False
+            cacheLayerThumbnails
+            Layer_Handler.setActiveLayerByID copyOfCurLayerID, True
+    
+        Case LYR_BTN_DELETE
+    
+    End Select
     
 End Sub
 
@@ -430,7 +509,7 @@ Private Sub redrawLayerBox()
     'Copy the buffer to its container picture box
     BitBlt picLayers.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
     picLayers.Picture = picLayers.Image
-    picLayers.Refresh
+    'picLayers.Refresh
 
 End Sub
 
@@ -507,10 +586,8 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
     clickedLayer = getLayerAtPosition(x, y)
     
     If clickedLayer >= 0 Then
-        If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).setActiveLayerByIndex clickedLayer
+        If Not pdImages(g_CurrentImage) Is Nothing Then Layer_Handler.setActiveLayerByIndex clickedLayer
     End If
-    
-    redrawLayerBox
     
 End Sub
 

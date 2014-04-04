@@ -68,3 +68,26 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
     End If
 
 End Sub
+
+'Activate a layer.  Use this instead of directly calling the pdImage.setActiveLayer function if you want to also
+' synchronize the UI to match.
+Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False)
+
+    'Notify the parent PD image of the change
+    pdImages(g_CurrentImage).setActiveLayerByID newLayerID
+    
+    'Redraw the layer box, but note that thumbnails don't need to be re-cached
+    toolbar_Layers.forceRedraw False
+    
+    'Redraw the viewport, but only if requested
+    If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+'Same idea as setActiveLayerByID, above
+Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False)
+
+    'Wrap setActiveLayerByID, above
+    setActiveLayerByID pdImages(g_CurrentImage).getLayerByIndex(newLayerIndex).getLayerID, alsoRedrawViewport
+    
+End Sub
