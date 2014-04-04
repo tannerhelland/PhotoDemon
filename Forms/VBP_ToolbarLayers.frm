@@ -8,6 +8,7 @@ Begin VB.Form toolbar_Layers
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   3735
+   FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -133,6 +134,7 @@ Begin VB.Form toolbar_Layers
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
+      ClipControls    =   0   'False
       ForeColor       =   &H80000008&
       Height          =   4935
       Left            =   120
@@ -297,11 +299,24 @@ End Enum
     Private Const LYR_BTN_MOVE_UP = 0, LYR_BTN_MOVE_DOWN = 1, LYR_BTN_DELETE = 2
 #End If
 
+'Sometimes we need to make changes that will raise redraw-causing events.  Set this variable to TRUE if you want
+' such functions to ignore their automatic redrawing.
+Private disableRedraws As Boolean
+
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
 Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
     If refreshThumbnailCache Then cacheLayerThumbnails
+    
+    'Synchronize the opacity scroll bar to the active layer.
+    disableRedraws = True
+    If (g_OpenImageCount > 0) Then
+        If (Not pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
+            sltLayerOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOpacity
+        End If
+    End If
+    disableRedraws = False
     
     'resizeLayerUI already calls all the proper redraw functions for us, so simply link it here
     resizeLayerUI
@@ -628,8 +643,10 @@ End Sub
 
 Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
-    curLayerHover = getLayerAtPosition(x, y)
-    redrawLayerBox
+    If curLayerHover <> getLayerAtPosition(x, y) Then
+        curLayerHover = getLayerAtPosition(x, y)
+        redrawLayerBox
+    End If
     
 End Sub
 
@@ -666,6 +683,11 @@ End Function
 
 'Change the opacity of the current layer
 Private Sub sltLayerOpacity_Change()
+
+    'By default, changing the scroll bar will automatically update the opacity value of the selected layer, and
+    ' the main viewport will be redrawn.  When changing the scrollbar programmatically, set disableRedraws to FALSE
+    ' to prevent cylical redraws.
+    If disableRedraws Then Exit Sub
 
     If g_OpenImageCount > 0 Then
     
