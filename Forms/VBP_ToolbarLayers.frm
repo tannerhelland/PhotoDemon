@@ -361,6 +361,44 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     
 End Sub
 
+Private Sub cMouseEvents_MouseOut()
+    curLayerHover = -1
+    redrawLayerBox
+End Sub
+
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+
+    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
+    If vsLayer.Visible Then
+  
+        If LinesScrolled < 0 Then
+            
+            If vsLayer.Value + vsLayer.LargeChange > vsLayer.Max Then
+                vsLayer.Value = vsLayer.Max
+            Else
+                vsLayer.Value = vsLayer.Value + vsLayer.LargeChange
+            End If
+            
+            curLayerHover = getLayerAtPosition(x, y)
+            redrawLayerBox
+        
+        ElseIf LinesScrolled > 0 Then
+            
+            If vsLayer.Value - vsLayer.LargeChange < vsLayer.Min Then
+                vsLayer.Value = vsLayer.Min
+            Else
+                vsLayer.Value = vsLayer.Value - vsLayer.LargeChange
+            End If
+            
+            curLayerHover = getLayerAtPosition(x, y)
+            redrawLayerBox
+            
+        End If
+        
+    End If
+
+End Sub
+
 Private Sub Form_Load()
 
     'Reset the thumbnail array
