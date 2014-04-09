@@ -597,7 +597,7 @@ Private Sub redrawLayerBox()
     bufferDIB.createBlank m_BufferWidth, m_BufferHeight
     
     'If the image has one or more layers, render them to the list.
-    If Not pdImages(g_CurrentImage) Is Nothing Then
+    If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
     
         If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
         

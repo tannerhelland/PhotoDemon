@@ -328,7 +328,7 @@ Public Sub MenuClose()
     ' are not closing ALL images - just this one.)
     g_ClosingAllImages = False
     fullPDImageUnload g_CurrentImage
-    
+
 End Sub
 
 'Close all active images

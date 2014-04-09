@@ -236,8 +236,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub cmdClose_Click()
-    g_ClosingAllImages = False
-    fullPDImageUnload g_CurrentImage
+    Process "Close", True
 End Sub
 
 Private Sub cmdOpen_Click()
