@@ -90,7 +90,7 @@ Private myLayerData As LayerData
 '
 'For performance reasons, I have made this DIB publicly accessible.  This allows edit functions to directly modify it as necessary.
 ' That said, any function that directly modifies the DIB must also take care of any management functions as well (e.g. redrawing
-' the viewport), as layers have no way tp propagate commands up to their parent image.
+' the viewport), as layers have no way to propagate commands up to their parent image.
 Public layerDIB As pdDIB
 
 'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
@@ -210,6 +210,121 @@ Private Sub Class_Initialize()
     layerID = -1
     
 End Sub
+
+'Write a copy of the layer header to an XML-format string.  All data necessary to recreate a layer from scratch will be
+' included in this string, EXCEPT FOR DIB DATA.  For obvious performance reasons, the DIB contents of this layer must be
+' handled separately, in binary format.
+'
+'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
+' applied to the XML string.  This helpful for improving read/write performance for the data.
+Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
+
+    'Prepare an XML engine, which greatly simplifies the process of assembling XML data
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Add a basic header and explanatory comment
+    xmlEngine.prepareNewXML "pdLayer"
+    
+    'Add a helpful comment, if requested.
+    If Not avoidFluffEntries Then
+        xmlEngine.writeBlankLine
+        xmlEngine.writeComment "This file contains a summary of crucial data for a given pdLayer entry."
+        xmlEngine.writeBlankLine
+    End If
+    
+    'Start by writing out the layerID.  Note that functions making use of this XML data must be very careful about how they
+    ' handle this value.  Depending on the context, it may not be advisable to re-use this data at load-time.
+    xmlEngine.writeTag "ID", layerID
+    
+    'Next, write out the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
+    xmlEngine.writeTag "Type", myLayerType
+    
+    'Write out the contents of our current LayerData header.  (NOTE: this must be manually modified if new entries are
+    ' added to the LayerData type.
+    With myLayerData
+        xmlEngine.writeTag "Name", .l_Name
+        xmlEngine.writeTag "GroupID", .l_GroupID
+        xmlEngine.writeTag "Opacity", .l_Opacity
+        xmlEngine.writeTag "BlendMode", .l_BlendMode
+        xmlEngine.writeTag "OffsetX", .l_OffsetX
+        xmlEngine.writeTag "OffsetY", .l_OffsetY
+        xmlEngine.writeTag "Angle", .l_Angle
+        xmlEngine.writeTag "Visibility", .l_Visibility
+    End With
+    
+    'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
+    ' in the future.
+    With xmlEngine
+        .writeTag "DIB_ColorDepth", layerDIB.getDIBColorDepth
+        .writeTag "DIB_Width", layerDIB.getDIBWidth
+        .writeTag "DIB_Height", layerDIB.getDIBHeight
+        .writeTag "DIB_ArrayWidth", layerDIB.getDIBArrayWidth
+    End With
+    
+    'Note: we obviously do not write out the layer's DIB contents.  It must be handled via separate binary methods.
+    
+    If Not avoidFluffEntries Then xmlEngine.writeBlankLine
+    
+    'The layer XML string is now complete.  Return it.
+    getLayerHeaderAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
+
+End Function
+
+'The sister function to "getLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.
+'
+'Note that this function will create a blank DIB for the layer DIB, using the dimensions and color depth stored in the
+' XML string.  However, it will obviously NOT apply any stored image data.  That must be handled separately, via binary
+' data interactions.
+Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1) As Boolean
+
+    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Validate the XML header...
+    If xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdLayer") Then
+        
+        'If the caller has not specified their own layerID, use the one from file.
+        If useCustomLayerID = -1 Then
+            layerID = xmlEngine.getUniqueTag_Long("ID")
+        Else
+            layerID = useCustomLayerID
+        End If
+    
+        'Read in the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
+        myLayerType = xmlEngine.getUniqueTag_Long("Type", PDL_IMAGE)
+        
+        'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
+        ' added to the LayerData type.
+        With myLayerData
+            .l_Name = xmlEngine.getUniqueTag_Long("Name")
+            .l_GroupID = xmlEngine.getUniqueTag_Long("GroupID")
+            .l_Opacity = xmlEngine.getUniqueTag_Long("Opacity")
+            .l_BlendMode = xmlEngine.getUniqueTag_Long("BlendMode")
+            .l_OffsetX = xmlEngine.getUniqueTag_Long("OffsetX")
+            .l_OffsetY = xmlEngine.getUniqueTag_Long("OffsetY")
+            .l_Angle = xmlEngine.getUniqueTag_Long("Angle")
+            .l_Visibility = xmlEngine.getUniqueTag_Long("Visibility")
+        End With
+        
+        'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
+        ' using the DIB header supplied in the XML, but we're *not* going to fill the DIB!  An external function will
+        ' handle that, because the actual DIB bits are stored in binary format.
+        Set layerDIB = New pdDIB
+        With xmlEngine
+            layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
+        End With
+        
+        CreateNewImageLayerFromXML = True
+    
+    'If the layer XML data can't be validated, there's nothing we can do but exit.
+    Else
+        Debug.Print "Layer could not be created: are you sure the supplied data was valid?"
+        CreateNewImageLayerFromXML = False
+    End If
+    
+End Function
 
 'Create a new image-type layer, using a DIB as the reference.  Note that this will automatically set the layer type to PDL_IMAGE.
 ' If the parentImage parameter is supplied, the layer will automatically center itself on the parent image.
