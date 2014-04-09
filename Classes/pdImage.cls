@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2014 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 14/February/14
-'Last update: added save tracking variables for WebP and JPEG-XR formats
+'Last updated: 08/April/14
+'Last update: change read/write internal data functions to support direct String access (instead of files only).  This is necessary
+'              for reading/writing layered images in PDI format.
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -427,28 +428,33 @@ Public Sub deleteLayerByIndex(ByVal srcLayerIndex As Long)
 
 End Sub
 
-'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the current image's state,
-' but it should be good enough to reconstruct an approximation for data recovery purposes.
-Public Function writeInternalDataToFile(ByVal dstFilename As String) As Boolean
+'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the
+' current image's state, because some pdImage data is only relevant at run-time.  Also, some data structures (like metadata) are
+' very difficult to handle properly; I am working on a solution to this, but have not finished it yet.
+'
+'In the event that you want to do something else with the XML data, I have now added an optional parameter.
+' Mark "filePathIsActuallyString" as TRUE to treat the filename string as a destination buffer, and this function will
+' write the XML data there (instead of treating it as a filename).
+Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
 
-    On Error GoTo failedInternalDataWrite
+    On Error GoTo failedDataWrite
 
     'Prepare an XML engine, which will handle the actual writing of the file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
     'Add a basic header and explanatory comment
-    xmlEngine.prepareNewXML "pdImage Backup"
+    xmlEngine.prepareNewXML "pdImage"
     
     xmlEngine.writeBlankLine
-    xmlEngine.writeComment "This file contains a summary of crucial data for a given pdImage entry.  It is not comprehensive, but should be sufficient for autosave purposes."
+    xmlEngine.writeComment "This file contains a summary of crucial data for a given pdImage entry."
     xmlEngine.writeBlankLine
     
     'Start by writing out the imageID.  This value will not be re-used in subsequent session, but it's helpful for matching up
     ' this image's data with any saved Undo/Redo entries (which are created by imageID for privacy reasons)
     xmlEngine.writeTag "ID", imageID
     
-    'Start writing any tag that may be useful for reconstructing an autosave version of this image.  We limit the information to
+    'Start writing any tags that may be useful for reconstructing an autosave version of this image.  We limit the information to
     ' properties independent of a given session (e.g. imageID); session-dependent properties will be recreated anew by PD.
     xmlEngine.writeTag "Width", Width
     xmlEngine.writeTag "Height", Height
@@ -463,33 +469,61 @@ Public Function writeInternalDataToFile(ByVal dstFilename As String) As Boolean
     xmlEngine.writeTag "CurrentFileFormat", currentFileFormat
     xmlEngine.writeTag "OriginalColorDepth", originalColorDepth
     xmlEngine.writeTag "pngBackgroundColor", pngBackgroundColor
+    xmlEngine.writeTag "numOfLayersEverCreated", numOfLayersEverCreated
+    xmlEngine.writeTag "numOfLayers", numOfLayers
+    xmlEngine.writeTag "curLayer", curLayer
+    
     xmlEngine.writeBlankLine
     
-    'That should be enough information to reconstruct the original image state.  Write it out to the file we were supplied.
-    xmlEngine.writeXMLToFile dstFilename
+    'That should be enough information to reconstruct the original image state.  We now have two options, depending on the value
+    ' of the "filePathIsActuallyString" parameter.
     
-    writeInternalDataToFile = True
+    'The string we were supplied is a blank buffer, not a filename.  Write the XML data to it.  Note that by default, XML indentation
+    ' is suppressed; this is for performance reasons.
+    If filePathIsActuallyString Then
+        dstFilename = xmlEngine.returnCurrentXMLString(True)
+    
+    'The string we were supplied is a filename.  Write the XML data to it.
+    Else
+        xmlEngine.writeXMLToFile dstFilename
+    End If
+    
+    writeExternalData = True
     Exit Function
     
-failedInternalDataWrite:
+failedDataWrite:
 
-    Message "Could not write Autosave data - did the containing drive run out of free space?"
-    writeInternalDataToFile = False
+    Debug.Print "WARNING: could not write XML data to file.  Are you sure this drive has enough free space?"
+    writeExternalData = False
     
 End Function
 
-'Sister function to writeInternalDataToFile, above.  If you add a variable to one function, make sure to include it in the other.
+'Sister function to writeExternalDataToFile, above.  If you add a variable to one function, make sure to include it in the other.
 ' If the function fails, it will return FALSE.
-Public Function readInternalDataFromFile(ByVal srcFilename As String) As Boolean
+'
+'In the event that you have already loaded the XML data yourself (or have compiled it manually), I have added an optional parameter.
+' Mark "filePathIsActuallyString" as TRUE to treat the filename string as actual XML data instead.
+Public Function readExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
 
-    On Error GoTo failedInternalDataRead
+    On Error GoTo failedDataRead
+    
+    Dim xmlLoadSuccessful As Boolean
+    xmlLoadSuccessful = False
 
     'Prepare an XML engine, which will handle the actual reading and parsing of the file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
-    'Make sure the supplied file is valid
-    If xmlEngine.loadXMLFile(srcFilename) And xmlEngine.isPDDataType("pdImage Backup") Then
+    'We now have two choices, depending on the value of filePathIsActuallyString.  Load the supposed XML contents
+    ' (either from file or directly) into the XML engine; note that both steps validate the incoming data automatically.
+    If filePathIsActuallyString Then
+        xmlLoadSuccessful = xmlEngine.loadXMLFromString(srcFilename)
+    Else
+        xmlLoadSuccessful = xmlEngine.loadXMLFile(srcFilename)
+    End If
+    
+    'Make sure the supplied XML actually contains pdImage data.
+    If xmlLoadSuccessful And xmlEngine.isPDDataType("pdImage") Then
     
         'The XML file checked out.  Start retrieving relevant values.
         Me.Width = xmlEngine.getUniqueTag_Long("Width")
@@ -505,23 +539,34 @@ Public Function readInternalDataFromFile(ByVal srcFilename As String) As Boolean
         Me.currentFileFormat = xmlEngine.getUniqueTag_Long("currentFileFormat")
         Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
         Me.pngBackgroundColor = xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+        
+        'Finally, retrieve layer values from the file
+        numOfLayersEverCreated = xmlEngine.getUniqueTag_Long("numOfLayersEverCreated")
+        numOfLayers = xmlEngine.getUniqueTag_Long("numOfLayers")
+        curLayer = xmlEngine.getUniqueTag_Long("curLayer")
+        
+        'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
+        ' set up each layer, because we can't do that here!)
+        ReDim imgLayers(0 To numOfLayers - 1) As pdLayer
+        
+        Dim i As Long
+        For i = 0 To numOfLayers - 1
+            Set imgLayers(i) = New pdLayer
+        Next i
     
     Else
-        GoTo failedInternalDataRead
+        GoTo failedDataRead
     End If
     
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "This file contains a summary of crucial pdImage data.  It is not comprehensive, but should be sufficient for autosave purposes."
-    xmlEngine.writeBlankLine
-    
-    readInternalDataFromFile = True
+    'The pdImage struct has been created successfully!
+    readExternalData = True
     
     Exit Function
     
-failedInternalDataRead:
+failedDataRead:
     
-    Debug.Print "WARNING: could not read Autosave data.  pdImage internals were not updated."
-    readInternalDataFromFile = False
+    Debug.Print "WARNING: could not validate XML data.  pdImage internals were not updated."
+    readExternalData = False
     
 End Function
 
@@ -737,7 +782,7 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
     End If
     
     'Any time the save state is modified, write a new AutoSave entry out to file.
-    If IsActive And (Not forInternalUseOnly) Then writeInternalDataToFile g_UserPreferences.getAutosavePath & imageID & ".xml"
+    If IsActive And (Not forInternalUseOnly) Then writeExternalData g_UserPreferences.getAutosavePath & imageID & ".xml"
     
 End Sub
 
