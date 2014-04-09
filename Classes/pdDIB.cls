@@ -1487,6 +1487,34 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     
 End Sub
 
+'As a helper to external functions, this sub can be used to fill a destination array with a copy the image's current data.
+' Note that this is raw image bytes - no header whatsoever - so it's assumed the caller knows how to deal with the data.
+Public Sub copyImageBytesIntoStream(ByRef dstArray() As Byte)
+
+    'Retrieve a pointer to the current DIB bits (in VB format).  Technically we could just use the dibBits pointer
+    ' and calculate bounds manually, but this provides a foolproof way to do the same thing using existing code.
+    Dim iData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepInternalSafeArray tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    'Using that temporary as our source, convert the image to the supplied 1D array.
+    Dim aSize As Long
+    aSize = (UBound(iData, 1) + 1) * (UBound(iData, 2) + 1) - 1
+    ReDim dstArray(0 To aSize) As Byte
+    CopyMemory dstArray(0), iData(0, 0), aSize
+    
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+
+End Sub
+
+'The counterpart to copyImageBytesIntoStream, above.  This function will blindly copy an array of bytes over the current
+' image's data.  For it to work, the DIB must have been correctly created at the right size and color depth BEFORE CALLING
+' THIS FUNCTION.  Otherwise, you will get errors.
+Public Sub copyStreamOverImageArray(ByRef srcArray() As Byte)
+    CopyMemory ByVal dibBits, srcArray(0), UBound(srcArray) + 1
+End Sub
+
 'Sometimes this class needs to access its own DIB bits. Here's how.
 Private Sub prepInternalSafeArray(ByRef tmpSA As SAFEARRAY2D)
     With tmpSA
