@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/April/13
-'Last updated: 08/April/14
-'Last update: pdPackages can now *theoretically* be created and written to file.  Unfortunately, I still have some work to do
-'             elsewhere in PD to enable the actual writing of PDI files, so I won't be able to test it just yet... :)
+'Last updated: 09/April/14
+'Last update: general code clean-up now that everything seems to be working.  Lots of stress testing will happen in
+'             the coming weeks, but for now I think this class is working pretty damn well.
 'Dependencies: clsBasicBuffer by dilettante (used to read/write byte array buffers more easily)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files

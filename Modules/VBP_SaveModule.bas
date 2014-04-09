@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 14/February/14
-'Last update: Added support for WebP and JPEG XR formats.
+'Last updated: 09/April/14
+'Last update: Added support for saving layered PDI images, using the new pdPackager class.
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -608,6 +608,15 @@ SaveBMPError:
 End Function
 
 'Save the current image to PhotoDemon's native PDI format
+' TODO:
+'  - Add support for storing a PNG copy of the fully composited image, preferably in the data chunk of the first node.
+'  - Figure out a good way to store metadata; the problem is not so much storing the metadata itself, but storing any user edits.
+'    I have postponed this until I get metadata editing working more fully.
+'  - User-settable options for compression.  Some users may prefer extremely tight compression, at a trade-off of slower
+'    image saves.  Similarly, compressing layers in PNG format instead of as a blind zLib stream would probably yield better
+'    results (at a trade-off to performance).
+'  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
+'    format to the help documentation, where various ideas for future additions could be tracked.
 Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String) As Boolean
     
     On Error GoTo SavePDIError
@@ -618,7 +627,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Message "Saving %1 image...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
-    ' and storing everything to a dynamic byte stream.
+    ' and storing everything to a running byte stream.
     Dim pdiWriter As pdPackager
     Set pdiWriter = New pdPackager
     If g_ZLibEnabled Then pdiWriter.init_ZLib g_PluginPath & "zlibwapi.dll"
