@@ -15,10 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 30/July/13
-'Last updated: 18/November/13
-'Last update: fix faulty detection of missing XML entries
+'Last updated: 08/April/14
+'Last update: added functions for reading/writing XML data directly from/to VB strings (instead of files).
 '
-'In 2014, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
+'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
 ' two projects, a decision was made to switch all custom PhotoDemon filetypes to XML format.  This should provide
 ' excellent interoperability with 3rd-party projects, as well as provide a measure of future-proofing, since new
@@ -416,6 +416,22 @@ Public Function validateLoadedXMLData(ParamArray expectedTags() As Variant) As B
 
 End Function
 
+'Load an XML file from a string.  This function will also do some basic validation to ensure the requested string actually contains XML.
+' Returns: TRUE if string is successfully validated and loaded.  FALSE otherwise.
+Public Function loadXMLFromString(ByRef xmlString As String) As Boolean
+    
+    'Make an internal copy of the string
+    xmlContents = xmlString
+    
+    'Validate the XML header
+    If verifyXMLHeader(xmlContents) Then
+        loadXMLFromString = True
+    Else
+        loadXMLFromString = False
+    End If
+    
+End Function
+
 'Load an XML file into memory.  This function will also do some basic validation to ensure the requested file is actually XML.
 ' Returns: TRUE if file found, loaded, and validated successfully.  FALSE otherwise.
 Public Function loadXMLFile(ByVal xmlPath As String) As Boolean
@@ -534,6 +550,20 @@ Private Sub applyIndentation(ByRef srcString As String)
     srcString = Join$(xmlArray, vbCrLf)
 
 End Sub
+
+'Return the current XML contents as one enormous string.  By default, the output will have tabs added to it to make the output "pretty".
+' This behavior can be avoided by setting the suppressIndentation param to TRUE.
+Public Function returnCurrentXMLString(Optional ByVal suppressIndentation As Boolean = False) As String
+
+    'Make the XML contents pretty by providing some basic indentation
+    Dim tmpXMLCopy As String
+    tmpXMLCopy = xmlContents
+    
+    If Not suppressIndentation Then applyIndentation tmpXMLCopy
+    
+    returnCurrentXMLString = tmpXMLCopy
+
+End Function
 
 'Write the current XML contents out to file.  By default, the output will have tabs added to it to make the output "pretty".
 ' This behavior can be avoided by setting the suppressIndentation param to TRUE.
