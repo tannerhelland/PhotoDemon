@@ -112,10 +112,13 @@ Private Type PDP_NODE
     'One of the unique features of pdPackages is that each node is allotted two entries in the data chunk.  These entries don't have
     ' to be used; in fact, neither has to be used, but they can be helpful for reading node-specific information without having to
     ' decode the entire node contents.
+    ' (Also, if I ever get around to implementing a file/folder wrapper for this class, the header chunk will be used to store
+    '  relative path locations for each file in the package!)
     NodeHeaderOffset As Long                'Absolute offset of this node's header in the data chunk, STARTING FROM THE START OF THE DATA CHUNK, not the start of the file!
     NodeHeaderPackedSize As Long            'Packed size of this node's header.  (This is the size the node's header array occupies in the pdPackage data chunk.)
     NodeHeaderOriginalSize As Long          'Original size of this node's header.  (If this value is the same as NodeHeaderCompSize, the node header was stored uncompressed.)
     NodeHeaderAdler32 As Long               'Adler32 checksum of the UNCOMPRESSED header bytes.  This can be used to verify the correctness of the data post-decompression.
+    
     NodeDataOffset As Long                  'Absolute offset of this node's data in the data chunk, STARTING FROM THE START OF THE DATA CHUNK, not the start of the file!
     NodeDataPackedSize As Long              'Packed size of this node's data.  (This is the size the node's data array occupies in the pdPackage data chunk.)
     NodeDataOriginalSize As Long            'Original size of this node's data.  (If this value is the same as NodeHeaderCompSize, the node data was stored uncompressed.)
@@ -125,7 +128,7 @@ End Type
 
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 
-'zLib compression and CRC validation
+'zLib compression and checksum validation
 Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
 Private Declare Function uncompress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
@@ -152,13 +155,17 @@ Private m_NumOfNodes As Long
 Private m_DataBuffer As clsBasicBuffer
 
 'pdPackage operations are roughly divided into two groups:
-' - GET operations, for retrieving data from existing pdPackage files
-' - SET operations, for creating new pdPackage files
 '
-'At present, these two types of operations do not interact, meaning you cannot use SET operations to modify a pdPackage
-' you have loaded using GET operations.  Packages must be created and written to file in one fell swoop, and if you want
-' to read a pdPackage, I strongly recommend creating a dedicated class for just that file (due to the way pdPacker caches
-' file contents).
+' - GET operations, for retrieving data from existing pdPackage files.  GET operations include:
+'        readPackageFromFile, getNodeInfo, getNodeDataByID/Index/Name
+'
+' - SET operations, for creating new pdPackage files.  SET operations include:
+'        prepareNewPackage, addNode, addNodeData, writePackageToFile
+'
+'At present, these two types of operations do not interact reliably, meaning you cannot use SET operations to modify a
+' pdPackage you have loaded using GET operations.  Packages must be created and written to file in one fell swoop, and
+' if you want to read a pdPackage, I strongly recommend creating a dedicated class for just that file (due to the way
+' this class caches file contents).
 
 
 'Before creating a pdPackage file, you must call this function once.  It preps all internal structures in anticipation of
@@ -272,7 +279,7 @@ End Function
 ' 3) Whether to calculate a checksum for the uncompressed data bytes.  This is completely optional.  If a checksum is found in
 '    the file, pdPackage will automatically process it at load-time, and reject the file if checksums do not match.  Note that
 '    checksumming the data increases write time non-trivially.
-Public Function addNodeData(ByVal nodeIndex As Long, ByVal destinationIsHeaderArray As Boolean, ByRef dataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
@@ -282,14 +289,14 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal destinationIsHeaderAr
     End If
     
     'Update the pre-compression values for this data chunk.
-    If destinationIsHeaderArray Then
+    If useHeaderBuffer Then
         m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize = UBound(dataBytes) + 1
     Else
         m_NodeDirectory(nodeIndex).NodeDataOriginalSize = UBound(dataBytes) + 1
     End If
     
     'Mark the offset for this data chunk.
-    If destinationIsHeaderArray Then
+    If useHeaderBuffer Then
         m_NodeDirectory(nodeIndex).NodeHeaderOffset = m_DataBuffer.Position
     Else
         m_NodeDirectory(nodeIndex).NodeDataOriginalSize = m_DataBuffer.Position
@@ -297,11 +304,11 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal destinationIsHeaderAr
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
     ' because the data is simply added to the pdPackages data chunk.  Order is irrelevant.
-    If Not compressData Then
+    If (Not compressData) Or (Not m_ZLibAvailable) Then
     
         m_DataBuffer.WriteBytes dataBytes
         
-        If destinationIsHeaderArray Then
+        If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(dataBytes) + 1
         Else
             m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(dataBytes) + 1
@@ -332,7 +339,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal destinationIsHeaderAr
             'zLib was successful.  Add the compressed data stream to the data buffer.
             m_DataBuffer.WriteBytes compressedData
         
-            If destinationIsHeaderArray Then
+            If useHeaderBuffer Then
                 m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(compressedData) + 1
             Else
                 m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(compressedData) + 1
@@ -346,7 +353,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal destinationIsHeaderAr
             
             m_DataBuffer.WriteBytes dataBytes
         
-            If destinationIsHeaderArray Then
+            If useHeaderBuffer Then
                 m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(dataBytes) + 1
             Else
                 m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(dataBytes) + 1
@@ -367,7 +374,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal destinationIsHeaderAr
         Dim zLibAdlerSum As Long
         zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), dataBytes(0), UBound(dataBytes) + 1)
         
-        If destinationIsHeaderArray Then
+        If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderAdler32 = zLibAdlerSum
         Else
             m_NodeDirectory(nodeIndex).NodeDataAdler32 = zLibAdlerSum
@@ -431,6 +438,278 @@ Public Function writePackageToFile(ByVal dstFilename As String) As Boolean
     writePackageToFile = True
     
     'TODO!  Add basic error handling.
+
+End Function
+
+'Load a pdPackage file into memory.  A few things to note:
+' - For performance reasons, this class caches the entire file contents in RAM.  It does this so that individual nodes can be
+'    quickly extracted without touching the hard drive.  If your particular pdPackage file is enormous, make sure you have enough
+'    memory to cache it!
+' - The caller is expected to handle detailed testing of the supplied path (e.g. read access, etc).  This function does only
+'    minimal error checking.
+'
+'If the file can be successfully loaded, this function returns TRUE.
+'
+'Parameters include:
+' 1) Source file.  (Again, callers must do their own validation on this path.)
+' 2) Optionally, a sub-type value you want to validate.  If this value is not found in bytes 4-7 of the file header, the file
+'     will be rejected.  (If you didn't request a specific sub-type at pdPackage creation time, don't enable this check!)
+Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0) As Boolean
+
+    On Error GoTo StopPackageFileRead
+
+    Dim fileNum As Integer
+
+    'Before doing anything else, make sure the file exists
+    If Not FileExist(srcFilename) Then
+        Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
+        GoTo StopPackageFileRead
+    End If
+    
+    'Open the file
+    fileNum = FreeFile
+    Open srcFilename For Binary As #fileNum
+    
+        'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
+        Dim pdpCheck As Long
+        Get #fileNum, 1, pdpCheck
+        
+        If (pdpCheck <> PDP_UNIVERSAL_IDENTIFIER) Then
+            Message "File doesn't have valid pdPackage header.  Abandoning load."
+            GoTo StopPackageFileRead
+        End If
+        
+        'If the caller requested a sub-type validation, perform that now
+        If subTypeValidator <> 0 Then
+        
+            Get #fileNum, 5, pdpCheck
+        
+            If (pdpCheck <> subTypeValidator) Then
+                Message "File doesn't match requested sub-type value.  Abandoning load."
+                GoTo StopPackageFileRead
+            End If
+        
+        End If
+        
+        'If both the file signature and the sub-type check out, load the full file header now.
+        Get #fileNum, 1, m_FileHeader
+        
+        'As yet another failsafe, make sure the header's node struct size is correct.  If it isn't, exit now.
+        Dim tmpNode As PDP_NODE
+        If m_FileHeader.NodeStructSize <> Len(tmpNode) Then
+            Message "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+            GoTo StopPackageFileRead
+        End If
+        
+        'Use information from the file header to prepare the directory array.
+        m_NumOfNodes = m_FileHeader.NodeCount
+        ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+        
+        'Retrieve the node directory
+        Get #fileNum, , m_NodeDirectory
+        
+        'Finally, retrieve the data chunk, and pass it to the m_DataBuffer class (which we'll use for further parsing).
+        Dim rawDataBuffer() As Byte
+        ReDim rawDataBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
+        Get #fileNum, , rawDataBuffer
+        
+        Set m_DataBuffer = New clsBasicBuffer
+        m_DataBuffer.WriteBytes rawDataBuffer
+    
+    'And that's all, folks!  Close the file and exit.
+    Close #fileNum
+    
+    readPackageFromFile = True
+    Exit Function
+    
+StopPackageFileRead:
+    
+    Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the Message() function."
+    If fileNum <> 0 Then Close #fileNum
+    readPackageFromFile = False
+    Exit Function
+
+End Function
+
+'Returns the current number of nodes in the package.  This is primarily designed to be used right after loading a pdPackage file;
+' after this number is obtained, the caller can iterate through individual nodes, extracting data as they go.
+Public Function getNumOfNodes() As Long
+    getNumOfNodes = m_NumOfNodes
+End Function
+
+'Given a node index, return relevant header data for that node.  This function will fail if the node index is out of bounds.
+' There is generally no need to use this function, as the direct node data access functions will handle all this automatically.
+' But I guess it's here if you need it.
+Public Function getNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName As String, Optional ByRef dstNodeID As Long, Optional ByRef dstOptionalNodeType As Long) As Boolean
+
+    'Start by validating the node index we were passed.  If it's out of range, exit immediately.
+    If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
+        Debug.Print "Node index out of range - try again with a valid node index!"
+        getNodeInfo = False
+        Exit Function
+    End If
+    
+    'Fill the supplied variables with the corresponding data for this node
+    With m_NodeDirectory(nodeIndex)
+        dstNodeName = .NodeName
+        dstNodeID = .NodeID
+        dstOptionalNodeType = .OptionalNodeType
+    End With
+    
+    getNodeInfo = True
+
+End Function
+
+'Node data access functions.  These functions fill a byte array with the requested data, and they will return TRUE if successful.
+' (FALSE generally only occurs if the requested node cannot be found in the source data.)
+'
+'If useHeaderBuffer is TRUE, the node's header buffer will be retrieved.  Otherwise, the node's data buffer will be used.
+'
+' Checksum validation and decompression are handled automatically, depending on the contents of the source file.  If performance
+' is at a premium, you can forcibly disable checksum validation, even if the file supplies checksum data.
+Public Function getNodeDataByName(ByVal targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+
+    'Node headers use a fixed-length 32 character string for storing names.  As such, pad the supplied node name to
+    ' 32 chars as necessary.
+    Dim nodeName32 As String * 32
+    nodeName32 = targetNodeName
+    
+    'Search the node array for a matching name
+    Dim i As Long, nodeIndex As Long
+    nodeIndex = -1
+    
+    For i = 0 To UBound(m_NodeDirectory)
+    
+        If StrComp(nodeName32, m_NodeDirectory(i).NodeName, vbTextCompare) = 0 Then
+        
+            'This node is the one!
+            nodeIndex = i
+            Exit For
+        
+        End If
+    
+    Next i
+    
+    'If a matching node was found, use getNodeDataByIndex() to retrieve its data
+    If nodeIndex > 0 Then
+        getNodeDataByName = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
+    Else
+        getNodeDataByName = False
+    End If
+
+End Function
+
+Public Function getNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+
+    'Search the node array for a matching ID
+    Dim i As Long, nodeIndex As Long
+    nodeIndex = -1
+    
+    For i = 0 To UBound(m_NodeDirectory)
+    
+        If targetNodeID = m_NodeDirectory(i).NodeID Then
+        
+            'This node is the one!
+            nodeIndex = i
+            Exit For
+        
+        End If
+    
+    Next i
+    
+    'If a matching node was found, use getNodeDataByIndex() to retrieve its data
+    If nodeIndex > 0 Then
+        getNodeDataByID = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
+    Else
+        getNodeDataByID = False
+    End If
+
+End Function
+
+'getNodeHeaderByName and getNodeHeaderByID both wrap this function, getNodeHeaderByIndex.  (Those functions are simply used
+' to retrieve the relevant index for a node.)
+'
+'Given a node index, and a target location (header buffer or data buffer), fill a destination array with the contents of that
+' data buffer.  Decompression and checksum validation is handled automatically, depending on the contents of the node.
+Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+
+    'Retrieve the offset, packed size, and original (unpacked) size of the target data
+    Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
+    
+    If useHeaderBuffer Then
+        dataOffset = m_NodeDirectory(nodeIndex).NodeHeaderOffset
+        dataPackedSize = m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize
+        dataOriginalSize = m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize
+    Else
+        dataOffset = m_NodeDirectory(nodeIndex).NodeDataOffset
+        dataPackedSize = m_NodeDirectory(nodeIndex).NodeDataOriginalSize
+        dataOriginalSize = m_NodeDirectory(nodeIndex).NodeDataOriginalSize
+    End If
+    
+    'Move the data buffer position to the relevant offset, then retrieve the data arary
+    Dim tmpDataArray() As Byte
+    m_DataBuffer.Position = dataOffset
+    tmpDataArray = m_DataBuffer.ReadBytes(dataPackedSize)
+    
+    'If the original size and packed size are different, assume the data is compressed.
+    If (dataPackedSize <> dataOriginalSize) Then
+        
+        'Make sure zLib is available.  If it isn't, the user is screwed.
+        If m_ZLibAvailable Then
+        
+            'Resize the temporary buffer to the original size of the data
+            ReDim dstArray(0 To (dataOriginalSize + (dataOriginalSize * 0.01) + 12)) As Byte
+            
+            'Use zLib to decompress the data
+            Dim zLibResult As Long
+            zLibResult = uncompress(dstArray(0), UBound(dstArray) + 1, tmpDataArray(0), UBound(tmpDataArray) + 1)
+            
+        Else
+        
+            Message "File node is compressed, but zLib dll is missing.  Decompression is impossible, abandoning load."
+            getNodeDataByIndex = False
+            Exit Function
+        
+        End If
+        
+    'The data is uncompressed.  No further processing is necessary.
+    Else
+        dstArray = tmpDataArray
+    End If
+    
+    'Retrieve the stored checksum value for this node (if any).
+    Dim checkSumOriginal As Long
+    
+    If useHeaderBuffer Then
+        checkSumOriginal = m_NodeDirectory(nodeIndex).NodeHeaderAdler32
+    Else
+        checkSumOriginal = m_NodeDirectory(nodeIndex).NodeDataAdler32
+    End If
+    
+    'Apply checksum validation now, unless one of three criteria is met:
+    ' 1) The node does not contain a checksum to validate against
+    ' 2) The user has forcibly disabled checksumming this node
+    ' 3) zLib is missing
+    If (checkSumOriginal <> 0) And (Not disableChecksumValidation) And m_ZLibAvailable Then
+    
+        'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
+        ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
+        Dim zLibAdlerSum As Long
+        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), dstArray(0), UBound(dstArray) + 1)
+        
+        'If the checksums do not match, fail the function and exit
+        If checkSumOriginal <> zLibAdlerSum Then
+            Message "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            getNodeDataByIndex = False
+            Exit Function
+        Else
+            Debug.Print "Checksum successfully verified for node #" & nodeIndex & "."
+        End If
+        
+    End If
+    
+    'If we made it all the way here, the node has been successfully loaded!
+    getNodeDataByIndex = True
 
 End Function
 
