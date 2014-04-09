@@ -615,16 +615,20 @@ End Function
 '  - User-settable options for compression.  Some users may prefer extremely tight compression, at a trade-off of slower
 '    image saves.  Similarly, compressing layers in PNG format instead of as a blind zLib stream would probably yield better
 '    results (at a trade-off to performance).
+'  - An option for compressing both the directory, and the completed data stream.  This would all take place in the pdPackage
+'    class, and the directory would be decompressed automatically at load-time, so calling functions wouldn't need to worry
+'    about catering to that class.  This could be helpful for further shrinking file size, especially for small images where
+'    the header represents a larger portion of the file.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True) As Boolean
     
     On Error GoTo SavePDIError
     
     Dim sFileType As String
     sFileType = "PDI"
     
-    Message "Saving %1 image...", sFileType
+    If Not suppressMessages Then Message "Saving %1 image...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
     ' and storing everything to a running byte stream.
@@ -647,7 +651,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Dim dataString As String
     srcPDImage.writeExternalData dataString, True
     
-    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, True, , True
+    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , True
     
     'The pdImage header only requires one of the two buffers in its node; the other can be happily left blank.
     
@@ -665,18 +669,18 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         
         'Retrieve the layer header and add it to the header section of this node
         layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
-        pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, True, , True
+        pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , True
         
         'Retrieve the layer's DIB and add it to the data section of this node
         srcPDImage.getLayerByIndex(i).layerDIB.copyImageBytesIntoStream layerDIBCopy
-        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, True, , True
+        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , True
     
     Next i
     
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath)
     
-    Message "%1 save complete.", sFileType
+    If Not suppressMessages Then Message "%1 save complete.", sFileType
     
     Exit Function
     
