@@ -299,7 +299,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     If useHeaderBuffer Then
         m_NodeDirectory(nodeIndex).NodeHeaderOffset = m_DataBuffer.Position
     Else
-        m_NodeDirectory(nodeIndex).NodeDataOriginalSize = m_DataBuffer.Position
+        m_NodeDirectory(nodeIndex).NodeDataOffset = m_DataBuffer.Position
     End If
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
@@ -333,6 +333,11 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
             zLibResult = compress(compressedData(0), compressedSize, dataBytes(0), UBound(dataBytes) + 1)
         End If
         
+        'zLib obviously has no way to update our VB-style SafeArray header, so we must manually resize the buffer now.
+        'TODO: update the data buffer to provide an optional Length parameter, which takes n bytes from a buffer.
+        '      That would save us this costly ReDim Preserve statement.
+        ReDim Preserve compressedData(0 To compressedSize - 1) As Byte
+        
         'Make sure zLib compressed the data successfully.
         If zLibResult = 0 Then
         
@@ -346,8 +351,8 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
             End If
             
             'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(originalSize)))), "#0.00") & "% smaller."
-        
+            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(originalSize)))), "#0.00") & "% smaller (" & originalSize & " to " & compressedSize & " bytes)."
+            
         'zLib failed.  Write the original, uncompressed data to file instead.
         Else
             
@@ -367,7 +372,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     End If
     
     'Next, checksum the file (if requested).
-    If requestChecksum Then
+    If requestChecksum And m_ZLibAvailable Then
     
         'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
         ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
@@ -385,6 +390,18 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     'This chunk was added successfully!  Return TRUE and exit.
     addNodeData = True
     
+End Function
+
+'Thin wrapper for addNodeData, above, but allows the user to supply a string.
+Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+
+    'Prepare a temporary array to hold the string
+    Dim tmpStringCopy() As Byte
+    tmpStringCopy = StrConv(srcDataString, vbFromUnicode)
+    
+    'Forward the byte array to the actual addNodeData function, and return its result.
+    addNodeDataFromString = addNodeData(nodeIndex, useHeaderBuffer, tmpStringCopy, compressData, compressionLevel, requestChecksum)
+
 End Function
 
 'When all nodes have been successfully added, the user can finally write out their data to file.  This function will return TRUE
@@ -410,7 +427,7 @@ Public Function writePackageToFile(ByVal dstFilename As String) As Boolean
     
     'If the node directory was being dynamically resized during the write process, it may contain blank entries at the tail end.
     ' Resize it to its exact final size now.
-    If UBound(m_NodeDirectory) < m_NumOfNodes - 1 Then ReDim Preserve m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+    If UBound(m_NodeDirectory) > m_NumOfNodes - 1 Then ReDim Preserve m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
     
     'Kill the destination file if it already exists
     If FileExist(dstFilename) Then Kill dstFilename
@@ -514,8 +531,9 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         Get #fileNum, , rawDataBuffer
         
         Set m_DataBuffer = New clsBasicBuffer
+        m_DataBuffer.OpenBuf
         m_DataBuffer.WriteBytes rawDataBuffer
-    
+        
     'And that's all, folks!  Close the file and exit.
     Close #fileNum
     
@@ -638,11 +656,11 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     
     If useHeaderBuffer Then
         dataOffset = m_NodeDirectory(nodeIndex).NodeHeaderOffset
-        dataPackedSize = m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize
+        dataPackedSize = m_NodeDirectory(nodeIndex).NodeHeaderPackedSize
         dataOriginalSize = m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize
     Else
         dataOffset = m_NodeDirectory(nodeIndex).NodeDataOffset
-        dataPackedSize = m_NodeDirectory(nodeIndex).NodeDataOriginalSize
+        dataPackedSize = m_NodeDirectory(nodeIndex).NodeDataPackedSize
         dataOriginalSize = m_NodeDirectory(nodeIndex).NodeDataOriginalSize
     End If
     
@@ -658,11 +676,21 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         If m_ZLibAvailable Then
         
             'Resize the temporary buffer to the original size of the data
-            ReDim dstArray(0 To (dataOriginalSize + (dataOriginalSize * 0.01) + 12)) As Byte
+            ReDim dstArray(0 To dataOriginalSize - 1) As Byte
             
             'Use zLib to decompress the data
             Dim zLibResult As Long
-            zLibResult = uncompress(dstArray(0), UBound(dstArray) + 1, tmpDataArray(0), UBound(tmpDataArray) + 1)
+            zLibResult = uncompress(dstArray(0), dataOriginalSize, tmpDataArray(0), UBound(tmpDataArray) + 1)
+            
+            Debug.Print "compressed size: " & dataPackedSize & ", uncompressed size: " & dataOriginalSize
+            
+            If zLibResult <> 0 Then
+                
+                Message "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                getNodeDataByIndex = False
+                Exit Function
+            
+            End If
             
         Else
         

@@ -616,18 +616,59 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     sFileType = "PDI"
     
     Message "Saving %1 image...", sFileType
-
-    'TODO: write an actual PDI save function.
     
-    'First, have the DIB write itself to file in BMP format
-    'srcPDImage.getCompositedImage().writeToBitmapFile PDIPath
+    'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
+    ' and storing everything to a dynamic byte stream.
+    Dim pdiWriter As pdPackager
+    Set pdiWriter = New pdPackager
+    If g_ZLibEnabled Then pdiWriter.init_ZLib g_PluginPath & "zlibwapi.dll"
     
-    'Then compress the file using zLib
-    'CompressFile PDIPath
+    'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
+    ' gets its own node, separate from the individual layer nodes.
+    pdiWriter.prepareNewPackage srcPDImage.getNumOfLayers + 1, PD_IMAGE_IDENTIFIER
+    
+    'We will use a temporary array for two main purposes: storing the byte equivalent of various XML strings returned by
+    ' PhotoDemon objects, and for storing temporary copies of byte arrays of binary DIB data.
+    Dim tmpData() As Byte
+    
+    'The first node we'll add is the pdImage header, in XML format.
+    Dim nodeIndex As Long
+    nodeIndex = pdiWriter.addNode("pdImage Header", 0, 0)
+    
+    Dim dataString As String
+    srcPDImage.writeExternalData dataString, True
+    
+    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, True, , True
+    
+    'The pdImage header only requires one of the two buffers in its node; the other can be happily left blank.
+    
+    'Next, we will add each pdLayer object to the stream.  This is done in two steps:
+    ' 1) First, obtain the layer header in XML format and write it out
+    ' 2) Second, obtain the current layer DIB (raw data only, no header!) and write it out
+    Dim layerXMLHeader As String
+    Dim layerDIBCopy() As Byte
+    
+    Dim i As Long
+    For i = 0 To srcPDImage.getNumOfLayers - 1
+    
+        'Create a new node for this layer
+        nodeIndex = pdiWriter.addNode("pdLayer " & i, i, 1)
+        
+        'Retrieve the layer header and add it to the header section of this node
+        layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
+        pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, True, , True
+        
+        'Retrieve the layer's DIB and add it to the data section of this node
+        srcPDImage.getLayerByIndex(i).layerDIB.copyImageBytesIntoStream layerDIBCopy
+        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, True, , True
+    
+    Next i
+    
+    'That's all there is to it!  Write the completed pdPackage out to file.
+    SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath)
     
     Message "%1 save complete.", sFileType
     
-    SavePhotoDemonImage = True
     Exit Function
     
 SavePDIError:

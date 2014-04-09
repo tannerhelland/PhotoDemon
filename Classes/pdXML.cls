@@ -624,7 +624,7 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     
 End Function
 
-Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As String
+Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As Long
     
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
@@ -633,6 +633,19 @@ Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaul
         getUniqueTag_Long = CLng(tmpString)
     Else
         getUniqueTag_Long = defaultReturn
+    End If
+    
+End Function
+
+Public Function getUniqueTag_Boolean(ByVal tagName As String, Optional ByVal defaultReturn As Long = False, Optional ByVal searchLocation As Long = 1) As Boolean
+    
+    Dim tmpString As String
+    tmpString = getTextBetweenTags(tagName, searchLocation)
+    
+    If Len(tmpString) > 0 Then
+        getUniqueTag_Boolean = CBool(tmpString)
+    Else
+        getUniqueTag_Boolean = defaultReturn
     End If
     
 End Function

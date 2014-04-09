@@ -618,7 +618,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetDIB, targetImage)
                 
                 targetImage.originalFileFormat = 100
-                mustCountColors = True
+                targetImage.currentFileFormat = 100
+                mustCountColors = False
         
             'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as it handles
             ' 32bpp images as well, but if we must, we can use VB's internal .LoadPicture command.
@@ -763,6 +764,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         
         '*************************************************************************************************************************************
+        ' If the loaded image was in PDI format (PhotoDemon's internal format), skip a number of processing steps.
+        '*************************************************************************************************************************************
+        
+        If targetImage.originalFileFormat = 100 Then GoTo PDI_Load_Continuation
+        
+        
+        '*************************************************************************************************************************************
         ' If GDI+ or VB's LoadPicture was used to load the file, populate some data fields manually (filetype, color depth, etc)
         '*************************************************************************************************************************************
         
@@ -874,6 +882,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         DoEvents
         
+        
         '*************************************************************************************************************************************
         ' Store some universally important information in the target image object
         '*************************************************************************************************************************************
@@ -919,6 +928,11 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         ' Determine a name for this image
         '*************************************************************************************************************************************
         
+        
+        'Note: this is where PDI format processing picks up again
+PDI_Load_Continuation:
+
+
         If isThisPrimaryImage Then Message "Determining image title..."
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
@@ -1036,7 +1050,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         '*************************************************************************************************************************************
         
         'Ask the metadata handler if it has finished parsing the image
-        If g_ExifToolEnabled And isThisPrimaryImage Then
+        If g_ExifToolEnabled And isThisPrimaryImage And (targetImage.originalFileFormat <> 100) Then
         
             'Wait for metadata parsing to finish...
             If isMetadataFinished Then
@@ -1309,27 +1323,104 @@ End Function
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
 Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
-    'Decompress the current PDI file
-    DecompressFile PDIPath
+    On Error GoTo LoadPDIFail
     
-    'Load the decompressed bitmap into a temporary StdPicture object
-    Dim tmpPicture As StdPicture
-    Set tmpPicture = New StdPicture
-    Set tmpPicture = LoadPicture(PDIPath)
+    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
+    ' from the source file.
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
+    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
     
-    If tmpPicture.Width = 0 Or tmpPicture.Height = 0 Then
+    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
+    ' Note that this step will also validate the incoming file.
+    If pdiReader.readPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    
+        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
+        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
+        Dim retBytes() As Byte, retString As String
+        
+        If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
+        
+            'Convert the received bytes into a string
+            retString = StrConv(retBytes, vbUnicode)
+            
+            'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
+            dstImage.readExternalData retString, True
+        
+        'Bytes could not be read, or alternately, checksums didn't match for the node.
+        Else
+        
+            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            
+        End If
+        
+        'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information a piece:
+        ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
+        ' 2) The layer DIB, which is a raw stream of bytes containing the DIB's data
+        
+        Dim i As Long
+        For i = 0 To dstImage.getNumOfLayers - 1
+        
+            'First, retrieve the layer's header
+            If pdiReader.getNodeDataByIndex(i + 1, True, retBytes) Then
+            
+                'Convert the received bytes into a string
+                retString = StrConv(retBytes, vbUnicode)
+                
+                'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
+                If Not dstImage.getLayerByIndex(i).CreateNewImageLayerFromXML(retString) Then
+                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+                End If
+                
+            Else
+                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            End If
+            
+            'Next, retrieve the layer's raw DIB data
+            If pdiReader.getNodeDataByIndex(i + 1, False, retBytes) Then
+                
+                'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
+                dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
+                
+            Else
+                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            End If
+        
+        Next i
+        
+        'Funny quirk time: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to something.
+        dstDIB.createBlank 4, 4
+        
+        
+        'That's all there is to it!  Mark the load as successful and carry on.
+        LoadPhotoDemonImage = True
+    
+    Else
+    
+        'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
+        Message "Selected file is not in PDI format.  Load abandoned."
         LoadPhotoDemonImage = False
-        Exit Function
+    
     End If
     
-    'Copy the image into the current pdImage object
-    dstDIB.CreateFromPicture tmpPicture
+    Exit Function
     
-    'Recompress the file back to its original state (I know, it's a terrible way to load these files - but since no one
-    ' uses them at present (because there is literally zero advantage to them) I'm not going to optimize it further.)
-    CompressFile PDIPath
+LoadPDIFail:
+
+    Select Case Err.Number
     
-    LoadPhotoDemonImage = True
+        Case PDP_GENERIC_ERROR
+            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
+            
+        Case Else
+
+        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
+        
+    End Select
+    
+    LoadPhotoDemonImage = False
+    Exit Function
 
 End Function
 

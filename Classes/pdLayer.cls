@@ -298,14 +298,14 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
         ' added to the LayerData type.
         With myLayerData
-            .l_Name = xmlEngine.getUniqueTag_Long("Name")
+            .l_Name = xmlEngine.getUniqueTag_String("Name")
             .l_GroupID = xmlEngine.getUniqueTag_Long("GroupID")
             .l_Opacity = xmlEngine.getUniqueTag_Long("Opacity")
             .l_BlendMode = xmlEngine.getUniqueTag_Long("BlendMode")
-            .l_OffsetX = xmlEngine.getUniqueTag_Long("OffsetX")
-            .l_OffsetY = xmlEngine.getUniqueTag_Long("OffsetY")
-            .l_Angle = xmlEngine.getUniqueTag_Long("Angle")
-            .l_Visibility = xmlEngine.getUniqueTag_Long("Visibility")
+            .l_OffsetX = xmlEngine.getUniqueTag_Double("OffsetX")
+            .l_OffsetY = xmlEngine.getUniqueTag_Double("OffsetY")
+            .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
+            .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
