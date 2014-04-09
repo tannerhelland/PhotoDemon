@@ -3,8 +3,9 @@ Attribute VB_Name = "Image_Autosave_Handler"
 'Image Autosave Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 23/January/14
-'Last update: wrap up initial build
+'Last updated: 08/April/14
+'Last update: change wrapper functions for pdImage access to account for new layered behavior.  This class is going to
+'              be woefully broken for some time due to Layers changes, but I will fix it... eventually.
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -437,7 +438,7 @@ Public Sub alignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
                 'If this file's location on disk matches the binary buffer associated with a given XML entry,
                 ' ask the pdImage object to rewrite its internal data to match the XML file.
                 If StrComp(srcPDImage.locationOnDisk, m_XmlEntries(i).latestUndoPath, vbTextCompare) = 0 Then
-                    srcPDImage.readInternalDataFromFile m_XmlEntries(i).xmlPath
+                    srcPDImage.readExternalData m_XmlEntries(i).xmlPath
                     Exit For
                 End If
             
