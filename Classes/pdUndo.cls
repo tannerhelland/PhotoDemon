@@ -15,13 +15,11 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 21/March/14
-'Last update: in preparation for Layers support, the entire Undo/Redo engine has been rewritten to operative
-'              actively instead of passively.  This means that Undo data is created *immediately* after any action
-'              is performed, instead of waiting to see if a future action requires us to create Undo/Redo data.
-'              This results in slightly more Undo data being written to file, especially for images that are
-'              loaded but not edited, but the benefits are many: including being able to write Undo/Redo data in
-'              only the relevant format, and on a per-layer basis.
+'Last updated: 09/April/14
+'Last update: for now, Undo / Redo is always going to make a full copy of the entire pdImage structure.  I know, I know,
+'             this is extrordinarily wasteful - but cracking a lighter version of Undo/Redo is *tough*.  Sometimes a
+'             full copy of the pdImage is necessary (e.g. Flatten Image), while at other times, something much lighter
+'             would suffice.  That's another project for another day, however.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -34,6 +32,8 @@ Attribute VB_Exposed = False
 ' of this change, the Undo/Redo engine was largely rewritten, and all interface-related code was moved outside the
 ' class.  (Specifically, it is now handled by the separate syncInterfaceToCurrentImage function.)
 '
+'(NOTE: the following paragraph is currently irrelevant; I may revisit an active engine in the future, but it has
+' been placed on hold due to some nasty interactions elsewhere in the project.)
 'In 2014, as part of adding Layers support, the Undo/Redo engine was changed from a lazy implementation to an active
 ' one.  Basically, the previous "lazy" implementation did not create Undo/Redo data until absolutely necessary.  This
 ' had some benefits; for example, Undo data was not created until an image was actually edited, improving image load
@@ -46,8 +46,9 @@ Attribute VB_Exposed = False
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if you run out of free
-' space.  I should probably fix this at some point in the future, but as no one has ever complained, it remains a
-' low priority for me.
+' space.  Similarly, clearing your TEMP folder in the middle of program operation could cause a lot of bad things,
+' including hard crashes.  I should probably fix this at some point in the future, but as no one has ever complained,
+' it remains a low priority for me.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -110,7 +111,7 @@ End Function
 Public Sub writeOneOffUndoEntry()
 
     'Ask the parent PD image to write itself out to file
-    parentPDImage.getActiveDIB().writeToFile getCurrentUndoFilename(), False
+    Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, True, True
     parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
     
     Debug.Print "Saved " & getCurrentUndoFilename() & " at the request of PD's Autosave engine."
@@ -132,7 +133,7 @@ Public Sub createUndoData(ByVal processID As String, Optional ByVal processType 
     
         'Pixel data
         'Case 1
-            parentPDImage.getActiveDIB().writeToFile getCurrentUndoFilename(), False
+            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, True, True
             
         'Selection data
         'Case 2
@@ -210,7 +211,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
         
             'Pixel undo data
             'Case 1
-                parentPDImage.getActiveDIB().writeToFile getCurrentUndoFilename(), False
+                Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, True, True
             
             'Selection undo data
             'Case 2

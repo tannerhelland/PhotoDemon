@@ -1347,11 +1347,9 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
             dstImage.readExternalData retString, True
         
-        'Bytes could not be read, or alternately, checksums didn't match for the node.
+        'Bytes could not be read, or alternately, checksums didn't match for the first node.
         Else
-        
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            
         End If
         
         'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information a piece:
@@ -1388,10 +1386,9 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         Next i
         
-        'Funny quirk time: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to something.
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
         dstDIB.createBlank 4, 4
-        
         
         'That's all there is to it!  Mark the load as successful and carry on.
         LoadPhotoDemonImage = True
@@ -1479,8 +1476,10 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
         'Case 1
         
             'The DIB handles the actual loading of the undo data
-            pdImages(g_CurrentImage).getActiveDIB().createFromFile undoFile
-            pdImages(g_CurrentImage).updateSize
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage)
+            
             
         'Selection data
         'Case 2
