@@ -14,10 +14,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright ©2013-2014 by Tanner Helland
-'Created: 05/April/13
-'Last updated: 09/April/14
-'Last update: general code clean-up now that everything seems to be working.  Lots of stress testing will happen in
-'             the coming weeks, but for now I think this class is working pretty damn well.
+'Created: 05/April/14
+'Last updated: 10/April/14
+'Last update: fix endianness of initial file marker, improve node creation performance by modifying BasicBuffer to
+'             accept a Length parameter (thus avoiding the need for costly ReDim Preserve statements).
 'Dependencies: clsBasicBuffer by dilettante (used to read/write byte array buffers more easily)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
@@ -81,13 +81,13 @@ Option Explicit
 ' value for this constant is 64, representative of PhotoDemon 6.4, when the format was first implemented.
 Private Const THIS_PDPACKAGE_VERSION As Long = 64
 
-'The first four bytes of a valid pdPackage file must always be &h5044504B ("PDPK" in ASCII)
-Private Const PDP_UNIVERSAL_IDENTIFIER As Long = &H5044504B
+'The first four bytes of a valid pdPackage file must always be &H4B504450 ("PDPK" in ASCII, if viewed in a text editor - note the little-endian declaration here)
+Private Const PDP_UNIVERSAL_IDENTIFIER As Long = &H4B504450
 
 'Each pdPackage file has a short file header.  This header is separate from the node directory, and contains all information
 ' necessary to prepare a node directory array.
 Private Type PDP_HEADER
-    PDP_ID As Long                          'pdPackage Identifier; must always be &h5044504B ("PDPK" in ASCII)
+    PDP_ID As Long                          'pdPackage Identifier; must always be &H4B504450 ("PDPK" in ASCII)
     PDP_SubID As Long                       'pdPackage sub-identifier.  This can be used by callers to define a specific type of pdPackage.  (PD uses this to denote PDI files.)
     PDP_Version As Long                     'Version number of the pdPackage class used to write this file.
     NodeCount As Long                       'Number of data nodes in this package, 1-based (e.g. if there is one node in the archive, this value will be 1).
@@ -333,16 +333,11 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
             zLibResult = compress(compressedData(0), compressedSize, dataBytes(0), UBound(dataBytes) + 1)
         End If
         
-        'zLib obviously has no way to update our VB-style SafeArray header, so we must manually resize the buffer now.
-        'TODO: update the data buffer to provide an optional Length parameter, which takes n bytes from a buffer.
-        '      That would save us this costly ReDim Preserve statement.
-        ReDim Preserve compressedData(0 To compressedSize - 1) As Byte
-        
         'Make sure zLib compressed the data successfully.
         If zLibResult = 0 Then
         
             'zLib was successful.  Add the compressed data stream to the data buffer.
-            m_DataBuffer.WriteBytes compressedData
+            m_DataBuffer.WriteBytes compressedData, compressedSize
         
             If useHeaderBuffer Then
                 m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(compressedData) + 1
@@ -682,8 +677,6 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             Dim zLibResult As Long
             zLibResult = uncompress(dstArray(0), dataOriginalSize, tmpDataArray(0), UBound(tmpDataArray) + 1)
             
-            Debug.Print "compressed size: " & dataPackedSize & ", uncompressed size: " & dataOriginalSize
-            
             If zLibResult <> 0 Then
                 
                 Message "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
@@ -794,7 +787,7 @@ Private Sub Class_Terminate()
     If m_ZLibToken > 0 Then FreeLibrary m_ZLibToken
     
     'Release our data stream buffer
-    m_DataBuffer.CloseBuf
+    If Not (m_DataBuffer Is Nothing) Then m_DataBuffer.CloseBuf
     Set m_DataBuffer = Nothing
 
 End Sub
