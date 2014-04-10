@@ -4,8 +4,8 @@ Option Explicit
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
 Public Const DISPLAY_TIMINGS As Boolean = False
 
-'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex.)
-Public Const PD_IMAGE_IDENTIFIER As Long = &H50444944
+'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)
+Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450
 
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001

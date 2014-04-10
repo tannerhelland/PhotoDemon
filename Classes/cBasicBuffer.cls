@@ -364,7 +364,7 @@ Public Sub ShrinkBuf()
     ReDim Preserve Buffer(mSize - 1)
 End Sub
 
-Public Sub WriteBytes(ByRef Bytes() As Byte)
+Public Sub WriteBytes(ByRef Bytes() As Byte, Optional ByVal Length As Long = -1)
     'Copy provided bytes into Buffer at current Position, extending
     'Size as required, updating Position to next byte offset.
     Dim LBoundOfBytes As Long
@@ -377,10 +377,20 @@ Public Sub WriteBytes(ByRef Bytes() As Byte)
     If Not mOpen Then OpenBuf
     
     LBoundOfBytes = LBound(Bytes)
-    WriteCountMinus1 = UBound(Bytes) - LBoundOfBytes
+    
+    'Change by Tanner: If the user has specified a Length value, use that instead of the array's upper bound.
+    If Length >= 0 Then
+        WriteCountMinus1 = LBoundOfBytes + Length - 1
+    Else
+        WriteCountMinus1 = UBound(Bytes) - LBoundOfBytes
+    End If
+    
+    'Original code follows...
+    
     WriteCount = WriteCountMinus1 + 1
     NeedAtLeastUBound = mPosition + WriteCountMinus1
     UBoundOfBuffer = UBound(Buffer)
+    
     If NeedAtLeastUBound > UBoundOfBuffer Then
         'Extend Buffer to make room, by at least ChunkSize.
         If WriteCount > mChunkSize Then
