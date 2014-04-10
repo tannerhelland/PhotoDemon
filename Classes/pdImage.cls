@@ -232,37 +232,42 @@ Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplic
     Dim i As Long
     For i = 0 To numOfLayers - 1
     
-        'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
-        
-        '24bpp case
-        If imgLayers(i).layerDIB.getDIBColorDepth = 24 Then
-        
-'            'Check layer opacity.  If it is 100%, use BitBlt to copy the layer into position.
-'            If imgLayers(i).getLayerOpacity = 100 Then
-'
-'                With imgLayers(i)
-'                    BitBlt dstDIB.getDIBDC, .getLayerOffsetX, .getLayerOffsetY, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, imgLayers(i).layerDIB.getDIBDC, 0, 0, vbSrcCopy
-'                End With
-'
-'            'Layer is not 100% opaque.  Use AlphaBlend API instead.
-'            Else
-'
-
-            Debug.Print "Drawing layer #" & i & " at opacity " & imgLayers(i).getLayerOpacity
+        'Don't draw a layer if it isn't visible
+        If imgLayers(i).getLayerVisibility Then
+    
+            'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
             
+            '24bpp case
+            If imgLayers(i).layerDIB.getDIBColorDepth = 24 Then
+            
+    '            'Check layer opacity.  If it is 100%, use BitBlt to copy the layer into position.
+    '            If imgLayers(i).getLayerOpacity = 100 Then
+    '
+    '                With imgLayers(i)
+    '                    BitBlt dstDIB.getDIBDC, .getLayerOffsetX, .getLayerOffsetY, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, imgLayers(i).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    '                End With
+    '
+    '            'Layer is not 100% opaque.  Use AlphaBlend API instead.
+    '            Else
+    '
+    
+                Debug.Print "Drawing layer #" & i & " at opacity " & imgLayers(i).getLayerOpacity
+                
+                    With imgLayers(i)
+                        .layerDIB.alphaBlendToDC dstDIB.getDIBDC, 255, .getLayerOffsetX, .getLayerOffsetY
+                    End With
+    '
+    '            End If
+                
+            '32bpp case
+            Else
+            
+                'Always use the AlphaBlend API
                 With imgLayers(i)
-                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, 255, .getLayerOffsetX, .getLayerOffsetY
+                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
                 End With
-'
-'            End If
             
-        '32bpp case
-        Else
-        
-            'Always use the AlphaBlend API
-            With imgLayers(i)
-                .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-            End With
+            End If
         
         End If
     

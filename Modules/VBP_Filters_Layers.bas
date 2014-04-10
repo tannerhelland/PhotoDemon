@@ -48,6 +48,30 @@ Public Function padDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Bool
 
 End Function
 
+'Pad a DIB with blank space, using a RECT so that each side can be independently resized.  Note that the rect specifies how many pixels
+' on each side the image should be expanded.  It does not specify the rect of the new image (because that wouldn't tell us where to
+' place the image on the new rect).
+' Note that this function will (obviously) resize the DIB as part of padding it.
+Public Function padDIBRect(ByRef srcDIB As pdDIB, ByRef paddingRect As RECT) As Boolean
+
+    'Make a copy of the current DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB srcDIB
+    
+    'Resize the source DIB to accommodate the new padding
+    srcDIB.createBlank srcDIB.getDIBWidth + paddingRect.Left + paddingRect.Right, srcDIB.getDIBHeight + paddingRect.Top + paddingRect.Bottom, srcDIB.getDIBColorDepth, 0, 0
+    
+    'Copy the old DIB into the center of the new DIB
+    BitBlt srcDIB.getDIBDC, paddingRect.Left, paddingRect.Top, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+    
+    'Erase the temporary DIB
+    Set tmpDIB = Nothing
+    
+    padDIBRect = True
+
+End Function
+
 'If the application needs to quickly blur a DIB and it doesn't care how, use this function.  It will lean on GDI+ if
 ' available (unless otherwise requested), or fall back to a high-speed internal box blur.
 Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Optional ByVal useGDIPlusIfAvailable As Boolean = True) As Boolean
