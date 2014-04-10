@@ -30,8 +30,8 @@ Begin VB.Form toolbar_Layers
       LargeChange     =   32
       Left            =   3360
       Max             =   100
-      TabIndex        =   9
-      Top             =   1200
+      TabIndex        =   7
+      Top             =   840
       Width           =   285
    End
    Begin VB.PictureBox picLayerButtons 
@@ -45,89 +45,65 @@ Begin VB.Form toolbar_Layers
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   249
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   6750
       Width           =   3735
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
          Index           =   0
          Left            =   960
-         TabIndex        =   6
+         TabIndex        =   4
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0000
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "VBP_ToolbarLayers.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
          Index           =   1
          Left            =   1560
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0D7A
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
          Index           =   2
          Left            =   2160
-         TabIndex        =   8
+         TabIndex        =   6
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":1AF4
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -141,55 +117,30 @@ Begin VB.Form toolbar_Layers
       ScaleHeight     =   327
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
-      TabIndex        =   4
-      Top             =   1200
+      TabIndex        =   2
+      Top             =   840
       Width           =   3255
-   End
-   Begin VB.TextBox txtName 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   315
-      Left            =   1080
-      TabIndex        =   1
-      Text            =   "Layer Name"
-      Top             =   105
-      Width           =   2535
    End
    Begin PhotoDemon.sliderTextCombo sltLayerOpacity 
       CausesValidation=   0   'False
       Height          =   495
       Left            =   960
-      TabIndex        =   3
-      Top             =   480
+      TabIndex        =   1
+      Top             =   120
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4868
+      _extenty        =   873
+      font            =   "VBP_ToolbarLayers.frx":286E
+      max             =   100
+      value           =   100
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H8000000D&
       Index           =   0
       X1              =   8
       X2              =   240
-      Y1              =   72
-      Y2              =   72
+      Y1              =   48
+      Y2              =   48
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -211,33 +162,9 @@ Begin VB.Form toolbar_Layers
       Height          =   240
       Index           =   1
       Left            =   240
-      TabIndex        =   2
-      Top             =   570
-      Width           =   675
-   End
-   Begin VB.Label lblLayerSettings 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "name:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00606060&
-      Height          =   240
-      Index           =   0
-      Left            =   360
       TabIndex        =   0
-      Top             =   120
-      Width           =   555
+      Top             =   210
+      Width           =   675
    End
 End
 Attribute VB_Name = "toolbar_Layers"
@@ -554,60 +481,61 @@ End Sub
 ' us to wipe the current layer cache and start anew.
 Private Sub cacheLayerThumbnails()
 
-    If Not pdImages(g_CurrentImage) Is Nothing Then
+    'Do not attempt to cache thumbnails if there are no open images
+    If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
     
-        'Make sure the active image has at least one layer
+        'Make sure the active image has at least one layer.  (This should always be true, but better safe than sorry.)
         If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
     
-        'Retrieve the number of layers in the current image and prepare the thumbnail cache
-        numOfThumbnails = pdImages(g_CurrentImage).getNumOfLayers
-        ReDim layerThumbnails(0 To numOfThumbnails - 1) As thumbEntry
-        
-        'Only cache thumbnails if the active image has one or more layers
-        If numOfThumbnails > 0 Then
-        
-            Dim i As Long
-            For i = 0 To numOfThumbnails - 1
-                
-                'Retrieve a thumbnail and ID for this layer
-                layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
-                
-                Set layerThumbnails(i).thumbDIB = New pdDIB
-                pdImages(g_CurrentImage).getLayerByIndex(i).requestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
-                
-            Next i
-        
-        End If
-        
-        'Determine if the vertical scrollbar needs to be visible or not (because there are so many layers that they overflow the box)
-        Dim maxLayerBoxSize As Long
-        maxLayerBoxSize = fixDPIFloat(BLOCKHEIGHT) * numOfThumbnails - 1
-        
-        vsLayer.Value = 0
-        If maxLayerBoxSize < picLayers.ScaleHeight Then
+            'Retrieve the number of layers in the current image and prepare the thumbnail cache
+            numOfThumbnails = pdImages(g_CurrentImage).getNumOfLayers
+            ReDim layerThumbnails(0 To numOfThumbnails - 1) As thumbEntry
             
-            'Hide the layer box scroll bar
-            vsLayer.Visible = False
-            vsLayer.Value = 0
+            'Only cache thumbnails if the active image has one or more layers
+            If numOfThumbnails > 0 Then
             
-            'Extend the layer box to be the full size of the form
-            picLayers.Width = (vsLayer.Left + vsLayer.Width) - picLayers.Left
+                Dim i As Long
+                For i = 0 To numOfThumbnails - 1
+                    
+                    'Retrieve a thumbnail and ID for this layer
+                    layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+                    
+                    Set layerThumbnails(i).thumbDIB = New pdDIB
+                    pdImages(g_CurrentImage).getLayerByIndex(i).requestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+                    
+                Next i
             
-        Else
-            
-            'Show the layer box scroll bar
-            vsLayer.Visible = True
-            vsLayer.Max = maxLayerBoxSize - picLayers.ScaleHeight
-            
-            'Shrink the layer box so that it does not cover the vertical scroll bar
-            picLayers.Width = (vsLayer.Left - picLayers.Left)
-            
-        End If
+            End If
         
         End If
-    
+        
     End If
     
+    'Determine if the vertical scrollbar needs to be visible or not (because there are so many layers that they overflow the box)
+    Dim maxLayerBoxSize As Long
+    maxLayerBoxSize = fixDPIFloat(BLOCKHEIGHT) * numOfThumbnails - 1
+    
+    vsLayer.Value = 0
+    If maxLayerBoxSize < picLayers.ScaleHeight Then
+        
+        'Hide the layer box scroll bar
+        vsLayer.Visible = False
+        vsLayer.Value = 0
+        
+        'Extend the layer box to be the full size of the form
+        picLayers.Width = (vsLayer.Left + vsLayer.Width) - picLayers.Left
+        
+    Else
+        
+        'Show the layer box scroll bar
+        vsLayer.Visible = True
+        vsLayer.Max = maxLayerBoxSize - picLayers.ScaleHeight
+        
+        'Shrink the layer box so that it does not cover the vertical scroll bar
+        picLayers.Width = (vsLayer.Left - picLayers.Left)
+        
+    End If
+            
 End Sub
 
 'Draw the layer box (from scratch)
@@ -789,17 +717,26 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
 End Sub
 
 Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-            
+    
+    'Don't process MouseMove events if no images are loaded
+    If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    
     'Update the tooltip contingent on the mouse position.
     Dim toolString As String
     
     'Mouse is over a visibility toggle
     If isPointInRect(x, y, m_VisibilityRect) Then
+        
+        'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
+        ' As such, we need to make sure we won't be attempting to access a bad layer index.
+        If curLayerHover >= 0 Then
             
-        If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
-            toolString = g_Language.TranslateMessage("Click to hide this layer.")
-        Else
-            toolString = g_Language.TranslateMessage("Click to show this layer.")
+            If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
+                toolString = g_Language.TranslateMessage("Click to hide this layer.")
+            Else
+                toolString = g_Language.TranslateMessage("Click to show this layer.")
+            End If
+            
         End If
             
     'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
