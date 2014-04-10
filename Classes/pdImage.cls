@@ -349,7 +349,14 @@ End Sub
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
 Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
+    
+    'As a failsafe, validate the incoming layer index
+    If layerIndex < 0 Then layerIndex = 0
+    If layerIndex > numOfLayers - 1 Then layerIndex = numOfLayers - 1
+    
+    'Return the requested layer
     Set getLayerByIndex = imgLayers(layerIndex)
+    
 End Function
 
 'Retrieve a layer using its canonical ID.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
