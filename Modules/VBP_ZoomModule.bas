@@ -219,7 +219,7 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             'Update 14 Feb '14: If GDI+ is available, use it to render 32bpp images when zoomed out.  (This is preferable to StretchBlt,
             ' as StretchBlt erases all alpha channel data if HALFTONE mode is used, limiting it to nearest-neighbor only!)
             If g_GDIPlusAvailable Then
-                GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeLowQuality
+                GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeBilinear
             Else
             
                 'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size of the viewport.)
