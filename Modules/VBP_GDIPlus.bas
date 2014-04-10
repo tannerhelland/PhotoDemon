@@ -327,12 +327,18 @@ Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As
 Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
 Private Declare Function GdipDrawImage Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal x As Single, ByVal y As Single) As Long
 Private Declare Function GdipDrawImageRect Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal x As Single, ByVal y As Single, ByVal iWidth As Single, ByVal iHeight As Single) As Long
+Private Declare Function GdipDrawImageRectRect Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
 Public Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
 Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
 Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal mPen As Long, ByVal startCap As LineCap, ByVal endCap As LineCap, ByVal dCap As DashCap) As Long
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
+Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mCompositingMode As CompositingMode) As Long
+Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal mGraphics As Long, ByVal mCompositingQuality As CompositingQuality) As Long
+Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef hImageAttr As Long) As Long
+Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttr As Long) As Long
+Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -367,6 +373,32 @@ Public Enum InterpolationMode
    InterpolationModeNearestNeighbor
    InterpolationModeHighQualityBilinear
    InterpolationModeHighQualityBicubic
+End Enum
+
+'Alpha compositing options; note that Over will apply alpha blending, while Copy will not
+Private Enum CompositingMode
+   CompositingModeSourceOver = 0
+   CompositingModeSourceCopy = 1
+End Enum
+
+'Alpha compositing qualities, which in turn affect how carefully GDI+ will blend the pixels.  Use with caution!
+Public Enum CompositingQuality
+   CompositingQualityInvalid = QualityModeInvalid
+   CompositingQualityDefault = QualityModeDefault
+   CompositingQualityHighSpeed = QualityModeLow
+   CompositingQualityHighQuality = QualityModeHigh
+   CompositingQualityGammaCorrected
+   CompositingQualityAssumeLinear
+End Enum
+
+'Wrap modes, which control the way GDI+ handles pixels that lie outside image boundaries.  (These are similar to
+' the pdFilterSupport class used by many of PhotoDemon's distort filters.)
+Public Enum WrapMode
+   WrapModeTile = 0
+   WrapModeTileFlipX = 1
+   WrapModeTileFlipY = 2
+   WrapModeTileFlipXY = 3
+   WrapModeClamp = 4
 End Enum
 
 Private Enum GDIFillMode
@@ -460,11 +492,24 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'Request the smoothing mode we were passed
     If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
     
+        'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
+        ' algorithm from drawing semi-transparent lines randomly around image borders.
+        ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
+        Dim imgAttributesHandle As Long
+        GdipCreateImageAttributes imgAttributesHandle
+        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
+        
+        'To improve performance, explicitly request high-speed alpha compositing operation
+        GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
+    
         'Perform the resize
-        If GdipDrawImageRectRectI(iGraphics, tBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel) <> 0 Then
+        If GdipDrawImageRectRectI(iGraphics, tBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, imgAttributesHandle) <> 0 Then
             GDIPlusResizeDIB = False
         End If
-    
+        
+        'Release our image attributes object
+        GdipDisposeImageAttributes imgAttributesHandle
+        
     Else
         GDIPlusResizeDIB = False
     End If
