@@ -444,9 +444,15 @@ Private Sub Form_Load()
     numOfThumbnails = 0
     ReDim layerThumbnails(0 To numOfThumbnails) As thumbEntry
 
-    'Assign the system hand cursor to all relevant objects
+    'Activate the custom tooltip handler
     Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    m_ToolTip.Create Me
+    m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+    m_ToolTip.DelayTime(ttDelayShow) = 5000
+    m_ToolTip.AddTool picLayers, ""
+    
+    'Theme the form
+    makeFormPretty Me
     
     'Enable mousewheel scrolling for the layer box
     Set cMouseEvents = New bluMouseEvents
@@ -694,14 +700,19 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         Else
             layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 76, xObjOffset, yObjOffset
             
-            'Also, render a "closed eye" icon in the corner
-            img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 210, xObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBWidth) - fixDPI(5), yObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBHeight) - fixDPI(5)
+            'Also, render a "closed eye" icon in the corner.
+            ' NOTE: I'm not sold on this being a good idea.  The icon seems to be clickable, but it isn't!
+            'img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 210, xObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBWidth) - fixDPI(5), yObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBHeight) - fixDPI(6)
             
         End If
         
         'Render the layer name
         Dim drawString As String
         drawString = tmpLayerRef.getLayerName
+        
+        'If this layer is invisible, mark it as such.
+        ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
+        If Not tmpLayerRef.getLayerVisibility Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
         
         layerNameFont.attachToDC bufferDIB.getDIBDC
         
@@ -778,7 +789,37 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
 End Sub
 
 Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+            
+    'Update the tooltip contingent on the mouse position.
+    Dim toolString As String
     
+    'Mouse is over a visibility toggle
+    If isPointInRect(x, y, m_VisibilityRect) Then
+            
+        If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
+            toolString = g_Language.TranslateMessage("Click to hide this layer.")
+        Else
+            toolString = g_Language.TranslateMessage("Click to show this layer.")
+        End If
+            
+    'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
+    ' the active layer.
+    Else
+        
+        'The tooltip is irrelevant if the current layer is already active
+        If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(x, y) Then
+            toolString = g_Language.TranslateMessage("Click to make this the active layer.")
+        Else
+            toolString = g_Language.TranslateMessage("This is the currently active layer.")
+        End If
+        
+    End If
+    
+    'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
+    If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
+    
+    
+    'If a layer other than the active one is being hovered, highlight that box
     If curLayerHover <> getLayerAtPosition(x, y) Then
         curLayerHover = getLayerAtPosition(x, y)
         redrawLayerBox
