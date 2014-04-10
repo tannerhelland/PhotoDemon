@@ -1055,13 +1055,13 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
                 
                 'Finally, set the backColor
                 If colorDepth = 24 Then
-                Dim dibRect As RECT
-                SetRect dibRect, 0, 0, iWidth, iHeight
-                
-                Dim hBrush As Long
-                hBrush = CreateSolidBrush(BackColor)
-                FillRect dibDC, dibRect, hBrush
-                DeleteObject hBrush
+                    Dim dibRect As RECT
+                    SetRect dibRect, 0, 0, iWidth, iHeight
+                    
+                    Dim hBrush As Long
+                    hBrush = CreateSolidBrush(BackColor)
+                    FillRect dibDC, dibRect, hBrush
+                    DeleteObject hBrush
                 End If
                 
             'If the DIB is 32bpp, apply any transparency now

@@ -303,6 +303,13 @@ End Enum
 ' such functions to ignore their automatic redrawing.
 Private disableRedraws As Boolean
 
+'Extra interface images are loaded as resources at run-time
+Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
+
+'Some UI elements are dynamically rendered onto the layer box.  To simplify hit detection, their RECTs are stored
+' at render-time, which allows the mouse actions to easily check hits regardless of layer box position.
+Private m_VisibilityRect As RECT
+
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
 Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
@@ -464,6 +471,17 @@ Private Sub Form_Load()
         .setTextAlignment vbLeftJustify
         .createFontObject
     End With
+    
+    'Load various interface images from the resource
+    Set img_EyeOpen = New pdDIB
+    loadResourceToDIB "EYE_OPEN", img_EyeOpen
+    Set img_EyeClosed = New pdDIB
+    loadResourceToDIB "EYE_CLOSE", img_EyeClosed
+    
+    'Pad all interface images with 2px blank space; this makes them a bit more aesthetically pleasing, and saves us the
+    ' trouble of manually calculating 2px offsets for each image at draw-time
+    Filters_Layers.padDIB img_EyeOpen, 2
+    Filters_Layers.padDIB img_EyeClosed, 2
     
 End Sub
 
@@ -665,8 +683,21 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             
         End If
         
-        'Render the layer thumbnail
-        layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
+        'Object offsets are stored in these values as various elements are drawn to the screen.
+        Dim xObjOffset As Long, yObjOffset As Long
+        
+        'Render the layer thumbnail.  If the layer is not currently visible, render it at 30% opacity.
+        xObjOffset = offsetX + fixDPI(thumbBorder)
+        yObjOffset = offsetY + fixDPI(thumbBorder)
+        If tmpLayerRef.getLayerVisibility Then
+            layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+        Else
+            layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 76, xObjOffset, yObjOffset
+            
+            'Also, render a "closed eye" icon in the corner
+            img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 210, xObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBWidth) - fixDPI(5), yObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBHeight) - fixDPI(5)
+            
+        End If
         
         'Render the layer name
         Dim drawString As String
@@ -676,9 +707,38 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         
         Dim xTextOffset As Long, yTextOffset As Long
         xTextOffset = offsetX + thumbWidth + fixDPI(thumbBorder) * 2
-        yTextOffset = offsetY + (BLOCKHEIGHT - layerNameFont.getHeightOfString(drawString) - fixDPI(2)) / 2
-        
+        yTextOffset = offsetY + fixDPI(4)       'yTextOffset = offsetY + (BLOCKHEIGHT - layerNameFont.getHeightOfString(drawString) - fixDPI(2)) / 2  'This line of code can be used to center the text in the layer area.
         layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, m_BufferWidth - xTextOffset - fixDPI(4), layerNameFont.getHeightOfString(drawString), drawString
+        
+        'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
+        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(4)
+        
+        'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
+        ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
+        ' (Note that this approach is not touch-friendly; I'm aware, and will revisit as necessary if users
+        '  request a touch-centric UI.)
+        If (blockIndex = curLayerHover) Then
+        
+            'Start with an x-offset that matches the text offset
+            xObjOffset = xTextOffset
+        
+            'Draw the visibility toggle.  Note that an icon for the opposite visibility state is drawn, to show
+            ' the user what will happen if they click the icon.
+            If tmpLayerRef.getLayerVisibility Then
+                img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+            Else
+                img_EyeOpen.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+            End If
+            
+            'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
+            With m_VisibilityRect
+                .Left = xObjOffset
+                .Top = yObjOffset
+                .Right = xObjOffset + img_EyeOpen.getDIBWidth
+                .Bottom = yObjOffset + img_EyeOpen.getDIBHeight
+            End With
+            
+        End If
         
     End If
 
@@ -691,7 +751,28 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
     clickedLayer = getLayerAtPosition(x, y)
     
     If clickedLayer >= 0 Then
-        If Not pdImages(g_CurrentImage) Is Nothing Then Layer_Handler.setActiveLayerByIndex clickedLayer
+        
+        If Not pdImages(g_CurrentImage) Is Nothing Then
+            
+            'Check the clicked position against a series of rects, each one representing a unique interaction.
+            
+            'Has the user clicked a visibility rectangle?
+            If isPointInRect(x, y, m_VisibilityRect) Then
+            
+                Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
+            
+            'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
+            ' the active layer.
+            Else
+                Layer_Handler.setActiveLayerByIndex clickedLayer
+            End If
+            
+            'Redraw the layer box to represent any changes from this interaction.
+            ' NOTE: this is not currently necessary, as all interactions will automatically force a redraw on their own.
+            'redrawLayerBox
+            
+        End If
+        
     End If
     
 End Sub

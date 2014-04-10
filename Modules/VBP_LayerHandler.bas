@@ -97,3 +97,17 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
+
+'Set layer visibility.  Note that the layer's visibility state must be explicitly noted, e.g. there is no "toggle" option.
+Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisibility As Boolean, Optional ByVal alsoRedrawViewport As Boolean = False)
+    
+    'Store the new visibility setting in the parent pdImage object
+    pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).setLayerVisibility layerVisibility
+    
+    'Redraw the layer box, but note that thumbnails don't need to be re-cached
+    toolbar_Layers.forceRedraw False
+    
+    'Redraw the viewport, but only if requested
+    If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
