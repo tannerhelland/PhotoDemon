@@ -515,7 +515,10 @@ End Function
 '
 'In the event that you have already loaded the XML data yourself (or have compiled it manually), I have added an optional parameter.
 ' Mark "filePathIsActuallyString" as TRUE to treat the filename string as actual XML data instead.
-Public Function readExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
+'
+'Finally, if this function is being called as part of an Undo/Redo action, we can safely ignore certain entries in the file, in favor
+' of the values we already have stored for this image.
+Public Function readExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
 
     On Error GoTo failedDataRead
     
@@ -543,14 +546,24 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
         xResolution = xmlEngine.getUniqueTag_Long("xResolution")
         yResolution = xmlEngine.getUniqueTag_Long("yResolution")
         imageDPI = xmlEngine.getUniqueTag_Long("DPI")
-        Me.originalFileSize = xmlEngine.getUniqueTag_Long("originalFileSize")
-        Me.originalFileName = xmlEngine.getUniqueTag_String("originalFileName")
-        Me.originalFileNameAndExtension = xmlEngine.getUniqueTag_String("originalFileNameAndExtension")
-        Me.locationOnDisk = xmlEngine.getUniqueTag_String("locationOnDisk")
-        Me.originalFileFormat = xmlEngine.getUniqueTag_Long("originalFileFormat")
-        Me.currentFileFormat = xmlEngine.getUniqueTag_Long("currentFileFormat")
-        Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
-        Me.pngBackgroundColor = xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+        
+        'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
+        ' the Undo/Redo stack.
+        If Not sourceIsUndoFile Then
+        
+            'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
+            ' them in the first place, but for now, just ignore them.
+            'TODO: make a firm decision on what data does not belong in PDI files!
+            'Me.originalFileSize = xmlEngine.getUniqueTag_Long("originalFileSize")
+            'Me.originalFileName = xmlEngine.getUniqueTag_String("originalFileName")
+            'Me.originalFileNameAndExtension = xmlEngine.getUniqueTag_String("originalFileNameAndExtension")
+            'Me.locationOnDisk = xmlEngine.getUniqueTag_String("locationOnDisk")
+            'Me.originalFileFormat = xmlEngine.getUniqueTag_Long("originalFileFormat")
+            'Me.currentFileFormat = xmlEngine.getUniqueTag_Long("currentFileFormat")
+            Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
+            Me.pngBackgroundColor = xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+            
+        End If
         
         'Finally, retrieve layer values from the file
         numOfLayersEverCreated = xmlEngine.getUniqueTag_Long("numOfLayersEverCreated")
@@ -558,7 +571,7 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
         curLayer = xmlEngine.getUniqueTag_Long("curLayer")
         
         'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
-        ' set up each layer, because we can't do that here!)
+        ' fill each layer with usable data, because we can't do that here!)
         ReDim imgLayers(0 To numOfLayers - 1) As pdLayer
         
         Dim i As Long
