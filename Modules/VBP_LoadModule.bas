@@ -880,19 +880,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         If isThisPrimaryImage Then targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilename(sFile(thisImage))
         
-        DoEvents
-        
-        
-        '*************************************************************************************************************************************
-        ' Store some universally important information in the target image object
-        '*************************************************************************************************************************************
-        
         'Update the pdImage container to be the same size as its (newly created) base layer
         targetImage.updateSize
-        
-        'Mark the original file size and file format of the image
-        If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
-        targetImage.currentFileFormat = targetImage.originalFileFormat
         
         DoEvents
         
@@ -925,14 +914,18 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
                 
         '*************************************************************************************************************************************
-        ' Determine a name for this image
+        ' Determine a name for this image, and store it (along with any other relevant bits) inside the parent pdImage object
         '*************************************************************************************************************************************
         
         
         'Note: this is where PDI format processing picks up again
 PDI_Load_Continuation:
 
-
+        
+        'Mark the original file size and file format of the image
+        If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
+        targetImage.currentFileFormat = targetImage.originalFileFormat
+        
         If isThisPrimaryImage Then Message "Determining image title..."
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
@@ -1321,7 +1314,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
-Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+' Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used to store undo/redo data, and when one of their
+' kind is loaded as part of an Undo/Redo action, we must ignore certain elements stored in the file (e.g. settings like "LastSaveFormat"
+' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer, and it tells it to ignore certain settings.
+Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
     
     On Error GoTo LoadPDIFail
     
@@ -1345,7 +1341,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             retString = StrConv(retBytes, vbUnicode)
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.readExternalData retString, True
+            dstImage.readExternalData retString, True, sourceIsUndoFile
         
         'Bytes could not be read, or alternately, checksums didn't match for the first node.
         Else
@@ -1478,7 +1474,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional B
             'The DIB handles the actual loading of the undo data
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
-            Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage)
+            Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
             
         'Selection data
