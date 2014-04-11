@@ -55,17 +55,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":0000
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":0028
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -74,17 +82,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":0D7A
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -93,17 +109,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":1AF4
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -120,6 +144,23 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   2
       Top             =   840
       Width           =   3255
+      Begin VB.TextBox txtLayerName 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   120
+         TabIndex        =   8
+         Top             =   120
+         Visible         =   0   'False
+         Width           =   3015
+      End
    End
    Begin PhotoDemon.sliderTextCombo sltLayerOpacity 
       CausesValidation=   0   'False
@@ -128,11 +169,19 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   873
-      font            =   "VBP_ToolbarLayers.frx":286E
-      max             =   100
-      value           =   100
+      _ExtentX        =   4868
+      _ExtentY        =   873
+      Max             =   100
+      Value           =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H8000000D&
@@ -235,7 +284,11 @@ Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
 
 'Some UI elements are dynamically rendered onto the layer box.  To simplify hit detection, their RECTs are stored
 ' at render-time, which allows the mouse actions to easily check hits regardless of layer box position.
-Private m_VisibilityRect As RECT
+Private m_VisibilityRect As RECT, m_NameRect As RECT
+
+'Because VB inexplicably fails to provide mouse coords for Click and DoubleClick events, we track coords manually
+' and use them as necessary.
+Private m_MouseX As Single, m_MouseY As Single
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
@@ -328,8 +381,14 @@ Private Sub cmdLayerAction_Click(Index As Integer)
 End Sub
 
 Private Sub cMouseEvents_MouseOut()
+    
     curLayerHover = -1
+    m_MouseX = -1
+    m_MouseY = -1
+    
+    'Redraw the layer box, which no longer has anything hovered
     redrawLayerBox
+    
 End Sub
 
 Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
@@ -644,10 +703,24 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         
         layerNameFont.attachToDC bufferDIB.getDIBDC
         
-        Dim xTextOffset As Long, yTextOffset As Long
+        Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
         xTextOffset = offsetX + thumbWidth + fixDPI(thumbBorder) * 2
         yTextOffset = offsetY + fixDPI(4)       'yTextOffset = offsetY + (BLOCKHEIGHT - layerNameFont.getHeightOfString(drawString) - fixDPI(2)) / 2  'This line of code can be used to center the text in the layer area.
-        layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, m_BufferWidth - xTextOffset - fixDPI(4), layerNameFont.getHeightOfString(drawString), drawString
+        xTextWidth = m_BufferWidth - xTextOffset - fixDPI(4)
+        yTextHeight = layerNameFont.getHeightOfString(drawString)
+        layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
+        
+        'Store the resulting text area in the text rect; if the user clicks this, they can modify the layer name
+        If (blockIndex = curLayerHover) Then
+        
+            With m_NameRect
+                .Left = xTextOffset - 2
+                .Top = yTextOffset - 2
+                .Right = xTextOffset + xTextWidth + 2
+                .Bottom = yTextOffset + yTextHeight + 2
+            End With
+            
+        End If
         
         'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
         yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(4)
@@ -679,6 +752,31 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             
         End If
         
+    End If
+
+End Sub
+
+'The user can double-click a layer name to change it directly.
+Private Sub picLayers_DblClick()
+
+    If isPointInRect(m_MouseX, m_MouseY, m_NameRect) Then
+    
+        'Move the text layer box into position
+        txtLayerName.Move m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
+        txtLayerName.Visible = True
+        
+        'Disable hotkeys until editing is finished
+        FormMain.ctlAccelerator.Enabled = False
+        
+        'Fill the text box with the current layer name, and select it
+        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(m_MouseX, m_MouseY)).getLayerName
+        AutoSelectText txtLayerName
+    
+    Else
+    
+        'Hide the text box if it isn't already
+        txtLayerName.Visible = False
+    
     End If
 
 End Sub
@@ -720,6 +818,10 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
     
     'Don't process MouseMove events if no images are loaded
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    
+    'Store the mouse position so other functions in this routine can access them
+    m_MouseX = x
+    m_MouseY = y
     
     'Update the tooltip contingent on the mouse position.
     Dim toolString As String
@@ -813,6 +915,32 @@ Private Sub sltLayerOpacity_Change()
         End If
     
     End If
+
+End Sub
+
+'When the user presses Enter, store their edits as the new layer name, then hide the text box and redraw the layer UI.
+Private Sub txtLayerName_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    Debug.Print "KeyDown: " & KeyCode
+
+    If KeyCode = vbKeyReturn Then
+        
+        pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
+        txtLayerName.Text = ""
+        txtLayerName.Visible = False
+        redrawLayerBox
+        
+        'Re-enable hotkeys now that editing is finished
+        FormMain.ctlAccelerator.Enabled = True
+        
+    End If
+
+End Sub
+
+'If the text box loses focus mid-edit, hide it and discard any changes
+Private Sub txtLayerName_LostFocus()
+
+    If txtLayerName.Visible Then txtLayerName.Visible = False
 
 End Sub
 

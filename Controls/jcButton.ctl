@@ -2826,6 +2826,9 @@ End Sub
 
 Private Sub UserControl_LostFocus()
 
+    'Edit by Tanner: release capture (in case it hasn't been released already)
+    ReleaseCapture
+
     m_bHasFocus = False                                 'No focus
     m_bIsDown = False                                   'No down state
     m_bIsSpaceBarDown = False                           'No spacebar held
