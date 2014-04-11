@@ -55,25 +55,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0000
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -82,25 +74,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0D7A
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -109,25 +93,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":1AF4
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -169,19 +145,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4868
+      _extenty        =   873
+      max             =   100
+      value           =   100
+      font            =   "VBP_ToolbarLayers.frx":286E
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H8000000D&
@@ -289,6 +257,9 @@ Private m_VisibilityRect As RECT, m_NameRect As RECT
 'Because VB inexplicably fails to provide mouse coords for Click and DoubleClick events, we track coords manually
 ' and use them as necessary.
 Private m_MouseX As Single, m_MouseY As Single
+
+'Global keyhooks are required because VB eats Enter keypresses if the user changes form while a text box is active.
+Private cSubclass As cSelfSubHookCallback
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
@@ -474,6 +445,11 @@ Private Sub Form_Load()
     ' trouble of manually calculating 2px offsets for each image at draw-time
     Filters_Layers.padDIB img_EyeOpen, 2
     Filters_Layers.padDIB img_EyeClosed, 2
+    
+    'Initialize the subclasser, so we can capture key events.  Note that we won't actually activate the hook until the
+    ' layer name text box receives focus.  Similarly, when it loses focus, it will immediately release the hook.
+    Set cSubclass = New cSelfSubHookCallback
+    
     
 End Sub
 
@@ -918,28 +894,25 @@ Private Sub sltLayerOpacity_Change()
 
 End Sub
 
-'When the user presses Enter, store their edits as the new layer name, then hide the text box and redraw the layer UI.
-Private Sub txtLayerName_KeyDown(KeyCode As Integer, Shift As Integer)
+Private Sub txtLayerName_GotFocus()
+    
+    'Hook keypresses.  This is the only way to reliably catch the Enter key, as VB is prone to eating Enter presses.
+    cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , , Me
+    
+End Sub
 
-    Debug.Print "KeyDown: " & KeyCode
+Private Sub txtLayerName_KeyPress(KeyAscii As Integer)
 
-    If KeyCode = vbKeyReturn Then
-        
-        pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
-        txtLayerName.Text = ""
-        txtLayerName.Visible = False
-        redrawLayerBox
-        
-        'Re-enable hotkeys now that editing is finished
-        FormMain.ctlAccelerator.Enabled = True
-        
-    End If
-
+    'Prevent beeps; also, we don't need to check for Enter here, because we do that in the hook handler
+    If KeyAscii = 13 Then KeyAscii = 0
+    
 End Sub
 
 'If the text box loses focus mid-edit, hide it and discard any changes
 Private Sub txtLayerName_LostFocus()
 
+    'Release our keyhook and hide the text box.
+    cSubclass.shk_UnHook WH_KEYBOARD
     If txtLayerName.Visible Then txtLayerName.Visible = False
 
 End Sub
@@ -951,3 +924,65 @@ End Sub
 Private Sub vsLayer_Scroll()
     redrawLayerBox
 End Sub
+
+'All events hooked by this window are processed here.  This function must remain as the last function in the
+Private Sub myHookProc(ByVal bBefore As Boolean, _
+                        ByRef bHandled As Boolean, _
+                        ByRef lReturn As Long, _
+                        ByVal nCode As Long, _
+                        ByVal wParam As Long, _
+                        ByVal lParam As Long, _
+                        ByVal lHookType As eHookType, _
+                        ByRef lParamUser As Long)
+'*************************************************************************************************
+' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
+'* bBefore    - Indicates whether the callback is before or after the next hook in chain.
+'* bHandled   - In a before next hook in chain callback, setting bHandled to True will prevent the
+'*              message being passed to the next hook in chain and (if set to do so).
+'* lReturn    - Return value. For Before messages, set per the MSDN documentation for the hook type
+'* nCode      - A code the hook procedure uses to determine how to process the message
+'* wParam     - Message related data, hook type specific
+'* lParam     - Message related data, hook type specific
+'* lHookType  - Type of hook calling this callback
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+    
+    'Virtual keycode for the Enter key.  (See http://msdn.microsoft.com/en-us/library/dd375731.aspx)
+    Const VK_RETURN As Long = &HD
+    
+    'If the user presses Enter
+    If (wParam = VK_RETURN) And txtLayerName.Visible Then
+        
+        'Set the active layer name, then hide the text box
+        pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
+        txtLayerName.Text = ""
+        txtLayerName.Visible = False
+        
+        'Call the LostFocus event, which will handle the rest of the clean-up (including unhooking key events)
+        Call txtLayerName_LostFocus
+        
+        'Re-enable hotkeys now that editing is finished
+        FormMain.ctlAccelerator.Enabled = True
+        
+        'Redraw the layer box with the new name
+        redrawLayerBox
+        
+        'Transfer focus somewhere innocent.  (If we don't do this, random command buttons on the form may activate!)
+        picLayers.SetFocus
+        
+        bHandled = True
+        
+    End If
+            
+    'Per http://msdn.microsoft.com/en-us/library/ms644984.aspx, we are required to return the value of
+    ' CallNextHookEx if the code value is less than 0.
+    If nCode < 0 Then lReturn = CallNextHookEx(lHookType, nCode, wParam, ByVal lParam)
+    
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
+End Sub
+

@@ -116,7 +116,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 'Retrieve various system metrics.  (Constants for this function are typically declared in the module where they are relevant.)
 Public Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 
-
-
+'Hook functions generally need to return the value of this function if they don't process a given message
+Public Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, lParam As Any) As Long
 
 
