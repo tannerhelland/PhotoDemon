@@ -213,6 +213,45 @@ Public Function getCompositeImageColorDepth() As Long
 
 End Function
 
+'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
+' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
+'
+'The optional parameter, "bottomLayerIsFullSize", should be set to TRUE if the bottom layer is the size of the image.  This saves
+' us some processing time, because we don't have to check for rect intersection.
+Public Sub mergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
+
+    'TODO: pad the bottom rect with transparent borders so that it is large enough to hold the top layer in its entirety.
+    If Not bottomLayerIsFullSize Then
+    
+    End If
+    
+    'Now that the two layers are ready to be condensed into one, the merge process is actually very simple.
+    
+    'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
+            
+    '24bpp case
+    If topLayer.layerDIB.getDIBColorDepth = 24 Then
+    
+        'Possible future project - provide specialized, performance-friendly handling for 24bpp layers??
+        With topLayer
+            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, 255, .getLayerOffsetX, .getLayerOffsetY
+        End With
+        
+    '32bpp case
+    Else
+    
+        'Always use the AlphaBlend API for 32bpp layers
+        With topLayer
+            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+        End With
+    
+    End If
+    
+    'The two layers have been merged successfully!  Any further actions (like deleting the top layer) must be handled
+    ' by the caller.
+    
+End Sub
+
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
@@ -222,58 +261,36 @@ Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplic
     'TODO: perform special checks for 24bpp single-layer images.  For these, we can simply copy the current layer out,
     '       saving a lot of time!
     
-    'Start by resizing the DIB to be the size of the current image
+    'Start by resizing the DIB to be the size of the current image, and placing it inside a temporary pdLayer container.
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    
     dstDIB.createBlank Me.Width, Me.Height, 32
+    Set tmpLayer.layerDIB = dstDIB
     
-    'Paint a checkerboard background to the destination DIB
-    ' NOTE: this is currently handled by the viewport renderer itself - is that okay??
+    'Always start by rendering the bottom layer onto the (presently empty) destination DIB.  The bottom layer's blend mode
+    ' does not matter, so this is a straightforward operation.
+    If imgLayers(0).getLayerVisibility Then
     
-    'We now composite layers starting from the bottom and working our way up.
-    Dim i As Long
-    For i = 0 To numOfLayers - 1
+        With imgLayers(0)
+            .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+        End With
     
-        'Don't draw a layer if it isn't visible
-        If imgLayers(i).getLayerVisibility Then
+    End If
     
-            'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
-            
-            '24bpp case
-            If imgLayers(i).layerDIB.getDIBColorDepth = 24 Then
-            
-    '            'Check layer opacity.  If it is 100%, use BitBlt to copy the layer into position.
-    '            If imgLayers(i).getLayerOpacity = 100 Then
-    '
-    '                With imgLayers(i)
-    '                    BitBlt dstDIB.getDIBDC, .getLayerOffsetX, .getLayerOffsetY, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, imgLayers(i).layerDIB.getDIBDC, 0, 0, vbSrcCopy
-    '                End With
-    '
-    '            'Layer is not 100% opaque.  Use AlphaBlend API instead.
-    '            Else
-    '
+    'If the image has additional layers, proceed to merge the rest of them, starting from the bottom and working our way up.
+    ' Note that if a layer is invisible, we simply skip it - this is the most performance-friendly way to handle them.
+    If numOfLayers > 1 Then
     
-                Debug.Print "Drawing layer #" & i & " at opacity " & imgLayers(i).getLayerOpacity
-                
-                    With imgLayers(i)
-                        .layerDIB.alphaBlendToDC dstDIB.getDIBDC, 255, .getLayerOffsetX, .getLayerOffsetY
-                    End With
-    '
-    '            End If
-                
-            '32bpp case
-            Else
-            
-                'Always use the AlphaBlend API
-                With imgLayers(i)
-                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                End With
-            
-            End If
-        
-        End If
+        Dim i As Long
+        For i = 1 To numOfLayers - 1
+            If imgLayers(i).getLayerVisibility Then mergeTwoLayers imgLayers(i), tmpLayer, True
+        Next i
     
-    Next i
+    End If
     
-    'Set dstDIB = imgLayers(curLayer).layerDIB
+    'Release the temp layer's hold on the destination DIB
+    Set tmpLayer.layerDIB = Nothing
     
     'If the user requested non-premultiplied alpha, calculate it now.
     'TODO: how we handle premultiplication will depend on how I implement compositing, above, so this needs to be revisited
