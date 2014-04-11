@@ -279,7 +279,7 @@ End Function
 ' 3) Whether to calculate a checksum for the uncompressed data bytes.  This is completely optional.  If a checksum is found in
 '    the file, pdPackage will automatically process it at load-time, and reject the file if checksums do not match.  Note that
 '    checksumming the data increases write time non-trivially.
-Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
@@ -290,9 +290,9 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     
     'Update the pre-compression values for this data chunk.
     If useHeaderBuffer Then
-        m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize = UBound(dataBytes) + 1
+        m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize = UBound(DataBytes) + 1
     Else
-        m_NodeDirectory(nodeIndex).NodeDataOriginalSize = UBound(dataBytes) + 1
+        m_NodeDirectory(nodeIndex).NodeDataOriginalSize = UBound(DataBytes) + 1
     End If
     
     'Mark the offset for this data chunk.
@@ -306,12 +306,12 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     ' because the data is simply added to the pdPackages data chunk.  Order is irrelevant.
     If (Not compressData) Or (Not m_ZLibAvailable) Then
     
-        m_DataBuffer.WriteBytes dataBytes
+        m_DataBuffer.WriteBytes DataBytes
         
         If useHeaderBuffer Then
-            m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(dataBytes) + 1
+            m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(DataBytes) + 1
         Else
-            m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(dataBytes) + 1
+            m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(DataBytes) + 1
         End If
         
     'Data compression was requested.  We now have a bit of extra work to do.
@@ -320,17 +320,17 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
         'Start by preparing an array to receive the zLib-compressed data.  The zLib creators recommend a buffer 1% larger than
         ' the input buffer, plus 12 extra bytes for a header.  This is the "worst possible scenario" for zLib compression.
         Dim compressedData() As Byte
-        Dim originalSize As Long, compressedSize As Long
-        originalSize = UBound(dataBytes) + 1
-        compressedSize = originalSize + (originalSize * 0.01) + 12
+        Dim OriginalSize As Long, compressedSize As Long
+        OriginalSize = UBound(DataBytes) + 1
+        compressedSize = OriginalSize + (OriginalSize * 0.01) + 12
         ReDim compressedData(0 To compressedSize - 1) As Byte
         
         'Request compression from zLib.  It'll take care of the rest.
         Dim zLibResult As Long
         If compressionLevel >= 0 Then
-            zLibResult = compress2(compressedData(0), compressedSize, dataBytes(0), UBound(dataBytes) + 1, compressionLevel)
+            zLibResult = compress2(compressedData(0), compressedSize, DataBytes(0), UBound(DataBytes) + 1, compressionLevel)
         Else
-            zLibResult = compress(compressedData(0), compressedSize, dataBytes(0), UBound(dataBytes) + 1)
+            zLibResult = compress(compressedData(0), compressedSize, DataBytes(0), UBound(DataBytes) + 1)
         End If
         
         'Make sure zLib compressed the data successfully.
@@ -346,17 +346,17 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
             End If
             
             'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(originalSize)))), "#0.00") & "% smaller (" & originalSize & " to " & compressedSize & " bytes)."
+            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(OriginalSize)))), "#0.00") & "% smaller (" & OriginalSize & " to " & compressedSize & " bytes)."
             
         'zLib failed.  Write the original, uncompressed data to file instead.
         Else
             
-            m_DataBuffer.WriteBytes dataBytes
+            m_DataBuffer.WriteBytes DataBytes
         
             If useHeaderBuffer Then
-                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(dataBytes) + 1
+                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(DataBytes) + 1
             Else
-                m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(dataBytes) + 1
+                m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(DataBytes) + 1
             End If
             
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
@@ -372,7 +372,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
         'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
         ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), dataBytes(0), UBound(dataBytes) + 1)
+        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), DataBytes(0), UBound(DataBytes) + 1)
         
         If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderAdler32 = zLibAdlerSum
@@ -724,7 +724,11 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             getNodeDataByIndex = False
             Exit Function
         Else
-            Debug.Print "Checksum successfully verified for node #" & nodeIndex & "."
+            If useHeaderBuffer Then
+                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (header)."
+            Else
+                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (data)."
+            End If
         End If
         
     End If
