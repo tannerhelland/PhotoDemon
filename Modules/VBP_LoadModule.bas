@@ -1335,7 +1335,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String
         
-        If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
+        If pdiReader.getNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
         
             'Convert the received bytes into a string
             retString = StrConv(retBytes, vbUnicode)
@@ -1356,7 +1356,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         For i = 0 To dstImage.getNumOfLayers - 1
         
             'First, retrieve the layer's header
-            If pdiReader.getNodeDataByIndex(i + 1, True, retBytes) Then
+            If pdiReader.getNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
             
                 'Convert the received bytes into a string
                 retString = StrConv(retBytes, vbUnicode)
@@ -1371,7 +1371,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             End If
             
             'Next, retrieve the layer's raw DIB data
-            If pdiReader.getNodeDataByIndex(i + 1, False, retBytes) Then
+            If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
                 
                 'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
                 dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
