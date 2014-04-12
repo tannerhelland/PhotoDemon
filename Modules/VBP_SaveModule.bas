@@ -621,7 +621,7 @@ End Function
 '    the header represents a larger portion of the file.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -651,7 +651,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Dim dataString As String
     srcPDImage.writeExternalData dataString, True
     
-    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , True
+    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
     
     'The pdImage header only requires one of the two buffers in its node; the other can be happily left blank.
     
@@ -669,11 +669,11 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         
         'Retrieve the layer header and add it to the header section of this node
         layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
-        pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , True
+        pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
         'Retrieve the layer's DIB and add it to the data section of this node
         srcPDImage.getLayerByIndex(i).layerDIB.copyImageBytesIntoStream layerDIBCopy
-        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , True
+        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
     
     Next i
     

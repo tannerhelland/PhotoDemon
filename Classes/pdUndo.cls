@@ -111,7 +111,7 @@ End Function
 Public Sub writeOneOffUndoEntry()
 
     'Ask the parent PD image to write itself out to file
-    Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, True, True
+    Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
     parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
     
     Debug.Print "Saved " & getCurrentUndoFilename() & " at the request of PD's Autosave engine."
@@ -133,7 +133,7 @@ Public Sub createUndoData(ByVal processID As String, Optional ByVal processType 
     
         'Pixel data
         'Case 1
-            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, True, True
+            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
             
         'Selection data
         'Case 2
@@ -211,7 +211,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
         
             'Pixel undo data
             'Case 1
-                Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, True, True
+                Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
             
             'Selection undo data
             'Case 2
