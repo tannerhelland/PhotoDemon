@@ -382,10 +382,8 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Layer_Handler.setActiveLayerByID copyOfCurLayerID, True
     
         Case LYR_BTN_DELETE
-            pdImages(g_CurrentImage).deleteLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex
-            cacheLayerThumbnails
-            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, True
-    
+            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
+            
     End Select
     
 End Sub
@@ -863,20 +861,20 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
             'Duplicate rectangle?
             ElseIf isPointInRect(x, y, m_DuplicateRect) Then
             
-                Layer_Handler.duplicateLayerByIndex clickedLayer
+                Process "Duplicate Layer", False, CStr(clickedLayer)
             
             'Merge down rectangle?
             ElseIf isPointInRect(x, y, m_MergeDownRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
-                    Layer_Handler.mergeLayerAdjacent clickedLayer, True
+                    Process "Merge layer down", False, CStr(clickedLayer)
                 End If
             
             'Merge up rectangle?
             ElseIf isPointInRect(x, y, m_MergeUpRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
-                    Layer_Handler.mergeLayerAdjacent clickedLayer, False
+                    Process "Merge layer up", False, CStr(clickedLayer)
                 End If
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer

@@ -255,3 +255,19 @@ Public Function isLayerAllowedToMergeAdjacent(ByVal dLayerIndex As Long, ByVal m
     End If
 
 End Function
+
+'Delete a given layer
+Public Sub deleteLayer(ByVal dLayerIndex As Long)
+
+    pdImages(g_CurrentImage).deleteLayerByIndex dLayerIndex
+    
+    'Set a new active layer
+    setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, False
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
