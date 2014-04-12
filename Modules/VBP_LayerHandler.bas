@@ -111,3 +111,110 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
+
+'Merge the layer at layerIndex up or down.
+Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Boolean)
+
+    'Look for a valid target layer to merge with in the requested direction.
+    Dim mergeTarget As Long
+    mergeTarget = isLayerAllowedToMergeAdjacent(dLayerIndex, mergeDown)
+    
+    'If we've been given a valid merge target, apply it now!
+    If mergeTarget >= 0 Then
+    
+        If mergeDown Then
+        
+            With pdImages(g_CurrentImage)
+                
+                'Request a merge from the parent pdImage
+                .mergeTwoLayers .getLayerByIndex(dLayerIndex), .getLayerByIndex(mergeTarget), False
+                
+                'Delete the now-merged layer
+                .deleteLayerByIndex dLayerIndex
+                
+                'Set the newly merged layer as the active layer
+                .setActiveLayerByIndex mergeTarget
+            
+            End With
+            
+        Else
+        
+            With pdImages(g_CurrentImage)
+            
+                'Request a merge from the parent pdImage
+                .mergeTwoLayers .getLayerByIndex(mergeTarget), .getLayerByIndex(dLayerIndex), False
+                
+                'Delete the now-merged layer
+                .deleteLayerByIndex mergeTarget
+                
+                'Set the newly merged layer as the active layer
+                .setActiveLayerByIndex dLayerIndex
+                
+            End With
+        
+        End If
+        
+        'Redraw the layer box, and note that thumbnails don't need to be re-cached
+        toolbar_Layers.forceRedraw True
+    
+        'Redraw the viewport
+        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+    End If
+
+End Sub
+
+'Is this layer allowed to merge up or down?  Note that invisible layers are not generally considered suitable
+' for merging, so a layer will typically be merged with the next VISIBLE layer.  If none are available, merging
+' is disallowed.
+'
+'Note that the return value for this function is a little wonky.  This function will return the TARGET MERGE LAYER
+' INDEX if the function is true.  This value will always be >= 0.  If no valid layer can be found, -1 will be
+' returned (which obviously isn't a valid index, but IS true, so it's a little confusing - handle accordingly!)
+Public Function isLayerAllowedToMergeAdjacent(ByVal dLayerIndex As Long, ByVal moveDown As Boolean) As Long
+
+    Dim i As Long
+    
+    'Check MERGE DOWN
+    If moveDown Then
+    
+        'As an easy check, make sure this layer is visible, and not already at the bottom.
+        If (dLayerIndex <= 0) Or (Not pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).getLayerVisibility) Then
+            isLayerAllowedToMergeAdjacent = -1
+            Exit Function
+        End If
+        
+        'Search for the nearest valid layer beneath this one.
+        For i = dLayerIndex - 1 To 0 Step -1
+            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+                isLayerAllowedToMergeAdjacent = i
+                Exit Function
+            End If
+        Next i
+        
+        'If we made it all the way here, no valid merge target was found.  Return failure (-1).
+        isLayerAllowedToMergeAdjacent = -1
+    
+    'Check MERGE UP
+    Else
+    
+        'As an easy check, make sure this layer isn't already at the top.
+        If (dLayerIndex >= pdImages(g_CurrentImage).getNumOfLayers - 1) Or (Not pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).getLayerVisibility) Then
+            isLayerAllowedToMergeAdjacent = -1
+            Exit Function
+        End If
+        
+        'Search for the nearest valid layer above this one.
+        For i = dLayerIndex + 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
+            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+                isLayerAllowedToMergeAdjacent = i
+                Exit Function
+            End If
+        Next i
+        
+        'If we made it all the way here, no valid merge target was found.  Return failure (-1).
+        isLayerAllowedToMergeAdjacent = -1
+    
+    End If
+
+End Function

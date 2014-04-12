@@ -281,6 +281,8 @@ PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 //Layer toolbox
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
 EYE_CLOSE    CUSTOM  MOVEABLE        LOADONCALL      eye_close.png
+MERGE_UP     CUSTOM  MOVEABLE        LOADONCALL      merge_up.png
+MERGE_DOWN   CUSTOM  MOVEABLE        LOADONCALL      merge_down.png
 
 //Cursors
 HANDOPEN     CUSTOM  MOVEABLE        LOADONCALL      openhand.png
