@@ -371,11 +371,12 @@ End Sub
 ' manually added to this function!
 Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
 
-    'Copy all relevant layer properties from the source layer
+    'Copy all relevant layer properties from the source layer.  (Note that canonical layer ID is *not* copied; that must always
+    ' be unique for every created layer!)
     myLayerType = srcLayer.getLayerType
     
     With myLayerData
-        .l_Name = srcLayer.getLayerName
+        .l_Name = incrementTrailingNumber(srcLayer.getLayerName)
         .l_GroupID = srcLayer.getLayerGroup
         .l_Opacity = srcLayer.getLayerOpacity
         .l_BlendMode = srcLayer.getLayerBlendMode
