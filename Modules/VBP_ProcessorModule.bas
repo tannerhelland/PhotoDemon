@@ -451,6 +451,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Merge layer up"
             Layer_Handler.mergeLayerAdjacent cParams.GetLong(1), False
             
+        'Raise a layer up or down
+        Case "Raise layer"
+            Layer_Handler.moveLayerAdjacent cParams.GetLong(1), True
+        
+        Case "Lower layer"
+            Layer_Handler.moveLayerAdjacent cParams.GetLong(1), False
+            
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc

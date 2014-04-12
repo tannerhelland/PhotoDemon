@@ -239,7 +239,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'addMenuIcon "SELECTALL", 4, 4       'Merge down
     'addMenuIcon "SELECTALL", 4, 5       'Order (top-level)
     'addMenuIcon "SELECTALL", 4, 7       'Transform (top-level)
-    'addMenuIcon "SELECTALL", 4, 9       'Transparency (top-level)
+    addMenuIcon "TRANSPARENCY", 4, 9     'Transparency
+        '--> Transparency sub-menu
+        addMenuIcon "ADDTRANS", 4, 9, 0     'Add alpha channel
+        addMenuIcon "GREENSCREEN", 4, 9, 1  'Color to alpha
+        addMenuIcon "REMOVETRANS", 4, 9, 3  'Remove alpha channel
     'addMenuIcon "SELECTALL", 4, 11      'Flatten image
     'addMenuIcon "SELECTALL", 4, 12      'Merge visible layers
     

@@ -372,14 +372,10 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     Select Case Index
     
         Case LYR_BTN_MOVE_UP
-            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, True
-            cacheLayerThumbnails
-            Layer_Handler.setActiveLayerByID copyOfCurLayerID, True
+            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
         
         Case LYR_BTN_MOVE_DOWN
-            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, False
-            cacheLayerThumbnails
-            Layer_Handler.setActiveLayerByID copyOfCurLayerID, True
+            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
     
         Case LYR_BTN_DELETE
             Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
