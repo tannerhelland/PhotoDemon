@@ -1388,11 +1388,11 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
     
         'Raise layer
         Case 0
-            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
+            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, 0
         
         'Lower layer
         Case 1
-            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
+            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, 0
         
         '<separator>
         Case 2
