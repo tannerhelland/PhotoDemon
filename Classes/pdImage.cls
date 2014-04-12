@@ -173,8 +173,8 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
     'The layer has images.  Extra work is involved
     Else
 
-        'If no layer has been specified, insert the new layer above the currently active layer
-        If layerPosition = -1 Then curLayer = curLayer + 1 Else curLayer = layerPosition
+        'If no layer has been specified, insert the new layer above the requested layer
+        If layerPosition = -1 Then curLayer = curLayer + 1 Else curLayer = layerPosition + 1
         
         'Resize the layers array by one, and shift all existing layers upward.
         ReDim Preserve imgLayers(0 To UBound(imgLayers) + 1) As pdLayer

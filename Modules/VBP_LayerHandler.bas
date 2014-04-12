@@ -112,6 +112,43 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     
 End Sub
 
+'Duplicate a given layer (note: it doesn't have to be the active layer)
+Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
+
+    'Validate the requested layer index
+    If dLayerIndex < 0 Then dLayerIndex = 0
+    If dLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+    'Before doing anything else, make a copy of the current active layer ID.  We will use this to restore the same
+    ' active layer after the creation is complete.
+    Dim activeLayerID As Long
+    activeLayerID = pdImages(g_CurrentImage).getActiveLayerID
+    
+    'Also copy the ID of the layer we are creating.
+    Dim dupedLayerID As Long
+    dupedLayerID = pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).getLayerID
+    
+    'Ask the parent pdImage to create a new layer object
+    Dim newLayerID As Long
+    newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
+            
+    'Ask the new layer to copy the contents of the layer we are duplicating
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).CopyExistingLayer pdImages(g_CurrentImage).getLayerByID(dupedLayerID)
+    
+    'Restore the original active layer
+    pdImages(g_CurrentImage).setActiveLayerByID activeLayerID
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Render the new image to screen
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+            
+    'Synchronize the interface to the new image
+    syncInterfaceToCurrentImage
+    
+End Sub
+
 'Merge the layer at layerIndex up or down.
 Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Boolean)
 
@@ -154,7 +191,7 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
         
         End If
         
-        'Redraw the layer box, and note that thumbnails don't need to be re-cached
+        'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.forceRedraw True
     
         'Redraw the viewport

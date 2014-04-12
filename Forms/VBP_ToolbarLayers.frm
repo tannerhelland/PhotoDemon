@@ -253,6 +253,9 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 ' screen DPI by the "redrawLayerList" and "renderLayerBlock" functions.
 Private Const BLOCKHEIGHT As Long = 48
 
+'The distance (in pixels at 96 dpi) between clickable buttons in the "show on hover" layer block menu
+Private Const DIST_BETWEEN_HOVER_BUTTONS As Long = 10
+
 'Internal DIB (and measurements) for the custom layer list interface
 Private bufferDIB As pdDIB
 Private m_BufferWidth As Long, m_BufferHeight As Long
@@ -282,17 +285,19 @@ Private disableRedraws As Boolean
 'Extra interface images are loaded as resources at run-time
 Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
 Private img_MergeUp As pdDIB, img_MergeDown As pdDIB, img_MergeUpDisabled As pdDIB, img_MergeDownDisabled As pdDIB
+Private img_Duplicate As pdDIB
 
 'Some UI elements are dynamically rendered onto the layer box.  To simplify hit detection, their RECTs are stored
 ' at render-time, which allows the mouse actions to easily check hits regardless of layer box position.
 Private m_VisibilityRect As RECT, m_NameRect As RECT
 Private m_MergeUpRect As RECT, m_MergeDownRect As RECT
+Private m_DuplicateRect As RECT
 
 'Because VB inexplicably fails to provide mouse coords for Click and DoubleClick events, we track coords manually
 ' and use them as necessary.
 Private m_MouseX As Single, m_MouseY As Single
 
-'Global keyhooks are required because VB eats Enter keypresses if the user changes form while a text box is active.
+'Global keyhooks are required because VB eats Enter keypresses if the user switches forms while a text box is active.
 Private cSubclass As cSelfSubHookCallback
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
@@ -472,12 +477,13 @@ Private Sub Form_Load()
     'Load various interface images from the resource
     initializeUIDib img_EyeOpen, "EYE_OPEN"
     initializeUIDib img_EyeClosed, "EYE_CLOSE"
+    initializeUIDib img_Duplicate, "DUPL_LAYER"
     initializeUIDib img_MergeUp, "MERGE_UP"
     initializeUIDib img_MergeDown, "MERGE_DOWN"
     initializeUIDib img_MergeUpDisabled, "MERGE_UP"
     initializeUIDib img_MergeDownDisabled, "MERGE_DOWN"
     
-    'Make the disabled copies of the images grayscale
+    'If a UI image can be disabled, make a grayscale copy of it in advance
     Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
     Filters_Layers.GrayscaleDIB img_MergeDownDisabled, True
         
@@ -727,7 +733,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         
         Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
         xTextOffset = offsetX + thumbWidth + fixDPI(thumbBorder) * 2
-        yTextOffset = offsetY + fixDPI(4)       'yTextOffset = offsetY + (BLOCKHEIGHT - layerNameFont.getHeightOfString(drawString) - fixDPI(2)) / 2  'This line of code can be used to center the text in the layer area.
+        yTextOffset = offsetY + fixDPI(4)
         xTextWidth = m_BufferWidth - xTextOffset - fixDPI(4)
         yTextHeight = layerNameFont.getHeightOfString(drawString)
         layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
@@ -745,7 +751,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         End If
         
         'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(4)
+        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(6)
         
         'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
         ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
@@ -767,11 +773,16 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
             fillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
             
+            'Next, provide a "duplicate layer" shortcut
+            xObjOffset = xObjOffset + img_EyeOpen.getDIBWidth + fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+            img_Duplicate.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+            fillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
+            
             'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
             If tmpLayerRef.getLayerVisibility Then
             
                 'Merge down comes first...
-                xObjOffset = xObjOffset + img_EyeOpen.getDIBWidth + fixDPI(6)
+                xObjOffset = xObjOffset + img_Duplicate.getDIBWidth + fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
                 
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
                     img_MergeDown.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
@@ -781,7 +792,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                 fillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
                 
                 '...then Merge up
-                xObjOffset = xObjOffset + img_MergeDown.getDIBWidth + fixDPI(6)
+                xObjOffset = xObjOffset + img_MergeDown.getDIBWidth + fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
                     img_MergeUp.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
                 Else
@@ -849,6 +860,11 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
                 
                 Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
             
+            'Duplicate rectangle?
+            ElseIf isPointInRect(x, y, m_DuplicateRect) Then
+            
+                Layer_Handler.duplicateLayerByIndex clickedLayer
+            
             'Merge down rectangle?
             ElseIf isPointInRect(x, y, m_MergeDownRect) Then
             
@@ -910,6 +926,13 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
             End If
         End If
         
+    'Mouse is over Duplicate
+    ElseIf isPointInRect(x, y, m_DuplicateRect) Then
+    
+        If curLayerHover >= 0 Then
+            toolString = g_Language.TranslateMessage("Click to duplicate this layer.")
+        End If
+    
     'Mouse is over Merge Down
     ElseIf isPointInRect(x, y, m_MergeDownRect) Then
     
@@ -917,7 +940,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
             If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
                 toolString = g_Language.TranslateMessage("Click to merge this layer with the layer beneath it.")
             Else
-                toolString = g_Language.TranslateMessage("This layer cannot be merged down, because there are no visible layers beneath it.")
+                toolString = g_Language.TranslateMessage("This layer can't merge down, because there are no visible layers beneath it.")
             End If
         End If
             
@@ -928,7 +951,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
             If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
                 toolString = g_Language.TranslateMessage("Click to merge this layer with the layer above it.")
             Else
-                toolString = g_Language.TranslateMessage("This layer cannot be merged up, because there are no visible layers above it.")
+                toolString = g_Language.TranslateMessage("This layer can't merge up, because there are no visible layers above it.")
             End If
         End If
             
@@ -946,6 +969,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
     End If
     
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
+    Message StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) & ", " & Format$(Timer, "0000000.000")
     If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
         
 End Sub
