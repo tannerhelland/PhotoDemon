@@ -62,10 +62,8 @@ Public Enum metaInitializer
      tPaste
      tView
      tImageOps
-     tImgMode32bpp
      tMetadata
      tGPSMetadata
-     tEffects
      tMacro
      tSelection
      tSelectionTransform
@@ -74,7 +72,7 @@ End Enum
 
 #If False Then
     Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tRepeatLast = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0
-    Private Const tImgMode32bpp = 0, tMetadata = 0, tGPSMetadata = 0, tEffects = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0
+    Private Const tMetadata = 0, tGPSMetadata = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0
 #End If
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
@@ -118,7 +116,6 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tView, False
         metaToggle tImageOps, False
         metaToggle tSelection, False
-        metaToggle tEffects, False
         metaToggle tMacro, False
         metaToggle tZoom, False
                 
@@ -170,7 +167,6 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tView, True
         metaToggle tZoom, True
         metaToggle tImageOps, True
-        metaToggle tEffects, True
         metaToggle tMacro, True
         
         'Display this image's path in the title bar.
@@ -221,9 +217,9 @@ Public Sub syncInterfaceToCurrentImage()
         End If
         
         'Check the image's color depth, and check/uncheck the matching Image Mode setting
-        If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
-            If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
-        End If
+        'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
+        '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+        'End If
         
         'Restore the zoom value for this particular image (again, only if the form has been initialized)
         If pdImages(g_CurrentImage).Width <> 0 Then
@@ -240,6 +236,11 @@ Public Sub syncInterfaceToCurrentImage()
         Else
             metaToggle tSelection, False
             metaToggle tSelectionTransform, False
+        End If
+        
+        'Update all layer menus; some will be disabled under certain circumstances
+        If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
+        
         End If
         
         'Finally, if the histogram window is open, redraw it.  (This isn't needed at present, but could be useful in the future)
@@ -384,7 +385,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tView
             If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState
         
-        'ImageOps is all Image-related menu items; it enables/disables the Image, Select, Color, and Print menus
+        'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
         Case tImageOps
             If FormMain.MnuImageTop.Enabled <> newState Then
                 FormMain.MnuImageTop.Enabled = newState
@@ -394,16 +395,19 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 'File -> Print
                 FormMain.MnuFile(13).Enabled = newState
                 
+                'Layer menu
+                FormMain.MnuLayerTop.Enabled = newState
+                
                 'Select menu
                 FormMain.MnuSelectTop.Enabled = newState
                 
                 'Adjustments menu
                 FormMain.MnuAdjustmentsTop.Enabled = newState
+                
+                'Effects menu
+                FormMain.MnuEffectsTop.Enabled = newState
+                
             End If
-            
-        'Effects (top-level menu)
-        Case tEffects
-            If FormMain.MnuFilter.Enabled <> newState Then FormMain.MnuFilter.Enabled = newState
             
         'Macro (within the Tools menu)
         Case tMacro
@@ -457,13 +461,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 If (Not newState) Then toolbar_Tools.tudSel(i).Value = 0
                 toolbar_Tools.tudSel(i).Enabled = newState
             Next i
-        
-        '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
-        ' 32bpp, but I've since changed my mind.  It may be useful to take a 32bpp image and apply a *new* alpha channel, so those options are
-        ' now enabled regardless of color depth.  "Remove transparency", however, is still disabled for 24bpp images.
-        'Case tImgMode32bpp
-        '    FormMain.MnuLayerTransparency(3).Enabled = newState
-        
+                
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
         ' reading/browsing/writing metadata.)
         Case tMetadata

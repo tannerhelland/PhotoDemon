@@ -358,11 +358,11 @@ Begin VB.Form FormMain
          Caption         =   "Add"
          Index           =   0
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "Duplicate"
+            Caption         =   "Blank"
             Index           =   0
          End
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "Empty layer"
+            Caption         =   "Duplicate"
             Index           =   1
          End
          Begin VB.Menu MnuLayerNew 
@@ -735,7 +735,7 @@ Begin VB.Form FormMain
          End
       End
    End
-   Begin VB.Menu MnuFilter 
+   Begin VB.Menu MnuEffectsTop 
       Caption         =   "Effe&cts"
       Begin VB.Menu MnuFadeLastEffect 
          Caption         =   "Fade last effect"
@@ -1288,15 +1288,115 @@ Public Sub refreshAllCanvases()
     
 End Sub
 
-'Menu: create a new layer
+'Menu: top-level layer actions
+Private Sub MnuLayer_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Add layer (top-level)
+        Case 0
+        
+        'Delete layer (top-level)
+        Case 1
+        
+        '<separator>
+        Case 2
+        
+        'Merge up
+        Case 3
+        
+        'Merge down
+        Case 4
+        
+        'Order (top-level)
+        Case 5
+        
+        '<separator>
+        Case 6
+        
+        'Transform (top-level)
+        Case 7
+        
+        '<separator>
+        Case 8
+        
+        'Transparency (top-level)
+        Case 9
+        
+        '<separator>
+        Case 10
+        
+        'Flatten layers
+        Case 11
+        
+        'Merge visible layers
+        Case 12
+        
+        
+    End Select
+
+End Sub
+
+'Menu: remove layers from the image
+Private Sub MnuLayerDelete_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Delete current layer
+        Case 0
+        
+        'Delete all hidden layers
+        Case 1
+        
+    End Select
+
+End Sub
+
+'Menu: add a layer to the image
 Private Sub MnuLayerNew_Click(Index As Integer)
 
     Select Case Index
     
-        'New layer from file
+        'Blank layer
         Case 0
+        
+        'Duplicate of current layer
+        Case 1
+        
+        '<separator>
+        Case 2
+        
+        'Import from clipboard
+        Case 3
+        
+        'Import from file
+        Case 4
             Process "New Layer from File", True
     
+    End Select
+
+End Sub
+
+'Menu: change layer order
+Private Sub MnuLayerOrder_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Raise layer
+        Case 0
+        
+        'Lower layer
+        Case 1
+        
+        '<separator>
+        Case 2
+        
+        'Raise to top
+        Case 3
+        
+        'Lower to bottom
+        Case 4
+        
     End Select
 
 End Sub
