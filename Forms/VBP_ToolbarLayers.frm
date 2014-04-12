@@ -969,7 +969,6 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
     End If
     
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
-    Message StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) & ", " & Format$(Timer, "0000000.000")
     If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
         
 End Sub
