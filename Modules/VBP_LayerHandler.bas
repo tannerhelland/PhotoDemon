@@ -271,3 +271,24 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
+
+'Move a layer up or down in the stack (referred to as "raise" and "lower" in the menus)
+Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As Boolean)
+
+    'Make a copy of the currently active layer's ID
+    Dim curActiveLayerID As Long
+    curActiveLayerID = pdImages(g_CurrentImage).getActiveLayerID
+    
+    'Ask the parent pdImage to move the layer for us
+    pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, directionIsUp
+    
+    'Restore the active layer
+    setActiveLayerByID curActiveLayerID, False
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
