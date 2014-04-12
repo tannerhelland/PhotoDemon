@@ -611,7 +611,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
     'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
     ' even if translation text is missing.
-    If newString = "" Then
+    If Len(newString) = 0 Then
         
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If translationActive And (InStr(1, searchString, vbCrLf) > 0) Then
