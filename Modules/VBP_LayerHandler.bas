@@ -76,8 +76,8 @@ Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
-    'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    toolbar_Layers.forceRedraw False
+    'Sync the interface to the new layer
+    syncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -90,8 +90,8 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).setActiveLayerByIndex newLayerIndex
     
-    'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    toolbar_Layers.forceRedraw False
+    'Sync the interface to the new layer
+    syncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)

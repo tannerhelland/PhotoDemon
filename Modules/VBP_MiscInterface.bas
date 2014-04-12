@@ -241,7 +241,90 @@ Public Sub syncInterfaceToCurrentImage()
         'Update all layer menus; some will be disabled under certain circumstances
         If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
         
+            'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
+            If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
+            
+                'Delete
+                FormMain.MnuLayer(1).Enabled = False
+            
+                'Merge up/down
+                FormMain.MnuLayer(3).Enabled = False
+                FormMain.MnuLayer(4).Enabled = False
+                
+                'Layer order
+                FormMain.MnuLayer(5).Enabled = False
+                
+                'Flatten
+                FormMain.MnuLayer(11).Enabled = False
+                
+                'Merge visible
+                FormMain.MnuLayer(12).Enabled = False
+                
+            'This image contains multiple layers.  Enable many menu items (if they aren't already).
+            Else
+            
+                'Delete
+                If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True
+            
+                'Merge up/down are not available for layers at the top and bottom of the image
+                If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
+                    FormMain.MnuLayer(3).Enabled = True
+                Else
+                    FormMain.MnuLayer(3).Enabled = False
+                End If
+                
+                If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, True) <> -1 Then
+                    FormMain.MnuLayer(4).Enabled = True
+                Else
+                    FormMain.MnuLayer(4).Enabled = False
+                End If
+                
+                'Order is always available if more than one layer exists in the image
+                If Not FormMain.MnuLayer(5).Enabled Then FormMain.MnuLayer(5).Enabled = True
+                
+                'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
+                ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
+                ' so we can mirror the same enabled state for both options.
+                FormMain.MnuLayerOrder(0).Enabled = FormMain.MnuLayer(3).Enabled
+                FormMain.MnuLayerOrder(1).Enabled = FormMain.MnuLayer(4).Enabled
+                FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled
+                FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled
+                                
+                'Adding transparency to a layer is always permitted, but removing it is invalid if an image is already 24bpp.
+                ' Note that at present, this may have unintended consequences - use with caution!
+                If pdImages(g_CurrentImage).getActiveDIB.getDIBColorDepth = 24 Then
+                    FormMain.MnuLayerTransparency(3).Enabled = False
+                Else
+                    If Not FormMain.MnuLayerTransparency(3).Enabled Then FormMain.MnuLayerTransparency(3).Enabled = True
+                End If
+                
+                'Flatten
+                If Not FormMain.MnuLayer(11).Enabled Then FormMain.MnuLayer(11).Enabled = True
+                
+                'Merge visible
+                If Not FormMain.MnuLayer(12).Enabled Then FormMain.MnuLayer(12).Enabled = True
+                
+            End If
+            
+            'If at least one layer is available, enable a number of layer options
+            If Not FormMain.MnuLayer(7).Enabled Then FormMain.MnuLayer(7).Enabled = True
+            If Not FormMain.MnuLayer(9).Enabled Then FormMain.MnuLayer(9).Enabled = True
+        
+        Else
+        
+            'Most layer menus are disabled if an image does not contain layers.  PD isn't setup to allow 0-layer images,
+            ' so this is primarily included as a fail-safe.
+            FormMain.MnuLayer(1).Enabled = False
+            FormMain.MnuLayer(3).Enabled = False
+            FormMain.MnuLayer(4).Enabled = False
+            FormMain.MnuLayer(5).Enabled = False
+            FormMain.MnuLayer(7).Enabled = False
+            FormMain.MnuLayer(9).Enabled = False
+            FormMain.MnuLayer(11).Enabled = False
+            FormMain.MnuLayer(12).Enabled = False
+        
         End If
+        
         
         'Finally, if the histogram window is open, redraw it.  (This isn't needed at present, but could be useful in the future)
         'If FormHistogram.Visible And pdImages(g_CurrentImage).loadedSuccessfully Then
