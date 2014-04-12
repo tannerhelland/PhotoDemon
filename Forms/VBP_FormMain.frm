@@ -256,60 +256,36 @@ Begin VB.Form FormMain
          Index           =   1
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Transparency"
-         Index           =   2
-         Begin VB.Menu MnuTransparency 
-            Caption         =   "Add basic transparency..."
-            Index           =   0
-         End
-         Begin VB.Menu MnuTransparency 
-            Caption         =   "Make color transparent..."
-            Index           =   1
-         End
-         Begin VB.Menu MnuTransparency 
-            Caption         =   "-"
-            Index           =   2
-         End
-         Begin VB.Menu MnuTransparency 
-            Caption         =   "Remove transparency..."
-            Index           =   3
-         End
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   3
-      End
-      Begin VB.Menu MnuImage 
          Caption         =   "Resize..."
-         Index           =   4
+         Index           =   2
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Content-aware resize..."
-         Index           =   5
+         Index           =   3
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Canvas size..."
-         Index           =   6
+         Index           =   4
       End
       Begin VB.Menu MnuImage 
          Caption         =   "-"
-         Index           =   7
+         Index           =   5
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Crop to selection"
-         Index           =   8
+         Index           =   6
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Autocrop"
-         Index           =   9
+         Index           =   7
       End
       Begin VB.Menu MnuImage 
          Caption         =   "-"
-         Index           =   10
+         Index           =   8
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Rotate"
-         Index           =   11
+         Index           =   9
          Begin VB.Menu MnuRotate 
             Caption         =   "90° clockwise"
             Index           =   0
@@ -329,35 +305,35 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Flip horizontal"
-         Index           =   12
+         Index           =   10
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Flip vertical"
-         Index           =   13
+         Index           =   11
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Convert to isometric view"
-         Index           =   14
+         Index           =   12
       End
       Begin VB.Menu MnuImage 
          Caption         =   "-"
-         Index           =   15
+         Index           =   13
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Indexed color..."
-         Index           =   16
+         Index           =   14
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Tile..."
-         Index           =   17
+         Index           =   15
       End
       Begin VB.Menu MnuImage 
          Caption         =   "-"
-         Index           =   18
+         Index           =   16
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Metadata"
-         Index           =   19
+         Index           =   17
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -379,12 +355,123 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuLayerTop 
       Caption         =   "&Layer"
       Begin VB.Menu MnuLayer 
-         Caption         =   "New"
+         Caption         =   "Add"
          Index           =   0
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "Layer from file..."
+            Caption         =   "Duplicate"
             Index           =   0
          End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "Empty layer"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "From clipboard"
+            Index           =   3
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "From file..."
+            Index           =   4
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Delete"
+         Index           =   1
+         Begin VB.Menu MnuLayerDelete 
+            Caption         =   "Current layer"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerDelete 
+            Caption         =   "All hidden layers"
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "-"
+         Index           =   2
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Merge up"
+         Index           =   3
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Merge down"
+         Index           =   4
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Order"
+         Index           =   5
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Raise layer"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Lower layer"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Layer to top"
+            Index           =   3
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Layer to bottom"
+            Index           =   4
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "-"
+         Index           =   6
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Transform"
+         Index           =   7
+         Begin VB.Menu MnuLayerTransform 
+            Caption         =   ""
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "-"
+         Index           =   8
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Transparency"
+         Index           =   9
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "Add basic transparency..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "Make color transparent..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "Remove transparency..."
+            Index           =   3
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "-"
+         Index           =   10
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Flatten image"
+         Index           =   11
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Merge visible layers"
+         Index           =   12
       End
    End
    Begin VB.Menu MnuSelectTop 
@@ -2242,69 +2329,63 @@ Private Sub MnuImage_Click(Index As Integer)
         'Separator
         Case 1
         
-        'Transparency top-level
-        Case 2
-        
-        'Separator
-        Case 3
-        
         'Resize
-        Case 4
+        Case 2
             Process "Resize", True
             
         'Content-aware resize
-        Case 5
+        Case 3
             Process "Content-aware resize", True
         
         'Canvas resize
-        Case 6
+        Case 4
             Process "Canvas size", True
                 
         'Separator
-        Case 7
+        Case 5
             
         'Crop to selection
-        Case 8
+        Case 6
             Process "Crop"
         
         'Autocrop
-        Case 9
+        Case 7
             Process "Autocrop"
         
         'Separator
-        Case 10
+        Case 8
         
         'Top-level Rotate
-        Case 11
+        Case 9
         
         'Flip horizontal (mirror)
-        Case 12
+        Case 10
             Process "Flip horizontal"
         
         'Flip vertical
-        Case 13
+        Case 11
             Process "Flip vertical"
         
         'Isometric view
-        Case 14
+        Case 12
             Process "Isometric conversion"
             
         'Separator
-        Case 15
+        Case 13
         
         'Indexed color
-        Case 16
+        Case 14
             Process "Reduce colors", True
         
         'Tile
-        Case 17
+        Case 15
             Process "Tile", True
             
         'Separator
-        Case 18
+        Case 16
         
         'Metadata top-level
-        Case 19
+        Case 17
     
     End Select
 
@@ -2850,8 +2931,8 @@ Private Sub mnuTool_Click(Index As Integer)
 
 End Sub
 
-'Add / Remove / Modify an image's alpha channel with this menu
-Private Sub MnuTransparency_Click(Index As Integer)
+'Add / Remove / Modify a layer's alpha channel with this menu
+Private Sub MnuLayerTransparency_Click(Index As Integer)
 
     Select Case Index
     

@@ -447,7 +447,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
-            If FormMain.MnuImage(8).Enabled <> newState Then FormMain.MnuImage(8).Enabled = newState
+            If FormMain.MnuImage(6).Enabled <> newState Then FormMain.MnuImage(6).Enabled = newState
             
         'Transformable selection controls specifically
         Case tSelectionTransform
@@ -461,8 +461,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         '32bpp color mode (e.g. add/remove alpha channel).  Previously I disabled the "add alpha channel"-type options if the image was already
         ' 32bpp, but I've since changed my mind.  It may be useful to take a 32bpp image and apply a *new* alpha channel, so those options are
         ' now enabled regardless of color depth.  "Remove transparency", however, is still disabled for 24bpp images.
-        Case tImgMode32bpp
-            FormMain.MnuTransparency(3).Enabled = newState
+        'Case tImgMode32bpp
+        '    FormMain.MnuLayerTransparency(3).Enabled = newState
         
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
         ' reading/browsing/writing metadata.)
