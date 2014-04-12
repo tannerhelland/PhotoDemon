@@ -372,10 +372,10 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     Select Case Index
     
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
+            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, 0
         
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
+            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, 0
     
         Case LYR_BTN_DELETE
             Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
