@@ -39,7 +39,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -386,7 +386,7 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuLayerDelete 
-            Caption         =   "All hidden layers"
+            Caption         =   "Hidden layers"
             Index           =   1
          End
       End
