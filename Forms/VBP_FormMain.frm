@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -434,7 +434,7 @@ Begin VB.Form FormMain
          Caption         =   "Transform"
          Index           =   7
          Begin VB.Menu MnuLayerTransform 
-            Caption         =   ""
+            Caption         =   "(coming soon)"
          End
       End
       Begin VB.Menu MnuLayer 
@@ -1330,10 +1330,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Flatten layers
         Case 11
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
         'Merge visible layers
         Case 12
-        
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
     End Select
 
@@ -1350,6 +1351,7 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
         
         'Delete all hidden layers
         Case 1
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
     End Select
 
@@ -1362,6 +1364,7 @@ Private Sub MnuLayerNew_Click(Index As Integer)
     
         'Blank layer
         Case 0
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
         'Duplicate of current layer
         Case 1
@@ -1372,6 +1375,7 @@ Private Sub MnuLayerNew_Click(Index As Integer)
         
         'Import from clipboard
         Case 3
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
         'Import from file
         Case 4
@@ -1399,9 +1403,11 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
         
         'Raise to top
         Case 3
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
         'Lower to bottom
         Case 4
+            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
         
     End Select
 
