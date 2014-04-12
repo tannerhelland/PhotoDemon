@@ -209,35 +209,39 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'Image Menu
     addMenuIcon "DUPLICATE", 3, 0      'Duplicate
-    addMenuIcon "TRANSPARENCY", 3, 2   'Transparency
-        '--> Image Mode sub-menu
-        addMenuIcon "ADDTRANS", 3, 2, 0      'Add alpha channel
-        addMenuIcon "GREENSCREEN", 3, 2, 1      'Color to alpha
-        addMenuIcon "REMOVETRANS", 3, 2, 3   'Remove alpha channel
-    addMenuIcon "RESIZE", 3, 4         'Resize
-    addMenuIcon "SMRTRESIZE", 3, 5     'Content-aware resize
-    addMenuIcon "CANVASSIZE", 3, 6     'Canvas resize
-    addMenuIcon "CROPSEL", 3, 8        'Crop to Selection
-    addMenuIcon "AUTOCROP", 3, 9      'Autocrop
-    addMenuIcon "ROTATECW", 3, 11      'Rotate top-level
+    addMenuIcon "RESIZE", 3, 2         'Resize
+    addMenuIcon "SMRTRESIZE", 3, 3     'Content-aware resize
+    addMenuIcon "CANVASSIZE", 3, 4     'Canvas resize
+    addMenuIcon "CROPSEL", 3, 6        'Crop to Selection
+    addMenuIcon "AUTOCROP", 3, 7      'Autocrop
+    addMenuIcon "ROTATECW", 3, 9      'Rotate top-level
         '--> Rotate sub-menu
-        addMenuIcon "ROTATECW", 3, 11, 0     'Rotate Clockwise
-        addMenuIcon "ROTATECCW", 3, 11, 1    'Rotate Counter-clockwise
-        addMenuIcon "ROTATE180", 3, 11, 2    'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 11, 3   'Rotate Arbitrary
-    addMenuIcon "MIRROR", 3, 12        'Mirror
-    addMenuIcon "FLIP", 3, 13          'Flip
-    addMenuIcon "ISOMETRIC", 3, 14     'Isometric
-    addMenuIcon "REDUCECOLORS", 3, 16  'Indexed color (Reduce Colors)
-    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(16).Enabled = True Else FormMain.MnuImage(16).Enabled = False
-    addMenuIcon "TILE", 3, 17          'Tile
-    addMenuIcon "METADATA", 3, 19      'Metadata (top-level)
+        addMenuIcon "ROTATECW", 3, 9, 0     'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 3, 9, 1    'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 3, 9, 2    'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 9, 3   'Rotate Arbitrary
+    addMenuIcon "MIRROR", 3, 10        'Mirror
+    addMenuIcon "FLIP", 3, 11          'Flip
+    addMenuIcon "ISOMETRIC", 3, 12     'Isometric
+    addMenuIcon "REDUCECOLORS", 3, 14  'Indexed color (Reduce Colors)
+    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(14).Enabled = True Else FormMain.MnuImage(14).Enabled = False
+    addMenuIcon "TILE", 3, 15          'Tile
+    addMenuIcon "METADATA", 3, 17      'Metadata (top-level)
         '--> Metadata sub-menu
-        addMenuIcon "BROWSEMD", 3, 19, 0     'Browse metadata
-        addMenuIcon "COUNTCOLORS", 3, 19, 2  'Count Colors
-        addMenuIcon "MAPPHOTO", 3, 19, 3     'Map photo location
+        addMenuIcon "BROWSEMD", 3, 17, 0     'Browse metadata
+        addMenuIcon "COUNTCOLORS", 3, 17, 2  'Count Colors
+        addMenuIcon "MAPPHOTO", 3, 17, 3     'Map photo location
     
     'Layer menu
+    'addMenuIcon "SELECTALL", 4, 0       'Add layer (top-level)
+    'addMenuIcon "SELECTALL", 4, 1       'Delete layer (top-level)
+    'addMenuIcon "SELECTALL", 4, 3       'Merge up
+    'addMenuIcon "SELECTALL", 4, 4       'Merge down
+    'addMenuIcon "SELECTALL", 4, 5       'Order (top-level)
+    'addMenuIcon "SELECTALL", 4, 7       'Transform (top-level)
+    'addMenuIcon "SELECTALL", 4, 9       'Transparency (top-level)
+    'addMenuIcon "SELECTALL", 4, 11      'Flatten image
+    'addMenuIcon "SELECTALL", 4, 12      'Merge visible layers
     
     'Select Menu
     addMenuIcon "SELECTALL", 5, 0       'Select all

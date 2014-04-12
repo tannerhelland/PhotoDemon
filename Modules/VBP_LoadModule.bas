@@ -1606,12 +1606,12 @@ Public Sub LoadAccelerators()
         
         'Image menu
         .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", FormMain.MnuImage(0), True, True, False, 0
-        .AddAccelerator vbKeyR, vbCtrlMask, "Resize", FormMain.MnuImage(4), True, True, True, 0
-        .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", FormMain.MnuImage(6), True, True, True, 0
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, 1
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Autocrop", FormMain.MnuImage(9), True, True, False, 1
+        .AddAccelerator vbKeyR, vbCtrlMask, "Resize", FormMain.MnuImage(2), True, True, True, 0
+        .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", FormMain.MnuImage(4), True, True, True, 0
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(6), True, True, False, 1
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Autocrop", FormMain.MnuImage(7), True, True, False, 1
         'KeyCode 188 = <,  (next to the letter M)
-        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(16), True, True, False, 0
+        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(14), True, True, False, 0
         
             'Image -> Rotate submenu
             .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
