@@ -2489,3 +2489,76 @@ Public Function CreateExtendedDIB(ByVal hExtend As Long, ByVal vExtend As Long, 
     CreateExtendedDIB = 1
     
 End Function
+
+'Quickly grayscale a given DIB.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
+    End If
+    
+    'Color values
+    Dim r As Long, g As Long, b As Long, grayVal As Long
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+            
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        If grayVal > 255 Then grayVal = 255
+        
+        'Assign that gray value to each color channel
+        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal + 1, y) = grayVal
+        ImageData(QuickVal + 2, y) = grayVal
+        
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    If cancelCurrentAction Then GrayscaleDIB = 0 Else GrayscaleDIB = 1
+    
+End Function

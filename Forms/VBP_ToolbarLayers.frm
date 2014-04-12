@@ -55,17 +55,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":0000
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":0028
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -74,17 +82,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":0D7A
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -93,17 +109,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":1AF4
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -145,11 +169,19 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   873
-      max             =   100
-      value           =   100
-      font            =   "VBP_ToolbarLayers.frx":286E
+      _ExtentX        =   4868
+      _ExtentY        =   873
+      Max             =   100
+      Value           =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H8000000D&
@@ -249,10 +281,12 @@ Private disableRedraws As Boolean
 
 'Extra interface images are loaded as resources at run-time
 Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
+Private img_MergeUp As pdDIB, img_MergeDown As pdDIB, img_MergeUpDisabled As pdDIB, img_MergeDownDisabled As pdDIB
 
 'Some UI elements are dynamically rendered onto the layer box.  To simplify hit detection, their RECTs are stored
 ' at render-time, which allows the mouse actions to easily check hits regardless of layer box position.
 Private m_VisibilityRect As RECT, m_NameRect As RECT
+Private m_MergeUpRect As RECT, m_MergeDownRect As RECT
 
 'Because VB inexplicably fails to provide mouse coords for Click and DoubleClick events, we track coords manually
 ' and use them as necessary.
@@ -405,7 +439,7 @@ Private Sub Form_Load()
     Set m_ToolTip = New clsToolTip
     m_ToolTip.Create Me
     m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-    m_ToolTip.DelayTime(ttDelayShow) = 5000
+    m_ToolTip.DelayTime(ttDelayShow) = 10000
     m_ToolTip.AddTool picLayers, ""
     
     'Theme the form
@@ -436,20 +470,32 @@ Private Sub Form_Load()
     End With
     
     'Load various interface images from the resource
-    Set img_EyeOpen = New pdDIB
-    loadResourceToDIB "EYE_OPEN", img_EyeOpen
-    Set img_EyeClosed = New pdDIB
-    loadResourceToDIB "EYE_CLOSE", img_EyeClosed
+    initializeUIDib img_EyeOpen, "EYE_OPEN"
+    initializeUIDib img_EyeClosed, "EYE_CLOSE"
+    initializeUIDib img_MergeUp, "MERGE_UP"
+    initializeUIDib img_MergeDown, "MERGE_DOWN"
+    initializeUIDib img_MergeUpDisabled, "MERGE_UP"
+    initializeUIDib img_MergeDownDisabled, "MERGE_DOWN"
     
-    'Pad all interface images with 2px blank space; this makes them a bit more aesthetically pleasing, and saves us the
-    ' trouble of manually calculating 2px offsets for each image at draw-time
-    Filters_Layers.padDIB img_EyeOpen, 2
-    Filters_Layers.padDIB img_EyeClosed, 2
-    
+    'Make the disabled copies of the images grayscale
+    Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
+    Filters_Layers.GrayscaleDIB img_MergeDownDisabled, True
+        
     'Initialize the subclasser, so we can capture key events.  Note that we won't actually activate the hook until the
     ' layer name text box receives focus.  Similarly, when it loses focus, it will immediately release the hook.
     Set cSubclass = New cSelfSubHookCallback
     
+End Sub
+
+'Load a UI image from the resource section and into a DIB
+Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
+    
+    Set dstDIB = New pdDIB
+    loadResourceToDIB resString, dstDIB
+    
+    'Pad all interface images with 2px blank space; this makes them a bit more aesthetically pleasing, and saves us the
+    ' trouble of manually calculating 2px offsets for each image at draw-time
+    Filters_Layers.padDIB dstDIB, fixDPI(2)
     
 End Sub
 
@@ -719,17 +765,46 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             End If
             
             'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
-            With m_VisibilityRect
-                .Left = xObjOffset
-                .Top = yObjOffset
-                .Right = xObjOffset + img_EyeOpen.getDIBWidth
-                .Bottom = yObjOffset + img_EyeOpen.getDIBHeight
-            End With
+            fillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
+            
+            'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
+            If tmpLayerRef.getLayerVisibility Then
+            
+                'Merge down comes first...
+                xObjOffset = xObjOffset + img_EyeOpen.getDIBWidth + fixDPI(6)
+                
+                If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
+                    img_MergeDown.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                Else
+                    img_MergeDownDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                End If
+                fillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
+                
+                '...then Merge up
+                xObjOffset = xObjOffset + img_MergeDown.getDIBWidth + fixDPI(6)
+                If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
+                    img_MergeUp.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                Else
+                    img_MergeUpDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                End If
+                fillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
+                
+            End If
             
         End If
         
     End If
 
+End Sub
+
+'Given a destination rect and a UI DIB, fill the rect with the UI DIB's coordinates
+Private Sub fillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, ByVal xOffset As Long, ByVal yOffset As Long)
+    With dstRect
+        .Left = xOffset
+        .Top = yOffset
+        .Right = xOffset + srcDIB.getDIBWidth
+        .Bottom = yOffset + srcDIB.getDIBHeight
+    End With
 End Sub
 
 'The user can double-click a layer name to change it directly.
@@ -771,8 +846,22 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
             
             'Has the user clicked a visibility rectangle?
             If isPointInRect(x, y, m_VisibilityRect) Then
-            
+                
                 Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
+            
+            'Merge down rectangle?
+            ElseIf isPointInRect(x, y, m_MergeDownRect) Then
+            
+                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
+                    Layer_Handler.mergeLayerAdjacent clickedLayer, True
+                End If
+            
+            'Merge up rectangle?
+            ElseIf isPointInRect(x, y, m_MergeUpRect) Then
+            
+                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
+                    Layer_Handler.mergeLayerAdjacent clickedLayer, False
+                End If
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
             ' the active layer.
@@ -795,6 +884,12 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
     'Don't process MouseMove events if no images are loaded
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
     
+    'If a layer other than the active one is being hovered, highlight that box
+    If curLayerHover <> getLayerAtPosition(x, y) Then
+        curLayerHover = getLayerAtPosition(x, y)
+        redrawLayerBox
+    End If
+    
     'Store the mouse position so other functions in this routine can access them
     m_MouseX = x
     m_MouseY = y
@@ -808,13 +903,33 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
         'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
         ' As such, we need to make sure we won't be attempting to access a bad layer index.
         If curLayerHover >= 0 Then
-            
             If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
                 toolString = g_Language.TranslateMessage("Click to hide this layer.")
             Else
                 toolString = g_Language.TranslateMessage("Click to show this layer.")
             End If
+        End If
+        
+    'Mouse is over Merge Down
+    ElseIf isPointInRect(x, y, m_MergeDownRect) Then
+    
+        If curLayerHover >= 0 Then
+            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
+                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer beneath it.")
+            Else
+                toolString = g_Language.TranslateMessage("This layer cannot be merged down, because there are no visible layers beneath it.")
+            End If
+        End If
             
+    'Mouse is over Merge Up
+    ElseIf isPointInRect(x, y, m_MergeUpRect) Then
+    
+        If curLayerHover >= 0 Then
+            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
+                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer above it.")
+            Else
+                toolString = g_Language.TranslateMessage("This layer cannot be merged up, because there are no visible layers above it.")
+            End If
         End If
             
     'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
@@ -832,14 +947,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
     
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
     If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
-    
-    
-    'If a layer other than the active one is being hovered, highlight that box
-    If curLayerHover <> getLayerAtPosition(x, y) Then
-        curLayerHover = getLayerAtPosition(x, y)
-        redrawLayerBox
-    End If
-    
+        
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the layer at that location

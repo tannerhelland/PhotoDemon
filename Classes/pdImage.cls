@@ -147,6 +147,10 @@ Option Explicit
     'Number of ACTIVE layers in the current image.  This is equal to or less than numOfLayers, above.  Note that it is not
     ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
     Private numOfLayers As Long
+    
+'Some API functions are used to simplify the process of things like merging layers
+Private Declare Function UnionRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
+
 
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
@@ -207,7 +211,7 @@ Public Function getCompositeImageColorDepth() As Long
         getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
     Else
     
-        'TODO!  Use magic to determine the color depth of the composited image.
+        'TODO!  Use magic to determine the ideal color depth of the composited image.
     
     End If
 
@@ -220,9 +224,46 @@ End Function
 ' us some processing time, because we don't have to check for rect intersection.
 Public Sub mergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
 
-    'TODO: pad the bottom rect with transparent borders so that it is large enough to hold the top layer in its entirety.
-    If Not bottomLayerIsFullSize Then
+    Dim xOffset As Double, yOffset As Double
     
+    'If the bottom layer is the size of the image itself, we can use the existing layer offsets in our calculation.  (Nice!)
+    If bottomLayerIsFullSize Then
+    
+        xOffset = topLayer.getLayerOffsetX
+        yOffset = topLayer.getLayerOffsetY
+    
+    'The top and bottom layer sizes are totally independent.  This makes our life somewhat unpleasant.
+    Else
+    
+        'First, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
+        Dim topRect As RECT, bottomRect As RECT, finalRect As RECT
+        fillRectForLayer bottomLayer, bottomRect
+        fillRectForLayer topLayer, topRect
+        UnionRect finalRect, topRect, bottomRect
+        
+        'finalRect now contains the coordinates of the resulting rect.  Create a blank DIB at those dimensions.
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank finalRect.Right - finalRect.Left, finalRect.Bottom - finalRect.Top, 32, 0
+        
+        'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
+        xOffset = bottomRect.Left - finalRect.Left
+        yOffset = bottomRect.Top - finalRect.Top
+        BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'We now need to calculate a new layer offset for this temporary DIB, which will eventually be copied into the bottom layer.
+        ' Without this, the main composite won't know where to stick the layer!
+        bottomLayer.setLayerOffsetX finalRect.Left
+        bottomLayer.setLayerOffsetY finalRect.Top
+        
+        'Copy the temporary DIB into the bottom layer
+        bottomLayer.layerDIB.createFromExistingDIB tmpDIB
+        Set tmpDIB = Nothing
+        
+        'Calculate new offsets for the top layer, then carry on with business as usual!
+        xOffset = topRect.Left - finalRect.Left
+        yOffset = topRect.Top - finalRect.Top
+        
     End If
     
     'Now that the two layers are ready to be condensed into one, the merge process is actually very simple.
@@ -234,7 +275,7 @@ Public Sub mergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLaye
     
         'Possible future project - provide specialized, performance-friendly handling for 24bpp layers??
         With topLayer
-            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, 255, .getLayerOffsetX, .getLayerOffsetY
+            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, 255, xOffset, yOffset
         End With
         
     '32bpp case
@@ -242,7 +283,7 @@ Public Sub mergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLaye
     
         'Always use the AlphaBlend API for 32bpp layers
         With topLayer
-            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, xOffset, yOffset
         End With
     
     End If
@@ -1017,5 +1058,17 @@ Private Sub Class_Terminate()
     For i = 0 To UBound(imgLayers)
         Set imgLayers(i) = Nothing
     Next i
+
+End Sub
+
+'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
+Friend Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT)
+
+    With srcLayer
+        dstRect.Left = .getLayerOffsetX
+        dstRect.Right = .getLayerOffsetX + .layerDIB.getDIBWidth
+        dstRect.Top = .getLayerOffsetY
+        dstRect.Bottom = .getLayerOffsetY + .layerDIB.getDIBHeight
+    End With
 
 End Sub
