@@ -187,8 +187,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     ' it made maintenance very difficult.
     '
     'For ease of reference, the various processIDs are divided into categories of similar functions.  These categories
-    ' match the organization of PhotoDemon's menus.  Please note that such organization in this function is simply to
-    ' improve readability; there is no functional purpose to it.
+    ' match the organization of PhotoDemon's menus.  Please note that such organization (in this function, anyway) is
+    ' simply to improve readability; there is no functional implication.
     '
     '******************************************************************************************************************
     
@@ -436,6 +436,21 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "New Layer from File"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
         
+        'Duplicate a given layer
+        Case "Duplicate Layer"
+            Layer_Handler.duplicateLayerByIndex cParams.GetLong(1)
+            
+        'Delete a layer
+        Case "Delete layer"
+            Layer_Handler.deleteLayer cParams.GetLong(1)
+            
+        'Merge a layer up or down
+        Case "Merge layer down"
+            Layer_Handler.mergeLayerAdjacent cParams.GetLong(1), True
+            
+        Case "Merge layer up"
+            Layer_Handler.mergeLayerAdjacent cParams.GetLong(1), False
+            
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc
