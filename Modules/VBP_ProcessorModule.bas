@@ -464,6 +464,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Lower layer"
             Layer_Handler.moveLayerAdjacent cParams.GetLong(1), False
             
+        'Flatten image
+            Case "Flatten image"
+                Layer_Handler.flattenImage
+            
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc

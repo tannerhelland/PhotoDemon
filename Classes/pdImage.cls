@@ -177,7 +177,7 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
         If layerPosition = -1 Then curLayer = curLayer + 1 Else curLayer = layerPosition + 1
         
         'Resize the layers array by one, and shift all existing layers upward.
-        ReDim Preserve imgLayers(0 To UBound(imgLayers) + 1) As pdLayer
+        ReDim Preserve imgLayers(0 To numOfLayers + 1) As pdLayer
         
         Dim i As Long
         For i = UBound(imgLayers) To curLayer Step -1

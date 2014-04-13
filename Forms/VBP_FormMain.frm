@@ -1342,7 +1342,7 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Flatten layers
         Case 11
-            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
+            Process "Flatten image", , , 1
         
         'Merge visible layers
         Case 12
