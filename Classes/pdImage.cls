@@ -404,6 +404,22 @@ Public Sub setActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
     
 End Sub
 
+'Retrieve a layer index using its canonical ID.
+Public Function getLayerIndexFromID(ByVal requestedID As Long) As Long
+    
+    Dim i As Long
+    For i = 0 To UBound(imgLayers)
+        If imgLayers(i).getLayerID = requestedID Then
+            getLayerIndexFromID = i
+            Exit Function
+        End If
+    Next i
+    
+    'If we made it all the way here, the requested layer was not found.  Return 0.
+    getLayerIndexFromID = 0
+    
+End Function
+
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
 Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
