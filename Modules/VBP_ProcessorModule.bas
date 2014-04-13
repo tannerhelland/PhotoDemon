@@ -295,8 +295,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
         
-        Case "Copy to clipboard"
-            ClipboardCopy
+        Case "Copy"
+            ClipboardCopy False
+            
+        Case "Copy merged"
+            ClipboardCopy True
             
         Case "Paste as new layer"
             ClipboardPaste True
