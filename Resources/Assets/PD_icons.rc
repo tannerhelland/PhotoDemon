@@ -35,7 +35,9 @@ UNDO         CUSTOM  MOVEABLE        LOADONCALL      edit_undo.png
 REDO         CUSTOM  MOVEABLE        LOADONCALL      edit_redo.png
 REPEAT       CUSTOM  MOVEABLE        LOADONCALL      arrow_repeat.png
 COPY         CUSTOM  MOVEABLE        LOADONCALL      blue_document_copy.png
-PASTE        CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_image.png
+COPY_MERGED  CUSTOM  MOVEABLE        LOADONCALL      copy_merged.png
+PASTE_LAYER  CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_image.png
+PASTE_IMAGE  CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_new_image.png
 CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
 
 
@@ -74,6 +76,17 @@ ISOMETRIC    CUSTOM  MOVEABLE        LOADONCALL      controller.png
 TILE         CUSTOM  MOVEABLE        LOADONCALL      image_tiled.png
 REDUCECOLORS CUSTOM  MOVEABLE        LOADONCALL      palette.png
 COUNTCOLORS  CUSTOM  MOVEABLE        LOADONCALL      counter.png
+
+
+//Layer menu
+
+//--> Add new sub-menu
+DUPL_LAYER   CUSTOM  MOVEABLE        LOADONCALL      duplicate_layer.png
+
+//--> Order sub-menu
+MERGE_UP     CUSTOM  MOVEABLE        LOADONCALL      merge_up.png
+MERGE_DOWN   CUSTOM  MOVEABLE        LOADONCALL      merge_down.png
+
 
 
 //Select menu
@@ -278,12 +291,9 @@ PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 //T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
 //T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
 
-//Layer toolbox
+//Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
 EYE_CLOSE    CUSTOM  MOVEABLE        LOADONCALL      eye_close.png
-MERGE_UP     CUSTOM  MOVEABLE        LOADONCALL      merge_up.png
-MERGE_DOWN   CUSTOM  MOVEABLE        LOADONCALL      merge_down.png
-DUPL_LAYER   CUSTOM  MOVEABLE        LOADONCALL      duplicate_layer.png
 
 //Cursors
 HANDOPEN     CUSTOM  MOVEABLE        LOADONCALL      openhand.png

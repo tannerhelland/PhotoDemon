@@ -118,7 +118,10 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tSelection, False
         metaToggle tMacro, False
         metaToggle tZoom, False
-                
+        
+        '"Paste as new layer" is disabled when no images are loaded (but "Paste as new image" remains active)
+        FormMain.MnuEdit(6).Enabled = False
+                        
         Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
         
         'Assign a generic caption to the main window
@@ -168,6 +171,9 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tZoom, True
         metaToggle tImageOps, True
         metaToggle tMacro, True
+        
+        'Paste as new layer is always available if one (or more) images are loaded
+        If Not FormMain.MnuEdit(6).Enabled Then FormMain.MnuEdit(6).Enabled = True
         
         'Display this image's path in the title bar.
         FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
@@ -459,11 +465,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         'Copy (menu item only)
         Case tCopy
             If FormMain.MnuEdit(4).Enabled <> newState Then FormMain.MnuEdit(4).Enabled = newState
-        
-        'Paste (menu item only)
-        Case tPaste
             If FormMain.MnuEdit(5).Enabled <> newState Then FormMain.MnuEdit(5).Enabled = newState
-        
+            
         'View (top-menu level)
         Case tView
             If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState

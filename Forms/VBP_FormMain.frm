@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -179,16 +179,28 @@ Begin VB.Form FormMain
          Index           =   3
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Copy to clipboard"
+         Caption         =   "&Copy "
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste as new image"
+         Caption         =   "Copy Merged"
          Index           =   5
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Empty clipboard"
+         Caption         =   "&Paste as new layer"
          Index           =   6
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "Paste as new image"
+         Index           =   7
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "-"
+         Index           =   8
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "&Empty clipboard"
+         Index           =   9
       End
    End
    Begin VB.Menu MnuView 
@@ -1375,7 +1387,7 @@ Private Sub MnuLayerNew_Click(Index As Integer)
         
         'Import from clipboard
         Case 3
-            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
+            Process "Paste as new layer", False, , , , False
         
         'Import from file
         Case 4
@@ -2224,16 +2236,27 @@ Private Sub MnuEdit_Click(Index As Integer)
         '<separator>
         Case 3
         
-        'Copy to clipboard
+        'Copy default to clipboard
         Case 4
-            Process "Copy to clipboard", False, , 0, , False
+            Process "Copy", False, , 0, , False
+        
+        'Copy merged area to clipboard
+        Case 5
+            Process "Copy merged", False, , 0, , False
+        
+        'Paste as new layer
+        Case 6
+            Process "Paste as new layer", False, , , , False
         
         'Paste as new image
-        Case 5
+        Case 7
             Process "Paste as new image", False, , 0, , False
         
+        '<separator>
+        Case 8
+        
         'Empty clipboard
-        Case 6
+        Case 9
             Process "Empty clipboard", False, , 0, , False
                 
     
@@ -2505,7 +2528,7 @@ End Sub
 
 'This is the exact same thing as "Paste as New Image".  It is provided in two locations for convenience.
 Private Sub MnuImportClipboard_Click()
-    Process "Paste as new image", , , False
+    Process "Paste as new image", False, , 0, , False
 End Sub
 
 'Attempt to import an image from the Internet

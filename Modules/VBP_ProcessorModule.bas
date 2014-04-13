@@ -298,8 +298,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Copy to clipboard"
             ClipboardCopy
             
+        Case "Paste as new layer"
+            ClipboardPaste True
+            
         Case "Paste as new image"
-            ClipboardPaste
+            ClipboardPaste False
             
         Case "Empty clipboard"
             ClipboardEmpty
