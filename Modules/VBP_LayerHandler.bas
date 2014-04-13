@@ -296,3 +296,40 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
+
+'Given a multi-layered image, flatten it.  Note that flattening does *not* remove alpha!  It simply merges all layers,
+' including discarding invisible ones.
+Public Sub flattenImage()
+
+    'Start by retrieving a copy of the composite image
+    Dim compositeDIB As pdDIB
+    Set compositeDIB = New pdDIB
+    
+    pdImages(g_CurrentImage).getCompositedImage compositeDIB
+    
+    'Also, grab the name of the bottom-most layer.  This will be used as the name of our only layer in the flattened image.
+    Dim flattenedName As String
+    flattenedName = pdImages(g_CurrentImage).getLayerByIndex(0).getLayerName
+    
+    'With this information, we can now delete all image layers.
+    Do
+        pdImages(g_CurrentImage).deleteLayerByIndex 0
+    Loop While pdImages(g_CurrentImage).getNumOfLayers > 1
+    
+    'Note that the delete operation does not allow us to delete all layers.  (If there is only one layer present,
+    ' it will exit without modifying the image.)  Because of that, the image will still retain one layer, which
+    ' we will have to manually overwrite.
+    
+    'Overwrite the final layer with the composite DIB.
+    pdImages(g_CurrentImage).getLayerByIndex(0).CreateNewImageLayer compositeDIB, , flattenedName
+    
+    'Mark the only layer present as the active one.  (This will also re-synchronize the interface against the new image.)
+    setActiveLayerByID 0, False
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
