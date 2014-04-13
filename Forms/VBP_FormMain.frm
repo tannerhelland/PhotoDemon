@@ -1346,7 +1346,7 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge visible layers
         Case 12
-            MsgBox "This action isn't implemented yet.  I hope to get to it by the end of April 2014.", vbOKOnly + vbInformation + vbApplicationModal, "Under construction"
+            Process "Merge visible layers", , , 1
         
     End Select
 

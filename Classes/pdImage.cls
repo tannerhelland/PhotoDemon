@@ -460,7 +460,7 @@ Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Bo
 End Sub
 
 'Used by various layer movement functions.  Given two layer indices, swap them.
-Private Sub swapTwoLayers(ByVal srcLayerID_1 As Long, ByVal srcLayerID_2 As Long)
+Public Sub swapTwoLayers(ByVal srcLayerID_1 As Long, ByVal srcLayerID_2 As Long)
 
     'Create a temporary reference to the first layer
     Dim tmpLayerRef As pdLayer
@@ -1100,3 +1100,30 @@ Friend Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT)
     End With
 
 End Sub
+
+'Get number of visible/hidden layers
+Public Function getNumOfVisibleLayers() As Long
+
+    Dim i As Long, visLayerCount As Long
+    visLayerCount = 0
+    
+    For i = 0 To numOfLayers - 1
+        If imgLayers(i).getLayerVisibility Then visLayerCount = visLayerCount + 1
+    Next i
+    
+    getNumOfVisibleLayers = visLayerCount
+
+End Function
+
+Public Function getNumOfHiddenLayers() As Long
+
+    Dim i As Long, hidLayerCount As Long
+    hidLayerCount = 0
+    
+    For i = 0 To numOfLayers - 1
+        If Not imgLayers(i).getLayerVisibility Then hidLayerCount = hidLayerCount + 1
+    Next i
+    
+    getNumOfHiddenLayers = hidLayerCount
+
+End Function

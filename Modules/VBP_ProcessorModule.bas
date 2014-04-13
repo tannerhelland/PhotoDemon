@@ -468,6 +468,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Case "Flatten image"
                 Layer_Handler.flattenImage
             
+        'Merge visible layers
+            Case "Merge visible layers"
+                Layer_Handler.mergeVisibleLayers
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc

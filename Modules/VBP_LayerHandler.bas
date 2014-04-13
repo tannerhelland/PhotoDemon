@@ -111,6 +111,9 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
     toolbar_Layers.forceRedraw False
     
+    'Synchronize the interface to the new image
+    syncInterfaceToCurrentImage
+    
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
@@ -333,3 +336,63 @@ Public Sub flattenImage()
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
+
+'Given a multi-layered image, merge all visible layers, while ignoring any hidden ones.  Note that flattening does *not*
+' remove alpha!  It simply merges all visible layers.
+Public Sub mergeVisibleLayers()
+    
+    'If there's only one visible layer, this function should not be called - but just in case, exit in advance.
+    If pdImages(g_CurrentImage).getNumOfLayers = 1 Then Exit Sub
+    
+    'SIf there's only one visible layer, this function should not be called - but just in case, exit in advance.
+    If pdImages(g_CurrentImage).getNumOfVisibleLayers = 1 Then Exit Sub
+    
+    'By this point, we can assume there are at least two visible layers in the image.  Rather than deal with the messiness
+    ' of finding the lowest base layer and gradually merging everything into it, we're going to just create a new blank
+    ' layer at the base of the image, then merge everything with it until finally all visible layers have been merged.
+    
+    'Insert a new layer at the bottom of the layer stack.
+    pdImages(g_CurrentImage).createBlankLayer 0
+    
+    'Technically, the command above does not actually insert a new layer at the base of the image.  Per convention,
+    ' it always inserts the requested layer at the spot one *above* the requested spot.  To work around this, swap
+    ' our newly created layer with the layer at position 0.
+    pdImages(g_CurrentImage).swapTwoLayers 0, 1
+    
+    'Fill that new layer with a blank DIB at the dimensions of the image.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0
+    pdImages(g_CurrentImage).getLayerByIndex(0).CreateNewImageLayer tmpDIB, , g_Language.TranslateMessage("Merged layers")
+    
+    'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
+    ' merging visible layers with the base layer, until all visible layers have been merged.
+    Dim i As Long
+    For i = 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        'If this layer is visible, merge it with the base layer
+        If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+            pdImages(g_CurrentImage).mergeTwoLayers pdImages(g_CurrentImage).getLayerByIndex(i), pdImages(g_CurrentImage).getLayerByIndex(0), True
+        End If
+    
+    Next i
+    
+    'Now that our base layer contains the result of merging all visible layers, we can now delete all
+    ' other visible layers.
+    For i = pdImages(g_CurrentImage).getNumOfLayers - 1 To 1 Step -1
+        If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+            pdImages(g_CurrentImage).deleteLayerByIndex i
+        End If
+    Next i
+    
+    'Mark the new merged layer as the active one.  (This will also re-synchronize the interface against the new image.)
+    setActiveLayerByIndex 0, False
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
