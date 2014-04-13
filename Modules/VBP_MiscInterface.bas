@@ -244,7 +244,8 @@ Public Sub syncInterfaceToCurrentImage()
             metaToggle tSelectionTransform, False
         End If
         
-        'Update all layer menus; some will be disabled under certain circumstances
+        'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
+        ' are visible, and other criteria.
         If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
         
             'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
@@ -271,6 +272,13 @@ Public Sub syncInterfaceToCurrentImage()
             
                 'Delete
                 If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True
+                
+                'Delete hidden layers is only available if one or more layers are hidden
+                If pdImages(g_CurrentImage).getNumOfHiddenLayers > 0 Then
+                    FormMain.MnuLayerDelete(1).Visible = False
+                Else
+                    FormMain.MnuLayerDelete(1).Visible = True
+                End If
             
                 'Merge up/down are not available for layers at the top and bottom of the image
                 If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
@@ -307,8 +315,12 @@ Public Sub syncInterfaceToCurrentImage()
                 'Flatten
                 If Not FormMain.MnuLayer(11).Enabled Then FormMain.MnuLayer(11).Enabled = True
                 
-                'Merge visible
-                If Not FormMain.MnuLayer(12).Enabled Then FormMain.MnuLayer(12).Enabled = True
+                'Merge visible is only available if two or more layers are visible
+                If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
+                    If Not FormMain.MnuLayer(12).Enabled Then FormMain.MnuLayer(12).Enabled = True
+                Else
+                    FormMain.MnuLayer(12).Enabled = False
+                End If
                 
             End If
             
