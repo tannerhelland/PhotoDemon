@@ -254,7 +254,7 @@ Public Sub MenuCropToSelection()
     'Create a new DIB the size of the active selection
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, True
+    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, True, True
     
     'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
     ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square

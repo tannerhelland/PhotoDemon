@@ -241,7 +241,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
-    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB
+    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, True
     'Set tmpImage.mainDIB = tmpDIB
     tmpImage.updateSize
     

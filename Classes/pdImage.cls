@@ -936,13 +936,41 @@ Private Sub Class_Initialize()
         
 End Sub
 
+'Pass a given layer's DIB into a new DIB, but pad it against null pixels so that it is the same size as the image.
+' This may cause cropping if the layer currently lies off the image - this is a known "issue", though I haven't quite made up my
+' mind as to whether it's an issue that needs resolving or not.  I will revisit in the future, once I have a better idea of
+' the workflow implications.
+' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
+Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
+
+    'Create a blank destination DIB at the size of the image
+    dstDIB.createBlank Width, Height, 32, 0
+    
+    'Copy the source layer into the blank DIB
+    BitBlt dstDIB.getDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).layerDIB.getDIBWidth, imgLayers(srcLayerIndex).layerDIB.getDIBHeight, imgLayers(srcLayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    
+End Sub
+
+
 'Return a DIB that contains the currently selected area, fully processed according to the selection mask
-Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False) As Boolean
+Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False) As Boolean
 
     'If this image does not contain an active selection, exit now.
     If (Not IsActive) Or (Not selectionActive) Then
         retrieveProcessedSelection = False
         Exit Function
+    End If
+    
+    'Before doing anything else, make a temporary copy of the source data.  The source data varies depending on the useMergedImage
+    ' parameter - if it is TRUE, we use a composite version of the image.  If it is FALSE, we use a copy of the current layer,
+    ' but null-padded to be the same size as the image.
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    
+    If useMergedImage Then
+        getCompositedImage srcDIB, False
+    Else
+        retrieveNullPaddedLayer srcDIB, curLayer
     End If
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
@@ -955,7 +983,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, getActiveDIB()
+    prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim selData() As Byte
@@ -978,7 +1006,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Dim blendAlpha As Double
     
     Dim srcDIBCD As Long, srcQuickX As Long, srcQuickY As Long
-    srcDIBCD = getActiveDIB().getDIBColorDepth \ 8
+    srcDIBCD = srcDIB.getDIBColorDepth \ 8
     
     Dim dstDIBCD As Long, dstQuickX As Long
     dstDIBCD = dstDIB.getDIBColorDepth \ 8

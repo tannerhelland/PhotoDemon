@@ -878,7 +878,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
         '*************************************************************************************************************************************
         
-        If isThisPrimaryImage Then targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage))
+        If isThisPrimaryImage Then
+            If Len(imgName) = 0 Then
+                targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage))
+            Else
+                targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName
+            End If
+        End If
         
         'Update the pdImage container to be the same size as its (newly created) base layer
         targetImage.updateSize

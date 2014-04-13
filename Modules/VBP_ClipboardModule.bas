@@ -26,7 +26,7 @@ Private Const CF_HDROP As Long = 15
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 
 'Copy image
-Public Sub ClipboardCopy()
+Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -37,12 +37,20 @@ Public Sub ClipboardCopy()
         'Fill the temporary DIB with the selection
         'tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
         'BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
-        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB
+        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, copyMerged
         
     Else
     
-        'If a selection is NOT active, just make a copy of the full image
-        pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
+        'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
+        If copyMerged Then
+            pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
+        Else
+            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
+            
+            'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha False
+            
+        End If
         
     End If
     
