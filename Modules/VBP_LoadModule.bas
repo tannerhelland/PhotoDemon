@@ -1587,8 +1587,10 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyY, vbCtrlMask, "Redo", FormMain.MnuEdit(1), True, True, False, False
         .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", FormMain.MnuEdit(2), True, True, False, True
         
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy to clipboard", FormMain.MnuEdit(4), True, True, False, False
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(5), True, False, False, False
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(4), True, True, False, False
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", FormMain.MnuEdit(5), True, True, False, False
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new layer", FormMain.MnuEdit(6), True, False, False, False
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new image", FormMain.MnuEdit(7), True, False, False, False
         
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, False
@@ -1632,7 +1634,7 @@ Public Sub LoadAccelerators()
         'Adjustments top shortcut menu
         .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", FormMain.MnuAdjustments(0), True, True, True, False
         .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuAdjustments(1), True, True, True, False
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Color balance", FormMain.MnuAdjustments(2), True, True, True, False
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", FormMain.MnuAdjustments(2), True, True, True, False
         .AddAccelerator vbKeyM, vbCtrlMask, "Curves", FormMain.MnuAdjustments(3), True, True, True, False
         .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuAdjustments(4), True, True, True, False
         .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuAdjustments(5), True, True, True, False
@@ -1696,9 +1698,12 @@ Public Sub DrawAccelerators()
 
     'A few menu shortcuts must be drawn manually.
     
-    'Because the Import -> From Clipboard menu shares the same shortcut as Edit -> Paste, we must manually add
-    ' its shortcut (as only the Edit -> Paste will be automatically handled).
-    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+V"
+    'Because the Import -> From Clipboard menu shares the same shortcut as Edit -> Paste as new image, we must
+    ' manually add its shortcut (as only the Edit -> Paste will be handled automatically).
+    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+Shift+V"
+    
+    'Similarly for the Layer -> New -> From Clipboard menu
+    FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & "Ctrl+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
     

@@ -18,7 +18,7 @@ Option Explicit
 
 'API functions used to extract file names from clipboard data
 Private Declare Function CloseClipboard Lib "user32" () As Long
-Private Declare Function DragQueryFile Lib "shell32.dll" Alias "DragQueryFileA" (ByVal hDrop As Long, ByVal iFile As Long, ByVal lpszFile As String, ByVal cch As Long) As Long
+Private Declare Function DragQueryFile Lib "shell32" Alias "DragQueryFileA" (ByVal hDrop As Long, ByVal iFile As Long, ByVal lpszFile As String, ByVal cch As Long) As Long
 Private Declare Function GetClipboardData Lib "user32" (ByVal wFormat As Long) As Long
 Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 
@@ -57,8 +57,9 @@ Public Sub ClipboardEmpty()
     Clipboard.Clear
 End Sub
 
-'Paste an image (e.g. create a new image based on data in the clipboard
-Public Sub ClipboardPaste()
+'Paste an image (e.g. create new image data based on whatever is in the clipboard).
+' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
+Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     Dim tmpClipboardFile As String
     Dim sFile(0) As String
@@ -92,7 +93,13 @@ Public Sub ClipboardPaste()
                 sFile(0) = tmpClipboardFile
                 sTitle = g_Language.TranslateMessage("Clipboard Image")
                 sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                LoadFileAsNewImage sFile, False, sTitle, sFilename
+                
+                'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                If srcIsMeantAsLayer Then
+                    Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle
+                Else
+                    LoadFileAsNewImage sFile, False, sTitle, sFilename
+                End If
                     
                 'Be polite and remove the temporary file
                 If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
@@ -132,18 +139,24 @@ Public Sub ClipboardPaste()
         Set tmpDIB = Nothing
         
         'Use the standard image load routine to import the temporary file
-        
         sFile(0) = tmpClipboardFile
         sTitle = g_Language.TranslateMessage("Clipboard Image")
         sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-        LoadFileAsNewImage sFile, False, sTitle, sFilename
+        
+        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+        If srcIsMeantAsLayer Then
+            Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle
+        Else
+            LoadFileAsNewImage sFile, False, sTitle, sFilename
+        End If
             
         'Be polite and remove the temporary file
         If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
             
         Message "Clipboard data imported successfully "
     
-    'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it
+    'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it.
+    ' TODO: make hyperlinks work with "Paste as new layer".  Right now they will always default to loading as a new image.
     ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(CStr(Clipboard.GetText)), 7) = "http://") Or (Left$(Trim(CStr(Clipboard.GetText)), 6) = "ftp://")) Then
         
         Message "URL found on clipboard.  Attempting to download image at that location..."
@@ -159,8 +172,18 @@ Public Sub ClipboardPaste()
         Dim listFiles() As String
         listFiles = ClipboardGetFiles()
         
-        LoadFileAsNewImage listFiles
-    
+        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+        If srcIsMeantAsLayer Then
+            Dim i As Long
+            
+            For i = 0 To UBound(listFiles)
+                Layer_Handler.loadImageAsNewLayer False, listFiles(i)
+            Next i
+            
+        Else
+            LoadFileAsNewImage listFiles
+        End If
+        
     Else
         pdMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If
