@@ -273,11 +273,11 @@ Public Sub syncInterfaceToCurrentImage()
                 'Delete
                 If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True
                 
-                'Delete hidden layers is only available if one or more layers are hidden
-                If pdImages(g_CurrentImage).getNumOfHiddenLayers > 0 Then
-                    FormMain.MnuLayerDelete(1).Visible = False
+                'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
+                If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).getNumOfLayers) Then
+                    FormMain.MnuLayerDelete(1).Enabled = True
                 Else
-                    FormMain.MnuLayerDelete(1).Visible = True
+                    FormMain.MnuLayerDelete(1).Enabled = False
                 End If
             
                 'Merge up/down are not available for layers at the top and bottom of the image
@@ -299,8 +299,19 @@ Public Sub syncInterfaceToCurrentImage()
                 'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
                 ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
                 ' so we can mirror the same enabled state for both options.
-                FormMain.MnuLayerOrder(0).Enabled = FormMain.MnuLayer(3).Enabled
-                FormMain.MnuLayerOrder(1).Enabled = FormMain.MnuLayer(4).Enabled
+                If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
+                    FormMain.MnuLayerOrder(0).Enabled = True
+                Else
+                    FormMain.MnuLayerOrder(0).Enabled = False
+                End If
+                
+                If pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
+                    FormMain.MnuLayerOrder(1).Enabled = True
+                Else
+                    FormMain.MnuLayerOrder(1).Enabled = False
+                End If
+                
+                'Mirror "raise to top" and "lower to bottom" against the state of "raise layer" and "lower layer"
                 FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled
                 FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled
                                 
@@ -312,8 +323,12 @@ Public Sub syncInterfaceToCurrentImage()
                     If Not FormMain.MnuLayerTransparency(3).Enabled Then FormMain.MnuLayerTransparency(3).Enabled = True
                 End If
                 
-                'Flatten
-                If Not FormMain.MnuLayer(11).Enabled Then FormMain.MnuLayer(11).Enabled = True
+                'Flatten is only available if one or more layers are visible
+                If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
+                    If Not FormMain.MnuLayer(11).Enabled Then FormMain.MnuLayer(11).Enabled = True
+                Else
+                    FormMain.MnuLayer(11).Enabled = False
+                End If
                 
                 'Merge visible is only available if two or more layers are visible
                 If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
