@@ -450,6 +450,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Delete layer"
             Layer_Handler.deleteLayer cParams.GetLong(1)
             
+        'Delete all hidden layers
+        Case "Delete hidden layers"
+            Layer_Handler.deleteHiddenLayers
+            
         'Merge a layer up or down
         Case "Merge layer down"
             Layer_Handler.mergeLayerAdjacent cParams.GetLong(1), True

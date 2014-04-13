@@ -279,6 +279,54 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
 
 End Sub
 
+'Delete all hidden layers
+Public Sub deleteHiddenLayers()
+
+    'Perform a couple fail-safe checks.  These should not be a problem, as calling functions should have safeguards
+    ' against bad requests, but better safe than sorry.
+    
+    'If there are no hidden layers, exit
+    If pdImages(g_CurrentImage).getNumOfHiddenLayers = 0 Then Exit Sub
+    
+    'If all layers are hidden, exit
+    If pdImages(g_CurrentImage).getNumOfHiddenLayers = pdImages(g_CurrentImage).getNumOfLayers Then Exit Sub
+    
+    'We can now assume that the image in question has at least one visible layer, and at least one hidden layer.
+    
+    'Cache the currently active layerID - IF the current layer is visible.  If it isn't, it's going to be deleted,
+    ' so we must pick a new arbitrary layer (why not the bottom layer?).
+    Dim activeLayerID As Long
+    
+    If pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility Then
+        activeLayerID = pdImages(g_CurrentImage).getActiveLayerID
+    Else
+        activeLayerID = -1
+    End If
+    
+    'Starting at the top and moving down, delete all hidden layers.
+    Dim i As Long
+    For i = pdImages(g_CurrentImage).getNumOfLayers - 1 To 0 Step -1
+    
+        If Not pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+            pdImages(g_CurrentImage).deleteLayerByIndex i
+        End If
+    Next i
+    
+    'Set a new active layer
+    If activeLayerID = -1 Then
+        setActiveLayerByIndex 0, False
+    Else
+        setActiveLayerByID activeLayerID
+    End If
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Move a layer up or down in the stack (referred to as "raise" and "lower" in the menus)
 Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As Boolean)
 
