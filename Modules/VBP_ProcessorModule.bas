@@ -468,13 +468,21 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Lower layer"
             Layer_Handler.moveLayerAdjacent cParams.GetLong(1), False
             
+        'Raise or lower to layer to end of stack
+        Case "Raise layer to top"
+            Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), True
+        
+        Case "Lower layer to bottom"
+            Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), False
+            
         'Flatten image
-            Case "Flatten image"
-                Layer_Handler.flattenImage
+        Case "Flatten image"
+            Layer_Handler.flattenImage
             
         'Merge visible layers
-            Case "Merge visible layers"
-                Layer_Handler.mergeVisibleLayers
+        Case "Merge visible layers"
+            Layer_Handler.mergeVisibleLayers
+            
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc

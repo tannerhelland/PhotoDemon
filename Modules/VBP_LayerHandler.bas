@@ -348,6 +348,45 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
 
 End Sub
 
+'Move a layer to the top or bottom of the stack (referred to as "raise to top" and "lower to bottom" in the menus)
+Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfStack As Boolean)
+
+    'Make a copy of the currently active layer's ID
+    Dim curActiveLayerID As Long
+    curActiveLayerID = pdImages(g_CurrentImage).getActiveLayerID
+    
+    'Until this layer is at the desired end of the stack, ask the parent to keep moving it for us!
+    If moveToTopOfStack Then
+    
+        Do While pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID) < pdImages(g_CurrentImage).getNumOfLayers - 1
+            
+            'Ask the parent pdImage to move the layer up for us
+            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID), True
+            
+        Loop
+    
+    Else
+    
+        Do While pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID) > 0
+            
+            'Ask the parent pdImage to move the layer up for us
+            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID), False
+            
+        Loop
+    
+    End If
+    
+    'Restore the active layer.  (This will also re-synchronize the interface against the new image.)
+    setActiveLayerByID curActiveLayerID, False
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Given a multi-layered image, flatten it.  Note that flattening does *not* remove alpha!  It simply merges all layers,
 ' including discarding invisible ones.
 Public Sub flattenImage()
