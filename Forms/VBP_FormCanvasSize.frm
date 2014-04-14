@@ -219,8 +219,8 @@ Attribute VB_Exposed = False
 'Canvas Size Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 25/August/13
-'Last update: add command bar, redesign interface to match
+'Last updated: 14/April/14
+'Last update: rewrite everything against layers
 '
 'This form handles canvas resizing.  You may wonder why it took me over a decade to implement this tool, when it's such a
 ' trivial one algorithmically.  The answer is that a number of user-interface support functions are necessary to build
@@ -393,30 +393,35 @@ Private Sub Form_Load()
 
     'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
     ' will be filled with transparency.
-    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
+    ' NOTE: as of 6.4's release, the code below still works just fine - but because PD now uses a "32bpp by default"
+    '       strategy, there is no reason to check color depth in advance.  Instead, we always assume 32bpp data.
     
-        'Hide the background color selectors
-        colorPicker.Visible = False
-        
-        Dim formHeightDifference As Long
-        Me.ScaleMode = vbTwips
-        formHeightDifference = Me.Height - Me.ScaleHeight
-        Me.ScaleMode = vbPixels
-        
-        'Resize the form to match
-        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + fixDPI(24)) * TwipsPerPixelYFix
-        
-    End If
+'    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
+'
+'        'Hide the background color selectors
+'        colorPicker.Visible = False
+'
+'        Dim formHeightDifference As Long
+'        Me.ScaleMode = vbTwips
+'        formHeightDifference = Me.Height - Me.ScaleHeight
+'        Me.ScaleMode = vbPixels
+'
+'        'Resize the form to match
+'        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + fixDPI(24)) * TwipsPerPixelYFix
+'
+'    End If
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
     
+    'NOTE: see above comment to PD now assuming 32bpp data by default
+    
     'If the source image is 32bpp, hide the color selection box and change the text to match
-    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
-        lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
-    Else
-        lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")
-    End If
+'    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
+'        lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
+'    Else
+'        lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")
+'    End If
     
     'Start with a default top-left position for the anchor
     updateAnchorButtons
@@ -429,8 +434,6 @@ End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
-
-    'TODO!  Make this function work with layers.
 
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(g_CurrentImage).Width
@@ -500,22 +503,27 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     
     End Select
     
-    'Create a temporary DIB to hold the new canvas
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    'tmpDIB.createBlank iWidth, iHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth, newBackColor
-
-    'Bitblt the old image into its new position on the canvas
-    'BitBlt tmpDIB.getDIBDC, dstX, dstY, srcWidth, srcHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, vbSrcCopy
+    'Now that we have our new top-left corner coordinates (and new width/height values), resizing the canvas
+    ' is actually very easy.  In PhotoDemon, there is no such thing as "image data"; an image is just an
+    ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
+    ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
     
-    'The temporary DIB now holds the new canvas and image.  Copy it back into the main image.
-    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
-    Set tmpDIB = Nothing
+        With pdImages(g_CurrentImage).getLayerByIndex(i)
+            .setLayerOffsetX .getLayerOffsetX + dstX
+            .setLayerOffsetY .getLayerOffsetY + dstY
+        End With
     
-    'Update the main image's size and DPI values
-    pdImages(g_CurrentImage).updateSize
+    Next i
+    
+    'Finally, update the parent image's size and DPI values
+    pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
     pdImages(g_CurrentImage).setDPI iDPI, iDPI
     DisplaySize pdImages(g_CurrentImage)
+    
+    'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
+    ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Canvas resize"
