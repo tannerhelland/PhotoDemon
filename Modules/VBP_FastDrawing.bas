@@ -243,8 +243,8 @@ End Sub
 ' the image will automatically be scaled to the size of the preview area, which allows the tool dialog to render much faster.
 ' Note that for this to work, an fxPreview control must be passed to the function.
 '
-'Finally, the calling routine can optionally specify a different progress bar maximum value.  By default, this is the current
-' DIB's width, but some routines run vertically and the progress bar needs to be changed accordingly.
+'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is the current
+' DIB's width, but some routines run vertically and the progress bar maximum needs to be changed accordingly.
 Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False)
 
     'Reset the public "cancel current action" tracker
@@ -252,7 +252,14 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
 
     'Prepare our temporary DIB
     Set workingDIB = New pdDIB
-        
+    
+    'The new Layers design sometimes requires us to apply actions outside of a layer's actual boundary.
+    ' (For example: a selected area that extends outside the boundary of the current image.)  When this
+    ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
+    ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
+    Dim tmpLayer As pdLayer
+    If pdImages(g_CurrentImage).selectionActive Then Set tmpLayer = New pdLayer
+    
     'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
     Dim dstWidth As Double, dstHeight As Double
     Dim srcWidth As Double, srcHeight As Double
@@ -265,8 +272,16 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         ' applied to the selected area - a full rectangle is passed to the source function, with no accounting for non-rectangular
         ' boundaries or feathering.  All that work is handled *after* the processing is complete.
         If pdImages(g_CurrentImage).selectionActive Then
+            
+            'Before proceeding further, null-pad the layer in question.  This will allow any possible selection to work,
+            ' regardless of the layer's actual area.
+            tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).getActiveLayer
+            tmpLayer.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            
+            'Now we can proceed to crop out the relevant parts of the layer from the selection boundary.
             workingDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
-            BitBlt workingDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            BitBlt workingDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, tmpLayer.layerDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            
         Else
             workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB()
         End If
@@ -539,6 +554,11 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             End If
         End If
         
+        'Before applying the selected area back onto the image, we need to null-pad the original layer.  (This is not done
+        ' by prepImageData, because the user may elect to cancel a running action - and if they do that, we want to leave
+        ' the original image untouched!  Thus, only the workingLayer has been null-padded.)
+        pdImages(g_CurrentImage).getActiveLayer.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        
         'Next, point three arrays at three images: the original image, the newly modified image, and the selection mask copy
         ' we just created.
         prepSafeArray wlSA, workingDIB
@@ -615,6 +635,9 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
             If workingDIBBackup.getDIBColorDepth = 32 Then workingDIBBackup.fixPremultipliedAlpha True
             BitBlt pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.getDIBDC, 0, 0, vbSrcCopy
+            
+            'Un-pad any null pixels we may have added as part of the selection interaction
+            pdImages(g_CurrentImage).getActiveLayer.cropNullPaddedLayer
         
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
