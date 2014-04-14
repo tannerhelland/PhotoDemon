@@ -414,7 +414,7 @@ Public Sub flattenImage()
     pdImages(g_CurrentImage).getLayerByIndex(0).CreateNewImageLayer compositeDIB, , flattenedName
     
     'Mark the only layer present as the active one.  (This will also re-synchronize the interface against the new image.)
-    setActiveLayerByID 0, False
+    setActiveLayerByIndex 0, False
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
