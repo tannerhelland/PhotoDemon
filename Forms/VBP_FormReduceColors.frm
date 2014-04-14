@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormReduceColors 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Reduce Image Colors"
+   Caption         =   " Indexed color"
    ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   285
@@ -47,7 +47,7 @@ Begin VB.Form FormReduceColors
       Index           =   0
       Left            =   6120
       TabIndex        =   4
-      Top             =   2400
+      Top             =   2040
       Width           =   1515
       _ExtentX        =   2672
       _ExtentY        =   661
@@ -76,7 +76,7 @@ Begin VB.Form FormReduceColors
       Index           =   1
       Left            =   6120
       TabIndex        =   5
-      Top             =   2880
+      Top             =   2520
       Width           =   3120
       _ExtentX        =   5503
       _ExtentY        =   661
@@ -91,9 +91,32 @@ Begin VB.Form FormReduceColors
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin VB.Label lblFlatten 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: this operation must flatten the image before converting it to indexed color mode."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   1125
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   3360
+      Visible         =   0   'False
+      Width           =   6090
+      WordWrap        =   -1  'True
+   End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
-      Caption         =   "Note: the FreeImage plugin is missing.  Please install it if you wish to use this tool."
+      Caption         =   "The FreeImage plugin is missing.  Please install it if you wish to use this tool."
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -104,10 +127,10 @@ Begin VB.Form FormReduceColors
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000C0&
-      Height          =   1455
+      Height          =   975
       Left            =   6000
       TabIndex        =   2
-      Top             =   4200
+      Top             =   4680
       Visible         =   0   'False
       Width           =   6015
       WordWrap        =   -1  'True
@@ -131,7 +154,7 @@ Begin VB.Form FormReduceColors
       Height          =   405
       Left            =   6000
       TabIndex        =   1
-      Top             =   1920
+      Top             =   1560
       Width           =   2265
    End
 End
@@ -199,6 +222,13 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
+    'If the current image has more than one layer, warn the user that this action will flatten the image.
+    If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+        lblFlatten.Visible = True
+    Else
+        lblFlatten.Visible = False
+    End If
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -213,69 +243,96 @@ End Sub
 'Automatic 8-bit color reduction via the FreeImage DLL.
 Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    'If a selection is active, remove it.
-    If pdImages(g_CurrentImage).selectionActive Then
+    'If this is not a preview, and a selection is active on the main image, remove it.
+    If (Not toPreview) And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
-
-    'If this is a preview, we want to perform the color reduction on a temporary image
+    
+    'A temporary DIB is required to pass data back-and-forth with FreeImage
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    pdImages(g_CurrentImage).getCompositedImage tmpDIB, True
+    
+    'Color reduction only works on a flat copy of the image, so retrieve a composited version now.
     If toPreview Then
-        Dim tmpSA As SAFEARRAY2D
-        prepImageData tmpSA, toPreview, dstPic
+        Dim tmpSafeArray As SAFEARRAY2D
+        previewNonStandardImage tmpSafeArray, tmpDIB, fxPreview
+        
+    'If this is not a preview, flatten the image before proceeding further
+    Else
+        
+        SetProgBarMax 3
+        SetProgBarVal 1
+        Message "Flattening image..."
+        Layer_Handler.flattenImage
+        
     End If
     
-    'TODO!  Warn the user that this requires flattening the image.
+    'At this point, we have two potential sources of our temporary DIB:
+    ' 1) During a preview, the global workingDIB object contains a section of the image relevant to the
+    '     preview window.
+    ' 2) During the processing of a full image, pdImages(g_CurrentImage) has what we need (the flattened image).
+    '
+    'To simplify the code from here, we are going to conditionally copy the current flattened image into
+    ' the global workingLayer DIB.  That way, we can use the same code path regardless of previews or
+    ' actual processing.
+    If Not toPreview Then
+        Set workingDIB = New pdDIB
+        workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
+    End If
     
-    Dim tmpCompositeDIB As pdDIB
-    Set tmpCompositeDIB = New pdDIB
-    pdImages(g_CurrentImage).getCompositedImage tmpCompositeDIB, False
+    'FreeImage requires 24bpp images as color reduction targets.
+    If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp
     
     'Make sure we found the FreeImage plug-in when the program was loaded
     If g_ImageFormats.FreeImageEnabled Then
         
-        If Not toPreview Then Message "Quantizing image using the FreeImage library..."
-        
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
         
-        If toPreview Then
-            If workingDIB.getDIBColorDepth = 32 Then workingDIB.compositeBackgroundColor 255, 255, 255
-            fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
-        Else
-            If tmpCompositeDIB.getDIBColorDepth = 32 Then tmpCompositeDIB.compositeBackgroundColor 255, 255, 255
-            fi_DIB = FreeImage_CreateFromDC(tmpCompositeDIB.getDIBDC)
-        End If
-        
-        'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
+        'Use that handle to request a color space transform from FreeImage
         If fi_DIB <> 0 Then
             
-            Dim returnDIB As Long
+            If (Not toPreview) Then
+                SetProgBarVal 2
+                Message "Indexing colors..."
+            End If
             
+            Dim returnDIB As Long
             returnDIB = FreeImage_ColorQuantizeEx(fi_DIB, qMethod, True)
             
-            'If this is a preview, render it to the temporary DIB.  Otherwise, use the current main DIB.
+            Dim numOfQuantizedColors As Long
+            
+            'If this is a preview, copy the FreeImage data into the global workingDIB object.
             If toPreview Then
                 workingDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, 24
                 SetDIBitsToDevice workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            
+            'This is not a preview.  Overwrite the current active layer with the quantized FreeImage data.
             Else
                 
-                'TODO!  Remove all images, and apply the results of the color reduction to a new Layer 0
+                SetProgBarVal 3
+                pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, 24
+                SetDIBitsToDevice pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.convertTo32bpp
                 
-                'pdImages(g_CurrentImage).mainDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 24
-                'SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 0, 0, 0, pdImages(g_CurrentImage).Height, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                'Ask FreeImage for the size of the quantized image's palette
+                numOfQuantizedColors = FreeImage_GetColorsUsed(returnDIB)
                 
             End If
             
-            'With the transfer complete, release the FreeImage DIB and unload the library
+            'With the transfer complete, release the FreeImage DIB
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
             'If this is a preview, draw the new image to the picture box and exit.  Otherwise, render the new main image DIB.
             If toPreview Then
-                finalizeImageData toPreview, dstPic
+                finalizeNonstandardPreview dstPic
             Else
                 ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                Message "Image successfully quantized to %1 unique colors. ", 256
+                SetProgBarVal 0
+                Message "Image successfully quantized to %1 unique colors. ", numOfQuantizedColors
             End If
             
         End If
