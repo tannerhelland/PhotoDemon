@@ -672,59 +672,60 @@ End Function
 'Convert this DIB to 32bpp mode
 Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
 
-    'Make sure this DIB is 24bpp. If it isn't, running this function is pointless.
-    If dibColorDepth = 24 Then
+    'Make sure this DIB isn't empty
+    If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
 
-        'Make sure this DIB isn't empty
-        If (dibDC <> 0) And (dibWidth <> 0) And (dibHeight <> 0) Then
-    
-            'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB Me
-            
-            'Now erase our own DIB
-            eraseDIB
-    
-            'Create a new DIB that's exactly the same size as the old one
-            If createBlank(tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, 32) Then
-                
-                'Copy the image data from the temporary DIB without modification
-                BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-                
-                'Erase the temporary DIB
-                tmpDIB.eraseDIB
-                Set tmpDIB = Nothing
-                                
-                'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
-                ' be completely transparent (and we don't want that!)
-                Dim iData() As Byte
-                Dim tmpSA As SAFEARRAY2D
-                prepInternalSafeArray tmpSA
-                CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-                Dim x As Long, y As Long, QuickX As Long
-                
-                'Loop through the image, setting the alpha of each pixel to 255 (opaque)
-                For x = 0 To dibWidth - 1
-                    QuickX = x * 4
-                For y = 0 To dibHeight - 1
-                    iData(QuickX + 3, y) = newTransparency
-                Next y
-                Next x
-    
-                'With our alpha channel complete, point iData() away from the DIB and deallocate it
-                CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                
-                'Exit
-                convertTo32bpp = True
-                Exit Function
-                
-            End If
-    
-        End If
+        'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createFromExistingDIB Me
         
+        'Now erase our own DIB
+        eraseDIB
+
+        'Create a new DIB that's exactly the same size as the old one
+        If createBlank(tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, 32) Then
+            
+            'Copy the image data from the temporary DIB without modification
+            BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                            
+            'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
+            ' be completely transparent (and we don't want that!)
+            Dim iData() As Byte
+            Dim tmpSA As SAFEARRAY2D
+            prepInternalSafeArray tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+
+            Dim x As Long, y As Long, QuickX As Long
+            
+            Dim newTransFloat As Double
+            newTransFloat = newTransparency / 255
+            
+            'Loop through the image, setting the alpha of each pixel to 255 (opaque)
+            For x = 0 To dibWidth - 1
+                QuickX = x * 4
+            For y = 0 To dibHeight - 1
+                
+                If tmpDIB.getDIBColorDepth = 24 Then
+                    iData(QuickX + 3, y) = newTransparency
+                Else
+                    iData(QuickX + 3, y) = iData(QuickX + 3, y) * newTransFloat
+                End If
+                
+            Next y
+            Next x
+
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            
+            'Exit
+            convertTo32bpp = True
+            Exit Function
+            
+        End If
+
     End If
+    
     
     'If we made it to this line, something went horribly wrong
     convertTo32bpp = False

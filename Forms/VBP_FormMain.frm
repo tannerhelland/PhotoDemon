@@ -3092,7 +3092,7 @@ Private Sub MnuLayerTransparency_Click(Index As Integer)
             'TODO: reevaluate the wisdom of having this option in the Image menu, vs a dedicated Layers menu
             'Ignore if the current image is already in 24bpp mode
             'If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 24 Then Exit Sub
-            'Process "Remove alpha channel", True
+            Process "Remove alpha channel", True
     
     End Select
 

@@ -144,12 +144,16 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     If newColorDepth = 24 Then
     
         'Ask the current DIB to convert itself to 24bpp mode
-        'pdImages(g_CurrentImage).mainDIB.convertTo24bpp newBackColor
+        pdImages(g_CurrentImage).getActiveDIB.convertTo24bpp newBackColor
+        
+        'Because PD now uses an "always 32bpp" approach to layers, convert the image back to 32bpp mode.
+        ' (All its alpha values will be 255.)
+        pdImages(g_CurrentImage).getActiveDIB.convertTo32bpp 255
         
     Else
     
         'Ask the current DIB to convert itself to 32bpp mode
-        'pdImages(g_CurrentImage).mainDIB.convertTo32bpp
+        pdImages(g_CurrentImage).getActiveDIB.convertTo32bpp 255
     
     End If
     
