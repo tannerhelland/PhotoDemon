@@ -1923,70 +1923,24 @@ Public Sub DuplicateCurrentImage()
     
     Message "Duplicating current image..."
     
-    'First, make a note of the currently active form
-    Dim imageToBeDuplicated As Long
-    imageToBeDuplicated = g_CurrentImage
+    'Ask the currently active image to write itself out to file
+    Dim tmpDuplicationFile As String
+    tmpDuplicationFile = g_UserPreferences.getTempPath & "PDDuplicate.pdi"
+    SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, True, True, False
     
-    CreateNewPDImage
-        
-    g_AllowViewportRendering = False
-        
-    'Reset scroll bars
-    FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
-        
-    'TODO!  Copy all layers, not just the active one!
-    pdImages(g_CurrentImage).getActiveDIB.createFromExistingDIB pdImages(imageToBeDuplicated).getActiveDIB
+    'We can now use the standard image load routine to import the temporary file
+    Dim sFile() As String, sTitle As String, sFilename As String
+    ReDim sFile(0) As String
+    sFile(0) = tmpDuplicationFile
+    sTitle = pdImages(g_CurrentImage).originalFileName & " - " & g_Language.TranslateMessage("Copy")
+    sFilename = sTitle
     
-    'Store important data about the image to the pdImages array
-    pdImages(g_CurrentImage).updateSize
-    pdImages(g_CurrentImage).originalFileSize = pdImages(imageToBeDuplicated).originalFileSize
-    pdImages(g_CurrentImage).locationOnDisk = ""
-            
-    'Get the original file's extension and filename, then append " - Copy" to it
-    Dim originalExtension As String
-    originalExtension = GetExtension(pdImages(imageToBeDuplicated).originalFileNameAndExtension)
-            
-    Dim newFilename As String
-    newFilename = pdImages(imageToBeDuplicated).originalFileName & " - " & g_Language.TranslateMessage("Copy")
-    pdImages(g_CurrentImage).originalFileName = newFilename
-    If Len(originalExtension) > 0 Then
-        pdImages(g_CurrentImage).originalFileNameAndExtension = newFilename & "." & originalExtension
-    Else
-        pdImages(g_CurrentImage).originalFileNameAndExtension = newFilename
-    End If
-            
-    'Because this image hasn't been saved to disk, mark its save state as "false"
-    pdImages(g_CurrentImage).setSaveState False
-    
-    'Fit the window to the newly duplicated image
-    Message "Resizing image to fit screen..."
-    
-    'Update the current caption to match
-    'g_WindowManager.requestWindowCaptionChange pdImages(g_CurrentImage).containingForm, pdImages(g_CurrentImage).originalFileNameAndExtension
-            
-    'Also register this image with the image tab bar
-    createCustomFormIcon pdImages(g_CurrentImage)
-    toolbar_ImageTabs.registerNewImage g_CurrentImage
-    
-    'If the user wants us to resize the image to fit on-screen, do that now
-    If g_AutozoomLargeImages = 0 Then FitImageToViewport True
-            
-    'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
-    ' update the zoom combo box to match the zoom assigned by the window-fit function.
-    g_AllowViewportRendering = False
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
-        
-    'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
-    g_AllowViewportRendering = True
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Duplicate image"
-    
-    'Synchronize the interface to match the newly created image's settings
-    syncInterfaceToCurrentImage
+    LoadFileAsNewImage sFile, False, sTitle, sFilename
+                    
+    'Be polite and remove the temporary file
+    If FileExist(tmpDuplicationFile) Then Kill tmpDuplicationFile
     
     Message "Image duplication complete."
-    
-    'If we made it all the way here, the image was successfully duplicated.
-    pdImages(g_CurrentImage).loadedSuccessfully = True
         
 End Sub
 
