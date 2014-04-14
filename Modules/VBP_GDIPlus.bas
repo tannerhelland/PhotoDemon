@@ -339,6 +339,7 @@ Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal mGraphic
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef hImageAttr As Long) As Long
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttr As Long) As Long
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
+Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -401,6 +402,17 @@ Public Enum WrapMode
    WrapModeClamp = 4
 End Enum
 
+'PixelOffsetMode controls how GDI+ attempts to antialias objects.  For cheap antialiasing, use PixelOffsetModeHalf.
+' This provides a good estimation of AA, without actually applying a full AA operation.
+Public Enum PixelOffsetMode
+   PixelOffsetModeInvalid = QualityModeInvalid
+   PixelOffsetModeDefault = QualityModeDefault
+   PixelOffsetModeHighSpeed = QualityModeLow
+   PixelOffsetModeHighQuality = QualityModeHigh
+   PixelOffsetModeNone = 3
+   PixelOffsetModeHalf = 4
+End Enum
+
 Private Enum GDIFillMode
    FillModeAlternate = 0
    FillModeWinding = 1
@@ -457,7 +469,18 @@ Public g_GDIPlusFXAvailable As Boolean
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
+' FOR FUTURE REFERENCE: after a bunch of profiling on my Win 7 PC, I can state with 100% confidence that
+' the HighQualityBicubic interpolation mode is actually the fastest mode for downsizing 32bpp images.  I have no idea
+' why this is, but many, many iterative tests confirmed it.  Stranger still, in descending order after that, the fastest
+' algorithms are: HighQualityBilinear, Bilinear, Bicubic.  Regular bicubic interpolation is some 4x slower than the
+' high quality mode!!
 Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode) As Boolean
+
+    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
+    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
+    ' have timing reports sent to the debug window.
+    'Dim profileTime As Double
+    'profileTime = Timer
 
     GDIPlusResizeDIB = True
 
@@ -490,6 +513,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
+    interpolationType = InterpolationModeHighQualityBicubic
     If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
     
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
@@ -501,6 +525,10 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         
         'To improve performance, explicitly request high-speed alpha compositing operation
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
+        
+        'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
+        ' improvement from explicitly requesting HighQuality mode - so why not leave it?
+        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
     
         'Perform the resize
         If GdipDrawImageRectRectI(iGraphics, tBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, imgAttributesHandle) <> 0 Then
@@ -517,6 +545,9 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'Release both the destination graphics object and the source bitmap object
     GdipDeleteGraphics iGraphics
     GdipDisposeImage tBitmap
+    
+    'Uncomment the line below to receive timing reports
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
 
