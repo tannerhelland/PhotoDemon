@@ -69,6 +69,9 @@ Attribute VB_Exposed = False
 '
 'Input on the format and this class interface are always welcome, as are code fixes/changes/improvements.
 '
+'TODO: add a node function (or modify the existing one) so that a raw data pointer can be supplied.  This would allow us
+'      to add multi-dimensional arrays without needing to condense them to 1D in advance - very helpful for image data!
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
