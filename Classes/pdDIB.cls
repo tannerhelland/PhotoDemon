@@ -550,63 +550,29 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
             'Create a new, blank DIB at the requested size
             If createBlank(newWidth, newHeight, srcDIB.getDIBColorDepth) Then
 
-                'If either dimension of the new image will be smaller than the source, request halftoning
-                If useHalftoning Then
-                    SetStretchBltMode dibDC, STRETCHBLT_HALFTONE
-                Else
-                    SetStretchBltMode dibDC, STRETCHBLT_COLORONCOLOR
-                End If
-
-                'Resize and copy the image data
-                StretchBlt dibDC, 0, 0, newWidth, newHeight, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, vbSrcCopy
+                'We now break up the resize request into two branches: 24bpp data, and 32bpp data.
+                If srcDIB.getDIBColorDepth = 24 Then
                 
-                'Now comes a nasty hack; HALFTONE stretching does not preserve the alpha channel, but COLORONCOLOR does. So for 32bpp
-                ' images, we now make a second copy of the original image using COLORONCOLOR - which means it contains valid alpha values.
-                ' Then we copy those into our current image, effectively taking the best of both HALFTONE and COLORONCOLOR stretching.
-                If srcDIB.getDIBColorDepth = 32 Then
-                    
-                    Dim hackDIB As pdDIB
-                    Set hackDIB = New pdDIB
-                    hackDIB.createBlank newWidth, newHeight, 32
-            
-                    SetStretchBltMode hackDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
-                    StretchBlt hackDIB.getDIBDC, 0, 0, newWidth, newHeight, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, vbSrcCopy
-            
-                    'At this point, hackDIB contains transparency data roughly equivalent to our half-toned images. (Not perfect, but close.)
-                    ' We need to copy that data into our image, then release the hack DIB.
-                    
-                    'Start, as always, with a SafeArray
-                    Dim iData() As Byte
-                    Dim tmpSA As SAFEARRAY2D
-                    prepInternalSafeArray tmpSA
-                    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+                    'If either dimension of the new image will be smaller than the source, request halftoning
+                    If useHalftoning Then
+                        SetStretchBltMode dibDC, STRETCHBLT_HALFTONE
+                    Else
+                        SetStretchBltMode dibDC, STRETCHBLT_COLORONCOLOR
+                    End If
     
-                    'Now make a second array that points to the hacked alpha data
-                    Dim aData() As Byte
-                    Dim srcSA As SAFEARRAY2D
-                    prepExternalSafeArray hackDIB, srcSA
-                    CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
-    
-                    Dim x As Long, y As Long, QuickX As Long
-    
-                    'Now loop through the image, copying alpha values as we go
-                    For x = 0 To dibWidth - 1
-                        QuickX = x * 4
-                    For y = 0 To dibHeight - 1
-                        iData(QuickX + 3, y) = aData(QuickX + 3, y)
-                    Next y
-                    Next x
+                    'Resize and copy the image data
+                    StretchBlt dibDC, 0, 0, newWidth, newHeight, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, vbSrcCopy
                     
-                    'Decommission both arrays
-                    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                    Erase iData
-                    CopyMemory ByVal VarPtrArray(aData), 0&, 4
-                    Erase aData
-                    
-                    'Release the temporary DIB
-                    hackDIB.eraseDIB
-                    Set hackDIB = Nothing
-    
+                '32bpp data requires special attention, because StretchBlt won't halftone alpha data.
+                Else
+                
+                    'Instead of halftoning, switch between interpolation and nearest-neighbor
+                    If useHalftoning Then
+                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+                    Else
+                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeNearestNeighbor
+                    End If
+                
                 End If
                 
                 createFromExistingDIB = True
