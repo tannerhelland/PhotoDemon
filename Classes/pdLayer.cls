@@ -411,7 +411,7 @@ End Sub
 '                 an intended use-case, so don't attempt it!
 '
 'Returns TRUE if layer was trimmed successfully, FALSE if it was not.  (False occurs if the entire layer is transparent.)
-Public Function cropNullPaddedLayerDIB() As Boolean
+Public Function cropNullPaddedLayer() As Boolean
     
     'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
     ' edge error conditions).
@@ -441,7 +441,7 @@ Public Function cropNullPaddedLayerDIB() As Boolean
             'Release our array pointer.  (This MUST be done for all function exits, or VB will crash.)
             CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
             Debug.Print "Quick check of layer corners shows no trimmable areas; premature exit initialized."
-            cropNullPaddedLayerDIB = False
+            cropNullPaddedLayer = False
             Exit Function
         
         End If
@@ -481,7 +481,7 @@ Public Function cropNullPaddedLayerDIB() As Boolean
         If Not pixelFails Then
             CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
             Debug.Print "Request for layer null padding trim denied - entire layer is transparent, so crop is impossible!"
-            cropNullPaddedLayerDIB = False
+            cropNullPaddedLayer = False
             Exit Function
         
         'Next, check for case (2)
@@ -561,34 +561,59 @@ Public Function cropNullPaddedLayerDIB() As Boolean
         ' extend to the full size of the image, so we can't trim it.
         If (newLeft = 0) And (newTop = 0) And (newRight = 0) And (newBottom = 0) Then
             Debug.Print "Layer null padding scan completed successfully, but no trimmable edges were found."
-            cropNullPaddedLayerDIB = False
+            cropNullPaddedLayer = False
         Else
         
             'Trimmable borders were found.  Use the calculated values to crop the image to its smallest relevant size.
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
-            tmpDIB.createBlank newRight - newLeft, newBottom - newTop, 32, 0
-            
-            BitBlt tmpDIB.getDIBDC, 0, 0, newRight - newLeft, newBottom - newTop, layerDIB.getDIBDC, newRight, newTop, vbSrcCopy
+            tmpDIB.createBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
+            Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
+            BitBlt tmpDIB.getDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.getDIBDC, newLeft, newTop, vbSrcCopy
             
             'Replace the current layer DIB with our temporary DIB
             layerDIB.createFromExistingDIB tmpDIB
             
             'Modify our layer offsets to reflect our new size
-            myLayerData.l_OffsetX = newRight
+            myLayerData.l_OffsetX = newLeft
             myLayerData.l_OffsetY = newTop
         
             'Return TRUE, so that the calling function knows to redraw the screen with the new size and offsets
-            cropNullPaddedLayerDIB = True
+            cropNullPaddedLayer = True
             
         End If
         
     Else
         Debug.Print "Request for layer null padding trim denied - layer DIB does not currently exist!"
-        cropNullPaddedLayerDIB = False
+        cropNullPaddedLayer = False
     End If
     
 End Function
+
+'Null-pad this layer (with transparent pixels) against the size of our parent pdImage.  Note that the parent pdImage's dimensions
+' must be explicitly passed, because layers do not maintain a link to their parent.
+' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
+Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long)
+
+    'Create a blank destination DIB at the size of the image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
+    
+    'Copy our current layer into the temporary DIB, with proper offsets applied
+    BitBlt tmpDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    
+    'Replace our current layer DIB with the temporary DIB
+    layerDIB.createFromExistingDIB tmpDIB
+    
+    'Reset our offset values
+    myLayerData.l_OffsetX = 0
+    myLayerData.l_OffsetY = 0
+    
+    'Release the temporary DIB
+    Set tmpDIB = Nothing
+    
+End Sub
 
 'External functions can use this function to request a thumbnail version of the layer contents.
 '

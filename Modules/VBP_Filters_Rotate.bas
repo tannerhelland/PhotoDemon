@@ -52,7 +52,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     'qvDepth = pdImages(g_CurrentImage).mainDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -82,8 +82,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Scan the image, starting at the top-left and moving right
     For y = 0 To finalY
     For x = 0 To finalX
-        QuickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        quickVal = x * qvDepth
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -126,10 +126,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     SetProgBarVal 1
     
     For x = 0 To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -148,15 +148,15 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     Message "Analyzing right edge of image..."
-    QuickVal = finalX * qvDepth
-    initColor = gLookup(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
+    quickVal = finalX * qvDepth
+    initColor = gLookup(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -175,16 +175,16 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     initX = newLeft
     finalX = newRight
-    QuickVal = initX * qvDepth
-    initColor = gLookup(CLng(srcImageData(QuickVal, finalY)) + CLng(srcImageData(QuickVal + 1, finalY)) + CLng(srcImageData(QuickVal + 2, finalY)))
+    quickVal = initX * qvDepth
+    initColor = gLookup(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
     
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
     For y = finalY To initY Step -1
     For x = initX To finalX
-        QuickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        quickVal = x * qvDepth
+        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -308,8 +308,6 @@ End Sub
 'Flip an image vertically
 Public Sub MenuFlip()
 
-    'TODO: make this function work with layers.
-
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -317,17 +315,39 @@ Public Sub MenuFlip()
     End If
     
     Message "Flipping image..."
-    'StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, pdImages(g_CurrentImage).Height - 1, pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
+    
+    'Iterate through each layer, flipping them in turn
+    Dim tmpLayerRef As pdLayer
+    
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        'Retrieve a pointer to the layer of interest
+        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        
+        'Null-pad the layer
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        
+        'Flip it
+        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, 0, tmpLayerRef.layerDIB.getDIBHeight - 1, tmpLayerRef.layerDIB.getDIBWidth, -tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
+        
+        'Remove any null-padding
+        tmpLayerRef.cropNullPaddedLayer
+    
+    Next i
+    
     Message "Finished. "
     
+    'Sync the interface to the new layer
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
-'Flip an image horizontally
+'Flip an image horizontally (mirror)
 Public Sub MenuMirror()
-    
-    'TODO: make this function work with layers.
     
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
@@ -336,9 +356,33 @@ Public Sub MenuMirror()
     End If
 
     Message "Mirroring image..."
-    'StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, 0, -pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, vbSrcCopy
-    Message "Finished. "
     
+    'Iterate through each layer, mirroring them in turn
+    Dim tmpLayerRef As pdLayer
+    
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        'Retrieve a pointer to the layer of interest
+        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        
+        'Null-pad the layer
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        
+        'Mirror it
+        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.layerDIB.getDIBWidth - 1, 0, -tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
+        
+        'Remove any null-padding
+        tmpLayerRef.cropNullPaddedLayer
+    
+    Next i
+    
+    Message "Finished."
+    
+    'Sync the interface to the new layer
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
@@ -384,7 +428,7 @@ Public Sub MenuRotate90Clockwise()
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long, QuickValY
+    Dim quickVal As Long, qvDepth As Long, QuickValY
     qvDepth = curDIBValues.BytesPerPixel
     
     Dim iWidth As Long, iHeight As Long
@@ -398,12 +442,12 @@ Public Sub MenuRotate90Clockwise()
         
     'Rotate the source image into the destination image, using the arrays provided
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         QuickValY = y * qvDepth
         
         For i = 0 To qvDepth - 1
-            dstImageData(iHeight - QuickValY + i, finalX - x) = srcImageData(iWidth - QuickVal + i, y)
+            dstImageData(iHeight - QuickValY + i, finalX - x) = srcImageData(iWidth - quickVal + i, y)
         Next i
         
     Next y
@@ -503,7 +547,7 @@ Public Sub MenuRotate270Clockwise()
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long, QuickValY
+    Dim quickVal As Long, qvDepth As Long, QuickValY
     qvDepth = curDIBValues.BytesPerPixel
     
     Dim iWidth As Long
@@ -516,12 +560,12 @@ Public Sub MenuRotate270Clockwise()
         
     'Rotate the source image into the destination image, using the arrays provided
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         QuickValY = y * qvDepth
         
         For i = 0 To qvDepth - 1
-            dstImageData(QuickValY + i, x) = srcImageData(iWidth - QuickVal + i, y)
+            dstImageData(QuickValY + i, x) = srcImageData(iWidth - quickVal + i, y)
         Next i
         
     Next y
