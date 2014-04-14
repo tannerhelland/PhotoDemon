@@ -3,9 +3,8 @@ Attribute VB_Name = "FastDrawing"
 'Fast API Graphics Routines Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 15/January/14
-'Last update: added special preview-specific versions of prep/finalizeImageData.  These were very helpful in the Export JPEG
-'              dialog, as they allow the full power of prep/finalizeImageData to be used on any arbitrary pdImage object.
+'Last updated: 14/April/14
+'Last update: get everything working with layers!
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
