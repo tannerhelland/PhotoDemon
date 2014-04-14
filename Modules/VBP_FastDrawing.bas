@@ -289,8 +289,9 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'Premultiplied alpha is removed prior to processing; this allows various tools to return proper results.
         If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
     
-    'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the image that matches the requested
-    ' dimensions of the preview area (which are not assumed to be universal!).
+    'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the active layer that matches
+    ' the requested dimensions of the preview area (which are not assumed to be universal), while accounting for the
+    ' selection area!  Aaahhh!
     Else
     
         'Start by calculating the source area for the preview.  This changes based on several criteria:
@@ -367,10 +368,14 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
-            BitBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, pdImages(g_CurrentImage).getActiveDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
             
-            'If the source area is 32bpp, we want to remove premultiplication before doing any resizing
-            'If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha
+            'Before proceeding further, make a copy of the active layer, and null-pad it to the size of the parent image.
+            ' This will allow any possible selection to work, regardless of a layer's actual area.
+            tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).getActiveLayer
+            tmpLayer.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            
+            'NOW we can copy over the active layer's data, within the bounding box of the active selection
+            BitBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayer.layerDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
             
             'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
             If previewTarget.viewportFitFullImage Then
@@ -522,7 +527,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             
             'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
             If previewTarget.viewportFitFullImage Then
-                GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBilinear
+                GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBicubic
             
             'The preview is a 100% copy of the image.  Copy only the relevant part of the selection mask into the
             ' selection processing DIB.
@@ -576,17 +581,18 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Dim thisAlpha As Long
         Dim blendAlpha As Double
         
-        Dim dstQuickVal As Long
+        Dim dstQuickVal As Long, srcQuickX As Long
         dstQuickVal = pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth \ 8
             
         Dim workingDIBCD As Long
         workingDIBCD = workingDIB.getDIBColorDepth \ 8
         
         For x = 0 To workingDIB.getDIBWidth - 1
+            srcQuickX = x * 3
         For y = 0 To workingDIB.getDIBHeight - 1
             
             'Retrieve the selection mask value at this position.  Its value determines how this pixel is handled.
-            thisAlpha = selImageData(x * 3, y)
+            thisAlpha = selImageData(srcQuickX, y)
             
             Select Case thisAlpha
                     
