@@ -167,8 +167,8 @@ Attribute VB_Exposed = False
 'Color Reduction Form
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 4/October/00
-'Last updated: 24/August/13
-'Last update: move all manual reduction routines to the Posterize form, where they make more sense
+'Last updated: 14/April/14
+'Last update: rewrite function against layers; note that this will now flatten a layered image before proceeding
 '
 'In the original incarnation of PhotoDemon, this was a central part of the project. I have since not used it much
 ' (since the project is now centered around 24/32bpp imaging), but as it costs nothing to tie into FreeImage's advanced
