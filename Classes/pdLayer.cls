@@ -403,6 +403,193 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
 
 End Sub
 
+'Assuming the current layer DIB is null-padded (a term I use to describe a layer that has been forced to the size of the
+' image by surrounding it with transparent pixels), intelligently crop the DIB by removing all fully transparent padding.
+' When this is done, modify the current layer offsets so that the image stays in effectively the same place, but without
+' all that blank padding.
+' IMPORTANT NOTE: if you call this function without first null-padding the layer DIB, weird shit may happen.  That is not
+'                 an intended use-case, so don't attempt it!
+'
+'Returns TRUE if layer was trimmed successfully, FALSE if it was not.  (False occurs if the entire layer is transparent.)
+Public Function cropNullPaddedLayerDIB() As Boolean
+    
+    'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
+    ' edge error conditions).
+    If (layerDIB.getDIBDC <> 0) And (layerDIB.getDIBWidth <> 0) And (layerDIB.getDIBHeight <> 0) And (layerDIB.getDIBColorDepth = 32) Then
+    
+        'Point an array at the layer's DIB data
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepInternalSafeArray srcSA
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = layerDIB.getDIBWidth - 1
+        finalY = layerDIB.getDIBHeight - 1
+        
+        'Each edge will be scanned independently, and these variables will be calculated with the new bounding
+        ' RECT for this layer.
+        Dim newTop As Long, newBottom As Long, newLeft As Long, newRight As Long
+        
+        'Before doing anything else, perform a quick sanity check of the four image corners.  If none of them are
+        ' fully transparent, we know the layer is untrimmable (because interesting pixel data extends to all sides),
+        ' so we can exit now without actually having to perform a full scan.
+        If (srcImageData(3, 0) <> 0) And (srcImageData(finalX * 4 + 3, 0) <> 0) And (srcImageData(3, finalY) <> 0) And (srcImageData(finalX * 4 + 3, finalY) <> 0) Then
+            
+            'Release our array pointer.  (This MUST be done for all function exits, or VB will crash.)
+            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+            Debug.Print "Quick check of layer corners shows no trimmable areas; premature exit initialized."
+            cropNullPaddedLayerDIB = False
+            Exit Function
+        
+        End If
+        
+        
+        'First, scan the top of the image.
+        
+        'All edges follow the same formula, so I'm only providing detailed commenting in this first section.
+        
+        'Unlike PD's "AutoCrop" function, we're only looking to eliminate completely transparent edges in this function.
+        ' That greatly simplifies (and accelerates) the process of determining if an edge row or column is "blank".
+        
+        'If a non-transparent pixel is found, this will be set to TRUE.  We must track failure state so that we can exit
+        ' both the x and y For loops.
+        Dim pixelFails As Boolean
+        pixelFails = False
+        
+        'Scan the image, starting at the top-left and moving right
+        For y = 0 To finalY
+        For x = 0 To finalX
+            
+            'If this pixel is not 100% transparent, we don't want to crop it.  Exit now.
+            If srcImageData(x * 4 + 3, y) <> 0 Then
+                pixelFails = True
+                Exit For
+            End If
+            
+        Next x
+            If pixelFails Then Exit For
+        Next y
+    
+        'We have now reached one of two conditions:
+        '1) The entire layer DIB is transparent
+        '2) The loop progressed part-way through the layer, and terminated once it found a non-transparent pixel
+    
+        'Check for case (1) and exit if it occurred
+        If Not pixelFails Then
+            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+            Debug.Print "Request for layer null padding trim denied - entire layer is transparent, so crop is impossible!"
+            cropNullPaddedLayerDIB = False
+            Exit Function
+        
+        'Next, check for case (2)
+        Else
+            newTop = y
+        End If
+        
+        'To save us a bit of time, subsequent scans will only be performed from the image's cropped top location.
+        initY = newTop
+        
+        'Next, repeat the steps above for the bottom of the image.
+        pixelFails = False
+        
+        For y = finalY To initY Step -1
+        For x = 0 To finalX - 1
+            
+            If srcImageData(x * 4 + 3, y) <> 0 Then
+                pixelFails = True
+                Exit For
+            End If
+            
+        Next x
+            If pixelFails Then Exit For
+        Next y
+        
+        'As before, we only want to scan pixels that lie inside the detected trim rect.  (Efficiency is key for this function,
+        ' as it is used so frequently throughout the program!)
+        newBottom = y
+        finalY = newBottom
+        
+        'Repeat the above steps, but tracking the left edge instead.  Note also that we will only be scanning from wherever
+        ' the top and bottom border detections arrived (to save processing time).
+        pixelFails = False
+        Dim quickVal As Long
+        
+        For x = 0 To finalX
+            quickVal = x * 4 + 3
+        For y = initY To finalY
+        
+            If srcImageData(quickVal, y) <> 0 Then
+                pixelFails = True
+                Exit For
+            End If
+            
+        Next y
+            If pixelFails Then Exit For
+        Next x
+    
+        newLeft = x
+        
+        'Repeat the above steps, but tracking the right edge instead.  Note also that we will only be scanning from wherever
+        ' the top crop failed (to save processing time).
+        pixelFails = False
+        
+        For x = finalX To newLeft Step -1
+            quickVal = x * 4 + 3
+        For y = initY To finalY
+        
+            If srcImageData(quickVal, y) <> 0 Then
+                pixelFails = True
+                Exit For
+            End If
+            
+        Next y
+            If pixelFails Then Exit For
+        Next x
+        
+        newRight = x
+        
+        'With our work complete, point ImageData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        'If we made it all the way here, our search for null borders completed successfully.
+        
+        'If all border values are 0, return FALSE.  This basically means that the interesting bits of the layer
+        ' extend to the full size of the image, so we can't trim it.
+        If (newLeft = 0) And (newTop = 0) And (newRight = 0) And (newBottom = 0) Then
+            Debug.Print "Layer null padding scan completed successfully, but no trimmable edges were found."
+            cropNullPaddedLayerDIB = False
+        Else
+        
+            'Trimmable borders were found.  Use the calculated values to crop the image to its smallest relevant size.
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createBlank newRight - newLeft, newBottom - newTop, 32, 0
+            
+            BitBlt tmpDIB.getDIBDC, 0, 0, newRight - newLeft, newBottom - newTop, layerDIB.getDIBDC, newRight, newTop, vbSrcCopy
+            
+            'Replace the current layer DIB with our temporary DIB
+            layerDIB.createFromExistingDIB tmpDIB
+            
+            'Modify our layer offsets to reflect our new size
+            myLayerData.l_OffsetX = newRight
+            myLayerData.l_OffsetY = newTop
+        
+            'Return TRUE, so that the calling function knows to redraw the screen with the new size and offsets
+            cropNullPaddedLayerDIB = True
+            
+        End If
+        
+    Else
+        Debug.Print "Request for layer null padding trim denied - layer DIB does not currently exist!"
+        cropNullPaddedLayerDIB = False
+    End If
+    
+End Function
+
 'External functions can use this function to request a thumbnail version of the layer contents.
 '
 'FreeImage is preferred for thumbnail resizing, but if it's not available, GDI+ will be used.
@@ -503,3 +690,19 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
 End Function
+
+'This function can be used to populate a valid SAFEARRAY2D structure against the layer's current DIB
+Private Sub prepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
+    
+    'Populate a relevant SafeArray variable for the supplied DIB
+    With srcSA
+        .cbElements = 1
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = layerDIB.getDIBHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = layerDIB.getDIBArrayWidth
+        .pvData = layerDIB.getActualDIBBits
+    End With
+    
+End Sub

@@ -967,7 +967,6 @@ Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As
     
 End Sub
 
-
 'Return a DIB that contains the currently selected area, fully processed according to the selection mask
 Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False) As Boolean
 
