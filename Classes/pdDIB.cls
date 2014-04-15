@@ -15,12 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 10/January/14
-'Last update: renamed to pdDIB instead of pdLayer.  Layers need extra metadata associated with them (name, opacity, etc)
-'             and that extra data is too heavy for the many functions that just need a single DIB for fx or whatever else.
-'             To that end, this class is now pdDIB, and all it does is store DIB data, whereas the new pdLayer class will
-'             actually be FOR LAYERS, e.g. it will include all relevant layer data, as well as a single pdDIB object with
-'             the image data for that DIB.  (Confused yet?  :)
+'Last updated: 14/April/14
+'Last update: greatly improved the .renderToPictureBox function for 32bpp images; GDI+ is now used for high-quality resampling.
 '
 'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
 ' pdDIB is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
@@ -1150,11 +1146,17 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     If dibColorDepth = 24 Then
         StretchBlt tmpDIB.getDIBDC, 0, 0, dWidth, dHeight, dibDC, 0, 0, dibWidth, dibHeight, vbSrcCopy
     
-    'For 32bpp images, we must first apply a background checkerboard pattern, then alphablend the image onto it.  (Note
-    ' that this does not currently use HALFTONE stretching - that change is forthcoming.)
+    'For 32bpp images, we must first apply a background checkerboard pattern, then alphablend the shrunken
+    ' image onto it.  (Note that GDI+ is used to perform the resize, as StretchBlt can't handle RGBA data properly.)
     Else
+    
         Drawing.fillDIBWithAlphaCheckerboard tmpDIB, 0, 0, dWidth, dHeight
-        alphaBlendToDC tmpDIB.getDIBDC, , 0, 0, dWidth, dHeight
+        
+        Dim gdipResizeDIB As pdDIB
+        Set gdipResizeDIB = New pdDIB
+        gdipResizeDIB.createBlank dWidth, dHeight, 32
+        GDIPlusResizeDIB gdipResizeDIB, 0, 0, dWidth, dHeight, Me, 0, 0, dibWidth, dibHeight, InterpolationModeHighQualityBicubic
+        gdipResizeDIB.alphaBlendToDC tmpDIB.getDIBDC
         
     End If
     
