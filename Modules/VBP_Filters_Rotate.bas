@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Transform"
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 17/May/13
-'Last update: CropToSelection now handles non-rectangular selections correctly.  (Unselected areas are made transparent.)
+'Last updated: 14/April/14
+'Last update: got rotation functions working with layers!
 '
 'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
