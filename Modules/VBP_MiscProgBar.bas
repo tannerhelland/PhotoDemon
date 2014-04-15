@@ -108,7 +108,7 @@ End Sub
 ' maximum divided by 20.  This is a nice compromise between responsive progress bar updates and extremely fast rendering.
 Public Function findBestProgBarValue() As Long
 
-    'First, figure out what the range of this operation will be using the values in curDIBValues
+    'First, figure out what the range of this operation will be, based on the current progress bar maximum
     Dim progBarRange As Double
     progBarRange = CDbl(getProgBarMax())
     

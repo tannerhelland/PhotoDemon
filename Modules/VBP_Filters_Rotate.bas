@@ -338,9 +338,6 @@ Public Sub MenuFlip()
     
     Message "Finished. "
     
-    'Sync the interface to the new layer
-    syncInterfaceToCurrentImage
-    
     'Redraw the viewport
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
@@ -379,19 +376,15 @@ Public Sub MenuMirror()
     
     Message "Finished."
     
-    'Sync the interface to the new layer
-    syncInterfaceToCurrentImage
-    
     'Redraw the viewport
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
 'Rotate an image 90° clockwise
+' TODO: lean on the API for this, as it's not very fast to process manually in VB
 Public Sub MenuRotate90Clockwise()
-
-    'TODO: make this function work with layers.
-
+    
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
     If pdImages(g_CurrentImage).selectionActive Then
@@ -401,77 +394,87 @@ Public Sub MenuRotate90Clockwise()
 
     Message "Rotating image clockwise..."
     
-    'Create a local array and point it at the pixel data of the current image
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepImageData srcSA
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'Create a second local array.  This will contain the pixel data of the new, rotated image
+    'Arrays will be pointed at both source and destination pixels (we obviously cannot do an in-place 90° rotation)
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
+    Dim copyImageData() As Byte
+    Dim copySA As SAFEARRAY2D
     
-    Dim dstDIB As pdDIB
-    Set dstDIB = New pdDIB
-    'dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+    'A temporary DIB will hold the contents of the layer as it is being rotated
+    Dim copyDIB As pdDIB
+    Set copyDIB = New pdDIB
     
-    prepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, i As Long
-    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-    
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long, QuickValY
-    qvDepth = curDIBValues.BytesPerPixel
+    'Lots of helper variables for a function like this
+    Dim x As Long, y As Long, j As Long
+    Dim quickVal As Long, QuickValY
+    Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
+    imgWidth = pdImages(g_CurrentImage).Width
+    imgHeight = pdImages(g_CurrentImage).Height
+    finalX = imgWidth - 1
+    finalY = imgHeight - 1
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = finalX * qvDepth
-    iHeight = finalY * qvDepth
+    iWidth = finalX * 4
+    iHeight = finalY * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
     progBarCheck = findBestProgBarValue()
+    
+    'Iterate through each layer, rotating them in turn
+    Dim tmpLayerRef As pdLayer
+    
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        'Retrieve a pointer to the layer of interest
+        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
-    'Rotate the source image into the destination image, using the arrays provided
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        QuickValY = y * qvDepth
+        'Null-pad the layer
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
-        For i = 0 To qvDepth - 1
-            dstImageData(iHeight - QuickValY + i, finalX - x) = srcImageData(iWidth - quickVal + i, y)
-        Next i
+        'Make a copy of the layer, which we will use as our source during the transform
+        copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+        'Create a blank destination DIB to receive the transformed pixels
+        tmpLayerRef.layerDIB.createBlank pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).Width, 32
+        
+        'Now we can point arrays at both the source and destination pixel sets
+        prepSafeArray copySA, copyDIB
+        CopyMemory ByVal VarPtrArray(copyImageData()), VarPtr(copySA), 4
     
-    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+        prepSafeArray dstSA, tmpLayerRef.layerDIB
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        
+        'Rotate the source image into the destination image, using the arrays provided
+        For x = 0 To finalX
+            quickVal = x * 4
+        For y = 0 To finalY
+            QuickValY = y * 4
+            
+            For j = 0 To 3
+                dstImageData(iHeight - QuickValY + j, finalX - x) = copyImageData(iWidth - quickVal + j, y)
+            Next j
+            
+        Next y
+            If (((i * imgWidth) + x) And progBarCheck) = 0 Then SetProgBarVal ((i * imgWidth) + x)
+        Next x
     
-    'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
-    If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
+        'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+        CopyMemory ByVal VarPtrArray(copyImageData), 0&, 4
+        Erase copyImageData
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+        'Remove any null-padding
+        tmpLayerRef.cropNullPaddedLayer
     
-    'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
-    
-    'With that transfer complete, we can erase our temporary DIB
-    dstDIB.eraseDIB
-    Set dstDIB = Nothing
+    Next i
     
     'Update the current image size
-    pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
     DisplaySize pdImages(g_CurrentImage)
     
     Message "Finished. "
@@ -497,9 +500,27 @@ Public Sub MenuRotate180()
 
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
     Message "Rotating image..."
+    
+    'Iterate through each layer, rotating them in turn
+    Dim tmpLayerRef As pdLayer
+    
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        'Retrieve a pointer to the layer of interest
+        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
-    'StretchBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).Width - 1, pdImages(g_CurrentImage).Height - 1, -pdImages(g_CurrentImage).Width, -pdImages(g_CurrentImage).Height, vbSrcCopy
+        'Null-pad the layer
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
+        'Rotate it by inverting both directions of a StretchBlt call
+        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.layerDIB.getDIBWidth - 1, tmpLayerRef.layerDIB.getDIBHeight - 1, -tmpLayerRef.layerDIB.getDIBWidth, -tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
+        
+        'Remove any null-padding
+        tmpLayerRef.cropNullPaddedLayer
+    
+    Next i
+            
     Message "Finished. "
     
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -507,9 +528,8 @@ Public Sub MenuRotate180()
 End Sub
 
 'Rotate an image 90° counter-clockwise
+' TODO: lean on the API for this, as it's not very fast to process manually in VB
 Public Sub MenuRotate270Clockwise()
-
-    'TODO: make this function work with layers.
 
     'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
     ' the selection to match the new image, but we can fix that at a later date.)
@@ -520,81 +540,93 @@ Public Sub MenuRotate270Clockwise()
 
     Message "Rotating image counter-clockwise..."
     
-    'Create a local array and point it at the pixel data of the current image
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepImageData srcSA
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'Create a second local array.  This will contain the pixel data of the new, rotated image
+    'Arrays will be pointed at both source and destination pixels (we obviously cannot do an in-place 90° rotation)
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
+    Dim copyImageData() As Byte
+    Dim copySA As SAFEARRAY2D
     
-    Dim dstDIB As pdDIB
-    Set dstDIB = New pdDIB
-    'dstDIB.createBlank pdImages(g_CurrentImage).mainDIB.getDIBHeight, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
+    'A temporary DIB will hold the contents of the layer as it is being rotated
+    Dim copyDIB As pdDIB
+    Set copyDIB = New pdDIB
     
-    prepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, i As Long
-    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    'Lots of helper variables for a function like this
+    Dim x As Long, y As Long, j As Long
+    Dim quickVal As Long, QuickValY
+    Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
+    imgWidth = pdImages(g_CurrentImage).Width
+    imgHeight = pdImages(g_CurrentImage).Height
+    finalX = imgWidth - 1
+    finalY = imgHeight - 1
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long, QuickValY
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    Dim iWidth As Long
-    iWidth = finalX * qvDepth
+    Dim iWidth As Long, iHeight As Long
+    iWidth = finalX * 4
+    iHeight = finalY * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
+    Dim progBarCheck As Long, progBarOffsetX As Long
+    SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
     progBarCheck = findBestProgBarValue()
+    
+    'Iterate through each layer, rotating them in turn
+    Dim tmpLayerRef As pdLayer
+    
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        progBarOffsetX = i * imgWidth
         
-    'Rotate the source image into the destination image, using the arrays provided
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        QuickValY = y * qvDepth
+        'Retrieve a pointer to the layer of interest
+        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
-        For i = 0 To qvDepth - 1
-            dstImageData(QuickValY + i, x) = srcImageData(iWidth - quickVal + i, y)
-        Next i
+        'Null-pad the layer
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
+        'Make a copy of the layer, which we will use as our source during the transform
+        copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
+        
+        'Create a blank destination DIB to receive the transformed pixels
+        tmpLayerRef.layerDIB.createBlank pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).Width, 32
+        
+        'Now we can point arrays at both the source and destination pixel sets
+        prepSafeArray copySA, copyDIB
+        CopyMemory ByVal VarPtrArray(copyImageData()), VarPtr(copySA), 4
     
-    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+        prepSafeArray dstSA, tmpLayerRef.layerDIB
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        
+        'Rotate the source image into the destination image, using the arrays provided
+        For x = 0 To finalX
+            quickVal = x * 4
+        For y = 0 To finalY
+            QuickValY = y * 4
+            
+            For j = 0 To 3
+                dstImageData(QuickValY + j, x) = copyImageData(iWidth - quickVal + j, y)
+            Next j
+            
+        Next y
+            If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal progBarOffsetX + x
+        Next x
     
-    'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
-    If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
+        'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+        CopyMemory ByVal VarPtrArray(copyImageData), 0&, 4
+        Erase copyImageData
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+        'Remove any null-padding
+        tmpLayerRef.cropNullPaddedLayer
     
-    'dstImageData now contains the rotated image.  We need to transfer that back into the current image.
-    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
-    
-    'With that transfer complete, we can erase our temporary DIB
-    dstDIB.eraseDIB
-    Set dstDIB = Nothing
+    Next i
     
     'Update the current image size
-    pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
     DisplaySize pdImages(g_CurrentImage)
     
     Message "Finished. "
     
-    'Redraw the image
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "image rotated"
     
     'Reset the progress bar to zero
