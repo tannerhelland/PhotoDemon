@@ -410,9 +410,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Flip horizontal"
             MenuMirror
-            
+        
+        'NOTE: isometric conversion was removed in v6.4
         Case "Isometric conversion"
-            FilterIsometric
+            'FilterIsometric
             
         Case "Tile"
             If showDialog Then

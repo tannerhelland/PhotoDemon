@@ -224,15 +224,15 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 9, 3   'Rotate Arbitrary
     addMenuIcon "MIRROR", 3, 10        'Mirror
     addMenuIcon "FLIP", 3, 11          'Flip
-    addMenuIcon "ISOMETRIC", 3, 12     'Isometric
-    addMenuIcon "REDUCECOLORS", 3, 14  'Indexed color (Reduce Colors)
-    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(14).Enabled = True Else FormMain.MnuImage(14).Enabled = False
-    addMenuIcon "TILE", 3, 15          'Tile
-    addMenuIcon "METADATA", 3, 17      'Metadata (top-level)
+    'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
+    addMenuIcon "REDUCECOLORS", 3, 13  'Indexed color (Reduce Colors)
+    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(13).Enabled = True Else FormMain.MnuImage(13).Enabled = False
+    addMenuIcon "TILE", 3, 14          'Tile
+    addMenuIcon "METADATA", 3, 16      'Metadata (top-level)
         '--> Metadata sub-menu
-        addMenuIcon "BROWSEMD", 3, 17, 0     'Browse metadata
-        addMenuIcon "COUNTCOLORS", 3, 17, 2  'Count Colors
-        addMenuIcon "MAPPHOTO", 3, 17, 3     'Map photo location
+        addMenuIcon "BROWSEMD", 3, 16, 0     'Browse metadata
+        addMenuIcon "COUNTCOLORS", 3, 16, 2  'Count Colors
+        addMenuIcon "MAPPHOTO", 3, 16, 3     'Map photo location
     
     'Layer menu
     'addMenuIcon "SELECTALL", 4, 0       'Add layer (top-level)
