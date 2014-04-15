@@ -984,7 +984,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Set srcDIB = New pdDIB
     
     If useMergedImage Then
-        getCompositedImage srcDIB, False
+        getCompositedImage srcDIB, True
     Else
         retrieveNullPaddedLayer srcDIB, curLayer
     End If
@@ -994,7 +994,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     'Start by initializing the destination DIB to the size of the active selection
     Set dstDIB = New pdDIB
-    dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32
+    dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
     Dim srcImageData() As Byte
@@ -1021,7 +1021,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
-    Dim srcDIBCD As Long, srcQuickX As Long, srcQuickY As Long
+    Dim srcDIBCD As Long, srcQuickX As Long, srcQuickY As Long, selQuickX As Long
     srcDIBCD = srcDIB.getDIBColorDepth \ 8
     
     Dim dstDIBCD As Long, dstQuickX As Long
@@ -1030,50 +1030,51 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     For x = 0 To dstDIB.getDIBWidth - 1
         dstQuickX = x * dstDIBCD
         srcQuickX = (leftOffset + x) * srcDIBCD
+        selQuickX = (leftOffset + x) * 3
     For y = 0 To dstDIB.getDIBHeight - 1
     
         srcQuickY = topOffset + y
-        thisAlpha = selData((leftOffset + x) * 3, srcQuickY)
+        thisAlpha = selData(selQuickX, srcQuickY)
         
-        'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
-        ' alpha value of the destination pixel.  If the source data is 32bpp, use only the selection mask data.
-        If srcDIBCD = 4 Then
-        
-            'Source pixel data will be premultiplied, so we must un-premultiply it now
-            origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
-            If origAlpha > 0 Then
-                blendAlpha = 255 / origAlpha
+        'If the selection does not exist at this pixel, we have no reason to process this pixel further!
+        If thisAlpha > 0 Then
+            
+            'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
+            ' alpha value of the destination pixel.  If the source data is 32bpp, use only the selection mask data.
+            If srcDIBCD = 4 Then
+            
+                'Check the image's alpha value.  If it's zero, we have no reason to process it further
+                origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
+                
+                If origAlpha > 0 Then
+                    
+                    'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
+                    ' we premultiply alpha, after all!)
+                    r = srcImageData(srcQuickX + 2, srcQuickY)
+                    g = srcImageData(srcQuickX + 1, srcQuickY)
+                    b = srcImageData(srcQuickX, srcQuickY)
+                    
+                    'Calculate a new multiplier, based on the strength of the selection at this location
+                    blendAlpha = thisAlpha / 255
+                    
+                    'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
+                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
+                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                    dstImageData(dstQuickX, y) = b * blendAlpha
+                    
+                    'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
+                    ' the original alpha value, and the selection mask value at this location.
+                    dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+                    
+                End If
+                
             Else
-                blendAlpha = 0
+                dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
+                dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
+                dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
+                dstImageData(dstQuickX + 3, y) = thisAlpha
             End If
             
-            r = srcImageData(srcQuickX + 2, srcQuickY)
-            g = srcImageData(srcQuickX + 1, srcQuickY)
-            b = srcImageData(srcQuickX, srcQuickY)
-            
-            r = r * blendAlpha
-            g = g * blendAlpha
-            b = b * blendAlpha
-            
-            If r > 255 Then r = 255
-            If g > 255 Then g = 255
-            If b > 255 Then b = 255
-            
-            dstImageData(dstQuickX + 2, y) = r
-            dstImageData(dstQuickX + 1, y) = g
-            dstImageData(dstQuickX, y) = b
-            
-            'We have now set un-premultiplied alpha data to the destination.  Finish our work by calculating
-            ' a new alpha channel value for this pixel, which is a blend of the original alpha value, and the
-            ' selection mask value at this location.
-            blendAlpha = thisAlpha / 255
-            dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
-            
-        Else
-            dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
-            dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
-            dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
-            dstImageData(dstQuickX + 3, y) = thisAlpha
         End If
         
     Next y
@@ -1088,8 +1089,8 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Erase dstImageData
     Erase selData
     
-    'If the calling function requested premultiplied alpha, apply it now
-    If preMultipliedAlphaState Then dstDIB.fixPremultipliedAlpha True
+    'If the calling function requested un-premultiplied alpha, apply it now
+    If Not preMultipliedAlphaState Then dstDIB.fixPremultipliedAlpha False
         
     retrieveProcessedSelection = True
 

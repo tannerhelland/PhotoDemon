@@ -25,7 +25,8 @@ Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 Private Const CF_HDROP As Long = 15
 Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 
-'Copy image
+'Copy the current layer (or composite image, if copyMerged is true) to the clipboard.
+' If a selection is active, crop the image to the layer area first.
 Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
     
     Dim tmpDIB As pdDIB
@@ -35,8 +36,6 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
     If pdImages(g_CurrentImage).selectionActive Then
     
         'Fill the temporary DIB with the selection
-        'tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
-        'BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, copyMerged
         
     Else
