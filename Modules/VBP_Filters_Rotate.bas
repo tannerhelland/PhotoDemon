@@ -238,7 +238,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
 
 End Sub
 
-'Crop the image to the current selection
+'Crop the image to the current selection.
+' TODO: look at optimizations for short-circuiting the full crop operation.  Transparent pixels could be skipped, for example,
+'       and we could probably make use of existing premultiplication (instead of undoing then redoing it, as we do now).
 Public Sub MenuCropToSelection()
 
     'TODO: make this work with layers.
@@ -251,37 +253,143 @@ Public Sub MenuCropToSelection()
     
     Message "Cropping image to selected area..."
     
-    'Create a new DIB the size of the active selection
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, True, True
-    
     'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
     ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square
-    ' selections, this will always result in a 32bpp image.
-    '
-    'The old code will be left here few a few releases, in case I decide to provide a preference for alternate behavior, per user request.
-    ' (Note: comment added for the 6.0 release; consider removing by 6.4 if no complaints received.)
-    '
-    'Copy the selection area to the temporary DIB
-    'tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
-    'BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).mainDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+    ' selections, this will always result in an image with some transparent regions.
     
-    'Transfer the newly cropped image back into the main DIB object
-    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
     
-    'Erase the temporary DIB
-    tmpDIB.eraseDIB
-    Set tmpDIB = Nothing
+    'Arrays will be pointed at three sets of pixels: the current layer, the selection mask, and a destination layer.
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    
+    'Point our selection array at the selection mask in advance; this only needs to be done once, as the same mask is used for all layers.
+    Dim selData() As Byte
+    Dim selSA As SAFEARRAY2D
+    prepSafeArray selSA, pdImages(g_CurrentImage).mainSelection.selMask
+    CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
+    
+    'Lots of helper variables for a function like this
+    Dim leftOffset As Long, topOffset As Long
+    leftOffset = pdImages(g_CurrentImage).mainSelection.boundLeft
+    topOffset = pdImages(g_CurrentImage).mainSelection.boundTop
+    
+    Dim r As Long, g As Long, b As Long
+    Dim thisAlpha As Long, origAlpha As Long, blendAlpha As Double
+    Dim srcQuickX As Long, srcQuickY As Long, dstQuickX As Long, selQuickX As Long
+    
+    Dim x As Long, y As Long
+    Dim imgWidth As Long, imgHeight As Long
+    imgWidth = pdImages(g_CurrentImage).Width
+    imgHeight = pdImages(g_CurrentImage).Height
+    
+    Dim selectionWidth As Long, selectionHeight As Long
+    selectionWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+    selectionHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long, progBarOffsetX As Long
+    SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+    progBarCheck = findBestProgBarValue()
+    
+    'Iterate through each layer, rotating them in turn
+    Dim tmpLayerRef As pdLayer
+    
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        'Update the progress bar counter for this layer
+        progBarOffsetX = i * imgWidth
+    
+        'Retrieve a pointer to the layer of interest
+        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        
+        'Null-pad the layer
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        
+        'Create a temporary layer at the relevant size of the selection, and retrieve a pointer to its pixel data
+        tmpDIB.createBlank selectionWidth, selectionHeight, 32, 0
+        prepSafeArray dstSA, tmpDIB
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        
+        'Point another array at the original image layer
+        prepSafeArray srcSA, tmpLayerRef.layerDIB
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        'Iterate through all relevant pixels in this layer (e.g. only those that actually lie within the interesting region
+        ' of the selection), copying them to the destination as necessary.
+        For x = 0 To selectionWidth - 1
+            dstQuickX = x * 4
+            srcQuickX = (leftOffset + x) * 4
+            selQuickX = (leftOffset + x) * 3
+        For y = 0 To selectionHeight - 1
+        
+            srcQuickY = topOffset + y
+            thisAlpha = selData(selQuickX, srcQuickY)
+            
+            If thisAlpha > 0 Then
+            
+                'Check the image's alpha value.  If it's zero, we have no reason to process it further
+                origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
+                
+                If origAlpha > 0 Then
+                    
+                    'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
+                    ' we premultiply alpha, after all!)
+                    r = srcImageData(srcQuickX + 2, srcQuickY)
+                    g = srcImageData(srcQuickX + 1, srcQuickY)
+                    b = srcImageData(srcQuickX, srcQuickY)
+                    
+                    'Calculate a new multiplier, based on the strength of the selection at this location
+                    blendAlpha = thisAlpha / 255
+                    
+                    'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
+                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
+                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                    dstImageData(dstQuickX, y) = b * blendAlpha
+                    
+                    'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
+                    ' the original alpha value, and the selection mask value at this location.
+                    dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+                    
+                End If
+                
+            End If
+            
+        Next y
+            If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal (progBarOffsetX + x)
+        Next x
+        
+        'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+        'Replace the current layer DIB with our destination one
+        tmpLayerRef.layerDIB.createFromExistingDIB tmpDIB
+        
+        'Release our temporary DIB
+        tmpDIB.eraseDIB
+        
+        'Remove any null-padding from the layer
+        tmpLayerRef.cropNullPaddedLayer
+        
+    Next i
+    
+    'Clear the selection mask array reference
+    CopyMemory ByVal VarPtrArray(selData), 0&, 4
+    Erase selData
     
     'Update the current image size
-    pdImages(g_CurrentImage).updateSize
+    pdImages(g_CurrentImage).updateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)
     
-    Message "Finished. "
-    
     'Deactivate the current selection, as it's no longer needed
-    'Clear selections after "Crop to Selection"
     If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
@@ -293,16 +401,20 @@ Public Sub MenuCropToSelection()
         pdImages(g_CurrentImage).mainSelection.selWidth = pdImages(g_CurrentImage).Width
         pdImages(g_CurrentImage).mainSelection.selHeight = pdImages(g_CurrentImage).Height
         pdImages(g_CurrentImage).mainSelection.lockIn
-        Dim i As Long
         For i = 0 To toolbar_Tools.cmbSelRender.Count - 1
             toolbar_Tools.cmbSelRender(i).ListIndex = sHighlightRed
         Next i
         Message "Crop complete.  Selection drawing mode changed to make selection visible."
     End If
     
-    'Redraw the image
+    Message "Finished. "
+    
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop to selection"
-
+    
+    'Reset the progress bar to zero
+    SetProgBarVal 0
+    releaseProgressBar
+    
 End Sub
 
 'Flip an image vertically
