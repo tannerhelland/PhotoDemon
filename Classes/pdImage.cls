@@ -206,14 +206,15 @@ End Function
 ' appropriate color depth for us.
 Public Function getCompositeImageColorDepth() As Long
 
+    'NOTE: as of April '14 (v6.4) newly added layer support dictates that all layers are 32bpp by default.
+    getCompositeImageColorDepth = 32
+    
     'Single-layer images are much easier to deal with!
-    If numOfLayers = 0 Then
-        getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
-    Else
-    
-        'TODO!  Use magic to determine the ideal color depth of the composited image.
-    
-    End If
+    'If numOfLayers = 0 Then
+    '    getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
+    'Else
+        'Use magic to determine the ideal color depth of the composited image??
+    'End If
 
 End Function
 
