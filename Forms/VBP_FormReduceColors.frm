@@ -95,7 +95,7 @@ Begin VB.Form FormReduceColors
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Note: this operation must flatten the image before converting it to indexed color mode."
+      Caption         =   "Note: this operation will flatten the image before converting it to indexed color mode."
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12

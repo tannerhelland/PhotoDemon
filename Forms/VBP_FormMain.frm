@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -324,28 +324,24 @@ Begin VB.Form FormMain
          Index           =   11
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Convert to isometric view"
+         Caption         =   "-"
          Index           =   12
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Indexed color..."
          Index           =   13
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Indexed color..."
+         Caption         =   "Tile..."
          Index           =   14
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
+         Caption         =   "-"
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   16
-      End
-      Begin VB.Menu MnuImage 
          Caption         =   "Metadata"
-         Index           =   17
+         Index           =   16
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -2501,26 +2497,27 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 11
             Process "Flip vertical"
         
+        'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
         'Isometric view
-        Case 12
-            Process "Isometric conversion"
+        'Case 12
+        '    Process "Isometric conversion"
             
         'Separator
-        Case 13
+        Case 12
         
         'Indexed color
-        Case 14
+        Case 13
             Process "Reduce colors", True
         
         'Tile
-        Case 15
+        Case 14
             Process "Tile", True
             
         'Separator
-        Case 16
+        Case 15
         
         'Metadata top-level
-        Case 17
+        Case 16
     
     End Select
 

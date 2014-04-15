@@ -68,7 +68,7 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -118,7 +118,7 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
@@ -200,9 +200,9 @@ NextCustomFilterPixel:  Next y2
         End If
         
         'Finally, remember the new value in our tData array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If Not toPreview Then
@@ -256,7 +256,7 @@ Public Sub FilterGridBlur()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -276,11 +276,11 @@ Public Sub FilterGridBlur()
         r = 0
         g = 0
         b = 0
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         For y = initY To finalY
-            r = r + ImageData(QuickVal + 2, y)
-            g = g + ImageData(QuickVal + 1, y)
-            b = b + ImageData(QuickVal, y)
+            r = r + ImageData(quickVal + 2, y)
+            g = g + ImageData(quickVal + 1, y)
+            b = b + ImageData(quickVal, y)
         Next y
         rax(x) = r
         gax(x) = g
@@ -293,10 +293,10 @@ Public Sub FilterGridBlur()
         g = 0
         b = 0
         For x = initX To finalX
-            QuickVal = x * qvDepth
-            r = r + ImageData(QuickVal + 2, y)
-            g = g + ImageData(QuickVal + 1, y)
-            b = b + ImageData(QuickVal, y)
+            quickVal = x * qvDepth
+            r = r + ImageData(quickVal + 2, y)
+            g = g + ImageData(quickVal + 1, y)
+            b = b + ImageData(quickVal, y)
         Next x
         ray(y) = r
         gay(y) = g
@@ -307,7 +307,7 @@ Public Sub FilterGridBlur()
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
@@ -321,9 +321,9 @@ Public Sub FilterGridBlur()
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -340,228 +340,3 @@ Public Sub FilterGridBlur()
     finalizeImageData
 
 End Sub
-
-'Convert an image to its isometric equivalent.  This can be very useful for developers of isometric games.
-Public Sub FilterIsometric()
-
-    'TODO!  Warn the user that this action requires flattening.
-
-    'If a selection is active, remove it.  (This is not the most elegant solution, but we can fix it at a later date.)
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
-    End If
-    
-    'Create a local array and point it at the pixel data of the current image
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepImageData srcSA
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'Make note of the current image's width and height
-    Dim hWidth As Double
-    Dim oWidth As Long, oHeight As Long
-    oWidth = curDIBValues.Width - 1
-    oHeight = curDIBValues.Height - 1
-    hWidth = oWidth / 2
-    
-    Dim nWidth As Long, nHeight As Long
-    nWidth = oWidth + oHeight + 1
-    nHeight = nWidth \ 2
-    
-    'Create a second local array.  This will contain the pixel data of the new isometric image
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    
-    Dim dstDIB As pdDIB
-    Set dstDIB = New pdDIB
-    dstDIB.createBlank nWidth + 1, nHeight + 1, pdImages(g_CurrentImage).getCompositeImageColorDepth()
-    
-    prepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-    
-    Dim srcX As Double, srcY As Double
-    
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim dstQuickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-        
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    SetProgBarMax nWidth
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-        
-    'Interpolated loop calculation
-    Dim lOffset As Long
-        
-    Message "Converting image to isometric view..."
-        
-    'Run through the destination image pixels, converting to isometric as we go
-    For x = 0 To nWidth
-        dstQuickVal = x * qvDepth
-    For y = 0 To nHeight
-        
-        srcX = getIsometricX(x, y, hWidth)
-        srcY = getIsometricY(x, y, hWidth)
-                
-        'If the pixel is inside the image, reverse-map it using bilinear interpolation.
-        ' (Note: this will also reverse-map alpha values if they are present in the image.)
-        If (srcX >= 0 And srcX < oWidth And srcY >= 0 And srcY < oHeight) Then
-            
-            For lOffset = 0 To qvDepth - 1
-                dstImageData(dstQuickVal + lOffset, y) = getInterpolatedVal(srcX, srcY, srcImageData, lOffset, qvDepth)
-            Next lOffset
-                    
-        'Out-of-bound pixels don't need interpolation - just set them manually
-        Else
-            'If the image is 32bpp, set outlying pixels as fully transparent
-            If qvDepth = 4 Then dstImageData(dstQuickVal + 3, y) = 0
-            dstImageData(dstQuickVal + 2, y) = 255
-            dstImageData(dstQuickVal + 1, y) = 255
-            dstImageData(dstQuickVal, y) = 255
-        End If
-        
-    
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-    
-    'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    'If the action was canceled, exit before copying the processed image over
-    If cancelCurrentAction Then
-        dstDIB.eraseDIB
-        Message "Action canceled."
-        SetProgBarVal 0
-        releaseProgressBar
-        Exit Sub
-    End If
-    
-    'If the original image was 32bpp, we need to re-apply premultiplication (because prepImageData above removed it)
-    If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
-    
-    'dstImageData now contains the isometric image.  We need to transfer that back into the current image.
-    'pdImages(g_CurrentImage).mainDIB.eraseDIB
-    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB dstDIB
-    
-    'With that transfer complete, we can erase our temporary DIB
-    dstDIB.eraseDIB
-    Set dstDIB = Nothing
-    
-    'Update the current image size
-    pdImages(g_CurrentImage).updateSize
-    DisplaySize pdImages(g_CurrentImage)
-    
-    Message "Finished. "
-    
-    'Redraw the image
-    FitOnScreen
-    
-    'Reset the progress bar to zero
-    SetProgBarVal 0
-    releaseProgressBar
-
-End Sub
-
-'These two functions translate a normal (x,y) coordinate to an isometric plane
-Private Function getIsometricX(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Double
-    getIsometricX = (xc / 2) - yc + tWidth
-End Function
-
-Private Function getIsometricY(ByVal xc As Long, ByVal yc As Long, ByVal tWidth As Long) As Double
-    getIsometricY = (xc / 2) + yc - tWidth
-End Function
-
-'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
-' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Public Function getInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
-        
-    'Retrieve the four surrounding pixel values
-    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
-    topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
-    topRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1))
-    bottomLeft = iData(Int(x1) * iDepth + iOffset, Int(y1 + 1))
-    bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1 + 1))
-    
-    'Calculate blend ratios
-    Dim yBlend As Double
-    Dim xBlend As Double, xBlendInv As Double
-    yBlend = y1 - Int(y1)
-    xBlend = x1 - Int(x1)
-    xBlendInv = 1 - xBlend
-    
-    'Blend in the x-direction
-    Dim topRowColor As Double, bottomRowColor As Double
-    topRowColor = topRight * xBlend + topLeft * xBlendInv
-    bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
-    
-    'Blend in the y-direction
-    getInterpolatedVal = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
-
-End Function
-
-'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
-' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, ByVal xMax As Long, yMax As Long, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
-        
-    'Retrieve the four surrounding pixel values
-    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
-    topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
-    If Int(x1) = xMax Then
-        topRight = iData(0 + iOffset, Int(y1))
-    Else
-        topRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1))
-    End If
-    If Int(y1) = yMax Then
-        bottomLeft = iData(Int(x1) * iDepth + iOffset, 0)
-    Else
-        bottomLeft = iData(Int(x1) * iDepth + iOffset, Int(y1 + 1))
-    End If
-    
-    If Int(x1) = xMax Then
-        If Int(y1) = yMax Then
-            bottomRight = iData(0 + iOffset, 0)
-        Else
-            bottomRight = iData(0 + iOffset, Int(y1 + 1))
-        End If
-    Else
-        If Int(y1) = yMax Then
-            bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, 0)
-        Else
-            bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1 + 1))
-        End If
-    End If
-    
-    'Calculate blend ratios
-    Dim yBlend As Double
-    Dim xBlend As Double, xBlendInv As Double
-    yBlend = y1 - Int(y1)
-    xBlend = x1 - Int(x1)
-    xBlendInv = 1 - xBlend
-    
-    'Blend in the x-direction
-    Dim topRowColor As Double, bottomRowColor As Double
-    topRowColor = topRight * xBlend + topLeft * xBlendInv
-    bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
-    
-    'Blend in the y-direction
-    getInterpolatedValWrap = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
-
-End Function
-

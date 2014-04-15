@@ -1619,7 +1619,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(6), True, True, False, 1
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Autocrop", FormMain.MnuImage(7), True, True, False, 1
         'KeyCode 188 = <,  (next to the letter M)
-        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(14), True, True, False, 0
+        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(13), True, True, False, 0
         
             'Image -> Rotate submenu
             .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
