@@ -169,14 +169,18 @@ Attribute VB_Exposed = False
 'Image Rotation Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 12/November/12
-'Last updated: 24/August/13
-'Last update: add command bar
+'Last updated: 14/April/14
+'Last update: rotate now works with layers!
 '
-'This tool allows the user to rotate an image at an arbitrary angle in 1/10 degree increments.  FreeImage is required
-' for the tool to work, as this relies upon FreeImage to perform the rotation in a fast, efficient manner.  The
-' corresponding menu entry for this tool is hidden unless FreeImage is found.
+'This tool allows the user to rotate an image at an arbitrary angle in 1/100 degree increments.  FreeImage is
+' required for the tool to work, as this relies upon FreeImage to perform the rotation in a fast, efficient
+' manner.  The corresponding menu entry for this tool is hidden unless FreeImage is found.  (I could add a
+' GDI+ fallback as well, but it's waaaay down my list of priorities.)
 '
 'At present, the tool assumes that you want to rotate the image around its center.
+'
+'To rotate a layer instead of the entire image, use the Layer menu.  Rotation is also available in the
+' Effect -> Distort menu, which can provide cool artistic effect when combined with selections.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -192,9 +196,7 @@ Dim smallDIB As pdDIB
 Dim m_ToolTip As clsToolTip
 
 Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal isPreview As Boolean = False)
-
-    'TODO!  Rewrite this function so it works with layers!
-
+    
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -211,30 +213,34 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
         
-        If Not isPreview Then Message "Rotating image (this may take a few seconds)..."
-                
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-                
+        'Rotation requires quite a few variables, including a number of handles for passing data back-and-forth with FreeImage.
+        Dim fi_DIB As Long, returnDIB As Long
+        Dim nWidth As Long, nHeight As Long
+        
+        'One of the FreeImage rotation variants requires an explicit center point; calculate one in advance.
+        Dim cx As Double, cy As Double
+        
         If isPreview Then
-            fi_DIB = FreeImage_CreateFromDC(smallDIB.getDIBDC)
+            cx = smallDIB.getDIBWidth / 2
+            cy = smallDIB.getDIBHeight / 2
         Else
-            
-            'TEMPORARY FIX! Retrieve a composited copy of the image and rotate that.
-            pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
-            fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
-            
+            cx = pdImages(g_CurrentImage).Width / 2
+            cy = pdImages(g_CurrentImage).Height / 2
         End If
         
-        'Use that handle to request an image rotation
-        If fi_DIB <> 0 Then
         
-            Dim returnDIB As Long
+        'Normally, I like to use identical code for previews and actual effects.  However, rotating is completely different
+        ' for previews (where we do a single rotation of the composited image) vs the full images (independently rotating
+        ' each layer, with support functions to null-pad and crop layers as necessary).  As such, there is some code
+        ' duplication here, but I believe it makes the code much more readable.
+        
+        If isPreview Then
             
-            Dim nWidth As Long, nHeight As Long
+            'Give FreeImage a handle to our temporary rotation image
+            fi_DIB = FreeImage_CreateFromDC(smallDIB.getDIBDC)
             
-            'There are currently two ways to resize an image - enlarging the canvas to receive the new image, or
-            ' leaving the image the same size.  These require two different FreeImage functions.
+            'There are two ways to rotate an image - enlarging the canvas to receive the fully rotated copy, or
+            ' leaving the image the same size and truncating corners.  These require two different FreeImage functions.
             Select Case canvasResize
             
                 'Resize the canvas to accept the new image
@@ -246,18 +252,6 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                     
                 'Leave the canvas the same size
                 Case 1
-                
-                    'This call requires an explicit center-point.  Calculate one accordingly.
-                    Dim cx As Double, cy As Double
-                    
-                    If isPreview Then
-                        cx = smallDIB.getDIBWidth / 2
-                        cy = smallDIB.getDIBHeight / 2
-                    Else
-                        cx = pdImages(g_CurrentImage).Width / 2
-                        cy = pdImages(g_CurrentImage).Height / 2
-                    End If
-                    
                     returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
                     
                     nWidth = FreeImage_GetWidth(returnDIB)
@@ -265,63 +259,107 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             
             End Select
             
-            'If this is only a preview, use a temporary object to hold the rotated image
-            If isPreview Then
+            'Create a blank DIB to receive the rotated image from FreeImage
+            tmpDIB.createBlank nWidth, nHeight, 32
             
-                tmpDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).getCompositeImageColorDepth()
+            'Ask FreeImage to premultiply the image's alpha data
+            FreeImage_PreMultiplyWithAlpha returnDIB
             
+            'Copy the bits from the FreeImage DIB to our DIB
+            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                
+            'Finally, render the preview and erase the temporary DIB to conserve memory
+            tmpDIB.renderToPictureBox fxPreview.getPreviewPic
+            fxPreview.setFXImage tmpDIB
+            
+            Set tmpDIB = Nothing
+            
+        Else
+        
+            Message "Rotating image..."
+            
+            'FreeImage doesn't raise progress events, but we can use the number of layers as
+            ' a stand-in progress parameter.
+            SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+            
+            'Iterate through each layer, rotating as we go
+            Dim tmpLayerRef As pdLayer
+            
+            Dim i As Long
+            For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+            
+                SetProgBarVal i
+            
+                'Retrieve a pointer to the layer of interest
+                Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+                
+                'Remove premultiplied alpha, if any
+                tmpLayerRef.layerDIB.fixPremultipliedAlpha False
+                
+                'Null-pad the layer
+                tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+                
+                'Give FreeImage a handle to the layer's pixel data
+                fi_DIB = FreeImage_CreateFromDC(tmpLayerRef.layerDIB.getDIBDC)
+            
+                'There are two ways to rotate an image - enlarging the canvas to receive the fully rotated copy, or
+                ' leaving the image the same size and truncating corners.  These require two different FreeImage functions.
+                Select Case canvasResize
+                
+                    'Resize the canvas to accept the new image
+                    Case 0
+                        returnDIB = FreeImage_Rotate(fi_DIB, rotationAngle, RGB(255, 255, 255))
+                        
+                        nWidth = FreeImage_GetWidth(returnDIB)
+                        nHeight = FreeImage_GetHeight(returnDIB)
+                        
+                    'Leave the canvas the same size
+                    Case 1
+                        returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
+                        
+                        nWidth = FreeImage_GetWidth(returnDIB)
+                        nHeight = FreeImage_GetHeight(returnDIB)
+                
+                End Select
+                
+                'Resize the layer's DIB in preparation for the transfer
+                tmpLayerRef.layerDIB.createBlank nWidth, nHeight, 32
+                
+                'Ask FreeImage to premultiply the image's alpha data
+                FreeImage_PreMultiplyWithAlpha returnDIB
+                
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                SetDIBitsToDevice tmpLayerRef.layerDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 
-                If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha True
+                'Remove any null-padding
+                tmpLayerRef.cropNullPaddedLayer
                 
-                'Finally, render the preview and erase the temporary DIB to conserve memory
-                tmpDIB.renderToPictureBox fxPreview.getPreviewPic
-                fxPreview.setFXImage tmpDIB
-                
-                tmpDIB.eraseDIB
-                Set tmpDIB = Nothing
+            'Continue with the next layer
+            Next i
             
-            Else
-                
-                'Resize the image's main DIB in preparation for the transfer
-                'pdImages(g_CurrentImage).mainDIB.createBlank nWidth, nHeight, pdImages(g_CurrentImage).mainDIB.getDIBColorDepth
-                
-                'Copy the bits from the FreeImage DIB to our DIB
-                'SetDIBitsToDevice pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
-                
-                'Update the size variables
-                pdImages(g_CurrentImage).updateSize
-                DisplaySize pdImages(g_CurrentImage)
-                
-                'If the original image is 32bpp, re-apply premultiplication now.
-                'If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
-                
-                'Fit the new image on-screen and redraw it
-                FitImageToViewport
-                
-            End If
+            'All layers have been rotated successfully!
             
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
+            'Update the image's size
+            pdImages(g_CurrentImage).updateSize False, nWidth, nHeight
+            DisplaySize pdImages(g_CurrentImage)
             
+            'Fit the new image on-screen and redraw it
+            FitImageToViewport
+            
+            Message "Rotation complete."
+            SetProgBarVal 0
+        
         End If
         
-        If Not isPreview Then Message "Rotation complete."
+        'With the transfer complete, release the FreeImage DIB and unload the library
+        If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+        If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
         
     Else
         Message "Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled."
         pdMsgBox "The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.", vbApplicationModal + vbOKOnly + vbInformation, "FreeImage plugin missing"
     End If
         
-End Sub
-
-Private Sub cmdBar_CancelClick()
-
-    'If the original image is 32bpp, re-apply premultiplication.
-    'If pdImages(g_CurrentImage).getCompositedImage.getDIBColorDepth = 32 Then pdImages(g_CurrentImage).getCompositedImage.fixPremultipliedAlpha True
-
 End Sub
 
 'OK button
@@ -362,19 +400,27 @@ Private Sub Form_Load()
     'Determine a new image size that preserves the current aspect ratio
     Dim dWidth As Long, dHeight As Long
     convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
-            
+    
     'Create a new, smaller image at those dimensions
     If (dWidth < pdImages(g_CurrentImage).Width) Or (dHeight < pdImages(g_CurrentImage).Height) Then
-        'smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB, dWidth, dHeight, True
+        
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        pdImages(g_CurrentImage).getCompositedImage tmpDIB
+        
+        smallDIB.createFromExistingDIB tmpDIB, dWidth, dHeight, True
+        
+        Set tmpDIB = Nothing
+        
     Else
-        'smallDIB.createFromExistingDIB pdImages(g_CurrentImage).mainDIB
+        pdImages(g_CurrentImage).getCompositedImage smallDIB
     End If
         
+    'Remove premultiplied alpha from the small DIB copy
+    smallDIB.fixPremultipliedAlpha False
+    
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
-    
-    'To ensure proper interaction with FreeImage, remove premultiplication from the sample image
-    'If pdImages(g_CurrentImage).getCompositedImage().getDIBColorDepth = 32 Then smallDIB.fixPremultipliedAlpha
     
 End Sub
 
