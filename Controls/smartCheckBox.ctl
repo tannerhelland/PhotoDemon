@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.UserControl smartCheckBox 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
-   ClientHeight    =   378
+   ClientHeight    =   375
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   2520
@@ -17,9 +17,9 @@ Begin VB.UserControl smartCheckBox
       Strikethrough   =   0   'False
    EndProperty
    MousePointer    =   99  'Custom
-   ScaleHeight     =   54
+   ScaleHeight     =   25
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   360
+   ScaleWidth      =   168
    ToolboxBitmap   =   "smartCheckBox.ctx":0000
    Begin VB.CheckBox chkBox 
       Appearance      =   0  'Flat

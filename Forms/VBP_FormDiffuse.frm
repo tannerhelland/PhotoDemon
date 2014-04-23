@@ -267,7 +267,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     Dim maxX As Long
@@ -292,13 +292,13 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         DiffuseX = Rnd * xDiffuse - hDX
         DiffuseY = Rnd * yDiffuse - hDY
         
-        QuickValDiffuseX = (DiffuseX * qvDepth) + QuickVal
+        QuickValDiffuseX = (DiffuseX * qvDepth) + quickVal
         QuickValDiffuseY = DiffuseY + y
             
         'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
@@ -317,9 +317,9 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
             If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
         End If
             
-        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
-        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
-        dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+        dstImageData(quickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
+        dstImageData(quickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
+        dstImageData(quickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
 
     Next y
         If toPreview = False Then

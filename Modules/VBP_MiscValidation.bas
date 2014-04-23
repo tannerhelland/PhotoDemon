@@ -108,12 +108,39 @@ Public Function CDblCustom(ByVal srcString As String) As Double
     If InStr(1, srcString, ",") > 0 Then srcString = Replace(srcString, ",", ".")
     
     'We can now use Val() to convert to Double
-    If IsNumeric(srcString) Then
+    If IsNumberLocaleUnaware(srcString) Then
         CDblCustom = Val(srcString)
     Else
         CDblCustom = 0
     End If
 
+End Function
+
+'Locale-unaware check for strings that can successfully be converted to numbers.  Thank you to
+' http://stackoverflow.com/questions/18368680/vb6-isnumeric-behaviour-in-windows-8-windows-2012
+' for the code.
+Public Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
+    Dim Negative As Boolean
+    Dim Number As Boolean
+    Dim Period As Boolean
+    Dim x As Long
+    For x = 1& To Len(Expression)
+        Select Case Mid$(Expression, x, 1&)
+        Case "0" To "9"
+            Number = True
+        Case "-"
+            If Period Or Number Or Negative Then Exit Function
+            Negative = True
+        Case "."
+            If Period Then Exit Function
+            Period = True
+        Case " ", vbTab, vbVerticalTab, vbCr, vbLf, vbFormFeed
+            If Period Or Number Or Negative Then Exit Function
+        Case Else
+            Exit Function
+        End Select
+    Next x
+    IsNumberLocaleUnaware = Number
 End Function
 
 'For a given string, see if it has a trailing number value in parentheses (e.g. "Image (2)").  If it does have a

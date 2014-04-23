@@ -617,7 +617,7 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
     If Len(tmpString) > 0 Then
-        getUniqueTag_String = Str(tmpString)
+        getUniqueTag_String = Trim$(tmpString)
     Else
         getUniqueTag_String = defaultReturn
     End If

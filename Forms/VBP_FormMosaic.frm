@@ -224,7 +224,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Calculate how many mosaic tiles will fit on the current image's size
@@ -253,7 +253,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To xLoop
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To yLoop
         
         'This sub loop is to gather all of the data for the current mosaic tile
@@ -263,7 +263,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
         dstYLoop = (y + 1) * BlockSizeY - 1
         
         For i = initXLoop To dstXLoop
-            QuickVal = i * qvDepth
+            quickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
@@ -271,9 +271,9 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            r = r + srcImageData(QuickVal + 2, j)
-            g = g + srcImageData(QuickVal + 1, j)
-            b = b + srcImageData(QuickVal, j)
+            r = r + srcImageData(quickVal + 2, j)
+            g = g + srcImageData(quickVal + 1, j)
+            b = b + srcImageData(quickVal, j)
             
             'Count this as a valid pixel
             NumOfPixels = NumOfPixels + 1
@@ -294,16 +294,16 @@ NextPixelatePixel1:
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
         For i = initXLoop To dstXLoop
-            QuickVal = i * qvDepth
+            quickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
             If i > finalX Or j > finalY Then GoTo NextPixelatePixel2
             
             'Set the pixel
-            dstImageData(QuickVal + 2, j) = r
-            dstImageData(QuickVal + 1, j) = g
-            dstImageData(QuickVal, j) = b
+            dstImageData(quickVal + 2, j) = r
+            dstImageData(quickVal + 1, j) = g
+            dstImageData(quickVal, j) = b
             
 NextPixelatePixel2:
 

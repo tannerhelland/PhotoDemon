@@ -1202,7 +1202,11 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
     
         Dim i As Long
         For i = LBound(allParams) To UBound(allParams)
-            buildParams = buildParams & Str(allParams(i))
+            If Len(Trim$(allParams(i))) > 0 Then
+                buildParams = buildParams & Str(allParams(i))
+            Else
+                buildParams = buildParams & " "
+            End If
             If i < UBound(allParams) Then buildParams = buildParams & "|"
         Next i
     

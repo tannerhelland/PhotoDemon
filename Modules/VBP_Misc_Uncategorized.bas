@@ -221,9 +221,9 @@ Public Function getPhotoDemonNameAndVersion() As String
     
         'Odd-numbered development releases of the pattern X.9 are betas for the next major version, e.g. (X+1).0
         If App.Minor = 9 Then
-            getPhotoDemonNameAndVersion = App.Title & " " & (App.Major + 1) & ".0 beta (build " & App.Revision & ")"
+            getPhotoDemonNameAndVersion = App.Title & " " & CStr(App.Major + 1) & ".0 beta (build " & CStr(App.Revision) & ")"
         Else
-            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & Str(App.Minor + 1) & " beta (build " & App.Revision & ")"
+            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " beta (build " & CStr(App.Revision) & ")"
         End If
         
     End If

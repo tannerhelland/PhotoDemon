@@ -316,7 +316,7 @@ Private Sub txtPrimary_KeyUp(KeyCode As Integer, Shift As Integer)
     If IsTextEntryValid() Then
         If shpError.Visible Then shpError.Visible = False
         textBoxInitiated = True
-        hsPrimary.Value = Val(txtPrimary) * (10 ^ significantDigits)
+        hsPrimary.Value = CDblCustom(txtPrimary) * (10 ^ significantDigits)
         textBoxInitiated = False
     Else
         shpError.Visible = True
@@ -466,7 +466,7 @@ Private Function getFormattedStringValue(ByVal srcValue As Double) As String
             getFormattedStringValue = Format(CStr(srcValue), "#0.000")
     
     End Select
-
+    
 End Function
 
 'Populate the text box with a given integer value.
@@ -501,12 +501,14 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     Dim cursorPos As Long
     cursorPos = txtPrimary.SelStart
     
-    If InStr(1, chkString, ",") Then
-        chkString = Replace(chkString, ",", ".")
-        txtPrimary = chkString
-        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-        txtPrimary.SelStart = cursorPos
-    End If
+    'NOTE: as part of a new initiative to better handle internationalization, I am no longer forcing text input to use
+    '      US-style notation.
+'    If InStr(1, chkString, ",") Then
+'        chkString = Replace(chkString, ",", ".")
+'        txtPrimary = chkString
+'        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
+'        txtPrimary.SelStart = cursorPos
+'    End If
     
     'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
     ' Check for this and fix it as necessary.

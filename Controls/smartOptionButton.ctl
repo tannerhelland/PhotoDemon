@@ -3,10 +3,10 @@ Begin VB.UserControl smartOptionButton
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
-   ClientHeight    =   392
+   ClientHeight    =   390
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   3269
+   ClientWidth     =   3270
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -19,9 +19,9 @@ Begin VB.UserControl smartOptionButton
    EndProperty
    ForeColor       =   &H00404040&
    MousePointer    =   99  'Custom
-   ScaleHeight     =   56
+   ScaleHeight     =   26
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   467
+   ScaleWidth      =   218
    ToolboxBitmap   =   "smartOptionButton.ctx":0000
    Begin VB.CheckBox chkFirst 
       Appearance      =   0  'Flat
