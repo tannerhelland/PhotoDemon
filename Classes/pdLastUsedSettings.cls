@@ -147,23 +147,23 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
         
             'Our custom controls all have a .Value property
             Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
-                controlValue = CStr(eControl.Value)
+                controlValue = Str(eControl.Value)
             
             'Color pickers have a .Color property
             Case "colorSelector"
-                controlValue = CStr(eControl.Color)
+                controlValue = Str(eControl.Color)
             
             'Intrinsic VB controls may have different names for their value properties
             Case "HScrollBar", "VScrollBar"
-                controlValue = CStr(eControl.Value)
+                controlValue = Str(eControl.Value)
                 
             Case "ListBox", "ComboBox"
             
                 'Make sure the combo box is not the preset box on this control!
-                controlValue = CStr(eControl.ListIndex)
+                controlValue = Str(eControl.ListIndex)
                 
             Case "TextBox"
-                controlValue = CStr(eControl.Text)
+                controlValue = Str(eControl.Text)
         
         End Select
         

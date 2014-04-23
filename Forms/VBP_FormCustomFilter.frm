@@ -869,14 +869,14 @@ Private Function getFilterParamString() As String
     If tudDivisor.Value = 0 Then
         tmpString = tmpString & "1"
     Else
-        tmpString = tmpString & CStr(tudDivisor.Value)
+        tmpString = tmpString & Str(tudDivisor.Value)
     End If
-    tmpString = tmpString & "|" & CStr(tudOffset.Value) & "|"
+    tmpString = tmpString & "|" & Str(tudOffset.Value) & "|"
     
     'Finally, add the text box values
     Dim i As Long
     For i = 0 To 24
-        tmpString = tmpString & CStr(tudF(i).Value)
+        tmpString = tmpString & Str(tudF(i).Value)
         If i < 24 Then tmpString = tmpString & "|"
     Next i
     

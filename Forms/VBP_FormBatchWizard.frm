@@ -2651,11 +2651,11 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 Select Case g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
                 
                     Case FIF_BMP
-                        m_FormatParams = CStr(CBool(chkBMPRLE))
+                        m_FormatParams = Str(CBool(chkBMPRLE))
                     
                     Case FIF_GIF
                         If sltThreshold.IsValid Then
-                            m_FormatParams = CStr(sltThreshold.Value)
+                            m_FormatParams = Str(sltThreshold.Value)
                         Else
                             Exit Sub
                         End If
@@ -2663,7 +2663,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                     Case FIF_JP2
                             'Determine the compression ratio for the JPEG-2000 wavelet transformation
                             If sltJP2Quality.IsValid Then
-                                m_FormatParams = CStr(sltQuality.Value)
+                                m_FormatParams = Str(sltQuality.Value)
                             Else
                                 Exit Sub
                             End If
@@ -2674,7 +2674,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         
                         'First, determine the compression quality for the quantization tables
                         If sltQuality.IsValid Then
-                            m_FormatParams = CStr(sltQuality)
+                            m_FormatParams = Str(sltQuality)
                         Else
                             Exit Sub
                         End If
@@ -2705,7 +2705,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
             
                         End If
                         
-                        m_FormatParams = m_FormatParams & "|" & CStr(tmpJPEGFlags)
+                        m_FormatParams = m_FormatParams & "|" & Str(tmpJPEGFlags)
         
                         'Finally, determine whether or not a thumbnail version of the file should be embedded inside
                         If CBool(chkThumbnail) Then
@@ -2718,19 +2718,19 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         m_FormatParams = m_FormatParams & "|0"
                                         
                     Case FIF_PNG
-                        m_FormatParams = CStr(hsPNGCompression)
-                        m_FormatParams = m_FormatParams & "|" & CStr(chkPNGInterlacing)
-                        m_FormatParams = m_FormatParams & "|" & CStr(chkPNGBackground)
+                        m_FormatParams = Str(hsPNGCompression)
+                        m_FormatParams = m_FormatParams & "|" & Str(chkPNGInterlacing)
+                        m_FormatParams = m_FormatParams & "|" & (chkPNGBackground)
                     
                     Case FIF_PPM
-                        m_FormatParams = CStr(cmbPPMFormat.ListIndex)
+                        m_FormatParams = Str(cmbPPMFormat.ListIndex)
                         
                     Case FIF_TARGA
-                        m_FormatParams = CStr(CBool(chkTGARLE))
+                        m_FormatParams = Str(CBool(chkTGARLE))
                     
                     Case FIF_TIFF
-                        m_FormatParams = CStr(cmbTIFFCompression.ListIndex)
-                        m_FormatParams = m_FormatParams & "|" & CStr(CBool(chkTIFFCMYK))
+                        m_FormatParams = Str(cmbTIFFCompression.ListIndex)
+                        m_FormatParams = m_FormatParams & "|" & Str(CBool(chkTIFFCMYK))
                 
                 End Select
             
@@ -2931,7 +2931,7 @@ Private Function saveCurrentBatchList() As Boolean
         
         Open sFile For Output As #fileNum
             Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
-            Print #fileNum, Trim(CStr(lstFiles.ListCount))
+            Print #fileNum, Trim(Str(lstFiles.ListCount))
             For x = 0 To lstFiles.ListCount - 1
                 Print #fileNum, lstFiles.List(x)
             Next x
@@ -3405,7 +3405,7 @@ Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As I
         Dim tmpString As String
         
         For Each oleFilename In Data.Files
-            tmpString = CStr(oleFilename)
+            tmpString = Str(oleFilename)
             If tmpString <> "" Then
                 If FileExist(tmpString) Then addFileToBatchList tmpString
             End If

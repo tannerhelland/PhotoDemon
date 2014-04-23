@@ -396,7 +396,7 @@ Private Sub createNewPreferencesFile()
     
     'Write out the "interface" block of preferences:
     xmlEngine.writeTag "Interface", "", True
-        xmlEngine.writeTag "CanvasBackground", CStr(vb3DShadow) 'RGB(201, 211, 226)
+        xmlEngine.writeTag "CanvasBackground", Str(vb3DShadow) 'RGB(201, 211, 226)
         xmlEngine.writeTag "CanvasDropShadow", "True"
         xmlEngine.writeTag "MRUCaptionLength", "0"
         xmlEngine.writeTag "RecentFilesLimit", "10"
@@ -468,8 +468,8 @@ Private Sub createNewPreferencesFile()
     'Write out the "transparency" block of preferences:
     xmlEngine.writeTag "Transparency", "", True
         xmlEngine.writeTag "AlphaCheckMode", "0"
-        xmlEngine.writeTag "AlphaCheckOne", CStr(RGB(255, 255, 255))
-        xmlEngine.writeTag "AlphaCheckTwo", CStr(RGB(204, 204, 204))
+        xmlEngine.writeTag "AlphaCheckOne", Str(RGB(255, 255, 255))
+        xmlEngine.writeTag "AlphaCheckTwo", Str(RGB(204, 204, 204))
         xmlEngine.writeTag "AlphaCheckSize", "1"
         xmlEngine.writeTag "ValidateAlphaChannels", "True"
     xmlEngine.closeTag "Transparency"
@@ -499,7 +499,7 @@ Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
     If Len(tmpString) = 0 Then
         
         'To prevent future blank results, write out a default value
-        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & CStr(defaultValue)
+        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Str(defaultValue)
         SetPref_Boolean preferenceSection, preferenceName, defaultValue
         GetPref_Boolean = defaultValue
             
@@ -538,7 +538,7 @@ Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     If Len(tmpString) = 0 Then
     
         'To prevent future blank results, write out a default value
-        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & CStr(defaultValue)
+        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Str(defaultValue)
         SetPref_Long preferenceSection, preferenceName, defaultValue
         GetPref_Long = defaultValue
     
@@ -551,7 +551,7 @@ End Function
 
 'Set a Long-type value to the preferences file.
 Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
-    WritePreference preferenceSection, preferenceName, CStr(longVal)
+    WritePreference preferenceSection, preferenceName, Str(longVal)
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)

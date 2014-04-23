@@ -1403,7 +1403,7 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
     Dim x As Long, y As Long
-    Dim QuickVal As Long
+    Dim quickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -1471,21 +1471,21 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                         
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
-                QuickVal = x * 3
+                quickVal = x * 3
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
                 
                 'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
                 If tmpSelHolder = 0 Then
-                    iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = hData(iData(QuickVal, y))
+                    iData(quickVal + 2, y) = hData(iData(quickVal + 2, y))
+                    iData(quickVal + 1, y) = hData(iData(quickVal + 1, y))
+                    iData(quickVal, y) = hData(iData(quickVal, y))
                 ElseIf tmpSelHolder < 255 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(QuickVal + 2, y) = BlendColors(hData(iData(QuickVal + 2, y)), iData(QuickVal + 2, y), tmpSelDivider)
-                    iData(QuickVal + 1, y) = BlendColors(hData(iData(QuickVal + 1, y)), iData(QuickVal + 1, y), tmpSelDivider)
-                    iData(QuickVal, y) = BlendColors(hData(iData(QuickVal, y)), iData(QuickVal, y), tmpSelDivider)
+                    iData(quickVal + 2, y) = BlendColors(hData(iData(quickVal + 2, y)), iData(quickVal + 2, y), tmpSelDivider)
+                    iData(quickVal + 1, y) = BlendColors(hData(iData(quickVal + 1, y)), iData(quickVal + 1, y), tmpSelDivider)
+                    iData(quickVal, y) = BlendColors(hData(iData(quickVal, y)), iData(quickVal, y), tmpSelDivider)
                 End If
                 
             Next y
@@ -1555,23 +1555,23 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
-                QuickVal = x * 3
+                quickVal = x * 3
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
                 
                 'If this pixels is over an active pixel in the selection mask, mark it with the selected color
                 If tmpSelHolder = 255 Then
-                    iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = bData(iData(QuickVal, y))
+                    iData(quickVal + 2, y) = rData(iData(quickVal + 2, y))
+                    iData(quickVal + 1, y) = gData(iData(quickVal + 1, y))
+                    iData(quickVal, y) = bData(iData(quickVal, y))
                     
                 'Partially selected pixels are rendered with antialiasing
                 ElseIf tmpSelHolder > 0 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(QuickVal + 2, y) = BlendColors(iData(QuickVal + 2, y), rData(iData(QuickVal + 2, y)), tmpSelDivider)
-                    iData(QuickVal + 1, y) = BlendColors(iData(QuickVal + 1, y), gData(iData(QuickVal + 1, y)), tmpSelDivider)
-                    iData(QuickVal, y) = BlendColors(iData(QuickVal, y), bData(iData(QuickVal, y)), tmpSelDivider)
+                    iData(quickVal + 2, y) = BlendColors(iData(quickVal + 2, y), rData(iData(quickVal + 2, y)), tmpSelDivider)
+                    iData(quickVal + 1, y) = BlendColors(iData(quickVal + 1, y), gData(iData(quickVal + 1, y)), tmpSelDivider)
+                    iData(quickVal, y) = BlendColors(iData(quickVal, y), bData(iData(quickVal, y)), tmpSelDivider)
                 End If
                 
             Next y
@@ -1841,55 +1841,55 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     If toRelativeFormat Then
     
         '08 - left
-        tmpParser.setNewValueAtLocation 8, CStr(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 8, Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width))
         
         '09 - top
-        tmpParser.setNewValueAtLocation 9, CStr(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 9, Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height))
         
         '10 - width
-        tmpParser.setNewValueAtLocation 10, CStr(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 10, Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width))
         
         '11 - height
-        tmpParser.setNewValueAtLocation 11, CStr(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 11, Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height))
         
         '12 - x1
-        tmpParser.setNewValueAtLocation 12, CStr(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 12, Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width))
         
         '13 - y1
-        tmpParser.setNewValueAtLocation 13, CStr(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 13, Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height))
         
         '14 - x2
-        tmpParser.setNewValueAtLocation 14, CStr(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 14, Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width))
         
         '15 - y2
-        tmpParser.setNewValueAtLocation 15, CStr(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 15, Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height))
     
     'Convert relative values to absolute values (typically used when READING a selection file)
     Else
     
         '08 - left
-        tmpParser.setNewValueAtLocation 8, CStr(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 8, Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width)))
         
         '09 - top
-        tmpParser.setNewValueAtLocation 9, CStr(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 9, Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height)))
         
         '10 - width
-        tmpParser.setNewValueAtLocation 10, CStr(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 10, Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width)))
         
         '11 - height
-        tmpParser.setNewValueAtLocation 11, CStr(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 11, Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height)))
         
         '12 - x1
-        tmpParser.setNewValueAtLocation 12, CStr(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 12, Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width)))
         
         '13 - y1
-        tmpParser.setNewValueAtLocation 13, CStr(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 13, Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height)))
         
         '14 - x2
-        tmpParser.setNewValueAtLocation 14, CStr(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 14, Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width)))
         
         '15 - y2
-        tmpParser.setNewValueAtLocation 15, CStr(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 15, Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height)))
     
     End If
     
@@ -1909,7 +1909,7 @@ Public Sub invertSelection()
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim QuickVal As Long
+    Dim quickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -1928,11 +1928,11 @@ Public Sub invertSelection()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = 0 To maskWidth
-        QuickVal = x * 3
+        quickVal = x * 3
     For y = 0 To maskHeight
-        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
-        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
-        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
+        selMaskData(quickVal, y) = 255 - selMaskData(quickVal, y)
+        selMaskData(quickVal + 1, y) = 255 - selMaskData(quickVal + 1, y)
+        selMaskData(quickVal + 2, y) = 255 - selMaskData(quickVal + 2, y)
     Next y
         If (x And progBarCheck) = 0 Then
             'If userPressedESC() Then Exit For
@@ -1973,7 +1973,7 @@ Public Sub findNewBoundsManually()
 
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim QuickVal As Long
+    Dim quickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -1992,12 +1992,12 @@ Public Sub findNewBoundsManually()
     Do
     
         For x = 0 To maskWidth
-            QuickVal = x * 3
-            If selMaskData(QuickVal, y) <> 0 Then
+            quickVal = x * 3
+            If selMaskData(quickVal, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+            ElseIf selMaskData(quickVal + 1, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+            ElseIf selMaskData(quickVal + 2, y) <> 0 Then
                 boundFound = True
             End If
             
@@ -2028,12 +2028,12 @@ Public Sub findNewBoundsManually()
     Do
     
         For x = 0 To maskWidth
-            QuickVal = x * 3
-            If selMaskData(QuickVal, y) <> 0 Then
+            quickVal = x * 3
+            If selMaskData(quickVal, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+            ElseIf selMaskData(quickVal + 1, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+            ElseIf selMaskData(quickVal + 2, y) <> 0 Then
                 boundFound = True
             End If
             
@@ -2165,7 +2165,7 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long
         qvDepth = 3
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -2188,18 +2188,18 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = 0 To selMask.getDIBWidth - 1
-            QuickVal = x * 3
+            quickVal = x * 3
         For y = 0 To selMask.getDIBHeight - 1
             
             'Retrieve the original image's pixels
-            r = selMaskData(QuickVal + 2, y)
-            g = selMaskData(QuickVal + 1, y)
-            b = selMaskData(QuickVal, y)
+            r = selMaskData(quickVal + 2, y)
+            g = selMaskData(quickVal + 1, y)
+            b = selMaskData(quickVal, y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
+            r2 = srcImageData(quickVal + 2, y)
+            g2 = srcImageData(quickVal + 1, y)
+            b2 = srcImageData(quickVal, y)
             
             tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
                 
@@ -2221,9 +2221,9 @@ Public Sub sharpenSelection(ByVal sharpenRadius As Long)
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
             
-            selMaskData(QuickVal + 2, y) = newR
-            selMaskData(QuickVal + 1, y) = newG
-            selMaskData(QuickVal, y) = newB
+            selMaskData(quickVal + 2, y) = newR
+            selMaskData(quickVal + 1, y) = newG
+            selMaskData(quickVal, y) = newB
                     
         Next y
             If (x And progBarCheck) = 0 Then

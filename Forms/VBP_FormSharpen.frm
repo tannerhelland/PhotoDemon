@@ -141,9 +141,9 @@ Public Sub ApplySharpenFilter(ByVal sStrength As Double, Optional ByVal toPrevie
     
     'And finally, the convolution array itself
     tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|0|" & CStr(-sStrength) & "|0|0|"
-    tmpString = tmpString & "0|" & CStr(-sStrength) & "|" & CStr(sStrength * 4 + 1) & "|" & CStr(-sStrength) & "|0|"
-    tmpString = tmpString & "0|0|" & CStr(-sStrength) & "|0|0|"
+    tmpString = tmpString & "0|0|" & Str(-sStrength) & "|0|0|"
+    tmpString = tmpString & "0|" & Str(-sStrength) & "|" & Str(sStrength * 4 + 1) & "|" & Str(-sStrength) & "|0|"
+    tmpString = tmpString & "0|0|" & Str(-sStrength) & "|0|0|"
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
@@ -153,7 +153,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sharpen", , CStr(sltStrength)
+    Process "Sharpen", , Str(sltStrength)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

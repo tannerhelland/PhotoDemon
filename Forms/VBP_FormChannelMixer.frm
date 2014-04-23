@@ -483,7 +483,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -499,12 +499,12 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Create a new value for each color based on the input parameters
         If isMonochrome Then
@@ -515,9 +515,9 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             
             'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
             
-            ImageData(QuickVal + 2, y) = newGray
-            ImageData(QuickVal + 1, y) = newGray
-            ImageData(QuickVal, y) = newGray
+            ImageData(quickVal + 2, y) = newGray
+            ImageData(quickVal + 1, y) = newGray
+            ImageData(quickVal, y) = newGray
             
         Else
         
@@ -543,9 +543,9 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
                 tHSLToRGB h, s, originalLuminance, newR, newG, newB
             End If
             
-            ImageData(QuickVal + 2, y) = newR
-            ImageData(QuickVal + 1, y) = newG
-            ImageData(QuickVal, y) = newB
+            ImageData(quickVal + 2, y) = newR
+            ImageData(quickVal + 1, y) = newG
+            ImageData(quickVal, y) = newB
             
         End If
                 
@@ -786,15 +786,15 @@ Private Function createChannelParamString() As String
     Dim i As Long, j As Long
     For i = 0 To 3
         For j = 0 To 3
-            paramString = paramString & CStr(curSliderValues(i, j)) & "|"
+            paramString = paramString & Str(curSliderValues(i, j)) & "|"
         Next j
     Next i
     
     'Next, add the monochrome checkbox value
-    paramString = paramString & CStr(CBool(chkMonochrome)) & "|"
+    paramString = paramString & Str(CBool(chkMonochrome)) & "|"
     
     'Finally, add the preserve luminance checkbox value
-    paramString = paramString & CStr(CBool(chkLuminance))
+    paramString = paramString & Str(CBool(chkLuminance))
     
     createChannelParamString = paramString
 

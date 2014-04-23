@@ -434,7 +434,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         End If
     
         'Start with the simplest field: the tag title (readable form)
-        drawTextOnObject picBuffer, CStr(blockIndex + 1) & " - " & drawString, offsetX + 0, offsetY + 0, 12, primaryColor, True, False
+        drawTextOnObject picBuffer, Str(blockIndex + 1) & " - " & drawString, offsetX + 0, offsetY + 0, 12, primaryColor, True, False
                 
         'Below the tag title, add the human-friendly description
         mHeight = picBuffer.TextHeight(drawString) + linePadding

@@ -83,12 +83,12 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
     End If
             
     'Loop through
-    Do While FileExist(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
+    Do While FileExist(dstDirectory & tmpFilename & " (" & Str(numToAppend) & ")" & "." & desiredExtension)
         numToAppend = numToAppend + 1
     Loop
         
     'If the loop has terminated, a unique filename has been found.  Make that the recommended filename.
-    incrementFilename = tmpFilename & " (" & CStr(numToAppend) & ")"
+    incrementFilename = tmpFilename & " (" & Str(numToAppend) & ")"
 
 End Function
 

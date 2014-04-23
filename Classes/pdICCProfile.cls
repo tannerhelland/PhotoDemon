@@ -200,7 +200,7 @@ Public Function loadICCFromFreeImage(ByVal fi_Bitmap As Long) As Boolean
         
         'The complete ICC profile will now be inside the iccData array.
         Message "ICC profile copied successfully."
-        Debug.Print "ICC profile size (in bytes): " & CStr(UBound(iccData) + 1)
+        Debug.Print "ICC profile size (in bytes): " & Str(UBound(iccData) + 1)
         iccDataPresent = True
         loadICCFromFreeImage = True
         
@@ -223,7 +223,7 @@ Public Function loadICCFromGDIPlus(ByVal profileSize As Long, ByVal ptrToProfile
         
     'The complete ICC profile will now be inside the iccData array.
     Message "ICC profile copied successfully."
-    Debug.Print "ICC profile size (in bytes): " & CStr(UBound(iccData) + 1)
+    Debug.Print "ICC profile size (in bytes): " & Str(UBound(iccData) + 1)
     iccDataPresent = True
     loadICCFromGDIPlus = True
 

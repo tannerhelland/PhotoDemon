@@ -1175,7 +1175,7 @@ Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button A
         countFiles = 0
         
         For Each oleFilename In Data.Files
-            tmpString = CStr(oleFilename)
+            tmpString = Str(oleFilename)
             If tmpString <> "" Then
                 sFile(countFiles) = tmpString
                 countFiles = countFiles + 1

@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1312,11 +1312,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex)
+            Process "Merge layer up", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex)
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex)
+            Process "Merge layer down", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex)
         
         'Order (top-level)
         Case 5
@@ -1355,7 +1355,7 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex), 1
+            Process "Delete layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), 1
         
         'Delete all hidden layers
         Case 1
@@ -1376,7 +1376,7 @@ Private Sub MnuLayerNew_Click(Index As Integer)
         
         'Duplicate of current layer
         Case 1
-            Process "Duplicate Layer", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex)
+            Process "Duplicate Layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex)
         
         '<separator>
         Case 2
@@ -1400,22 +1400,22 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
     
         'Raise layer
         Case 0
-            Process "Raise layer", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex), 0
+            Process "Raise layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), 0
         
         'Lower layer
         Case 1
-            Process "Lower layer", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex), 0
+            Process "Lower layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), 0
         
         '<separator>
         Case 2
         
         'Raise to top
         Case 3
-            Process "Raise layer to top", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex), 0
+            Process "Raise layer to top", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), 0
         
         'Lower to bottom
         Case 4
-            Process "Lower layer to bottom", False, CStr(pdImages(g_CurrentImage).getActiveLayerIndex), 0
+            Process "Lower layer to bottom", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), 0
         
     End Select
 
@@ -1747,7 +1747,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         countFiles = 0
         
         For Each oleFilename In Data.Files
-            tmpString = CStr(oleFilename)
+            tmpString = Str(oleFilename)
             If tmpString <> "" Then
                 sFile(countFiles) = tmpString
                 countFiles = countFiles + 1

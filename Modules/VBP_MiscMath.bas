@@ -46,7 +46,7 @@ Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     w = Abs(Fix(v))
     'V = Abs(V) - W << subtracting doubles can change the decimal portion by adding more numeral at end
     'TANNER'S NOTE: the original version of this included +1 to the string length, which gave me consistent errors.  So I removed it.
-    v = CDbl(Mid$(CStr(Abs(v)), Len(CStr(w))))
+    v = CDbl(Mid$(Str(Abs(v)), Len(Str(w))))
     
     ' check for no decimal or zero
     If v = 0 Then GoTo RtnResult

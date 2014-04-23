@@ -306,7 +306,7 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -357,18 +357,18 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = newGamma(r)
-        ImageData(QuickVal + 1, y) = newGamma(g)
-        ImageData(QuickVal, y) = newGamma(b)
+        ImageData(quickVal + 2, y) = newGamma(r)
+        ImageData(quickVal + 1, y) = newGamma(g)
+        ImageData(quickVal, y) = newGamma(b)
         
     Next y
         If Not toPreview Then
@@ -393,7 +393,7 @@ End Sub
 Private Sub cmdBar_AddCustomPresetData()
     
     'Write the number of nodes to file
-    cmdBar.addPresetData "NodeCount", CStr(numOfNodes)
+    cmdBar.addPresetData "NodeCount", Str(numOfNodes)
     
     'Next, place all node data in one giant string.
     ' UPDATE 03 Dec 2014: instead of storing absolute coordinates, store relative ones per the size of the
@@ -408,7 +408,7 @@ Private Sub cmdBar_AddCustomPresetData()
     
     Dim i As Long
     For i = 1 To numOfNodes
-        nodeString = nodeString & CStr(cNodes(i).pX / nodeBoxWidth) & ":" & CStr(cNodes(i).pY / nodeBoxHeight)
+        nodeString = nodeString & Str(cNodes(i).pX / nodeBoxWidth) & ":" & Str(cNodes(i).pY / nodeBoxHeight)
         If i < numOfNodes Then nodeString = nodeString & "|"
     Next i
     
@@ -647,7 +647,7 @@ Private Function getCurvesParamString() As String
     'We now need to convert the histogram array into a "|"-delimited string that can be passed through the
     ' software processor.  Generate it automatically.
     For i = 0 To 255
-        paramString = paramString & CStr(cHistogram(i))
+        paramString = paramString & Str(cHistogram(i))
         If i < 255 Then paramString = paramString & "|"
     Next i
     

@@ -3,7 +3,7 @@ Begin VB.UserControl commandBar
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   ClientHeight    =   749
+   ClientHeight    =   750
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   9555
@@ -17,9 +17,9 @@ Begin VB.UserControl commandBar
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   107
+   ScaleHeight     =   50
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1365
+   ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
    Begin VB.CommandButton cmdRandomize 
       Caption         =   "Randomize"
@@ -395,7 +395,7 @@ Private Sub cmdRandomize_Click()
             
             'Text boxes are set to a random value between -10 and 10
             Case "TextBox"
-                eControl.Text = CStr(-10 + Int(Rnd * 21))
+                eControl.Text = Str(-10 + Int(Rnd * 21))
         
         End Select
         
@@ -950,29 +950,29 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
         
             'Our custom controls all have a .Value property
             Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
-                controlValue = CStr(eControl.Value)
+                controlValue = Str(eControl.Value)
             
             'Color pickers have a .Color property
             Case "colorSelector"
-                controlValue = CStr(eControl.Color)
+                controlValue = Str(eControl.Color)
             
             'Intrinsic VB controls may have different names for their value properties
             Case "HScrollBar", "VScrollBar"
-                controlValue = CStr(eControl.Value)
+                controlValue = Str(eControl.Value)
                 
             Case "ListBox", "ComboBox"
             
                 'Make sure the combo box is not the preset box on this control!
-                If (eControl.hWnd <> cmbPreset.hWnd) Then controlValue = CStr(eControl.ListIndex)
+                If (eControl.hWnd <> cmbPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
                 
             Case "TextBox"
-                controlValue = CStr(eControl.Text)
+                controlValue = Str(eControl.Text)
                 
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "smartResize"
-                controlValue = CStr(eControl.imgWidth) & "|" & CStr(eControl.imgHeight) & "|" & CStr(eControl.lockAspectRatio) _
-                                & "|" & CStr(eControl.unitOfMeasurement) & "|" & CStr(eControl.imgDPI) & "|" & CStr(eControl.unitOfResolution)
+                controlValue = Str(eControl.imgWidth) & "|" & Str(eControl.imgHeight) & "|" & Str(eControl.lockAspectRatio) _
+                                & "|" & Str(eControl.unitOfMeasurement) & "|" & Str(eControl.imgDPI) & "|" & Str(eControl.unitOfResolution)
                 
         
         End Select

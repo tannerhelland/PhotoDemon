@@ -1290,10 +1290,10 @@ Public Function saveAllWindowLocations() As Boolean
                 
                 'Alignment; this is only used by the image tabstrip at present, but may be enabled for other windows
                 ' in the future.
-                xmlEngine.updateTag "alignLeft", CStr(.alignmentOptions.alignLeft), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignTop", CStr(.alignmentOptions.alignTop), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignRight", CStr(.alignmentOptions.alignRight), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignBottom", CStr(.alignmentOptions.alignBottom), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignLeft", Str(.alignmentOptions.alignLeft), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignTop", Str(.alignmentOptions.alignTop), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignRight", Str(.alignmentOptions.alignRight), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignBottom", Str(.alignmentOptions.alignBottom), "windowEntry", "id", .windowName
                 
             End With
         

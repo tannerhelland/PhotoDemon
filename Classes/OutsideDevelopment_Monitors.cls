@@ -312,7 +312,7 @@ Public Sub Refresh()
             .Height = .Bottom
         End With
         'Add the monitor to the monitors collection
-        Monitors.Add Item:=cMonitor, Key:=CStr(0)
+        Monitors.Add Item:=cMonitor, Key:=Str(0)
     Else
         
         'Loop through an imaginary grid of 640x480 cells across the virtual desktop
@@ -324,7 +324,7 @@ Public Sub Refresh()
                 If lMonitor <> 0 Then
                     Set cMonitor = New clsMonitor
                     Call GetMonitorInformation(lMonitor, cMonitor)
-                    Monitors.Add Item:=cMonitor, Key:=CStr(lMonitor)
+                    Monitors.Add Item:=cMonitor, Key:=Str(lMonitor)
                 End If
             Next
         Next
