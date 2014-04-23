@@ -401,10 +401,10 @@ Private Function getExtraGrayscaleParams(ByVal grayscaleMethod As Long) As Strin
             End If
             
         Case 5
-            getExtraGrayscaleParams = CStr(sltShades.Value)
+            getExtraGrayscaleParams = Str(sltShades.Value)
             
         Case 6
-            getExtraGrayscaleParams = CStr(sltShades.Value)
+            getExtraGrayscaleParams = Str(sltShades.Value)
             
     End Select
 
@@ -544,7 +544,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -583,20 +583,20 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         grayVal = grayLookUp(r + g + b)
         
         'Assign all color channels the new gray value
-        ImageData(QuickVal + 2, y) = LookUp(grayVal)
-        ImageData(QuickVal + 1, y) = LookUp(grayVal)
-        ImageData(QuickVal, y) = LookUp(grayVal)
+        ImageData(quickVal + 2, y) = LookUp(grayVal)
+        ImageData(quickVal + 1, y) = LookUp(grayVal)
+        ImageData(quickVal, y) = LookUp(grayVal)
         
     Next y
         If Not suppressMessages Then
@@ -633,7 +633,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -901,11 +901,11 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         For y = initY To finalY
         For x = initX To finalX
         
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
             
             'Get the source pixel color values.  Because we know the image we're handed is already going to be grayscale,
             ' we can shortcut this calculation by only grabbing the red channel.
-            r = ImageData(QuickVal + 2, y)
+            r = ImageData(quickVal + 2, y)
             'g = ImageData(QuickVal + 1, y)
             'b = ImageData(QuickVal, y)
             
@@ -922,9 +922,9 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
             End If
             
             'Write the new luminance value out to the image array
-            ImageData(QuickVal + 2, y) = LookUp(newL)
-            ImageData(QuickVal + 1, y) = LookUp(newL)
-            ImageData(QuickVal, y) = LookUp(newL)
+            ImageData(quickVal + 2, y) = LookUp(newL)
+            ImageData(quickVal + 1, y) = LookUp(newL)
+            ImageData(quickVal, y) = LookUp(newL)
             
             'Calculate an error for this calculation
             errorVal = l - LookUp(newL)
@@ -999,7 +999,7 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1026,21 +1026,21 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(quickVal, y) = grayVal
+        ImageData(quickVal + 1, y) = grayVal
+        ImageData(quickVal + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then
@@ -1077,7 +1077,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1098,22 +1098,22 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
         If grayVal > 255 Then grayVal = 255
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(quickVal, y) = grayVal
+        ImageData(quickVal + 1, y) = grayVal
+        ImageData(quickVal + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then
@@ -1150,7 +1150,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1171,21 +1171,21 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
        
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
         grayVal = CByte(getLuminance(r, g, b))
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(quickVal, y) = grayVal
+        ImageData(quickVal + 1, y) = grayVal
+        ImageData(quickVal + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then
@@ -1222,7 +1222,7 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1243,21 +1243,21 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Find the highest or lowest of the RGB values
         If maxOrMin = 0 Then grayVal = CByte(Min3Int(r, g, b)) Else grayVal = CByte(Max3Int(r, g, b))
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(quickVal, y) = grayVal
+        ImageData(quickVal + 1, y) = grayVal
+        ImageData(quickVal + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then
@@ -1294,7 +1294,7 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1315,13 +1315,13 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Assign the gray value to a single color channel based on the value of cChannel
         Select Case cChannel
@@ -1334,9 +1334,9 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
         End Select
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal + 2, y) = grayVal
+        ImageData(quickVal, y) = grayVal
+        ImageData(quickVal + 1, y) = grayVal
+        ImageData(quickVal + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then

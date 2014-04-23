@@ -138,7 +138,7 @@ Public Function RemoveImage(hWnd As Long) As Boolean
    
     SendMessage hWnd, BCM_GETIMAGELIST, 0&, BI
     If BI.himl Then
-        cColl.Remove CStr(BI.himl)
+        cColl.Remove Str(BI.himl)
         ImageList_Destroy (BI.himl): BI.himl = 0
         RemoveImage = SendMessage(hWnd, BCM_SETIMAGELIST, 0&, BI)
     End If
@@ -188,7 +188,7 @@ Public Function SetImageFromHandle(hWnd As Long, hImage As Long, Optional ByVal 
     Else
         BI.himl = ImageList_Create(cx, cy, ILC_COLOR32 Or ILC_MASK, 1, 1)
         If BI.himl Then
-            cColl.Add BI.himl, CStr(BI.himl)
+            cColl.Add BI.himl, Str(BI.himl)
             If ImageList_AddIcon(BI.himl, hImage) <> -1 Then
                 SetImageFromHandle = SendMessage(hWnd, BCM_SETIMAGELIST, 0&, BI)
             End If

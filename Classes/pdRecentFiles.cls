@@ -283,7 +283,7 @@ Public Sub MRU_SaveToFile()
     'Only write new entries if MRU data exists for them
     If numEntries > 0 Then
         For i = 0 To numEntries - 1
-            xmlEngine.writeTagWithAttribute "mruEntry", "id", CStr(i), "", True
+            xmlEngine.writeTagWithAttribute "mruEntry", "id", Str(i), "", True
             xmlEngine.writeTag "filePath", MRUlist(i)
             xmlEngine.closeTag "mruEntry"
             xmlEngine.writeBlankLine

@@ -173,9 +173,9 @@ Dim m_ToolTip As clsToolTip
 Private Sub cmdBar_OKClick()
 
     If optEmboss.Value Then
-        Process "Emboss", , CStr(colorPicker.Color)
+        Process "Emboss", , Str(colorPicker.Color)
     Else
-        Process "Engrave", , CStr(colorPicker.Color)
+        Process "Engrave", , Str(colorPicker.Color)
     End If
     
 End Sub
@@ -253,7 +253,7 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValRight As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValRight As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -272,14 +272,14 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         QuickValRight = (x + 1) * qvDepth
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
-        g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
+        r = Abs(CLng(srcImageData(quickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
+        g = Abs(CLng(srcImageData(quickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
+        b = Abs(CLng(srcImageData(quickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
         
         If r > 255 Then
             r = 255
@@ -299,9 +299,9 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal, y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
         If x = finalX Then
@@ -364,7 +364,7 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValRight As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValRight As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -383,14 +383,14 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         QuickValRight = (x + 1) * qvDepth
     For y = initY To finalY
     
         'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + TR)
-        g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
+        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(quickVal + 2, y)) + TR)
+        g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(quickVal + 1, y)) + tG)
+        b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(quickVal, y)) + tB)
         
         If r > 255 Then
             r = 255
@@ -410,9 +410,9 @@ Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As 
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal, y) = b
         
         'The right-most line of pixels will always be missed, so manually check for and correct that
         If x = finalX Then

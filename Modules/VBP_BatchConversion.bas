@@ -117,7 +117,7 @@ SaveMacroAgain:
         Next i
         
         'Write out the number of valid processes in the macro
-        xmlEngine.writeTag "processCount", CStr(numOfValidProcesses)
+        xmlEngine.writeTag "processCount", Str(numOfValidProcesses)
         xmlEngine.writeBlankLine
         
         'Now, write out each macro entry in the current process list
@@ -135,8 +135,8 @@ SaveMacroAgain:
                 'Write out all the properties of this entry
                 xmlEngine.writeTag "ID", Processes(i).Id
                 xmlEngine.writeTag "Parameters", Processes(i).Parameters
-                xmlEngine.writeTag "MakeUndo", CStr(Processes(i).MakeUndo)
-                xmlEngine.writeTag "Tool", CStr(Processes(i).Tool)
+                xmlEngine.writeTag "MakeUndo", Str(Processes(i).MakeUndo)
+                xmlEngine.writeTag "Tool", Str(Processes(i).Tool)
                 
                 'Note that the Dialog and Recorded properties are not written to file.  There is no need to remember
                 ' them, as we know their values must be FALSE and TRUE, respectively, per the check above.
@@ -239,7 +239,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
                 
                     'Start by finding the location of the tag we want
                     Dim tagPosition As Long
-                    tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", CStr(i))
+                    tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", Str(i))
                     
                     'Use that tag position to retrieve the processor parameters we need.
                     With Processes(i - 1)

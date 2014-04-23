@@ -171,7 +171,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Pre-calculate the largest possible processed x-value
@@ -196,29 +196,29 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Grab the current pixel values
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(quickVal + 2, y)
+        g = srcImageData(quickVal + 1, y)
+        b = srcImageData(quickVal, y)
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If tType = 0 Then
-            r2 = srcImageData(maxX - QuickVal + 2, y)
-            g2 = srcImageData(maxX - QuickVal + 1, y)
-            b2 = srcImageData(maxX - QuickVal, y)
+            r2 = srcImageData(maxX - quickVal + 2, y)
+            g2 = srcImageData(maxX - quickVal + 1, y)
+            b2 = srcImageData(maxX - quickVal, y)
         Else
-            r2 = srcImageData(QuickVal + 2, finalY - y)
-            g2 = srcImageData(QuickVal + 1, finalY - y)
-            b2 = srcImageData(QuickVal, finalY - y)
+            r2 = srcImageData(quickVal + 2, finalY - y)
+            g2 = srcImageData(quickVal + 1, finalY - y)
+            b2 = srcImageData(quickVal, finalY - y)
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
-        dstImageData(QuickVal + 2, y) = hLookup(r + r2)
-        dstImageData(QuickVal + 1, y) = hLookup(g + g2)
-        dstImageData(QuickVal, y) = hLookup(b + b2)
+        dstImageData(quickVal + 2, y) = hLookup(r + r2)
+        dstImageData(quickVal + 1, y) = hLookup(g + g2)
+        dstImageData(quickVal, y) = hLookup(b + b2)
         
     Next y
         If toPreview = False Then
@@ -242,7 +242,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Twins", , CStr(CLng(optTwins(1)))
+    Process "Twins", , Str(CLng(optTwins(1)))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

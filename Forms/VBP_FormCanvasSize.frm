@@ -333,7 +333,7 @@ End Sub
 
 'The current anchor must be manually saved as part of preset data
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.addPresetData "currentAnchor", CStr(m_CurrentAnchor)
+    cmdBar.addPresetData "currentAnchor", Str(m_CurrentAnchor)
 End Sub
 
 Private Sub cmdBar_ExtraValidations()

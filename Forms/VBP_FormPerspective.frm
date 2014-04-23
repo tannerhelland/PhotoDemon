@@ -319,7 +319,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Parse the incoming parameter string into individual (x, y) pairs
@@ -508,7 +508,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
                 
         'Reverse-map the coordinates back onto the original image (to allow for resampling)
@@ -555,7 +555,7 @@ Private Sub cmdBar_AddCustomPresetData()
     
     Dim i As Long
     For i = 0 To 3
-        nodeString = nodeString & CStr(m_nPoints(i).pX) & "," & CStr(m_nPoints(i).pY)
+        nodeString = nodeString & Str(m_nPoints(i).pX) & "," & Str(m_nPoints(i).pY)
         If i < 3 Then nodeString = nodeString & "|"
     Next i
     

@@ -857,20 +857,20 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
             'Duplicate rectangle?
             ElseIf isPointInRect(x, y, m_DuplicateRect) Then
             
-                Process "Duplicate Layer", False, CStr(clickedLayer)
+                Process "Duplicate Layer", False, Str(clickedLayer)
             
             'Merge down rectangle?
             ElseIf isPointInRect(x, y, m_MergeDownRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
-                    Process "Merge layer down", False, CStr(clickedLayer)
+                    Process "Merge layer down", False, Str(clickedLayer)
                 End If
             
             'Merge up rectangle?
             ElseIf isPointInRect(x, y, m_MergeUpRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
-                    Process "Merge layer up", False, CStr(clickedLayer)
+                    Process "Merge layer up", False, Str(clickedLayer)
                 End If
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer

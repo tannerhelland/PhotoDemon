@@ -3,10 +3,10 @@ Begin VB.Form FormPreferences
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Options"
-   ClientHeight    =   7616
-   ClientLeft      =   42
-   ClientTop       =   287
-   ClientWidth     =   11508
+   ClientHeight    =   7620
+   ClientLeft      =   45
+   ClientTop       =   285
+   ClientWidth     =   11505
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,9 +20,9 @@ Begin VB.Form FormPreferences
    MaxButton       =   0   'False
    MinButton       =   0   'False
    MousePointer    =   99  'Custom
-   ScaleHeight     =   1088
+   ScaleHeight     =   508
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1644
+   ScaleWidth      =   767
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset all options"
@@ -351,9 +351,9 @@ Begin VB.Form FormPreferences
       Index           =   2
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   926
+      ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   45
       Top             =   240
       Width           =   8295
@@ -364,8 +364,8 @@ Begin VB.Form FormPreferences
          ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
          Top             =   360
          Width           =   5445
-         _ExtentX        =   10451
-         _ExtentY        =   873
+         _ExtentX        =   9604
+         _ExtentY        =   847
          Caption         =   "when closing images, warn me me about unsaved changes"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -648,9 +648,9 @@ Begin VB.Form FormPreferences
       Index           =   1
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   924
+      ScaleHeight     =   431
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   29
       Top             =   240
       Width           =   8295
@@ -696,8 +696,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   101
          Top             =   360
          Width           =   6765
-         _ExtentX        =   13004
-         _ExtentY        =   873
+         _ExtentX        =   11933
+         _ExtentY        =   847
          Caption         =   "count unique colors in incoming images (to determine optimal color depth)"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -715,8 +715,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   102
          Top             =   1440
          Width           =   7245
-         _ExtentX        =   13917
-         _ExtentY        =   873
+         _ExtentX        =   12779
+         _ExtentY        =   847
          Caption         =   "automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -880,9 +880,9 @@ Begin VB.Form FormPreferences
       Index           =   4
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   926
+      ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   11
       Top             =   240
       Width           =   8295
@@ -892,8 +892,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   96
          Top             =   480
          Width           =   6480
-         _ExtentX        =   12435
-         _ExtentY        =   873
+         _ExtentX        =   11430
+         _ExtentY        =   847
          Caption         =   "automatically clear the active selection after ""Crop to Selection"" is used"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -936,9 +936,9 @@ Begin VB.Form FormPreferences
       Index           =   7
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   926
+      ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   16
       Top             =   240
       Width           =   8295
@@ -993,8 +993,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   97
          Top             =   360
          Width           =   3195
-         _ExtentX        =   6072
-         _ExtentY        =   873
+         _ExtentX        =   5636
+         _ExtentY        =   847
          Caption         =   "log all program messages to file "
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1197,9 +1197,9 @@ Begin VB.Form FormPreferences
       Index           =   6
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   926
+      ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   13
       Top             =   240
       Width           =   8295
@@ -1209,8 +1209,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   87
          Top             =   1080
          Width           =   5280
-         _ExtentX        =   10120
-         _ExtentY        =   873
+         _ExtentX        =   9313
+         _ExtentY        =   847
          Caption         =   "if core plugins cannot be located, offer to download them"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -1230,8 +1230,8 @@ Begin VB.Form FormPreferences
          ToolTipText     =   "If this is disabled, you can visit photodemon.org to manually download the latest version of PhotoDemon"
          Top             =   480
          Width           =   5130
-         _ExtentX        =   9856
-         _ExtentY        =   873
+         _ExtentX        =   9049
+         _ExtentY        =   847
          Caption         =   "automatically check for software updates every 10 days"
          Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -1294,9 +1294,9 @@ Begin VB.Form FormPreferences
       Index           =   0
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   926
+      ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   7
       Top             =   240
       Width           =   8295
@@ -1337,8 +1337,8 @@ Begin VB.Form FormPreferences
          ToolTipText     =   "This setting uses ""Segoe UI"" as the PhotoDemon interface font. Leaving it unchecked defaults to ""Tahoma""."
          Top             =   5520
          Width           =   7425
-         _ExtentX        =   14261
-         _ExtentY        =   873
+         _ExtentX        =   13097
+         _ExtentY        =   847
          Caption         =   "render PhotoDemon text with modern typefaces (only available on Vista or newer)"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1357,8 +1357,8 @@ Begin VB.Form FormPreferences
          ToolTipText     =   "This setting helps images stand out from the canvas behind them"
          Top             =   1230
          Width           =   4380
-         _ExtentX        =   8334
-         _ExtentY        =   873
+         _ExtentX        =   7726
+         _ExtentY        =   847
          Caption         =   "draw drop shadow between image and canvas"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1599,9 +1599,9 @@ Begin VB.Form FormPreferences
       Index           =   5
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   926
+      ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   20
       Top             =   240
       Width           =   8295
@@ -1666,8 +1666,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   112
          Top             =   840
          Width           =   2760
-         _ExtentX        =   5305
-         _ExtentY        =   609
+         _ExtentX        =   4868
+         _ExtentY        =   582
          Caption         =   "use the system color profile"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -1695,8 +1695,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   90
          Top             =   5760
          Width           =   4635
-         _ExtentX        =   8969
-         _ExtentY        =   873
+         _ExtentX        =   8176
+         _ExtentY        =   847
          Caption         =   "automatically validate all incoming alpha channels"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1760,8 +1760,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   113
          Top             =   1200
          Width           =   3660
-         _ExtentX        =   6959
-         _ExtentY        =   609
+         _ExtentX        =   6456
+         _ExtentY        =   582
          Caption         =   "use one or more custom color profiles"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1929,9 +1929,9 @@ Begin VB.Form FormPreferences
       Index           =   3
       Left            =   3000
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   928
+      ScaleHeight     =   433
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1185
+      ScaleWidth      =   553
       TabIndex        =   47
       Top             =   240
       Width           =   8295
@@ -1961,9 +1961,9 @@ Begin VB.Form FormPreferences
          Height          =   3735
          Index           =   1
          Left            =   240
-         ScaleHeight     =   534
+         ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   1134
+         ScaleWidth      =   529
          TabIndex        =   76
          Top             =   1680
          Width           =   7935
@@ -1973,8 +1973,8 @@ Begin VB.Form FormPreferences
             TabIndex        =   93
             Top             =   2520
             Width           =   4830
-            _ExtentX        =   9168
-            _ExtentY        =   873
+            _ExtentX        =   8520
+            _ExtentY        =   847
             Caption         =   "preserve file's original background color, if available"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -1992,8 +1992,8 @@ Begin VB.Form FormPreferences
             TabIndex        =   92
             Top             =   2040
             Width           =   2430
-            _ExtentX        =   4683
-            _ExtentY        =   873
+            _ExtentX        =   4286
+            _ExtentY        =   847
             Caption         =   "use interlacing (Adam7)"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -2108,9 +2108,9 @@ Begin VB.Form FormPreferences
          Height          =   3735
          Index           =   3
          Left            =   240
-         ScaleHeight     =   534
+         ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   1134
+         ScaleWidth      =   529
          TabIndex        =   82
          Top             =   1680
          Width           =   7935
@@ -2120,8 +2120,8 @@ Begin VB.Form FormPreferences
             TabIndex        =   94
             Top             =   600
             Width           =   4410
-            _ExtentX        =   8467
-            _ExtentY        =   873
+            _ExtentX        =   7779
+            _ExtentY        =   847
             Caption         =   "use RLE compression when saving TGA images"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -2163,9 +2163,9 @@ Begin VB.Form FormPreferences
          Height          =   3735
          Index           =   0
          Left            =   240
-         ScaleHeight     =   534
+         ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   1134
+         ScaleWidth      =   529
          TabIndex        =   74
          Top             =   1680
          Width           =   7935
@@ -2175,8 +2175,8 @@ Begin VB.Form FormPreferences
             TabIndex        =   95
             Top             =   600
             Width           =   4890
-            _ExtentX        =   9379
-            _ExtentY        =   873
+            _ExtentX        =   8625
+            _ExtentY        =   847
             Caption         =   "use RLE compression when saving 8bpp BMP images"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -2218,9 +2218,9 @@ Begin VB.Form FormPreferences
          Height          =   3735
          Index           =   4
          Left            =   240
-         ScaleHeight     =   534
+         ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   1134
+         ScaleWidth      =   529
          TabIndex        =   66
          Top             =   1680
          Width           =   7935
@@ -2230,8 +2230,8 @@ Begin VB.Form FormPreferences
             TabIndex        =   91
             Top             =   1560
             Width           =   4230
-            _ExtentX        =   8109
-            _ExtentY        =   873
+            _ExtentX        =   7461
+            _ExtentY        =   847
             Caption         =   " save TIFFs as separated CMYK (for printing)"
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -2312,9 +2312,9 @@ Begin VB.Form FormPreferences
          Height          =   3855
          Index           =   2
          Left            =   240
-         ScaleHeight     =   551
+         ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
-         ScaleWidth      =   1134
+         ScaleWidth      =   529
          TabIndex        =   63
          Top             =   1680
          Width           =   7935
@@ -3396,8 +3396,8 @@ Private Sub LoadAllPreferences()
             cmdCopyReportClipboard.ToolTip = g_Language.TranslateMessage("Copy the report to the system clipboard")
         
         'Display what we know about PD's memory usage
-            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(CStr(GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
-            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(CStr(GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
+            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
+            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
             If Not g_IsProgramCompiled Then
                 lblMemoryUsageCurrent = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
                 lblMemoryUsageMax = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"

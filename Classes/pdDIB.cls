@@ -913,22 +913,22 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
-                Dim TmpDC As Long
-                TmpDC = CreateCompatibleDC(0)
+                Dim tmpDC As Long
+                tmpDC = CreateCompatibleDC(0)
                 
                 'If successful, select the object into that DC
-                If TmpDC <> 0 Then
+                If tmpDC <> 0 Then
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
+                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt dibDC, 0, 0, dibWidth, dibHeight, TmpDC, 0, 0, vbSrcCopy
+                    BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject TmpDC, oldBitmap
-                    DeleteDC TmpDC
+                    SelectObject tmpDC, oldBitmap
+                    DeleteDC tmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.

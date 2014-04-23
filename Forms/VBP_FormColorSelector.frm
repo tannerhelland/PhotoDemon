@@ -1174,7 +1174,7 @@ Private Sub saveRecentColorList()
     
     'Add all color entries to the XML engine
     For i = 0 To UBound(recentColors)
-        xmlEngine.writeTagWithAttribute "colorEntry", "id", CStr(i), "", True
+        xmlEngine.writeTagWithAttribute "colorEntry", "id", Str(i), "", True
         xmlEngine.writeTag "color", recentColors(i)
         xmlEngine.closeTag "colorEntry"
         xmlEngine.writeBlankLine

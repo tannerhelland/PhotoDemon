@@ -635,7 +635,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         
         Dim retRadius As Double
         If displaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
-            Process "Feather selection", False, CStr(retRadius), 2
+            Process "Feather selection", False, Str(retRadius), 2
         End If
         
     Else
@@ -684,7 +684,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         
         Dim retRadius As Double
         If displaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK Then
-            Process "Sharpen selection", False, CStr(retRadius), 2
+            Process "Sharpen selection", False, Str(retRadius), 2
         End If
         
     Else
@@ -726,7 +726,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_GROW, retSize) = vbOK Then
-            Process "Grow selection", False, CStr(retSize), 2
+            Process "Grow selection", False, Str(retSize), 2
         End If
         
     Else
@@ -774,7 +774,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
-            Process "Shrink selection", False, CStr(retSize), 2
+            Process "Shrink selection", False, Str(retSize), 2
         End If
         
     Else
@@ -822,7 +822,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
-            Process "Border selection", False, CStr(retSize), 2
+            Process "Border selection", False, Str(retSize), 2
         End If
         
     Else

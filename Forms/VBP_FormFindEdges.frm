@@ -164,23 +164,23 @@ Private Sub cmdBar_OKClick()
 
     Select Case LstEdgeOptions.ListIndex
         Case 0
-            Process "Find edges (Prewitt horizontal)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (Prewitt horizontal)", , Str(CBool(chkInvert.Value))
         Case 1
-            Process "Find edges (Prewitt vertical)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (Prewitt vertical)", , Str(CBool(chkInvert.Value))
         Case 2
-            Process "Find edges (Sobel horizontal)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (Sobel horizontal)", , Str(CBool(chkInvert.Value))
         Case 3
-            Process "Find edges (Sobel vertical)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (Sobel vertical)", , Str(CBool(chkInvert.Value))
         Case 4
-            Process "Find edges (Laplacian)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (Laplacian)", , Str(CBool(chkInvert.Value))
         Case 5
-            Process "Artistic contour", , CStr(CBool(chkInvert.Value))
+            Process "Artistic contour", , Str(CBool(chkInvert.Value))
         Case 6
-            Process "Find edges (Hilite)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (Hilite)", , Str(CBool(chkInvert.Value))
         Case 7
-            Process "Find edges (PhotoDemon linear)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (PhotoDemon linear)", , Str(CBool(chkInvert.Value))
         Case 8
-            Process "Find edges (PhotoDemon cubic)", , CStr(CBool(chkInvert.Value))
+            Process "Find edges (PhotoDemon cubic)", , Str(CBool(chkInvert.Value))
     End Select
     
 End Sub
@@ -213,7 +213,7 @@ Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optio
     tmpString = g_Language.TranslateMessage("Hilite edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -238,7 +238,7 @@ Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolea
     tmpString = g_Language.TranslateMessage("PhotoDemon cubic edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -263,7 +263,7 @@ Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boole
     tmpString = g_Language.TranslateMessage("PhotoDemon linear edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -288,7 +288,7 @@ Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = F
     tmpString = g_Language.TranslateMessage("Prewitt horizontal edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -313,7 +313,7 @@ Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = Fal
     tmpString = g_Language.TranslateMessage("Prewitt vertical edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -338,7 +338,7 @@ Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = Fal
     tmpString = g_Language.TranslateMessage("Sobel horizontal edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -363,7 +363,7 @@ Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False
     tmpString = g_Language.TranslateMessage("Sobel vertical edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"
@@ -388,7 +388,7 @@ Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Op
     tmpString = g_Language.TranslateMessage("Laplacian edge detection") & "|"
     
     'Next comes an invert parameter
-    tmpString = tmpString & CStr(Not blackBackground) & "|"
+    tmpString = tmpString & Str(Not blackBackground) & "|"
     
     'Next is the divisor and offset
     tmpString = tmpString & "1|0|"

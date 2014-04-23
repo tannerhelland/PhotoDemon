@@ -1698,7 +1698,7 @@ Private Sub performAutosave()
     'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
     ' (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & curLanguage.langID & "_" & CStr(curBackupFile) & ".tmpxml"
+    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & curLanguage.langID & "_" & Str(curBackupFile) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
     xmlEngine.writeXMLToFile backupFile, True

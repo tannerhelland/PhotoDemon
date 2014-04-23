@@ -221,11 +221,11 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the function's save parameters with the ones set by the user
-                cParams.setParamString CStr(g_JPEGQuality)
-                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGFlags)
-                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGThumbnail)
-                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGAutoQuality)
-                cParams.setParamString cParams.getParamString & "|" & CStr(g_JPEGAdvancedColorMatching)
+                cParams.setParamString Str(g_JPEGQuality)
+                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGFlags)
+                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGThumbnail)
+                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGAutoQuality)
+                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGAdvancedColorMatching)
                 
             End If
             
@@ -289,9 +289,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'PNGs support a number of specialized parameters.  If we weren't passed any, retrieve corresponding values from the preferences
             ' file (specifically, the parameters include: PNG compression level (0-9), interlacing (bool), BKGD preservation (bool).)
             If Not cParams.doesParamExist(1) Then
-                cParams.setParamString CStr(g_UserPreferences.GetPref_Long("File Formats", "PNG Compression", 9))
-                cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False))
-                cParams.setParamString cParams.getParamString() & "|" & CStr(g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True))
+                cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "PNG Compression", 9))
+                cParams.setParamString cParams.getParamString() & "|" & Str(g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False))
+                cParams.setParamString cParams.getParamString() & "|" & Str(g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True))
             End If
             
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
@@ -308,12 +308,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
         'PPM
         Case FIF_PPM
-            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
             updateMRU = SavePPMImage(srcPDImage, dstPath, cParams.getParamString)
                 
         'TGA
         Case FIF_TARGA
-            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
             updateMRU = SaveTGAImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'JPEG-2000
@@ -336,7 +336,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString CStr(g_JP2Compression)
+                cParams.setParamString Str(g_JP2Compression)
                 
             End If
             
@@ -350,7 +350,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'TIFFs use two parameters - compression type, and CMYK encoding (true/false)
             If Not cParams.doesParamExist(1) Then
-                cParams.setParamString CStr(g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)) & "|" & CStr(g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False))
+                cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)) & "|" & Str(g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False))
             End If
             
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
@@ -385,7 +385,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString CStr(g_WebPCompression)
+                cParams.setParamString Str(g_WebPCompression)
                 
             End If
             
@@ -414,7 +414,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString CStr(g_JXRCompression) & "|" & CStr(g_JXRProgressive)
+                cParams.setParamString Str(g_JXRCompression) & "|" & Str(g_JXRProgressive)
                 
             End If
             
@@ -427,7 +427,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         Case FIF_BMP
             
             'If the user has not provided explicit BMP parameters, load their default values from the preferences file
-            If Not cParams.doesParamExist(1) Then cParams.setParamString CStr(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
             updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         Case Else

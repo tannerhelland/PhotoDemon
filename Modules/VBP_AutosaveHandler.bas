@@ -412,7 +412,7 @@ Public Sub alignXMLandBinaryAutosaves()
                 .isDisplayed = True
                 .latestUndoFound = m_BinaryEntries(i).origUndoID
                 .latestUndoPath = m_BinaryEntries(i).fullPath
-                .friendlyName = g_Language.TranslateMessage("unknown image %1", CStr(unfoundImages))
+                .friendlyName = g_Language.TranslateMessage("unknown image %1", Str(unfoundImages))
             End With
             
         End If

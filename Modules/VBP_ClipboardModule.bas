@@ -164,11 +164,11 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it.
     ' TODO: make hyperlinks work with "Paste as new layer".  Right now they will always default to loading as a new image.
-    ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(CStr(Clipboard.GetText)), 7) = "http://") Or (Left$(Trim(CStr(Clipboard.GetText)), 6) = "ftp://")) Then
+    ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(Str(Clipboard.GetText)), 7) = "http://") Or (Left$(Trim(Str(Clipboard.GetText)), 6) = "ftp://")) Then
         
         Message "URL found on clipboard.  Attempting to download image at that location..."
         Dim downloadSuccess As Boolean
-        downloadSuccess = FormInternetImport.ImportImageFromInternet(Trim(CStr(Clipboard.GetText)))
+        downloadSuccess = FormInternetImport.ImportImageFromInternet(Trim(Str(Clipboard.GetText)))
         
         'If the download failed, let the user know that hey, at least we tried.
         If downloadSuccess = False Then Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."

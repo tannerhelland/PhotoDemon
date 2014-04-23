@@ -159,6 +159,6 @@ Public Function incrementTrailingNumber(ByVal srcString As String) As String
         numToAppend = 2
     End If
     
-    incrementTrailingNumber = srcString & " (" & CStr(numToAppend) & ")"
+    incrementTrailingNumber = srcString & " (" & Str(numToAppend) & ")"
 
 End Function

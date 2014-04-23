@@ -118,9 +118,9 @@ Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox,
 
     'PhotoDemon never allows more than two significant digits for floating-point text boxes
     If numOfSD = 2 Then
-        dstTextBox = Format(CStr(srcValue), "#0.00")
+        dstTextBox = Format(Str(srcValue), "#0.00")
     Else
-        dstTextBox = Format(CStr(srcValue), "#0.0")
+        dstTextBox = Format(Str(srcValue), "#0.0")
     End If
     dstTextBox.Refresh
     
@@ -223,7 +223,7 @@ Public Function getPhotoDemonNameAndVersion() As String
         If App.Minor = 9 Then
             getPhotoDemonNameAndVersion = App.Title & " " & (App.Major + 1) & ".0 beta (build " & App.Revision & ")"
         Else
-            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " beta (build " & App.Revision & ")"
+            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & Str(App.Minor + 1) & " beta (build " & App.Revision & ")"
         End If
         
     End If
