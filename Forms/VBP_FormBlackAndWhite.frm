@@ -316,7 +316,7 @@ Private Function calculateOptimalThreshold() As Long
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Color variables
@@ -329,13 +329,13 @@ Private Function calculateOptimalThreshold() As Long
     
     'Loop through each pixel in the image, tallying values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
                 
         pLuminance = getLuminance(r, g, b)
         
@@ -396,7 +396,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -432,26 +432,26 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         Case 0
     
             For x = initX To finalX
-                QuickVal = x * qvDepth
+                quickVal = x * qvDepth
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+                r = ImageData(quickVal + 2, y)
+                g = ImageData(quickVal + 1, y)
+                b = ImageData(quickVal, y)
                 
                 'Convert those to a luminance value
                 l = getLuminance(r, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(QuickVal + 2, y) = highR
-                    ImageData(QuickVal + 1, y) = highG
-                    ImageData(QuickVal, y) = highB
+                    ImageData(quickVal + 2, y) = highR
+                    ImageData(quickVal + 1, y) = highG
+                    ImageData(quickVal, y) = highB
                 Else
-                    ImageData(QuickVal + 2, y) = lowR
-                    ImageData(QuickVal + 1, y) = lowG
-                    ImageData(QuickVal, y) = lowB
+                    ImageData(quickVal + 2, y) = lowR
+                    ImageData(quickVal + 1, y) = lowG
+                    ImageData(quickVal, y) = lowB
                 End If
                 
             Next y
@@ -502,27 +502,27 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
 
             'Now loop through the image, using the dither values as our threshold
             For x = initX To finalX
-                QuickVal = x * qvDepth
+                quickVal = x * qvDepth
                 xModQuick = x And 3
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+                r = ImageData(quickVal + 2, y)
+                g = ImageData(quickVal + 1, y)
+                b = ImageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(QuickVal + 2, y) = highR
-                    ImageData(QuickVal + 1, y) = highG
-                    ImageData(QuickVal, y) = highB
+                    ImageData(quickVal + 2, y) = highR
+                    ImageData(quickVal + 1, y) = highG
+                    ImageData(quickVal, y) = highB
                 Else
-                    ImageData(QuickVal + 2, y) = lowR
-                    ImageData(QuickVal + 1, y) = lowG
-                    ImageData(QuickVal, y) = lowB
+                    ImageData(quickVal + 2, y) = lowR
+                    ImageData(quickVal + 1, y) = lowG
+                    ImageData(quickVal, y) = lowB
                 End If
                 
             Next y
@@ -624,27 +624,27 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
 
             'Now loop through the image, using the dither values as our threshold
             For x = initX To finalX
-                QuickVal = x * qvDepth
+                quickVal = x * qvDepth
                 xModQuick = x And 7
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+                r = ImageData(quickVal + 2, y)
+                g = ImageData(quickVal + 1, y)
+                b = ImageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(QuickVal + 2, y) = highR
-                    ImageData(QuickVal + 1, y) = highG
-                    ImageData(QuickVal, y) = highB
+                    ImageData(quickVal + 2, y) = highR
+                    ImageData(quickVal + 1, y) = highG
+                    ImageData(quickVal, y) = highB
                 Else
-                    ImageData(QuickVal + 2, y) = lowR
-                    ImageData(QuickVal + 1, y) = lowG
-                    ImageData(QuickVal, y) = lowB
+                    ImageData(quickVal + 2, y) = lowR
+                    ImageData(quickVal + 1, y) = lowG
+                    ImageData(quickVal, y) = lowB
                 End If
                 
             Next y
@@ -876,13 +876,13 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         
         'Now loop through the image, calculating errors as we go
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
         
             'Get the source pixel color values
-            r = ImageData(QuickVal + 2, y)
-            g = ImageData(QuickVal + 1, y)
-            b = ImageData(QuickVal, y)
+            r = ImageData(quickVal + 2, y)
+            g = ImageData(quickVal + 1, y)
+            b = ImageData(quickVal, y)
             
             'Convert those to a luminance value and add the value of the error at this location
             l = getLuminance(r, g, b)
@@ -891,14 +891,14 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             'Check our modified luminance value against the threshold, and set new values accordingly
             If newL >= cThreshold Then
                 errorVal = newL - 255
-                ImageData(QuickVal + 2, y) = highR
-                ImageData(QuickVal + 1, y) = highG
-                ImageData(QuickVal, y) = highB
+                ImageData(quickVal + 2, y) = highR
+                ImageData(quickVal + 1, y) = highG
+                ImageData(quickVal, y) = highB
             Else
                 errorVal = newL
-                ImageData(QuickVal + 2, y) = lowR
-                ImageData(QuickVal + 1, y) = lowG
-                ImageData(QuickVal, y) = lowB
+                ImageData(quickVal + 2, y) = lowR
+                ImageData(quickVal + 1, y) = lowG
+                ImageData(quickVal, y) = lowB
             End If
             
             'If there is an error, spread it

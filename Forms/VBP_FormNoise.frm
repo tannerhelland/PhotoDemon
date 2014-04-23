@@ -163,7 +163,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -186,13 +186,13 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         If MC = True Then
             
@@ -219,9 +219,9 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
         If b < 0 Then b = 0
         
         'Assign that blended value to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If toPreview = False Then
