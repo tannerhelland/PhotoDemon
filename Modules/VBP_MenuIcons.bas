@@ -499,8 +499,8 @@ Public Sub resetMenuIcons()
     addMenuIcon "REDO", 1, 1     'Redo
     
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
-    addMenuIcon "NEXTIMAGE", 8, 6       'Next image
-    addMenuIcon "PREVIMAGE", 8, 7       'Previous image
+    addMenuIcon "NEXTIMAGE", 9, 6       'Next image
+    addMenuIcon "PREVIMAGE", 9, 7       'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long
