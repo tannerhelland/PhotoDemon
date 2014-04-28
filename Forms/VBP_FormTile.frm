@@ -4,10 +4,10 @@ Begin VB.Form FormTile
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tile Image"
-   ClientHeight    =   6524
-   ClientLeft      =   -14
-   ClientTop       =   224
-   ClientWidth     =   11592
+   ClientHeight    =   6525
+   ClientLeft      =   -15
+   ClientTop       =   225
+   ClientWidth     =   11595
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,9 +20,9 @@ Begin VB.Form FormTile
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   932
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1656
+   ScaleWidth      =   773
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -32,7 +32,7 @@ Begin VB.Form FormTile
       Top             =   5719
       Width           =   11592
       _ExtentX        =   20452
-      _ExtentY        =   1416
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -113,6 +113,30 @@ Begin VB.Form FormTile
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Label lblFlatten 
+      Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: this operation will flatten the image before tiling it."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   525
+      Left            =   5880
+      TabIndex        =   11
+      Top             =   5160
+      Visible         =   0   'False
+      Width           =   5610
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblWidth 
       Alignment       =   1  'Right Justify
@@ -222,7 +246,7 @@ Begin VB.Form FormTile
       Height          =   1155
       Left            =   6000
       TabIndex        =   3
-      Top             =   3960
+      Top             =   3720
       Width           =   5355
       WordWrap        =   -1  'True
    End
@@ -373,7 +397,12 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     'Create a temporary DIB to generate the tile and/or tile preview
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-        
+    
+    'Create a temporary copy of the composited image
+    Dim compositeDIB As pdDIB
+    Set compositeDIB = New pdDIB
+    pdImages(g_CurrentImage).getCompositedImage compositeDIB, True
+    
     'We need to determine a target width and height based on the input parameters
     Dim targetWidth As Long, targetHeight As Long
     
@@ -405,7 +434,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If targetHeight > MaxSize Then targetHeight = MaxSize
     
     'Resize the target picture box to this new size
-    tmpDIB.createBlank targetWidth, targetHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+    tmpDIB.createBlank targetWidth, targetHeight, 32, 0
         
     'Figure out how many loop intervals we'll need in the x and y direction to fill the target size
     Dim xLoop As Long, yLoop As Long
@@ -419,7 +448,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     
     For x = 0 To xLoop
     For y = 0 To yLoop
-        BitBlt tmpDIB.getDIBDC, x * iWidth, y * iHeight, iWidth, iHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, 0, 0, vbSrcCopy
+        BitBlt tmpDIB.getDIBDC, x * iWidth, y * iHeight, iWidth, iHeight, compositeDIB.getDIBDC, 0, 0, vbSrcCopy
     Next y
         If Not isPreview Then SetProgBarVal x
     Next x
@@ -427,16 +456,20 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     If Not isPreview Then
     
         SetProgBarVal xLoop
-    
+        
+        'Flatten the image
+        Layer_Handler.flattenImage
+        pdImages(g_CurrentImage).getLayerByIndex(0).setLayerName g_Language.TranslateMessage("Tiled image")
+        
         'With the tiling complete, copy the temporary DIB over the existing DIB
-        pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB tmpDIB
+        pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.createFromExistingDIB tmpDIB
         
         'Erase the temporary DIB to save on memory
         tmpDIB.eraseDIB
         Set tmpDIB = Nothing
         
         'Display the new size
-        pdImages(g_CurrentImage).updateSize
+        pdImages(g_CurrentImage).updateSize True
         DisplaySize pdImages(g_CurrentImage)
         
         SetProgBarVal 0
@@ -453,7 +486,6 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         tmpDIB.renderToPictureBox fxPreview.getPreviewPic
         fxPreview.setFXImage tmpDIB
         
-        tmpDIB.eraseDIB
         Set tmpDIB = Nothing
         
     End If
@@ -498,6 +530,13 @@ Private Sub Form_Load()
     cboTarget.AddItem " custom image size (in pixels)", 1
     cboTarget.AddItem " specific number of tiles", 2
     cboTarget.ListIndex = 0
+    
+    'If the current image has more than one layer, warn the user that this action will flatten the image.
+    If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+        lblFlatten.Visible = True
+    Else
+        lblFlatten.Visible = False
+    End If
     
 End Sub
 
