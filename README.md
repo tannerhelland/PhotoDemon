@@ -1,4 +1,4 @@
-# PhotoDemon 6.4 beta
+# PhotoDemon 6.4 alpha
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/PD_6-2.jpg)
 
