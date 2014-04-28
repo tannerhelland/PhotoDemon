@@ -3,8 +3,8 @@ Attribute VB_Name = "Layer_Handler"
 'Layer Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/March/14
-'Last updated: 24/March/14
-'Last update: initial build
+'Last updated: 28/April/14
+'Last update: add new function "addBlankLayer"
 '
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
@@ -15,6 +15,37 @@ Attribute VB_Name = "Layer_Handler"
 '***************************************************************************
 
 Option Explicit
+
+'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
+Public Sub addBlankLayer(ByVal dLayerIndex As Long)
+
+    'Validate the requested layer index
+    If dLayerIndex < 0 Then dLayerIndex = 0
+    If dLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+    'Ask the parent pdImage to create a new layer object
+    Dim newLayerID As Long
+    newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
+    
+    'Assign the newly created layer the IMAGE type, and initialize it to the size of the image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , g_Language.TranslateMessage("Blank layer")
+    
+    'Make the blank layer the new active layer
+    pdImages(g_CurrentImage).setActiveLayerByID newLayerID
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Render the new image to screen (not technically necessary, but doesn't hurt)
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+            
+    'Synchronize the interface to the new image
+    syncInterfaceToCurrentImage
+    
+End Sub
 
 'Allow the user to load an image file as a layer
 Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "")
