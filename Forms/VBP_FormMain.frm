@@ -1708,11 +1708,8 @@ Private Sub Form_Load()
         
     Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
     
-    'TODO: As of 22 March '14, I'm adding a warning box to the project.  Layers implementation is going to break a lot
-    '       of things, but because it's convenient for me to use GitHub to transfer work between PCs (and VB makes
-    '       multiple branches very unpleasant, thanks to garbage .frx handling), I'm going to be posting updates to
-    '       the master branch, even if they break the program completely.
-    MsgBox "WARNING!  I am currently adding Layers support to PhotoDemon.  Because Layers are only partially complete, the program is extremely unstable, with many features completely broken." & vbCrLf & vbCrLf & "As long as this message remains, PhotoDemon may not function properly (or at all).  I've suspended nightly builds until things are stable.  If you've manually downloaded this build from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any editing with with the 6.2 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.4 Development Warning"
+    'TODO: As of 27 April '14, I have removed the warning below.
+    'MsgBox "WARNING!  I am currently adding Layers support to PhotoDemon.  Because Layers are only partially complete, the program is extremely unstable, with many features completely broken." & vbCrLf & vbCrLf & "As long as this message remains, PhotoDemon may not function properly (or at all).  I've suspended nightly builds until things are stable.  If you've manually downloaded this build from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any editing with with the 6.2 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.4 Development Warning"
     
     
     '*************************************************************************************************************************************
