@@ -332,6 +332,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             Else
                 ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 SetProgBarVal 0
+                releaseProgressBar
                 Message "Image successfully quantized to %1 unique colors. ", numOfQuantizedColors
             End If
             
