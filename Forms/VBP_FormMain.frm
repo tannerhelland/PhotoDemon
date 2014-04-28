@@ -3,10 +3,10 @@ Begin VB.Form FormMain
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   9750
+   ClientHeight    =   10455
    ClientLeft      =   225
    ClientTop       =   855
-   ClientWidth     =   14040
+   ClientWidth     =   15540
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -20,9 +20,9 @@ Begin VB.Form FormMain
    Icon            =   "VBP_FormMain.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   650
+   ScaleHeight     =   697
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   936
+   ScaleWidth      =   1036
    StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdCanvas mainCanvas 
       Height          =   3735
