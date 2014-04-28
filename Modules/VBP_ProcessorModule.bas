@@ -439,6 +439,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'LAYER FUNCTIONS
         ' Any action triggered from the Layer menu, or the Layer toolbox - creating layers, moving them, etc
         
+        'Add a blank 32bpp layer to the image
+        Case "Add blank layer"
+            Layer_Handler.addBlankLayer cParams.GetLong(1)
+        
         'Add an image file to the current image (as a new layer)
         Case "New Layer from File"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
