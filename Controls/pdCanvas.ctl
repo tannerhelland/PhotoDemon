@@ -545,6 +545,9 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.Width + fixDPI(10)
     lineStatusBar(2).x2 = lineStatusBar(2).x1
     
+    'Make the message area shrink to match the new coordinate display size
+    fixChromeLayout
+    
     lblCoordinates.Refresh
     
 End Sub
