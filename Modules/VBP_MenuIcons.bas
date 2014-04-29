@@ -212,47 +212,60 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Image Menu
     addMenuIcon "DUPLICATE", 3, 0      'Duplicate
     addMenuIcon "RESIZE", 3, 2         'Resize
-    addMenuIcon "SMRTRESIZE", 3, 3     'Content-aware resize
     addMenuIcon "CANVASSIZE", 3, 4     'Canvas resize
-    addMenuIcon "CROPSEL", 3, 6        'Crop to Selection
-    addMenuIcon "AUTOCROP", 3, 7      'Autocrop
-    addMenuIcon "ROTATECW", 3, 9      'Rotate top-level
+    'addMenuIcon "CANVASSIZE", 3, 5     'Fit canvas to active layer
+    'addMenuIcon "CANVASSIZE", 3, 6     'Fit canvas around all layers
+    addMenuIcon "CROPSEL", 3, 8        'Crop to Selection
+    addMenuIcon "AUTOCROP", 3, 9      'Trim
+    addMenuIcon "ROTATECW", 3, 11     'Rotate top-level
         '--> Rotate sub-menu
-        addMenuIcon "ROTATECW", 3, 9, 0     'Rotate Clockwise
-        addMenuIcon "ROTATECCW", 3, 9, 1    'Rotate Counter-clockwise
-        addMenuIcon "ROTATE180", 3, 9, 2    'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 9, 3   'Rotate Arbitrary
-    addMenuIcon "MIRROR", 3, 10        'Mirror
-    addMenuIcon "FLIP", 3, 11          'Flip
+        addMenuIcon "ROTATECW", 3, 11, 0    'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 3, 11, 1   'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 3, 11, 2   'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 11, 3  'Rotate Arbitrary
+    addMenuIcon "MIRROR", 3, 12        'Mirror
+    addMenuIcon "FLIP", 3, 13          'Flip
     'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
-    addMenuIcon "REDUCECOLORS", 3, 13  'Indexed color (Reduce Colors)
-    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(13).Enabled = True Else FormMain.MnuImage(13).Enabled = False
-    addMenuIcon "TILE", 3, 14          'Tile
-    addMenuIcon "METADATA", 3, 16      'Metadata (top-level)
+    addMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
+    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(15).Enabled = True Else FormMain.MnuImage(15).Enabled = False
+    addMenuIcon "TILE", 3, 16          'Tile
+    addMenuIcon "METADATA", 3, 18      'Metadata (top-level)
         '--> Metadata sub-menu
-        addMenuIcon "BROWSEMD", 3, 16, 0     'Browse metadata
-        addMenuIcon "COUNTCOLORS", 3, 16, 2  'Count Colors
-        addMenuIcon "MAPPHOTO", 3, 16, 3     'Map photo location
+        addMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
+        addMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
+        addMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Layer menu
     'addMenuIcon "SELECTALL", 4, 0       'Add layer (top-level)
         '--> Add layer sub-menu
-        'addMenuIcon "", 4, 0, 0          'Add blank layer
+        'addMenuIcon "", 4, 0, 0             'Add blank layer
         addMenuIcon "DUPL_LAYER", 4, 0, 1          'Add duplicate layer
         addMenuIcon "PASTE_LAYER", 4, 0, 3          'Add layer from clipboard
-        'addMenuIcon "", 4, 0, 4          'Add layer from file
+        'addMenuIcon "", 4, 0, 4             'Add layer from file
     'addMenuIcon "SELECTALL", 4, 1       'Delete layer (top-level)
     'addMenuIcon "SELECTALL", 4, 3       'Merge up
     'addMenuIcon "SELECTALL", 4, 4       'Merge down
     'addMenuIcon "SELECTALL", 4, 5       'Order (top-level)
-    'addMenuIcon "SELECTALL", 4, 7       'Transform (top-level)
-    addMenuIcon "TRANSPARENCY", 4, 9     'Transparency
+    addMenuIcon "ROTATECW", 4, 7       'Orientation (top-level)
+        '--> Orientation sub-menu
+        addMenuIcon "ROTATECW", 4, 7, 0     'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 4, 7, 1    'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 4, 7, 2    'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 4, 7, 3   'Rotate Arbitrary
+        addMenuIcon "MIRROR", 4, 7, 5       'Mirror
+        addMenuIcon "FLIP", 4, 7, 6         'Flip
+    addMenuIcon "RESIZE", 4, 8          'Size (top-level)
+        '--> Size sub-menu
+        'addMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
+        addMenuIcon "RESIZE", 4, 8, 2        'Resize
+        addMenuIcon "SMRTRESIZE", 4, 8, 3    'Content-aware resize
+    addMenuIcon "TRANSPARENCY", 4, 10   'Transparency
         '--> Transparency sub-menu
-        addMenuIcon "ADDTRANS", 4, 9, 0     'Add alpha channel
-        addMenuIcon "GREENSCREEN", 4, 9, 1  'Color to alpha
-        addMenuIcon "REMOVETRANS", 4, 9, 3  'Remove alpha channel
-    'addMenuIcon "SELECTALL", 4, 11      'Flatten image
-    'addMenuIcon "SELECTALL", 4, 12      'Merge visible layers
+        addMenuIcon "ADDTRANS", 4, 10, 0     'Add alpha channel
+        addMenuIcon "GREENSCREEN", 4, 10, 1  'Color to alpha
+        addMenuIcon "REMOVETRANS", 4, 10, 3  'Remove alpha channel
+    'addMenuIcon "SELECTALL", 4, 12      'Flatten image
+    'addMenuIcon "SELECTALL", 4, 13      'Merge visible layers
     
     'Select Menu
     addMenuIcon "SELECTALL", 5, 0       'Select all
