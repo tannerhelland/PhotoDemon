@@ -91,7 +91,7 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     prepSafeArray energySA, m_EnergyImage
     CopyMemory ByVal VarPtrArray(energyData()), VarPtr(energySA), 4
     
-    Dim x As Long, y As Long, QuickVal As Long
+    Dim x As Long, y As Long, quickVal As Long
     Dim r As Long, g As Long, b As Long
     
     Dim grayLookUp(0 To 765) As Byte
@@ -101,12 +101,12 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     Next x
     
     For x = 0 To srcDIB.getDIBWidth - 1
-        QuickVal = x * 3
+        quickVal = x * 3
     For y = 0 To srcDIB.getDIBHeight - 1
-        r = energyData(QuickVal + 2, y)
-        g = energyData(QuickVal + 1, y)
-        b = energyData(QuickVal, y)
-        energyData(QuickVal, y) = grayLookUp(r + g + b)
+        r = energyData(quickVal + 2, y)
+        g = energyData(quickVal + 1, y)
+        b = energyData(quickVal, y)
+        energyData(quickVal, y) = grayLookUp(r + g + b)
     Next y
     Next x
     
@@ -622,7 +622,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     prepSafeArray dstEnergySA, newEnergyMap
     CopyMemory ByVal VarPtrArray(dstEnergy()), VarPtr(dstEnergySA), 4
     
-    Dim quickSrcX As Long, quickDstX As Long, xOffset As Long
+    Dim quickSrcX As Long, quickDstX As Long, xOffset As Long, innerXOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
     If m_SourceImage.getDIBColorDepth = 32 Then
@@ -646,16 +646,16 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
             
             'Copy pixels from the source image to the destination image, using the visibility map to duplicate pixels as necessary
             For i = 0 To visibilityMap(x, y)
+            
+                innerXOffset = quickDstX + (i * 3)
                 
                 'Remap RGB data to the destination image
-                dstImageData(quickDstX + (i * 3), y) = srcImageData(quickSrcX, y)
-                dstImageData(quickDstX + (i * 3) + 1, y) = srcImageData(quickSrcX + 1, y)
-                dstImageData(quickDstX + (i * 3) + 2, y) = srcImageData(quickSrcX + 2, y)
+                dstImageData(innerXOffset, y) = srcImageData(quickSrcX, y)
+                dstImageData(innerXOffset + 1, y) = srcImageData(quickSrcX + 1, y)
+                dstImageData(innerXOffset + 2, y) = srcImageData(quickSrcX + 2, y)
                 
                 'If present, remap alpha data as well
-                If alphaPresent Then
-                    dstImageData(quickDstX + (i * 3) + 3, y) = srcImageData(quickSrcX + 3, y)
-                End If
+                If alphaPresent Then dstImageData(innerXOffset + 3, y) = srcImageData(quickSrcX + 3, y)
                 
                 'Because energy data only uses the blue channel, we can copy it more easily
                 dstEnergy((x + xOffset) * 3, y) = srcEnergy(quickSrcX, y)
